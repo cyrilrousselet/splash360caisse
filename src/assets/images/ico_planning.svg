@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="34px" viewBox="0 0 40 34" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Group 3</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Page-d'accueil" transform="translate(-762.000000, -185.000000)">
+            <g id="Group-3" transform="translate(762.000000, 185.000000)">
+                <path d="M1,13 C1,21.0133262 1,21.3463177 1,30 C1,31.6568542 2.34314575,33 4,33 L36,33 C37.6568542,33 39,31.6568542 39,30 C39,21.3463177 39,21.0133262 39,13 C38.2582389,13 37.1819422,13 33.75,13 C27.5,13 27.5,13 20,13 C12.5,13 12.5,13 6.25,13 C2.8180578,13 1.74176105,13 1,13 Z" id="Rectangle" stroke="#FFFFFF" stroke-width="2" fill-rule="nonzero"></path>
+                <text id="12" font-family="Avenir-Black, Avenir" font-size="11" font-weight="700" fill="#FFFFFF">
+                    <tspan x="13.488" y="27">12</tspan>
+                </text>
+                <path d="M26.5,4 L26.5,8 C26.5,9.93299662 28.0670034,11.5 30,11.5 C31.9329966,11.5 33.5,9.93299662 33.5,8 L33.5,4 L36,4 C38.209139,4 40,5.790861 40,8 L40,15 L0,15 L0,8 C-2.705415e-16,5.790861 1.790861,4 4,4 L6.5,4 L6.5,8 C6.5,9.93299662 8.06700338,11.5 10,11.5 C11.9329966,11.5 13.5,9.93299662 13.5,8 L13.5,4 L26.5,4 Z" id="Combined-Shape" fill="#FFFFFF" fill-rule="nonzero"></path>
+                <rect id="Rectangle" fill="#FFFFFF" fill-rule="nonzero" x="8" y="0" width="4" height="10" rx="2"></rect>
+                <rect id="Rectangle-Copy-7" fill="#FFFFFF" fill-rule="nonzero" x="28" y="0" width="4" height="10" rx="2"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

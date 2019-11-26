@@ -1,0 +1,19 @@
+.subcontent {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-left: 20px;
+    height: 100%;
+    width: calc(100% - 230px);
+    vertical-align: top;
+
+
+    font-family: $f_boo;
+    font-size: 30px;
+    text-align: center;
+}
+
+.Parametres {
+    @import "Parametres-Commandes";
+}

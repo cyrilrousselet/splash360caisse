@@ -1,0 +1,207 @@
+.Reglement {
+    display: inline-block;
+    position: absolute;
+    left: calc(50% - 150px); // (largeur de la fenêtre - largeur du panier) / 2
+    top: 50%;
+    transform: translate(-50%, -50%);
+    outline: none;
+    .Modal-container {
+        background-color: $blanc;
+        width: 550px;
+        height: 520px;
+        border-radius: 15px;
+        padding: 0 20px;
+    }
+    .close-button {
+        background-color: $blanc;
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        width: 30px;
+        height: 30px;
+        min-height: 30px;
+    }
+    .header {
+        height: 55px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        .title {
+            font-family: $f_blk;
+            font-size: 18px;
+            color: $noir;
+            text-align: center;
+            text-transform: uppercase;
+        }
+    }
+    .body {
+        .calculette {
+            display: inline-block;
+            vertical-align: top;
+            width: 200px;
+            height: 293px;
+            border-radius: 5px;
+            background-color: $blanc-fonce;
+            padding: 15px;
+            .PillField {
+                background: $gris-clair;
+                height: 40px;
+                min-width: 170px;
+                border-radius: 20px;
+                padding-left: 15px;
+                padding-right: 15px;
+                input {
+                    letter-spacing: 0.1em;
+                    font-size: 22px;
+                    height: 40px;
+                    line-height: 40px;
+                    width: 110px;
+                    text-align: right;
+                }
+                .btn-delete {
+                    height: 40px;
+                }
+            }
+            .keyboard {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                width: 170px;
+                height: 230px;
+                padding: 15px 6px 0;
+            }
+            .PillButton {
+                background-color: $blanc;
+                
+            }
+        }
+        .liste {
+            display: inline-block;
+            vertical-align: top;
+            width: 290px;
+            height: 293px;
+            margin-left: 20px;
+            border-radius: 5px;
+            background-color: $blanc-fonce;
+            padding: 5px;
+            .liste-header {
+                background-color: $gris-clair;
+                border-radius: 2px;
+                .lhdr {
+                    font-family: $f_med;
+                    font-size: 15px;
+                    color: $noir;
+                    display: inline-block;
+                    padding: 7px 10px;
+                    text-align: center;
+                }
+            }
+            .wrapper {
+                height: calc(100% - 70px);
+                overflow-y: scroll;
+            }
+            .trop-percu {
+                display: flex;
+                flex-direction: row;
+                width: 100%;
+                justify-content: space-between;
+                height: 35px;
+                align-items: center;
+                padding: 0 10px;
+
+                font-family: "Avenir-Black";
+                font-size: 15px;
+                color: $rouge;
+                &.rendable {
+                    color: $noir;
+                }
+            }
+        }
+        .boutons {
+            .raccourcis {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                padding-top: 15px;
+                .raccourci {
+                    width: 110px;
+                    &.StdButton .StdButton-text {
+                        font-family: $f_blk;
+                        font-size: 17px;
+                    }
+                    &:nth-child(1) {
+                        background-color: $wheel8;
+                    }
+                    &:nth-child(2) {
+                        background-color: $wheel9;
+                    }
+                    &:nth-child(3) {
+                        background-color: $wheel10;
+                    }
+                    &:nth-child(4) {
+                        background-color: $wheel11;
+                    }
+                }
+            }
+            .moyens {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                line-height: 1.0em !important;
+                .moyen {
+                    width: 110px;
+                    background-color: $prairie;
+                    &.StdButton {
+                        .StdButton-icon {
+                            height: 30px;
+                            svg {
+                                height: 100%;
+                                width: auto;
+                            }
+                        }
+                        .StdButton-text {
+                            font-family: $f_blk;
+                            font-size: 17px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .ReglementListeItem {
+        background-color: $blanc;
+        border-radius: 18px;
+        margin-top: 2px;
+        height: 36px;
+
+        .MuiListItem-root {
+            justify-content: space-between;
+            padding: 0 3px 0 10px;
+            align-items: center;
+            height: 36px;
+        }
+
+        .ritm {
+            &.moyen {
+                font-family: $f_med;
+                font-size: 15px;
+                color: $noir;
+                width: 160px;
+            }
+            &.valeur {
+                font-family: $f_blk;
+                font-size: 15px;
+                color: $noir;
+                width: 60px;
+            }
+            &.removebtn {
+                width: 30px;
+                height: 30px;
+                min-height: 30px;
+                background-color: red;
+                box-shadow: none;
+            }
+        }
+    }
+}

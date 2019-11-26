@@ -1,0 +1,38 @@
+.LargeButton {
+    width: 180px;
+    height: 90px;
+    background: $rouge;
+    box-shadow: 0 0 0 10px $blanc, 0 20px 15px 0 $noir_010;
+    line-height: 1.5em !important;
+    border-radius: 11px !important;
+    border: 1px solid $blanc;
+    margin: 15px !important;
+    padding: 0;
+    outline: none;
+    transition: box-shadow .2s ease-out, border .2s ease-out;
+    text-transform: capitalize !important;
+    cursor: pointer;
+    span {
+        display: block;
+    }
+    .LargeButton-icon {
+        display: inline-block;
+        width: 50px;
+        height: 40px;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: 40px 40px;
+    }
+    .LargeButton-text {
+        font-family: $f-blk;
+        font-size: 18px;
+        color: $blanc;
+        text-align: center;
+        @include font-smoothing(on);
+    }
+    &:active {
+        box-shadow: 0 0 0 10px $gris, 0 20px 15px 0 rgba(0, 0, 0, 0);
+        border: 1px solid $gris;
+        outline: none;
+    }
+}

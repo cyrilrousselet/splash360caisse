@@ -1,0 +1,14 @@
+{
+    "cartes": "usageCartes",
+    "clients": "moduleClients",
+    "stocks": "moduleStocks",
+    "statistiques": "moduleStatistiques",
+    "parametres": "moduleParametres",
+    "menu": "moduleMenu",
+    "cloture": "moduleCloture",
+    "marketing": "moduleMarketing",
+    "depenses": "moduleDepenses",
+    "plannings": "modulePlannings",
+    "remise": "usageRemise",
+    "tiroir_hors_encaissement": true
+}

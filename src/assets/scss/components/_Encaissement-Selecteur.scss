@@ -1,0 +1,129 @@
+
+    .Selecteur {
+        display: inline-block;
+        position: relative;
+        height: 100%;
+        width: calc(100% - 315px);
+    }
+    .TabBar {
+        width: 215px;
+        display: inline-block;
+        height: 100%;
+        position: relative;
+        
+        .btn-up,
+        .btn-down {
+            border: none;
+            border-radius: 15px 0 0 15px;
+            background-color: $gris-pale;
+            height: 70px;
+            width: 200px;
+            height: 45px;
+            background-image: url('../../images/ico_arrow-up.svg');
+            background-size: 16px 8px;
+            background-position: center center;
+            background-repeat: no-repeat;
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+        }
+        .btn-down {
+            background-image: url('../../images/ico_arrow-down.svg');
+            top: auto;
+            bottom: 0;
+        }
+        .wrapper {
+            height: 100%;
+            overflow-y: scroll;
+            &::-webkit-scrollbar {
+                display: none;
+            }
+        }
+    }
+    .tab-link {
+        border: none;
+        border-radius: 15px 0 0 15px;
+        background-color: $gris-pale;
+        height: 70px;
+        width: 215px;
+        margin-bottom: 2px;
+        outline: none;
+
+        font-family: $f-hea;
+        font-size: 18px;
+        color: $noir;
+        text-align: center;
+        text-transform: uppercase;
+        cursor: pointer;
+        &.tab-link-active {
+            background-color: $blanc;
+            color: $primary;
+            cursor: default;
+            font-family: $f_blk;
+            box-shadow: 0 5px 12px 0 $noir_005;
+        }
+    }
+    .TabCont {
+        display: inline-block;
+        vertical-align: top;
+        margin-left: -15px;
+        width: calc(100% - 200px);
+        height: 100%;
+        position: relative;
+        background-color: $blanc;
+        border-radius: 15px;
+        padding: 10px;
+
+        .wrapper {
+            height: 100%;
+            overflow-y: scroll;
+            &::-webkit-scrollbar {
+                display: none;
+            }
+        }
+    }
+    .ProduitBtn {
+        display: inline-flex;
+        width: 33.33333%;
+        height: 100px;
+        border-radius: 0;
+        color: $blanc;
+        font-family: $f_blk;
+        font-size: 16px;
+        vertical-align: top;
+        text-transform: uppercase;
+        box-sizing: border-box;
+        padding: 5px;
+        box-shadow: inset 0 0 0 2px $blanc;
+        span {
+            display: block;
+        }
+        div {
+            line-height: 1.0em;
+            &+div {
+                padding-top: 7px;
+            }
+        }
+        &:nth-child(7n+1) {
+            background-color: $wheel1;
+        }
+        &:nth-child(7n+2) {
+            background-color: $wheel2;
+        }
+        &:nth-child(7n+3) {
+            background-color: $wheel3;
+        }
+        &:nth-child(7n+4) {
+            background-color: $wheel4;
+        }
+        &:nth-child(7n+5) {
+            background-color: $wheel5;
+        }
+        &:nth-child(7n+6) {
+            background-color: $wheel6;
+        }
+        &:nth-child(7n) {
+            background-color: $wheel7;
+        }
+    }

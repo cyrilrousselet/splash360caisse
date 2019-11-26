@@ -1,0 +1,44 @@
+.Footer {
+    position: fixed;
+    padding: 0 50px 0 23px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: $footer-height;
+    background-color: $blanc;
+    font-family: $f_med;
+    font-size: 16px;
+    color: $noir;
+    letter-spacing: 0;
+    @include font-smoothing(on);
+    .connexion {
+        text-transform: capitalize;
+        height: 23px;
+        &:before {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            margin-right: 13px;
+            box-shadow: inset 0 0 0 2px $rouge;
+        }
+        &.on:before {
+            box-shadow: inset 0 0 0 2px $vert;
+        }
+        span {
+            vertical-align: baseline;
+        }
+    }
+    .date {
+        display: inline-block;
+        padding-right: 50px;
+    }
+    .heure {
+        display: inline-block;
+    }
+}

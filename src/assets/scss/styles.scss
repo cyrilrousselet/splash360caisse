@@ -1,0 +1,23 @@
+// config
+@import './config';
+@import './base/fonts';
+// vendor
+@import './base/sweetalert2';
+// dev
+@import './components/BrowserLocation';
+// base
+@import './general';
+// components - common
+@import './components/Footer';
+@import './components/PillButton';
+@import './components/LargeButton';
+@import './components/StdButton';
+@import './components/PillField';
+@import './components/SwitchCheckbox';
+@import './components/TopZone';
+// components
+@import './components/Login';
+@import './components/Dashboard';
+@import './components/Encaissement';
+@import './components/Parametres';
+@import './components/Navigation';

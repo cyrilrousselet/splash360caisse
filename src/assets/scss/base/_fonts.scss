@@ -1,0 +1,30 @@
+@font-face {
+    font-family: 'Avenir-Black';
+    src: url('./../../fonts/Avenir-Black.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Avenir-Book';
+    src: url('./../../fonts/Avenir-Book.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Avenir-Heavy';
+    src: url('./../../fonts/Avenir-Heavy.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Avenir-Medium';
+    src: url('./../../fonts/Avenir-Medium.woff') format('woff');
+}
+
+@mixin font-smoothing($value: on) {
+    @if $value==on {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    @else {
+        -webkit-font-smoothing: subpixel-antialiased;
+        -moz-osx-font-smoothing: auto;
+    }
+}

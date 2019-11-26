@@ -1,0 +1,180 @@
+.Panier {
+    display: inline-block;
+    position: relative;
+    margin-left: 14px;
+    width: 300px;
+    height: 100%;
+    vertical-align: top;
+
+    background-color: $blanc;
+    border-radius: 15px;
+    padding: 10px;
+
+    &.reglement-ouvert {
+        z-index: 1301;
+    }
+
+    .header {
+        height: 30px;
+        .ticketId {
+            font-family: $f_med;
+            font-size: 18px;
+            color: $noir;
+            padding: 5px;
+        }
+        .ticketComment {
+            float: right;
+        }
+    }
+
+    .body {
+        height: calc(100% - 205px);
+        .PanierListe {
+            height: 100%;
+        }
+        .Liste {
+            background-color: $blanc-fonce;
+            padding:5px;
+            border-radius: 5px;
+            height: calc(100% - 40px);
+            .liste-header {
+                background-color: $gris-clair;
+                border-radius: 2px;
+                .lhdr {
+                    font-family: $f_med;
+                    font-size: 15px;
+                    color: $noir;
+                    display: inline-block;
+                    padding: 7px 10px;
+                    text-align: center;
+                }
+                .lhdr-nom {
+                    width: 150px;
+                    text-align: left;
+                }
+                .lhdr-quantite {
+                    width: 40px;
+                    padding: 7px 6px;
+                    background-color: $noir_005;
+                }
+                .lhdr-prix {
+                    width: 80px;
+                }
+            }
+            .wrapper {
+                height: calc(100% - 94px);
+                overflow-y: scroll;
+                background: linear-gradient($noir_005 0%, $noir_005 100%);
+                background-size: 40px 100%;
+                background-repeat: no-repeat;
+                background-position: 150px 0;
+            }
+            .tools {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 10px 10px;
+                .tool {
+                    background-color: $blanc;
+                }
+            }
+        }
+        .total {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding: 10px 10px 5px;
+            .intitule {
+                font-family: $f_hea;
+                font-size: 18px;
+                color: $noir;
+            }
+            .montant {
+                font-family: $f_hea;
+                font-size: 18px;
+                color: $noir;
+                text-align: right;
+            }
+        }
+    }
+
+    .modes {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        .mode {
+            width: 29%;
+            background-color:$gris-bleu;
+            &.active {
+                background-color: $rouge;
+            }
+        } 
+    }
+    .actions {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        .action {
+            width: 29%;
+        }
+        .action-encaisser {
+            background-color: $prairie;
+            width: 100%;
+            min-height: 45px;
+            .StdButton-text {
+                font-family: $f_blk;
+                font-size: 18px;
+                text-transform: uppercase;
+            }
+        }
+        .action-tiroir {
+            background-color: $noir;
+        }
+        .action-attente {
+            background-color: $jaune;
+        }
+        .action-reprise {
+            background-color: $jaune;
+        }
+    }
+
+
+    .PanierListeItem {
+        .MuiButtonBase-root {
+            padding: 0 !important;
+            display: table-row;
+        }
+        .litm {
+            font-family: $f_med;
+            font-size: 15px;
+            color: $noir;
+            display: table-cell;
+            padding: 7px 10px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .MuiListItem-root.Mui-selected {
+            background-color: $primary;
+            .litm {
+                font-family: $f_hea;
+                color: $blanc;
+            }
+        }
+        .nom {
+            width: 150px;
+            text-align: left;
+        }
+        .quantite {
+            width: 40px;
+            padding: 7px 6px;
+            //  background-color: $noir_005;
+        }
+        .prix {
+            width: 80px;
+        }
+    }
+
+}

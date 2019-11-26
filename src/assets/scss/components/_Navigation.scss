@@ -1,0 +1,65 @@
+.sidebar {
+    display: inline-block;
+    box-shadow: 0 5px 15px 0 rgba(0,0,0,0.10);
+    background: #FFFFFF;
+    border-radius: 15px;
+    padding: 15px;
+    height: 100%;
+    width: 210px;
+
+    .titre {
+        width: 180px;
+        height: 90px;
+        background: $gris-pale;
+        border-radius: 11px;
+        border: 1px solid $blanc;
+        padding: 10px 0;
+        box-sizing: border-box;
+        .icon {
+            display: inline-block;
+            width: 100%;
+            height: 40px;
+            background-image: url('../../images/ico_parametres.svg');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: 40px 40px;
+        }
+        .text {
+            font-family: $f-blk;
+            font-size: 18px;
+            color: $noir;
+            text-align: center;
+            @include font-smoothing(on);
+        }
+    }
+    .submodulesList {
+        padding-top: 30px;
+    }
+    .module-item {
+        width: 100%;
+        cursor: pointer;
+        .NavigationButton {
+            width: 100%;
+            background-color: $blanc;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-family: $f-hea;
+            font-size: 18px;
+            color: $noir;
+            @include font-smoothing(on);
+            border: none;
+            border-radius: 0;
+            outline: none;
+            transition: background-color .2s ease-out, color .2s ease-out;
+            &:hover {
+                background-color: $primary;
+                color: $blanc;
+            }
+        }
+        &.active .NavigationButton {
+            background-color: $primary;
+            color: $blanc;
+        }
+    }
+}

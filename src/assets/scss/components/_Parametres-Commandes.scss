@@ -1,0 +1,17 @@
+.Commandes {
+    justify-content: flex-start;
+    .commande-item {
+        width: 100%;
+        font-family: $f_med;
+        font-size: 14px;
+        border-bottom: 1px solid $gris;
+        padding: 10px 0;
+        text-align: left;
+        .id,
+        .created,
+        .montant {
+            display: inline-block;
+            padding: 0 10px;
+        }
+    }
+}

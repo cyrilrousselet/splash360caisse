@@ -1,0 +1,16 @@
+.BrowserLocation {
+    font-size: 12px;
+    border-bottom: 1px solid $orange;
+    strong {
+        font-weight: normal;
+        font-family: $f_hea;
+    }
+    div {
+        display: inline-block;
+        font-family: 'Courier New', Courier, monospace;
+        .int {
+            font-family: $f_boo;
+        }
+    }
+    @include font-smoothing(on);
+}

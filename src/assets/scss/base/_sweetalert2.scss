@@ -1,0 +1,42 @@
+.swal2-container {
+    .swal2-icon {
+        font-family: $f-hea;
+    }
+    .swal2-title {
+        font-family: $f-hea;
+        font-size: 25px;
+    }
+    .swal2-content {
+        font-family: $f-boo;
+    }
+    .swal2-actions button {
+        min-width: 40px;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        border-radius: 20px;
+        background-color: $gris-clair;
+        border: none;
+        padding: 0 20px;
+        box-shadow: inset 0 0 0 4px $blanc, 0 3px 8px 0 $noir_010;
+        cursor: pointer;
+        transition: background-color .3s ease-out;
+        font-family: $f_blk;
+        padding: 0 20px;
+        font-size: 16px;
+        color: $noir;
+        &.swal2-confirm {
+            background-color: $bleu;
+        }
+        &:focus {
+            outline: none;
+            text-decoration: underline;
+        }
+        &:active {
+            background-color: $gris;
+            .PillButton-text {
+                color: $blanc;
+            }
+        }
+    }
+}

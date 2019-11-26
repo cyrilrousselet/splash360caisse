@@ -1,0 +1,40 @@
+{"groupe_id":"grp20","categorie":"cat16","nom":"SUMMER","description":"","weight":5,"_id":"158jJfbMaPHW8H8U","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp32","categorie":"cat16","nom":"DESSERTS","description":"","weight":17,"_id":"1DtC02cvguf86MM5","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}
+{"groupe_id":"grp15","categorie":"cat15","nom":"Make your own Poké or Burrito","description":"","weight":2,"_id":"5WrKAH6YqpwYgwe8","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}
+{"groupe_id":"grp14","categorie":"cat15","nom":"Nos signatures","description":"","weight":1,"_id":"94yb49AqvGPKWQwW","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}
+{"groupe_id":"grp33","categorie":"cat16","nom":"SAUCE","description":"","weight":18,"_id":"BIjvdNWZnfha5KSF","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp31","categorie":"cat16","nom":"VINS","description":"","weight":16,"_id":"CZjwnQ0kuRF1UKhV","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}
+{"groupe_id":"grp16","categorie":"cat16","nom":"SUSHI","description":"","weight":1,"_id":"DujMnVpWnazuKaTw","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp29","categorie":"cat16","nom":"BOISSONS","description":"","weight":14,"_id":"Fm1gUbNRztwkojht","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp21","categorie":"cat16","nom":"KRYSPI","description":"","weight":6,"_id":"Ftea9dNM47hMs1u5","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}
+{"groupe_id":"grp27","categorie":"cat16","nom":"BOX","description":"","weight":12,"_id":"He1HZ0OZAjsUo0Qh","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}
+{"groupe_id":"grp21","categorie":"cat16","nom":"KRYSPI","description":"","weight":6,"_id":"I1Siexrz9gXbUM2P","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp30","categorie":"cat16","nom":"BIERES JAPONAISES","description":"","weight":15,"_id":"IT9blzKPyKrC3V0q","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp25","categorie":"cat16","nom":"ENTRÉE","description":"","weight":10,"_id":"IUFc71QSEkduiFqi","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp23","categorie":"cat16","nom":"SASHIMI","description":"","weight":8,"_id":"K2YFpcAry2ssxvLD","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}
+{"groupe_id":"grp23","categorie":"cat16","nom":"SASHIMI","description":"","weight":8,"_id":"LJiJ4XkuUZQHK4hI","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp16","categorie":"cat16","nom":"SUSHI","description":"","weight":1,"_id":"Li17VFf6coFZ3eP4","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}
+{"groupe_id":"grp24","categorie":"cat16","nom":"BROCHETTES","description":"","weight":9,"_id":"MTZ0kl8Ov2CXJm7f","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp27","categorie":"cat16","nom":"BOX","description":"","weight":12,"_id":"OWbhbs6taTciUB6R","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp28","categorie":"cat16","nom":"PLATEAUX","description":"","weight":13,"_id":"Oui5b6ennlwGLeRZ","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp24","categorie":"cat16","nom":"BROCHETTES","description":"","weight":9,"_id":"PTA4UyTqioY7SEIn","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}
+{"groupe_id":"grp29","categorie":"cat16","nom":"BOISSONS","description":"","weight":14,"_id":"QM5qX68uYuAaoG3C","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}
+{"groupe_id":"grp31","categorie":"cat16","nom":"VINS","description":"","weight":16,"_id":"REABNpt1YAbCYOh2","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp15","categorie":"cat15","nom":"Make your own Poké or Burrito","description":"","weight":2,"_id":"RWHuiQXOZBM2wVaL","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp22","categorie":"cat16","nom":"FLOCON","description":"","weight":7,"_id":"XScvkq8gEjOBRytI","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp18","categorie":"cat16","nom":"MAKI","description":"","weight":3,"_id":"ZRGpfO07sZ3e7UXs","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp17","categorie":"cat16","nom":"ROLLS","description":"","weight":2,"_id":"ZRlOTr7fRqvqrABS","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp17","categorie":"cat16","nom":"ROLLS","description":"","weight":2,"_id":"aPvJx9Ztug37xTsh","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}
+{"groupe_id":"grp28","categorie":"cat16","nom":"PLATEAUX","description":"","weight":13,"_id":"d2F1rfjBEeRmpKfI","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}
+{"groupe_id":"grp19","categorie":"cat16","nom":"CALIFORNIA","description":"","weight":4,"_id":"dtDe61mhFOmk1DaV","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp26","categorie":"cat16","nom":"SOBA","description":"","weight":11,"_id":"e6hqcIfJSNQuT9yG","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp20","categorie":"cat16","nom":"SUMMER","description":"","weight":5,"_id":"gkk1PlXJinka9eSD","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}
+{"groupe_id":"grp22","categorie":"cat16","nom":"FLOCON","description":"","weight":7,"_id":"jLiCMkmjrEn9wOg4","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}
+{"groupe_id":"grp14","categorie":"cat15","nom":"Nos signatures","description":"","weight":1,"_id":"kgX1vvHq0bI8x3Ev","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp25","categorie":"cat16","nom":"ENTRÉE","description":"","weight":10,"_id":"mRgxVFXNz1gkC0u7","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}
+{"groupe_id":"grp33","categorie":"cat16","nom":"SAUCE","description":"","weight":18,"_id":"tsjpqtTvRpSGlDp2","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}
+{"groupe_id":"grp26","categorie":"cat16","nom":"SOBA","description":"","weight":11,"_id":"uN8bYRd3zt3D0tJ2","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}
+{"groupe_id":"grp32","categorie":"cat16","nom":"DESSERTS","description":"","weight":17,"_id":"uwDoAzC0PimL9V3n","createdAt":{"$$date":1571813694958},"updatedAt":{"$$date":1571813694958}}
+{"groupe_id":"grp30","categorie":"cat16","nom":"BIERES JAPONAISES","description":"","weight":15,"_id":"vtMX0s44ZVEkgkLZ","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}
+{"groupe_id":"grp18","categorie":"cat16","nom":"MAKI","description":"","weight":3,"_id":"xFx8b2v0q9nt8Nej","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}
+{"groupe_id":"grp19","categorie":"cat16","nom":"CALIFORNIA","description":"","weight":4,"_id":"zEBjYLTo0qtk7Box","createdAt":{"$$date":1571813801430},"updatedAt":{"$$date":1571813801430}}

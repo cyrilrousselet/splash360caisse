@@ -1,0 +1,139 @@
+.Dashboard {
+    height: calc(100% - 60px);
+    .topzone {
+        .points {
+            display: inline-block;
+            padding: 0 60px 0 85px;
+            height: 60px;
+            line-height: 60px;
+            font-family: $f-hea;
+            font-size: 18px;
+            color: $noir;
+            letter-spacing: 0;
+            background: $blanc;
+            box-shadow: 0 5px 12px 0 $noir_005;
+            border-radius: 30px;
+            background-image: url('./../../images/ico_trophy.svg');
+            background-repeat: no-repeat;
+            background-size: 24px 23px;
+            background-position: 25px center;
+        }
+    }
+    .modules {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: center;
+        align-items: flex-start;
+
+        height: calc(100% - 110px);
+        .module-item {
+            text-align: center;
+            width: 30%;
+            padding: 5px 0;
+        }
+    }
+    .LargeButton {
+        &.marketing {
+            background-color: #7AD4F6;
+            .LargeButton-icon {
+                background-image: url('./../../images/ico_marketing.svg');
+                background-size: 30px 30px;
+            }
+        }
+        &.encaissement {
+            background-color: #9CD04E;
+            .LargeButton-icon {
+                background-image: url('./../../images/ico_encaissement.svg');
+            }
+        }
+        &.plannings {
+            background-color: #7AD4F6;
+            .LargeButton-icon {
+                background-image: url('./../../images/ico_planning.svg');
+                background-size: 40px 34px;
+            }
+        }
+        &.depenses {
+            background-color: #1EA9DF;
+            .LargeButton-icon {
+                background-image: url('./../../images/ico_depenses.svg');
+                background-size: 27px 25px;
+            }
+        }
+        &.cloture {
+            background-color: #FE485F;
+            .LargeButton-icon {
+                background-image: url('./../../images/ico_cloture.svg');
+            }
+        }
+        &.stocks {
+            background-color: #1EA9DF;
+            .LargeButton-icon {
+                background-image: url('./../../images/ico_stock.svg');
+                background-size: 34px 16px;
+            }
+        }
+        &.statistiques {
+            background-color: #167093;
+            .LargeButton-icon {
+                background-image: url('./../../images/ico_statistiques.svg');
+                background-size: 34px 30px;
+            }
+        }
+        &.menu {
+            background-color: #FDC24F;
+            .LargeButton-icon {
+                background-image: url('./../../images/ico_menu.svg');
+                background-size: 30px 30px;
+            }
+        }
+        &.clients {
+            background-color: #167093;
+            .LargeButton-icon {
+                background-image: url('./../../images/ico_clients.svg');
+                background-size: 50px 24px;
+            }
+        }
+        &.parametres {
+            background-color: #EFEFEF;
+            .LargeButton-icon {
+                background-image: url('./../../images/ico_parametres.svg');
+                background-size: 46px 30px;
+            }
+            .LargeButton-text {
+                color: $noir;
+            }
+        }
+    }
+    .tickets,
+    .ca {
+        position: absolute;
+        bottom: 120px;
+        font-family: $f-boo;
+        font-size: 18px;
+        color: $noir;
+        letter-spacing: 0;
+        span {
+            font-family: $f-hea;
+            font-size: 21px;
+        }
+    }
+    .tickets {
+        left: 20%;
+        transform: translateX(-50%);
+    }
+    .ca {
+        right: 20%;
+        transform: translateX(50%);
+        span {
+            &.good {
+                color: $vert;
+            }
+            &.bad {
+                color: $rouge;
+            }
+        }
+    }
+}
