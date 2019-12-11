@@ -1,4 +1,4 @@
-import { catalogueActionTypes } from './../constants/catalogueActionTypes';
+import { catalogueActionTypes } from './catalogueActionTypes';
 
 const initialState = {
   loading: false,

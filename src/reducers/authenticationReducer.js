@@ -1,4 +1,4 @@
-import { userActionTypes } from './../constants/actionTypes';
+import { userActionTypes } from './../services/user/userActionTypes';
 
 let user = JSON.parse(localStorage.getItem('user'));
 const initialState = user ? { loggedIn: true, user } : {};

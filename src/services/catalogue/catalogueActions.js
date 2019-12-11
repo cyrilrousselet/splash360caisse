@@ -1,5 +1,5 @@
-import { catalogueActionTypes } from '../constants/catalogueActionTypes';
-import { catalogueServices } from '../services/catalogueServices';
+import { catalogueActionTypes } from './catalogueActionTypes';
+import { catalogueServices } from './catalogueServices';
 
 
 function getAllActive() {

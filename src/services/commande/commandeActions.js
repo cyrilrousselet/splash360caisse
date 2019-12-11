@@ -1,5 +1,5 @@
-import { commandeActionTypes } from '../constants/commandeActionTypes';
-import { commandeServices } from '../services/commandeServices';
+import { commandeActionTypes } from './commandeActionTypes';
+import { commandeServices } from './commandeServices';
 
 
 function getCommandesList(params={}) {

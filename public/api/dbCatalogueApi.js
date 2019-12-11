@@ -1,6 +1,6 @@
 const db = require('../db.js');
 const log = require('electron-log');
-const hydration = require('../assets/dev/dbhydration.js');
+const hydration = require('../dev/dbhydration.js');
 const {categories, groupes, tva, types, ingredients, produits, steps} = hydration;
 
 

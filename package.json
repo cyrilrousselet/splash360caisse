@@ -16,19 +16,19 @@
         "mac": {
             "category": "public.app-category.business"
         },
+        "win": {
+            "target": "nsis"
+        },
         "files": [
             "build/**/*",
-            "node_modules/**/*",
-            "src/api/**/*",
-            "src/db.js",
-            "src/assets/dev/dbhydration.js",
-            "data/**/*"
+            "node_modules/**/*"
         ],
         "directories": {
-            "buildResources": "assets"
+            "buildResources": "build"
         }
     },
     "license": "MIT",
+    "homepage": "./",
     "main": "public/electron.js",
     "dependencies": {
         "@babel/runtime": "^7.6.3",

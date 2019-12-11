@@ -2,8 +2,8 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux';
 import Dashboard from '../components/Dashboard';
 import { modulesList } from '../constants/modules';
-import { commandeActions } from '../actions/commandeActions'
-import { getCommandesListError, getCommandesListLoading, getCommandesList } from '../reducers/commandesListReducer';
+import { commandeActions } from '../services/commande/commandeActions'
+import { getCommandesListError, getCommandesListLoading, getCommandesList } from '../services/commande/commandesListReducer';
 import history from '../helpers/history';
 import paths from './../constants/routes.json';
 import Swal from 'sweetalert2';

@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux';
-import { commandeActions } from '../actions/commandeActions'
-import { getCommandeError, getCommandeLoading, getCommande } from '../reducers/commandeReducer';
+import { commandeActions } from '../services/commande/commandeActions'
+import { getCommandeError, getCommandeLoading, getCommande } from '../services/commande/commandeReducer';
 import Reglement from '../components/Encaissement/Reglement';
 
 

@@ -3,8 +3,8 @@ import { bindActionCreators } from 'redux';
 import Commandes from '../components/Parametres/Commandes';
 import history from './../helpers/history';
 import paths from './../constants/routes.json';
-import { commandeActions } from '../actions/commandeActions'
-import { getCommandesListError, getCommandesListLoading, getCommandesList } from '../reducers/commandesListReducer';
+import { commandeActions } from '../services/commande/commandeActions'
+import { getCommandesListError, getCommandesListLoading, getCommandesList } from '../services/commande/commandesListReducer';
 
 
 const mapStateToProps = (state) => {

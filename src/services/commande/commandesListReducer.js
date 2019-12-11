@@ -1,4 +1,4 @@
-import { commandeActionTypes } from '../constants/commandeActionTypes';
+import { commandeActionTypes } from './commandeActionTypes';
 
 const initialState = {
   loading: false,

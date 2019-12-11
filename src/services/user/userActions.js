@@ -1,8 +1,8 @@
-import { userActionTypes } from './../constants/actionTypes';
-import { alertActions } from './';
-import { userServices } from './../services';
-import history from './../helpers/history';
-import paths from './../constants/routes.json';
+import { userActionTypes } from './userActionTypes';
+import { alertActions } from './../../actions';
+import { userServices } from './userServices';
+import history from './../../helpers/history';
+import paths from './../../constants/routes.json';
 
 
 function login(passphrase) {
