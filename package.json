@@ -65,7 +65,7 @@
         "build": "rescripts build",
         "test": "rescripts test",
         "eject": "react-scripts eject",
-        "electron-dev": "concurrently \"BROWSER=none yarn start && yarn watch-css\" \"wait-on http://localhost:3000 && electron .\"",
+        "electron-dev": "concurrently \"yarn start && yarn watch-css\" \"wait-on http://localhost:3000 && electron .\"",
         "postinstall": "electron-builder install-app-deps",
         "preelectron-pack": "yarn build",
         "electron-pack": "electron-builder -m"
