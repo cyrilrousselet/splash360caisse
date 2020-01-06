@@ -86,6 +86,16 @@ function updateProduit(payload, item) {
 function addReglement(payload, reglements) {
   const { moyen, valeur } = payload;
 
+  const esp = reglements.filter(rgl=>rgl.moyen=='especes');
+  
+  if (esp.length>0 && moyen=='especes') {
+    const newvaleur = esp[0].valeur + valeur;
+    return {
+      ...esp[0],
+      valeur: newvaleur
+    };
+  }
+
   return {
     reglementId: new Date().getTime(),
     moyen: moyen,

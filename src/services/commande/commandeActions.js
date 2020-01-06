@@ -22,10 +22,11 @@ function getCommandesList(params={}) {
  */
 function getCommande(commandeId=null) {
   return (dispatch, getState) => {
-    dispatch({ type: commandeActionTypes.GET_COMMANDE_REQUEST });
+    dispatch({ type: commandeActionTypes.GET_COMMANDE_REQUEST, id:commandeId });
 
     // sans id de commande, on crée une nouvelle commande
     if (null===commandeId) {
+      console.log('on demande une nouvelle commande');
       const state = getState();
       const { user } = state.authentication;
       const commande = commandeServices.getNewCommande({operator:user, caisse:0});
@@ -33,9 +34,13 @@ function getCommande(commandeId=null) {
     }
     // avec id de commande, on va chercher la commande en base
     else {
+      console.log('on va chercher la commande #'+commandeId);
       commandeServices.getCommandeById(commandeId)
       .then(
-        commande => dispatch({ type: commandeActionTypes.GET_COMMANDE_SUCCESS, commande }),
+        response => {
+          const commande = response._cmd;
+          dispatch({ type: commandeActionTypes.GET_COMMANDE_SUCCESS, commande });
+        },
         error => dispatch({ type: commandeActionTypes.GET_COMMANDE_FAILURE, error: error.toString() })
       );
     }
@@ -47,7 +52,33 @@ function validateCommande(payload) {
 
     dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_REQUEST });
 
-    payload.status = 'confirmed';
+   // payload.status = 'confirmed';
+    const state = getState();
+    
+    commandeServices.saveCommande(payload, state)
+    .then(
+      confirm => {
+        const { user } = state.authentication;
+        const commande = commandeServices.getNewCommande({operator:user, caisse:0});
+        return dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
+      },
+      error => {
+        console.log(error);
+        return dispatch({ type:commandeActionTypes.VALIDATE_COMMANDE_FAILURE, error: error.toString() })
+      }
+    );
+    
+  }
+}
+
+function standByCommande(payload) {
+
+  return (dispatch, getState) => {
+
+    dispatch({ type: commandeActionTypes.STANDBY_COMMANDE });
+
+    payload.status = 'standby';
+    console.log(payload);
     const state = getState();
     
     commandeServices.saveCommande(payload, state)
@@ -160,5 +191,6 @@ export const commandeActions = {
   addRendu,
   removeRendu,
   validateCommande,
+  standByCommande,
   getCommandesList
 };

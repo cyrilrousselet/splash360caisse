@@ -14,7 +14,7 @@ let userData = app.getPath('userData');
 function createWindow() {
     mainWindow = new BrowserWindow({ width: 1024, height: 768, backgroundColor: '#F7F7F7', webPreferences: { nodeIntegration: true } });
     mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
-//    if (isDev) {
+    if (isDev) {
        //  Open the DevTools.
        if (process.platform === 'darwin') {
          BrowserWindow.addDevToolsExtension(
@@ -22,7 +22,7 @@ function createWindow() {
          );
        }
         mainWindow.webContents.openDevTools();
-//    }
+    }
     mainWindow.on('closed', () => mainWindow = null);
 
 }

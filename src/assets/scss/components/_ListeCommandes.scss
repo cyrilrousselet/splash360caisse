@@ -1,0 +1,140 @@
+.ListeCommandes {
+  .caption {
+    font-family: $f_blk;
+    font-size: 18px;
+    color: $noir;
+    letter-spacing: 0;
+  }
+  .dates {
+    display: flex;
+    align-items: center;
+    .MuiFormControl-marginNormal {
+      margin: 0 10px;
+      width: 200px;
+      &:hover .MuiInput-underline:before,
+      &:hover .MuiInput-underline:after,
+      .MuiInput-underline:before,
+      .MuiInput-underline:after {
+        border: 0;
+      }
+      .MuiInput-formControl {
+        background-color: $blanc;
+        border-radius: 2px;
+        padding: 2px 0px 2px 5px;
+      }
+      input {
+        color: $primary;
+        font-family: $f_blk;
+        font-size: 18px;
+        text-align: center;
+      }
+    }
+  } // --- /.dates
+
+  .listes {
+    margin-top: 10px;
+    height: calc(100% - 80px);
+
+    header {
+      box-shadow: none;
+      background-color: transparent;
+      .MuiButtonBase-root {
+        font-family: $f_hea;
+        font-size: 18px;
+        background-color: $gris-clair;
+        border-radius: 15px 15px 0 0;
+        color: $noir;
+        margin-right: 2px;
+        padding: 8px 25px;
+        &.Mui-selected {
+          background-color: $blanc;
+          color: $primary;
+          font-family: $f_blk;
+        }
+      }
+      .MuiTabs-indicator {
+        background-color: transparent;
+      }
+    }
+
+
+    .MuiTypography-root {
+      height: 100%;
+      background-color: $blanc;
+      border-radius: 0 0 15px 15px;
+    }
+
+    .liste-actions {
+      width: 350px;
+      padding-right: 3px;
+    }
+    .MuiTableCell-root {
+      font-family: $f_med;
+      border: none;
+    }
+    thead {
+      background-color: $noir_010;
+    }
+    tbody {
+      .liste-date,
+      .liste-numero,
+      .liste-client {
+        background-color: $blanc-fonce;
+      }
+      .MuiTableRow-root.odd {
+        .liste-date,
+        .liste-numero,
+        .liste-client {
+          background-color: $gris-pale;
+        }
+      }
+      .liste-heure,
+      .liste-montant,
+      .liste-actions {
+        background-color: $blanc;
+      }
+      .MuiTableRow-root.odd {
+        .liste-heure,
+        .liste-montant,
+        .liste-actions {
+          background-color: $blanc-fonce;
+        }
+      }
+
+      .liste-actions {
+        text-align: right;
+      }
+    }
+
+    .StdButton {
+      margin: 0 2px !important;
+      padding: 0 10px!important;
+      min-width: 40px;
+      min-height: 25px;
+      border-radius: 8px !important;
+    }
+    .StdButton-text {
+      text-transform: uppercase;
+      font-size: 12px;
+      font-family: $f_blk;
+    }
+    .StdButton-icon {
+      height: 17px;
+      width: 16px;
+      svg {
+        width: 16px;
+        height: 17px;
+      }
+    }
+
+    .action-encaissement {
+      background-color: $prairie;
+    }
+    .action-annuler {
+      background-color: $rouge;
+    }
+    .action-reprise {
+      background-color: $primary;
+    }
+  } // --- /.listes
+}

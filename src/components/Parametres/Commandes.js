@@ -9,9 +9,9 @@ let strings = new LocalizedStrings(data);
 class Commandes extends React.Component {
 
 
-componentDidMount() {
-  console.log('Dashboard.componentDidMount()');
-  this.props.getCommandesList();
+  componentDidMount() {
+    console.log('Dashboard.componentDidMount()');
+    this.props.getCommandesList();
   }
 
  render() {

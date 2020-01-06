@@ -8,6 +8,7 @@
     "cloture": "moduleCloture",
     "marketing": "moduleMarketing",
     "depenses": "moduleDepenses",
+    "listecommandes": "moduleListeCommandes",
     "plannings": "modulePlannings",
     "remise": "usageRemise",
     "tiroir_hors_encaissement": true

@@ -20,6 +20,7 @@ const getCommandeTotal = (items) => {
 
 
 const mapStateToProps = (...args) => { 
+  console.log('ReglementCont.mapStateToProps');
     const state = args[0];
     const props = args[1];
   return {

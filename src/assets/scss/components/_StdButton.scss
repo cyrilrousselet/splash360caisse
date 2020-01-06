@@ -17,6 +17,11 @@
     span {
         display: block;
     }
+
+    &.no-stroke {
+        box-shadow: 0 0 0 0px $blanc, 0 5px 10px 0 $noir_010;
+    }
+
     .StdButton-icon {
         display: inline-block;
         width: 50px;
@@ -34,6 +39,9 @@
     }
     &.active {
         box-shadow: 0 0 0 5px $gris, 0 5px 10px 0 rgba(0, 0, 0, 0);
+        &.no-stroke {
+            box-shadow: 0 0 0 0px $gris, 0 5px 10px 0 rgba(0, 0, 0, 0);
+        }
         border: 1px solid $gris;
         outline: none;
     }

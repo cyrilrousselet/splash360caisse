@@ -46,9 +46,10 @@ class Panier extends React.Component {
     return __total;
   }
 
+
   render() {
 
-    const { error, loading, updateProduit, updateCommande, deleteCommande, openReglement, open } = this.props;
+    const { error, loading, updateProduit, updateCommande, standByCommande, deleteCommande, openReglement, open } = this.props;
     const { commentaire, items, status, ticketId, mode } = this.props.commande;
     
     const total = this.calculateTotal(items);
@@ -79,6 +80,9 @@ class Panier extends React.Component {
           deleteCommande();
         }
       });
+    }
+    const attenteHandler = (event) => {
+      standByCommande(this.props.commande);
     }
 
     return (
@@ -152,7 +156,7 @@ class Panier extends React.Component {
           <div className="actions">
             <StdButton identifier='encaisser' elementclass="action action-encaisser" disabled={ undefined===items || items.length===0 || open } icon={ false } text={ strings.modules.encaissement.panier.action.encaissement } onClick={ openReglement } />
             <StdButton identifier='tiroir' elementclass="action action-tiroir" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.tiroir } onClick={(value) => { onClickAction(value) }} />
-            <StdButton identifier='attente' elementclass="action action-attente" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.attente } onClick={(value) => { onClickAction(value) }} />
+            <StdButton identifier='attente' elementclass="action action-attente" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.attente } onClick={ attenteHandler } />
             <StdButton identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.reprise } disabled={ true } onClick={(value) => { onClickAction(value) }} />
           </div>
         </div>
@@ -169,6 +173,7 @@ Panier.propTypes = {
   error: PropTypes.string,
   getCommande: PropTypes.func,
   updateCommande: PropTypes.func,
+  standByCommande: PropTypes.func,
   deleteCommande: PropTypes.func,
   updateProduit: PropTypes.func
 }

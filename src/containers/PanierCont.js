@@ -18,6 +18,7 @@ const mapDispatchToProps = (dispatch) => {
     getCommande: commandeActions.getCommande,
     updateProduit: commandeActions.updateProduit,
     updateCommande: commandeActions.updateCommande,
+    standByCommande: commandeActions.standByCommande,
     deleteCommande: commandeActions.deleteCommande
   }, dispatch);
 }

@@ -2,12 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Button} from '@material-ui/core';
 
-const StdButton = ({ identifier, elementclass, icon, text, disabled, onClick }) => (
-  <Button className={ `StdButton ${elementclass}` } onClick={ () => onClick(identifier) } disabled={ disabled }>
+const StdButton = ({ identifier, elementclass, icon, noStroke, text, disabled, onClick }) => (
+  <Button className={ `StdButton ${elementclass} ${noStroke && 'no-stroke'}` } onClick={ () => onClick(identifier) } disabled={ disabled }>
     {icon &&
      <div className="StdButton-icon">{ icon }</div>
     }
-    <div className="StdButton-text">{ text }</div>
+    {text &&
+      <div className="StdButton-text">{ text }</div>
+    }
   </Button>
 );
 
@@ -16,6 +18,7 @@ StdButton.propTypes = {
   elementclass: PropTypes.string,
   icon: PropTypes.node,
   text: PropTypes.string.isRequired,
+  noStroke: PropTypes.bool,
   disabled: PropTypes.bool,
   handleClick: PropTypes.func
 }

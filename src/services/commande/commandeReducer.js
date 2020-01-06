@@ -83,11 +83,11 @@ export function commandeReducer(state = initialState, action) {
 
     case commandeActionTypes.UPDATE_COMMANDE:
 
-      let {mode, commentaire} = action.payload;
+      let {mode, status, commentaire} = action.payload;
       return {
         ...state,
         commande: {
-          ...commande, mode, commentaire
+          ...commande, mode, status, commentaire
         }
       }
 
@@ -104,8 +104,16 @@ export function commandeReducer(state = initialState, action) {
     case commandeActionTypes.ADD_REGLEMENT:
 
       reglements = commande.reglements;
-      reglements.push(action.reglement);
 
+      // dans le cas de l'update d'un règlement en espèces
+      // on supprime l'ancienne occurrence du règlement
+      rglIndex = reglements.findIndex(reglement=>reglement.reglementId==action.reglement.reglementId);
+      if (rglIndex>-1) {
+        reglements.splice(rglIndex, 1);
+      }
+      
+      reglements.push(action.reglement);
+      
       return {
         ...state,
         commande: {...commande, reglements}

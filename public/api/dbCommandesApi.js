@@ -16,8 +16,9 @@ const actions = {
   },
   dbCommandeGetCommande: async (req,res) => {
     const {payload} = req;
-    const proxies = await _findCommande({commande_id: payload.id});
-
+    log.info("dbCommandeGetCommande("+payload.ticketId+") in API");
+    const proxies = await _findCommande({ticketId: Number(payload.ticketId)});
+    log.info(proxies);
     res.send(proxies);
   },
   dbCommandePersist: async (req,res) => {
@@ -58,25 +59,31 @@ async function _fillinCommande() {
 }
 
 /**
- * Get all commandes data from DB
+ * Get commandes data from DB
  */
 async function _findCommande(criteriae={}) {
-  const _cmd = await db.commandes.find(criteriae);
+  log.info(criteriae);
+  let _cmd = [];
+  if ("ticketId" in criteriae) {
+    _cmd = await db.commandes.findOne(criteriae);
+  } else {
+    _cmd = await db.commandes.find(criteriae);
+  }
   return { _cmd };
 }
 
 async function _persistCommande(payload) {
 
-  let _cmd = await db.commandes.find({ticketId: payload.ticketId});
+  let _cmd = await db.commandes.findOne({ticketId: payload.ticketId});
   log.info(_cmd);
-  if (_cmd.length==0) {
-    log.info('pas de cmd donc on insert');
-    _cmd = await db.commandes.insert(payload);
+  if (_cmd) {
+    log.info('cmd existe, donc on update');
+    let __upd = {..._cmd, ...payload};
+    _cmd = await db.commandes.update({ticketId: payload.ticketId}, __upd);
   }
   else {
-    log.info('cmd existe, donc on update');
-    let __upd = {..._cmd, payload};
-    _cmd = await db.commandes.update({ticketId: payload.ticketId}, __upd);
+    log.info('pas de cmd donc on insert');
+    _cmd = await db.commandes.insert(payload);
   }
 
   return _cmd != null;

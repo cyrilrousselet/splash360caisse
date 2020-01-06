@@ -25,7 +25,12 @@ const data = {
                 "octobre",
                 "novembre",
                 "décembre"
-            ]
+            ],
+            dialog: {
+                ok: "Valider",
+                cancel: "Annuler",
+                clear: "Effacer"
+            }
         },
         footer: {
             online: "connecté",
@@ -108,6 +113,35 @@ const data = {
             },
             plannings: { nom: "Plannings" },
             depenses: { nom: "Dépenses" },
+            listecommandes: { 
+                nom: "Liste Commandes",
+                dates: {
+                    start: "Liste des commandes du ",
+                    end: " au "
+                },
+                status: {
+                    a_encaisser: "À encaisser",
+                    standby: "En attente",
+                    confirmed: "Terminées"
+                },
+                recherche: {
+                    numero: "N° Commande",
+                    client: "Nom Client"
+                },
+                liste: {
+                    date: "Date",
+                    heure: "Heure",
+                    numero: "Numéro",
+                    montant: "Montant",
+                    client: "Client",
+                    actions: "Actions"
+                },
+                actions: {
+                    encaissement: "Encaissement",
+                    annuler: "Annuler",
+                    reprise: "Reprise"
+                }
+            },
             cloture: { nom: "Clôture" },
             stocks: { nom: "Stocks" },
             statistiques: { nom: "Statistiques" },

@@ -4,10 +4,13 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    .logo img {
+    .logo .logoImg {
         width: 120px;
         height: auto;
         margin: 10px 0;
+        .st0 {
+            fill: #1EA9DF;
+        }
     }
     .panel {
         width: 320px;

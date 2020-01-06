@@ -21,7 +21,8 @@ function login(passphrase) {
       'parametres',
       'cloture',
       'marketing',
-      'depenses',
+    //  'depenses',
+      'listecommandes',
       'plannings',
       'remise'
     ]

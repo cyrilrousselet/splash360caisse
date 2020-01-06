@@ -62,6 +62,13 @@
                 background-size: 27px 25px;
             }
         }
+        &.listecommandes {
+            background-color: #1EA9DF;
+            .LargeButton-icon {
+                background-image: url('./../../images/ico_depenses.svg');
+                background-size: 27px 25px;
+            }
+        }
         &.cloture {
             background-color: #FE485F;
             .LargeButton-icon {

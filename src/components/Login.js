@@ -6,7 +6,7 @@ import PillButton from './common/PillButton';
 import PillField from './common/PillField';
 import PillConnect from './PillConnect';
 
-import logo from './../assets/images/default_logo.svg';
+import YoutillLogoIcon from './common/icon/YoutillLogoIcon';
 
 // passphrase number of characters
 const NUMCHAR = 6;
@@ -51,7 +51,7 @@ class Login extends React.Component {
 
     return (
       <div className="Login">
-        <div className="logo"><img src={logo} alt="" /></div>
+        <div className="logo"><YoutillLogoIcon className="logoImg" /></div>
         <div className="panel">
           <PillField type="password" innerButton="delete" charNum={ NUMCHAR } value={passphrase} innerButtonHandler={this.deleteHandler}/>
           <div className="keyboard">

@@ -39,14 +39,15 @@ class Reglement extends React.Component {
   }
 
   componentDidMount() {
-    const { getCommande } = this.props;
-    getCommande();
+    const { getCommande, commandeId } = this.props;
+    getCommande(commandeId);
   }
 
   addValeur(value) {
     let __t = Number(this.state.total) + Number(value);
     console.log('addValeur : +'+value);
     this.setState({total:__t, input: true});
+    this.toAddReglement('especes', value);
   }
 
   calculetteClick(value) {
@@ -113,17 +114,24 @@ class Reglement extends React.Component {
     const { reste, rendu } = this.updateValeurs();
     console.log(reste, rendu);
     if (reste==0) {
+      this.props.commande.status = 'confirmed';
       this.props.validateCommande(this.props.commande);
     }
 
     this.props.closeReglement();
   }
 
-  toAddReglement(moyen) {
 
-    const {input, total} = this.state;
-    const { reste } = this.updateValeurs();
-    let montant = input ? total : reste;
+  toAddReglement(moyen, valeur=-1) {
+
+    let montant = 0;
+    if (valeur==-1) {
+      const {input, total} = this.state;
+      const { reste } = this.updateValeurs();
+      montant = input ? total : reste;
+    } else {
+      montant = valeur;
+    }
 
     if (montant > 0) {
       this.props.addReglement({moyen: moyen, valeur: montant});

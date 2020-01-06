@@ -5,6 +5,7 @@
     "ENCAISSEMENT": "/encaissement",
     "PLANNINGS": "/plannings",
     "DEPENSES": "/depenses",
+    "LISTECOMMANDES": "/listecommandes",
     "CLOTURE": "/cloture",
     "STOCKS": "/stocks",
     "STATISTIQUES": "/statistiques",
