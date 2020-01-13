@@ -1,7 +1,10 @@
 .Reglement {
     display: inline-block;
     position: absolute;
-    left: calc(50% - 150px); // (largeur de la fenêtre - largeur du panier) / 2
+    left: 50%;
+    &.EncaissementReglement {
+        left: calc(50% - 150px); // (largeur de la fenêtre - largeur du panier) / 2
+    }
     top: 50%;
     transform: translate(-50%, -50%);
     outline: none;

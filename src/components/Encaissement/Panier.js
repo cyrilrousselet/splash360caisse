@@ -49,7 +49,7 @@ class Panier extends React.Component {
 
   render() {
 
-    const { error, loading, updateProduit, updateCommande, standByCommande, deleteCommande, openReglement, open } = this.props;
+    const { error, loading, updateProduit, updateCommande, standByCommande, livraisonCommande, deleteCommande, gotoListeCommandes, openReglement, open } = this.props;
     const { commentaire, items, status, ticketId, mode } = this.props.commande;
     
     const total = this.calculateTotal(items);
@@ -84,7 +84,13 @@ class Panier extends React.Component {
     const attenteHandler = (event) => {
       standByCommande(this.props.commande);
     }
+    const livraisonHandler = (event) => {
+      livraisonCommande(this.props.commande);
+    }
 
+    const repriseHandler = (event) => {
+      gotoListeCommandes();
+    }
     return (
       <div className={ `Panier ${open && 'reglement-ouvert'}` }>
         <div className="header">
@@ -154,10 +160,10 @@ class Panier extends React.Component {
             <StdButton identifier='livraison' elementclass={ `mode mode-livraison ${(('livraison'===mode) && 'active' : '')}` } disabled={ open } icon={ false } text={ strings.modules.encaissement.panier.mode.livraison } onClick={(value) => { updateCommande({mode:value}) }} />
           </div>
           <div className="actions">
-            <StdButton identifier='encaisser' elementclass="action action-encaisser" disabled={ undefined===items || items.length===0 || open } icon={ false } text={ strings.modules.encaissement.panier.action.encaissement } onClick={ openReglement } />
+            <StdButton identifier='encaisser' elementclass="action action-encaisser" disabled={ undefined===items || items.length===0 || open } icon={ false } text={ ('livraison'===mode)?strings.modules.encaissement.panier.action.valider:strings.modules.encaissement.panier.action.encaissement } onClick={ ()=> { ('livraison'===mode)?livraisonHandler():openReglement() }} />
             <StdButton identifier='tiroir' elementclass="action action-tiroir" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.tiroir } onClick={(value) => { onClickAction(value) }} />
             <StdButton identifier='attente' elementclass="action action-attente" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.attente } onClick={ attenteHandler } />
-            <StdButton identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.reprise } disabled={ true } onClick={(value) => { onClickAction(value) }} />
+            <StdButton identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.reprise } onClick={gotoListeCommandes} />
           </div>
         </div>
       </div>
@@ -174,8 +180,10 @@ Panier.propTypes = {
   getCommande: PropTypes.func,
   updateCommande: PropTypes.func,
   standByCommande: PropTypes.func,
+  livraisonCommande: PropTypes.func,
   deleteCommande: PropTypes.func,
-  updateProduit: PropTypes.func
+  updateProduit: PropTypes.func,
+  gotoListeCommandes: PropTypes.func
 }
 
 

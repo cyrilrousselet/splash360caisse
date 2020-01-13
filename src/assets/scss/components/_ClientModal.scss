@@ -1,0 +1,163 @@
+
+.ClientModal {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none;
+  .Modal-container {
+      background-color: $blanc;
+      width: 900px;
+      border-radius: 15px;
+      padding: 10px 0 0;
+  }
+  .close-button {
+      background-color: $blanc;
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 30px;
+      height: 30px;
+      min-height: 30px;
+  }
+
+  .body {
+    display: flex;
+    padding: 0 20px 0 0;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    .col {
+      width: 50%;
+    }
+    .section-fidelite {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      background-color: $blanc-fonce;
+      padding: 10px 20px;
+      .labelledfield .input-wrapper {
+        background-color: $blanc;
+      }
+      .check-bloque {
+        padding: 10px 0 15px;
+        label+label {
+          font-family: $f_med;
+          font-size: 14px;
+          color: $noir;
+        }
+      }
+      .fid {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        .labelledfield {
+          width: 30%;
+        }
+      }
+    }
+
+    .section-fiche {
+      padding: 10px 20px 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+
+      .fieldbatiment,
+      .fieldetage {
+        width: 20%;
+      }
+    }
+    .title {
+      font-family: $f_blk;
+      font-size: 18px;
+      color: $noir;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .labelledfield {
+        width: calc(50% - 5px);
+        label {
+            display: block;
+        }
+        .input-wrapper {
+            width: 100%;
+        }
+        padding-bottom: 8px;
+    }
+    .remarque {
+      width: 100%;
+      label {
+        font-family: $f_med;
+          font-size: 14px;
+          color: $noir;
+          user-select: none;
+      }
+      textarea {
+        font-family: $f_boo;
+        font-size: 14px;
+        color: $bleu-prusse;
+        background-color: $blanc-fonce;
+        height: 50px;
+        border-radius: 5px;
+        box-shadow: none;
+        border: none;
+        padding: 5px 15px;
+        outline: none;
+        width: 100%;
+        resize: none;
+      }
+    }
+    .map {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      &.map-123 {
+        background-image: url('./../../images/maps-123.png');
+      }
+      &.map-150 {
+        background-image: url('./../../images/maps-150.png');
+      }
+      &.map-158 {
+        background-image: url('./../../images/maps-158.png');
+      }
+      &.map-170 {
+        background-image: url('./../../images/maps-170.png');
+      }
+      .emptymap {
+        display: none;
+      }
+      &.map-none {
+        background-color: $blanc-fonce;
+        .emptymap {
+          display: inline-block;
+          width: 150px;
+          height: 150px;
+          opacity: .2;
+        }
+      }
+      background-attachment: no-repeat;
+      background-size: 200%;
+    }
+  }
+
+  .footer{
+      text-align: right;
+      padding: 0 20px;
+    .save {
+        background-color:$vert;
+        width: 45%;
+        min-height: 30px;
+        .StdButton-text {
+            font-family: $f_blk;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+    }
+  }
+}

@@ -1,17 +1,185 @@
 .Commandes {
+    
+
+  div {
+    box-sizing: content-box;
+  }
+
+  &.subcontent {
+
+    display: inline-flex;
     justify-content: flex-start;
-    .commande-item {
-        width: 100%;
+    align-items: start;
+    text-align: left;
+    padding: 15px;
+
+    background-color: $blanc;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px 0 rgba(0,0,0,0.10);
+
+
+
+    header {
+        box-shadow: none;
+        background-color: transparent;
+        .MuiButtonBase-root {
+          font-family: $f_hea;
+          font-size: 18px;
+          background-color: $gris-clair;
+          border-radius: 15px 15px 0 0;
+          color: $noir;
+          margin-right: 2px;
+          padding: 8px 25px;
+          &.Mui-selected {
+            background-color: $blanc;
+            color: $primary;
+            font-family: $f_blk;
+          }
+        }
+        .MuiTabs-indicator {
+          background-color: transparent;
+        }
+      }
+
+    .MuiTableCell-stickyHeader {
+        background-color: transparent;
+    }
+    .MuiTableCell-root {
         font-family: $f_med;
-        font-size: 14px;
-        border-bottom: 1px solid $gris;
-        padding: 10px 0;
-        text-align: left;
-        .id,
-        .created,
-        .montant {
-            display: inline-block;
-            padding: 0 10px;
+        border: none;
+        &.MuiTableCell-head {
+            font-family: $f_hea;
         }
     }
+
+    thead {
+        background-color: $noir_010;
+    }
+    .liste-frais {
+        width: 150px;
+        text-align: center;
+    }
+    .liste-remise {
+        width: 150px;
+        text-align: center;
+    }
+    .liste-activation {
+        width: 100px;
+        text-align: center;
+    }
+    tbody {
+        .liste-nom {
+            text-transform: capitalize;
+            text-decoration: underline;
+            div {
+                cursor: pointer;
+            }
+        }
+        .liste-frais {
+            text-align: right;
+        }
+        .liste-remise {
+            text-align: right;
+        }
+        .liste-activation {
+            text-align: center;
+        }
+        .odd {
+            background-color: $noir_005;
+        }
+    }
+
+    .subttl {
+        font-family: $f_blk;
+        font-size: 18px;
+        padding: 10px 0;
+    }
+    .addtype-button {
+        background-color: $primary;
+        position: absolute;
+        right: 60px;
+        width: 30px;
+        height: 30px;
+        min-height: 30px;
+    }
+    .table-wrapper {
+        width: 100%;
+        height: calc(100% - 200px);
+        overflow-y: auto;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 0 3px $noir_010;
+
+        background: linear-gradient($blanc-fonce 0%, $blanc-fonce 100%), linear-gradient($blanc-fonce 0%, $blanc-fonce 100%), linear-gradient($blanc-fonce 0%, $blanc-fonce 100%);
+        background-repeat: no-repeat;
+        background-size: calc(50% - 195px) 100%, 150px 100%, 100px 100%;
+        background-position: 0 0, calc(100% - 250px) 0, 100% 0;
+    }
+    .numero-wrapper {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        .labelledfield {
+            width: 230px;
+            label {
+                display: inline-block;
+                width: 50%;
+            }
+            .input-wrapper { 
+                width: 50%;
+            }
+            &.fielddebut {
+                width: 260px;
+                label {
+                    width: 70%;
+                }
+                .input-wrapper {
+                    width: 30%;
+                }
+            }
+            &.fieldcompteur {
+                input {
+                    border-radius: 5px 0px 0px 5px;
+                }
+            }
+        }
+        .currentnum-wrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: baseline;
+        }
+        .btn-reset {
+            display: inline-block;
+            background-color: $blanc-fonce;
+            padding: 0 5px;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 0 5px 5px 0;
+            font-family: $f_med;
+            font-size: 14px;
+            color: $gris;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        
+        .switch-container {
+            width: 220px;
+            padding-top: 10px;
+            label {
+              position: relative;
+              user-select: none;
+              left: 75%;
+            }
+            label+label {
+              font-family: $f_med;
+              font-size: 14px;
+              color: $noir;
+              position: absolute;
+              left: auto;
+            }
+          }
+    }
+  }
 }

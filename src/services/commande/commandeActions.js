@@ -97,6 +97,32 @@ function standByCommande(payload) {
   }
 }
 
+function livraisonCommande(payload) {
+
+  return (dispatch, getState) => {
+
+    dispatch({ type: commandeActionTypes.AENCAISSER_COMMANDE });
+
+    payload.status = 'a_encaisser';
+    console.log(payload);
+    const state = getState();
+    
+    commandeServices.saveCommande(payload, state)
+    .then(
+      confirm => {
+        const { user } = state.authentication;
+        const commande = commandeServices.getNewCommande({operator:user, caisse:0});
+        return dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
+      },
+      error => {
+        console.log(error);
+        return dispatch({ type:commandeActionTypes.VALIDATE_COMMANDE_FAILURE, error: error.toString() })
+      }
+    );
+    
+  }
+}
+
 function addProduit(payload) {
 
   return (dispatch, getState) => {
@@ -192,5 +218,6 @@ export const commandeActions = {
   removeRendu,
   validateCommande,
   standByCommande,
+  livraisonCommande,
   getCommandesList
 };

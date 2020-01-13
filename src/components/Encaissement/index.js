@@ -30,7 +30,7 @@ class Encaissement extends React.Component {
         <div className="MainZone">
           <SelecteurCont />
           <PanierCont openReglement={ this.openReglement } open={ this.state.reglementOpen } />
-          <ReglementCont open={ this.state.reglementOpen } closeReglement={ this.closeReglement } />
+          <ReglementCont open={ this.state.reglementOpen } contClass="EncaissementReglement" closeReglement={ this.closeReglement } />
         </div>
       </div>
     );

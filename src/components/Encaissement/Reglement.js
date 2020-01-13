@@ -166,7 +166,7 @@ class Reglement extends React.Component {
 
   render() {
 
-    const { open, valueToPay, closeReglement, addReglement, addRendu } = this.props;
+    const { open, valueToPay, contClass, closeReglement, addReglement, addRendu } = this.props;
     const { items, reglements } = this.props.commande;
     const { paye, reste, rendable } = this.updateValeurs();
     const { total, input, tiroirOuvert } = this.state;
@@ -177,7 +177,7 @@ class Reglement extends React.Component {
     <Modal
       open={open}
       >
-      <div className="Reglement">
+      <div className={ `Reglement ${contClass}`}>
         <div className="Modal-container">
           <div className="header">
             <div className="title">{ strings.modules.encaissement.reglement.titre }</div>
@@ -236,7 +236,7 @@ class Reglement extends React.Component {
           </div>
         </div>
         { (null==reglements || reglements.length==0) &&
-          <Fab aria-label="close" size="small" className="close-button" onClick={ this.beforeCloseReglement }>
+        <Fab aria-label="close" size="small" className="close-button" onClick={ this.beforeCloseReglement }>
           <CloseIcon />
         </Fab>
         }

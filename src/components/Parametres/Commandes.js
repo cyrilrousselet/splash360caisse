@@ -1,54 +1,259 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import LoadingSpinner from '../common/LoadingSpinner';
 
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
+import SwitchCheckbox from '../common/SwitchCheckbox';
+
+import { Table, TableCell, TableRow, TableHead, TableBody, Modal, Fab } from '@material-ui/core';
+import LabelledField from '../common/LabelledField';
+import StdButton from '../common/StdButton';
+import CloseIcon from '../common/icon/CloseIcon';
+import AddIcon from '../common/icon/AddIcon';
 let strings = new LocalizedStrings(data);
+
+const data_types = [
+  {nom: 'sur place', identifiant:'surplace', frais:'0.00 €', remise:'0 %', activation: true},
+  {nom: 'à emporter', identifiant:'emporter', frais:'0.00 €', remise:'15 %', activation: true},
+  {nom: 'livraison', identifiant:'livraison', frais:'3.50 €', remise:'0 %', activation: true},
+];
+
+function TableTypes(props) {
+  const { liste, id, openEdit } = props;
+
+  return (
+    <Table stickyHeader size="small" key={id} aria-label="a dense table">
+      <TableHead>
+        <TableRow>
+          <TableCell key={`${id}-hd-nom`} className="liste-nom">{ strings.modules.parametres.submodules.commandes.types.label.nom }</TableCell>
+          <TableCell key={`${id}-hd-abreviation`} className="liste-identifiant">{ strings.modules.parametres.submodules.commandes.types.label.identifiant }</TableCell>
+          <TableCell key={`${id}-hd-frais`} className="liste-frais">{ strings.modules.parametres.submodules.commandes.types.label.frais }</TableCell>
+          <TableCell key={`${id}-hd-remise`} className="liste-remise">{ strings.modules.parametres.submodules.commandes.types.label.remise }</TableCell>
+          <TableCell key={`${id}-hd-activation`} className="liste-activation">{ strings.modules.parametres.submodules.commandes.types.label.activation }</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {liste.map((row, i) => (
+          <TableRow key={row.id} className={(i%2)?'odd':'even'}>
+            <TableCell key={`${i}-nom`} className="liste-nom"><div onClick={ () => { openEdit(i) } }>{ row.nom }</div></TableCell>
+            <TableCell key={`${i}-abreviation`} className="liste-identifiant">{ row.identifiant }</TableCell>
+            <TableCell key={`${i}-frais`} className="liste-frais">{ row.frais }</TableCell>
+            <TableCell key={`${i}-remise`} className="liste-remise">{ row.remise }</TableCell>
+            <TableCell key={`${i}-activation`} className="liste-activation">
+              <SwitchCheckbox 
+                isChecked={ row.activation } 
+                key={`${i}-activation-switch`}
+                name={ 'activation' } 
+                onChange={ console.log } 
+                label="" 
+              />
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+} 
+
+
+
+class EditTypePopin extends React.Component {
+  constructor(props) {
+    super(props);
+    console.log(props);
+    this.state = {
+      nom: props.commandtype && props.commandtype.nom,
+      identifiant: props.commandtype && props.commandtype.identifiant, 
+      frais: props.commandtype && props.commandtype.frais, 
+      remise: props.commandtype && props.commandtype.remise
+    }
+    this.updateValue = this.updateValue.bind(this);
+    this.saveType = this.saveType.bind(this);
+  }
+
+
+  updateValue(value) {
+    this.setState(value);
+  }
+  saveType() {
+    this.props.saveType(this.state);
+    this.props.closeHandler();
+  }
+
+  render() {
+    const { commandtype, editOpen, closeHandler } = this.props;
+    const { nom, identifiant, frais, remise } = this.state;
+
+    return (
+      <Modal open={ editOpen } >
+        <div className="EditTypeModal">
+          <div className="Modal-container">
+            <div className="header">
+              <div className="title">{ commandtype==null ? strings.modules.parametres.submodules.commandes.types.label.ajouter : strings.modules.parametres.submodules.commandes.types.label.editer }</div>
+            </div>
+            <div className="body">
+              <LabelledField 
+                  id={ `nom` }
+                  name={ `nom` }
+                  className="fieldnom"
+                  value={ commandtype && commandtype.nom } 
+                  placeholder='' 
+                  type='text' 
+                  readOnly={ false } 
+                  onChange={(val)=>{ this.updateValue({nom:val.value}) }}
+                  label={ strings.modules.parametres.submodules.commandes.types.label.nom }
+              />
+              <LabelledField 
+                  id={ `identifiant` }
+                  name={ `identifiant` }
+                  className="fieldidentifiant"
+                  value={ commandtype && commandtype.identifiant } 
+                  placeholder='' 
+                  type='text' 
+                  readOnly={ false } 
+                  onChange={(val)=>{ this.updateValue({identifiant:val.value}) }}
+                  label={ strings.modules.parametres.submodules.commandes.types.label.identifiant }
+              />
+              <LabelledField 
+                  id={ `frais` }
+                  name={ `frais` }
+                  className="fieldfrais"
+                  value={ commandtype && commandtype.frais.replace(/(\ )?(€|%)/,'') } 
+                  placeholder='' 
+                  type='text' 
+                  options={['€','%']}
+                  optionvalue={ commandtype && commandtype.frais.match(/(€|%)/)[0] } 
+                  readOnly={ false } 
+                  onChange={(val)=>{ this.updateValue({frais:`${val.value} ${val.option}`}) }}
+                  label={ strings.modules.parametres.submodules.commandes.types.label.frais }
+              />
+              <LabelledField 
+                  id={ `remise` }
+                  name={ `remise` }
+                  className="fieldremise"
+                  value={ commandtype && commandtype.remise.replace(/(\ )?(€|%)/,'') } 
+                  placeholder='' 
+                  type='text' 
+                  options={['€','%']}
+                  optionvalue={ commandtype && commandtype.remise.match(/(€|%)/)[0] } 
+                  readOnly={ false } 
+                  onChange={(val)=>{ this.updateValue({remise:`${val.value} ${val.option}`}) }}
+                  label={ strings.modules.parametres.submodules.commandes.types.label.remise }
+              />
+            </div>
+            <div className="footer">
+              <StdButton 
+                identifier="modal-save" 
+                elementclass="save" 
+                icon={ false } 
+                text={ strings.general.dialog.save } 
+                onClick={this.saveType} 
+              />
+            </div>
+          </div>
+          <Fab aria-label="close" size="small" className="close-button" onClick={ closeHandler }>
+            <CloseIcon />
+          </Fab>
+        </div>
+      </Modal>
+    );
+  }
+}
 
 class Commandes extends React.Component {
 
+  constructor(props) {
+    super(props);
 
-  componentDidMount() {
-    console.log('Dashboard.componentDidMount()');
-    this.props.getCommandesList();
+    this.state = {
+      commandtype: null,
+      editOpen: false,
+      currentNumero: 23890982
+    };
+
+    this.openEdit = this.openEdit.bind(this);
+    this.closeEdit = this.closeEdit.bind(this);
+    this.resetNumero = this.resetNumero.bind(this);
+    this.saveType = this.saveType.bind(this);
+  }
+ 
+  openEdit(typeid=null) {
+    console.log(typeid);
+    if (typeid!==null) {
+      this.setState({commandtype:data_types[typeid], editOpen: true});
+    }
+    else {
+      this.setState({editOpen: true});
+    }
+  }
+  closeEdit() {
+    this.setState({editOpen: false});
+  }
+  resetNumero() {
+    this.setState({currentNumero:1});
+  }
+  saveType(type) {
+    console.log(type);
+  //  this.setState({editOpen: false});
   }
 
- render() {
-  const { commandeslist, error, loading } = this.props;
+  render() {
 
-  if(loading) {
-    return <LoadingSpinner />
-  }
-
-  if (undefined === commandeslist) {
+    const { commandtype, editOpen, currentNumero } = this.state;
+   
     return (
       <div className="Commandes subcontent">
-        <div className="SelecteurEmpty">{ strings.modules.encaissement.selecteur.empty }</div>
+        <div className="subttl">{ strings.modules.parametres.submodules.commandes.types.nom }</div>
+        <Fab aria-label="addtype" size="small" className="addtype-button" onClick={ ()=>{ this.openEdit() } }>
+          <AddIcon htmlColor="#ffffff" />
+        </Fab>
+        <div className="table-wrapper">
+          <TableTypes liste={data_types} id='typesliste' openEdit={this.openEdit} />
+        </div>
+        <div className="subttl">{ strings.modules.parametres.submodules.commandes.numero.nom }</div>
+        <div className="numero-wrapper">
+          <LabelledField 
+              id={ `debut` }
+              name={ `debut` }
+              className="fielddebut"
+              value={ 1 } 
+              placeholder='1' 
+              type='text' 
+              readOnly={ false } 
+              onChange={()=>{console.log('click')}}
+              label={ strings.modules.parametres.submodules.commandes.numero.label.debut }
+            />
+          <div className="currentnum-wrapper">
+            <LabelledField
+              id={ `compteur` }
+              name={ `compteur` }
+              className="fieldcompteur"
+              value={ currentNumero } 
+              placeholder='0' 
+              type='text' 
+              readOnly={ true } 
+              onChange={()=>{console.log('click')}}
+              label={ strings.modules.parametres.submodules.commandes.numero.label.compteur }
+              />
+            <div className="btn-reset" onClick={this.resetNumero}>{ strings.modules.parametres.submodules.commandes.numero.label.reset }</div>
+          </div>
+          <SwitchCheckbox
+            isChecked={ false } 
+            key={`hexa`}
+            name={ `hexa` } 
+            labelLeft={ true }
+            onChange={ console.log } 
+            label={ strings.modules.parametres.submodules.commandes.numero.label.hexa } 
+          />
+        </div>
+        <EditTypePopin commandtype={commandtype} editOpen={editOpen} closeHandler={this.closeEdit} saveType={this.saveType} />
       </div>
     );
   }
- 
-  return (
-   <div className="Commandes subcontent">
-    {Object.keys(commandeslist).map(ticketId =>
-    <div className="commande-item" key={ticketId}>
-      <div className="id">{ `#${ticketId}` }</div>
-      <div className="created">{ commandeslist[ticketId].createdAt }</div>
-      <div className="montant">{ `${commandeslist[ticketId].total.toFixed(2).replace('.',',')} €` }</div>
-    </div>
-    )}
-   </div>
-  );
- }
 };
 
 export default Commandes;
 
-Commandes.propTypes = {
-  commandeslist: PropTypes.object,
-  getCommandesList: PropTypes.func.isRequired
-};
+
 
 
 

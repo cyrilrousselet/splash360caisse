@@ -6,7 +6,7 @@ import { PrivateRoute } from '../common/PrivateRoute';
 import paths from '../../constants/routes';
 import { paramSubmodulesList } from '../../constants/modules';
 
-import CommandesCont from './../../containers/CommandesCont';
+import Commandes from './Commandes';
 import Entreprise from './Entreprise';
 import Financier from './Financier';
 import Options from './Options';
@@ -33,7 +33,7 @@ class Parametres extends React.Component {
             <PrivateRoute exact path={ paths.PARAM_UTILISATEURS } component={ Utilisateurs } />
             <PrivateRoute exact path={ paths.PARAM_FINANCIER } component={ Financier } />
             <PrivateRoute exact path={ paths.PARAM_PERIPHERIQUES } component={ Peripheriques } />
-            <PrivateRoute exact path={ paths.PARAM_COMMANDES } component={ CommandesCont } />
+            <PrivateRoute exact path={ paths.PARAM_COMMANDES } component={ Commandes } />
             <PrivateRoute exact path={ paths.PARAM_OPTIONS } component={ Options } />
           </Switch>
         </div>

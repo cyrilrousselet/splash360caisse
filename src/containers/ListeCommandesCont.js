@@ -12,7 +12,8 @@ const mapStateToProps = (state) => {
   return {
       loading: getCommandesListLoading(state),
       error: getCommandesListError(state),
-      commandeslist: getCommandesList(state)
+      commandeslist: getCommandesList(state),
+      tickets: ['sac','commande', 'cuisine', 'sucré', 'brasserie']
   }
 }
 

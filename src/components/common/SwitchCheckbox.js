@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const SwitchCheckbox = ({ name, isChecked, onChange, label }) => (
-      <div className="switch-container">
+const SwitchCheckbox = ({ name, isChecked, onChange, className, label, labelLeft, small }) => (
+      <div className={ `switch-container${labelLeft ? ' labelleft' : ''}${small ? ' switch-small' : ''}${className?' '+className:''}` }>
         <label>
           <input
             type="checkbox"
-            className="switch"
+            className={ `${small ? 'switch switch-small' : 'switch'}` }
             id={`switchid-${name}`}
             name={name}
             defaultChecked={ isChecked }
@@ -23,6 +23,8 @@ SwitchCheckbox.propTypes = {
   isChecked: PropTypes.bool.isRequired,
   onChange: PropTypes.func.isRequired,
   label: PropTypes.string,
+  labelLeft: PropTypes.bool,
+  small: PropTypes.bool,
 }
 
 export default SwitchCheckbox;

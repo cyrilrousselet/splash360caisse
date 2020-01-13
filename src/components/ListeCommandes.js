@@ -31,6 +31,8 @@ import Box from '@material-ui/core/Box';
 import StdButton from './common/StdButton';
 import PrinterIcon from './common/icon/PrinterIcon';
 import ReglementCont from '../containers/ReglementCont';
+import { Modal, Fab } from '@material-ui/core';
+import CloseIcon from './common/icon/CloseIcon';
 
 let strings = new LocalizedStrings(data);
 
@@ -66,7 +68,7 @@ TabPanel.propTypes = {
 
 
 function TableCommandes(props) {
-  const { liste, id, openReglement, openReprise, ...other } = props;
+  const { liste, id, openReglement, openReprise, openPrint, ...other } = props;
 
   return (
     <Table size="small" key={id} aria-label="a dense table">
@@ -91,8 +93,8 @@ function TableCommandes(props) {
             <TableCell key={`${row.id}-actions`} className="liste-actions">
               <StdButton key={`${row.id}-encaissement`} identifier='encaissement' elementclass="action action-encaissement" icon={ false } disabled={id==='confirmed'} noStroke={true} text={ strings.modules.listecommandes.actions.encaissement } onClick={ () => { openReglement(row.id) } } />
               <StdButton key={`${row.id}-annuler`} identifier='annuler' elementclass="action action-annuler" icon={ false } disabled={id!=='standby'} noStroke={true} text={ strings.modules.listecommandes.actions.annuler } onClick={(value) => { console.log(value) }} />
-              <StdButton key={`${row.id}-reprise`} identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={id=='confirmed'} noStroke={true} text={ strings.modules.listecommandes.actions.reprise } onClick={() => { openReprise(row.id) }} />
-              <StdButton key={`${row.id}-imprimer`} identifier='imprimer' elementclass="action action-imprimer" icon={ <PrinterIcon /> } noStroke={true} text='' onClick={(value) => { console.log(value) }} />
+              <StdButton key={`${row.id}-reprise`} identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={id!=='standby'} noStroke={true} text={ strings.modules.listecommandes.actions.reprise } onClick={() => { openReprise(row.id) }} />
+              <StdButton key={`${row.id}-imprimer`} identifier='imprimer' elementclass="action action-imprimer" icon={ <PrinterIcon /> } noStroke={true} text='' onClick={() => { openPrint(row.id) }} />
             </TableCell>
           </TableRow>
         ))}
@@ -100,6 +102,37 @@ function TableCommandes(props) {
     </Table>
   );
 } 
+
+
+function ImpressionTicketPopin(props) {
+  const { tickets, printOpen, closeHandler, commandeId, launchTicket } = props;
+
+  const tous = strings.modules.listecommandes.impression.tous; 
+
+  const _tickets = [tous , ...tickets];
+
+  return (
+    <Modal
+      open={ printOpen }
+      >
+      <div className="ImpressionTicket">
+        <div className="Modal-container">
+          <div className="header">
+            <div className="title">{ strings.modules.listecommandes.impression.titre }</div>
+          </div>
+          <div className="body">
+          { _tickets.map((tkt,i) =>
+            <StdButton identifier={ `${tkt}` } key={i} elementclass="ticket" icon={ false } text={ tkt } onClick={(value) => { launchTicket(tkt, commandeId) }} />
+          )}
+          </div>
+        </div>
+        <Fab aria-label="close" size="small" className="close-button" onClick={ closeHandler }>
+          <CloseIcon />
+        </Fab>
+      </div>
+    </Modal>
+  );
+}
 
 
 
@@ -113,13 +146,16 @@ class ListeCommandes extends React.Component {
       endDate: endOfToday(),
       openTab: 0,
       reglementOpen: false,
-      commandeId: null
+      commandeId: null,
+      printOpen: false
     };
     this.setSelectedDate = this.setSelectedDate.bind(this);
     this.handleChangeTab = this.handleChangeTab.bind(this);
     this.encaissementHandle = this.encaissementHandle.bind(this);
     this.repriseHandle = this.repriseHandle.bind(this);
     this.closeReglement = this.closeReglement.bind(this);
+    this.openPrint = this.openPrint.bind(this);
+    this.closePrint = this.closePrint.bind(this);
   }
 
   componentDidMount() {
@@ -157,10 +193,20 @@ class ListeCommandes extends React.Component {
     this.setState({openTab: newValue});
   };
 
-  render() {
-    const { commandeslist, error, loading } = this.props;
+  openPrint(cmdid) {
+    this.setState({commandeId:cmdid, printOpen:true});
+  }
+  closePrint() {
+    this.setState({printOpen:false});
+  }
+  launchTicket(ticket, cmdid) {
+    console.log(`print ticket '${ticket}' pour #${cmdid}`);
+  }
 
-    const { startDate, endDate, openTab, commandeId } = this.state;
+  render() {
+    const { commandeslist, error, loading, tickets } = this.props;
+
+    const { startDate, endDate, openTab, commandeId, printOpen } = this.state;
 
     let a_encaisserlist = [], standbylist = [], confirmedlist = [];
     
@@ -244,17 +290,18 @@ class ListeCommandes extends React.Component {
             </Tabs>
           </AppBar>
           <TabPanel key="a_encaisser-panel" value={openTab} index={0}>
-            <TableCommandes className="a_encaisser" id="a_encaisser" openReglement={ this.encaissementHandle } liste={a_encaisserlist} />
+            <TableCommandes className="a_encaisser" id="a_encaisser" openReglement={ this.encaissementHandle } openPrint={ this.openPrint } liste={a_encaisserlist} />
           </TabPanel>
           <TabPanel key="standby-panel" value={openTab} index={1}>
-            <TableCommandes className="standby" id="standby" openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } liste={standbylist} />
+            <TableCommandes className="standby" id="standby" openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } liste={standbylist} />
           </TabPanel>
           <TabPanel key="confirmed-panel" value={openTab} index={2}>
-            <TableCommandes className="confirmed" id="confirmed" liste={confirmedlist} />
+            <TableCommandes className="confirmed" id="confirmed" openPrint={ this.openPrint } liste={confirmedlist} />
           </TabPanel>
         </div>
 
-        <ReglementCont open={ this.state.reglementOpen } commandeId={ this.state.commandeId } closeReglement={ this.closeReglement } />
+        <ReglementCont open={ this.state.reglementOpen } contClass="ListeCommandeReglement" commandeId={ this.state.commandeId } closeReglement={ this.closeReglement } />
+        <ImpressionTicketPopin tickets={tickets} printOpen={printOpen} closeHandler={this.closePrint} commandeId={ this.state.commandeId } launchTicket={this.launchTicket} />
       </div>
     </div>
     );
@@ -264,6 +311,7 @@ export default ListeCommandes;
 
 ListeCommandes.propTypes = {
   commandeslist: PropTypes.object,
+  tickets: PropTypes.array,
   getCommandesList: PropTypes.func.isRequired,
   getCommande: PropTypes.func.isRequired
 };

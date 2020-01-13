@@ -62,4 +62,22 @@ input[type="checkbox"].switch {
             box-shadow: inset 0 0 0 0 $noir_005, 0 3px 1px 0 $noir_005, 0 2px 2px 0 $noir_010, 0 3px 3px 0 $noir_005;
         }
     }
+    &.switch-small {
+        &+div {
+            width: 26px;
+            height: 16px;
+            margin-right: 10px;
+            &>div {
+                width: 14px;
+                height: 14px;
+            }
+        }
+        &:checked+div {
+            width: 26px;
+            &>div {
+                -webkit-transform: translate3d(10px, 0, 0);
+                transform: translate3d(10px, 0, 0);
+            }
+        }
+    }
 }

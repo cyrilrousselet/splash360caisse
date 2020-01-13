@@ -1,0 +1,51 @@
+.labelledfield {
+  display: inline-block;
+  flex-direction: row;
+  align-items: center;
+
+  label {
+    font-family: $f_med;
+    font-size: 14px;
+    color: $noir;
+    padding-right: 10px;
+    user-select: none;
+  }
+  .input-wrapper {
+    background-color: $blanc-fonce;
+    height: 30px;
+    border-radius: 5px;
+    display: inline-flex;
+    flex-direction: row;
+  }
+  input {
+    font-family: $f_boo;
+    font-size: 14px;
+    color: $bleu-prusse;
+    background-color: transparent;
+    box-shadow: none;
+    border: none;
+    padding: 5px 15px;
+    outline: none;
+    &:read-only {
+      color: $gris;
+    }
+    width: 100%;
+    &[type='number'] {
+      text-align: right;
+    }
+  }
+  .postvalue {
+    font-family: $f_boo;
+    font-size: 14px;
+    color: $noir;
+    height: 30px;
+    line-height: 30px;
+    padding-right: 15px;
+  }
+
+  .MuiSelect-select:focus {
+    background: transparent;
+  }
+  
+  
+}

@@ -1,0 +1,144 @@
+.Clients {
+  div {
+    box-sizing: content-box;
+  }
+
+  .toolbar {
+    display: flex;
+    height: 80px;
+    width: calc(100% - 70px);
+
+    .adduser-btn {
+      background-color:$vert;
+      min-height: 40px;
+      height: 40px;
+      .StdButton-text {
+          font-family: $f_blk;
+          font-size: 14px;
+          text-transform: uppercase;
+          padding: 0 15px;
+      }
+    }
+
+  }
+  .table-wrapper {
+
+    display: flex;
+    justify-content: flex-start;
+    align-items: start;
+    text-align: left;
+    padding: 3px;
+    width: calc(100% - 70px);
+    height: calc(100% - 70px);
+
+    border-radius: 5px;
+    box-shadow: inset 0 0 0 3px $noir_010;
+
+
+    background: linear-gradient($blanc 0%, $blanc 100%), linear-gradient($blanc 0%, $blanc 100%), linear-gradient($blanc 0%, $blanc 100%), linear-gradient($blanc 0%, $blanc 100%);
+    background-repeat: no-repeat;
+    background-size: 70px 100%, 140px 100%, 110px 100%, 100px 100%;
+    background-position: 0 0, calc(100% - 560px) 0, calc(100% - 270px) 0, 100% 0;
+
+
+    header {
+        box-shadow: none;
+        background-color: transparent;
+        .MuiButtonBase-root {
+          font-family: $f_hea;
+          font-size: 18px;
+          background-color: $gris-clair;
+          border-radius: 15px 15px 0 0;
+          color: $noir;
+          margin-right: 2px;
+          padding: 8px 25px;
+          &.Mui-selected {
+            background-color: $blanc;
+            color: $primary;
+            font-family: $f_blk;
+          }
+        }
+        .MuiTabs-indicator {
+          background-color: transparent;
+        }
+      }
+
+    .MuiTableCell-stickyHeader {
+        background-color: transparent;
+    }
+    .MuiTableCell-root {
+        font-family: $f_med;
+        border: none;
+        &.MuiTableCell-head {
+            font-family: $f_hea;
+        }
+    }
+
+    .liste-code {
+        width: 70px;
+        text-align: center;
+    }
+    .liste-tel1 {
+        width: 140px;
+    }
+    .liste-email {
+        width: 190px;
+    }
+    .liste-codepostal {
+        width: 110px;
+        text-align: center;
+    }
+    .liste-ville {
+        width: 200px;
+    }
+    .liste-actions {
+        width: 100px;
+        text-align: center;
+    }
+    thead {
+        background-color: $noir_010;
+        .liste-codepostal {
+          box-sizing: content-box;
+            padding: 6px 0;
+        }
+    }
+    tbody {
+        .liste-nom,
+        .liste-prenom {
+            text-transform: capitalize;
+            text-decoration: underline;
+            div {
+                cursor: pointer;
+            }
+        }
+        .liste-frais {
+            text-align: right;
+        }
+        .liste-remise {
+            text-align: right;
+        }
+        .liste-actions {
+            text-align: center;
+            padding: 0;
+
+        .StdButton {
+          min-width: 30px;
+          min-height: 30px;
+          display: inline;
+        }
+        .StdButton-icon {
+          height: 17px;
+          width: 16px;
+          svg {
+            width: 16px;
+            height: 17px;
+          }
+        }
+        }
+        .odd {
+            background-color: $noir_005;
+        }
+    }
+
+  }
+}

@@ -16,4 +16,9 @@
 
 .Parametres {
     @import "Parametres-Commandes";
+    @import "Parametres-Entreprise";
+    @import "Parametres-Utilisateurs";
+    @import "Parametres-Financier";
 }
+@import "Parametres-Commandes-TypeModal";
+@import "Parametres-Utilisateurs-UserModal";

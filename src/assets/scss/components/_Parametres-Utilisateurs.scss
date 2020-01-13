@@ -1,0 +1,106 @@
+.Utilisateurs {
+    
+
+  div {
+    box-sizing: content-box;
+  }
+
+  &.subcontent {
+
+    display: inline-flex;
+    justify-content: flex-start;
+    align-items: start;
+    text-align: left;
+    padding: 15px;
+
+    background-color: $blanc;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px 0 rgba(0,0,0,0.10);
+
+
+
+    header {
+        box-shadow: none;
+        background-color: transparent;
+        .MuiButtonBase-root {
+          font-family: $f_hea;
+          font-size: 18px;
+          background-color: $gris-clair;
+          border-radius: 15px 15px 0 0;
+          color: $noir;
+          margin-right: 2px;
+          padding: 8px 25px;
+          &.Mui-selected {
+            background-color: $blanc;
+            color: $primary;
+            font-family: $f_blk;
+          }
+        }
+        .MuiTabs-indicator {
+          background-color: transparent;
+        }
+      }
+
+    .MuiTableCell-stickyHeader {
+        background-color: transparent;
+    }
+    .MuiTableCell-root {
+        font-family: $f_med;
+        border: none;
+        &.MuiTableCell-head {
+            font-family: $f_hea;
+        }
+    }
+
+    thead {
+        background-color: $noir_010;
+    }
+    .liste-passe {
+        width: 200px;
+        text-align: center;
+    }
+    .liste-droits {
+        width: 100px;
+        text-align: center;
+    }
+    tbody {
+        .liste-nom {
+            text-transform: capitalize;
+            text-decoration: underline;
+            div {
+                cursor: pointer;
+            }
+        }
+        .odd {
+            background-color: $noir_005;
+        }
+    }
+
+    .subttl {
+        font-family: $f_blk;
+        font-size: 18px;
+        padding: 10px 0;
+    }
+    .adduser-button {
+        background-color: $primary;
+        position: absolute;
+        right: 60px;
+        width: 30px;
+        height: 30px;
+        min-height: 30px;
+    }
+    .table-wrapper {
+        width: 100%;
+        height: calc(100% - 80px);
+        overflow-y: auto;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 0 3px $noir_010;
+
+        background: linear-gradient($blanc-fonce 0%, $blanc-fonce 100%), linear-gradient($blanc-fonce 0%, $blanc-fonce 100%);
+        background-repeat: no-repeat;
+        background-size: calc(100% - 300px) 100%, 100px 100%;
+        background-position: 0 0, 100% 0;
+    }
+  }
+}
