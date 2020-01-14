@@ -37,6 +37,7 @@ const userLogout = () => {
 }
 
 
+
 const mapStateToProps = (state) => {
   return {
     cashname: 'Caisse n°1',

@@ -148,7 +148,7 @@ class EditUtilisateurPopin extends React.Component {
         </div>
       </Modal>
     );
-            }
+  }
 }
 
 
