@@ -18,7 +18,7 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/picker
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-//import TableContainer from '@material-ui/core/TableContainer';
+import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
@@ -71,35 +71,37 @@ function TableCommandes(props) {
   const { liste, id, openReglement, openReprise, openPrint, ...other } = props;
 
   return (
-    <Table size="small" key={id} aria-label="a dense table">
-      <TableHead>
-        <TableRow>
-          <TableCell key={`${id}-hd-date`} className="liste-date">{ strings.modules.listecommandes.liste.date }</TableCell>
-          <TableCell key={`${id}-hd-heure`} className="liste-heure">{ strings.modules.listecommandes.liste.heure }</TableCell>
-          <TableCell key={`${id}-hd-numero`} className="liste-numero">{ strings.modules.listecommandes.liste.numero }</TableCell>
-          <TableCell key={`${id}-hd-montant`} className="liste-montant">{ strings.modules.listecommandes.liste.montant }</TableCell>
-          <TableCell key={`${id}-hd-client`} className="liste-client">{ strings.modules.listecommandes.liste.client }</TableCell>
-          <TableCell key={`${id}-hd-actions`} className="liste-actions">{ strings.modules.listecommandes.liste.actions }</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {liste.map((row, i) => (
-          <TableRow key={row.id} className={(i%2)?'odd':'even'}>
-            <TableCell key={`${row.id}-date`} className="liste-date">{ row.commande.date }</TableCell>
-            <TableCell key={`${row.id}-heure`} className="liste-heure">{ row.commande.heure }</TableCell>
-            <TableCell key={`${row.id}-numero`} className="liste-numero">{ row.commande.id }</TableCell>
-            <TableCell key={`${row.id}-montant`} className="liste-montant">{ row.commande.montant }</TableCell>
-            <TableCell key={`${row.id}-client`} className="liste-client">{ row.commande.client }</TableCell>
-            <TableCell key={`${row.id}-actions`} className="liste-actions">
-              <StdButton key={`${row.id}-encaissement`} identifier='encaissement' elementclass="action action-encaissement" icon={ false } disabled={id==='confirmed'} noStroke={true} text={ strings.modules.listecommandes.actions.encaissement } onClick={ () => { openReglement(row.id) } } />
-              <StdButton key={`${row.id}-annuler`} identifier='annuler' elementclass="action action-annuler" icon={ false } disabled={id!=='standby'} noStroke={true} text={ strings.modules.listecommandes.actions.annuler } onClick={(value) => { console.log(value) }} />
-              <StdButton key={`${row.id}-reprise`} identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={id!=='standby'} noStroke={true} text={ strings.modules.listecommandes.actions.reprise } onClick={() => { openReprise(row.id) }} />
-              <StdButton key={`${row.id}-imprimer`} identifier='imprimer' elementclass="action action-imprimer" icon={ <PrinterIcon /> } noStroke={true} text='' onClick={() => { openPrint(row.id) }} />
-            </TableCell>
+    <TableContainer className="table-cont">
+      <Table size="small" key={id} aria-label="a dense table" stickyHeader>
+        <TableHead>
+          <TableRow>
+            <TableCell key={`${id}-hd-date`} className="liste-date">{ strings.modules.listecommandes.liste.date }</TableCell>
+            <TableCell key={`${id}-hd-heure`} className="liste-heure">{ strings.modules.listecommandes.liste.heure }</TableCell>
+            <TableCell key={`${id}-hd-numero`} className="liste-numero">{ strings.modules.listecommandes.liste.numero }</TableCell>
+            <TableCell key={`${id}-hd-montant`} className="liste-montant">{ strings.modules.listecommandes.liste.montant }</TableCell>
+            <TableCell key={`${id}-hd-client`} className="liste-client">{ strings.modules.listecommandes.liste.client }</TableCell>
+            <TableCell key={`${id}-hd-actions`} className="liste-actions">{ strings.modules.listecommandes.liste.actions }</TableCell>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHead>
+        <TableBody>
+          {liste.map((row, i) => (
+            <TableRow key={row.id} className={(i%2)?'odd':'even'}>
+              <TableCell key={`${row.id}-date`} className="liste-date">{ row.commande.date }</TableCell>
+              <TableCell key={`${row.id}-heure`} className="liste-heure">{ row.commande.heure }</TableCell>
+              <TableCell key={`${row.id}-numero`} className="liste-numero">{ row.commande.id }</TableCell>
+              <TableCell key={`${row.id}-montant`} className="liste-montant">{ row.commande.montant }</TableCell>
+              <TableCell key={`${row.id}-client`} className="liste-client">{ row.commande.client }</TableCell>
+              <TableCell key={`${row.id}-actions`} className="liste-actions">
+                <StdButton key={`${row.id}-encaissement`} identifier='encaissement' elementclass="action action-encaissement" icon={ false } disabled={id==='confirmed'} noStroke={true} text={ strings.modules.listecommandes.actions.encaissement } onClick={ () => { openReglement(row.id) } } />
+                <StdButton key={`${row.id}-annuler`} identifier='annuler' elementclass="action action-annuler" icon={ false } disabled={id!=='standby'} noStroke={true} text={ strings.modules.listecommandes.actions.annuler } onClick={(value) => { console.log(value) }} />
+                <StdButton key={`${row.id}-reprise`} identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={id!=='standby'} noStroke={true} text={ strings.modules.listecommandes.actions.reprise } onClick={() => { openReprise(row.id) }} />
+                <StdButton key={`${row.id}-imprimer`} identifier='imprimer' elementclass="action action-imprimer" icon={ <PrinterIcon /> } noStroke={true} text='' onClick={() => { openPrint(row.id) }} />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 } 
 
@@ -289,13 +291,13 @@ class ListeCommandes extends React.Component {
               <Tab label={ strings.modules.listecommandes.status.confirmed } {...a11yProps(2)} />
             </Tabs>
           </AppBar>
-          <TabPanel key="a_encaisser-panel" value={openTab} index={0}>
+          <TabPanel key="a_encaisser-panel" className="panel" value={openTab} index={0}>
             <TableCommandes className="a_encaisser" id="a_encaisser" openReglement={ this.encaissementHandle } openPrint={ this.openPrint } liste={a_encaisserlist} />
           </TabPanel>
-          <TabPanel key="standby-panel" value={openTab} index={1}>
+          <TabPanel key="standby-panel" className="panel" value={openTab} index={1}>
             <TableCommandes className="standby" id="standby" openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } liste={standbylist} />
           </TabPanel>
-          <TabPanel key="confirmed-panel" value={openTab} index={2}>
+          <TabPanel key="confirmed-panel" className="panel" value={openTab} index={2}>
             <TableCommandes className="confirmed" id="confirmed" openPrint={ this.openPrint } liste={confirmedlist} />
           </TabPanel>
         </div>

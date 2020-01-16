@@ -7,10 +7,12 @@ function getCommandesList(params={}) {
   return dispatch => {
     dispatch({ type: commandeActionTypes.GET_ALLCOMMANDES_REQUEST });
 
-    commandeServices.getCommandesList(params)
+    return commandeServices.getCommandesList(params)
     .then(
-        data => dispatch({ type: commandeActionTypes.GET_ALLCOMMANDES_SUCCESS, ...data }),
-        error => dispatch({ type: commandeActionTypes.GET_ALLCOMMANDES_FAILURE, error: error.toString() })
+        data => { dispatch({ type: commandeActionTypes.GET_ALLCOMMANDES_SUCCESS, ...data }) }
+    )
+    .catch(
+      error => { dispatch({ type: commandeActionTypes.GET_ALLCOMMANDES_FAILURE, error: error.toString() }) }
     );
   }
 }
@@ -55,19 +57,30 @@ function validateCommande(payload) {
    // payload.status = 'confirmed';
     const state = getState();
     
-    commandeServices.saveCommande(payload, state)
+    return commandeServices.saveCommande(payload, state)
     .then(
       confirm => {
         const { user } = state.authentication;
         const commande = commandeServices.getNewCommande({operator:user, caisse:0});
-        return dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
+        dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
       },
       error => {
         console.log(error);
-        return dispatch({ type:commandeActionTypes.VALIDATE_COMMANDE_FAILURE, error: error.toString() })
+        dispatch({ type:commandeActionTypes.VALIDATE_COMMANDE_FAILURE, error: error.toString() })
       }
     );
     
+  }
+}
+
+function validateCommandeAndUpdateList(payload) {
+
+  console.log('commandeActions.validateCommandeAndUpdateList()');
+
+  return (dispatch) => {
+    dispatch(validateCommande(payload)).then((dataFromValidate) => {
+      dispatch(getCommandesList())
+    })
   }
 }
 
@@ -86,6 +99,7 @@ function standByCommande(payload) {
       confirm => {
         const { user } = state.authentication;
         const commande = commandeServices.getNewCommande({operator:user, caisse:0});
+        dispatch(getCommandesList());
         return dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
       },
       error => {
@@ -112,6 +126,7 @@ function livraisonCommande(payload) {
       confirm => {
         const { user } = state.authentication;
         const commande = commandeServices.getNewCommande({operator:user, caisse:0});
+        dispatch(getCommandesList());
         return dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
       },
       error => {
@@ -219,5 +234,6 @@ export const commandeActions = {
   validateCommande,
   standByCommande,
   livraisonCommande,
-  getCommandesList
+  getCommandesList,
+  validateCommandeAndUpdateList
 };

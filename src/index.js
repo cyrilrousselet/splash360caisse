@@ -17,7 +17,8 @@ import paths from './constants/routes';
 import './index.scss';
 import registerServiceWorker from './registerServiceWorker';
 
-const {store, persistor} = configureStore();
+//const {store, persistor} = configureStore();
+const {store} = configureStore();
 
 
 const electron = require('electron');
@@ -34,7 +35,8 @@ console.log(paths.LOGIN);
 
 render(
  <AppContainer>
-  <Root store={ store } persistor={ persistor } history={ history } />
+  {/* <Root store={ store } persistor={ persistor } history={ history } /> */}
+  <Root store={ store } history={ history } />
  </AppContainer>,
  document.getElementById('root')
 );

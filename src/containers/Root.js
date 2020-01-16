@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import { Provider, ReactReduxContext } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
+// import { PersistGate } from 'redux-persist/integration/react';
 import { ConnectedRouter } from 'connected-react-router';
 import { hot } from 'react-hot-loader/root';
 import type { Store } from '../reducers/types';
@@ -11,17 +11,18 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 
 type Props = {
   store: Store,
-  persistor: any,
+ // persistor: any,
   history: {}
 };
 
-const Root = ({ store, persistor, history }: Props) => (
+// const Root = ({ store, persistor, history }: Props) => (
+const Root = ({ store, history }: Props) => (
   <Provider store={store} context={ReactReduxContext}>
-    <PersistGate loading={<LoadingSpinner />} persistor={persistor}>
+    {/* <PersistGate loading={<LoadingSpinner />} persistor={persistor}> */}
       <ConnectedRouter history={history} context={ReactReduxContext}>
         <Routes />
       </ConnectedRouter>
-    </PersistGate>
+    {/* </PersistGate> */}
   </Provider>
 );
 

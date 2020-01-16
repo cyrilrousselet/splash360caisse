@@ -6,4 +6,10 @@ const {setupMainHandler} = require('eiphop');
 const dbCatalogueApi = require('./dbCatalogueApi.js');
 const dbCommandesApi = require('./dbCommandesApi.js');
 
-setupMainHandler(electron, {...dbCatalogueApi, ...dbCommandesApi}, true);
+const peripheralApi = require('./peripheralApi.js');
+
+setupMainHandler(electron, {
+                  ...dbCatalogueApi, 
+                  ...dbCommandesApi,
+                  ...peripheralApi
+                }, true);

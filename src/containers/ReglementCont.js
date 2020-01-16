@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { commandeActions } from '../services/commande/commandeActions'
 import { getCommandeError, getCommandeLoading, getCommande } from '../services/commande/commandeReducer';
 import Reglement from '../components/Encaissement/Reglement';
+import { peripheralActions } from '../services/peripheral/peripheralActions';
 
 
 const getCommandeTotal = (items) => {
@@ -39,7 +40,8 @@ const mapDispatchToProps = (dispatch) => {
     addReglement: commandeActions.addReglement,
     removeReglement: commandeActions.removeReglement,
     addRendu: commandeActions.addRendu,
-    validateCommande: commandeActions.validateCommande,
+    validateCommande: commandeActions.validateCommandeAndUpdateList,
+    printTest: peripheralActions.printTest
   }, dispatch);
 }
 
