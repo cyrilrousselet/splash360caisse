@@ -27,7 +27,6 @@ setupFrontendListener(electron);
 
 console.log(process.env.REACT_APP_PRODUCT_NAME);
 console.log(process.env.REACT_APP_PRODUCT_AUTHOR);
-console.log(paths.LOGIN);
 
 
 // log.transports.file.level = 'info';

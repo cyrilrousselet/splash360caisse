@@ -71,7 +71,9 @@
         "electron-dev": "concurrently \"yarn start && yarn watch-css\" \"wait-on http://localhost:3000 && electron .\"",
         "postinstall": "electron-builder install-app-deps",
         "preelectron-pack": "yarn build",
-        "electron-pack": "electron-builder -m"
+        "electron-pack-mac": "electron-builder -m",
+        "electron-pack-win": "electron-builder -w",
+        "electron-pack-linux": "electron-builder -l"
     },
     "eslintConfig": {
         "extends": "react-app"
