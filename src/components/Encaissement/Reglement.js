@@ -114,7 +114,7 @@ class Reglement extends React.Component {
     const { reste, rendu } = this.updateValeurs();
     console.log(reste, rendu);
     if (reste==0) {
-      this.props.printTest();
+      this.props.printTicket('commande');
       this.props.commande.status = 'confirmed';
       this.props.validateCommande(this.props.commande);
     }
@@ -259,7 +259,8 @@ Reglement.propTypes = {
   getCommande: PropTypes.func.isRequired,
   addReglement: PropTypes.func.isRequired,
   addRendu: PropTypes.func.isRequired,
-  printTest: PropTypes.func.isRequired
+  printTest: PropTypes.func.isRequired,
+  printTicket: PropTypes.func.isRequired
 };
 
 

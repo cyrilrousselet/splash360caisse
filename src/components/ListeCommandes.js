@@ -196,6 +196,7 @@ class ListeCommandes extends React.Component {
   };
 
   openPrint(cmdid) {
+    this.props.getCommande(cmdid);
     this.setState({commandeId:cmdid, printOpen:true});
   }
   closePrint() {

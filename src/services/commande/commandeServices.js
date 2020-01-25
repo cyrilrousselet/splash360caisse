@@ -32,7 +32,7 @@ function getCommandesList(params) {
   return emit('dbCommandeGetAll', params);
 }
 
-function addProduit(payload, items) {
+function addProduit(payload, tva, items) {
   const { produitid, nom, prix, composition } = payload;
 
   // s'il s'agit d'un produit customisable, on crée une autre item
@@ -49,6 +49,7 @@ function addProduit(payload, items) {
       produitid: produitid,
       nom: nom,
       prix: prix,
+      tva: tva,
       composition: composition,
       quantite: 1,
       itemid: new Date().getTime()

@@ -28,10 +28,10 @@ const hydration = {
   ],
   
   tva: [
-    {tva_id: 'tva1', nom: 'tva 1', valeur: '0.1'},
-    {tva_id: 'tva2', nom: 'tva 2', valeur: '.055'},
-    {tva_id: 'tva3', nom: 'tva 3', valeur: '0.2'},
-    {tva_id: 'tva4', nom: 'tva 4', valeur: '0'}
+    {tva_id: 'tva1', nom: 'tva 1', code:'A', valeur: '0.1'},
+    {tva_id: 'tva2', nom: 'tva 2', code:'B', valeur: '.055'},
+    {tva_id: 'tva3', nom: 'tva 3', code:'C', valeur: '0.2'},
+    {tva_id: 'tva4', nom: 'tva 4', code:'D', valeur: '0'}
   ],
   
   types: [

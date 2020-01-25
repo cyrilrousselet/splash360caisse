@@ -144,8 +144,9 @@ function addProduit(payload) {
     
     const state = getState();
     const items = state.commandeReducer.commande.items;
+    const tva = state.catalogueReducer.tva[payload.tva_id]
 
-    const { commandeItem, mode } = commandeServices.addProduit(payload, items);
+    const { commandeItem, mode } = commandeServices.addProduit(payload, tva, items);
     
     if ('add'===mode) dispatch({ type: commandeActionTypes.ADD_PRODUIT, commandeItem });
     if ('update'===mode) dispatch({ type: commandeActionTypes.UPDATE_PRODUIT, commandeItem });

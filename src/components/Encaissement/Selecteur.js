@@ -83,7 +83,7 @@ class Selecteur extends React.Component {
                   nom={ prd.nom } 
                   prix={ prd.prix } 
                   composition={prd.composition}
-                  onClick={ () => addProduit({produitid: prd.id, nom: prd.nom, prix: Number(prd.prix), composition: prd.composition }) } />
+                  onClick={ () => addProduit({produitid: prd.id, nom: prd.nom, prix: Number(prd.prix), composition: prd.composition, tva_id:prd.tva_id }) } />
               )}
             </TabContent>
             )}

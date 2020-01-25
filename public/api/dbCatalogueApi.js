@@ -44,7 +44,7 @@ function _parseCatalogue(_rawdata) {
 
   const __tva = {};
   _rawdata._tva.forEach(t => {
-    __tva[t.tva_id] = {nom: t.nom, valeur: t.valeur};
+    __tva[t.tva_id] = {nom: t.nom, code: t.code, valeur: t.valeur};
   })
 
   const __catalogue = {};
