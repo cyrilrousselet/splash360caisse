@@ -1,5 +1,5 @@
 const electron = require('electron');
-const { app, BrowserWindow } = electron;
+const { app, BrowserWindow, Menu } = electron;
 
 const path = require('path');
 const os = require('os')
@@ -10,8 +10,11 @@ const api = require('./api/index.js');
 let mainWindow;
 let db_users;
 let userData = app.getPath('userData');
+let menu;
 
 function createWindow() {
+
+
     mainWindow = new BrowserWindow({ width: 1024, height: 768, backgroundColor: '#F7F7F7', webPreferences: { nodeIntegration: true } });
     mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
     if (isDev) {
@@ -22,6 +25,11 @@ function createWindow() {
          );
        }
         mainWindow.webContents.openDevTools();
+    } else {
+        // suppression du menu sur Windows et Linux en prod
+        if (process.platform !== 'darwin') {
+            Menu.setApplicationMenu(null);
+        }
     }
     mainWindow.on('closed', () => mainWindow = null);
 

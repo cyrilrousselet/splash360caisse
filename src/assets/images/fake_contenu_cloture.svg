@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="988px" height="586px" viewBox="0 0 988 586" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 61.2 (89653) - https://sketch.com -->
+    <title>fake cloture</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path id="path-1"></path>
+        <filter x="-7.3%" y="-3.3%" width="14.6%" height="8.7%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="5" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="6" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.15 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <rect id="path-3" x="0" y="40" width="280" height="470" rx="15"></rect>
+        <filter x="-7.3%" y="-3.3%" width="114.6%" height="108.7%" filterUnits="objectBoundingBox" id="filter-4">
+            <feOffset dx="0" dy="5" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="6" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.15 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <rect id="path-5" x="15" y="15" width="90" height="30" rx="15"></rect>
+        <filter x="-27.8%" y="-66.7%" width="155.6%" height="266.7%" filterUnits="objectBoundingBox" id="filter-6">
+            <feOffset dx="0" dy="5" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="7.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.1 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <rect id="path-7" x="0" y="0" width="120" height="45" rx="15"></rect>
+        <filter x="-11.2%" y="-23.3%" width="122.5%" height="160.0%" filterUnits="objectBoundingBox" id="filter-8">
+            <feOffset dx="0" dy="3" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="4" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.15 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <path id="path-9"></path>
+        <filter x="-7.3%" y="-3.3%" width="14.6%" height="8.7%" filterUnits="objectBoundingBox" id="filter-10">
+            <feOffset dx="0" dy="5" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="6" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.15 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <rect id="path-11" x="684" y="40" width="280" height="470" rx="15"></rect>
+        <filter x="-7.3%" y="-3.3%" width="114.6%" height="108.7%" filterUnits="objectBoundingBox" id="filter-12">
+            <feOffset dx="0" dy="5" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="6" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.15 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <path id="path-13"></path>
+        <mask id="mask-14" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="360" height="530" fill="white">
+            <use xlink:href="#path-13"></use>
+        </mask>
+        <rect id="path-15" x="302" y="40" width="360" height="530" rx="5"></rect>
+        <mask id="mask-16" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="360" height="530" fill="white">
+            <use xlink:href="#path-15"></use>
+        </mask>
+        <rect id="path-17" x="15" y="15" width="200" height="30" rx="15"></rect>
+        <filter x="-12.5%" y="-66.7%" width="125.0%" height="266.7%" filterUnits="objectBoundingBox" id="filter-18">
+            <feOffset dx="0" dy="5" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="7.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.1 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <rect id="path-19" x="0" y="0" width="230" height="45" rx="15"></rect>
+        <filter x="-5.9%" y="-23.3%" width="111.7%" height="160.0%" filterUnits="objectBoundingBox" id="filter-20">
+            <feOffset dx="0" dy="3" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="4" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.15 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <rect id="path-21" x="15" y="15" width="200" height="30" rx="15"></rect>
+        <filter x="-12.5%" y="-66.7%" width="125.0%" height="266.7%" filterUnits="objectBoundingBox" id="filter-22">
+            <feOffset dx="0" dy="5" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="7.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.1 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <rect id="path-23" x="0" y="0" width="230" height="45" rx="15"></rect>
+        <filter x="-5.9%" y="-23.3%" width="111.7%" height="160.0%" filterUnits="objectBoundingBox" id="filter-24">
+            <feOffset dx="0" dy="3" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="4" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.15 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <rect id="path-25" x="15" y="15" width="200" height="30" rx="15"></rect>
+        <filter x="-12.5%" y="-66.7%" width="125.0%" height="266.7%" filterUnits="objectBoundingBox" id="filter-26">
+            <feOffset dx="0" dy="5" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="7.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.1 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <rect id="path-27" x="0" y="0" width="230" height="45" rx="15"></rect>
+        <filter x="-5.9%" y="-23.3%" width="111.7%" height="160.0%" filterUnits="objectBoundingBox" id="filter-28">
+            <feOffset dx="0" dy="3" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="4" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.15 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Clôture" transform="translate(-18.000000, -119.000000)">
+            <g id="fake-cloture" transform="translate(30.000000, 115.000000)">
+                <g id="Combined-Shape" fill-rule="nonzero">
+                    <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                    <use fill="#FFFFFF" xlink:href="#path-1"></use>
+                </g>
+                <g id="Rectangle" fill-rule="nonzero">
+                    <use fill="black" fill-opacity="1" filter="url(#filter-4)" xlink:href="#path-3"></use>
+                    <use fill="#FFFFFF" xlink:href="#path-3"></use>
+                </g>
+                <g id="Bouton-bis" transform="translate(80.000000, 179.000000)">
+                    <g id="Rectangle" fill-rule="nonzero">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-6)" xlink:href="#path-5"></use>
+                        <use fill="#FFFFFF" xlink:href="#path-5"></use>
+                    </g>
+                    <g id="Rectangle" fill-rule="nonzero">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-8)" xlink:href="#path-7"></use>
+                        <use fill="#FFFFFF" xlink:href="#path-7"></use>
+                    </g>
+                    <rect id="Rectangle" fill="#9EB3BB" fill-rule="nonzero" x="5" y="5" width="110" height="35" rx="10"></rect>
+                    <text id="Livraison" font-family="Avenir-Heavy, Avenir" font-size="15" font-weight="600" fill="#FFFFFF">
+                        <tspan x="16.6575" y="27">Ré-Imprimer</tspan>
+                    </text>
+                </g>
+                <g id="Combined-Shape-Copy-2" fill-rule="nonzero">
+                    <use fill="black" fill-opacity="1" filter="url(#filter-10)" xlink:href="#path-9"></use>
+                    <use fill="#FFFFFF" xlink:href="#path-9"></use>
+                </g>
+                <g id="Rectangle" fill-rule="nonzero">
+                    <use fill="black" fill-opacity="1" filter="url(#filter-12)" xlink:href="#path-11"></use>
+                    <use fill="#FFFFFF" xlink:href="#path-11"></use>
+                </g>
+                <text id="764,50-€" font-family="Avenir-Black, Avenir" font-size="22" font-weight="700" fill="#1EA9DF">
+                    <tspan x="778.916" y="112">764,50 €</tspan>
+                </text>
+                <text id="0,00-€" font-family="Avenir-Black, Avenir" font-size="22" font-weight="700" fill="#9B9B9B">
+                    <tspan x="791.94" y="487">0,00 €</tspan>
+                </text>
+                <use id="Combined-Shape-Copy" stroke="#979797" mask="url(#mask-14)" stroke-width="2" fill="#FFFFFF" fill-rule="nonzero" stroke-dasharray="6" xlink:href="#path-13"></use>
+                <use id="Rectangle" stroke="#979797" mask="url(#mask-16)" stroke-width="2" fill="#FFFFFF" fill-rule="nonzero" stroke-dasharray="6" xlink:href="#path-15"></use>
+                <text id="Clôture-X/Z" font-family="Avenir-Black, Avenir" font-size="18" font-weight="700" fill="#4A4A4A">
+                    <tspan x="431.852" y="18">Clôture X/Z</tspan>
+                </text>
+                <text id="Coordonnées-Société" font-family="Avenir-Heavy, Avenir" font-size="16" font-weight="600" fill="#4A4A4A">
+                    <tspan x="332" y="75">Coordonnées Société</tspan>
+                </text>
+                <text id="Dernière-clôture" font-family="Avenir-Heavy, Avenir" font-size="16" font-weight="600" fill="#4A4A4A">
+                    <tspan x="30" y="75">Dernière clôture</tspan>
+                </text>
+                <text id="Caissier" font-family="Avenir-Heavy, Avenir" font-size="15" font-weight="600" fill="#4A4A4A">
+                    <tspan x="30" y="249">Caissier</tspan>
+                </text>
+                <text id="Caisse" font-family="Avenir-Heavy, Avenir" font-size="15" font-weight="600" fill="#4A4A4A">
+                    <tspan x="30" y="319">Caisse</tspan>
+                </text>
+                <text id="Date-:" font-family="Avenir-Heavy, Avenir" font-size="14" font-weight="600" fill="#4A4A4A">
+                    <tspan x="30" y="108">Date :</tspan>
+                </text>
+                <text id="Heure-:" font-family="Avenir-Heavy, Avenir" font-size="14" font-weight="600" fill="#4A4A4A">
+                    <tspan x="30" y="133">Heure :</tspan>
+                </text>
+                <text id="24/04/2019" font-family="Avenir-Book, Avenir" font-size="14" font-weight="normal" fill="#4A4A4A">
+                    <tspan x="140" y="108">24/04/2019</tspan>
+                </text>
+                <text id="23:37:42" font-family="Avenir-Book, Avenir" font-size="14" font-weight="normal" fill="#4A4A4A">
+                    <tspan x="140" y="133">23:37:42</tspan>
+                </text>
+                <text id="Utilisateur-:" font-family="Avenir-Heavy, Avenir" font-size="14" font-weight="600" fill="#4A4A4A">
+                    <tspan x="30" y="158">Utilisateur :</tspan>
+                </text>
+                <text id="Admin" font-family="Avenir-Book, Avenir" font-size="14" font-weight="normal" fill="#4A4A4A">
+                    <tspan x="140" y="158">Admin</tspan>
+                </text>
+                <text id="Total-en-caisse-en-t" font-family="Avenir-Heavy, Avenir" font-size="16" font-weight="600" fill="#4A4A4A">
+                    <tspan x="714" y="75">Total en caisse en théorique</tspan>
+                </text>
+                <text id="Nouveau-fond-de-cais" font-family="Avenir-Heavy, Avenir" font-size="15" font-weight="600" fill="#4A4A4A">
+                    <tspan x="714" y="450">Nouveau fond de caisse</tspan>
+                </text>
+                <text id="Total-en-caisse-comp" font-family="Avenir-Heavy, Avenir" font-size="15" font-weight="600" fill="#4A4A4A">
+                    <tspan x="714" y="145">Total en caisse compté</tspan>
+                </text>
+                <text id="Prélèvement-en-clôtu" font-family="Avenir-Heavy, Avenir" font-size="15" font-weight="600" fill="#4A4A4A">
+                    <tspan x="714" y="225">Prélèvement en clôture</tspan>
+                </text>
+                <g id="Bouton-billets" transform="translate(25.000000, 525.000000)">
+                    <g id="Rectangle" fill-rule="nonzero">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-18)" xlink:href="#path-17"></use>
+                        <use fill="#FFFFFF" xlink:href="#path-17"></use>
+                    </g>
+                    <g id="Rectangle" fill-rule="nonzero">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-20)" xlink:href="#path-19"></use>
+                        <use fill="#FFFFFF" xlink:href="#path-19"></use>
+                    </g>
+                    <rect id="Rectangle" fill="#9EB3BB" fill-rule="nonzero" x="5" y="5" width="220" height="35" rx="10"></rect>
+                    <text id="Livraison" font-family="Avenir-Black, Avenir" font-size="17" font-weight="700" fill="#FFFFFF">
+                        <tspan x="102.42" y="28">5 €</tspan>
+                    </text>
+                </g>
+                <g id="Bouton-billets" transform="translate(709.000000, 525.000000)">
+                    <g id="Rectangle" fill-rule="nonzero">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-22)" xlink:href="#path-21"></use>
+                        <use fill="#FFFFFF" xlink:href="#path-21"></use>
+                    </g>
+                    <g id="Rectangle" fill-rule="nonzero">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-24)" xlink:href="#path-23"></use>
+                        <use fill="#FFFFFF" xlink:href="#path-23"></use>
+                    </g>
+                    <rect id="Rectangle" fill="#9EB3BB" fill-rule="nonzero" x="5" y="5" width="220" height="35" rx="10"></rect>
+                    <text id="Livraison" font-family="Avenir-Black, Avenir" font-size="17" font-weight="700" fill="#FFFFFF">
+                        <tspan x="102.42" y="28">5 €</tspan>
+                    </text>
+                </g>
+                <g id="Bouton-bis-Copy-9" stroke-width="1" fill-rule="evenodd" transform="translate(25.000000, 440.000000)">
+                    <g id="Rectangle" fill-rule="nonzero">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-26)" xlink:href="#path-25"></use>
+                        <use fill="#FFFFFF" xlink:href="#path-25"></use>
+                    </g>
+                    <g id="Rectangle" fill-rule="nonzero">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-28)" xlink:href="#path-27"></use>
+                        <use fill="#FFFFFF" xlink:href="#path-27"></use>
+                    </g>
+                    <rect id="Rectangle" fill="#9CD04E" fill-rule="nonzero" x="5" y="5" width="220" height="35" rx="10"></rect>
+                    <text id="Comptage" font-family="Avenir-Black, Avenir" font-size="17" font-weight="700" fill="#FFFFFF">
+                        <tspan x="72.9845" y="28">Comptage</tspan>
+                    </text>
+                </g>
+                <g id="Group-2" stroke-width="1" fill-rule="evenodd" transform="translate(25.000000, 264.000000)">
+                    <rect id="Rectangle-21-Copy-2" fill="#F7F7F7" x="0" y="0" width="230" height="30" rx="5"></rect>
+                    <polygon id="Triangle-Copy" fill="#1EA9DF" fill-rule="nonzero" transform="translate(211.000000, 16.000000) scale(1, -1) translate(-211.000000, -16.000000) " points="211 13 215 19 207 19"></polygon>
+                    <text id="Tous-les-caissiers" font-family="Avenir-Medium, Avenir" font-size="14" font-weight="400" fill="#1EA9DF">
+                        <tspan x="10" y="20">Tous les caissiers</tspan>
+                    </text>
+                </g>
+                <g id="Group-2-Copy" stroke-width="1" fill-rule="evenodd" transform="translate(25.000000, 334.000000)">
+                    <rect id="Rectangle-21-Copy-2" fill="#F7F7F7" x="0" y="0" width="230" height="30" rx="5"></rect>
+                    <polygon id="Triangle-Copy" fill="#1EA9DF" fill-rule="nonzero" transform="translate(211.000000, 16.000000) scale(1, -1) translate(-211.000000, -16.000000) " points="211 13 215 19 207 19"></polygon>
+                    <text id="Toutes-les-caisses" font-family="Avenir-Medium, Avenir" font-size="14" font-weight="400" fill="#1EA9DF">
+                        <tspan x="10" y="20">Toutes les caisses</tspan>
+                    </text>
+                </g>
+                <g id="Group-2-Copy-2" stroke-width="1" fill-rule="evenodd" transform="translate(709.000000, 160.000000)"></g>
+                <rect id="Rectangle-21-Copy-2" fill="#F7F7F7" fill-rule="evenodd" x="709" y="160" width="230" height="40" rx="5"></rect>
+                <g id="Group-2-Copy-3" stroke-width="1" fill-rule="evenodd" transform="translate(709.000000, 240.000000)"></g>
+                <rect id="Rectangle-21-Copy-2" fill="#F7F7F7" fill-rule="evenodd" x="709" y="240" width="230" height="40" rx="5"></rect>
+                <text id="24/04/2019---00:00:0" font-family="Avenir-Book, Avenir" font-size="13" font-weight="normal" fill="#4A4A4A">
+                    <tspan x="334" y="138">24/04/2019 - 00:00:00 &gt; 25/04/2019 19:20:21</tspan>
+                    <tspan x="334" y="156">Utilisateur : Admin</tspan>
+                    <tspan x="334" y="174"></tspan>
+                    <tspan x="334" y="192">Caissier : Tous les caissiers</tspan>
+                    <tspan x="334" y="210">Caisse : Toutes les caisses</tspan>
+                    <tspan x="334" y="228"></tspan>
+                    <tspan x="334" y="246">Montant dépenses</tspan>
+                    <tspan x="334" y="264">Montant remboursés</tspan>
+                    <tspan x="334" y="282">Montant encaissés</tspan>
+                    <tspan x="334" y="300">Montant caisse</tspan>
+                </text>
+                <text id="&lt;TICKET-CAISSE&gt;" font-family="Avenir-Book, Avenir" font-size="13" font-weight="normal" fill="#4A4A4A">
+                    <tspan x="334" y="348">&lt;TICKET CAISSE&gt;</tspan>
+                </text>
+                <text id="&lt;CA&gt;-Ticket-Moyen" font-family="Avenir-Book, Avenir" font-size="13" font-weight="normal" fill="#4A4A4A">
+                    <tspan x="334" y="442">&lt;CA&gt;</tspan>
+                    <tspan x="334" y="460">   Ticket Moyen</tspan>
+                </text>
+                <text id="&lt;VENTES&gt;-&lt;REMBOURSER" font-family="Avenir-Book, Avenir" font-size="13" font-weight="normal" fill="#4A4A4A">
+                    <tspan x="334" y="386">&lt;VENTES&gt;</tspan>
+                    <tspan x="334" y="404">&lt;REMBOURSER&gt;</tspan>
+                </text>
+                <text id="0,00-19,00-678,50-65" font-family="Avenir-Book, Avenir" font-size="13" font-weight="normal" fill="#4A4A4A">
+                    <tspan x="606.702" y="247">0,00</tspan>
+                    <tspan x="599.474" y="265">19,00</tspan>
+                    <tspan x="592.246" y="283">678,50</tspan>
+                    <tspan x="592.246" y="301">659,50</tspan>
+                </text>
+                <text id="678,50--19,00" font-family="Avenir-Book, Avenir" font-size="13" font-weight="normal" fill="#4A4A4A">
+                    <tspan x="532.246" y="386">678,50</tspan>
+                    <tspan x="535.145" y="404">-19,00</tspan>
+                </text>
+                <text id="659,50--13,00" font-family="Avenir-Book, Avenir" font-size="13" font-weight="normal" fill="#4A4A4A">
+                    <tspan x="532.246" y="442">659,50</tspan>
+                    <tspan x="535.145" y="460">-13,00</tspan>
+                </text>
+                <text id="#2-#1" font-family="Avenir-Book, Avenir" font-size="13" font-weight="normal" fill="#4A4A4A">
+                    <tspan x="617.544" y="386">#2</tspan>
+                    <tspan x="617.544" y="404">#1</tspan>
+                </text>
+                <text id="#3" font-family="Avenir-Book, Avenir" font-size="13" font-weight="normal" fill="#4A4A4A">
+                    <tspan x="617.544" y="442">#3</tspan>
+                </text>
+                <line x1="334" y1="324" x2="632" y2="324" id="Line-4" stroke="#979797" stroke-width="1" stroke-linecap="square" stroke-dasharray="6" fill-rule="nonzero"></line>
+                <line x1="334" y1="363" x2="632" y2="363" id="Line-4-Copy" stroke="#979797" stroke-width="1" stroke-linecap="square" stroke-dasharray="6" fill-rule="nonzero"></line>
+                <line x1="334" y1="419" x2="632" y2="419" id="Line-4-Copy-2" stroke="#979797" stroke-width="1" stroke-linecap="square" fill-rule="nonzero"></line>
+                <line x1="334" y1="479" x2="632" y2="479" id="Line-4-Copy-3" stroke="#979797" stroke-width="1" stroke-linecap="square" fill-rule="nonzero"></line>
+            </g>
+        </g>
+    </g>
+</svg>

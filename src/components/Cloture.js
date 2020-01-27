@@ -6,6 +6,8 @@ import PropTypes from 'prop-types';
 import TopZone from '../containers/TopZone';
 import LoadingSpinner from './common/LoadingSpinner';
 
+import contimage from '../assets/images/fake_contenu_cloture.svg';
+
 // let strings = new LocalizedStrings(data);
 
 class Cloture extends React.Component {
@@ -38,7 +40,7 @@ class Cloture extends React.Component {
     <div className="Cloture container">
       <TopZone />
       <div className="MainZone">
-          <div className="tempcont">Clôture</div>
+        <img src={ contimage } className="contimage" />
       </div>
     </div>
     );

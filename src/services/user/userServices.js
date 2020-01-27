@@ -11,7 +11,7 @@ function login(passphrase) {
 
   const user = {
     'id': 1,
-    'nom': 'Cyril',
+    'nom': 'Admin',
     'droits': [
       'cartes',
       'clients',
