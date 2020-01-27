@@ -1,21 +1,25 @@
 @font-face {
     font-family: 'Avenir-Black';
-    src: url('./../../fonts/Avenir-Black.woff') format('woff');
+    src: url('./../../fonts/Avenir-Black.ttf') format('truetype'), 
+         url('./../../fonts/Avenir-Black.woff') format('woff');
 }
 
 @font-face {
     font-family: 'Avenir-Book';
-    src: url('./../../fonts/Avenir-Book.woff') format('woff');
+    src: url('./../../fonts/Avenir-Book.ttf') format('truetype'),
+         url('./../../fonts/Avenir-Book.woff') format('woff');
 }
 
 @font-face {
     font-family: 'Avenir-Heavy';
-    src: url('./../../fonts/Avenir-Heavy.woff') format('woff');
+    src: url('./../../fonts/Avenir-Heavy.ttf') format('truetype'),
+         url('./../../fonts/Avenir-Heavy.woff') format('woff');
 }
 
 @font-face {
     font-family: 'Avenir-Medium';
-    src: url('./../../fonts/Avenir-Medium.woff') format('woff');
+    src: url('./../../fonts/Avenir-Medium.ttf') format('truetype'),
+         url('./../../fonts/Avenir-Medium.woff') format('woff');
 }
 
 @mixin font-smoothing($value: on) {

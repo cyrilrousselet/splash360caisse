@@ -24,75 +24,72 @@ const actions = {
 
     // composition du ticket en fonction du template :
     
+    // const company = [
+    //   {style:'B', string: 'LE RESTAURANT'},
+    //   {style:'NORMAL', string: '5 place de la ville'},
+    //   {style:'NORMAL', string: '75011 PARIS'},
+    //   {style:'NORMAL', string: 'Tél. 01 02 03 04 05'},
+    //   {style:'NORMAL', string: 'E-mail : paris@le-restaurant.fr'},
+    //   {style:'NORMAL', string: 'www.le-restaurant.fr'},
+    //   {style:'NORMAL', string: 'SIRET 123 456 789 00012'},
+    //   {style:'NORMAL', string: 'CODE NAF 5610C'},
+    //   {style:'NORMAL', string: 'TVA FR12 123 456 789'}
+    // ];
+    // const commande = {
+    //   id: 'COMMANDE N° 12312',
+    //   date: 'du 21 janv. 2020 à 12h43',
+    //   header: {qte: 'QTE', designation: 'ARTICLE', pu: 'P.U.', montant: 'TOTAL', codetva: 'T'},
+    //   articles: [
+    //     {qte: '1', nom: 'POKÉ COMPOSÉ', pu:'12,95',  prix: '12,95', codetva: 'B', detail:[
+    //       {qte: '1', nom: 'Riz vinaigré', pu:'',  prix: '', codetva: 'B'},
+    //       {qte: '1', nom: 'Saumon', pu:'', prix: '', codetva: 'B'},
+    //       {qte: '2', nom: 'Avocat', pu: '1.00', prix: '2.OO', codetva: 'B'},
+    //       {qte: '1', nom: 'Chou blanc', pu:'', prix: '', codetva: 'B'},
+    //       {qte: '1', nom: 'Chou rouge', pu:'', prix: '', codetva: 'B'},
+    //       {qte: '1', nom: 'Parmesan', pu:'', prix: '', codetva: 'B'},
+    //       {qte: '1', nom: 'Gingembre', pu:'', prix: '', codetva: 'B'},
+    //       {qte: '1', nom: 'Nachos', pu:'', prix: '', codetva: 'B'},
+    //       {qte: '1', nom: 'Sce piquante', pu:'', prix: '', codetva: 'B'}
+    //     ]},
+    //     {qte: '1', nom: 'CRUNCHY TUNA', pu:'12,95', prix: '12,95', codetva: 'B', detail:[
+    //       {qte: '1', nom: 'Feuille de soja', pu:'', prix: '', codetva: 'B'},
+    //       {qte: '1', nom: 'Coca Cola', pu:'', prix: '1.00', codetva: 'B'},
+    //       {qte: '1', nom: 'Fondant chocolat', pu:'', prix: '2.00', codetva: 'B'}
+    //     ]},
+    //     {qte: '3', nom: 'CRISTALINE FRAISE', pu:'3,00', prix: '3,00', codetva: 'B', detail:[]},
+    //     {qte: '1', nom: 'ROSÉ', pu:'9,00', prix: '9,00', codetva: 'C', detail:[]}
+    //   ],
+    //   reglement: {
+    //     soustotal: '42,90 EUR',
+    //     reduction: '0,00 EUR'
+    //   },
+    //   total: {
+    //     total: '42,90 EUR',
+    //     tva: [
+    //       {code: 'A', nom: 'TVA 5,5%', montant: '0,21'},
+    //       {code: 'B', nom: 'TVA 10%', montant: '1,56'},
+    //       {code: 'C', nom: 'TVA 20%', montant: '0,47'}
+    //     ]
+    //   },
+    //   encaissement: [
+    //     {moyen: 'Espèces', montant: '20,00 EUR'},
+    //     {moyen: 'Carte', montant: '22,90 EUR'}
+    //   ]
+    // }; 
 
-
-    const company = [
-      {style:'B', string: 'LE RESTAURANT'},
-      {style:'NORMAL', string: '5 place de la ville'},
-      {style:'NORMAL', string: '75011 PARIS'},
-      {style:'NORMAL', string: 'Tél. 01 02 03 04 05'},
-      {style:'NORMAL', string: 'E-mail : paris@le-restaurant.fr'},
-      {style:'NORMAL', string: 'www.le-restaurant.fr'},
-      {style:'NORMAL', string: 'SIRET 123 456 789 00012'},
-      {style:'NORMAL', string: 'CODE NAF 5610C'},
-      {style:'NORMAL', string: 'TVA FR12 123 456 789'}
-    ];
-    const commande = {
-      id: 'COMMANDE N° 12312',
-      date: 'du 21 janv. 2020 à 12h43',
-      header: {qte: 'QTE', designation: 'ARTICLE', pu: 'P.U.', montant: 'TOTAL', codetva: 'T'},
-      articles: [
-        {qte: '1', nom: 'POKÉ COMPOSÉ', pu:'12,95',  prix: '12,95', codetva: 'B', detail:[
-          {qte: '1', nom: 'Riz vinaigré', pu:'',  prix: '', codetva: 'B'},
-          {qte: '1', nom: 'Saumon', pu:'', prix: '', codetva: 'B'},
-          {qte: '2', nom: 'Avocat', pu: '1.00', prix: '2.OO', codetva: 'B'},
-          {qte: '1', nom: 'Chou blanc', pu:'', prix: '', codetva: 'B'},
-          {qte: '1', nom: 'Chou rouge', pu:'', prix: '', codetva: 'B'},
-          {qte: '1', nom: 'Parmesan', pu:'', prix: '', codetva: 'B'},
-          {qte: '1', nom: 'Gingembre', pu:'', prix: '', codetva: 'B'},
-          {qte: '1', nom: 'Nachos', pu:'', prix: '', codetva: 'B'},
-          {qte: '1', nom: 'Sce piquante', pu:'', prix: '', codetva: 'B'}
-        ]},
-        {qte: '1', nom: 'CRUNCHY TUNA', pu:'12,95', prix: '12,95', codetva: 'B', detail:[
-          {qte: '1', nom: 'Feuille de soja', pu:'', prix: '', codetva: 'B'},
-          {qte: '1', nom: 'Coca Cola', pu:'', prix: '1.00', codetva: 'B'},
-          {qte: '1', nom: 'Fondant chocolat', pu:'', prix: '2.00', codetva: 'B'}
-        ]},
-        {qte: '3', nom: 'CRISTALINE FRAISE', pu:'3,00', prix: '3,00', codetva: 'B', detail:[]},
-        {qte: '1', nom: 'ROSÉ', pu:'9,00', prix: '9,00', codetva: 'C', detail:[]}
-      ],
-      reglement: {
-        soustotal: '42,90 EUR',
-        reduction: '0,00 EUR'
-      },
-      total: {
-        total: '42,90 EUR',
-        tva: [
-          {code: 'A', nom: 'TVA 5,5%', montant: '0,21'},
-          {code: 'B', nom: 'TVA 10%', montant: '1,56'},
-          {code: 'C', nom: 'TVA 20%', montant: '0,47'}
-        ]
-      },
-      encaissement: [
-        {moyen: 'Espèces', montant: '20,00 EUR'},
-        {moyen: 'Carte', montant: '22,90 EUR'}
-      ]
-    }; 
-
-const message = [
-  {style:'NORMAL', string: 'Notre restaurant est ouvert'},
-  {style:'NORMAL', string: 'Du lundi au samedi'},
-  {style:'NORMAL', string: 'De 11h à 14h et de 18h à 22h30'},
-  {style:'NORMAL', string: 'Et le dimanche'},
-  {style:'NORMAL', string: 'de 18h à 22h30'},
-  {style:'NORMAL', string: 'MERCI ET BON APPÉTIT !'},
-]
+    // const message = [
+    //   {style:'NORMAL', string: 'Notre restaurant est ouvert'},
+    //   {style:'NORMAL', string: 'Du lundi au samedi'},
+    //   {style:'NORMAL', string: 'De 11h à 14h et de 18h à 22h30'},
+    //   {style:'NORMAL', string: 'Et le dimanche'},
+    //   {style:'NORMAL', string: 'de 18h à 22h30'},
+    //   {style:'NORMAL', string: 'MERCI ET BON APPÉTIT !'},
+    // ]
 
     log.debug('printTicketCommande start');
 
     const tux = path.join(__dirname, 'default_logo.png');
     log.debug('img : '+tux);
-
 
 
 
@@ -137,6 +134,38 @@ const message = [
     res.send({msg: 'ticket printed'});
   },
 
+
+
+  /**
+   * Ouverture du tiroir 
+   * connecté à l'imprimante passée en paramètre
+   */
+  openDrawer: (req,res) => {
+
+    const { imprimante } = req.payload;
+
+    log.debug('openDrawer');
+
+    // déclaration de l'imprimante
+    let device;
+    if (imprimante.connexion=='usb') {
+      device = new escpos.USB();
+    } else if (imprimante.connexion=='network') {
+      device = new escpos.Network(imprimante.param); 
+    }
+    const options = {encoding: imprimante.encoding};
+    const printer = new escpos.Printer(device, options);
+
+    device.open(async function() {
+        
+      printer
+        .cashdraw()
+        .close();
+    });
+
+    res.send({msg: 'drawer open'});
+
+  },
 
   /**
    * Impression d'un ticket de test passant en revue certaines fonctionnalités de l'imprimante
@@ -379,18 +408,36 @@ function _printCommande(printer, data) {
 
   // reglements
   printer
-    .drawLine();
+    .drawLine()
+    .style('NORMAL').text('REGLEMENT :');
 
     data.reglements.forEach(reglement => {
       printer.style('NORMAL').tableCustom([
-        {text: reglement.moyen, cols:35, align:'LEFT'},
+        {text:'', cols:1},
+        {text: reglement.moyen, cols:34, align:'LEFT'},
         {text:'', cols:1},
         {text: `${reglement.valeur.toFixed(2).replace('.',',')} EUR`, cols:12, align:'RIGHT'}
       ]);
     });
 
-  printer
-    .drawLine();
+  // rendu monnaie
+  if (data.rendus.length>0) {
+    printer
+      .drawLine()
+      .style('NORMAL').text('RENDU :');
+
+    data.rendus.forEach(rendu => {
+      printer.style('NORMAL').tableCustom([
+        {text:'', cols:1},
+        {text: rendu.moyen, cols:34, align:'LEFT'},
+        {text:'', cols:1},
+        {text: `${rendu.valeur.toFixed(2).replace('.',',')} EUR`, cols:12, align:'RIGHT'}
+      ]);
+    });
+  }
+
+  
+
 
 
 }

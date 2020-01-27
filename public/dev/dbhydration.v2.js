@@ -21,6 +21,8 @@ const hydration = {
     {groupe_id: 'grp27', categorie: 'cat16', nom: 'BOX', description: '', weight: 12},
     {groupe_id: 'grp28', categorie: 'cat16', nom: 'PLATEAUX', description: '', weight: 13},
     {groupe_id: 'grp29', categorie: 'cat16', nom: 'BOISSONS', description: '', weight: 14},
+    {groupe_id: 'grp30', categorie: 'cat16', nom: 'BIERES JAPONAISES', description: '', weight: 15},
+    {groupe_id: 'grp31', categorie: 'cat16', nom: 'VINS', description: '', weight: 16},
     {groupe_id: 'grp32', categorie: 'cat16', nom: 'DESSERTS', description: '', weight: 17},
     {groupe_id: 'grp33', categorie: 'cat16', nom: 'SAUCE', description: '', weight: 18}
   ],
@@ -233,6 +235,9 @@ const hydration = {
     { produit_id: 'prd119', tva: 'tva2', groupe: 'grp29', active: 1, nom: 'Cristaline', prix: '1.50', composition: [], weight: 5},
     { produit_id: 'prd120', tva: 'tva2', groupe: 'grp29', active: 1, nom: 'Cristaline Fraise', prix: '1.50', composition: [], weight: 6},
     { produit_id: 'prd121', tva: 'tva2', groupe: 'grp29', active: 1, nom: 'Cristaline Pêche', prix: '1.50', composition: [], weight: 7},
+    { produit_id: 'prd122', tva: 'tva4', groupe: 'grp30', active: 1, nom: 'ASAHI', prix: '3.90', composition: [], weight: 1},
+    { produit_id: 'prd123', tva: 'tva4', groupe: 'grp30', active: 1, nom: 'Kirin Ichiban', prix: '3.90', composition: [], weight: 1},
+    { produit_id: 'prd124', tva: 'tva4', groupe: 'grp31', active: 1, nom: 'Rosé', prix: '9.00', composition: [], weight: 1},
     { produit_id: 'prd125', tva: 'tva1', groupe: 'grp32', active: 1, nom: 'Fondant Chocolat', prix: '3.00', composition: [], weight: 1},
     { produit_id: 'prd126', tva: 'tva1', groupe: 'grp32', active: 1, nom: 'Boules Coco', prix: '3.00', composition: [], weight: 1},
     { produit_id: 'prd127', tva: 'tva1', groupe: 'grp32', active: 1, nom: 'Gyoza Pomme', prix: '3.00', composition: [], weight: 2},

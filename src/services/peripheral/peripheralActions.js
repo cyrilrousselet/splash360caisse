@@ -18,6 +18,35 @@ function printTest(payload) {
   }
 }
 
+function openDrawer() {
+  return dispatch => {
+
+// récup des infos
+      // -> params imprimante
+      const imprimante = {
+        nom: 'POS Printer',
+        connexion: 'usb',
+        param: null,
+        encoding: 'Cp850'
+      };
+
+    peripheralServices.openDrawer(imprimante)
+    .then(
+        data => { dispatch({ type: peripheralActionTypes.OPEN_DRAWER }) }
+    )
+    .catch(
+      error => { dispatch({ type: peripheralActionTypes.OPEN_DRAWER_FAILURE, error: error.toString() }) }
+    );
+  }
+}
+
+function closeDrawer() {
+  return dispatch => {
+    dispatch({type: peripheralActionTypes.CLOSE_DRAWER});
+  }
+}
+
+
 function printTicket(payload) {
   return (dispatch, getState) => {
 
@@ -96,7 +125,8 @@ function printTicket(payload) {
           total: total.toFixed(2),
           tva: tva
         },
-        reglements: cmd.reglements
+        reglements: cmd.reglements,
+        rendus: cmd.rendus
       };
 
 
@@ -144,5 +174,7 @@ function printTicket(payload) {
 
 export const peripheralActions = {
   printTest,
-  printTicket
+  printTicket,
+  openDrawer,
+  closeDrawer
 };

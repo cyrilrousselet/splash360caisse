@@ -2,6 +2,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux';
 import { commandeActions } from '../services/commande/commandeActions'
 import { getCommandeError, getCommandeLoading, getCommande } from '../services/commande/commandeReducer';
+import { getTiroirOuvert } from '../services/peripheral/peripheralReducer';
 import Reglement from '../components/Encaissement/Reglement';
 import { peripheralActions } from '../services/peripheral/peripheralActions';
 
@@ -27,6 +28,7 @@ const mapStateToProps = (...args) => {
   return {
     //open: state.openReglement,
     valueToPay: getCommandeTotal(getCommande(state).items),
+    tiroirOuvert: getTiroirOuvert(state),
     loading: getCommandeLoading(state),
     commande: getCommande(state),
     error: getCommandeError(state)
@@ -42,7 +44,9 @@ const mapDispatchToProps = (dispatch) => {
     addRendu: commandeActions.addRendu,
     validateCommande: commandeActions.validateCommandeAndUpdateList,
     printTest: peripheralActions.printTest,
-    printTicket: peripheralActions.printTicket
+    printTicket: peripheralActions.printTicket,
+    openDrawer: peripheralActions.openDrawer,
+    closeDrawer: peripheralActions.closeDrawer,
   }, dispatch);
 }
 

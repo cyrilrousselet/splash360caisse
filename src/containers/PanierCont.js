@@ -1,6 +1,7 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux';
-import { commandeActions } from '../services/commande/commandeActions'
+import { commandeActions } from '../services/commande/commandeActions';
+import { peripheralActions } from '../services/peripheral/peripheralActions';
 import { getCommandeError, getCommandeLoading, getCommande } from '../services/commande/commandeReducer';
 import Panier from '../components/Encaissement/Panier';
 
@@ -27,7 +28,8 @@ const mapDispatchToProps = (dispatch) => {
     updateCommande: commandeActions.updateCommande,
     standByCommande: commandeActions.standByCommande,
     livraisonCommande: commandeActions.livraisonCommande,
-    deleteCommande: commandeActions.deleteCommande
+    deleteCommande: commandeActions.deleteCommande,
+    openDrawer: peripheralActions.openDrawer
   }, dispatch);
   return {
     ...binded,

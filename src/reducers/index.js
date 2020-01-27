@@ -5,6 +5,7 @@ import { userReducer } from './../services/user/userReducer';
 import { catalogueReducer } from './../services/catalogue/catalogueReducer';
 import { commandeReducer } from './../services/commande/commandeReducer';
 import { commandesListReducer } from './../services/commande/commandesListReducer';
+import { peripheralReducer } from './../services/peripheral/peripheralReducer';
 import { authentication } from './authenticationReducer';
 
 export default function createRootReducer(history) {
@@ -14,6 +15,7 @@ export default function createRootReducer(history) {
         catalogueReducer,
         commandeReducer,
         commandesListReducer,
+        peripheralReducer,
         authentication
     });
 }

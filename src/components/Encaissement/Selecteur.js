@@ -101,5 +101,5 @@ Selecteur.propTypes = {
   loading: PropTypes.bool,
   error: PropTypes.string,
   getAllActive: PropTypes.func,
-  addProduit: PropTypes.func
+  addProduit: PropTypes.func,
 }

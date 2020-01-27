@@ -22,8 +22,7 @@ class Reglement extends React.Component {
     super(props);
     this.state = {
       total: 0,
-      input: false,
-      tiroirOuvert: false
+      input: false
     }
     this.addValeur = this.addValeur.bind(this);
     this.calculetteClick = this.calculetteClick.bind(this);
@@ -137,7 +136,8 @@ class Reglement extends React.Component {
     if (montant > 0) {
       this.props.addReglement({moyen: moyen, valeur: montant});
       const { reste } = this.updateValeurs();
-      this.setState({total: 0, input: false, tiroirOuvert:(moyen=='especes')?true:this.state.tiroirOuvert});
+      if (moyen=='especes') this.props.openDrawer();
+      this.setState({total: 0, input: false});
 
       // s'il ne reste rien à payer ni à rendre, 
       // on ferme l'encaissement et on valide la commande
@@ -158,7 +158,7 @@ class Reglement extends React.Component {
   DONC une fermeture de tiroir doit être matérialisée par la création d'un rendu ('especes' si reste>0)
   */
   closeTiroir() {
-    this.setState({tiroirOuvert:false});
+    this.props.closeDrawer();
     const { reste, rendable } = this.updateValeurs();
     if (reste<0 && rendable) this.props.addRendu({moyen:'especes', valeur: -reste});
     this.beforeCloseReglement();
@@ -167,10 +167,10 @@ class Reglement extends React.Component {
 
   render() {
 
-    const { open, valueToPay, contClass, closeReglement, addReglement, addRendu } = this.props;
+    const { open, valueToPay, contClass, closeReglement, addReglement, addRendu, tiroirOuvert } = this.props;
     const { items, reglements } = this.props.commande;
     const { paye, reste, rendable } = this.updateValeurs();
-    const { total, input, tiroirOuvert } = this.state;
+    const { total, input } = this.state;
     
     const aAfficher = input ? total : Math.max(0,reste);
     
@@ -252,6 +252,7 @@ export default Reglement;
 
 Reglement.propTypes = {
   open: PropTypes.bool,
+  tiroirOuvert: PropTypes.bool,
   valueToPay: PropTypes.number.isRequired,
   closeReglement: PropTypes.func.isRequired,
   validateCommande: PropTypes.func.isRequired,
@@ -260,7 +261,9 @@ Reglement.propTypes = {
   addReglement: PropTypes.func.isRequired,
   addRendu: PropTypes.func.isRequired,
   printTest: PropTypes.func.isRequired,
-  printTicket: PropTypes.func.isRequired
+  printTicket: PropTypes.func.isRequired,
+  openDrawer: PropTypes.func.isRequired,
+  closeDrawer: PropTypes.func,
 };
 
 

@@ -2,7 +2,8 @@ import { emit } from 'eiphop';
 
 export const peripheralServices = {
   printTest,
-  printTicketCommande
+  printTicketCommande,
+  openDrawer
 };
 
 function printTest() {
@@ -11,4 +12,8 @@ function printTest() {
 
 function printTicketCommande(imprimante, template, contenu) {
   return emit('printTicket', {imprimante, template, contenu});
+}
+
+function openDrawer(imprimante) {
+  return emit('openDrawer', {imprimante});
 }
