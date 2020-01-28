@@ -4,6 +4,7 @@ const initialState = {
   loading: false,
   catalogue: {},
   tva: {},
+  steps: {},
   error: null
 };
 
@@ -23,6 +24,7 @@ console.log(action);
         loading: false,
         catalogue: action.catalogue,
         tva: action.tva,
+        steps: action.steps,
         error: null
       };
     case catalogueActionTypes.GETALL_ACTIVE_FAILURE:
@@ -42,7 +44,10 @@ console.log(action);
       return {
         ...state,
         loading: false,
-        catalogue: action.catalogue
+        catalogue: action.catalogue,
+        tva: action.tva,
+        steps: action.steps,
+        error: null
       };
     case catalogueActionTypes.GETALL_FAILURE:
       return {

@@ -51,6 +51,21 @@ function _parseCatalogue(_rawdata) {
   _rawdata._grp.forEach(g => {
     __catalogue[g.groupe_id] = {nom: g.nom, produits: []};
   });
+
+  const __steps = {};
+  _rawdata._stp.forEach(s => {
+    if (!__steps.hasOwnProperty(s.produit)) {
+      Object.defineProperty(__steps, s.produit, {
+        value: [],
+        writable: true,
+        enumerable: true
+      });
+    }
+    __steps[s.produit].push(s);
+    log.debug(s);
+    log.debug('---');
+    log.debug(__steps[s.produit]);
+  });
   
   _rawdata._prd.forEach(p => {
     __catalogue[p.groupe].produits.push({
@@ -58,11 +73,12 @@ function _parseCatalogue(_rawdata) {
       nom: p.nom,
       tva_id: p.tva,
       prix: p.prix,
-      composition: []
+      composition: [],
+      customizable: __steps.hasOwnProperty(p.produit_id)
     });
   });
 
-  return {catalogue: __catalogue, tva: __tva};
+  return {catalogue: __catalogue, tva: __tva, steps: __steps};
 //  return __catalogue;
 }
 

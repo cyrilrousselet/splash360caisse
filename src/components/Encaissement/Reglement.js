@@ -182,9 +182,9 @@ class Reglement extends React.Component {
         <div className="Modal-container">
           <div className="header">
             <div className="title">{ strings.modules.encaissement.reglement.titre }</div>
-            { tiroirOuvert && 
+            {/* { tiroirOuvert && 
             <Button variant="outlined" size="small" style={{alignSelf:'flex-end',position:"absolute"}} className="fermeture-tiroir" onClick={ () => this.closeTiroir() }>Fermeture tiroir</Button>
-            }
+            } */}
           </div>
           <div className="body">
             <div className="calculette">
@@ -241,6 +241,12 @@ class Reglement extends React.Component {
           <CloseIcon />
         </Fab>
         }
+         { tiroirOuvert && 
+          <Fab aria-label="close" size="small" className="close-button" onClick={ () => this.closeTiroir() }>
+          <CloseIcon />
+        </Fab>
+          // <Button variant="outlined" size="small" style={{alignSelf:'flex-end',position:"absolute"}} className="fermeture-tiroir" onClick={ () => this.closeTiroir() }>Fermeture tiroir</Button>
+          }
       </div>
     </Modal>
     );

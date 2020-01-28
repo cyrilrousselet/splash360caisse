@@ -157,10 +157,12 @@ const actions = {
     const printer = new escpos.Printer(device, options);
 
     device.open(async function() {
-        
-      printer
-        .cashdraw()
-        .close();
+      log.debug('device open -> cashdraw()');
+      setTimeout(() => {
+        printer
+          .cashdraw()
+          .close();
+      }, 200);
     });
 
     res.send({msg: 'drawer open'});
