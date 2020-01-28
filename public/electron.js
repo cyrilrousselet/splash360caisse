@@ -29,6 +29,7 @@ function createWindow() {
         // suppression du menu sur Windows et Linux en prod
         if (process.platform !== 'darwin') {
             Menu.setApplicationMenu(null);
+            mainWindow.setFullScreen(true);
         }
     }
     mainWindow.on('closed', () => mainWindow = null);
