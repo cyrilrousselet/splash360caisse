@@ -111,6 +111,9 @@ const data = {
                         "20 €",
                         "50 €"
                     ]
+                },
+                personnalisation: {
+                    titre: 'Personnalisation'
                 }
             },
             plannings: { nom: "Plannings" },

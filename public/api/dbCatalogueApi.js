@@ -47,10 +47,6 @@ function _parseCatalogue(_rawdata) {
     __tva[t.tva_id] = {nom: t.nom, code: t.code, valeur: t.valeur};
   })
 
-  const __catalogue = {};
-  _rawdata._grp.forEach(g => {
-    __catalogue[g.groupe_id] = {nom: g.nom, produits: []};
-  });
 
   const __steps = {};
   _rawdata._stp.forEach(s => {
@@ -62,9 +58,26 @@ function _parseCatalogue(_rawdata) {
       });
     }
     __steps[s.produit].push(s);
-    log.debug(s);
-    log.debug('---');
-    log.debug(__steps[s.produit]);
+  });
+
+  const __ingredients = {};
+  _rawdata._igt.forEach(t => {
+    __ingredients[t.type_id] = {nom: t.nom, ingredients: []};
+  });
+
+  _rawdata._ing.forEach(i => {
+    __ingredients[i.type].ingredients.push({
+      id: i.ingredient_id,
+      nom: i.nom,
+      tva_id: i.tva,
+      supplement: i.supplement
+    });
+  });
+
+
+  const __catalogue = {};
+  _rawdata._grp.forEach(g => {
+    __catalogue[g.groupe_id] = {nom: g.nom, produits: []};
   });
   
   _rawdata._prd.forEach(p => {
@@ -78,7 +91,9 @@ function _parseCatalogue(_rawdata) {
     });
   });
 
-  return {catalogue: __catalogue, tva: __tva, steps: __steps};
+
+
+  return {catalogue: __catalogue, tva: __tva, steps: __steps, ingredients: __ingredients};
 //  return __catalogue;
 }
 

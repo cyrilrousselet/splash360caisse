@@ -156,13 +156,14 @@ const actions = {
     const options = {encoding: imprimante.encoding};
     const printer = new escpos.Printer(device, options);
 
-    device.open(async function() {
+    device.open(function() {
+
       log.debug('device open -> cashdraw()');
-      setTimeout(() => {
-        printer
-          .cashdraw()
-          .close();
-      }, 200);
+      printer.cashdraw().cashdraw().close();
+      // setTimeout(() => {
+      //   printer.close();
+      // }, 200);
+          
     });
 
     res.send({msg: 'drawer open'});

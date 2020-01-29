@@ -5,6 +5,7 @@ const initialState = {
   catalogue: {},
   tva: {},
   steps: {},
+  ingredients: {},
   error: null
 };
 
@@ -25,6 +26,7 @@ console.log(action);
         catalogue: action.catalogue,
         tva: action.tva,
         steps: action.steps,
+        ingredients: action.ingredients,
         error: null
       };
     case catalogueActionTypes.GETALL_ACTIVE_FAILURE:
@@ -47,6 +49,7 @@ console.log(action);
         catalogue: action.catalogue,
         tva: action.tva,
         steps: action.steps,
+        ingredients: action.ingredients,
         error: null
       };
     case catalogueActionTypes.GETALL_FAILURE:
