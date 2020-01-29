@@ -3,4 +3,72 @@
     width: 100%;
     height: auto;
   }
+  .btncomptage {
+    position: relative;
+    width: 29%;
+    height: 100%;
+    /* padding-top: 3.5%; */
+    border: 1px solid transparent;
+    margin-top: -56%;
+    /* transform: translateY(-100%); */
+    left: 0;
+    border-radius: 10px;
+  }
+}
+.ClotureComptage,
+.ClotureComptcaisse {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none;
+  .Modal-container {
+      background-color: $blanc;
+      width: 900px;
+      border-radius: 15px;
+      padding: 0 20px;
+  }
+  .close-button {
+      background-color: $blanc;
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 30px;
+      height: 30px;
+      min-height: 30px;
+  }
+  .close-button {
+    background-color: $blanc;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px;
+  }
+  .header {
+    height: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    .title {
+        font-family: $f_blk;
+        font-size: 18px;
+        color: $noir;
+        text-align: center;
+        text-transform: uppercase;
+    }
+  }
+  .btncomptcaisse {
+    position: absolute;
+    width: 50%;
+    height: 100px;
+    border: 1px dotted transparent;
+    bottom: 0;
+    left: 0;
+  }
+}
+.ClotureComptcaisse .Modal-container {
+  width: 800px;
 }
