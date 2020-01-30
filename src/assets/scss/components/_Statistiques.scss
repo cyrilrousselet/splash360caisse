@@ -1,0 +1,193 @@
+.Statistiques {
+
+  .MainZone {
+    height: calc(100% - 100px);
+  }
+  .caption {
+    font-family: $f_blk;
+    font-size: 18px;
+    color: $noir;
+    letter-spacing: 0;
+  }
+  .dates {
+    display: inline-flex;
+    align-items: center;
+    .MuiFormControl-marginNormal {
+      margin: 0 10px;
+      width: 200px;
+      &:hover .MuiInput-underline:before,
+      &:hover .MuiInput-underline:after,
+      .MuiInput-underline:before,
+      .MuiInput-underline:after {
+        border: 0;
+      }
+      .MuiInput-formControl {
+        background-color: $blanc;
+        border-radius: 2px;
+        padding: 2px 0px 2px 5px;
+      }
+      input {
+        color: $primary;
+        font-family: $f_blk;
+        font-size: 18px;
+        text-align: center;
+      }
+    }
+    button {
+      background-color: transparent !important;
+      border-radius: 0;
+      padding: 0 5px !important;
+    }
+  } // --- /.dates
+
+  .panel {
+    height: calc(100% - 25px);
+    .MuiBox-root {
+      height: 100%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+    }
+    .table-cont {
+      height: 100%;
+    }
+  }
+  .listes {
+    margin-top: 10px;
+    height: calc(100% - 80px);
+
+    header {
+      box-shadow: none;
+      background-color: transparent;
+      &.MuiAppBar-root {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      .MuiButtonBase-root {
+        font-family: $f_hea;
+        font-size: 18px;
+        background-color: $gris-clair;
+        border-radius: 15px 15px 0 0;
+        color: $noir;
+        margin-right: 2px;
+        padding: 8px 25px;
+        &.Mui-selected {
+          background-color: $blanc;
+          color: $primary;
+          font-family: $f_blk;
+        }
+      }
+      .MuiTabs-indicator {
+        background-color: transparent;
+      }
+    }
+
+    .MuiTab-root {
+      min-width: 60px !important;
+    }
+
+    .MuiTypography-root {
+      height: 100%;
+      background-color: $blanc;
+      border-radius: 0 0 15px 15px;
+    }
+
+    .liste-actions {
+      width: 350px;
+      padding-right: 3px;
+    }
+    .MuiTableCell-root {
+      font-family: $f_med;
+      border: none;
+    }
+    .MuiTableCell-stickyHeader {
+      background-color: $gris-clair;
+    }
+    thead {
+      background-color: $noir_010;
+    }
+    tbody {
+      .liste-date,
+      .liste-numero,
+      .liste-client {
+        background-color: $blanc-fonce;
+      }
+      .MuiTableRow-root.odd {
+        .liste-date,
+        .liste-numero,
+        .liste-client {
+          background-color: $gris-pale;
+        }
+      }
+      .liste-heure,
+      .liste-montant,
+      .liste-actions {
+        background-color: $blanc;
+      }
+      .MuiTableRow-root.odd {
+        .liste-heure,
+        .liste-montant,
+        .liste-actions {
+          background-color: $blanc-fonce;
+        }
+      }
+
+      .liste-actions {
+        text-align: right;
+      }
+    }
+    .zonebtn {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .StdButton {
+      margin: 0 2px !important;
+      padding: 0 10px!important;
+      min-width: 40px;
+      min-height: 25px;
+      border-radius: 8px !important;
+      width: 200px;
+    }
+    .StdButton-text {
+      text-transform: uppercase;
+      font-size: 16px;
+      font-family: $f_hea;
+      text-align: center;
+      line-height: 20px;
+      padding: 5px;
+    }
+    .StdButton-icon {
+      height: 17px;
+      width: 16px;
+      svg {
+        width: 16px;
+        height: 17px;
+      }
+    }
+
+    .action-ca {
+      background-color: $rouge;
+    }
+    .action-nbrcmd {
+      background-color: $royal;
+    }
+    .action-cart {
+      background-color: $orange;
+    }
+    .action-tpscmd {
+      background-color: $prairie;
+    }
+  } // --- /.listes
+
+
+.fakeimg {
+  padding-top: 10px;
+  height: 410px;
+  align-self: center;
+}
+
+}

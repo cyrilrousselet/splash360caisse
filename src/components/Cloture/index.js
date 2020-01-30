@@ -11,6 +11,7 @@ import comptageimage from '../../assets/images/fake_contenu_cloturecomptage.svg'
 import comptcaisseimage from '../../assets/images/fake_contenu_cloturecomptcaisse.svg';
 import { Modal, Fab } from '@material-ui/core';
 import CloseIcon from '../common/icon/CloseIcon';
+import StdButton from '../common/StdButton';
 
 let strings = new LocalizedStrings(data);
 
@@ -24,8 +25,11 @@ const ClotureComptage = ({open, closeComptage, openComptcaisse}) => (
             <div className="title">{ strings.modules.encaissement.reglement.titre }</div>
           </div>
           <div className="body">
+            <div className="blocbg"></div>
             <img src={ comptageimage } className="contimage" />
             <div className="btncomptcaisse" onClick={ openComptcaisse}></div>
+            <StdButton identifier="btncomptcaisse" elementclass="btncomptcaisse" key="btncomptcaisse" text="Compte Caisse" onClick={ openComptcaisse } />
+            <StdButton identifier="btncomptverif" elementclass="btncomptverif" key="btncomptverif" text="Vérification" onClick={ closeComptage} />
           </div>
         </div>
         <Fab aria-label="close" size="small" className="close-button" onClick={ closeComptage }>
@@ -45,6 +49,9 @@ const ClotureComptcaisse = ({open, closeComptcaisse}) => (
         </div>
         <div className="body">
           <img src={ comptcaisseimage } className="contimage" />
+        </div>
+        <div className="footer">
+          <StdButton identifier="comptcaisseverif" elementclass="btncomptcaisseverif" key="comptcaisseverif" text="Vérification" onClick={ closeComptcaisse} />
         </div>
       </div>
       <Fab aria-label="close" size="small" className="close-button" onClick={ closeComptcaisse }>
@@ -109,8 +116,13 @@ closeComptcaisse() {
     <div className="Cloture container">
       <TopZone />
       <div className="MainZone">
+        <div className="blocgauche"></div>
+        <div className="blocdroite"></div>
         <img src={ contimage } className="contimage" />
-        <div className="btncomptage" onClick={this.openComptage}></div>
+        <StdButton identifier="btnreprint" elementclass="btnreprint" key="btnreprint" text="Ré-imprimer" onClick={ () => void(0) } />
+        <StdButton identifier="btncomptage" elementclass="btncomptage" key="btncomptage" text="Comptage" onClick={ this.openComptage } />
+        <StdButton identifier="btnx" elementclass="btnx" key="btnx" text="Imprime X Caisse" onClick={ () => void(0) } />
+        <StdButton identifier="btncloture" elementclass="btncloture" key="btncloture" text="Clôture Z" onClick={ () => void(0) } />
       </div>
       <ClotureComptage open={comptageOpen} closeComptage={this.closeComptage} openComptcaisse={this.openComptcaisse} />
       <ClotureComptcaisse open={comptcaisseOpen} closeComptcaisse={this.closeComptcaisse} />

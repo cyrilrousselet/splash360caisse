@@ -2,17 +2,56 @@
   .contimage {
     width: 100%;
     height: auto;
+    position: relative;
+    z-index: 1;
+  }
+  .blocgauche,
+  .blocdroite {
+    background-color:$blanc;
+    box-shadow: 0 5px 15px 0 rgba(0,0,0,0.10);
+    border-radius: 15px;
+    width: 28%;
+    height: calc(100% - 260px);
+    position: absolute;
+    top: 110px;
+  }
+  .blocdroite {
+    right: 30px;
+  }
+  .btnreprint {
+    position: absolute;
+    width: 200px;
+    left: 70px;
+    top: 240px;
+    background-color: $gris-bleu;
+    z-index: 1;
   }
   .btncomptage {
-    position: relative;
-    width: 29%;
-    height: 100%;
-    /* padding-top: 3.5%; */
-    border: 1px solid transparent;
-    margin-top: -56%;
-    /* transform: translateY(-100%); */
-    left: 0;
-    border-radius: 10px;
+    position: absolute;
+    width: 235px;
+    left: 50px;
+    bottom: 160px;
+    background-color: $vert;
+    height: 45px;
+    z-index: 1;
+  }
+  .btnx {
+    position: absolute;
+    width: 235px;
+    left: 50px;
+    bottom: 75px;
+    background-color: $gris-bleu;
+    height: 45px;
+    z-index: 1;
+  }
+  .btncloture {
+    position: absolute;
+    width: 235px;
+    right: 50px;
+    bottom: 75px;
+    background-color: $gris-bleu;
+    height: 45px;
+    z-index: 1;
   }
 }
 .ClotureComptage,
@@ -62,13 +101,48 @@
   }
   .btncomptcaisse {
     position: absolute;
-    width: 50%;
-    height: 100px;
-    border: 1px dotted transparent;
-    bottom: 0;
-    left: 0;
+    bottom: 30px;
+    left: 50px;
+    width: 195px;
+    background-color: $vert !important;
+    .MuiButton-label {
+      padding: 0 25px;
+    }
+  }
+  .btncomptverif {
+    position: absolute;
+    bottom: 30px;
+    right: 50px;
+    width: 215px;
+    background-color: $rouge !important;
+    .MuiButton-label {
+      padding: 0 25px;
+    }
+  }
+}
+.ClotureComptage {
+  .blocbg {
+    position: absolute;
+    right: 30px;
+    top: 116px;
+    background-color: transparent;
+    border-radius: 15px;
+    width: 265px;
+    height: calc(100% - 130px);
+    box-shadow: 0 5px 15px 0 rgba(0,0,0,0.10);
+
   }
 }
 .ClotureComptcaisse .Modal-container {
   width: 800px;
+  .footer {
+    text-align: center;
+    padding-bottom: 10px;
+  }
+}
+.btncomptcaisseverif {
+  background-color: $vert !important;
+  .MuiButton-label {
+    padding: 0 25px;
+  }
 }

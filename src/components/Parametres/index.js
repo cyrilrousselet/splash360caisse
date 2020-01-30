@@ -1,7 +1,7 @@
 import React from 'react';
 import TopZone from '../../containers/TopZone';
 import Navigation from '../common/Navigation.js';
-import { Switch } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import { PrivateRoute } from '../common/PrivateRoute';
 import paths from '../../constants/routes';
 import { paramSubmodulesList } from '../../constants/modules';
@@ -35,6 +35,9 @@ class Parametres extends React.Component {
             <PrivateRoute exact path={ paths.PARAM_PERIPHERIQUES } component={ Peripheriques } />
             <PrivateRoute exact path={ paths.PARAM_COMMANDES } component={ Commandes } />
             <PrivateRoute exact path={ paths.PARAM_OPTIONS } component={ Options } />
+            <Route path={ paths.PARAMETRES }>
+              <Redirect to={{ pathname: paths.PARAM_ENTREPRISE }} />
+            </Route>
           </Switch>
         </div>
       </div>
