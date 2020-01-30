@@ -21,10 +21,10 @@ const ProduitBtn = ({ id, nom, prix, composition, onClick }) => (
 
 class Selecteur extends React.Component {
 
-  componentDidMount() {
-    const { getAllActive } = this.props;
-    getAllActive();
-  }
+  // componentDidMount() {
+  //   const { getAllActive } = this.props;
+  //   getAllActive();
+  // }
 
   // action on buttons (fill in passphrase)
   buttonHandler(text) {
@@ -51,7 +51,7 @@ class Selecteur extends React.Component {
 
 
     if(loading) {
-      return <LoadingSpinner />
+      return <div className="SelecteurEmpty"><LoadingSpinner /></div>
     }
 
     if (undefined === catalogue) {

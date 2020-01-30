@@ -144,3 +144,30 @@
         }
     }
 }
+
+.cloturePopin,
+.encaissementPopin,
+.askfidcardPopin,
+.showfidcardPopin {
+    .swal2-actions {
+        flex-direction: column;
+        justify-content: space-between;
+        height: 110px;
+        button {
+            border-radius: 12px;
+            height: 50px;
+            width: 220px;
+            color: $blanc;
+            &.swal2-confirm {
+                background-color: $rouge;
+            }
+            &.swal2-cancel {
+                background-color: $bleu;
+            }
+        }
+    }
+}
+
+.showfidcardPopin .swal2-actions button {
+    width: 80%;
+}
