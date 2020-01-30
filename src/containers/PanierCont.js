@@ -8,7 +8,6 @@ import Panier from '../components/Encaissement/Panier';
 import history from './../helpers/history';
 import paths from './../constants/routes.json';
 
-
 const gotoListeCommandes = () => {
   history.push(paths.LISTECOMMANDES);
 }

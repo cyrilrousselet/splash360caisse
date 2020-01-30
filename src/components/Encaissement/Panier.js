@@ -25,6 +25,11 @@ class Panier extends React.Component {
     this.setSelectedIndex = this.setSelectedIndex.bind(this);
   }
 
+
+
+ 
+
+
   componentDidMount() {
     const { getCommande } = this.props;
     getCommande();
@@ -81,6 +86,59 @@ class Panier extends React.Component {
         }
       });
     }
+
+    const gotoEncaissement = () => {
+      Swal.fire({
+        title: 'Avez-vous une carte de fidélité ?',
+        focusConfirm: true,
+        showCancelButton: true,
+        customClass: 'encaissementPopin',
+        confirmButtonText: 'Oui',
+        cancelButtonText: 'Non',
+        buttonsStyling: false 
+      }).then((result)=> {
+        if (result.value) {
+          showFidcard();
+        } else {
+          askFidcard();
+        }
+      });
+    }
+    
+    const askFidcard = () => {
+      Swal.fire({
+        title: 'Vous voulez avoir une carte de fidélité ?',
+        focusConfirm: true,
+        showCancelButton: true,
+        customClass: 'askfidcardPopin',
+        confirmButtonText: 'Oui',
+        cancelButtonText: 'Non',
+        buttonsStyling: false 
+      }).then((result)=> {
+      //  history.push(paths.ENCAISSEMENT);
+      });
+    }
+    
+    const showFidcard = () => {
+      Swal.fire({
+        title: 'Bonjour Édouard !',
+        text: 'Voulez-vous...',
+        focusConfirm: true,
+        showCancelButton: true,
+        customClass: 'showfidcardPopin',
+        confirmButtonText: 'Une nouvelle commande',
+        cancelButtonText: 'Comme la dernière fois',
+        buttonsStyling: false 
+      }).then((result)=> {
+      //  history.push(paths.ENCAISSEMENT);
+      });
+    }
+
+
+
+
+    if (undefined === items || items.length==0) gotoEncaissement();
+
     const attenteHandler = (event) => {
       standByCommande(this.props.commande);
     }

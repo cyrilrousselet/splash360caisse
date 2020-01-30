@@ -56,59 +56,12 @@ const gotoCloture = () => {
   });
 }
 
-const gotoEncaissement = () => {
-  Swal.fire({
-    title: 'Avez-vous une carte de fidélité ?',
-    focusConfirm: true,
-    showCancelButton: true,
-    customClass: 'encaissementPopin',
-    confirmButtonText: 'Oui',
-    cancelButtonText: 'Non',
-    buttonsStyling: false 
-  }).then((result)=> {
-    if (result.value) {
-      showFidcard();
-    } else {
-      askFidcard();
-    }
-  });
-}
 
-const askFidcard = () => {
-  Swal.fire({
-    title: 'Vous voulez avoir une carte de fidélité ?',
-    focusConfirm: true,
-    showCancelButton: true,
-    customClass: 'askfidcardPopin',
-    confirmButtonText: 'Oui',
-    cancelButtonText: 'Non',
-    buttonsStyling: false 
-  }).then((result)=> {
-    history.push(paths.ENCAISSEMENT);
-  });
-}
-
-const showFidcard = () => {
-  Swal.fire({
-    title: 'Bonjour Édouard !',
-    text: 'Voulez-vous...',
-    focusConfirm: true,
-    showCancelButton: true,
-    customClass: 'showfidcardPopin',
-    confirmButtonText: 'Une nouvelle commande',
-    cancelButtonText: 'Comme la dernière fois',
-    buttonsStyling: false 
-  }).then((result)=> {
-    history.push(paths.ENCAISSEMENT);
-  });
-}
 
 
 const beforeClickModule = (text) => {
   if (text==='CLOTURE') {
     gotoCloture();
-  } else if (text==='ENCAISSEMENT') {
-    gotoEncaissement();
   } else {
     history.push(paths[text]);
   }
