@@ -21,5 +21,11 @@
     "PARAM_OPTIONS": "/parametres/options",
     "MARKET_PROMOTIONS": "/marketing/promotions",
     "MARKET_NEWSLETTER": "/marketing/newsletter",
-    "MARKET_SMS": "/marketing/sms"
+    "MARKET_SMS": "/marketing/sms",
+    "STOCKS_FOURNISSEURS": "/stocks/fournisseurs",
+    "STOCKS_ETATFOURNISSEURS": "/stocks/etatsfournisseurs",
+    "STOCKS_ARTICLES": "/stocks/articles",
+    "STOCKS_COMMANDES": "/stocks/commandes",
+    "STOCKS_RECEPTIONS": "/stocks/receptions",
+    "STOCKS_INVENTAIRES": "/stocks/inventaires"
 }

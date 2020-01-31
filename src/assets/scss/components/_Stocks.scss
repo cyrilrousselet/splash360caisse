@@ -1,0 +1,120 @@
+.Stocks {
+
+  .MainZone {
+    
+    height: calc(100% - 110px);
+
+  }
+  .Stocks-sommaire {
+
+    .titre {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-family: $f_blk;
+      color: $noir;
+      font-size: 20px;
+
+      .LargeButton {
+        background-color: #1EA9DF;
+        .LargeButton-icon {
+            background-image: url('./../../images/ico_stock.svg');
+            background-size: 34px 16px;
+        }
+    }
+
+    }
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+    align-items: flex-start;
+    height: 100%;
+  }
+
+
+  .sommaire-item {
+    text-align: center;
+    width: 30%;
+    padding: 5px 0;
+    .LargeButton-text {
+      color: $noir;
+    }
+  }
+
+
+  .Fournisseurs,
+  .EtatFournisseurs,
+  .Articles,
+  .StocksCommandes,
+  .Receptions,
+  .Inventaires {
+
+    height: 100%;
+
+
+
+    .zoneBoutons {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      .buttons {
+        width: 300px;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        .StdButton-text {
+          color: $noir;
+        }
+        .StdButton {
+          background-color: $blanc;
+          min-width: 100px;
+          height: 35px;
+          &+.StdButton {
+            margin-left: 10px !important;
+          }
+        }
+        .btnretour {
+          background-color: $gris-clair;
+          .StdButton-text {
+            text-decoration: underline;
+          }
+        }
+      }
+      .titre {
+        font-family: $f_blk;
+        font-size: 18px;
+        color: $noir;
+        text-align: center;
+      }
+      .search {
+        width: 300px;
+      }
+    }
+
+    .zoneliste {
+      position: relative;
+      background-color: $blanc;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px 0 rgba(0,0,0,0.10);
+      width: 100%;
+      margin-top: 10px;
+      height: calc(100% - 80px);
+      padding: 15px;
+      .wrapper {
+        height: 100%;
+        width: 100%;
+        overflow: auto;
+      }
+    }
+  }
+
+
+
+}
+@import 'StocksFournisseurs';
+@import 'StocksEtatFournisseurs';
+@import 'StocksArticles';

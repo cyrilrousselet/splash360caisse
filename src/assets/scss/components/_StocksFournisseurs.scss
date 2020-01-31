@@ -1,0 +1,58 @@
+.Fournisseurs {
+  
+}
+.NewFournisseur {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none;
+  .Modal-container {
+      background-color: $blanc;
+      width: 690px;
+      border-radius: 15px;
+      padding: 0 20px 30px;
+  }
+  .close-button {
+      background-color: $blanc;
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 30px;
+      height: 30px;
+      min-height: 30px;
+  }
+  .close-button {
+    background-color: $blanc;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px;
+  }
+  .header {
+    height: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    .title {
+        font-family: $f_blk;
+        font-size: 18px;
+        color: $noir;
+        text-align: center;
+        text-transform: uppercase;
+    }
+  }
+  .btnvalider {
+    position: absolute;
+    bottom: 20px;
+    right: 80px;
+    width: 195px;
+    background-color: $primary !important;
+    .MuiButton-label {
+      padding: 0 25px;
+    }
+  }
+}
