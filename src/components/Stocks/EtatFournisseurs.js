@@ -26,7 +26,6 @@ class EtatFournisseurs extends React.Component {
         <div className="zoneBoutons">
         <div className="buttons">
             <StdButton identifier="btnretour" elementclass="btnretour" key="btnretour" text="Retour" onClick={ () => { history.push(paths.STOCKS_FOURNISSEURS) }} />
-            <StdButton identifier="btnnew" elementclass="btnnew" key="btnnew" text="Nouveau" onClick={ () => { return void(0) }} />
           </div>
           <div className="titre">État Fournisseurs</div>
           <div className="search"><img src={ fakesearch } /></div>
