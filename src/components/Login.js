@@ -17,7 +17,7 @@ class Login extends React.Component {
 
     super(props);
 
-    this.props.logout();
+    if (!this.props.inPopin) this.props.logout();
 
     this.state = {
       passphrase: '',
@@ -48,6 +48,13 @@ class Login extends React.Component {
 
     const {passphrase, activated, boutons} = this.state;
 
+    const connectBtnHandler = () => {
+      if (this.props.inPopin) {
+        this.props.popinAction()
+      } else {
+        this.props.login();
+      }
+    }
 
     return (
       <div className="Login">
@@ -63,7 +70,7 @@ class Login extends React.Component {
               })}
           </div>
         </div>
-        <PillConnect activated={activated} onClick={ this.props.login } />
+        <PillConnect activated={activated} onClick={ connectBtnHandler } />
       </div>
     );
   }
@@ -73,7 +80,8 @@ class Login extends React.Component {
 
 Login.propTypes = {
   login: PropTypes.func.isRequired,
-  logout: PropTypes.func.isRequired
+  logout: PropTypes.func.isRequired,
+  inPopin: PropTypes.bool
 }
 
 export default Login;

@@ -19,7 +19,31 @@ import paths from '../../constants/routes';
 import fakeliste from '../../assets/images/fake_stocks_fournisseurs.svg';
 import LargeButton from '../common/LargeButton';
 
+import LoginCont from '../../containers/LoginCont';
+
 let strings = new LocalizedStrings(data);
+
+
+
+const ChangeEmploye = ({open, closePopin}) => (
+
+  <Modal open={open}>
+    <div className="ChangeEmploye">
+      <div className="Modal-container">
+        <div className="header">
+          <div className="title">Change Employé</div>
+        </div>
+        <div className="body">
+          <LoginCont inPopin={true} popinAction={ closePopin } />
+        </div>
+      </div>
+      <Fab aria-label="close" size="small" className="close-button" onClick={ closePopin }>
+        <CloseIcon />
+      </Fab>
+    </div>
+  </Modal>
+);
+
 
 class Pointeuse extends React.Component {
 
@@ -27,7 +51,8 @@ class Pointeuse extends React.Component {
     super(props);
     this.state = {
       jour: format(new Date(), 'eeee d MMMM', { locale: frLocale }),
-      heure: format(new Date(), 'HH:mm:ss', { locale: frLocale })
+      heure: format(new Date(), 'HH:mm:ss', { locale: frLocale }),
+      popinOpen: false
     }
   }
 
@@ -52,7 +77,14 @@ class Pointeuse extends React.Component {
 
  render() {
 
-  const { jour, heure } = this.state;
+  const { jour, heure, popinOpen } = this.state;
+
+  const closePopin = () => {
+    this.setState({popinOpen:false});
+  }
+  const openPopin = () => {
+    this.setState({popinOpen:true});
+  }
 
   return (
     <div className="Pointeuse">
@@ -73,9 +105,10 @@ class Pointeuse extends React.Component {
              <LargeButton identifier='btnarrivee' elementclass='btnarrivee' icon={ false } text={ 'Arrivée' } onClick={() => void(0) }></LargeButton>
              <LargeButton identifier='btndepart' elementclass='btndepart' icon={ false } text={ 'Départ' } onClick={() => void(0) }></LargeButton>
           </div>
-          <div class="change"><LargeButton identifier='btnchange' elementclass='btnchange' icon={ false } text={ 'Autre employé' } onClick={() => void(0) }></LargeButton></div>
+          <div class="change"><LargeButton identifier='btnchange' elementclass='btnchange' icon={ false } text={ 'Autre employé' } onClick={openPopin}></LargeButton></div>
         </div>
       </div>
+      <ChangeEmploye open={popinOpen} closePopin={closePopin} />
     </div>
     );
   }

@@ -17,6 +17,10 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import StdButton from './common/StdButton';
 
+
+import history from '../helpers/history';
+import paths from '../constants/routes';
+
 import fakecont from './../assets/images/fake_contenu_statistiques.png';
 
 let strings = new LocalizedStrings(data);
@@ -135,6 +139,7 @@ class Statistiques extends React.Component {
               <StdButton key="tpscmd" identifier='tpscmd' elementclass="action action-tpscmd" noStroke={false} text='PRISE DE COMMANDE 31,14&nbsp;sec' onClick={ ()=>void(0) } />
             </div>
             <img src={fakecont} width="auto" height="100%" className="fakeimg" />
+            <div className="zonedeclic" onClick={()=>{ history.push(paths.STOCKS_ARTICLES) }}></div>
           </TabPanel>
           <TabPanel key="semaine-panel" className="panel" value={openTab} index={1}>
           </TabPanel>
