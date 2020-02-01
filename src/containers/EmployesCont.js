@@ -1,6 +1,6 @@
 // @flow
 import { connect } from 'react-redux'
-import Plannings from '../components/Employes/Plannings';
+import Employes from '../components/Employes';
 
 
 const mapStateToProps = (state) => {
@@ -11,9 +11,9 @@ const mapDispatchToProps = (dispatch) => {
   return {}
 }
 
-const PlanningsCont = connect(
+const EmployesCont = connect(
   mapStateToProps,
   mapDispatchToProps
-)(Plannings);
+)(Employes);
 
-export default PlanningsCont;
+export default EmployesCont;

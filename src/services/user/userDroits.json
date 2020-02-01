@@ -9,7 +9,7 @@
     "marketing": "moduleMarketing",
     "depenses": "moduleDepenses",
     "listecommandes": "moduleListeCommandes",
-    "plannings": "modulePlannings",
+    "employes": "moduleEmployes",
     "remise": "usageRemise",
     "tiroir_hors_encaissement": true
 }

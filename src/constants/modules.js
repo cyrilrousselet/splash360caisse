@@ -1,7 +1,7 @@
 export const modulesList = [];
 modulesList[0] = 'marketing';
 modulesList[1] = 'encaissement';
-modulesList[2] = 'plannings';
+modulesList[2] = 'employes';
 modulesList[3] = 'listecommandes';  //'depenses';
 modulesList[4] = 'cloture';
 modulesList[5] = 'stocks';

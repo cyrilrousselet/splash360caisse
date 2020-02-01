@@ -1,0 +1,47 @@
+.Pointeuse {
+
+
+  .jour {
+    font-family: $f_hea;
+    font-size: 30px
+  }
+  .heure {
+    font-family: $f_blk;
+    font-size: 80px;
+  }
+
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+  }
+  .boutons {
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .LargeButton {
+    &.btnarrivee {
+      background-color: $vert;
+      .LargeButton-text {
+        font-size: 25px;
+      }
+    }
+    &.btndepart {
+      background-color: $rouge;
+      .LargeButton-text {
+        font-size: 25px;
+      }
+    }
+    &.btnchange{
+      background-color: $gris-bleu;
+      height: 50px;
+      width: 250px;
+  
+    }
+  }
+}

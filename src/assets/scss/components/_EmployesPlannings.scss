@@ -1,0 +1,60 @@
+.Plannings {
+
+  .buttons {
+    width: 350px !important;
+    align-items: center;
+    .MuiFormControl-marginNormal {
+      margin: 0 10px;
+      width: 230px;
+      &:hover .MuiInput-underline:before,
+      &:hover .MuiInput-underline:after,
+      .MuiInput-underline:before,
+      .MuiInput-underline:after {
+        border: 0;
+      }
+      .MuiInput-formControl {
+        background-color: $blanc;
+        border-radius: 2px;
+        padding: 2px 0px 2px 5px;
+      }
+      input {
+        color: $primary;
+        font-family: $f_hea;
+        font-size: 15px;
+        text-align: center;
+      }
+    }
+
+  }
+  .taille {
+    width: 350px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    .btnsemaine {
+      .StdButton-text {
+        text-decoration: underline;
+      }
+    }
+    .StdButton-text {
+      color: $noir;
+    }
+    .StdButton {
+      background-color: $blanc;
+      min-width: 80px;
+      height: 35px;
+      &+.StdButton {
+        margin-left: 10px !important;
+      }
+    }
+    .btnretour {
+      background-color: $gris-clair;
+      .StdButton-text {
+        text-decoration: underline;
+      }
+    }
+
+    
+  }
+  
+}

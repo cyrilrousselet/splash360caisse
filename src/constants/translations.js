@@ -116,7 +116,7 @@ const data = {
                     titre: 'Personnalisation'
                 }
             },
-            plannings: { nom: "Employés" },
+            employes: { nom: "Employés" },
             depenses: { nom: "Dépenses" },
             listecommandes: { 
                 nom: "Liste Commandes",

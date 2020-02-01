@@ -23,7 +23,7 @@ function login(passphrase) {
       'marketing',
     //  'depenses',
       'listecommandes',
-      'plannings',
+      'employes',
       'remise'
     ]
   }

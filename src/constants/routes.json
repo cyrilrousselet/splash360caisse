@@ -3,7 +3,7 @@
     "LOGIN": "/login",
     "MARKETING": "/marketing",
     "ENCAISSEMENT": "/encaissement",
-    "PLANNINGS": "/plannings",
+    "EMPLOYES": "/employes",
     "DEPENSES": "/depenses",
     "LISTECOMMANDES": "/listecommandes",
     "CLOTURE": "/cloture",
@@ -27,5 +27,8 @@
     "STOCKS_ARTICLES": "/stocks/articles",
     "STOCKS_COMMANDES": "/stocks/commandes",
     "STOCKS_RECEPTIONS": "/stocks/receptions",
-    "STOCKS_INVENTAIRES": "/stocks/inventaires"
+    "STOCKS_INVENTAIRES": "/stocks/inventaires",
+    "EMPLOYES_PLANNING": "/employes/planning",
+    "EMPLOYES_POINTEUSE": "/employes/pointeuse",
+    "EMPLOYES_PAIES": "/employes/paies"
 }
