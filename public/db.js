@@ -17,7 +17,8 @@ const db = {
  produits: dbFactory('produits.db'),
  steps: dbFactory('steps.db'),
  settings: dbFactory('settings.db'),
- commandes: dbFactory('commandes.db')
+ commandes: dbFactory('commandes.db'),
+ parametres: dbFactory('parametres.db')
 };
 
 module.exports = db;

@@ -61,17 +61,25 @@ function _parseCatalogue(_rawdata) {
   });
 
   const __ingredients = {};
-  _rawdata._igt.forEach(t => {
-    __ingredients[t.type_id] = {nom: t.nom, ingredients: []};
-  });
 
   _rawdata._ing.forEach(i => {
-    __ingredients[i.type].ingredients.push({
+    __ingredients[i.ingredient_id] = {
       id: i.ingredient_id,
       nom: i.nom,
       tva_id: i.tva,
-      supplement: i.supplement
-    });
+      supplement: i.supplement,
+      type: i.type
+    };
+  });
+
+
+  const __ingredientTypes = {};
+  _rawdata._igt.forEach(t => {
+    __ingredientTypes[t.type_id] = {nom: t.nom, ingredients: []};
+  });
+
+  _rawdata._ing.forEach(i => {
+    __ingredientTypes[i.type].ingredients.push(i.ingredient_id);
   });
 
 
@@ -81,19 +89,20 @@ function _parseCatalogue(_rawdata) {
   });
   
   _rawdata._prd.forEach(p => {
+
     __catalogue[p.groupe].produits.push({
       id: p.produit_id,
       nom: p.nom,
       tva_id: p.tva,
       prix: p.prix,
-      composition: [],
+      composition: p.composition,
       customizable: __steps.hasOwnProperty(p.produit_id)
     });
   });
 
 
 
-  return {catalogue: __catalogue, tva: __tva, steps: __steps, ingredients: __ingredients};
+  return {catalogue: __catalogue, tva: __tva, steps: __steps, ingredients: __ingredients, ingredientTypes: __ingredientTypes};
 //  return __catalogue;
 }
 

@@ -1,7 +1,8 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux';
-// import { commandeActions } from '../services/commande/commandeActions'
+import { commandeActions } from '../services/commande/commandeActions'
 // import { getCommandeError, getCommandeLoading, getCommande } from '../services/commande/commandeReducer';
+import { getSteps, getIngredients, getIngredientTypes } from '../services/catalogue/catalogueReducer';
 import Personnalisation from '../components/Encaissement/Personnalisation';
 
 
@@ -18,12 +19,54 @@ import Personnalisation from '../components/Encaissement/Personnalisation';
 // }
 
 
+const _findStep = (state, stepId) => {
+  if (stepId==-1) return null;
+
+  const steps = getSteps(state);
+  let stepobj = {};
+  
+  Object.values(steps).forEach(st => {
+    const stepo = st.find(so => so.step_id == stepId);
+    if (stepo) stepobj = stepo;
+  });
+
+  return stepobj;
+}
+
+const _getIngredientTypes = (state, stepId) => {
+  if (stepId==-1) return null;
+  
+  const stepObj = _findStep(state, stepId);
+  let ingredientTypes = {};
+  if (stepObj) {
+    const allIng = getIngredients(state);
+    const allTypes = getIngredientTypes(state);
+    stepObj.regles.forEach(regle => {
+      const rglType = {nom: allTypes[regle.type].nom, ingredients:[]};
+      allTypes[regle.type].ingredients.forEach(ingid => {
+        rglType.ingredients.push({
+          id: ingid,
+          nom: allIng[ingid].nom,
+          supplement: allIng[ingid].supplement
+        });
+      });
+      Object.defineProperty(ingredientTypes, regle.type, {
+        value: rglType,
+        writable: true,
+        enumerable: true
+      });
+    });
+  }
+
+  return ingredientTypes;
+}
 
 const mapStateToProps = (...args) => { 
-  console.log('PersonnalisationCont.mapStateToProps');
     const state = args[0];
     const props = args[1];
   return {
+    stepObject: _findStep(state, props.step),
+    ingredientTypes: _getIngredientTypes(state, props.step)
     // valueToPay: getCommandeTotal(getCommande(state).items),
     // tiroirOuvert: getTiroirOuvert(state),
     // loading: getCommandeLoading(state),
@@ -34,6 +77,7 @@ const mapStateToProps = (...args) => {
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({
+    addIngredient: commandeActions.addIngredient
     // getCommande: commandeActions.getCommande,
     // updateCommande: commandeActions.updateCommande,
     // addReglement: commandeActions.addReglement,

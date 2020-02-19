@@ -144,9 +144,19 @@ function addProduit(payload) {
     
     const state = getState();
     const items = state.commandeReducer.commande.items;
-    const tva = state.catalogueReducer.tva[payload.tva_id]
+    const tva = state.catalogueReducer.tva[payload.tva_id];
+    const steps = state.catalogueReducer.steps[payload.produitid];
+    const composition = payload.composition.map(cmp => (
+        {...cmp, 
+         type: state.catalogueReducer.ingredients[cmp.ingredient].type, 
+         tva: state.catalogueReducer.ingredients[cmp.ingredient].tva_id,
+         prix: Number(state.catalogueReducer.ingredients[cmp.ingredient].supplement) ,
+         fromStep: null 
+        }
+    ));
+    payload = {...payload, composition};
 
-    const { commandeItem, mode } = commandeServices.addProduit(payload, tva, items);
+    const { commandeItem, mode } = commandeServices.addProduit(payload, tva, items, steps);
     
     if ('add'===mode) dispatch({ type: commandeActionTypes.ADD_PRODUIT, commandeItem });
     if ('update'===mode) dispatch({ type: commandeActionTypes.UPDATE_PRODUIT, commandeItem });
@@ -168,6 +178,25 @@ function updateProduit(payload) {
 
   }
 }
+
+function addIngredient(payload) {
+
+  return (dispatch, getState) => {
+
+
+    console.log(payload);
+
+    const { itemid, stepid, ingredientid, quantite } = payload;
+    const state = getState();
+    const item = state.commandeReducer.commande.items.find(itm => itm.itemid === itemid);
+    const step = state.catalogueReducer.steps[item.produitid].find(step => step.step_id === stepid);
+    const ingredient = state.catalogueReducer.ingredients[ingredientid];
+
+    const commandeItem = commandeServices.addIngredient(ingredient, quantite, step, item);
+    dispatch({ type: commandeActionTypes.ADD_INGREDIENT, commandeItem });
+  }
+}
+
 
 function updateCommande(payload) {
   return (dispatch) => {
@@ -236,5 +265,6 @@ export const commandeActions = {
   standByCommande,
   livraisonCommande,
   getCommandesList,
-  validateCommandeAndUpdateList
+  validateCommandeAndUpdateList,
+  addIngredient
 };

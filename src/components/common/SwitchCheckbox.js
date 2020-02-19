@@ -10,7 +10,7 @@ const SwitchCheckbox = ({ name, isChecked, onChange, className, label, labelLeft
             id={`switchid-${name}`}
             name={name}
             defaultChecked={ isChecked }
-            onChange={ () => onChange(name, isChecked) }
+            onChange={ (event) => onChange(name, !isChecked) }
           />
           <div><div></div></div>
         </label>

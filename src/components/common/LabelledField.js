@@ -23,15 +23,16 @@ class LabelledField extends React.Component {
 
   render() {
 
-    const { name, className, placeholder, type, readOnly, label, options, postvalue } = this.props;
+    const { name, className, placeholder, type, readOnly, label, options, postvalue, disabled } = this.props;
     const { value, option } = this.state;
     const withoptionsclass = (options && options.length>0) ? ' with-options' : '';
     const withpostvalue = postvalue ? ' with-postvalue' : '';
+    const disabledvalue = disabled ? ' disabled' : '';
 
     // (options && options.length>0) && console.log(value+' :: option: '+option);
 
     return (
-      <div className={`labelledfield labelledfield-container ${className?className:''}${withoptionsclass}${withpostvalue}`}>
+      <div className={`labelledfield labelledfield-container ${className?className:''}${withoptionsclass}${withpostvalue}${disabledvalue}`}>
           <label htmlFor={`fieldid-${name}`}>{ label }</label>
           <div className="input-wrapper">
             <input
@@ -65,9 +66,13 @@ class LabelledField extends React.Component {
 LabelledField.propTypes = {
   name: PropTypes.string.isRequired,
   className: PropTypes.string,
-  value: PropTypes.bool.isRequired,
+  value: PropTypes.oneOf([
+    PropTypes.string, 
+    PropTypes.number
+  ]).isRequired,
   onChange: PropTypes.func.isRequired,
   readOnly: PropTypes.bool,
+  disabled: PropTypes.bool,
   placeholder: PropTypes.string,
   type: PropTypes.oneOf([
     'text',

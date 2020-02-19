@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux';
 import Dashboard from '../components/Dashboard';
 import { modulesList } from '../constants/modules';
-import { commandeActions } from '../services/commande/commandeActions'
+import { commandeActions } from '../services/commande/commandeActions';
 import { getCommandesListError, getCommandesListLoading, getCommandesList } from '../services/commande/commandesListReducer';
 import history from '../helpers/history';
 import paths from './../constants/routes.json';
@@ -12,6 +12,7 @@ import Swal from 'sweetalert2';
 import {data} from '../constants/translations';
 import LocalizedStrings from 'react-localization';
 import { catalogueActions } from '../services/catalogue/catalogueActions';
+import { parametresActions } from '../services/parametres/parametresActions';
 let strings = new LocalizedStrings(data);
 
 const getModulesFromDroits = (droits) => {
@@ -94,6 +95,7 @@ const mapDispatchToProps = (dispatch) => {
   const binded = bindActionCreators({
     getCommandesList: commandeActions.getCommandesList,
     getAllActive: catalogueActions.getAllActive,
+    getParametres: parametresActions.getAll,
   }, dispatch);
   return {
     ...binded,

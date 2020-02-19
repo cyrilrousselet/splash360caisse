@@ -46,6 +46,11 @@
   .MuiSelect-select:focus {
     background: transparent;
   }
+  &.disabled {
+    label {
+      opacity: .5;
+    }
+  }
   
   
 }

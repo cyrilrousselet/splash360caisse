@@ -12,7 +12,10 @@ class Encaissement extends React.Component {
     super(props);
     this.state = {
       reglementOpen: false,
-      personnalisationOpen: false
+      personnalisationOpen: false,
+      personnalisationReview: false,
+      personnalisationStep: -1,
+      commandeItemToPersonnalize: null
     };
     this.openReglement = this.openReglement.bind(this);
     this.closeReglement = this.closeReglement.bind(this);
@@ -26,22 +29,42 @@ class Encaissement extends React.Component {
   closeReglement() {
     this.setState({reglementOpen: false});
   }
-  openPersonnalisation() {
-    this.setState({personnalisationOpen: true});
+  openPersonnalisation(itemid, stepid, from='chaipas') {
+    console.log('openPersonnalisation('+itemid+', '+stepid+', '+from+')');
+    this.setState({personnalisationOpen: true, personnalisationStep: stepid, commandeItemToPersonnalize: itemid});
   }
-  closePersonnalisation() {
-    this.setState({personnalisationOpen: false});
+  closePersonnalisation(from='chaipas') {
+    console.log('closePersonnalisation('+from+')');
+    this.setState({personnalisationOpen: false, personnalisationStep: -1});
   }
 
  render () {
+
+    console.log('personnalisationOpen : '+this.state.personnalisationOpen);
     return (
       <div className="Encaissement container">
         <TopZone />
         <div className="MainZone">
           <SelecteurCont />
-          <PanierCont openReglement={ this.openReglement } open={ this.state.reglementOpen } />
-          <ReglementCont open={ this.state.reglementOpen } contClass="EncaissementReglement" closeReglement={ this.closeReglement } />
-          <PersonnalisationCont open={ this.state.personnalisationOpen } contClass="EncaissementPersonnalisation" closePersonnalisation={ this.closePersonnalisation } />
+          <PanierCont 
+            openReglement={ this.openReglement } 
+            openPersonnalisation={ this.openPersonnalisation } 
+            closePersonnalisation={ this.closePersonnalisation } 
+            open={ this.state.reglementOpen } 
+            itemToPersonnalize={ this.state.commandeItemToPersonnalize } 
+          />
+          <ReglementCont 
+            open={ this.state.reglementOpen } 
+            contClass="EncaissementReglement" 
+            closeReglement={ this.closeReglement } 
+          />
+          <PersonnalisationCont 
+            open={ this.state.personnalisationOpen } 
+            step={ this.state.personnalisationStep } 
+            item={ this.state.commandeItemToPersonnalize }
+            contClass="EncaissementPersonnalisation" 
+            closePersonnalisation={ this.closePersonnalisation } 
+          />
         </div>
       </div>
     );

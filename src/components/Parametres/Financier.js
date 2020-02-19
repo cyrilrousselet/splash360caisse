@@ -7,6 +7,7 @@ import { Fab, List, ListItem } from '@material-ui/core';
 import AddIcon from '../common/icon/AddIcon';
 import SwitchCheckbox from '../common/SwitchCheckbox';
 import _ from 'lodash';
+import LoadingSpinner from '../common/LoadingSpinner';
 
 let strings = new LocalizedStrings(data);
 
@@ -48,6 +49,13 @@ class Financier extends React.Component {
     this.openMoyenEdit = this.openMoyenEdit.bind(this);
     this.closeMoyenEdit = this.closeMoyenEdit.bind(this);
   }
+
+
+  componentDidMount() {
+    console.log('Parametres/Financier.componentDidMount()');
+    this.props.getAll();
+  }
+
   openMoyenEdit(id:null) {
 
   }
@@ -59,6 +67,9 @@ class Financier extends React.Component {
  render() {
 
   const { moyenEditOpen, moyen } = this.state;
+  const { data, updateValeur, getAll } = this.props;
+
+  if (undefined===data) return <LoadingSpinner />;
 
   // on déplace le dimanche en fin de semaine
   let dimanche = strings.general.jours[0];
@@ -172,11 +183,17 @@ class Financier extends React.Component {
         <div className="section">
           <div className="subttl">{ strings.modules.parametres.submodules.financier.fidelite.titre }</div>
           <SwitchCheckbox
-            isChecked={ fidelite_data.activation } 
+            isChecked={ data.fidelite_activation } 
             key="fidelite-activation"
-            name="fidelite-activation" 
+            name="fidelite_activation" 
             className="fidelite-activation" 
-            onChange={ console.log } 
+            onChange={ (name, isChecked)=>{
+              updateValeur({
+                domaine: 'financier',
+                cle: name,
+                valeur: isChecked
+              })
+            } } 
             label={ strings.modules.parametres.submodules.financier.fidelite.activation } 
           />
 
@@ -188,7 +205,8 @@ class Financier extends React.Component {
             value={ fidelite_data.valeur } 
             placeholder=''
             type='number' 
-            readOnly={ false } 
+            disabled={ !data.fidelite_activation }
+            readOnly={ !data.fidelite_activation } 
             onChange={()=>{console.log('click')}}
             label={ strings.modules.parametres.submodules.financier.fidelite.valeur }
             postvalue='€'
@@ -202,7 +220,8 @@ class Financier extends React.Component {
             value={ fidelite_data.seuil } 
             placeholder=''
             type='number' 
-            readOnly={ false } 
+            disabled={ !data.fidelite_activation }
+            readOnly={ !data.fidelite_activation } 
             onChange={()=>{console.log('click')}}
             label={ strings.modules.parametres.submodules.financier.fidelite.seuil.split(';')[0] }
             postvalue={ strings.modules.parametres.submodules.financier.fidelite.seuil.split(';')[1] }

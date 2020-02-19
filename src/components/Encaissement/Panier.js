@@ -26,14 +26,29 @@ class Panier extends React.Component {
   }
 
 
-
- 
-
-
   componentDidMount() {
-    const { getCommande } = this.props;
+    const { getCommande, getParametres } = this.props;
     getCommande();
+    getParametres();    
+  }
+  componentDidUpdate() {
+    const { items } = this.props.commande;
+
+    // s'il y a des items dans la commande
+    if (undefined!==items && items.length>0) {
     
+      // vérifie si un item est 'pending'
+      // si c'est le cas, on ouvre la Personnalisation avec le premier step non complet
+      // et si c'est le cas, le bouton 'encaissement'/'valider' est inactif
+      
+      const __pendingItem = items.find(item => item.status==='pending');
+      if (__pendingItem) {
+        const __nextStep = __pendingItem.steps.find(step => step.completed===false);
+        this.props.openPersonnalisation(__pendingItem.itemid, __nextStep.id, 'Panier.componentDidUpdate()');
+      } else {
+        this.props.closePersonnalisation('Panier.componentDidUpdate()');
+      }
+    }
   }
 
   setSelectedIndex(event=null,index) {
@@ -45,7 +60,7 @@ class Panier extends React.Component {
     let __total = 0;
     if (undefined!==items) {
       items.forEach(itm => {
-        __total += itm.quantite * itm.prix;      
+        __total += itm.quantite * itm.prix;
       });
     }
     return __total;
@@ -54,12 +69,40 @@ class Panier extends React.Component {
 
   render() {
 
-    const { error, loading, updateProduit, updateCommande, standByCommande, livraisonCommande, deleteCommande, gotoListeCommandes, openReglement, open, openDrawer } = this.props;
+    const { error, loading, updateProduit, updateCommande, standByCommande, livraisonCommande, deleteCommande, gotoListeCommandes, openReglement, open, openDrawer, parametres, itemToPersonnalize } = this.props;
     const { commentaire, items, status, ticketId, mode } = this.props.commande;
     
     const total = this.calculateTotal(items);
     const devise = '€';
     const { selectedIndex } = this.state;
+
+
+    /* GESTION DE LA PERSONNALISATION */
+    let __encaissable = true;
+    // aucun item dans la commande -> btn 'encaissement'/'valider' inactif
+    if (undefined===items || items.length===0) {
+      __encaissable = false;
+    } 
+    // s'il y a des items dans la commande
+    else {
+      
+    //   // vérifie si un item est 'pending'
+    //   // si c'est le cas, on ouvre la Personnalisation avec le premier step non complet
+    //   // et si c'est le cas, le bouton 'encaissement'/'valider' est inactif
+      
+       const __pendingItem = items.find(item => item.status==='pending');
+       if (__pendingItem) {
+         __encaissable = false;
+    //     const __nextStep = __pendingItem.steps.find(step => step.completed===false);
+    //     this.props.openPersonnalisation(__pendingItem.itemid, __nextStep.id);
+    //   } else {
+    //     this.props.closePersonnalisation();
+       }
+    }
+
+    
+
+
     
     const onClickAction = (value) => { console.log(`Action: ${value}`) };
 
@@ -136,8 +179,10 @@ class Panier extends React.Component {
 
 
 
-
-    if (undefined === items || items.length==0) gotoEncaissement();
+    // affichage de la popin "carte de fidelite" si la fidélité est activée
+    if (null!==parametres && parametres.hasOwnProperty("financier") && parametres.financier.fidelite_activation) {      
+      if (undefined === items || items.length==0) gotoEncaissement();
+    }
 
     const attenteHandler = (event) => {
       standByCommande(this.props.commande);
@@ -186,8 +231,10 @@ class Panier extends React.Component {
                           disabled={ open }
                           commentaire={ itm.commentaire!=='' }
                           selected={ selectedIndex===i }
+                          composition={ itm.composition }
                           ingredients={ itm.ingredients }
-                          _onClick={ this.setSelectedIndex } />
+                          _onClick={ this.setSelectedIndex }
+                          _onSubClick={ (stepid) => { this.props.openPersonnalisation(itm.itemid.toString(), stepid, 'subitem') } } />
                   )}
                   </List>
               </div> {/* /.wrapper */}
@@ -223,7 +270,7 @@ class Panier extends React.Component {
             <StdButton identifier='livraison' elementclass={ `mode mode-livraison ${(('livraison'===mode) && 'active' : '')}` } disabled={ open } icon={ false } text={ strings.modules.encaissement.panier.mode.livraison } onClick={(value) => { updateCommande({mode:value}) }} />
           </div>
           <div className="actions">
-            <StdButton identifier='encaisser' elementclass="action action-encaisser" disabled={ undefined===items || items.length===0 || open } icon={ false } text={ ('livraison'===mode)?strings.modules.encaissement.panier.action.valider:strings.modules.encaissement.panier.action.encaissement } onClick={ ()=> { ('livraison'===mode)?livraisonHandler():openReglement() }} />
+            <StdButton identifier='encaisser' elementclass="action action-encaisser" disabled={ !__encaissable || open } icon={ false } text={ ('livraison'===mode)?strings.modules.encaissement.panier.action.valider:strings.modules.encaissement.panier.action.encaissement } onClick={ ()=> { ('livraison'===mode)?livraisonHandler():openReglement() }} />
             <StdButton identifier='tiroir' elementclass="action action-tiroir" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.tiroir } onClick={ tiroirHandler } />
             <StdButton identifier='attente' elementclass="action action-attente" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.attente } onClick={ attenteHandler } />
             <StdButton identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.reprise } onClick={gotoListeCommandes} />
@@ -240,7 +287,9 @@ Panier.propTypes = {
   commande: PropTypes.object,
   loading: PropTypes.bool,
   error: PropTypes.string,
+  parametres: PropTypes.object,
   getCommande: PropTypes.func,
+  getParametres: PropTypes.func,
   updateCommande: PropTypes.func,
   standByCommande: PropTypes.func,
   livraisonCommande: PropTypes.func,
@@ -251,21 +300,49 @@ Panier.propTypes = {
 }
 
 
-const PanierListeItem = ({id, itemid, nom, quantite, prix, commentaire, selected, disabled, ingredients, _onClick}) => (
-  <div className="PanierListeItem">
-    <ListItem 
-      button 
-      disableGutters
-      selected={ selected }
-      disabled={ disabled }
-      onClick={ event => _onClick(event, id) }
-      >
-      <div className="litm nom">{nom}</div> 
-      <div className="litm quantite">{quantite}</div> 
-      <div className="litm prix">{ prix.toFixed(2).replace('.',',') }</div>
-    </ListItem>
-  </div>
-);
+
+class PanierListeItem extends React.Component {
+
+  render() {
+    const {id, itemid, nom, quantite, prix, commentaire, selected, disabled, ingredients, _onClick, _onSubClick} = this.props;
+
+    const customIng = ingredients.filter(ing => ing.fromStep!==null);
+
+    return (
+      <div className="PanierListeItem">
+        <ListItem 
+          button 
+          disableGutters
+          selected={ selected }
+          disabled={ disabled }
+          onClick={ event => _onClick(event, id) }
+          >
+          <div className="litm nom">{nom}</div> 
+          <div className="litm quantite">{quantite}</div> 
+          <div className="litm prix">{ prix.toFixed(2).replace('.',',') }</div>
+        </ListItem>
+      {customIng.length>0 && (
+        <div className="litm ingredients-list">
+          {customIng.map(ing => (
+            <ListItem
+              button
+              disableGutters
+              selected={selected}
+              disabled={disabled}
+              onClick={ event => _onSubClick(ing.fromStep)}
+              key={`itm${itemid}-ing${ing.ingredient}`}
+              >
+              <div className="lsitm nom">{ ing.nom }</div>
+              <div className="lsitm quantite">{ ing.qte }</div>
+              <div className="lsitm prix">{ ing.prix.toFixed(2).replace('.',',') }</div>
+            </ListItem>
+          ))}
+        </div>
+      )}
+      </div>
+    );
+  }
+}
 
 PanierListeItem.propTypes = {
   id: PropTypes.number.isRequired,
@@ -276,6 +353,8 @@ PanierListeItem.propTypes = {
   prix: PropTypes.number,
   commentaire: PropTypes.bool,
   selected: PropTypes.bool,
+  composition: PropTypes.array,
   ingredients: PropTypes.array,
-  _onClick: PropTypes.func
+  _onClick: PropTypes.func,
+  _onSubClick: PropTypes.func
 };

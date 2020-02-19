@@ -19,6 +19,7 @@ class Dashboard extends Component {
     console.log('Dashboard.componentDidMount()');
     this.props.getCommandesList();
     this.props.getAllActive();
+    this.props.getParametres();
   }
 
 
@@ -77,6 +78,7 @@ Dashboard.propTypes = {
   modules: PropTypes.arrayOf(PropTypes.string).isRequired,
   getCommandesList: PropTypes.func.isRequired,
   getAllActive: PropTypes.func.isRequired,
+  getParametres: PropTypes.func.isRequired,
   commandeslist: PropTypes.object,
   loading: PropTypes.bool,
   error: PropTypes.object

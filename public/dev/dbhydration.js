@@ -353,6 +353,11 @@ const hydration = {
 
   commandes: [
     
+  ],
+
+  parametres: [
+    { domaine: 'entreprise', cle: 'denomination_sociale', valeur: 'Aqua Forte sarl'},
+    { domaine: 'financier', cle: 'fidelite_activation', valeur: true}
   ]
 };
 

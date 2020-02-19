@@ -6,6 +6,7 @@ const initialState = {
   tva: {},
   steps: {},
   ingredients: {},
+  ingredientTypes: {},
   error: null
 };
 
@@ -27,6 +28,7 @@ console.log(action);
         tva: action.tva,
         steps: action.steps,
         ingredients: action.ingredients,
+        ingredientTypes: action.ingredientTypes,
         error: null
       };
     case catalogueActionTypes.GETALL_ACTIVE_FAILURE:
@@ -50,6 +52,7 @@ console.log(action);
         tva: action.tva,
         steps: action.steps,
         ingredients: action.ingredients,
+        ingredientTypes: action.ingredientTypes,
         error: null
       };
     case catalogueActionTypes.GETALL_FAILURE:
@@ -64,6 +67,9 @@ console.log(action);
   }
 }
 
+export const getSteps = state => state.catalogueReducer.steps;
+export const getIngredients = state => state.catalogueReducer.ingredients;
+export const getIngredientTypes = state => state.catalogueReducer.ingredientTypes;
 export const getCatalogue = state => state.catalogueReducer.catalogue;
 export const getCatalogueLoading = state => state.catalogueReducer.loading;
 export const getCatalogueError = state => state.catalogueReducer.error;

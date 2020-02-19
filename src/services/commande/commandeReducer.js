@@ -101,6 +101,19 @@ export function commandeReducer(state = initialState, action) {
         commande: {...commande, items:[]}
       }
 
+    case commandeActionTypes.ADD_INGREDIENT:
+
+      items = commande.items;
+      commandeitem = action.commandeItem;
+      itmIndex = items.findIndex((obj => obj.itemid === commandeitem.itemid));
+      itm = items[itmIndex];
+      items[itmIndex] = {...itm, ...commandeitem};
+
+      return {
+        ...state,
+        commande: {...commande, items}
+      }
+
     case commandeActionTypes.ADD_REGLEMENT:
 
       reglements = commande.reglements;

@@ -1,5 +1,6 @@
 const electron = require('electron');
 const { app, BrowserWindow, Menu } = electron;
+const log = require('electron-log');
 
 const path = require('path');
 const os = require('os')
@@ -11,6 +12,7 @@ let mainWindow;
 let db_users;
 let userData = app.getPath('userData');
 let menu;
+
 
 function createWindow() {
 
@@ -36,17 +38,32 @@ function createWindow() {
 
 }
 
-app.on('ready', createWindow);
 
-app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit();
-    }
-});
+const gotTheLock = app.requestSingleInstanceLock()
+if (!gotTheLock) {
+    app.quit()
+} else {
 
-app.on('activate', () => {
-    if (mainWindow === null) {
-        createWindow();
-    }
-});
+    app.on('second-instance', (event, commandLine, workingDirectory) => {
+        // Someone tried to run a second instance, we should focus our window.
+        if (mainWindow) {
+          if (mainWindow.isMinimized()) mainWindow.restore()
+          mainWindow.focus()
+        }
+      })
 
+    app.on('ready', createWindow);
+
+    app.on('window-all-closed', () => {
+        if (process.platform !== 'darwin') {
+            app.quit();
+        }
+    });
+
+    app.on('activate', () => {
+        if (mainWindow === null) {
+            createWindow();
+        }
+    });
+
+} 
