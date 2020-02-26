@@ -74,6 +74,9 @@ function printTicket(payload) {
 
 
       const cmd = state.commandeReducer.commande;
+      const types = state.catalogueReducer.ingredientTypes;
+      const ingredients = state.catalogueReducer.ingredients;
+      const tva = state.catalogueReducer.tva;
 
       const caisse = {id:'001'};
       const operateur = cmd.operator;
@@ -81,23 +84,39 @@ function printTicket(payload) {
       const date = format(new Date(), "d MMM yyyy", { locale: this.locale });
       const heure = format(new Date(), "H:mm:ss");
 
-      const tva = {};
+      const cmdTva = {};
       let articles = [];
       let total = 0;
       cmd.items.forEach(article => {
 
+        let articleIngredients = [];
         total += article.quantite * article.prix;
+
+        article.ingredients.forEach(ing => {
+          if (ing.fromStep!=null && types[ing.type].print.commande!=null) {
+            articleIngredients.push({
+              qte: ing.qte,
+              codetva: tva[ingredients[ing.ingredient].tva_id].code,
+              nom: ing.nom,
+              pu: ing.prix==0 ? '' : Number(ing.prix).toFixed(2),
+              prix: ing.prix==0 ? '' : (Number(ing.prix)*ing.qte).toFixed(2),
+              weight: types[ing.type].print.commande
+            });
+          }
+        });
+
+        articleIngredients.sort((a,b)=>a.weight-b.weight);
 
         articles.push({
           qte: article.quantite,
           codetva: article.tva.code,
           nom: article.nom,
-          pu: article.prix,
+          pu: Number(article.prix).toFixed(2),
           prix: (Number(article.prix)*article.quantite).toFixed(2),
-          ingredients: []
+          ingredients: articleIngredients
         });
-        if (!tva.hasOwnProperty(article.tva.code)) {
-          Object.defineProperty(tva, article.tva.code, {
+        if (!cmdTva.hasOwnProperty(article.tva.code)) {
+          Object.defineProperty(cmdTva, article.tva.code, {
             value: {taux:`${Number(article.tva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
             writable: true,
             enumerable: true
@@ -107,10 +126,10 @@ function printTicket(payload) {
 
         let ht = (Number(article.prix)*article.quantite) / (1 + Number(article.tva.valeur));
 
-        tva[article.tva.code] = Object.assign(tva[article.tva.code], {
-          montant: tva[article.tva.code].montant + (ht * Number(article.tva.valeur)),
-          ht: tva[article.tva.code].ht + ht,
-          ttc: tva[article.tva.code].ttc + Number(article.prix)*article.quantite
+        cmdTva[article.tva.code] = Object.assign(cmdTva[article.tva.code], {
+          montant: cmdTva[article.tva.code].montant + (ht * Number(article.tva.valeur)),
+          ht: cmdTva[article.tva.code].ht + ht,
+          ttc: cmdTva[article.tva.code].ttc + Number(article.prix)*article.quantite
         });
         
 
@@ -123,7 +142,7 @@ function printTicket(payload) {
         articles: articles,
         total: {
           total: total.toFixed(2),
-          tva: tva
+          tva: cmdTva
         },
         reglements: cmd.reglements,
         rendus: cmd.rendus

@@ -10,6 +10,8 @@ export const commandeServices = {
   addRendu,
   saveCommande,
   addIngredient,
+  removeIngredient,
+  noIngredientForStep,
   getRuleValues
  };
 
@@ -54,6 +56,7 @@ function addProduit(payload, tva, items, steps) {
       produitid: produitid,
       nom: nom,
       prix: prix,
+      pu: prix,
       tva: tva,
       composition: composition,
       ingredients: [...composition],
@@ -111,18 +114,42 @@ function updateProduit(payload, item) {
   return {commandeItem:item, mode:mode};
 }
 
+
 /**
+ * Incrémente la quantité d'un ingrédient
+ * et ajoute l'ingrédient à la liste s'il n'y est pas encore
  * 
- * @param {*} ingredient : provenant du catalogue
- * @param {*} quantite   : quantité choisie
- * @param {*} step       : provenant du catalogue
- * @param {*} item       : item à modifier
+ * @param {*} ingredient   : provenant du catalogue
+ * @param {*} quantite     : quantité choisie
+ * @param {*} step         : provenant du catalogue
+ * @param {*} item         : item à modifier
+ * @param {*} produitSteps : steps du produit
  */
-function addIngredient(ingredient, quantite, step, item) {
+function addIngredient(ingredient, quantite, step, item, produitSteps) {
 
   const {ingredients, steps} = item;
 
-  console.log(step)
+  // si la règle du step impose un seul ingrédient
+  // on vérifie si un ingrédient existe déjà pour le step
+  // et on le supprime avant d'ajouter le nouvel ingrédient
+  const { unique, type } = _mustBeUnique(step, ingredient);
+
+  console.log('step #'+step.step_id+' '+(unique?'unique':'pas unique'));
+  if (unique) {
+    let ingdustepInCmd = -1;
+    // s'il n'y a aucun type précisé, on supprime l'ingrédient du step
+    if (null==type) {
+      console.log('aucun type précisé => suppression de l’ing du step');
+      ingdustepInCmd = ingredients.findIndex(ing=>ing.fromStep==step.step_id);
+      if (ingdustepInCmd>-1) ingredients.splice(ingdustepInCmd,1);
+    }
+    // si un type est précisé, on supprime l'ingrédient du type (et du step)
+    else {
+      console.log('type '+type+' => suppression de l’ing du type et du step');
+      ingdustepInCmd = ingredients.findIndex(ing=>(ing.fromStep==step.step_id && ing.type==type));
+      if (ingdustepInCmd>-1) ingredients.splice(ingdustepInCmd,1);
+    }
+  }
   
   const ingInCmdId = ingredients.findIndex(ing=>ing.ingredient==ingredient.id);
   // si l'ingredient n'est pas encore dans la liste de l'item
@@ -136,7 +163,7 @@ function addIngredient(ingredient, quantite, step, item) {
   }
 
   // test du step (validation et supplément)
-  const {validated, prixtotal} = _checkStepRegles(step, item);
+  const validated = _checkStepRegles(step, item);
   // on vérifie si l'ajout est raccord avec la liste
   // et on indique que le step est "completed", le cas échéant
   if (validated) {
@@ -152,23 +179,172 @@ function addIngredient(ingredient, quantite, step, item) {
     }
   }
   
-  item.prix = prixtotal;
+//  item.prix = prixtotal;
+  item.prix = _getPrix(item, produitSteps);
 
   return item;
+}
+
+
+/**
+ * Décrémente la quantité d'un ingrédient
+ * et supprime l'ingrédient de la liste si sa quantité est nulle
+ * 
+ * @param {*} ingredient : provenant du catalogue
+ * @param {*} quantite   : quantité choisie
+ * @param {*} step       : provenant du catalogue
+ * @param {*} item       : item à modifier
+ * @param {*} produitSteps : steps du produit
+ */
+function removeIngredient(ingredient, quantite, step, item, produitSteps) {
+
+  const {ingredients, steps} = item;
+
+  console.log(step)
+  
+  const ingInCmdId = ingredients.findIndex(ing=>ing.ingredient==ingredient.id);
+  // l'ingredient est-il dans la liste de l'item ?
+  if (-1!==ingInCmdId) {
+
+    ingredients[ingInCmdId].qte -= 1;
+    // si la quantité de l'ingrédient est à 0, on le supprime de la liste
+    if (0>=ingredients[ingInCmdId].qte) {
+      ingredients.splice(ingInCmdId,1);
+    }
+
+    item.ingredients = [...ingredients];
+  }
+
+  // test du step (validation et supplément)
+  const validated = _checkStepRegles(step, item);
+  // on vérifie si l'ajout est raccord avec la liste
+  // et on indique que le step est "completed", le cas échéant
+  if (validated) {
+    const itemstepid = steps.findIndex(st => st.id == step.step_id);
+    steps[itemstepid].completed = true;
+    
+    item.steps = [...steps];
+
+    // si tous les steps sont "completed", 
+    // on passe le status de l'item de "pending" à "completed"
+    if (-1==steps.findIndex(st => st.completed == false)) {
+      item.status = 'completed';
+    }
+  }
+  
+ // item.prix = prixtotal;
+  item.prix = _getPrix(item, produitSteps);
+
+  return item;
+}
+
+/**
+ * Supprime tous les ingrédients pour le step
+ * 
+ * @param {*} step       : provenant du catalogue
+ * @param {*} item       : item à modifier
+ * @param {*} produitSteps : steps du produit
+ */
+function noIngredientForStep(step, item, produitSteps) {
+
+  const {ingredients, steps} = item;
+
+  console.log(step)
+
+  ingredients.forEach((ing,i) => {
+    if (ing.fromStep == step.step_id) ingredients.splice(i,1);
+  });
+
+  item.ingredients = [...ingredients];
+
+  // test du step (validation et supplément)
+  const validated = _checkStepRegles(step, item);
+  // on vérifie si l'ajout est raccord avec la liste
+  // et on indique que le step est "completed", le cas échéant
+  if (validated) {
+    const itemstepid = steps.findIndex(st => st.id == step.step_id);
+    steps[itemstepid].completed = true;
+    
+    item.steps = [...steps];
+
+    // si tous les steps sont "completed", 
+    // on passe le status de l'item de "pending" à "completed"
+    if (-1==steps.findIndex(st => st.completed == false)) {
+      item.status = 'completed';
+    }
+  }
+  
+ // item.prix = prixtotal;
+  item.prix = _getPrix(item, produitSteps);
+
+  return item;
+}
+
+function _getPrix(item, produitSteps) {
+
+  let __supplement = 0;
+  let __ing = null;
+
+  produitSteps.forEach(step => {
+    if (step.regles.length == 1 || (step.regles.length>1 && step.regles[0].regle.toLowerCase().indexOf('g') != -1)) {
+      // on exécute le même test sur tous les types
+      console.log('on applique le test sur tous les types d’ingredients à la fois');
+      __ing = item.ingredients.filter(ing => ing.fromStep == step.step_id);
+      __supplement += _getSupplements(step.regles[0], __ing);
+    }
+    else {
+      step.regles.forEach( regle => {
+        __ing = item.ingredients.filter(ing => regle.type == ing.type);
+        __supplement += _getSupplements(regle, __ing);
+      })
+    }
+    console.log('step '+step.step_id+' suppl = '+__supplement);
+  });
+
+  return item.pu + __supplement;
+
+}
+
+function _mustBeUnique(step, ingredient) {
+
+  let __unique = false;
+  let __type = null;
+
+  // s'il n'y a qu'un type d'ingrédients
+  // OU
+  // s'il y a plusieurs types d'ingrédients dans le step
+  // et que la règle vaut pour tous les types
+  if (step.regles.length == 1 || (step.regles.length>1 && step.regles[0].regle.toLowerCase().indexOf('g') != -1)) {
+    // si la règle impose un max. d'1 ingrédient:
+    if (RegExp('^(\\?|\\{0,1\\}|\\{1\\})').test(step.regles[0].regle)) __unique = true;
+  }
+  
+  // s'il y a plusieurs types d'ingrédients
+  else if (step.regles.length>1) {
+    const __regle = step.regles.find(st=>st.type==ingredient.type);
+
+    // si la règle impose un max. d'1 ingrédient
+    // on récupère le type correspondant à l'ingrédient
+    if (RegExp('^(\\?|\\{1\\})').test(__regle.regle)) {
+      __unique = true;
+      __type = ingredient.type;
+    }
+  }
+
+  return {unique: __unique, type: __type};
 }
 
 
 function _checkStepRegles(step, item) {
 
   let __validated = true;
-  let __supplement = 0;
   let __types = [];
   let __ing = [];
 
   // on stocke les types dans un tableau
   step.regles.forEach(rgl => {
     __types.push(rgl.type);
-  })
+  });
 
 
   // s'il n'y a qu'un type d'ingrédients
@@ -180,17 +356,15 @@ function _checkStepRegles(step, item) {
     console.log('on applique le test sur tous les types d’ingredients à la fois');
     __ing = item.ingredients.filter(ing => __types.indexOf(ing.type)!=-1);
     if (!_testIngredient(step.regles[0], __ing)) __validated = false;
-    __supplement = _getSupplements(step.regles[0], __ing);
   }
   else {
     step.regles.forEach( regle => {
       __ing = item.ingredients.filter(ing => regle.type == ing.type);
       if (!_testIngredient(regle, __ing)) __validated = false;
-      __supplement += _getSupplements(regle, __ing);
     })
   }
 
-  return {validated: __validated, prixtotal: item.prix + __supplement};
+  return __validated;
 
 }
 
@@ -209,7 +383,7 @@ function _getSupplements(rule, ingredients) {
     const __supvaleurs = getRuleValues(__deuxregles[1]);
     
     // si la liste des ingrédients entre dans les critères du supplément
-    if (_testIngredient(__deuxregles[1], ingredients)) {
+    if (_testIngredient({regle: __deuxregles[1]}, ingredients)) {
 
       // tri des ingrédients par supplément croissant (les plus élevés à la fin)
       ingredients.sort((a,b) => a.prix - b.prix);
@@ -273,6 +447,8 @@ function _testIngredient(rule, ingredients) {
    * 'global' indique si la règle s'applique à tous les types d'ingrédients de l'étape ou juste au type de l'ingrédient courant
    */
 function  getRuleValues(rule) {
+
+  console.log('getRuleValues('+rule+')');
 
     let __valeurs = {min:0, max:-1, global:false}; // par défaut, règle '*'
 

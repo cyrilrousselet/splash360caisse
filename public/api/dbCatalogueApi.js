@@ -75,7 +75,7 @@ function _parseCatalogue(_rawdata) {
 
   const __ingredientTypes = {};
   _rawdata._igt.forEach(t => {
-    __ingredientTypes[t.type_id] = {nom: t.nom, ingredients: []};
+    __ingredientTypes[t.type_id] = {nom: t.nom, ingredients: [], print: t.print};
   });
 
   _rawdata._ing.forEach(i => {

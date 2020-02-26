@@ -102,6 +102,8 @@ export function commandeReducer(state = initialState, action) {
       }
 
     case commandeActionTypes.ADD_INGREDIENT:
+    case commandeActionTypes.REMOVE_INGREDIENT:
+    case commandeActionTypes.STEP_NOINGREDIENT:
 
       items = commande.items;
       commandeitem = action.commandeItem;

@@ -113,7 +113,8 @@ const data = {
                     ]
                 },
                 personnalisation: {
-                    titre: 'Personnalisation'
+                    titre: 'Personnalisation',
+                    aucun: 'Aucun'
                 }
             },
             employes: { nom: "Employés" },

@@ -150,7 +150,7 @@ function addProduit(payload) {
         {...cmp, 
          type: state.catalogueReducer.ingredients[cmp.ingredient].type, 
          tva: state.catalogueReducer.ingredients[cmp.ingredient].tva_id,
-         prix: Number(state.catalogueReducer.ingredients[cmp.ingredient].supplement) ,
+         prix: Number(state.catalogueReducer.ingredients[cmp.ingredient].supplement),
          fromStep: null 
         }
     ));
@@ -183,17 +183,49 @@ function addIngredient(payload) {
 
   return (dispatch, getState) => {
 
+    const { itemid, stepid, ingredientid, quantite } = payload;
+    const state = getState();
+    const item = state.commandeReducer.commande.items.find(itm => itm.itemid === itemid);
+    const step = state.catalogueReducer.steps[item.produitid].find(step => step.step_id === stepid);
+    const ingredient = state.catalogueReducer.ingredients[ingredientid];
+    const produitSteps = state.catalogueReducer.steps[item.produitid];
 
-    console.log(payload);
+    const commandeItem = commandeServices.addIngredient(ingredient, quantite, step, item, produitSteps);
+    dispatch({ type: commandeActionTypes.ADD_INGREDIENT, commandeItem });
+  }
+}
+
+function removeIngredient(payload) {
+
+  return (dispatch, getState) => {
 
     const { itemid, stepid, ingredientid, quantite } = payload;
     const state = getState();
     const item = state.commandeReducer.commande.items.find(itm => itm.itemid === itemid);
     const step = state.catalogueReducer.steps[item.produitid].find(step => step.step_id === stepid);
     const ingredient = state.catalogueReducer.ingredients[ingredientid];
+    const produitSteps = state.catalogueReducer.steps[item.produitid];
 
-    const commandeItem = commandeServices.addIngredient(ingredient, quantite, step, item);
-    dispatch({ type: commandeActionTypes.ADD_INGREDIENT, commandeItem });
+    const commandeItem = commandeServices.removeIngredient(ingredient, quantite, step, item, produitSteps);
+    dispatch({ type: commandeActionTypes.REMOVE_INGREDIENT, commandeItem });
+  }
+}
+
+function noIngredientForStep(payload) {
+
+  return (dispatch, getState) => {
+
+
+    console.log(payload);
+
+    const { itemid, stepid } = payload;
+    const state = getState();
+    const item = state.commandeReducer.commande.items.find(itm => itm.itemid === itemid);
+    const step = state.catalogueReducer.steps[item.produitid].find(step => step.step_id === stepid);
+    const produitSteps = state.catalogueReducer.steps[item.produitid];
+
+    const commandeItem = commandeServices.noIngredientForStep(step, item, produitSteps);
+    dispatch({ type: commandeActionTypes.STEP_NOINGREDIENT, commandeItem });
   }
 }
 
@@ -266,5 +298,7 @@ export const commandeActions = {
   livraisonCommande,
   getCommandesList,
   validateCommandeAndUpdateList,
-  addIngredient
+  addIngredient,
+  removeIngredient,
+  noIngredientForStep
 };

@@ -42,7 +42,7 @@ const _getIngredientTypes = (state, stepId) => {
     const allIng = getIngredients(state);
     const allTypes = getIngredientTypes(state);
     stepObj.regles.forEach(regle => {
-      const rglType = {nom: allTypes[regle.type].nom, ingredients:[]};
+      const rglType = {nom: allTypes[regle.type].nom, regle:regle.regle, ingredients:[]};
       allTypes[regle.type].ingredients.forEach(ingid => {
         rglType.ingredients.push({
           id: ingid,
@@ -61,12 +61,26 @@ const _getIngredientTypes = (state, stepId) => {
   return ingredientTypes;
 }
 
+/**
+ * Retourne la liste des ingredients de l'item en cours de personnalisation
+ * @param {*} state   state (pour en récupérer le commandeReducer)
+ * @param {*} itemid  id de l'item en cours de personnalisation
+ */
+const _getItemIngredients = (state, itemid) => {
+  if (itemid==-1) return null;
+  if (undefined == state.commandeReducer.commande.items) return null;
+ const item_obj = state.commandeReducer.commande.items.find(item=>item.itemid==itemid);
+ if (null==item_obj) return null;
+ return item_obj.ingredients;
+}
+
 const mapStateToProps = (...args) => { 
     const state = args[0];
     const props = args[1];
   return {
     stepObject: _findStep(state, props.step),
-    ingredientTypes: _getIngredientTypes(state, props.step)
+    ingredientTypes: _getIngredientTypes(state, props.step),
+    itemIngredients: _getItemIngredients(state, props.item)
     // valueToPay: getCommandeTotal(getCommande(state).items),
     // tiroirOuvert: getTiroirOuvert(state),
     // loading: getCommandeLoading(state),
@@ -77,7 +91,9 @@ const mapStateToProps = (...args) => {
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({
-    addIngredient: commandeActions.addIngredient
+    addIngredient: commandeActions.addIngredient,
+    removeIngredient: commandeActions.removeIngredient,
+    noIngredientForStep: commandeActions.noIngredientForStep
     // getCommande: commandeActions.getCommande,
     // updateCommande: commandeActions.updateCommande,
     // addReglement: commandeActions.addReglement,
@@ -89,6 +105,7 @@ const mapDispatchToProps = (dispatch) => {
     // openDrawer: peripheralActions.openDrawer,
     // closeDrawer: peripheralActions.closeDrawer,
   }, dispatch);
+
 }
 
 const PersonnalisationCont = connect(

@@ -7,34 +7,62 @@ import CloseIcon from '../common/icon/CloseIcon';
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import LoadingSpinner from '../common/LoadingSpinner';
+import MinusIcon from '../common/icon/MinusIcon';
+import PlusIcon from '../common/icon/PlusIcon';
 let strings = new LocalizedStrings(data);
 
 
 
 
-const IngredientBtn = ({ id, nom, supplement, step, addIng, removeIng }) => (
-  <Button
-    className="IngredientBtn"
+const IngredientBtn = ({ id, nom, supplement, step, addIng, removeIng, qte, withbuttons }) => (
+  <div
+    className={`IngredientBtn${withbuttons ? ' with-qtebtn' :''}`}
     id={id}
     step={ step }
-    onClick={ () => addIng(id) }
-  ><div>{ nom }</div>
-  {supplement>0 && <div>{ supplement.replace('.',',') }&nbsp;€</div>}
-  </Button>
+    onClick={ (e) => { e.stopPropagation(); addIng(id)} }
+  ><div className="btnlabel">
+    <div className="nom">{ nom }</div>
+  {supplement>0 && <div className="supplt">{ supplement.replace('.',',') }&nbsp;€</div>}
+    </div>
+  {qte>0 && <div className="qte-label">{qte}</div>}
+  {withbuttons && (
+    <div className="qte-btn">
+      <Fab aria-label="remove" size="small" className="moins" disabled={qte==0} onClick={(e) => { e.stopPropagation(); removeIng(id)}}>
+        <MinusIcon htmlColor="#ffffff" />
+      </Fab>
+      <Fab aria-label="add" size="small" className="plus" disabled={false} onClick={(e) => { e.stopPropagation(); addIng(id)}}>
+        <PlusIcon htmlColor="#ffffff" />
+      </Fab>
+    </div>
+  )}
+  </div>
 );
 
 
 
 class Personnalisation extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.getIngredientQuantity = this.getIngredientQuantity.bind(this);
+  }
+
+  getIngredientQuantity(ingredientid, regle) {
+    const { itemIngredients } = this.props;
+    const ingredient = itemIngredients.find(ing=>ing.ingredient==ingredientid);
+    if (null==ingredient) return 0; 
+    return ingredient.qte;
+  }
+
 
   render() {
     
-    const { open, closePersonnalisation, contClass, stepObject, step, item, ingredientTypes, addIngredient } = this.props;
+    const { open, closePersonnalisation, contClass, stepObject, step, item, ingredientTypes, addIngredient, removeIngredient, noIngredientForStep } = this.props;
 
-    if (null==stepObject || Object.entries(stepObject).length==0) return <LoadingSpinner />;
+    if (null==stepObject || Object.entries(stepObject).length==0) return <Modal open={open}><LoadingSpinner /></Modal>;
 
-    if(null==ingredientTypes || Object.entries(ingredientTypes).length==0) return <LoadingSpinner />;
+    if (null==ingredientTypes || Object.entries(ingredientTypes).length==0) return <Modal open={open}><LoadingSpinner /></Modal>;
+
 
     return (
       <Modal
@@ -48,20 +76,35 @@ class Personnalisation extends React.Component {
             <div className="body">
               <div className="modal-wrapper">
                 {Object.entries(ingredientTypes).map(([id,type])=>
-                  <div className="igtype" key={id}>
+                  <div className="igtype" key={id} data-regle={type.regle}>
                     { Object.entries(ingredientTypes).length>1 && <div className="igtype-nom">{ type.nom }</div> }
                     <div className="igtype-liste">
                       { type.ingredients.map(ingredient => 
                       <IngredientBtn 
-                      id={ingredient.id}
-                      nom={ingredient.nom}
-                      supplement={ingredient.supplement} 
-                      step={step}
-                      addIng={()=>{ addIngredient({itemid: item, stepid: step, ingredientid: ingredient.id, quantite: 1}) }} 
-                      removeIng={()=>{ console.log(`remove ${ingredient.id}`)}} 
-                      key={ingredient.id}
+                        id={ingredient.id}
+                        nom={ingredient.nom}
+                        supplement={ingredient.supplement} 
+                        step={step}
+                        withbuttons={!RegExp('^(\\?|\\{1\\}|\\{0\\}|\\{0,1\\})').test(type.regle)}
+                        qte={this.getIngredientQuantity(ingredient.id, type.regle)}
+                        addIng={()=>{ addIngredient({itemid: item, stepid: step, ingredientid: ingredient.id, quantite: 1}) }} 
+                        removeIng={()=>{ removeIngredient({itemid: item, stepid: step, ingredientid: ingredient.id, quantite: 1}) }} 
+                        key={ingredient.id}
                       />
                       )}
+
+                      {RegExp('^(\\?|\\*|\\{0)').test(type.regle) && 
+                        <IngredientBtn 
+                          id={-1}
+                          nom={strings.modules.encaissement.personnalisation.aucun}
+                          supplement={0} 
+                          step={step}
+                          withbuttons={false}
+                          qte={0}
+                          addIng={()=>{ noIngredientForStep({itemid: item, stepid: step}) }} 
+                          key={0}
+                        />
+                      }
                     </div>
                   </div>
                 )}

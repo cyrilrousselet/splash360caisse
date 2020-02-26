@@ -233,6 +233,7 @@ class Panier extends React.Component {
                           selected={ selectedIndex===i }
                           composition={ itm.composition }
                           ingredients={ itm.ingredients }
+                          steps={ itm.steps }
                           _onClick={ this.setSelectedIndex }
                           _onSubClick={ (stepid) => { this.props.openPersonnalisation(itm.itemid.toString(), stepid, 'subitem') } } />
                   )}
@@ -240,10 +241,10 @@ class Panier extends React.Component {
               </div> {/* /.wrapper */}
               <div className="tools">
                 <Fab aria-label="add" size="small" className="tool plus" disabled={selectedIndex===-1 || open} onClick={onClickAdd}>
-                  <PlusIcon />
+                  <PlusIcon htmlColor="#1EA9DF" />
                 </Fab>
                 <Fab aria-label="remove" size="small" className="tool remove" disabled={selectedIndex===-1 || open} onClick={onClickRemove}>
-                  <MinusIcon />
+                  <MinusIcon htmlColor="#1EA9DF" />
                 </Fab>
                 <Fab aria-label="discount" size="small" className="tool discount" disabled={selectedIndex===-1 || open}>
                   <DiscountIcon />
@@ -304,9 +305,30 @@ Panier.propTypes = {
 class PanierListeItem extends React.Component {
 
   render() {
-    const {id, itemid, nom, quantite, prix, commentaire, selected, disabled, ingredients, _onClick, _onSubClick} = this.props;
+    const {id, itemid, nom, quantite, prix, commentaire, selected, disabled, ingredients, steps, _onClick, _onSubClick} = this.props;
 
-    const customIng = ingredients.filter(ing => ing.fromStep!==null);
+    // on définit la liste des ingrédients à partir de l'ordre des steps de personnalisation de l'item
+    // (pour exclure les ingrédients non personnalisables et conserver l'ordre des steps)
+    let customIng = [];
+    let i =  -1;
+    if (steps) {
+      steps.forEach(stp => {
+        let ing = ingredients.filter(ingrd => ingrd.fromStep==stp.id);
+        // s'il n'y a aucun ingrédient pour le step,
+        // on ajoute un item "aucun" pour permettre d'ouvrir la popin de personnalisation pour ce step
+        if (0==ing.length) {
+          
+          ing = [{
+            fromStep: stp.id,
+            ingredient: i--,
+            nom: strings.modules.encaissement.personnalisation.aucun,
+            qte: 0,
+            prix: 0
+          }];
+        }
+        customIng = [...customIng, ...ing];
+      });
+    }
 
     return (
       <div className="PanierListeItem">
