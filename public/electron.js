@@ -6,7 +6,7 @@ const path = require('path');
 const os = require('os')
 const isDev = require('electron-is-dev');
 const api = require('./api/index.js');
-
+const server = require('./server.js');
 
 let mainWindow;
 let db_users;
@@ -35,6 +35,8 @@ function createWindow() {
         }
     }
     mainWindow.on('closed', () => mainWindow = null);
+
+    server.init();
 
 }
 
