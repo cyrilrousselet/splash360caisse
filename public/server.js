@@ -15,6 +15,11 @@ const server = {
       let __d = new Date();
       res.json({status:'success', commandeid: 'c'+__d.getTime().toString()});
     });
+    xpr.post('/setcommande', (req,res) => {
+      log.info('POST : '+req.body.data);
+      let __d = new Date();
+      res.json({status:'success', commandeid: 'c'+__d.getTime().toString()});
+    });
     xpr.listen(3300, () => {
       log.info('server écoute le port 3300');
     })

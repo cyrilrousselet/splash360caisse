@@ -77,10 +77,11 @@ class Cloture extends React.Component {
     this.closeComptcaisse = this.closeComptcaisse.bind(this);
   }
 
- componentDidMount() {
-  // const { getAllActive } = this.props;
-  // getAllActive();
- }
+  componentDidMount() {
+    const { getCommandesList, getCurrentPeriode } = this.props;
+    // getCommandesList();
+    getCurrentPeriode();
+  }
 
  shouldComponentRender() {
  //  const {loading} = this.props;
@@ -102,31 +103,32 @@ closeComptcaisse() {
    this.setState({comptcaisseOpen:false, comptageOpen:true});
  }
 
- render() {
+  render() {
 
- // const { catalogue, error, loading } = this.props;
+    const { periode, error, loading, printPeriodeX } = this.props;
 
- const { comptageOpen, comptcaisseOpen} = this.state;
+    const { comptageOpen, comptcaisseOpen} = this.state;
 
-  if(!this.shouldComponentRender()) {
-    return <LoadingSpinner />
-  }
+    if(!this.shouldComponentRender()) {
+      return <LoadingSpinner />
+    }
 
-  return (
-    <div className="Cloture container">
-      <TopZone />
-      <div className="MainZone">
-        <div className="blocgauche"></div>
-        <div className="blocdroite"></div>
-        <img src={ contimage } className="contimage" />
-        <StdButton identifier="btnreprint" elementclass="btnreprint" key="btnreprint" text="Ré-imprimer" onClick={ () => void(0) } />
-        <StdButton identifier="btncomptage" elementclass="btncomptage" key="btncomptage" text="Comptage" onClick={ this.openComptage } />
-        <StdButton identifier="btnx" elementclass="btnx" key="btnx" text="Imprime X Caisse" onClick={ () => void(0) } />
-        <StdButton identifier="btncloture" elementclass="btncloture" key="btncloture" text="Clôture Z" onClick={ () => void(0) } />
+    return (
+      <div className="Cloture container">
+        <TopZone />
+        <div className="MainZone">
+          <div className="blocgauche"></div>
+          <div className="blocdroite"></div>
+
+          <img src={ contimage } className="contimage" />
+          <StdButton identifier="btnreprint" elementclass="btnreprint" key="btnreprint" text="Ré-imprimer" onClick={ () => void(0) } />
+          <StdButton identifier="btncomptage" elementclass="btncomptage" key="btncomptage" text="Comptage" onClick={ this.openComptage } />
+          <StdButton identifier="btnx" elementclass="btnx" key="btnx" text="Imprime X Caisse" onClick={ () => { console.log('printPeriodeX()'); printPeriodeX() } } />
+          <StdButton identifier="btncloture" elementclass="btncloture" key="btncloture" text="Clôture Z" onClick={ () => void(0) } />
+        </div>
+        <ClotureComptage open={comptageOpen} closeComptage={this.closeComptage} openComptcaisse={this.openComptcaisse} />
+        <ClotureComptcaisse open={comptcaisseOpen} closeComptcaisse={this.closeComptcaisse} />
       </div>
-      <ClotureComptage open={comptageOpen} closeComptage={this.closeComptage} openComptcaisse={this.openComptcaisse} />
-      <ClotureComptcaisse open={comptcaisseOpen} closeComptcaisse={this.closeComptcaisse} />
-    </div>
     );
   }
 }

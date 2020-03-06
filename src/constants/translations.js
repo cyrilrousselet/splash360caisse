@@ -152,7 +152,58 @@ const data = {
                     tous: "tous"
                 }
             },
-            cloture: { nom: "Clôture" },
+            cloture: { 
+                nom: "Clôture",
+                x: 'X',
+                z: 'Z',
+                impression: {
+                    titre: {
+                        x: '< Ticket X Caisse >',
+                        z: '< Ticket Z Caisse >'
+                    },
+                    periode: {
+                        titre: 'Période',
+                        du: 'du ',
+                        au: ' au '
+                    },
+                    editeur: 'Éditeur : ',
+                    vendeurs: ['Vendeur : ', 'Vendeurs : '],
+                    vendeurs_all: 'Tous les vendeurs',
+                    caisses: ['Caisse : ', 'Caisses : '],
+                    caisses_all: 'Toutes les caisses',
+                    depenses: 'Montant dépenses : ',
+                    remboursements: 'Montant remboursements : ',
+                    ventes: 'Montant ventes : ',
+                    mtcaisse: 'Montant caisse : ',
+                    ca: 'CA',
+                    tickets: 'Nbre tickets',
+                    ticket_moyen: 'Ticket moyen',
+                    ventilation: {
+                        vendeur: 'Ventilation par vendeur',
+                        tva: 'Ventilation par TVA',
+                        moyen: 'Ventilation par moyen de paiement'
+                    },
+                    caption: {
+                        ventes: '<VENTES>',
+                        remboursements: '<REMBOURSEMENTS>',
+                        ca: '<CA>',
+                        numtickets: 'NBRE DE TICKETS',
+                        ticket_moyen: 'TICKET MOYEN',
+                        type: 'TYPE',
+                        ht: 'HT',
+                        tva: 'TVA',
+                        ttc: 'TTC',
+                        moyens: {
+                            especes: 'ESPECES',
+                            carte: 'CARTE BLEUE',
+                            tickets: 'TICKET RESTAURANT',
+                            cheque: 'CHÈQUE'
+                        },
+                        total: 'Total'
+                    },
+                }
+
+            },
             stocks: { nom: "Stocks" },
             statistiques: { nom: "Statistiques" },
             menu: { nom: "Menu" },

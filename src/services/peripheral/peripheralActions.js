@@ -6,6 +6,10 @@ import { format, compareAsc, startOfToday, endOfToday, startOfDay, endOfDay } fr
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 
+import LocalizedStrings from 'react-localization';
+import {data} from '../../constants/translations';
+const strings = new LocalizedStrings(data);
+
 function printTest(payload) {
   return dispatch => {
     peripheralServices.printTest()
@@ -176,7 +180,8 @@ function printTicket(payload) {
           ticketid: `T${caisse.id}-0001`,
           printid: 1,
           date: `${date} - ${heure}`
-        }
+        },
+        strings: {}
       };
 
      peripheralServices.printTicketCommande(imprimante, template, contenu)
@@ -191,9 +196,63 @@ function printTicket(payload) {
   }
 }
 
+
+function printPeriodeX(payload={}) {
+
+  return (dispatch, getState) => {
+
+      // récup des infos
+      // -> params imprimante
+      const imprimante = {
+        nom: 'POS Printer',
+        connexion: 'usb',
+        param: null,
+        encoding: 'Cp850'
+      };
+      // -> template ticket
+      const template = [
+        'entreprise', 
+        'periode_x'
+      ];
+
+      const {periode} = getState().clotureReducer;
+      const {impression} = strings.modules.cloture;
+
+      const {debut, fin} = periode;
+      const __debut = format(debut, "d MMM yyyy à H:mm:ss", { locale: frLocale });
+      const __fin = format(fin, "d MMM yyyy à H:mm:ss", { locale: frLocale });
+
+
+      const __periode = {...periode, 
+                 debut: __debut, 
+                 fin: __fin};
+
+      const contenu = {
+        // -> entreprise
+        entreprise: {
+          nom: 'LE RESTAURANT',
+          coordonnees: [ '5 place de la ville', '75011 PARIS', 'Tél. 01 02 03 04 05', 'E-mail : paris@le-restaurant.fr', 'www.le-restaurant.fr' ],
+          fiscal: [ 'SIRET 123 456 789 00012 - CODE NAF 5610C', 'TVA FR12 123 456 789' ]
+        },
+        periode: __periode,
+        strings: impression
+      };
+
+    peripheralServices.printTicket(imprimante, template, contenu)
+    .then(
+      response => {
+        console.log('print X');
+      }
+    )
+    dispatch({ type: peripheralActionTypes.PRINT_PERIODE_X });
+
+  }
+}
+
 export const peripheralActions = {
   printTest,
   printTicket,
+  printPeriodeX,
   openDrawer,
   closeDrawer
 };

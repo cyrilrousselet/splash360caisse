@@ -7,6 +7,7 @@ import { commandeReducer } from './../services/commande/commandeReducer';
 import { commandesListReducer } from './../services/commande/commandesListReducer';
 import { peripheralReducer } from './../services/peripheral/peripheralReducer';
 import { parametresReducer } from './../services/parametres/parametresReducer';
+import { clotureReducer } from './../services/cloture/clotureReducer';
 import { authentication } from './authenticationReducer';
 
 export default function createRootReducer(history) {
@@ -18,6 +19,7 @@ export default function createRootReducer(history) {
         commandesListReducer,
         peripheralReducer,
         parametresReducer,
+        clotureReducer,
         authentication
     });
 }
