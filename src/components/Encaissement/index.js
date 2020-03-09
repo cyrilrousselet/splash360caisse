@@ -29,11 +29,11 @@ class Encaissement extends React.Component {
   closeReglement() {
     this.setState({reglementOpen: false});
   }
-  openPersonnalisation(itemid, stepid, from='chaipas') {
+  openPersonnalisation(itemid, stepid, from='unknown') {
     console.log('openPersonnalisation('+itemid+', '+stepid+', '+from+')');
     this.setState({personnalisationOpen: true, personnalisationStep: stepid, commandeItemToPersonnalize: itemid});
   }
-  closePersonnalisation(from='chaipas') {
+  closePersonnalisation(from='unknown') {
     console.log('closePersonnalisation('+from+')');
     this.setState({personnalisationOpen: false, personnalisationStep: -1});
   }

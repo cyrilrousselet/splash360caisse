@@ -17,7 +17,7 @@ const actions = {
   dbCommandeGetCommande: async (req,res) => {
     const {payload} = req;
     log.info("dbCommandeGetCommande("+payload.ticketId+") in API");
-    const proxies = await _findCommande({ticketId: Number(payload.ticketId)});
+    const proxies = await _findCommande({ticketId: payload.ticketId});
     log.info(proxies);
     res.send(proxies);
   },

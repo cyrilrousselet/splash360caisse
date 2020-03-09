@@ -187,6 +187,7 @@ class ListeCommandes extends React.Component {
   }
 
   repriseHandle(value) {
+    console.log('repriseHandle('+value+')');
     this.props.getCommande(value);
     history.push(paths.ENCAISSEMENT);
   }

@@ -1,6 +1,7 @@
 import { clotureActionTypes } from './clotureActionTypes';
 import { clotureServices } from './clotureServices';
 
+import { startOfToday, endOfToday } from 'date-fns';
 
 
 
@@ -17,7 +18,9 @@ function getCurrentPeriode(params={}) {
                                       user: state.authentication.user,
                                       caisses: [{id:0, nom: 'caisse 0'}],
                                       vendeurs: [state.authentication.user],
-                                      fdcaisse: 100
+                                      fdcaisse: 100,
+                                      debut: startOfToday(),
+                                      fin: endOfToday()
                                     };
     const periode = clotureServices.getCurrentPeriode(commandeslist, catalogue, cloture_params)
     dispatch({ type: clotureActionTypes.GET_CURRENT_PERIODE, periode });

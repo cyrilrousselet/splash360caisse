@@ -293,7 +293,7 @@ function setCommandeFromAPI(payload) {
     const commande = commandeServices.setCommandeFromAPI(payload.data, state.catalogueReducer);
 
     commandeServices.sendTicketId(commande.ticketId, payload.response);
-    
+
     commandeServices.saveCommande(commande, state.catalogueReducer)
     .then(
       confirm => {
