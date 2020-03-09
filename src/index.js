@@ -4,8 +4,12 @@ import { AppContainer } from 'react-hot-loader';
 import Root from './containers/Root';
 import { configureStore } from './store/configureStore';
 import history from './helpers/history';
+import electron from 'electron';
+import {ipcRenderer} from 'electron';
 
 import {setupFrontendListener} from 'eiphop';
+
+import { commandeActions } from './services/commande/commandeActions';
 
 //import routes from './Routes';
 
@@ -21,13 +25,17 @@ import registerServiceWorker from './registerServiceWorker';
 const {store} = configureStore();
 
 
-const electron = require('electron');
+//const electron = require('electron');
 setupFrontendListener(electron);
 
 
 console.log(process.env.REACT_APP_PRODUCT_NAME);
 console.log(process.env.REACT_APP_PRODUCT_AUTHOR);
 
+// listener sur la réception de commande via '/public/server.js'
+ipcRenderer.on('setCommande', (event, commande) => {
+  commandeActions.setCommandeFromAPI(commande)(store.dispatch, store.getState);
+});
 
 // log.transports.file.level = 'info';
 // log.info('arrivée sur le Dashboard');

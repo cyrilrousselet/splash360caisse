@@ -390,8 +390,7 @@ function _printPeriodeX(printer, data, strings) {
       .drawLine()
       .align('LT')
       .text(strings.periode.titre)
-      .text(strings.periode.du+data.debut)
-      .text(strings.periode.au+data.fin)
+      .text(data.debut+'  ->  '+data.fin)
       .text(strings.editeur+data.editeur.nom+' ('+data.editeur.id+')')
       .feed(1)
       ;
@@ -413,19 +412,19 @@ function _printPeriodeX(printer, data, strings) {
     printer
       .tableCustom([
         {text: strings.depenses, cols:30, align:'LEFT'},
-        {text: Number(data.depenses).toFixed(2), cols:18, align:'RIGHT'}
+        {text: Number(data.depenses).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
       ])
       .tableCustom([
         {text: strings.remboursements, cols:30, align:'LEFT'},
-        {text: Number(data.remboursements).toFixed(2), cols:18, align:'RIGHT'}
+        {text: Number(data.remboursements).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
       ])
       .tableCustom([
-        {text: strings.ventes, cols:30, align:'LEFT'},
-        {text: Number(data.ventes).toFixed(2), cols:18, align:'RIGHT'}
+        {text: strings.encaissements, cols:30, align:'LEFT'},
+        {text: Number(data.ventes).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
       ])
       .tableCustom([
         {text: strings.mtcaisse, cols:30, align:'LEFT'},
-        {text: Number(data.mtcaisse).toFixed(2), cols:18, align:'RIGHT'}
+        {text: Number(data.mtcaisse).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
       ])
       .feed(1);
 
@@ -440,29 +439,161 @@ function _printPeriodeX(printer, data, strings) {
     
     // recap :
     printer
+    .style('NORMAL')
     .tableCustom([
       {text: strings.caption.ventes, cols:25, align:'LEFT'},
-      {text: Number(data.ventes).toFixed(2), cols:15, align:'RIGHT'},
-      {text: '3#', cols:8, align:'RIGHT'}
+      {text: Number(data.ventes).toFixed(2).replace('.',','), cols:15, align:'RIGHT'},
+      {text: '2#', cols:8, align:'RIGHT'}
     ])
     .tableCustom([
       {text: strings.caption.remboursements, cols:25, align:'LEFT'},
-      {text: -Number(data.remboursements).toFixed(2), cols:15, align:'RIGHT'},
-      {text: '2#', cols:8, align:'RIGHT'}
+      {text: "-"+Number(data.remboursements).toFixed(2).replace('.',','), cols:15, align:'RIGHT'},
+      {text: '1#', cols:8, align:'RIGHT'}
     ])
     .drawLine()
     .tableCustom([
+      {text: strings.caption.ca, cols:25, align:'LEFT'},
+      {text: "-"+Number(data.ca).toFixed(2).replace('.',','), cols:15, align:'RIGHT'},
+      {text: '3#', cols:8, align:'RIGHT'}
+    ])
+    .feed(1)
+    .tableCustom([
       {text: '', cols:5, align:'LEFT'},
       {text: strings.caption.numtickets, cols:20, align:'LEFT'},
-      {text: data.tickets, cols:23, align:'RIGHT'}
+      {text: data.numtickets, cols:15, align:'RIGHT'},
+      {text: '', cols:8, align:'RIGHT'}
     ])
     .tableCustom([
       {text: '', cols:5, align:'LEFT'},
       {text: strings.caption.ticket_moyen, cols:20, align:'LEFT'},
-      {text: Number(data.ticket_moyen).toFixed(2), cols:23, align:'RIGHT'}
+      {text: Number(data.ticket_moyen).toFixed(2).replace('.',','), cols:15, align:'RIGHT'},
+      {text: '', cols:8, align:'RIGHT'}
     ])
     .drawLine()
     ;
+
+    // ventilation par caissier
+    printer
+      .align('CT')
+      .style('B')
+      .text(strings.ventilation.vendeur)
+      .drawLine();
+
+    let vndvnt = 0;
+    let vndrmb = 0;
+    let vndtotal = 0;
+
+    printer
+      .tableCustom([
+        {text: '', cols:21, align:'LEFT'},
+        {text: strings.caption.vente_short, cols:9, align:'RIGHT'},
+        {text: strings.caption.remboursements_short, cols:9, align:'RIGHT'},
+        {text: strings.caption.ca_short, cols:9, align:'RIGHT'}
+      ]);
+
+    data.ventilation.vendeur.forEach(vendeur => {
+      
+      printer
+        .style('NORMAL')
+        .tableCustom([
+          {text: vendeur.nom+' ('+vendeur.id+')', cols:21, align:'LEFT'},
+          {text: Number(vendeur.ventes).toFixed(2).replace('.',','), cols:9, align:'RIGHT'},
+          {text: '-'+Number(vendeur.remboursements).toFixed(2).replace('.',','), cols:9, align:'RIGHT'},
+          {text: Number(vendeur.ventes-vendeur.remboursements).toFixed(2).replace('.',','), cols:9, align:'RIGHT'}
+        ]);
+        vndvnt += vendeur.ventes;
+        vndrmb += vendeur.remboursements;
+        vndtotal += (vendeur.ventes-vendeur.remboursements);
+    });
+
+    printer
+      .feed(1)
+      .tableCustom([
+        {text: strings.caption.total, cols:21, align:'LEFT'},
+        {text: Number(vndvnt).toFixed(2).replace('.',','), cols:9, align:'RIGHT'},
+        {text: '-'+Number(vndrmb).toFixed(2).replace('.',','), cols:9, align:'RIGHT'},
+        {text: Number(vndtotal).toFixed(2).replace('.',','), cols:9, align:'RIGHT'}
+      ]);
+
+    // ventilation par TVA
+    printer
+      .drawLine()
+      .align('CT')
+      .style('B')
+      .text(strings.ventilation.tva)
+      .drawLine();
+
+    let tvaht = 0;
+    let tvamnt = 0;
+    let tvattc = 0;
+
+    printer
+      .tableCustom([
+        {text: strings.caption.type, cols:9, align:'LEFT'},
+        {text:'', cols:3},
+        {text: strings.caption.ht, cols:10, align:'RIGHT'},
+        {text:'', cols:3},
+        {text: strings.caption.tva, cols:10, align:'RIGHT'},
+        {text:'', cols:3},
+        {text: strings.caption.ttc, cols:10, align:'RIGHT'}
+      ]);
+
+    data.ventilation.tva.forEach(tva => { 
+      printer
+        .style('NORMAL')
+        .tableCustom([
+          {text: Number(tva.taux*100).toFixed(2).replace('.',',')+'%', cols:9, align:'LEFT'},
+          {text:'', cols:3},
+          {text: Number(tva.ht).toFixed(2).replace('.',','), cols:10, align:'RIGHT'},
+          {text:'', cols:3},
+          {text: Number(tva.montant).toFixed(2).replace('.',','), cols:10, align:'RIGHT'},
+          {text:'', cols:3},
+          {text: Number(tva.ttc).toFixed(2).replace('.',','), cols:10, align:'RIGHT'}
+        ]);
+        tvaht += tva.ht;
+        tvamnt += tva.montant;
+        tvattc += tva.ttc;
+    });
+
+    printer
+    .feed(1)
+    .tableCustom([
+      {text: strings.caption.total, cols:9, align:'LEFT'},
+      {text:'', cols:3},
+      {text: Number(tvaht).toFixed(2).replace('.',','), cols:10, align:'RIGHT'},
+      {text:'', cols:3},
+      {text: Number(tvamnt).toFixed(2).replace('.',','), cols:10, align:'RIGHT'},
+      {text:'', cols:3},
+      {text: Number(tvattc).toFixed(2).replace('.',','), cols:10, align:'RIGHT'}
+    ]);
+
+
+    // ventilation par moyen de paiement
+    printer
+      .drawLine()
+      .align('CT')
+      .style('B')
+      .text(strings.ventilation.moyen)
+      .drawLine();
+
+    let moytotal = 0;
+
+    data.ventilation.moyen.forEach(moyen => { 
+      printer
+        .style('NORMAL')
+        .tableCustom([
+          {text: strings.caption.moyens[moyen.moyen], cols:30, align:'LEFT'},
+          {text: Number(moyen.valeur).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
+        ]);
+        moytotal += moyen.valeur;
+    });
+
+    printer
+    .feed(1)
+    .tableCustom([
+      {text: strings.caption.total, cols:30, align:'LEFT'},
+      {text: Number(moytotal).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
+    ]);
         
 }
 

@@ -50,56 +50,118 @@ function getCurrentPeriode(commandes, catalogue, params) {
       __remb += (cmd.remboursements) ? cmd.remboursements : 0;
       __tickets++;
 
+
       // ventilation par vendeurs
-      if (!__ventil.vendeur.hasOwnProperty('v'+cmd.operator.id)) {
-        __ventil.vendeur = Object.defineProperty(__ventil.vendeur, 'v'+cmd.operator.id, {
-          value: {
-            id: cmd.operator.id,
-            nom: cmd.operator.nom,
-            ventes: 0, remboursements: 0
-          },
-          writable: true
-        });
-        console.log(__ventil.vendeur);
+      let __vId = __ventil.vendeur.findIndex(vnd => vnd.id==cmd.operator.id);
+      
+      // si le vendeur n'est pas enregistré ds la liste
+      if (__vId==-1) {
+        // on ajoute un objet pour le vendeur dans le tableau
+        // et on récupère son index (length - 1)
+        __vId = __ventil.vendeur.push({
+                          id: cmd.operator.id,
+                          nom: cmd.operator.nom,
+                          ventes: 0, remboursements: 0
+                        }) - 1;
       }
-      __ventil.vendeur['v'+cmd.operator.id].ventes += cmd.total;
-      __ventil.vendeur['v'+cmd.operator.id].remboursements += (cmd.remboursements) ? cmd.remboursements : 0;
+      // on récupère l'objet pour le mettre à jour avec les valeurs de la commande
+      const __vendeur = __ventil.vendeur[__vId];
+      const { ventes, remboursements } = __ventil.vendeur[__vId];
+      
+      __ventil.vendeur[__vId] = {
+          ...__vendeur, 
+          ventes:(ventes+cmd.total), 
+          remboursements:(remboursements+(cmd.remboursements?cmd.remboursements:0))
+        };
+
 
 
       // ventilation par moyens de paiement
       cmd.reglements.forEach(rgl => {
-        if (!__ventil.moyen.hasOwnProperty(rgl.moyen)) {
-          __ventil.moyen = Object.defineProperty(__ventil.moyen, rgl.moyen, {
-            value: {valeur: 0},
-            writable: true
-          });
+
+        let __mId = __ventil.moyen.findIndex(moy => moy.moyen==rgl.moyen);
+
+        // si le moyen de paiement n'est pas enregistré ds la liste
+        if (__mId==-1) {
+          // on ajoute un objet pour le moyen de paiement dans le tableau
+          // et on récupère son index (length - 1)
+          __mId = __ventil.moyen.push({
+                            moyen: rgl.moyen,
+                            valeur: 0
+                          }) - 1;
         }
-        __ventil.moyen[rgl.moyen].valeur += rgl.valeur;
+        // on récupère l'objet pour le mettre à jour avec les valeurs de la commande
+        const __moyen = __ventil.moyen[__mId];
+        const { valeur } = __ventil.moyen[__mId];
+
+        __ventil.moyen[__mId] = {
+            ...__moyen, 
+            valeur:(valeur+rgl.valeur)
+          };
       });
+
+      // rendu monnaie (déduit de la ventilation 'espèces')
+      cmd.rendus.forEach(rnd => {
+
+        let __mId = __ventil.moyen.findIndex(moy => moy.moyen=='especes');
+
+        // si le moyen de paiement n'est pas enregistré ds la liste
+        if (__mId==-1) {
+          // on ajoute un objet pour le moyen de paiement dans le tableau
+          // et on récupère son index (length - 1)
+          __mId = __ventil.moyen.push({
+                            moyen: 'espèces',
+                            valeur: 0
+                          }) - 1;
+        }
+        // on récupère l'objet pour le mettre à jour avec les valeurs de la commande
+        const __moyen = __ventil.moyen[__mId];
+        const { valeur } = __ventil.moyen[__mId];
+
+        __ventil.moyen[__mId] = {
+            ...__moyen, 
+            valeur:(valeur-rnd.valeur)
+          };
+      });
+
 
       // ventilation par tva
       cmd.items.forEach(itm => {
-        if (!__ventil.tva.hasOwnProperty(itm.tva.id)) {
-          __ventil.tva = Object.defineProperty(__ventil.tva, itm.tva.id, {
-            value: {
-              taux: Number(itm.tva.valeur),
-              ht: 0,
-              montant: 0,
-              ttc: 0
-            },
-            writable: true
-          });
+
+
+        let __tId = __ventil.tva.findIndex(t => t.id==itm.tva.id);
+
+        // si la tva n'est pas enregistrée ds la liste
+        if (__tId==-1) {
+          // on ajoute un objet pour le moyen de paiement dans le tableau
+          // et on récupère son index (length - 1)
+          __tId = __ventil.tva.push({
+                        id: itm.tva.id,
+                        taux: Number(itm.tva.valeur),
+                        ht: 0,
+                        montant: 0,
+                        ttc: 0
+                      }) - 1;
         }
+        // on récupère l'objet pour le mettre à jour avec les valeurs de la commande
+        const __tva = __ventil.tva[__tId];
+        const { ht, montant, ttc } = __ventil.tva[__tId];
+
         let __ht = itm.prix / (1+Number(itm.tva.valeur));
-        __ventil.tva[itm.tva.id].ttc += itm.prix;
-        __ventil.tva[itm.tva.id].ht += __ht;
-        __ventil.tva[itm.tva.id].montant += __ht * Number(itm.tva.valeur);
+
+        __ventil.tva[__tId] = {
+            ...__tva, 
+            ht:(ht + __ht),
+            montant:(montant + (__ht * Number(itm.tva.valeur))),
+            ttc:(ttc + itm.prix)
+          };
       });
     });
 
     __ca = __vnt - (__remb + __dep);
 
     __mtcaisse = params.fdcaisse + __ca;
+
 
     return {
       debut: startOfToday(),

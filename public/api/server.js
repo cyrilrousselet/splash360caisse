@@ -10,9 +10,12 @@ const allowedOrigins = [
   //'*'
 ];
 
+let responses = [];
+
 const server = {
-  init: () => {
+  init: (webContents) => {
     const xpr = express();
+
 
     // xpr.use(cors({
     //   origin: function(origin, callback){
@@ -43,7 +46,11 @@ const server = {
     xpr.post('/setcommande', (req,res) => {
       log.info('POST : '+req.body.data);
       let __d = new Date();
-      res.json({status:'success', commandeid: 'c'+__d.getTime().toString()});
+
+      const response_id = responses.push(res) - 1;
+      webContents.send('setCommande', {data: req.body.data, response: response_id});
+      
+  //    res.json({status:'success', commandeid: 'c'+__d.getTime().toString()});
     });
     xpr.listen(3300, () => {
       log.info('server écoute le port 3300');
@@ -51,4 +58,21 @@ const server = {
   }
 }
 
-module.exports = server;
+const actions = {
+  sendTicketId: (req, res) => {
+
+    
+    const { ticketId, response } = req.payload;
+   // log.info(response);
+    responses[response].json({status:'success', commandeid: ticketId});
+    
+    log.info('ticketID : '+ticketId);
+
+    res.send({msg: 'ticketID sent'});
+  }
+};
+
+module.exports = {
+  ...server,
+  ...actions
+};

@@ -173,7 +173,7 @@ const data = {
                     caisses_all: 'Toutes les caisses',
                     depenses: 'Montant dépenses : ',
                     remboursements: 'Montant remboursements : ',
-                    ventes: 'Montant ventes : ',
+                    encaissements: 'Montant encaissements : ',
                     mtcaisse: 'Montant caisse : ',
                     ca: 'CA',
                     tickets: 'Nbre tickets',
@@ -189,14 +189,17 @@ const data = {
                         ca: '<CA>',
                         numtickets: 'NBRE DE TICKETS',
                         ticket_moyen: 'TICKET MOYEN',
-                        type: 'TYPE',
+                        type: 'TAUX',
                         ht: 'HT',
                         tva: 'TVA',
                         ttc: 'TTC',
+                        vente_short: 'VENTES',
+                        remboursements_short: 'REMB.',
+                        ca_short: 'CA',
                         moyens: {
                             especes: 'ESPECES',
                             carte: 'CARTE BLEUE',
-                            tickets: 'TICKET RESTAURANT',
+                            ticket: 'TICKET RESTAURANT',
                             cheque: 'CHÈQUE'
                         },
                         total: 'Total'

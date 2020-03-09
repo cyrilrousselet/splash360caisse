@@ -2,6 +2,8 @@ import { commandeActionTypes } from './commandeActionTypes';
 import { commandeServices } from './commandeServices';
 
 
+
+
 function getCommandesList(params={}) {
 
   return dispatch => {
@@ -55,12 +57,12 @@ function validateCommande(payload) {
     dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_REQUEST });
 
    // payload.status = 'confirmed';
-    const state = getState();
+    const catalogueReducer = getState().catalogueReducer;
     
-    return commandeServices.saveCommande(payload, state)
+    return commandeServices.saveCommande(payload, catalogueReducer)
     .then(
       confirm => {
-        const { user } = state.authentication;
+        const { user } = getState().authentication;
         const commande = commandeServices.getNewCommande({operator:user, caisse:0});
         dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
       },
@@ -94,7 +96,7 @@ function standByCommande(payload) {
     console.log(payload);
     const state = getState();
     
-    commandeServices.saveCommande(payload, state)
+    commandeServices.saveCommande(payload, state.catalogueReducer)
     .then(
       confirm => {
         const { user } = state.authentication;
@@ -121,7 +123,7 @@ function livraisonCommande(payload) {
     console.log(payload);
     const state = getState();
     
-    commandeServices.saveCommande(payload, state)
+    commandeServices.saveCommande(payload, state.catalogueReducer)
     .then(
       confirm => {
         const { user } = state.authentication;
@@ -283,6 +285,32 @@ function removeRendu(payload) {
 }
 
 
+function setCommandeFromAPI(payload) {
+  return (dispatch, getState) => {
+
+    const state = getState();
+    console.log(payload);
+    const commande = commandeServices.setCommandeFromAPI(payload.data, state.catalogueReducer);
+
+    commandeServices.sendTicketId(commande.ticketId, payload.response);
+    
+    commandeServices.saveCommande(commande, state.catalogueReducer)
+    .then(
+      confirm => {
+        dispatch(getCommandesList());
+        dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
+      },
+      error => {
+        console.log(error);
+        dispatch({ type:commandeActionTypes.VALIDATE_COMMANDE_FAILURE, error: error.toString() })
+      }
+    );
+    return commande.ticketId;
+  }
+}
+
+
+
 export const commandeActions = {
   getCommande,
   addProduit,
@@ -300,5 +328,6 @@ export const commandeActions = {
   validateCommandeAndUpdateList,
   addIngredient,
   removeIngredient,
+  setCommandeFromAPI,
   noIngredientForStep
 };

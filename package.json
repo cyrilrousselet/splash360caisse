@@ -43,6 +43,7 @@
         "eiphop": "^1.0.11",
         "electron-is-dev": "^1.1.0",
         "electron-log": "^3.0.7",
+        "electron-promise-ipc": "^2.0.1",
         "electron-store": "^4.0.0",
         "escpos": "^2.5.2",
         "express": "^4.17.1",

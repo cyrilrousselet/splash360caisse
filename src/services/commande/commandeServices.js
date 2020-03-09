@@ -12,7 +12,9 @@ export const commandeServices = {
   addIngredient,
   removeIngredient,
   noIngredientForStep,
-  getRuleValues
+  getRuleValues,
+  setCommandeFromAPI,
+  sendTicketId
  };
 
 function getNewCommande(params) {
@@ -24,6 +26,7 @@ function getNewCommande(params) {
         items: [],
         reglements: [],
         rendus: [],
+        total: 0,
         mode: 'surplace',
         status: 'pending'
     }
@@ -537,7 +540,7 @@ function addRendu(payload, rendus) {
 }
 
 
-function saveCommande(commande, state) {
+function saveCommande(commande, catalogueReducer) {
 /*
   let __cmd = {
     commande_id: payload.ticketId,
@@ -570,7 +573,7 @@ function saveCommande(commande, state) {
 
   // on met tous les produits dans le même array
   let produits = [];
-  for (let [key, value] of Object.entries(state.catalogueReducer.catalogue)) {
+  for (let [key, value] of Object.entries(catalogueReducer.catalogue)) {
     produits = [...produits, ...value.produits];
   }
 
@@ -579,7 +582,7 @@ function saveCommande(commande, state) {
     const prd = produits.find(p => p.id==itm.produitid);
     items.push({
       ...itm,
-      tva: {id: prd.tva_id, valeur: state.catalogueReducer.tva[prd.tva_id].valeur}
+      tva: {id: prd.tva_id, valeur: catalogueReducer.tva[prd.tva_id].valeur}
     })
   });
 
@@ -594,6 +597,84 @@ function saveCommande(commande, state) {
 
   return emit('dbCommandePersist', {commande:__c});
 }
+
+
+function setCommandeFromAPI(data, catalogueReducer) {
+
+  const commande = getNewCommande(data);
+  commande.status = data.status; // "standby" ou "completed"
+
+  // on met tous les produits dans le même array
+  let produits = [];
+  for (let [key, value] of Object.entries(catalogueReducer.catalogue)) {
+    produits = [...produits, ...value.produits];
+  }
+
+  data.items.forEach(itm => {
+
+    // infos du produit issues du catalogue
+    const prd = produits.find(p => p.id==itm.produitid);
+    // steps de personnalisation du produit issus du catalogue
+    const steps = catalogueReducer.steps[itm.produitid];
+    let steps_list = [];
+    steps.forEach(step => {
+      steps_list.push({id: step.step_id, completed: true}); // <-- "completed=true" parce que commande terminée
+    }); 
+    
+
+    // création de l'item (produit dans la commande)
+    const item = {
+      produitid: itm.produitid,
+      nom: prd.nom,
+      prix: itm.quantite*Number(prd.prix),
+      pu: Number(prd.prix),
+      tva: {...catalogueReducer.tva[prd.tva_id]},
+      composition: prd.composition,
+      ingredients: [...prd.composition],
+      steps: steps_list,
+      stepslength: steps.length,
+      quantite: itm.quantite,
+      itemid: _newCommandeItemId(),
+      status: 'completed'
+    };
+
+    // ajout des ingrédients (personnalisation)
+    itm.ingredients.forEach(ing => {
+
+      // infos de l'ingrédient issues du catalogue
+      const ingredient = catalogueReducer.ingredients[ing.ingredient];
+      const ingredient_step = steps.find(st => {
+        let __istype = false;
+        st.regles.forEach(str => {
+          if (str.type==ingredient.type) __istype = true;
+        });
+        return __istype;
+      });
+
+      item.ingredients.push({ingredient: ing.ingredient, type: ingredient.type, qte: ing.qte, prix: Number(ingredient.supplement), nom: ingredient.nom, fromStep:ingredient_step.step_id});
+
+    });
+
+    item.prix = _getPrix(item, steps)    
+    commande.items.push(item);
+    
+  });
+  
+  commande.total = _getCommandeTotal(commande.items);
+  return commande;
+
+
+}
+
+
+function sendTicketId(ticketId, response) {
+  console.log('commandeServices.sendTicketId('+ticketId+')')
+  return emit('sendTicketId', {ticketId, response});
+}
+
+
+
+
 
 const _newCommandeId = () => {
     let __d = new Date();

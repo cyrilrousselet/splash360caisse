@@ -8,11 +8,13 @@ const dbCommandesApi = require('./dbCommandesApi.js');
 const dbParametresApi = require('./dbParametresApi.js');
 
 const peripheralApi = require('./peripheralApi.js');
+const server = require('./server.js');
 
 
 setupMainHandler(electron, {
                   ...dbCatalogueApi, 
                   ...dbCommandesApi,
                   ...dbParametresApi,
-                  ...peripheralApi
+                  ...peripheralApi,
+                  ...server
                 }, true);

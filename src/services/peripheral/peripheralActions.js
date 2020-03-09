@@ -184,8 +184,7 @@ function printTicket(payload) {
         strings: {}
       };
 
-     peripheralServices.printTicketCommande(imprimante, template, contenu)
-      // peripheralServices.printTest()
+      peripheralServices.printTicket(imprimante, template, contenu)
       .then(
         response => {
           console.log(response);
@@ -219,8 +218,8 @@ function printPeriodeX(payload={}) {
       const {impression} = strings.modules.cloture;
 
       const {debut, fin} = periode;
-      const __debut = format(debut, "d MMM yyyy à H:mm:ss", { locale: frLocale });
-      const __fin = format(fin, "d MMM yyyy à H:mm:ss", { locale: frLocale });
+      const __debut = format(debut, "dd/MM/yyyy - HH:mm:ss", { locale: frLocale });
+      const __fin = format(fin, "dd/MM/yyyy - HH:mm:ss", { locale: frLocale });
 
 
       const __periode = {...periode, 
