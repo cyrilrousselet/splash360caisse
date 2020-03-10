@@ -603,6 +603,7 @@ function setCommandeFromAPI(data, catalogueReducer) {
 
   const commande = getNewCommande(data);
   commande.status = data.status; // "standby" ou "completed"
+  commande.mode = data.mode; // "emporter", "surplace" ou "livraison"
 
   // on met tous les produits dans le même array
   let produits = [];
@@ -614,49 +615,59 @@ function setCommandeFromAPI(data, catalogueReducer) {
 
     // infos du produit issues du catalogue
     const prd = produits.find(p => p.id==itm.produitid);
-    // steps de personnalisation du produit issus du catalogue
-    const steps = catalogueReducer.steps[itm.produitid];
-    let steps_list = [];
-    steps.forEach(step => {
-      steps_list.push({id: step.step_id, completed: true}); // <-- "completed=true" parce que commande terminée
-    }); 
-    
 
-    // création de l'item (produit dans la commande)
-    const item = {
-      produitid: itm.produitid,
-      nom: prd.nom,
-      prix: itm.quantite*Number(prd.prix),
-      pu: Number(prd.prix),
-      tva: {...catalogueReducer.tva[prd.tva_id]},
-      composition: prd.composition,
-      ingredients: [...prd.composition],
-      steps: steps_list,
-      stepslength: steps.length,
-      quantite: itm.quantite,
-      itemid: _newCommandeItemId(),
-      status: 'completed'
-    };
+    if (prd) {
 
-    // ajout des ingrédients (personnalisation)
-    itm.ingredients.forEach(ing => {
+      // steps de personnalisation du produit issus du catalogue
+      let steps = catalogueReducer.steps[itm.produitid];
+      let steps_list = [];
+      if (steps) {
+        steps.forEach(step => {
+          steps_list.push({id: step.step_id, completed: true}); // <-- "completed=true" parce que commande terminée
+        }); 
+      } else {
+        steps = [];
+      }
+      
 
-      // infos de l'ingrédient issues du catalogue
-      const ingredient = catalogueReducer.ingredients[ing.ingredient];
-      const ingredient_step = steps.find(st => {
-        let __istype = false;
-        st.regles.forEach(str => {
-          if (str.type==ingredient.type) __istype = true;
-        });
-        return __istype;
+      // création de l'item (produit dans la commande)
+      const item = {
+        produitid: itm.produitid,
+        nom: prd.nom,
+        prix: itm.quantite*Number(prd.prix),
+        pu: Number(prd.prix),
+        tva: {...catalogueReducer.tva[prd.tva_id]},
+        composition: prd.composition,
+        ingredients: [...prd.composition],
+        steps: steps_list,
+        stepslength: steps.length,
+        quantite: itm.quantite,
+        itemid: _newCommandeItemId(),
+        status: 'completed'
+      };
+
+      // ajout des ingrédients (personnalisation)
+      itm.ingredients.forEach(ing => {
+
+        // infos de l'ingrédient issues du catalogue
+        const ingredient = catalogueReducer.ingredients[ing.ingredient];
+        if (ingredient) {
+          const ingredient_step = steps.find(st => {
+            let __istype = false;
+            st.regles.forEach(str => {
+              if (str.type==ingredient.type) __istype = true;
+            });
+            return __istype;
+          });
+
+          item.ingredients.push({ingredient: ing.ingredient, type: ingredient.type, qte: ing.qte, prix: Number(ingredient.supplement), nom: ingredient.nom, fromStep:ingredient_step.step_id});
+        }
+
       });
 
-      item.ingredients.push({ingredient: ing.ingredient, type: ingredient.type, qte: ing.qte, prix: Number(ingredient.supplement), nom: ingredient.nom, fromStep:ingredient_step.step_id});
-
-    });
-
-    item.prix = _getPrix(item, steps)    
-    commande.items.push(item);
+      item.prix = _getPrix(item, steps)    
+      commande.items.push(item);
+    }
     
   });
   

@@ -5,18 +5,37 @@
     position: relative;
     z-index: 1;
   }
+
+  .MainZone {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .clo-gauche,
+  .clo-centre,
+  .clo-droite {
+    width: 30%;
+    height: 100%;
+  }
+  .clo-centre {
+    width: 38%;
+  }
+
   .blocgauche,
+  .bloccentre,
   .blocdroite {
     background-color:$blanc;
     box-shadow: 0 5px 15px 0 rgba(0,0,0,0.10);
     border-radius: 15px;
-    width: 28%;
-    height: calc(100% - 260px);
-    position: absolute;
-    top: 110px;
+    width: 100%;
+    height: calc(100% - 60px);
   }
-  .blocdroite {
-    right: 30px;
+  .bloccentre {
+    box-shadow: none;
+    height: 100%;
+    border: 1px dashed $noir;
+    padding: 20px;
   }
   .btnreprint {
     position: absolute;

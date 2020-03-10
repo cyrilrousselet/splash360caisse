@@ -204,8 +204,29 @@ const data = {
                         },
                         total: 'Total'
                     },
-                }
-
+                },
+                derniere: {
+                    titre: "Dernière Clôture",
+                    caption: {
+                        date: "Date",
+                        heure: "Heure",
+                        editeur: "Éditeur"
+                    },
+                    reprint: "Ré-Imprimer"
+                },
+                selection: {
+                    vendeur: "Vendeur",
+                    vendeur_all: "Tous les vendeurs",
+                    caisse: "Caisse",
+                    caisse_all: "Toutes les caisses"
+                },
+                comptagebtn: "Comptage",
+                print_x: "Imprime X Caisse",
+                total_caisse_theo: "Total en caisse théorique",
+                total_caisse_cmpt: "Total en caisse compté",
+                prelevement: "Prélèvement en clôture",
+                fond_de_caisse: "Nouveau fond de caisse",
+                cloture_z: "Clôture Z"
             },
             stocks: { nom: "Stocks" },
             statistiques: { nom: "Statistiques" },

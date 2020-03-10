@@ -453,7 +453,7 @@ function _printPeriodeX(printer, data, strings) {
     .drawLine()
     .tableCustom([
       {text: strings.caption.ca, cols:25, align:'LEFT'},
-      {text: "-"+Number(data.ca).toFixed(2).replace('.',','), cols:15, align:'RIGHT'},
+      {text: Number(data.ca).toFixed(2).replace('.',','), cols:15, align:'RIGHT'},
       {text: '3#', cols:8, align:'RIGHT'}
     ])
     .feed(1)
