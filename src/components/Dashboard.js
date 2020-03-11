@@ -3,6 +3,7 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../constants/translations';
 import LargeButton from './common/LargeButton';
 import PropTypes from 'prop-types';
+import LoadingSpinner from './common/LoadingSpinner';
 
 let strings = new LocalizedStrings(data);
 
@@ -20,12 +21,14 @@ class Dashboard extends Component {
     this.props.getCommandesList();
     this.props.getAllActive();
     this.props.getParametres();
+    this.props.getCurrentPeriode();
   }
 
 
   calculeCA(){
 
     const { commandeslist } = this.props;
+
     let __ca = 0;
     let __tickets = 0;
     if (commandeslist) {
@@ -44,10 +47,19 @@ class Dashboard extends Component {
 
   render() {
 
-    const { cashname, username, userid, modules, points, devise, onClickUseraccount, onClickModule } = this.props;
-    const { chiffredaffaires, ca_eval, ticketsNum } = this.calculeCA();
+    const { cashname, username, userid, modules, points, devise, onClickUseraccount, onClickModule, periode } = this.props;
+    const { ca, numtickets } = periode;
+    
+  
+    if (ca==undefined) {
+      return <LoadingSpinner />;
+    }
 
-    console.log(chiffredaffaires);
+
+    
+    const ca_eval = "good";
+
+    console.log(ca);
 
     return (
       <div className="Dashboard">
@@ -65,8 +77,8 @@ class Dashboard extends Component {
           </div>
         )}
         </div>
-        <div className="tickets">{ strings.dashboard.ticketsnum }<span>{ ticketsNum }</span></div>
-        <div className="ca">{ strings.dashboard.ca }<span className={ ca_eval }>{ chiffredaffaires.toFixed(2).replace(/\./g,',') }{ devise }</span></div>
+        <div className="tickets">{ strings.dashboard.ticketsnum }<span>{ numtickets }</span></div>
+        <div className="ca">{ strings.dashboard.ca }<span className={ ca_eval }>{ ca.toFixed(2).replace(/\./g,',') }{ devise }</span></div>
       </div>
     );
   }
@@ -79,6 +91,7 @@ Dashboard.propTypes = {
   getCommandesList: PropTypes.func.isRequired,
   getAllActive: PropTypes.func.isRequired,
   getParametres: PropTypes.func.isRequired,
+  getCurrentPeriode: PropTypes.func.isRequired,
   commandeslist: PropTypes.object,
   loading: PropTypes.bool,
   error: PropTypes.object

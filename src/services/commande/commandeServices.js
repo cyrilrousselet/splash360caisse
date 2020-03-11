@@ -12,6 +12,7 @@ export const commandeServices = {
   addIngredient,
   removeIngredient,
   noIngredientForStep,
+  completeStep,
   getRuleValues,
   setCommandeFromAPI,
   sendTicketId
@@ -52,7 +53,7 @@ function addProduit(payload, tva, items, steps) {
 
     let steps_list = [];
     steps.forEach(step => {
-      steps_list.push({id: step.step_id, completed: false});
+      steps_list.push({id: step.step_id, completed: false, validated: isStepOptionnal(step)});
     });
 
     item = {
@@ -166,15 +167,16 @@ function addIngredient(ingredient, quantite, step, item, produitSteps) {
   }
 
   // test du step (validation et supplément)
-  const validated = _checkStepRegles(step, item);
+  const {completed, validated} = _checkStepRegles(step, item);
   // on vérifie si l'ajout est raccord avec la liste
   // et on indique que le step est "completed", le cas échéant
-  if (validated) {
-    const itemstepid = steps.findIndex(st => st.id == step.step_id);
-    steps[itemstepid].completed = true;
-    
-    item.steps = [...steps];
+  const itemstepid = steps.findIndex(st => st.id == step.step_id);
+  steps[itemstepid].validated = validated;
+  steps[itemstepid].completed = completed;
+  item.steps = [...steps];
 
+  if (validated) {
+    
     // si tous les steps sont "completed", 
     // on passe le status de l'item de "pending" à "completed"
     if (-1==steps.findIndex(st => st.completed == false)) {
@@ -219,15 +221,16 @@ function removeIngredient(ingredient, quantite, step, item, produitSteps) {
   }
 
   // test du step (validation et supplément)
-  const validated = _checkStepRegles(step, item);
+  const {validated, completed} = _checkStepRegles(step, item);
   // on vérifie si l'ajout est raccord avec la liste
   // et on indique que le step est "completed", le cas échéant
+  const itemstepid = steps.findIndex(st => st.id == step.step_id);
+  steps[itemstepid].validated = validated;
+  steps[itemstepid].completed = completed;
+  
+  item.steps = [...steps];
+  
   if (validated) {
-    const itemstepid = steps.findIndex(st => st.id == step.step_id);
-    steps[itemstepid].completed = true;
-    
-    item.steps = [...steps];
-
     // si tous les steps sont "completed", 
     // on passe le status de l'item de "pending" à "completed"
     if (-1==steps.findIndex(st => st.completed == false)) {
@@ -261,12 +264,13 @@ function noIngredientForStep(step, item, produitSteps) {
   item.ingredients = [...ingredients];
 
   // test du step (validation et supplément)
-  const validated = _checkStepRegles(step, item);
+  const {validated, completed} = _checkStepRegles(step, item);
   // on vérifie si l'ajout est raccord avec la liste
   // et on indique que le step est "completed", le cas échéant
   if (validated) {
     const itemstepid = steps.findIndex(st => st.id == step.step_id);
-    steps[itemstepid].completed = true;
+    steps[itemstepid].validated = true;
+    steps[itemstepid].completed = completed;
     
     item.steps = [...steps];
 
@@ -282,6 +286,31 @@ function noIngredientForStep(step, item, produitSteps) {
 
   return item;
 }
+
+
+function completeStep(step, item, produitSteps) {
+
+  const {steps} = item;
+
+  const {validated} = _checkStepRegles(step, item);
+  if (validated) {
+    const itemstepid = steps.findIndex(st => st.id == step.step_id);
+    steps[itemstepid].validated = true;
+    steps[itemstepid].completed = true;
+    
+    item.steps = [...steps];
+
+    // si tous les steps sont "completed", 
+    // on passe le status de l'item de "pending" à "completed"
+    if (-1==steps.findIndex(st => st.completed == false)) {
+      item.status = 'completed';
+    }
+  }
+  item.prix = _getPrix(item, produitSteps);
+
+  return item;
+}
+
 
 function _getPrix(item, produitSteps) {
 
@@ -341,6 +370,7 @@ function _mustBeUnique(step, ingredient) {
 function _checkStepRegles(step, item) {
 
   let __validated = true;
+  let __completed = true;
   let __types = [];
   let __ing = [];
 
@@ -359,18 +389,41 @@ function _checkStepRegles(step, item) {
     console.log('on applique le test sur tous les types d’ingredients à la fois');
     __ing = item.ingredients.filter(ing => __types.indexOf(ing.type)!=-1);
     if (!_testIngredient(step.regles[0], __ing)) __validated = false;
+    if (!_testIngredient(step.regles[0], __ing, true)) __completed = false;
   }
   else {
     step.regles.forEach( regle => {
       __ing = item.ingredients.filter(ing => regle.type == ing.type);
       if (!_testIngredient(regle, __ing)) __validated = false;
+      if (!_testIngredient(regle, __ing, true)) __completed = false;
     })
   }
 
-  return __validated;
+  return {validated:__validated, completed:__completed};
 
 }
 
+
+function isStepOptionnal(step) {
+  let __isOptionnal = false;
+  // s'il n'y a qu'un type d'ingrédients
+  // OU
+  // s'il y a plusieurs types d'ingrédients dans le step
+  // et que la règle vaut pour tous les types
+  if (step.regles.length == 1 || (step.regles.length>1 && step.regles[0].regle.toLowerCase().indexOf('g') != -1)) {
+    if (getRuleValues(step.regles[0].regle).min==0) __isOptionnal = true;
+  } 
+  // sinon (plusieurs types avec règles différentes), on additionne les valeurs minimales (si 0, c'est optionnel)
+  else {
+    let values = 0;
+    step.regles.forEach( rgl => {
+      values += getRuleValues(rgl.regle).min;
+    });
+    if (values==0) __isOptionnal = true;
+  }
+
+  return __isOptionnal;
+}
 
 
 function _getSupplements(rule, ingredients) {
@@ -409,8 +462,7 @@ function _getSupplements(rule, ingredients) {
 }
 
 
-
-function _testIngredient(rule, ingredients) {
+function _testIngredient(rule, ingredients, max=false) {
 
   const regle = rule.regle;
   let __valeurs = getRuleValues(regle);
@@ -425,13 +477,16 @@ function _testIngredient(rule, ingredients) {
   let __confirm = false;
   let __c = 0;
 
-  // si la quantité est dans le créneau valeurs min <= total <= max
-  if (__valeurs.max == -1 || __total <= __valeurs.max) __c++;
-  if (__total >= __valeurs.min) __c++;
+  if (max) {
+    if (__valeurs.max == __total) __c = 2;
+  } else {
+    // si la quantité est dans le créneau valeurs min <= total <= max
+    if (__valeurs.max == -1 || __total <= __valeurs.max) __c++;
+    if (__total >= __valeurs.min) __c++;
 
-  // si la quantité correspond à la valeur fixe
-  if (__valeurs.max == __valeurs.min && __valeurs.min == __total) __c = 2;
-
+    // si la quantité correspond à la valeur fixe
+    if (__valeurs.max == __valeurs.min && __valeurs.min == __total) __c = 2;
+  }
   if (__c==2) __confirm = true;
 
   return __confirm;
@@ -582,7 +637,7 @@ function saveCommande(commande, catalogueReducer) {
     const prd = produits.find(p => p.id==itm.produitid);
     items.push({
       ...itm,
-      tva: {id: prd.tva_id, valeur: catalogueReducer.tva[prd.tva_id].valeur}
+      tva: {id: prd.tva_id, code: catalogueReducer.tva[prd.tva_id].code, valeur: catalogueReducer.tva[prd.tva_id].valeur}
     })
   });
 
@@ -623,7 +678,7 @@ function setCommandeFromAPI(data, catalogueReducer) {
       let steps_list = [];
       if (steps) {
         steps.forEach(step => {
-          steps_list.push({id: step.step_id, completed: true}); // <-- "completed=true" parce que commande terminée
+          steps_list.push({id: step.step_id, completed: true, validated: true}); // <-- "completed=true" parce que commande terminée
         }); 
       } else {
         steps = [];

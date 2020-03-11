@@ -3,6 +3,8 @@ import { bindActionCreators } from 'redux';
 import Dashboard from '../components/Dashboard';
 import { modulesList } from '../constants/modules';
 import { commandeActions } from '../services/commande/commandeActions';
+import { clotureActions } from '../services/cloture/clotureActions';
+import { getPeriode } from '../services/cloture/clotureReducer';
 import { getCommandesListError, getCommandesListLoading, getCommandesList } from '../services/commande/commandesListReducer';
 import history from '../helpers/history';
 import paths from './../constants/routes.json';
@@ -78,6 +80,7 @@ const mapStateToProps = (state) => {
     username: state.authentication.user.nom,
     userid: state.authentication.user.id,
     commandeslist: getCommandesList(state),
+    periode: getPeriode(state),
     points: 200,
     modules: getModulesFromDroits(state.authentication.user.droits),
     devise: ' €',
@@ -99,6 +102,7 @@ const mapDispatchToProps = (dispatch) => {
     getCommandesList: commandeActions.getCommandesList,
     getAllActive: catalogueActions.getAllActive,
     getParametres: parametresActions.getAll,
+    getCurrentPeriode: clotureActions.getCurrentPeriode,
   }, dispatch);
   return {
     ...binded,

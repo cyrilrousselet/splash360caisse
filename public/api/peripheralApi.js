@@ -376,6 +376,7 @@ function _printCommande(printer, data, strings) {
     });
   }
 
+  printer.drawLine();
   
 
 
@@ -443,18 +444,18 @@ function _printPeriodeX(printer, data, strings) {
     .tableCustom([
       {text: strings.caption.ventes, cols:25, align:'LEFT'},
       {text: Number(data.ventes).toFixed(2).replace('.',','), cols:15, align:'RIGHT'},
-      {text: '2#', cols:8, align:'RIGHT'}
+      {text: '', cols:8, align:'RIGHT'}
     ])
     .tableCustom([
       {text: strings.caption.remboursements, cols:25, align:'LEFT'},
       {text: "-"+Number(data.remboursements).toFixed(2).replace('.',','), cols:15, align:'RIGHT'},
-      {text: '1#', cols:8, align:'RIGHT'}
+      {text: '', cols:8, align:'RIGHT'}
     ])
     .drawLine()
     .tableCustom([
       {text: strings.caption.ca, cols:25, align:'LEFT'},
       {text: Number(data.ca).toFixed(2).replace('.',','), cols:15, align:'RIGHT'},
-      {text: '3#', cols:8, align:'RIGHT'}
+      {text: '', cols:8, align:'RIGHT'}
     ])
     .feed(1)
     .tableCustom([
@@ -601,7 +602,6 @@ function _printPeriodeX(printer, data, strings) {
 function _printMessage(printer, data, strings) {
   
     printer
-      .drawLine()
       .feed(1)
       .align('CT')
 

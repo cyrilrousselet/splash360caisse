@@ -231,6 +231,19 @@ function noIngredientForStep(payload) {
   }
 }
 
+function completeStep(payload) {
+  return (dispatch, getState)  => {
+    const { itemid, stepid } = payload;
+    const state = getState();
+    const item = state.commandeReducer.commande.items.find(itm => itm.itemid === itemid);
+    const step = state.catalogueReducer.steps[item.produitid].find(step => step.step_id === stepid);
+    const produitSteps = state.catalogueReducer.steps[item.produitid];
+
+    const commandeItem = commandeServices.completeStep(step, item, produitSteps);
+    dispatch({ type: commandeActionTypes.STEP_COMPLETE, commandeItem });
+  }
+}
+
 
 function updateCommande(payload) {
   return (dispatch) => {
@@ -329,5 +342,6 @@ export const commandeActions = {
   addIngredient,
   removeIngredient,
   setCommandeFromAPI,
-  noIngredientForStep
+  noIngredientForStep,
+  completeStep
 };

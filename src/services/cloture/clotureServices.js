@@ -176,7 +176,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
       fdcaisse: params.fdcaisse,
       mtcaisse: __mtcaisse,
       numtickets: __tickets,
-      ticket_moyen: Math.round(__ca/__tickets),
+      ticket_moyen: __tickets==0 ? 0 : Math.round(__ca/__tickets),
       ventilation: __ventil
     };
 

@@ -9,6 +9,7 @@ import {data} from '../../constants/translations';
 import LoadingSpinner from '../common/LoadingSpinner';
 import MinusIcon from '../common/icon/MinusIcon';
 import PlusIcon from '../common/icon/PlusIcon';
+import StdButton from '../common/StdButton';
 let strings = new LocalizedStrings(data);
 
 
@@ -57,7 +58,7 @@ class Personnalisation extends React.Component {
 
   render() {
     
-    const { open, closePersonnalisation, contClass, stepObject, step, item, ingredientTypes, addIngredient, removeIngredient, noIngredientForStep } = this.props;
+    const { open, closePersonnalisation, contClass, stepObject, step, item, ingredientTypes, addIngredient, removeIngredient, noIngredientForStep, completeStep, valide } = this.props;
 
     if (null==stepObject || Object.entries(stepObject).length==0) return <Modal open={open}><LoadingSpinner /></Modal>;
 
@@ -93,7 +94,7 @@ class Personnalisation extends React.Component {
                       />
                       )}
 
-                      {RegExp('^(\\?|\\*|\\{0)').test(type.regle) && 
+                      {/* {RegExp('^(\\?|\\*|\\{0)').test(type.regle) && 
                         <IngredientBtn 
                           id={-1}
                           nom={strings.modules.encaissement.personnalisation.aucun}
@@ -104,14 +105,14 @@ class Personnalisation extends React.Component {
                           addIng={()=>{ noIngredientForStep({itemid: item, stepid: step}) }} 
                           key={0}
                         />
-                      }
+                      } */}
                     </div>
                   </div>
                 )}
               </div>
             </div>
             <div className="footer">
-
+              <StdButton identifier="btnsuivant" elementclass="btnsuivant" key="btnsuivant" text={strings.modules.encaissement.personnalisation.valider} disabled={!valide} onClick={ () => { completeStep({itemid: item, stepid: step}) }} />
             </div>
           </div>
         </div>

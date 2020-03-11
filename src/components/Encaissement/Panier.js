@@ -39,12 +39,12 @@ class Panier extends React.Component {
     
       // vérifie si un item est 'pending'
       // si c'est le cas, on ouvre la Personnalisation avec le premier step non complet
-      // et si c'est le cas, le bouton 'encaissement'/'valider' est inactif
       
       const __pendingItem = items.find(item => item.status==='pending');
       if (__pendingItem) {
         const __nextStep = __pendingItem.steps.find(step => step.completed===false);
-        this.props.openPersonnalisation(__pendingItem.itemid, __nextStep.id, 'Panier.componentDidUpdate()');
+        this.props.openPersonnalisation(__pendingItem.itemid, __nextStep.id, __nextStep.validated,  'Panier.componentDidUpdate()');
+      //  this.props.validatePersonnalisation(__nextStep.validated);
       } else {
         this.props.closePersonnalisation('Panier.componentDidUpdate()');
       }
@@ -86,17 +86,11 @@ class Panier extends React.Component {
     // s'il y a des items dans la commande
     else {
       
-    //   // vérifie si un item est 'pending'
-    //   // si c'est le cas, on ouvre la Personnalisation avec le premier step non complet
-    //   // et si c'est le cas, le bouton 'encaissement'/'valider' est inactif
-      
+      // vérifie si un item est 'pending'
+      // si c'est le cas, le bouton 'encaissement'/'valider' est inactif
        const __pendingItem = items.find(item => item.status==='pending');
        if (__pendingItem) {
          __encaissable = false;
-    //     const __nextStep = __pendingItem.steps.find(step => step.completed===false);
-    //     this.props.openPersonnalisation(__pendingItem.itemid, __nextStep.id);
-    //   } else {
-    //     this.props.closePersonnalisation();
        }
     }
 
@@ -235,7 +229,10 @@ class Panier extends React.Component {
                           ingredients={ itm.ingredients }
                           steps={ itm.steps }
                           _onClick={ this.setSelectedIndex }
-                          _onSubClick={ (stepid) => { this.props.openPersonnalisation(itm.itemid.toString(), stepid, 'subitem') } } />
+                          _onSubClick={ (stepid) => { 
+                            let __step = itm.steps.find(s=>s.id==stepid);
+                            this.props.openPersonnalisation(itm.itemid.toString(), stepid, __step.validated, 'subitem');
+                          } } />
                   )}
                   </List>
               </div> {/* /.wrapper */}

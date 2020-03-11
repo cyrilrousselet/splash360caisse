@@ -2,7 +2,7 @@ import { peripheralActionTypes } from './peripheralActionTypes';
 import { peripheralServices } from './peripheralServices';
 
 import 'date-fns';
-import { format, compareAsc, startOfToday, endOfToday, startOfDay, endOfDay } from "date-fns";
+import { format, compareAsc, startOfToday, endOfToday, startOfDay, endOfDay, parseJSON } from "date-fns";
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 
@@ -69,10 +69,10 @@ function printTicket(payload) {
       };
       // -> template ticket
       const template = [
-        'logo', 
+       // 'logo', 
         'entreprise', 
         'commande', 
-        'message', 
+      //  'message', 
         'legal'
       ];
 
@@ -85,8 +85,12 @@ function printTicket(payload) {
       const caisse = {id:'001'};
       const operateur = cmd.operator;
 
-      const date = format(new Date(), "d MMM yyyy", { locale: this.locale });
-      const heure = format(new Date(), "H:mm:ss");
+      let __createdAt = new Date();
+      if (undefined!=cmd.createdAt) {
+        __createdAt = parseJSON(cmd.createdAt);
+      }
+      const date = format(__createdAt, "d MMM yyyy", { locale: frLocale });
+      const heure = format(__createdAt, "H:mm:ss");
 
       const cmdTva = {};
       let articles = [];
@@ -142,7 +146,7 @@ function printTicket(payload) {
 
       const commande = {
         id: cmd.ticketId,
-        date: format(cmd.createdAt | new Date(), "d MMM yyyy à H:mm:ss", { locale: this.locale }),
+        date: `${date} à ${heure}`,
         articles: articles,
         total: {
           total: total.toFixed(2),

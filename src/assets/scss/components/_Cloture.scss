@@ -20,6 +20,11 @@
   }
   .clo-centre {
     width: 38%;
+    font-family: $f_boo;
+    font-size: 12px;
+    @include font-smoothing(on);
+
+   
   }
 
   .blocgauche,
@@ -36,6 +41,74 @@
     height: 100%;
     border: 1px dashed $noir;
     padding: 20px;
+
+    overflow-y: scroll;
+
+    .wrapper {
+      height: 100%;
+      width: 100%;
+    }
+    .periode {
+      .val {
+        text-align: center;
+      }
+      padding-bottom: 10px;
+    }
+    .sel {
+      padding-bottom: 10px;
+    }
+
+    .recap {
+      .recap-item {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      padding-bottom: 10px;
+    }
+
+    .titre {
+      text-align: center;
+      border-top: 1px solid $noir;
+      border-bottom: 1px solid $noir;
+      padding: 5px 0;
+      margin: 10px 0 5px;
+    }
+    .detail {
+      .detail-item {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        &.pre-filet {
+          margin-top: 5px;
+          padding-top: 5px;
+          border-top: 1px solid $noir;
+        }
+        &.post-space {
+          padding-bottom: 10px;
+        }
+        &.total {
+          padding-left: 20px;
+        }
+      }
+    }
+    .ventil {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      .ventil-nom,
+      .ventil-intit:nth-child(1) {
+        width: 30%;
+      }
+      &.total {
+        padding-top: 10px;
+      }
+      &.intit {
+        padding-bottom: 5px;
+      }
+    }
+
   }
   .btnreprint {
     position: absolute;

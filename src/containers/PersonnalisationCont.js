@@ -93,7 +93,8 @@ const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({
     addIngredient: commandeActions.addIngredient,
     removeIngredient: commandeActions.removeIngredient,
-    noIngredientForStep: commandeActions.noIngredientForStep
+    noIngredientForStep: commandeActions.noIngredientForStep,
+    completeStep: commandeActions.completeStep
     // getCommande: commandeActions.getCommande,
     // updateCommande: commandeActions.updateCommande,
     // addReglement: commandeActions.addReglement,

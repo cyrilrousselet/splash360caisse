@@ -114,7 +114,9 @@ const data = {
                 },
                 personnalisation: {
                     titre: 'Personnalisation',
-                    aucun: 'Aucun'
+                    aucun: 'Aucun',
+                    suivant: 'Suivant',
+                    valider: 'Valider'
                 }
             },
             employes: { nom: "Employés" },
