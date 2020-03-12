@@ -402,6 +402,30 @@ const data = {
                     options: { nom: 'Options' },
                 }
             }
+        },
+        tickets: {
+            commande: {
+                titre: 'COMMANDE',
+                numero: 'Cmd no '
+            },
+            cuisine: {
+                titre: 'CUISINE',
+                numero: 'Cmd no ',
+                creation: 'Créée le ',
+                mode: {
+                    livraison: 'À LIVRER',
+                    surplace: 'SUR PLACE',
+                    emporter: 'À EMPORTER'
+                },
+                caption: {
+                    quantite: 'QTE',
+                    articles: 'ARTICLES',
+                    num_articles: 'NOMBRE D\'ARTICLES : '
+                }
+            },
+            sac: {
+                titre: 'SAC'
+            }
         }
     }
 }

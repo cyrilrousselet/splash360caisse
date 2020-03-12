@@ -56,41 +56,52 @@ function printTicket(payload) {
 
     const state = getState();
 
+
+
+    const cmd = state.commandeReducer.commande;
+    const types = state.catalogueReducer.ingredientTypes;
+    const ingredients = state.catalogueReducer.ingredients;
+    const tva = state.catalogueReducer.tva;
+
+    const caisse = {id:'001'};
+    const operateur = cmd.operator;
+
+    let __createdAt = new Date();
+    if (undefined!=cmd.createdAt) {
+      __createdAt = parseJSON(cmd.createdAt);
+    }
+    const date = format(__createdAt, "d MMM yyyy", { locale: frLocale });
+    const heure = format(__createdAt, "H:mm:ss");
+
+    let contenu = {};
+
+    let imprimante = {
+      nom: 'POS Printer',
+      connexion: 'usb',
+      param: null,
+      encoding: 'Cp850'
+    };
+    let template = [];
+
     // en fonction du type de ticket demandé
     if (payload=='commande') {
 
       // récup des infos
       // -> params imprimante
-      const imprimante = {
+      imprimante = {
         nom: 'POS Printer',
         connexion: 'usb',
         param: null,
         encoding: 'Cp850'
       };
       // -> template ticket
-      const template = [
+      template = [
        // 'logo', 
         'entreprise', 
         'commande', 
       //  'message', 
         'legal'
       ];
-
-
-      const cmd = state.commandeReducer.commande;
-      const types = state.catalogueReducer.ingredientTypes;
-      const ingredients = state.catalogueReducer.ingredients;
-      const tva = state.catalogueReducer.tva;
-
-      const caisse = {id:'001'};
-      const operateur = cmd.operator;
-
-      let __createdAt = new Date();
-      if (undefined!=cmd.createdAt) {
-        __createdAt = parseJSON(cmd.createdAt);
-      }
-      const date = format(__createdAt, "d MMM yyyy", { locale: frLocale });
-      const heure = format(__createdAt, "H:mm:ss");
 
       const cmdTva = {};
       let articles = [];
@@ -157,10 +168,8 @@ function printTicket(payload) {
       };
 
 
-      console.log(commande);
-
       // contenu :
-      const contenu = {
+      contenu = {
         // -> logo
         logo: null,
         // -> entreprise
@@ -185,17 +194,87 @@ function printTicket(payload) {
           printid: 1,
           date: `${date} - ${heure}`
         },
-        strings: {}
+        strings: strings.tickets.commande
       };
 
-      peripheralServices.printTicket(imprimante, template, contenu)
-      .then(
-        response => {
-          console.log(response);
-        }
-      )
-      dispatch({ type: peripheralActionTypes.PRINT_TICKET });
     }
+    else if (payload==="cuisine") {
+      
+
+      // récup des infos
+      // -> params imprimante
+      imprimante = {
+        nom: 'POS Printer',
+        connexion: 'usb',
+        param: null,
+        encoding: 'Cp850'
+      };
+      // -> template ticket
+      template = [
+        'cuisine_info', 
+        'cuisine_detail'
+      ];
+
+
+
+      let articles = [];
+      cmd.items.forEach(article => {
+
+        let articleIngredients = [];
+
+        article.ingredients.forEach(ing => {
+          if (ing.fromStep!=null && types[ing.type].print.cuisine!=null) {
+            articleIngredients.push({
+              qte: ing.qte,
+              nom: ing.nom,
+              weight: types[ing.type].print.cuisine
+            });
+          }
+        });
+
+        articleIngredients.sort((a,b)=>a.weight-b.weight);
+
+        articles.push({
+          qte: article.quantite,
+          nom: article.nom,
+          ingredients: articleIngredients
+        });        
+
+      });
+
+
+
+      const cmdcuisine = {
+        id: cmd.ticketId,
+        mode: cmd.mode,
+        date: `${date} à ${heure}`,
+        articles: articles
+      };
+
+
+
+
+      contenu = {
+        info: {
+          date: date,
+          heure: heure
+        },
+        detail: cmdcuisine,
+        strings: strings.tickets.cuisine
+      }
+
+
+    }
+
+
+
+    peripheralServices.printTicket(imprimante, template, contenu)
+    .then(
+      response => {
+        console.log(response);
+      }
+    )
+    dispatch({ type: peripheralActionTypes.PRINT_TICKET });
   }
 }
 

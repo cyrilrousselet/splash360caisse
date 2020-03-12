@@ -10,7 +10,7 @@ import history from '../helpers/history';
 import paths from './../constants/routes.json';
 
 import 'date-fns';
-import { format, compareAsc, startOfToday, endOfToday, startOfDay, endOfDay } from "date-fns";
+import { format, compareAsc, compareDesc, startOfToday, endOfToday, startOfDay, endOfDay } from "date-fns";
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
@@ -70,6 +70,11 @@ TabPanel.propTypes = {
 function TableCommandes(props) {
   const { liste, id, openReglement, openReprise, openPrint, ...other } = props;
 
+  liste.sort((a,b) => {
+    let da = new Date(a.commande.createdAt), db = new Date(b.commande.createdAt);
+    return compareDesc(da, db);
+  });
+
   return (
     <TableContainer className="table-cont">
       <Table size="small" key={id} aria-label="a dense table" stickyHeader>
@@ -124,7 +129,7 @@ function ImpressionTicketPopin(props) {
           </div>
           <div className="body">
           { _tickets.map((tkt,i) =>
-            <StdButton identifier={ `${tkt}` } key={i} elementclass="ticket" icon={ false } text={ tkt } onClick={(value) => { launchTicket(tkt, commandeId) }} />
+            <StdButton identifier={ `${tkt}` } key={i} elementclass="ticket" icon={ false } text={ tkt } onClick={(value) => { launchTicket(tkt) }} />
           )}
           </div>
         </div>
@@ -208,7 +213,7 @@ class ListeCommandes extends React.Component {
   }
 
   render() {
-    const { commandeslist, error, loading, tickets } = this.props;
+    const { commandeslist, error, loading, tickets, printTicket } = this.props;
 
     const { startDate, endDate, openTab, commandeId, printOpen } = this.state;
 
@@ -217,6 +222,7 @@ class ListeCommandes extends React.Component {
     for (let [key, value] of Object.entries(commandeslist)) {
       let cmd = {
         id: value.ticketId,
+        createdAt: value.createdAt,
         date: format(new Date(value.createdAt), "d MMM yyyy", { locale: this.locale }),
         heure: format(new Date(value.createdAt), "H:mm:ss"),
         montant: `${value.total.toFixed(2).replace('.',',')} €`,
@@ -305,7 +311,7 @@ class ListeCommandes extends React.Component {
         </div>
 
         <ReglementCont open={ this.state.reglementOpen } contClass="ListeCommandeReglement" commandeId={ this.state.commandeId } closeReglement={ this.closeReglement } />
-        <ImpressionTicketPopin tickets={tickets} printOpen={printOpen} closeHandler={this.closePrint} commandeId={ this.state.commandeId } launchTicket={this.launchTicket} />
+        <ImpressionTicketPopin tickets={tickets} printOpen={printOpen} closeHandler={this.closePrint} commandeId={ this.state.commandeId } launchTicket={printTicket} />
       </div>
     </div>
     );
@@ -317,6 +323,7 @@ ListeCommandes.propTypes = {
   commandeslist: PropTypes.object,
   tickets: PropTypes.array,
   getCommandesList: PropTypes.func.isRequired,
-  getCommande: PropTypes.func.isRequired
+  getCommande: PropTypes.func.isRequired,
+  printTicket: PropTypes.func.isRequired
 };
 

@@ -6,7 +6,7 @@ import paths from './../constants/routes.json';
 import { commandeActions } from '../services/commande/commandeActions';
 import { catalogueActions } from '../services/catalogue/catalogueActions';
 import { getCommandesListError, getCommandesListLoading, getCommandesList } from '../services/commande/commandesListReducer';
-
+import { peripheralActions } from '../services/peripheral/peripheralActions';
 
 const mapStateToProps = (state) => {
   return {
@@ -18,13 +18,14 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-  const binded = bindActionCreators({
+  const bound = bindActionCreators({
       getAllActive: catalogueActions.getAllActive,
       getCommandesList: commandeActions.getCommandesList,
-      getCommande: commandeActions.getCommande
+      getCommande: commandeActions.getCommande,
+      printTicket: peripheralActions.printTicket
   }, dispatch);
   return {
-    ...binded,
+    ...bound,
     onClickSubModule: text => history.push(paths[text])
   }
 }

@@ -2,6 +2,7 @@ const log = require('electron-log');
 const escpos = require('escpos');
 const path = require('path');
 
+let printerOpen = false;
 
 
 const actions = {
@@ -11,59 +12,21 @@ const actions = {
 
     const { imprimante, template, contenu } = req.payload;
 
-    // déclaration de l'imprimante
-    let device;
-    if (imprimante.connexion=='usb') {
-      device = new escpos.USB();
-    } else if (imprimante.connexion=='network') {
-      device = new escpos.Network(imprimante.param); 
+    log.info('printerOpen',printerOpen);
+
+    if (printerOpen) {
+      let waitInterval = setInterval(function() {
+        if (!printerOpen) {
+          clearInterval(waitInterval);
+          _doPrintTicket(imprimante, template, contenu);
+        }
+      },200);
     }
-    const options = {encoding: imprimante.encoding};
-    const printer = new escpos.Printer(device, options);
-
-    log.debug('printTicket start');
-
-    const tux = path.join(__dirname, 'default_logo.png');
-    log.debug('img : '+tux);
-
-
-    log.debug('device opened');
-
-    // s'il y a un logo au début du ticket
-    if (template[0]==='logo') {
-      log.debug('Image.load -> print');
-    
-      // on charge le logo
-      escpos.Image.load(tux, function(image){
-
-        // on ouvre la connexion à l'imprimante
-        device.open(async function() {
-          log.debug('print logo');
-          // center logo
-          printer.align('CT');
-          // impression logo
-          let printimage = await _printImage(printer, image);
-
-          // une fois le logo chargé on lance l'impression des sections du tickets
-          if (printimage) {
-           _launchPrint(template, printer, contenu);
-          }
-
-        });
-
-      });
-  
-    } else {
-
-      // on ouvre la connexion à l'imprimante
-      // et on lance l'impression des sections du tickets
-      device.open(function() {
-        _launchPrint(template, printer, contenu);
-      });
+    else {
+      _doPrintTicket(imprimante, template, contenu);
     }
-      
 
-    log.debug('printTicket end');
+   
 
     res.send({msg: 'ticket printed'});
   },
@@ -161,7 +124,64 @@ const actions = {
   }
 }
 
+function _doPrintTicket(imprimante, template, contenu) {
 
+  // déclaration de l'imprimante
+  let device;
+  if (imprimante.connexion=='usb') {
+    device = new escpos.USB();
+  } else if (imprimante.connexion=='network') {
+    device = new escpos.Network(imprimante.param); 
+  }
+  const options = {encoding: imprimante.encoding};
+  const printer = new escpos.Printer(device, options);
+  printerOpen = true;
+
+  log.debug('printTicket start');
+
+  const tux = path.join(__dirname, 'default_logo.png');
+  log.debug('img : '+tux);
+
+
+  log.debug('device opened');
+
+  // s'il y a un logo au début du ticket
+  if (template[0]==='logo') {
+    log.debug('Image.load -> print');
+
+    // on charge le logo
+    escpos.Image.load(tux, function(image){
+
+      // on ouvre la connexion à l'imprimante
+      device.open(async function() {
+        log.debug('print logo');
+        // center logo
+        printer.align('CT');
+        // impression logo
+        let printimage = await _printImage(printer, image);
+
+        // une fois le logo chargé on lance l'impression des sections du tickets
+        if (printimage) {
+        _launchPrint(template, printer, contenu);
+        }
+
+      });
+
+    });
+
+  } else {
+
+    // on ouvre la connexion à l'imprimante
+    // et on lance l'impression des sections du tickets
+    device.open(function() {
+      _launchPrint(template, printer, contenu);
+    });
+  }
+    
+
+  log.debug('printTicket end');
+
+}
 
 
 async function _printImage(printer, image) {
@@ -176,6 +196,12 @@ async function _printImage(printer, image) {
 function _launchPrint(template, printer, contenu) {
 
   log.debug('_launchPrint()');
+
+  if (template.length==0) {
+    printer.close(function() {
+      printerOpen = false;
+    });
+  }
 
   template.forEach((section,i,arr) => {
 
@@ -194,26 +220,103 @@ function _launchPrint(template, printer, contenu) {
       _printLegal(printer, contenu.legal, contenu.strings);
     }
     else if ('periode_x' === section) {
-      _printPeriodeX(printer, contenu.periode, contenu.strings)
+      _printPeriodeX(printer, contenu.periode, contenu.strings);
     }
+    else if ('cuisine_info' === section) {
+      _printCuisineInfo(printer, {info: contenu.info, commande:{id:contenu.detail.id, mode:contenu.detail.mode}}, contenu.strings);
+    }
+    else if ('cuisine_detail' ===  section) {
+      _printCuisineDetail(printer, contenu.detail, contenu.strings);
+    }
+
     // fin du ticket
     if (i === arr.length-1) {
       printer.feed(2)
-       .cut()
-       .close();
+       .cut();
+      
+      printer
+       .close(function() {
+         printerOpen = false;
+       });
     }
   });
 }
 
 
 
+// informations sur le ticket cuisine
+function _printCuisineInfo(printer, data, strings) {
+  printer
+    .font('A')
+    .align('CT')
+    .style('B')
+    .size(1,2)
+    .text(strings.titre)
+    .size(1,1)
+    .drawLine()
+    .style('NORMAL')
+    .text(`${strings.numero}${data.commande.id}`)
+    .text(`${strings.creation}${data.info.date} à ${data.info.heure}`)
+    .text(`*** ${strings.mode[data.commande.mode]} ***`)
+    .size(1,2)
+    .drawLine()
+    .size(1,1);
+}
 
+function _printCuisineDetail(printer, data, strings) {
+  printer
+    .size(1,1)
+    .align('LT')
+    .style('B')
+    .tableCustom([
+      {text:'', cols:3},
+      {text: strings.caption.quantite, cols:3},
+      {text:'', cols:3},
+      {text: strings.caption.articles, cols:36},
+      {text:'', cols:3}
+    ]);
 
+    printer.drawLine();
+
+    let numarticles = 0;
+    data.articles.forEach((article) => {
+      printer.style('B').tableCustom([
+        {text:'', cols:3},
+        {text: article.qte, cols:3, align:'RIGHT'},
+        {text:'', cols:3},
+        {text: article.nom, cols:36, align:'LEFT'},
+        {text:'', cols:3}
+      ]);
+      numarticles++;
+
+    if (article.ingredients.length>0) {
+      article.ingredients.forEach((ingredient) => {
+        printer.style('NORMAL').tableCustom([
+          {text:'', cols:3},
+          {text: ingredient.qte, cols:3, align:'RIGHT'},
+          {text:'', cols:3},
+          {text: '  '+ingredient.nom, cols:36, align:'LEFT'},
+          {text:'', cols:3}
+        ]);
+      });
+
+      printer.feed(1);
+    }
+  });
+  
+  printer
+    .drawLine()
+    .align('CT')
+    .size(1,2)
+    .text(`${strings.caption.num_articles}${numarticles}`);
+
+}
 
 // informations Company
 function _printEntreprise(printer, data, strings) {
     printer
       .font('A')
+      .size(1,1)
       .feed(1)
       .align('CT')
     ;
@@ -236,6 +339,7 @@ function _printCommande(printer, data, strings) {
   printer
     .drawLine()
     .font('A')
+    .size(1,1)
     .style('NORMAL')
     .text(data.id)
     .text(data.date)
@@ -388,6 +492,7 @@ function _printPeriodeX(printer, data, strings) {
 
   // EN-TÊTE:
     printer
+      .size(1,1)
       .drawLine()
       .align('LT')
       .text(strings.periode.titre)
