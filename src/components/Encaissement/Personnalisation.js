@@ -31,9 +31,9 @@ const IngredientBtn = ({ id, nom, supplement, step, addIng, removeIng, qte, with
       <Fab aria-label="remove" size="small" className="moins" disabled={qte==0} onClick={(e) => { e.stopPropagation(); removeIng(id)}}>
         <MinusIcon htmlColor="#ffffff" />
       </Fab>
-      <Fab aria-label="add" size="small" className="plus" disabled={false} onClick={(e) => { e.stopPropagation(); addIng(id)}}>
+      {/* <Fab aria-label="add" size="small" className="plus" disabled={false} onClick={(e) => { e.stopPropagation(); addIng(id)}}>
         <PlusIcon htmlColor="#ffffff" />
-      </Fab>
+      </Fab> */}
     </div>
   )}
   </div>
