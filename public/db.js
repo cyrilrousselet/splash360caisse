@@ -18,6 +18,8 @@ const db = {
  steps: dbFactory('steps.db'),
  settings: dbFactory('settings.db'),
  commandes: dbFactory('commandes.db'),
+ imprimantes: dbFactory('imprimantes.db'),
+ tickets: dbFactory('tickets.db'),
  parametres: dbFactory('parametres.db')
 };
 

@@ -85,7 +85,7 @@ function _parseCatalogue(_rawdata) {
 
   const __catalogue = {};
   _rawdata._grp.forEach(g => {
-    __catalogue[g.groupe_id] = {nom: g.nom, produits: []};
+    __catalogue[g.groupe_id] = {nom: g.nom, produits: [], print: g.print};
   });
   
   _rawdata._prd.forEach(p => {

@@ -1,5 +1,7 @@
 const log = require('electron-log');
 const escpos = require('escpos');
+escpos.USB = require('escpos-usb');
+escpos.Network = require('escpos-network');
 const path = require('path');
 
 let printerOpen = false;
@@ -50,7 +52,7 @@ const actions = {
     } else if (imprimante.connexion=='network') {
       device = new escpos.Network(imprimante.param); 
     }
-    const options = {encoding: imprimante.encoding};
+    const options = {encoding: imprimante.encoding, width:42};
     const printer = new escpos.Printer(device, options);
 
     device.open(function() {
@@ -133,7 +135,7 @@ function _doPrintTicket(imprimante, template, contenu) {
   } else if (imprimante.connexion=='network') {
     device = new escpos.Network(imprimante.param); 
   }
-  const options = {encoding: imprimante.encoding};
+  const options = {encoding: imprimante.encoding, width:42};
   const printer = new escpos.Printer(device, options);
   printerOpen = true;
 
@@ -141,7 +143,6 @@ function _doPrintTicket(imprimante, template, contenu) {
 
   const tux = path.join(__dirname, 'default_logo.png');
   log.debug('img : '+tux);
-
 
   log.debug('device opened');
 
@@ -228,6 +229,12 @@ function _launchPrint(template, printer, contenu) {
     else if ('cuisine_detail' ===  section) {
       _printCuisineDetail(printer, contenu.detail, contenu.strings);
     }
+    else if ('sac_info' === section) {
+      _printSacInfo(printer, {info: contenu.info, commande:{id:contenu.detail.id, mode:contenu.detail.mode}}, contenu.strings);
+    }
+    else if ('sac_detail' ===  section) {
+      _printSacDetail(printer, contenu.detail, contenu.strings);
+    }
 
     // fin du ticket
     if (i === arr.length-1) {
@@ -265,14 +272,14 @@ function _printCuisineInfo(printer, data, strings) {
 
 function _printCuisineDetail(printer, data, strings) {
   printer
+    .align('CT')
     .size(1,1)
-    .align('LT')
     .style('B')
     .tableCustom([
       {text:'', cols:3},
       {text: strings.caption.quantite, cols:3},
       {text:'', cols:3},
-      {text: strings.caption.articles, cols:36},
+      {text: strings.caption.articles, cols:30},
       {text:'', cols:3}
     ]);
 
@@ -284,7 +291,7 @@ function _printCuisineDetail(printer, data, strings) {
         {text:'', cols:3},
         {text: article.qte, cols:3, align:'RIGHT'},
         {text:'', cols:3},
-        {text: article.nom, cols:36, align:'LEFT'},
+        {text: article.nom, cols:30, align:'LEFT'},
         {text:'', cols:3}
       ]);
       numarticles++;
@@ -295,7 +302,75 @@ function _printCuisineDetail(printer, data, strings) {
           {text:'', cols:3},
           {text: ingredient.qte, cols:3, align:'RIGHT'},
           {text:'', cols:3},
-          {text: '  '+ingredient.nom, cols:36, align:'LEFT'},
+          {text: '  '+ingredient.nom, cols:30, align:'LEFT'},
+          {text:'', cols:3}
+        ]);
+      });
+
+      printer.feed(1);
+    }
+  });
+  
+  printer
+    .drawLine()
+    .align('CT')
+    .size(1,2)
+    .text(`${strings.caption.num_articles}${numarticles}`);
+
+}
+
+// informations sur le ticket cuisine
+function _printSacInfo(printer, data, strings) {
+  printer
+    .font('A')
+    .align('CT')
+    .style('B')
+    .size(1,2)
+    .text(strings.titre)
+    .size(1,1)
+    .drawLine()
+    .style('NORMAL')
+    .text(`${strings.numero}${data.commande.id}`)
+    .text(`${strings.creation}${data.info.date} à ${data.info.heure}`)
+    .text(`*** ${strings.mode[data.commande.mode]} ***`)
+    .size(1,2)
+    .drawLine()
+    .size(1,1);
+}
+
+function _printSacDetail(printer, data, strings) {
+  printer
+    .align('CT')
+    .size(1,1)
+    .style('B')
+    .tableCustom([
+      {text:'', cols:3},
+      {text: strings.caption.quantite, cols:3},
+      {text:'', cols:3},
+      {text: strings.caption.articles, cols:30},
+      {text:'', cols:3}
+    ]);
+
+    printer.drawLine();
+
+    let numarticles = 0;
+    data.articles.forEach((article) => {
+      printer.style('B').tableCustom([
+        {text:'', cols:3},
+        {text: article.qte, cols:3, align:'RIGHT'},
+        {text:'', cols:3},
+        {text: article.nom, cols:30, align:'LEFT'},
+        {text:'', cols:3}
+      ]);
+      numarticles++;
+
+    if (article.ingredients.length>0) {
+      article.ingredients.forEach((ingredient) => {
+        printer.style('NORMAL').tableCustom([
+          {text:'', cols:3},
+          {text: ingredient.qte, cols:3, align:'RIGHT'},
+          {text:'', cols:3},
+          {text: '  '+ingredient.nom, cols:30, align:'LEFT'},
           {text:'', cols:3}
         ]);
       });
@@ -337,6 +412,7 @@ function _printEntreprise(printer, data, strings) {
 function _printCommande(printer, data, strings) {
 
   printer
+    .align('CT')
     .drawLine()
     .font('A')
     .size(1,1)
@@ -353,7 +429,7 @@ function _printCommande(printer, data, strings) {
     .tableCustom([
       {text:'QTE', cols:3, align:'RIGHT'},
       {text:'', cols:1},
-      {text:'ARTICLE', cols:28, align:'LEFT'},
+      {text:'ARTICLE', cols:22, align:'LEFT'},
       {text:'', cols:1},
       {text:'P.U.', cols:6, align:'RIGHT'},
       {text:'', cols:1},
@@ -374,7 +450,7 @@ function _printCommande(printer, data, strings) {
       printer.style('B').tableCustom([
         {text: article.qte, cols:3, align:'RIGHT'},
         {text:'', cols:1},
-        {text: article.nom, cols:28, align:'LEFT'},
+        {text: article.nom, cols:22, align:'LEFT'},
         {text:'', cols:1},
         {text: article.pu, cols:6, align:'RIGHT'},
         {text:'', cols:1},
@@ -389,7 +465,7 @@ function _printCommande(printer, data, strings) {
         printer.style('NORMAL').tableCustom([
           {text: ingredient.qte, cols:3, align:'RIGHT'},
           {text:'', cols:1},
-          {text: '  '+ingredient.nom, cols:28, align:'LEFT'},
+          {text: '  '+ingredient.nom, cols:22, align:'LEFT'},
           {text:'', cols:1},
           {text: ingredient.pu, cols:6, align:'RIGHT'},
           {text:'', cols:1},
@@ -404,34 +480,40 @@ function _printCommande(printer, data, strings) {
   
   printer
     .drawLine()
-    .align('RT')
+    .align('CT')
     .size(1,2)
-    .text('TOTAL TTC   '+data.total.total.replace('.',','))
+    .tableCustom([
+      {text: 'TOTAL TTC   '+data.total.total.replace('.',','), cols:42, align:'RIGHT'}
+    ])
     .size(1,1)
     .drawLine();
 
   printer
-    .align('LT')
     .font('A')
-    .text('Nombre de lignes : '+_linecount);
+    .align('CT')
+    .tableCustom([
+      {text: 'Nombre de lignes : '+_linecount, cols:42, align:'LEFT'}
+    ]);
 
   // tva
   printer
+    .align('CT')
     .drawLine();
 
   // header
   printer
+    .align('CT')
     .style('B')
     .tableCustom([
       {text:'CODE', cols:4, align:'LEFT'},
       {text:'', cols:2},
-      {text:'TAUX', cols:9, align:'RIGHT'},
+      {text:'TAUX', cols:6, align:'RIGHT'},
       {text:'', cols:2},
-      {text:'TVA', cols:9, align:'RIGHT'},
+      {text:'TVA', cols:8, align:'RIGHT'},
       {text:'', cols:2},
-      {text:'H.T.', cols:9, align:'RIGHT'},
+      {text:'H.T.', cols:8, align:'RIGHT'},
       {text:'', cols:2},
-      {text:'TTC', cols:9, align:'RIGHT'}
+      {text:'TTC', cols:8, align:'RIGHT'}
     ])
     .style('NORMAL')
 
@@ -439,26 +521,27 @@ function _printCommande(printer, data, strings) {
     printer.tableCustom([
       {text:key, cols:4, align:'LEFT'},
       {text:'', cols:2},
-      {text:value.taux, cols:9, align:'RIGHT'},
+      {text:value.taux, cols:6, align:'RIGHT'},
       {text:'', cols:2},
-      {text:value.montant.toFixed(2).replace('.',','), cols:9, align:'RIGHT'},
+      {text:value.montant.toFixed(2).replace('.',','), cols:8, align:'RIGHT'},
       {text:'', cols:2},
-      {text:value.ht.toFixed(2).replace('.',','), cols:9, align:'RIGHT'},
+      {text:value.ht.toFixed(2).replace('.',','), cols:8, align:'RIGHT'},
       {text:'', cols:2},
-      {text:value.ttc.toFixed(2).replace('.',','), cols:9, align:'RIGHT'}
+      {text:value.ttc.toFixed(2).replace('.',','), cols:8, align:'RIGHT'}
     ]);
   }
 
 
   // reglements
   printer
+    .align('CT')
     .drawLine()
     .style('NORMAL').text('REGLEMENT :');
 
     data.reglements.forEach(reglement => {
       printer.style('NORMAL').tableCustom([
         {text:'', cols:1},
-        {text: reglement.moyen, cols:34, align:'LEFT'},
+        {text: reglement.moyen, cols:28, align:'LEFT'},
         {text:'', cols:1},
         {text: `${reglement.valeur.toFixed(2).replace('.',',')} EUR`, cols:12, align:'RIGHT'}
       ]);
@@ -473,7 +556,7 @@ function _printCommande(printer, data, strings) {
     data.rendus.forEach(rendu => {
       printer.style('NORMAL').tableCustom([
         {text:'', cols:1},
-        {text: rendu.moyen, cols:34, align:'LEFT'},
+        {text: rendu.moyen, cols:28, align:'LEFT'},
         {text:'', cols:1},
         {text: `${rendu.valeur.toFixed(2).replace('.',',')} EUR`, cols:12, align:'RIGHT'}
       ]);
@@ -494,43 +577,52 @@ function _printPeriodeX(printer, data, strings) {
     printer
       .size(1,1)
       .drawLine()
-      .align('LT')
-      .text(strings.periode.titre)
-      .text(data.debut+'  ->  '+data.fin)
-      .text(strings.editeur+data.editeur.nom+' ('+data.editeur.id+')')
+      .align('CT')
+      .tableCustom([
+        {text: strings.periode.titre, cols:42, align:'LEFT'},
+        {text: data.debut+' -> '+data.fin, cols:42, align:'CENTER'},
+        {text: strings.editeur+data.editeur.nom+' ('+data.editeur.id+')', cols:42, align:'LEFT'}
+      ])
       .feed(1)
       ;
     // vendeur(s) :
     if (data.vendeurs.length>1) {
-      printer.text(strings.vendeurs[1]+strings.vendeurs_all);
+      printer.tableCustom([
+          {text: strings.vendeurs[1]+strings.vendeurs_all, cols:42, align:'LEFT'}
+      ]);
     } else {
-      printer.text(strings.vendeurs[0]+data.vendeurs[0].nom+' ('+data.vendeurs[0].id+')');
+      printer.tableCustom([
+        {text: strings.vendeurs[0]+data.vendeurs[0].nom+' ('+data.vendeurs[0].id+')', cols:42, align:'LEFT'}
+      ]);
     }
     // caisse(s) :
     if (data.caisses.length>1) {
-      printer.text(strings.caisses[1]+strings.caisses_all)
-             .feed(1);
+      printer.tableCustom([
+        {text: strings.caisses[1]+strings.caisses_all, cols:42, align:'LEFT'}
+      ])
+      .feed(1);
     } else {
-      printer.text(strings.caisses[0]+data.caisses[0].nom+' ('+data.caisses[0].id+')')
-             .feed(1);
+      printer.tableCustom([
+        {text: strings.caisses[0]+data.caisses[0].nom+' ('+data.caisses[0].id+')', cols:42, align:'LEFT'}
+      ]).feed(1);
     }
     // récap montants :
     printer
       .tableCustom([
         {text: strings.depenses, cols:30, align:'LEFT'},
-        {text: Number(data.depenses).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
+        {text: Number(data.depenses).toFixed(2).replace('.',','), cols:12, align:'RIGHT'}
       ])
       .tableCustom([
         {text: strings.remboursements, cols:30, align:'LEFT'},
-        {text: Number(data.remboursements).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
+        {text: Number(data.remboursements).toFixed(2).replace('.',','), cols:12, align:'RIGHT'}
       ])
       .tableCustom([
         {text: strings.encaissements, cols:30, align:'LEFT'},
-        {text: Number(data.ventes).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
+        {text: Number(data.ventes).toFixed(2).replace('.',','), cols:12, align:'RIGHT'}
       ])
       .tableCustom([
         {text: strings.mtcaisse, cols:30, align:'LEFT'},
-        {text: Number(data.mtcaisse).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
+        {text: Number(data.mtcaisse).toFixed(2).replace('.',','), cols:12, align:'RIGHT'}
       ])
       .feed(1);
 
@@ -547,32 +639,32 @@ function _printPeriodeX(printer, data, strings) {
     printer
     .style('NORMAL')
     .tableCustom([
-      {text: strings.caption.ventes, cols:25, align:'LEFT'},
-      {text: Number(data.ventes).toFixed(2).replace('.',','), cols:15, align:'RIGHT'},
+      {text: strings.caption.ventes, cols:22, align:'LEFT'},
+      {text: Number(data.ventes).toFixed(2).replace('.',','), cols:12, align:'RIGHT'},
       {text: '', cols:8, align:'RIGHT'}
     ])
     .tableCustom([
-      {text: strings.caption.remboursements, cols:25, align:'LEFT'},
-      {text: "-"+Number(data.remboursements).toFixed(2).replace('.',','), cols:15, align:'RIGHT'},
-      {text: '', cols:8, align:'RIGHT'}
+      {text: strings.caption.remboursements, cols:22, align:'LEFT'},
+      {text: "-"+Number(data.remboursements).toFixed(2).replace('.',','), cols:12, align:'RIGHT'},
+      {text: '', cols:6, align:'RIGHT'}
     ])
     .drawLine()
     .tableCustom([
-      {text: strings.caption.ca, cols:25, align:'LEFT'},
-      {text: Number(data.ca).toFixed(2).replace('.',','), cols:15, align:'RIGHT'},
+      {text: strings.caption.ca, cols:22, align:'LEFT'},
+      {text: Number(data.ca).toFixed(2).replace('.',','), cols:12, align:'RIGHT'},
       {text: '', cols:8, align:'RIGHT'}
     ])
     .feed(1)
     .tableCustom([
       {text: '', cols:5, align:'LEFT'},
-      {text: strings.caption.numtickets, cols:20, align:'LEFT'},
-      {text: data.numtickets, cols:15, align:'RIGHT'},
+      {text: strings.caption.numtickets, cols:17, align:'LEFT'},
+      {text: data.numtickets, cols:12, align:'RIGHT'},
       {text: '', cols:8, align:'RIGHT'}
     ])
     .tableCustom([
       {text: '', cols:5, align:'LEFT'},
-      {text: strings.caption.ticket_moyen, cols:20, align:'LEFT'},
-      {text: Number(data.ticket_moyen).toFixed(2).replace('.',','), cols:15, align:'RIGHT'},
+      {text: strings.caption.ticket_moyen, cols:17, align:'LEFT'},
+      {text: Number(data.ticket_moyen).toFixed(2).replace('.',','), cols:12, align:'RIGHT'},
       {text: '', cols:8, align:'RIGHT'}
     ])
     .drawLine()
@@ -591,7 +683,7 @@ function _printPeriodeX(printer, data, strings) {
 
     printer
       .tableCustom([
-        {text: '', cols:21, align:'LEFT'},
+        {text: '', cols:15, align:'LEFT'},
         {text: strings.caption.vente_short, cols:9, align:'RIGHT'},
         {text: strings.caption.remboursements_short, cols:9, align:'RIGHT'},
         {text: strings.caption.ca_short, cols:9, align:'RIGHT'}
@@ -602,7 +694,7 @@ function _printPeriodeX(printer, data, strings) {
       printer
         .style('NORMAL')
         .tableCustom([
-          {text: vendeur.nom+' ('+vendeur.id+')', cols:21, align:'LEFT'},
+          {text: vendeur.nom+' ('+vendeur.id+')', cols:15, align:'LEFT'},
           {text: Number(vendeur.ventes).toFixed(2).replace('.',','), cols:9, align:'RIGHT'},
           {text: '-'+Number(vendeur.remboursements).toFixed(2).replace('.',','), cols:9, align:'RIGHT'},
           {text: Number(vendeur.ventes-vendeur.remboursements).toFixed(2).replace('.',','), cols:9, align:'RIGHT'}
@@ -615,7 +707,7 @@ function _printPeriodeX(printer, data, strings) {
     printer
       .feed(1)
       .tableCustom([
-        {text: strings.caption.total, cols:21, align:'LEFT'},
+        {text: strings.caption.total, cols:15, align:'LEFT'},
         {text: Number(vndvnt).toFixed(2).replace('.',','), cols:9, align:'RIGHT'},
         {text: '-'+Number(vndrmb).toFixed(2).replace('.',','), cols:9, align:'RIGHT'},
         {text: Number(vndtotal).toFixed(2).replace('.',','), cols:9, align:'RIGHT'}
@@ -637,11 +729,11 @@ function _printPeriodeX(printer, data, strings) {
       .tableCustom([
         {text: strings.caption.type, cols:9, align:'LEFT'},
         {text:'', cols:3},
-        {text: strings.caption.ht, cols:10, align:'RIGHT'},
+        {text: strings.caption.ht, cols:8, align:'RIGHT'},
         {text:'', cols:3},
-        {text: strings.caption.tva, cols:10, align:'RIGHT'},
+        {text: strings.caption.tva, cols:8, align:'RIGHT'},
         {text:'', cols:3},
-        {text: strings.caption.ttc, cols:10, align:'RIGHT'}
+        {text: strings.caption.ttc, cols:8, align:'RIGHT'}
       ]);
 
     data.ventilation.tva.forEach(tva => { 
@@ -650,11 +742,11 @@ function _printPeriodeX(printer, data, strings) {
         .tableCustom([
           {text: Number(tva.taux*100).toFixed(2).replace('.',',')+'%', cols:9, align:'LEFT'},
           {text:'', cols:3},
-          {text: Number(tva.ht).toFixed(2).replace('.',','), cols:10, align:'RIGHT'},
+          {text: Number(tva.ht).toFixed(2).replace('.',','), cols:8, align:'RIGHT'},
           {text:'', cols:3},
-          {text: Number(tva.montant).toFixed(2).replace('.',','), cols:10, align:'RIGHT'},
+          {text: Number(tva.montant).toFixed(2).replace('.',','), cols:8, align:'RIGHT'},
           {text:'', cols:3},
-          {text: Number(tva.ttc).toFixed(2).replace('.',','), cols:10, align:'RIGHT'}
+          {text: Number(tva.ttc).toFixed(2).replace('.',','), cols:8, align:'RIGHT'}
         ]);
         tvaht += tva.ht;
         tvamnt += tva.montant;
@@ -666,11 +758,11 @@ function _printPeriodeX(printer, data, strings) {
     .tableCustom([
       {text: strings.caption.total, cols:9, align:'LEFT'},
       {text:'', cols:3},
-      {text: Number(tvaht).toFixed(2).replace('.',','), cols:10, align:'RIGHT'},
+      {text: Number(tvaht).toFixed(2).replace('.',','), cols:8, align:'RIGHT'},
       {text:'', cols:3},
-      {text: Number(tvamnt).toFixed(2).replace('.',','), cols:10, align:'RIGHT'},
+      {text: Number(tvamnt).toFixed(2).replace('.',','), cols:8, align:'RIGHT'},
       {text:'', cols:3},
-      {text: Number(tvattc).toFixed(2).replace('.',','), cols:10, align:'RIGHT'}
+      {text: Number(tvattc).toFixed(2).replace('.',','), cols:8, align:'RIGHT'}
     ]);
 
 
@@ -688,7 +780,7 @@ function _printPeriodeX(printer, data, strings) {
       printer
         .style('NORMAL')
         .tableCustom([
-          {text: strings.caption.moyens[moyen.moyen], cols:30, align:'LEFT'},
+          {text: strings.caption.moyens[moyen.moyen], cols:24, align:'LEFT'},
           {text: Number(moyen.valeur).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
         ]);
         moytotal += moyen.valeur;
@@ -697,7 +789,7 @@ function _printPeriodeX(printer, data, strings) {
     printer
     .feed(1)
     .tableCustom([
-      {text: strings.caption.total, cols:30, align:'LEFT'},
+      {text: strings.caption.total, cols:24, align:'LEFT'},
       {text: Number(moytotal).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
     ]);
         

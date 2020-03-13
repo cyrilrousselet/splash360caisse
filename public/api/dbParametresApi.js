@@ -1,7 +1,7 @@
 const db = require('../db.js');
 const log = require('electron-log');
-const hydration = require('../dev/dbhydration.js');
-const {parametres} = hydration;
+const hydration = require('../dev/dbhydration_chickenstreet.js');
+const {parametres, imprimantes, tickets} = hydration;
 
 
 const actions = {
@@ -31,11 +31,11 @@ async function _getAll() {
   let __params = await db.parametres.count();
   log.info('count params = '+__params);
   if (__params==0) {
-    log.info('dbParametresApi._getAll() : init DB');
     __rawdata = await _fillinParametres();
   } else {
     __rawdata = await _findParametres();
   }
+  
   return _parseParametres(__rawdata);
 }
 
@@ -64,9 +64,17 @@ function _parseParametres(_rawdata) {
     });
   });
 
-  return {parametres: __param};
-}
+  const __impr = {};
+  _rawdata._impr.forEach(p => {
+    __impr[p.printer_id] = {id: p.printer_id, nom: p.nom, connexion: p.connexion, param: p.param, encoding: p.encoding, default: p.default};
+  });
+  const __tck = {};
+  _rawdata._tck.forEach(t => {
+    __tck[t.ticket_id] = {id: t.ticket_id, nom: t.nom, template: t.template, imprimantes: t.imprimantes};
+  });
 
+  return {parametres: __param, imprimantes: __impr, tickets: __tck};
+}
 
 
 /**
@@ -75,7 +83,9 @@ function _parseParametres(_rawdata) {
  */
 async function _fillinParametres() {
   const _param = await db.parametres.insert(parametres);
-  return { _param };
+  const _impr = await db.imprimantes.insert(imprimantes);
+  const _tck = await db.tickets.insert(tickets);
+  return { _param, _impr, _tck };
 }
 
 /**
@@ -83,8 +93,13 @@ async function _fillinParametres() {
  */
 async function _findParametres(prd_criteriae={}) {
   const _param = await db.parametres.find({});
-  return { _param };
+  const _impr = await db.imprimantes.find({});
+  const _tck = await db.tickets.find({});
+  return { _param, _impr, _tck };
 }
+
+
+
 
 
 

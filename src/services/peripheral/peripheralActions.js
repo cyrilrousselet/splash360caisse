@@ -174,9 +174,9 @@ function printTicket(payload) {
         logo: null,
         // -> entreprise
         entreprise: {
-          nom: 'LE RESTAURANT',
-          coordonnees: [ '5 place de la ville', '75011 PARIS', 'Tél. 01 02 03 04 05', 'E-mail : paris@le-restaurant.fr', 'www.le-restaurant.fr' ],
-          fiscal: [ 'SIRET 123 456 789 00012 - CODE NAF 5610C', 'TVA FR12 123 456 789' ]
+          nom: 'CHICKEN STREET',
+          coordonnees: [ '31, avenue Anatole France', '94600 CHOISY-LE-ROI', 'www.chickenstreet.fr' ],
+          fiscal: [ '844 413 807 RCS Créteil' ]
         },
         // -> commande (id, date, articles, remises, totaux, tva, réglements)
         commande: commande,
@@ -204,9 +204,9 @@ function printTicket(payload) {
       // récup des infos
       // -> params imprimante
       imprimante = {
-        nom: 'POS Printer',
-        connexion: 'usb',
-        param: null,
+        nom: 'Cuisine Printer',
+        connexion: 'network',
+        param: '192.168.182.151',
         encoding: 'Cp850'
       };
       // -> template ticket
@@ -265,6 +265,73 @@ function printTicket(payload) {
 
 
     }
+    else if (payload==="sac") {
+      
+
+      // récup des infos
+      // -> params imprimante
+      imprimante = {
+        nom: 'POS Printer',
+        connexion: 'usb',
+        param: null,
+        encoding: 'Cp850'
+      };
+      // -> template ticket
+      template = [
+        'sac_info', 
+        'sac_detail'
+      ];
+
+
+
+      let articles = [];
+      cmd.items.forEach(article => {
+
+        let articleIngredients = [];
+
+        article.ingredients.forEach(ing => {
+          if (ing.fromStep!=null && types[ing.type].print.cuisine!=null) {
+            articleIngredients.push({
+              qte: ing.qte,
+              nom: ing.nom,
+              weight: types[ing.type].print.cuisine
+            });
+          }
+        });
+
+        articleIngredients.sort((a,b)=>a.weight-b.weight);
+
+        articles.push({
+          qte: article.quantite,
+          nom: article.nom,
+          ingredients: articleIngredients
+        });        
+
+      });
+
+
+
+      const cmdcuisine = {
+        id: cmd.ticketId,
+        mode: cmd.mode,
+        date: `${date} à ${heure}`,
+        articles: articles
+      };
+
+
+
+
+      contenu = {
+        info: {
+          date: date,
+          heure: heure
+        },
+        detail: cmdcuisine,
+        strings: strings.tickets.sac
+      }
+
+
+    }
 
 
 
@@ -301,8 +368,8 @@ function printPeriodeX(payload={}) {
       const {impression} = strings.modules.cloture;
 
       const {debut, fin} = periode;
-      const __debut = format(debut, "dd/MM/yyyy - HH:mm:ss", { locale: frLocale });
-      const __fin = format(fin, "dd/MM/yyyy - HH:mm:ss", { locale: frLocale });
+      const __debut = format(debut, "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
+      const __fin = format(fin, "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
 
 
       const __periode = {...periode, 
@@ -312,9 +379,9 @@ function printPeriodeX(payload={}) {
       const contenu = {
         // -> entreprise
         entreprise: {
-          nom: 'LE RESTAURANT',
-          coordonnees: [ '5 place de la ville', '75011 PARIS', 'Tél. 01 02 03 04 05', 'E-mail : paris@le-restaurant.fr', 'www.le-restaurant.fr' ],
-          fiscal: [ 'SIRET 123 456 789 00012 - CODE NAF 5610C', 'TVA FR12 123 456 789' ]
+          nom: 'CHICKEN STREET',
+          coordonnees: [ '31, avenue Anatole France', '94600 CHOISY-LE-ROI', 'www.chickenstreet.fr' ],
+          fiscal: [ '844 413 807 RCS Créteil' ]
         },
         periode: __periode,
         strings: impression

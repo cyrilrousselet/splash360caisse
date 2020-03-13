@@ -424,7 +424,19 @@ const data = {
                 }
             },
             sac: {
-                titre: 'SAC'
+                titre: 'SAC',
+                numero: 'Cmd no ',
+                creation: 'Créée le ',
+                mode: {
+                    livraison: 'À LIVRER',
+                    surplace: 'SUR PLACE',
+                    emporter: 'À EMPORTER'
+                },
+                caption: {
+                    quantite: 'QTE',
+                    articles: 'ARTICLES',
+                    num_articles: 'NOMBRE D\'ARTICLES : '
+                }
             }
         }
     }
