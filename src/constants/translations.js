@@ -115,6 +115,7 @@ const data = {
                 personnalisation: {
                     titre: 'Personnalisation',
                     aucun: 'Aucun',
+                    precedent: 'Précédent',
                     suivant: 'Suivant',
                     valider: 'Valider'
                 }

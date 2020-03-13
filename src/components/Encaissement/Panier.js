@@ -43,7 +43,9 @@ class Panier extends React.Component {
       const __pendingItem = items.find(item => item.status==='pending');
       if (__pendingItem) {
         const __nextStep = __pendingItem.steps.find(step => step.completed===false);
-        this.props.openPersonnalisation(__pendingItem.itemid, __nextStep.id, __nextStep.validated,  'Panier.componentDidUpdate()');
+        let __stepIndex = __pendingItem.steps.findIndex(s=>s.id==__nextStep.id);
+        let __previd = (__stepIndex<=0 ) ? -1 : __pendingItem.steps[__stepIndex-1].id;
+        this.props.openPersonnalisation(__pendingItem.itemid, __nextStep.id, __previd, __nextStep.validated,  'Panier.componentDidUpdate()');
       //  this.props.validatePersonnalisation(__nextStep.validated);
       } else {
         this.props.closePersonnalisation('Panier.componentDidUpdate()');
@@ -231,7 +233,9 @@ class Panier extends React.Component {
                           _onClick={ this.setSelectedIndex }
                           _onSubClick={ (stepid) => { 
                             let __step = itm.steps.find(s=>s.id==stepid);
-                            this.props.openPersonnalisation(itm.itemid.toString(), stepid, __step.validated, 'subitem');
+                            let __stepIndex = itm.steps.findIndex(s=>s.id==stepid);
+                            let __previd = (__stepIndex==0) ? -1 : itm.steps[__stepIndex-1].id;
+                            this.props.openPersonnalisation(itm.itemid.toString(), stepid, __previd, __step.validated, 'subitem');
                           } } />
                   )}
                   </List>

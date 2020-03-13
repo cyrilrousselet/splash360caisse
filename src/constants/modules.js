@@ -3,7 +3,7 @@ export const modulesList = [
   'encaissement',
   'cloture',
   'statistiques',
-  'employes',
+ // 'employes',
   'clients',
   'parametres'
 ];

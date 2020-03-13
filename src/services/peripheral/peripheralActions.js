@@ -112,14 +112,17 @@ function printTicket(payload) {
         total += article.quantite * article.prix;
 
         article.ingredients.forEach(ing => {
-          if (ing.fromStep!=null && types[ing.type].print.commande!=null) {
+
+          let __onticketcmd = types[ing.type].print.find(p=>p.ticket=='tck1');
+
+          if (ing.fromStep!=null && __onticketcmd!=undefined) {
             articleIngredients.push({
               qte: ing.qte,
               codetva: tva[ingredients[ing.ingredient].tva_id].code,
               nom: ing.nom,
               pu: ing.prix==0 ? '' : Number(ing.prix).toFixed(2),
               prix: ing.prix==0 ? '' : (Number(ing.prix)*ing.qte).toFixed(2),
-              weight: types[ing.type].print.commande
+              weight: __onticketcmd.weight
             });
           }
         });
@@ -223,11 +226,13 @@ function printTicket(payload) {
         let articleIngredients = [];
 
         article.ingredients.forEach(ing => {
-          if (ing.fromStep!=null && types[ing.type].print.cuisine!=null) {
+
+          let __onticketcsn = types[ing.type].print.find(p=>p.ticket=='tck3');
+          if (ing.fromStep!=null && __onticketcsn!=undefined) {
             articleIngredients.push({
               qte: ing.qte,
               nom: ing.nom,
-              weight: types[ing.type].print.cuisine
+              weight: __onticketcsn.weight
             });
           }
         });
@@ -290,11 +295,13 @@ function printTicket(payload) {
         let articleIngredients = [];
 
         article.ingredients.forEach(ing => {
-          if (ing.fromStep!=null && types[ing.type].print.cuisine!=null) {
+
+          let __onticketsac = types[ing.type].print.find(p=>p.ticket=='tck2');
+          if (ing.fromStep!=null && __onticketsac!=undefined) {
             articleIngredients.push({
               qte: ing.qte,
               nom: ing.nom,
-              weight: types[ing.type].print.cuisine
+              weight: __onticketsac.weight
             });
           }
         });

@@ -46,6 +46,7 @@ class Personnalisation extends React.Component {
   constructor(props) {
     super(props);
     this.getIngredientQuantity = this.getIngredientQuantity.bind(this);
+    this.gotoPreviousStep = this.gotoPreviousStep.bind(this);
   }
 
   getIngredientQuantity(ingredientid, regle) {
@@ -56,14 +57,26 @@ class Personnalisation extends React.Component {
   }
 
 
+  gotoPreviousStep() {
+
+    const { item, itemSteps, previousstep, openPersonnalisation } = this.props;
+    
+    const __nextStep = itemSteps.find(s => s.id==previousstep);
+    let __stepIndex = itemSteps.findIndex(s=>s.id==previousstep);
+    let __previd = (__stepIndex<=0 ) ? -1 : itemSteps[__stepIndex-1].id;
+
+    openPersonnalisation(item, previousstep, __previd, __nextStep.validated, 'previousbtn');
+
+  }
+
+
   render() {
     
-    const { open, closePersonnalisation, contClass, stepObject, step, item, ingredientTypes, addIngredient, removeIngredient, noIngredientForStep, completeStep, valide } = this.props;
+    const { open, closePersonnalisation, contClass, stepObject, step, itemSteps, item, ingredientTypes, addIngredient, removeIngredient, noIngredientForStep, completeStep, valide, previousstep } = this.props;
 
     if (null==stepObject || Object.entries(stepObject).length==0) return <Modal open={open}><LoadingSpinner /></Modal>;
 
     if (null==ingredientTypes || Object.entries(ingredientTypes).length==0) return <Modal open={open}><LoadingSpinner /></Modal>;
-
 
     return (
       <Modal
@@ -112,6 +125,8 @@ class Personnalisation extends React.Component {
               </div>
             </div>
             <div className="footer">
+              {(this.props.previousstep!=-1) && <StdButton identifier="btnprecedent" elementclass="btnprecedent" key="btnprecedent" text={strings.modules.encaissement.personnalisation.precedent} onClick={ () => { this.gotoPreviousStep() }} />}
+              <div className="intercalaire"></div>
               <StdButton identifier="btnsuivant" elementclass="btnsuivant" key="btnsuivant" text={strings.modules.encaissement.personnalisation.valider} disabled={!valide} onClick={ () => { completeStep({itemid: item, stepid: step}) }} />
             </div>
           </div>

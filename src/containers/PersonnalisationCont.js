@@ -74,13 +74,22 @@ const _getItemIngredients = (state, itemid) => {
  return item_obj.ingredients;
 }
 
+const _getItemSteps = (state, itemid) => {
+  if (itemid==-1) return null;
+  if (undefined == state.commandeReducer.commande.items) return null;
+  const item_obj = state.commandeReducer.commande.items.find(item=>item.itemid==itemid);
+  if (null==item_obj) return null;
+  return item_obj.steps;
+}
+
 const mapStateToProps = (...args) => { 
     const state = args[0];
     const props = args[1];
   return {
     stepObject: _findStep(state, props.step),
     ingredientTypes: _getIngredientTypes(state, props.step),
-    itemIngredients: _getItemIngredients(state, props.item)
+    itemIngredients: _getItemIngredients(state, props.item),
+    itemSteps: _getItemSteps(state, props.item)
     // valueToPay: getCommandeTotal(getCommande(state).items),
     // tiroirOuvert: getTiroirOuvert(state),
     // loading: getCommandeLoading(state),
