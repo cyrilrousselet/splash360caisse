@@ -18,7 +18,7 @@ function getCurrentPeriode(params={}) {
                                       user: state.authentication.user,
                                       caisses: [{id:0, nom: 'caisse 0'}],
                                       vendeurs: [state.authentication.user],
-                                      fdcaisse: 100,
+                                      fdcaisse: 0,
                                       debut: startOfToday(),
                                       fin: endOfToday()
                                     };

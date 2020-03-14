@@ -209,7 +209,7 @@ function printTicket(payload) {
       imprimante = {
         nom: 'Cuisine Printer',
         connexion: 'network',
-        param: '192.168.182.151',
+        param: '192.168.1.151',
         encoding: 'Cp850'
       };
       // -> template ticket
