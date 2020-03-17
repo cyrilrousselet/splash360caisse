@@ -56,6 +56,7 @@
       margin: 3px;
       box-shadow: inset 0 0 0 2px $blanc;
       cursor: pointer;
+      
 
       div.btnlabel {
         text-align: left;
@@ -135,6 +136,12 @@
       }
       &:nth-child(7n) {
           background-color: $wheel7;
+      }
+
+      &.btn-disabled {
+        cursor: default;
+        color: $noir;
+        background-color: $gris;
       }
     }
 

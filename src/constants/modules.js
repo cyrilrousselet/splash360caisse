@@ -1,9 +1,12 @@
 export const modulesList = [
-  'listecommandes',
+  'marketing',
   'encaissement',
+  'employes',
+  'listecommandes',
   'cloture',
+  'stocks',
   'statistiques',
- // 'employes',
+  'menu',
   'clients',
   'parametres'
 ];
