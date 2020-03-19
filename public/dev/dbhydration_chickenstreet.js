@@ -443,6 +443,10 @@ const hydration = {
     
   ],
 
+  users: [
+
+  ],
+
   imprimantes: [
     { printer_id: 'imp1', nom: 'POS Printer', connexion: 'usb', param: null, encoding: 'Cp850', default: true },
     { printer_id: 'imp2', nom: 'Network1', connexion: 'network', param: '192.168.0.150', encoding: 'Cp850', default: false }

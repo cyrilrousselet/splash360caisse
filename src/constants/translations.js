@@ -37,6 +37,17 @@ const data = {
             online: "connecté",
             offline: "non connecté"
         },
+        login: {
+            premiere: {
+                titre: 'Première connexion',
+                active: 'Entrez le mot de passe par défaut pour activer la caisse',
+                texte: 'Vous devez personnaliser l’identifiant administrateur afin d’utiliser la caisse.'
+            },
+            erreur: {
+                titre: 'Erreur !',
+                texte: 'Veuillez vérifier votre identifiant'
+            }
+        },
         dashboard: {
             nom: 'Accueil',
             points: ' pts',
@@ -327,8 +338,23 @@ const data = {
                         liste: {
                             titre: 'Liste des utilisateurs',
                             nom: 'Nom',
-                            passe: 'Mot de passe',
-                            droits: 'Droits'
+                            passe: 'Identifiant',
+                            droits: 'Droits',
+                            droits_liste: {
+                                clients: "Accès Clients",
+                                stocks: "Accès Stocks",
+                                statistiques: "Accès Statistiques",
+                                parametres: "Accès Paramètres",
+                                menu: "Accès Menu",
+                                cloture: "Accès Clôture",
+                                marketing: "Accès Marketing",
+                                depenses: "Accès Dépenses",
+                                employes: "Accès Employés",
+                                remise: "Remise",
+                                cartes: "Encaissement CB",
+                                listecommandes: "Accès Liste Commandes",
+                                encaissement: "Accès Encaissement"
+                            }
                         },
                         edition: {
                             ajouter: 'Ajouter un utilisateur',
@@ -343,7 +369,7 @@ const data = {
                                 cloture: "Accès Clôture",
                                 marketing: "Accès Marketing",
                                 depenses: "Accès Dépenses",
-                                plannings: "Accès Plannings",
+                                employes: "Accès Employés",
                                 remise: "Remise"
                             }
                         }

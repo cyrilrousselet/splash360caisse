@@ -6,28 +6,30 @@ class LabelledField extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { value: props.value, option: props.optionvalue };
+    this.state = { svalue: props.value || '', option: props.optionvalue };
     this.handleChange = this.handleChange.bind(this);
     this.optionChange = this.optionChange.bind(this);
   }
 
   handleChange = (e) => {
-    this.setState({ value: e.target.value });
+    this.setState({ svalue: e.target.value });
     this.props.onChange({ value: e.target.value, option: this.state.option });
   }
   
   optionChange(e) {
     this.setState({ option: e.target.value });
-    this.props.onChange({ value: this.state.value, option: e.target.value });
+    this.props.onChange({ value: this.state.svalue, option: e.target.value });
   }
 
   render() {
 
-    const { name, className, placeholder, type, readOnly, label, options, postvalue, disabled } = this.props;
-    const { value, option } = this.state;
+    const { name, className, placeholder, type, readOnly, label, options, postvalue, disabled, maxLength, value } = this.props;
+    const { svalue, option } = this.state;
     const withoptionsclass = (options && options.length>0) ? ' with-options' : '';
     const withpostvalue = postvalue ? ' with-postvalue' : '';
     const disabledvalue = disabled ? ' disabled' : '';
+
+    const val = value || svalue;
 
     // (options && options.length>0) && console.log(value+' :: option: '+option);
 
@@ -40,10 +42,11 @@ class LabelledField extends React.Component {
               className="labelledfield-field"
               id={`fieldid-${name}`}
               name={name}
-              value={value}
+              value={val}
               readOnly={ readOnly }
               onChange={ this.handleChange }
               placeholder={placeholder}
+              size={maxLength}
               />
             { postvalue && <div className="postvalue">{postvalue}</div> }
             { (options && options.length>0) && 
@@ -66,10 +69,10 @@ class LabelledField extends React.Component {
 LabelledField.propTypes = {
   name: PropTypes.string.isRequired,
   className: PropTypes.string,
-  value: PropTypes.oneOf([
-    PropTypes.string, 
-    PropTypes.number
-  ]).isRequired,
+  // value: PropTypes.oneOf([
+  //   PropTypes.string, 
+  //   PropTypes.number
+  // ]).isRequired,
   onChange: PropTypes.func.isRequired,
   readOnly: PropTypes.bool,
   disabled: PropTypes.bool,

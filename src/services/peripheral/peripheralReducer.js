@@ -1,7 +1,10 @@
 import { peripheralActionTypes } from './peripheralActionTypes';
+import { parametresActionTypes } from '../parametres/parametresActionTypes';
 
 const initialState = {
-  drawerOpen: false
+  drawerOpen: false,
+  imprimantes: {},
+  tickets: {},
 }
 
 export function peripheralReducer(state = initialState, action) {
@@ -15,6 +18,12 @@ export function peripheralReducer(state = initialState, action) {
       return {
         ...state,
         drawerOpen: false
+      };
+    case parametresActionTypes.GETALL_SUCCESS:
+      return {
+        ...state,
+        imprimantes: action.imprimantes,
+        tickets: action.tickets
       };
     default:
       return state;

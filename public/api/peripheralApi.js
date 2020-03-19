@@ -4,7 +4,13 @@ escpos.USB = require('escpos-usb');
 escpos.Network = require('escpos-network');
 const path = require('path');
 
-let printerOpen = false;
+
+let openPrinter = false;
+
+let spool = [];
+
+let default_printer;
+let waitInterval = -1;
 
 
 const actions = {
@@ -12,23 +18,20 @@ const actions = {
 
   printTicket: (req, res) => {
 
-    const { imprimante, template, contenu } = req.payload;
+    const { tickets, defaultprinter } = req.payload;
 
-    log.info('printerOpen',printerOpen);
 
-    if (printerOpen) {
-      let waitInterval = setInterval(function() {
-        if (!printerOpen) {
-          clearInterval(waitInterval);
-          _doPrintTicket(imprimante, template, contenu);
-        }
-      },200);
-    }
-    else {
-      _doPrintTicket(imprimante, template, contenu);
-    }
+    // definition de l'imprimante par défaut (fallback)
+    default_printer = defaultprinter;
 
-   
+    // on remplit le spool avec les tickets
+    Object.values(tickets).forEach(tck=> {
+      spool.push(tck);
+    });
+
+  //  log.info(spool);
+
+    _shiftTickets();
 
     res.send({msg: 'ticket printed'});
   },
@@ -126,35 +129,133 @@ const actions = {
   }
 }
 
-function _doPrintTicket(imprimante, template, contenu) {
 
-  // déclaration de l'imprimante
+
+function _shiftTickets() {
+  log.info('_shiftTickets() '+spool.length);
+  if (spool.length>0) {
+    _launchPrintJob(spool[0]);
+  } else {
+    log.info('FIN DU JOB D’IMPRESSION (spool vide)');
+  }
+}
+
+
+
+function _launchPrintJob(ticket) {
+
+  log.info('_launchPrintJob('+ticket.id+')');
+
+  const {imprimantes, templatelist, contenu, commande} = ticket;
+  
+  log.info('printerOpen', openPrinter);
+
+  if (openPrinter) {
+    if (waitInterval!=-1) clearInterval(waitInterval);
+    waitInterval = setInterval(function() {
+      log.info('check printer ')
+      if (!openPrinter) {
+        clearInterval(waitInterval);
+        waitInterval = -1;
+        _doPrintTicket(imprimantes[0], templatelist, {...contenu, ...commande}, ticket.id);
+      }
+    },200);
+  }
+  else {
+    if (waitInterval!=-1) clearInterval(waitInterval);
+    waitInterval = -1;
+    _doPrintTicket(imprimantes[0], templatelist, {...contenu, ...commande}, ticket.id);
+  }
+}
+
+
+
+
+function _openDevice(imprimante, callback) {
+
+
+  log.info('_openDevice('+imprimante.id+') '+imprimante.connexion);
+
   let device;
   if (imprimante.connexion=='usb') {
-    device = new escpos.USB();
-  } else if (imprimante.connexion=='network') {
-    device = new escpos.Network(imprimante.param); 
+    try {
+      device = new escpos.USB();
+    }
+    catch(err) {
+      callback && callback(null, err);
+    }
+  }
+  else if (imprimante.connexion=="network") {
+    try {
+      device = new escpos.Network(imprimante.param);
+    }
+    catch(err) {
+      callback && callback(null, err);
+    }
   }
   const options = {encoding: imprimante.encoding, width:42};
   const printer = new escpos.Printer(device, options);
-  printerOpen = true;
 
-  log.debug('printTicket start');
+  device.open(function(err) {
+    if (err) {
+      callback && callback(null, err);
+    }
+    openPrinter = true;
+
+    callback && callback(printer);
+  });
+}
+
+
+
+
+
+function _doPrintTicket(imprimante, template, contenu, ticketid) {
+
+  log.info('_doPrintTicket('+ticketid+')');
+
+  // déclaration de l'imprimante
+  _openDevice(imprimante, function(printer, error){
+    // si l'imprimante n'est pas connectée, on tente l'imprimante par défaut
+    if (error) {
+      log.info('erreur d’imprimante : '+error);
+      // _openDevice(default_printer, function(printer, error2){
+      //   // si l'imprimante par défaut n'est pas connectée, on envoie une erreur
+      //   if (error2) {
+      //     log.info('erreur de l’imprimante par défaut : '+error2);
+      //     throw new Error('Aucune imprimante connectée à la caisse.');
+      //   } else {
+      //     log.debug('device par défaut opened');
+      //     // sinon job :
+      //     _startPrintJob(printer, template, contenu, imprimante.id, ticketid);
+      //   }
+      // });
+    } else {
+      log.debug('device opened du premier coup');
+      // sinon job :
+      _startPrintJob(printer, template, contenu, imprimante.id, ticketid);
+    }
+  });
+}
+
+function _startPrintJob(printer, template, contenu, imprimanteid, ticketid) {
+
+
+  log.debug('_startPrintJob('+template+')');
 
   const tux = path.join(__dirname, 'default_logo.png');
-  log.debug('img : '+tux);
+ // log.debug('img : '+tux);
 
-  log.debug('device opened');
 
   // s'il y a un logo au début du ticket
   if (template[0]==='logo') {
     log.debug('Image.load -> print');
 
     // on charge le logo
-    escpos.Image.load(tux, function(image){
+    escpos.Image.load(tux, async function(image){
 
       // on ouvre la connexion à l'imprimante
-      device.open(async function() {
+    //  device.open(async function(err) {
         log.debug('print logo');
         // center logo
         printer.align('CT');
@@ -163,10 +264,10 @@ function _doPrintTicket(imprimante, template, contenu) {
 
         // une fois le logo chargé on lance l'impression des sections du tickets
         if (printimage) {
-        _launchPrint(template, printer, contenu);
+          _launchPrint(template, printer, contenu, imprimanteid, ticketid);
         }
 
-      });
+    //  });
 
     });
 
@@ -174,13 +275,14 @@ function _doPrintTicket(imprimante, template, contenu) {
 
     // on ouvre la connexion à l'imprimante
     // et on lance l'impression des sections du tickets
-    device.open(function() {
-      _launchPrint(template, printer, contenu);
-    });
+  //  device.open(function(err) {
+     
+      _launchPrint(template, printer, contenu, imprimanteid, ticketid);
+  //   });
   }
     
 
-  log.debug('printTicket end');
+ // log.debug('printTicket end');
 
 }
 
@@ -193,60 +295,80 @@ async function _printImage(printer, image) {
 }
 
 
-
-function _launchPrint(template, printer, contenu) {
+/**
+ * 
+ * @param {Array} template : liste des sections du ticket 
+ * @param {escpos.Printer} printer : job d'impression 
+ * @param {Object} contenu : objet contenant les informations à imprimer
+ */
+function _launchPrint(template, printer, contenu, imprimanteid, ticketid) {
 
   log.debug('_launchPrint()');
 
+  // si le template est vide, on ferme le job d'impression
   if (template.length==0) {
     printer.close(function() {
-      printerOpen = false;
+      log.info('printer closed .');
+      openPrinter = false;
+      let _ticketIndex = spool.findIndex(tck=>tck.id==ticketid);
+      if (_ticketIndex!=-1) spool.splice(_ticketIndex,1);
+      _shiftTickets();
+    });
+  } 
+  else {
+
+    // pour chaque section du template, on appelle la fonction dédiée
+    // en lui passant le contenu
+    template.forEach((section,i,arr) => {
+
+      log.debug(section);
+
+      if ('entreprise' === section) { 
+        _printEntreprise(printer, contenu.entreprise, contenu.strings);
+      }
+      else if ('commande' === section) {
+        _printCommande(printer, contenu, contenu.strings);
+      }
+      else if ('message' === section) {
+        _printMessage(printer, contenu.message, contenu.strings);
+      }
+      else if ('legal' === section) {
+        _printLegal(printer, contenu.legal, contenu.strings);
+      }
+      else if ('periode_x' === section) {
+        _printPeriodeX(printer, contenu.periode, contenu.strings);
+      }
+      else if ('cuisine_info' === section) {
+        _printCuisineInfo(printer, {info: contenu, commande:{id:contenu.detail.id, mode:contenu.detail.mode}}, contenu.strings);
+      }
+      else if ('cuisine_detail' ===  section) {
+        _printCuisineDetail(printer, contenu, contenu.strings);
+      }
+      else if ('sac_info' === section) {
+        _printSacInfo(printer, {info: contenu.info, commande:{id:contenu.detail.id, mode:contenu.detail.mode}}, contenu.strings);
+      }
+      else if ('sac_detail' ===  section) {
+        _printSacDetail(printer, contenu.detail, contenu.strings);
+      }
+
+      // fin du ticket
+      // on coupe le ticket et on ferme le job d'impression
+      if (i === arr.length-1) {
+        printer.feed(2)
+        .cut();
+        
+        printer
+          .close(function() {
+            log.info('printer closed ..');
+            openPrinter = false;
+            let _ticketIndex = spool.findIndex(tck=>tck.id==ticketid);
+            if (_ticketIndex!=-1) spool.splice(_ticketIndex,1);
+            _shiftTickets();
+          });
+
+      }
     });
   }
-
-  template.forEach((section,i,arr) => {
-
-    log.debug(section);
-
-    if ('entreprise' === section) { 
-      _printEntreprise(printer, contenu.entreprise, contenu.strings);
-    }
-    else if ('commande' === section) {
-      _printCommande(printer, contenu.commande, contenu.strings);
-    }
-    else if ('message' === section) {
-      _printMessage(printer, contenu.message, contenu.strings);
-    }
-    else if ('legal' === section) {
-      _printLegal(printer, contenu.legal, contenu.strings);
-    }
-    else if ('periode_x' === section) {
-      _printPeriodeX(printer, contenu.periode, contenu.strings);
-    }
-    else if ('cuisine_info' === section) {
-      _printCuisineInfo(printer, {info: contenu.info, commande:{id:contenu.detail.id, mode:contenu.detail.mode}}, contenu.strings);
-    }
-    else if ('cuisine_detail' ===  section) {
-      _printCuisineDetail(printer, contenu.detail, contenu.strings);
-    }
-    else if ('sac_info' === section) {
-      _printSacInfo(printer, {info: contenu.info, commande:{id:contenu.detail.id, mode:contenu.detail.mode}}, contenu.strings);
-    }
-    else if ('sac_detail' ===  section) {
-      _printSacDetail(printer, contenu.detail, contenu.strings);
-    }
-
-    // fin du ticket
-    if (i === arr.length-1) {
-      printer.feed(2)
-       .cut();
-      
-      printer
-       .close(function() {
-         printerOpen = false;
-       });
-    }
-  });
 }
 
 
@@ -263,7 +385,7 @@ function _printCuisineInfo(printer, data, strings) {
     .drawLine()
     .style('NORMAL')
     .text(`${strings.numero}${data.commande.id}`)
-    .text(`${strings.creation}${data.info.date} à ${data.info.heure}`)
+    .text(`${strings.creation}${data.info.date}`)
     .text(`*** ${strings.mode[data.commande.mode]} ***`)
     .size(1,2)
     .drawLine()
@@ -331,7 +453,7 @@ function _printSacInfo(printer, data, strings) {
     .drawLine()
     .style('NORMAL')
     .text(`${strings.numero}${data.commande.id}`)
-    .text(`${strings.creation}${data.info.date} à ${data.info.heure}`)
+    .text(`${strings.creation}${data.info.date}`)
     .text(`*** ${strings.mode[data.commande.mode]} ***`)
     .size(1,2)
     .drawLine()
@@ -425,6 +547,7 @@ function _printCommande(printer, data, strings) {
   // articles
   // header
   printer
+    .align('CT')
     .style('B')
     .tableCustom([
       {text:'QTE', cols:3, align:'RIGHT'},
@@ -441,13 +564,16 @@ function _printCommande(printer, data, strings) {
 
   // articles :
   printer
-    .style('NORMAL');
+    .style('NORMAL')
+    .align('CT');
 
     let _linecount = 0;
 
       
     data.articles.forEach((article) => {
-      printer.style('B').tableCustom([
+      printer
+      //.style('B')
+      .tableCustom([
         {text: article.qte, cols:3, align:'RIGHT'},
         {text:'', cols:1},
         {text: article.nom, cols:22, align:'LEFT'},
@@ -462,7 +588,9 @@ function _printCommande(printer, data, strings) {
 
     if (article.ingredients.length>0) {
       article.ingredients.forEach((ingredient) => {
-        printer.style('NORMAL').tableCustom([
+        printer
+        //.style('NORMAL')
+        .tableCustom([
           {text: ingredient.qte, cols:3, align:'RIGHT'},
           {text:'', cols:1},
           {text: '  '+ingredient.nom, cols:22, align:'LEFT'},
@@ -503,7 +631,7 @@ function _printCommande(printer, data, strings) {
   // header
   printer
     .align('CT')
-    .style('B')
+//    .style('B')
     .tableCustom([
       {text:'CODE', cols:4, align:'LEFT'},
       {text:'', cols:2},
@@ -536,7 +664,10 @@ function _printCommande(printer, data, strings) {
   printer
     .align('CT')
     .drawLine()
-    .style('NORMAL').text('REGLEMENT :');
+    .style('NORMAL')
+    .tableCustom([
+      {text: 'REGLEMENT :', cols: 42, align:'LEFT'}
+    ]);
 
     data.reglements.forEach(reglement => {
       printer.style('NORMAL').tableCustom([

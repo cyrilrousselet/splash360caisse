@@ -10,7 +10,7 @@ import Commandes from './Commandes';
 import Entreprise from './Entreprise';
 import ParametresFinancierCont from './../../containers/ParametresFinancierCont';
 import Options from './Options';
-import Utilisateurs from './Utilisateurs';
+import ParametresUtilisateursCont from './../../containers/ParametresUtilisateursCont';
 import Peripheriques from './Peripheriques';
 
 import {data} from '../../constants/translations';
@@ -30,7 +30,7 @@ class Parametres extends React.Component {
           
           <Switch>
             <PrivateRoute exact path={ paths.PARAM_ENTREPRISE } component={ Entreprise } />
-            <PrivateRoute exact path={ paths.PARAM_UTILISATEURS } component={ Utilisateurs } />
+            <PrivateRoute exact path={ paths.PARAM_UTILISATEURS } component={ ParametresUtilisateursCont } />
             <PrivateRoute exact path={ paths.PARAM_FINANCIER } component={ ParametresFinancierCont } />
             <PrivateRoute exact path={ paths.PARAM_PERIPHERIQUES } component={ Peripheriques } />
             <PrivateRoute exact path={ paths.PARAM_COMMANDES } component={ Commandes } />

@@ -18,9 +18,10 @@ import { parametresActions } from '../services/parametres/parametresActions';
 let strings = new LocalizedStrings(data);
 
 const getModulesFromDroits = (droits) => {
-  droits = [...droits, 'encaissement'];
+  droits = {...droits, encaissement: true, listecommandes: true};
   return modulesList.filter(function(value) {
-    return droits.indexOf(value) > -1;
+    // return droits.indexOf(value) > -1;
+    return (droits.hasOwnProperty(value) && droits[value]==true);
   });
 }
 
@@ -81,7 +82,7 @@ const mapStateToProps = (state) => {
     userid: state.authentication.user.id,
     commandeslist: getCommandesList(state),
     periode: getPeriode(state),
-    points: 200,
+    points: null, //200,
     modules: getModulesFromDroits(state.authentication.user.droits),
     devise: ' €',
     caisse: 0

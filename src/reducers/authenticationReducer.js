@@ -1,7 +1,7 @@
 import { userActionTypes } from './../services/user/userActionTypes';
 
 let user = JSON.parse(localStorage.getItem('user'));
-const initialState = user ? { loggedIn: true, user } : {};
+const initialState = user ? { loggedIn: true, user } : {loggedIn: false};
 
 export function authentication(state = initialState, action) {
 
@@ -17,7 +17,15 @@ export function authentication(state = initialState, action) {
         user: action.user
       };
     case userActionTypes.LOGIN_FAILURE:
-      return {};
+      return {
+        loggedIn: false,
+        error: action.payload
+      };
+    case userActionTypes.RESET_LOGIN_ERROR:
+      return {
+        ...state,
+        error: null
+      };
     case userActionTypes.LOGOUT:
       return {};
     default:

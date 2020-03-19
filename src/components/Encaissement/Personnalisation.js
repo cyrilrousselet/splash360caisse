@@ -51,6 +51,11 @@ class Personnalisation extends React.Component {
     this.gotoPreviousStep = this.gotoPreviousStep.bind(this);
   }
 
+  /**
+   * Retourne la quantité choisie pour l'ingrédient passé en paramètre
+   * 
+   * @param {*} ingredientid id de l'ingrédient
+   */
   getIngredientQuantity(ingredientid) {
     const { itemIngredients } = this.props;
     const ingredient = itemIngredients.find(ing=>ing.ingredient==ingredientid);
@@ -58,8 +63,14 @@ class Personnalisation extends React.Component {
     return ingredient.qte;
   }
 
+  /**
+   * Définit si le nombre maximum de choix d'ingrédient a été atteint par type
+   * 
+   * @param {*} steptypes liste des regles du step
+   * @param {*} itming    liste des ingredients de l'item de commande
+   * @returns un objet ayant comme propriétés l'id de chaque type et comme valeur un booléen (true = nombre max atteint)
+   */
   isIngredientTypeMaxnum(steptypes, itming) {
-
 
     let intypes = {}, typeMax = {};
     let max, num, typeing;
@@ -93,7 +104,9 @@ class Personnalisation extends React.Component {
     return typeMax;
   }
 
-
+  /**
+   * récupère les id du step précédent (n-1) et du step d'avant (n-2) pour ouvrir le step précédent
+   */
   gotoPreviousStep() {
 
     const { item, itemSteps, previousstep, openPersonnalisation } = this.props;
@@ -115,34 +128,7 @@ class Personnalisation extends React.Component {
 
     if (null==ingredientTypes || Object.entries(ingredientTypes).length==0) return <Modal open={open}><LoadingSpinner /></Modal>;
 
-
-    console.log(itemIngredients);
     const isTypesMax = this.isIngredientTypeMaxnum(ingredientTypes, itemIngredients);
-
-    console.log(isTypesMax);
-    // const isIngMX = (type) => {
-      
-    //   const { itemIngredients } = this.props;
-    //   let __ismax = false;
-
-    //   if (type.regle) {
-
-    //     const max = commandeServices.getRuleValues(type.regle).max;
-        
-    //     // si le type est global
-    //     if (type.regle.indexOf('g')!=-1) {
-    //       // on additionne le nbr d'ingredients de tous les types
-          
-    //     } 
-    //     // sinon uniquement le type actuel
-    //     else {
-    //       const typeing = itemIngredients.filter(ing => ing.type==type.type);
-    //       console.log(Object.entries(itemIngredients));
-    //       __ismax = typeing.length >= max;
-    //     }
-    //   }
-    //   return __ismax;
-    // }
 
     return (
       <Modal

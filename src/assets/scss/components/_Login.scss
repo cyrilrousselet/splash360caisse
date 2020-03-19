@@ -21,6 +21,21 @@
         box-sizing: border-box;
         margin: 20px 0;
     }
+    .prepareTitle {
+        text-align: center;
+        font-family: $f_blk;
+        text-transform: uppercase;
+        padding-bottom: 10px;
+        font-size: 18px;
+        @include font-smoothing(on);
+    }
+    .prepareTexte {
+        text-align: center;
+        font-family: $f_boo;
+        padding-top: 10px;
+        font-size: 14px;
+        @include font-smoothing(on);
+    }
     .keyboard {
         padding: 10px;
         text-align: center;

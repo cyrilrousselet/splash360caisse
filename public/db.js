@@ -20,7 +20,8 @@ const db = {
  commandes: dbFactory('commandes.db'),
  imprimantes: dbFactory('imprimantes.db'),
  tickets: dbFactory('tickets.db'),
- parametres: dbFactory('parametres.db')
+ parametres: dbFactory('parametres.db'),
+ users: dbFactory('users.db')
 };
 
 module.exports = db;

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const PillButton = ({ elementclass, text, onClick }) => (
-  <button className={ `PillButton ${elementclass}` } onClick={ () => onClick(text) }>
+  <button className={ `PillButton ${elementclass}` } onClick={ (e) => onClick(text,e) }>
     <div className="PillButton-text">{ text }</div>
   </button>
 );

@@ -1,42 +1,67 @@
+import { emit } from 'eiphop';
 
 export const userServices = {
  login,
  logout,
  getAll,
  update,
+ checkUsers,
+ setAdmin,
  delete: _delete
 };
 
 function login(passphrase) {
 
-  const user = {
-    'id': 1,
-    'nom': 'Admin',
-    'droits': [
-      'cartes',
-      'clients',
-      'stocks',
-      'statistiques',
-      'menu',
-      'parametres',
-      'cloture',
-      'marketing',
-    //  'depenses',
-      'listecommandes',
-      'employes',
-      'remise'
-    ]
-  }
+  return emit('dbUsersLogin', {identifiant:passphrase});
 
-  // store user details and jwt token in local storage to keep user logged in between page refreshes
-  localStorage.setItem('user', JSON.stringify(user));
+  // const user = {
+  //   'id': 1,
+  //   'nom': 'Admin',
+  //   'droits': [
+  //     'cartes',
+  //     'clients',
+  //     'stocks',
+  //     'statistiques',
+  //     'menu',
+  //     'parametres',
+  //     'cloture',
+  //     'marketing',
+  //   //  'depenses',
+  //     'listecommandes',
+  //     'employes',
+  //     'remise'
+  //   ]
+  // }
 
-  return new Promise(function(resolve, reject) {
-    resolve(user);
-  });
 
 }
 
+function setAdmin(passphrase) {
+  const user = {
+    user_id: 'usr0',
+    nom: 'Admin',
+    identifiant: passphrase,
+    droits: {
+      'cartes': true,
+      'clients': true,
+      'stocks': true,
+      'statistiques': true,
+      'menu': true,
+      'parametres': true,
+      'cloture': true,
+      'marketing': true,
+      'depenses': true,
+      'listecommandes': true,
+      'employes': true,
+      'remise': true
+    }
+  }
+  return emit('dbAddUser', {user: user});
+}
+
+function checkUsers() {
+  return emit('dbHasUsers',{});
+}
 
 
 function logout() {
@@ -45,11 +70,11 @@ function logout() {
 }
 
 function getAll() {
-  return {}
+  return emit('dbUsersGetAll',{});
 }
 
 function update(user) {
-
+  return emit('dbUpdateUser', {user: user});
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript

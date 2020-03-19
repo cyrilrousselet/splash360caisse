@@ -1,18 +1,27 @@
 import { connect } from 'react-redux'
-import { userActions } from '../services/user/userActions'
+import { userActions } from '../services/user/userActions';
+import { hasUsers } from '../services/user/userReducer';
 import Login from '../components/Login';
+import { bindActionCreators } from 'redux';
 
 const mapStateToProps = (state) => { 
-  return {};
+  return {
+    hasUsers: hasUsers(state),
+    error: state.authentication.error
+  };
 }
 
 const mapDispatchToProps = (dispatch) => {
+  const bound = bindActionCreators({
+    login: userActions.login,
+    checkUsers: userActions.checkUsers,
+    setAdmin: userActions.setAdmin,
+    resetError: userActions.resetError
+  }, dispatch);
   return {
-    logout: userActions.logout,
-    login: (passphrase) => {
-      dispatch(userActions.login(passphrase))
-    }
-  }
+    ...bound,
+    logout: userActions.logout
+  };
 }
 
 const LoginCont = connect(

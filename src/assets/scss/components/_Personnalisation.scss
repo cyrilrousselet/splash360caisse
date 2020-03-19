@@ -26,6 +26,7 @@
     flex-direction: column;
     justify-content: center;
     .title {
+        user-select: none;
         font-family: $f_blk;
         font-size: 18px;
         color: $noir;
@@ -53,20 +54,22 @@
       text-transform: uppercase;
       box-sizing: border-box;
       padding: 5px;
-      margin: 3px;
-      box-shadow: inset 0 0 0 2px $blanc;
+      margin: 3px 3px 8px;
+      box-shadow: inset 0 0 0 8px $blanc, 0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12);
       cursor: pointer;
       
-
+      
       div.btnlabel {
+        user-select: none;
         text-align: left;
         margin-left: 20px;
-          line-height: 1.0em;
-          div.supplt {
-              padding-top: 7px;
-          }
+        line-height: 1.0em;
+        div.supplt {
+          padding-top: 7px;
+        }
       }
       .qte-label {
+        user-select: none;
         display: inline-flex;
         flex-direction: column;
         justify-content: center;
@@ -77,16 +80,16 @@
         border-radius: 50%;
         background-color: $rouge;
         position: absolute;
-        top: 0;
-        right: 0;
+        top: -7px;
+        right: 10px;
         box-shadow: 0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12);
       }
       .qte-btn {
         display: none;
         position: absolute;
         width: 30px;
-        left: 5px;
-        bottom: calc(50% - 15px);
+        left: 10px;
+        top: -7px;
         flex-direction: row;
         justify-content: space-around;
         button {
@@ -155,7 +158,7 @@
   }
 
   .igtype {
-    padding-bottom: 10px;
+    padding: 5px 0 10px;
   }
 
   .igtype-nom {

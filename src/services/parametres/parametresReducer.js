@@ -3,8 +3,6 @@ import { parametresActionTypes } from './parametresActionTypes';
 const initialState = {
   loading: false,
   parametres: {},
-  imprimantes: {},
-  tickets: {},
   error: null
 };
 
@@ -27,9 +25,7 @@ export function parametresReducer(state=initialState, action) {
         ...state,
         loading: false,
         error: null,
-        parametres: action.parametres,
-        imprimantes: action.imprimantes,
-        tickets: action.tickets
+        parametres: action.parametres
       };
 
     case parametresActionTypes.GETALL_FAILURE:
