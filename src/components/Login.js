@@ -141,7 +141,9 @@ class Login extends React.Component {
 
     return (
       <div className="Login">
-        <div className="logo"><YoutillLogoIcon className="logoImg" /></div>
+        <div className="logo">
+          {/* <YoutillLogoIcon className="logoImg" /> */}
+        </div>
         <div className={ `panel${(prepareToSet ? ' prepareAdmin' : '')}` }>
           {(!hasUsers) && <div className="prepareTitle">{ strings.login.premiere.titre }</div> }
           <PillField type="password" innerButton="delete" charNum={ NUMCHAR } value={passphrase} innerButtonHandler={this.deleteHandler}/>

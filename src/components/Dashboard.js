@@ -66,9 +66,7 @@ class Dashboard extends Component {
         <div className="topzone">
           <div className="cashName">{ cashname }</div>
           <div className="userName" onClick={()=>{onClickUseraccount(userid)} }>{ username }</div>
-          {points!==null &&
-            <div className="points">{ points }{ strings.dashboard.points }</div>
-          }
+          <div className={ `points${points==null ? ' nopoint':''}` }>{ `${points}${strings.dashboard.points}` }</div>
         </div>
         <div className="modules">
         {modules.map((module, i) =>

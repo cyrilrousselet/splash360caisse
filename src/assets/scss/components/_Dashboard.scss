@@ -17,6 +17,9 @@
             background-repeat: no-repeat;
             background-size: 24px 23px;
             background-position: 25px center;
+            &.nopoint {
+                opacity: 0;
+            }
         }
     }
     .modules {

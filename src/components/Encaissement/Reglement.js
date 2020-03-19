@@ -113,9 +113,9 @@ class Reglement extends React.Component {
     const { reste, rendu } = this.updateValeurs();
     console.log(reste, rendu);
     if (reste==0) {
-      this.props.printTicket();
-    //  this.props.printTicket('sac');
-    //  this.props.printTicket('cuisine');
+      this.props.printTicket('commande');
+      this.props.printTicket('sac');
+      this.props.printTicket('cuisine');
       this.props.commande.status = 'confirmed';
       this.props.validateCommande(this.props.commande);
     }

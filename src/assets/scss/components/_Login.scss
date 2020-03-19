@@ -4,10 +4,14 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    .logo .logoImg {
+    .logo  {
         width: 120px;
         height: auto;
+        padding-bottom: 120px;
         margin: 10px 0;
+        background-image: url('./../../images/icone_caisse.png');
+        background-repeat: no-repeat;
+        background-size: contain;
         path {
             fill: #1EA9DF;
         }
