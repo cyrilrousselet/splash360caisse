@@ -13,9 +13,11 @@
         "productName": "Splash360",
         "copyright": "Copyright © 2020 Splash360",
         "mac": {
+            "icon": "build/icon.icns",
             "category": "public.app-category.business"
         },
         "win": {
+            "icon": "build/icon.ico",
             "target": "nsis"
         },
         "files": [
