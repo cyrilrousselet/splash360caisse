@@ -5,13 +5,13 @@
     "version": "0.1.0",
     "private": true,
     "author": {
-        "email": "contact@youfid.fr",
-        "url": "https://www.youfid.fr"
+        "email": "contact@splash360.fr",
+        "url": "https://www.splash360.fr"
     },
     "build": {
-        "appId": "fr.youfid.splash",
+        "appId": "fr.splash360.splash",
         "productName": "Splash360",
-        "copyright": "Copyright © 2020 ${author}",
+        "copyright": "Copyright © 2020 Splash360",
         "mac": {
             "category": "public.app-category.business"
         },

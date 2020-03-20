@@ -93,12 +93,20 @@ class EditUtilisateurPopin extends React.Component {
     if (identifiant_tmo!=-1) clearTimeout(identifiant_tmo);
     identifiant_tmo = setTimeout(()=>{
       const trimmed = valeur.substr(0,passphrase_length);
-      memeident = Object.entries(this.props.identifiants).find(([id,ident]) => (id!=this.props.utilisateur.user_id && trimmed==ident));
+      if (this.props.utilisateur) {
+        memeident = Object.entries(this.props.identifiants).find(([id,ident]) => (id!=this.props.utilisateur.user_id && trimmed==ident));
+      } else {
+        memeident = Object.entries(this.props.identifiants).find(([id,ident]) => trimmed==ident);
+      }
       this.setState({error_identifiant: (memeident && memeident.length>0), identifiant: trimmed});
       identifiant_tmo = -1;
     },1500);
 
-    memeident = Object.entries(this.props.identifiants).find(([id,ident]) => (id!=this.props.utilisateur.user_id && valeur==ident));
+    if (this.props.utilisateur) {
+      memeident = Object.entries(this.props.identifiants).find(([id,ident]) => (id!=this.props.utilisateur.user_id && valeur==ident));
+    } else {
+      memeident = Object.entries(this.props.identifiants).find(([id,ident]) => valeur==ident);
+    }
     this.setState({error_identifiant: (memeident && memeident.length>0), identifiant: valeur});
   }
 
@@ -230,7 +238,7 @@ class EditUtilisateurPopin extends React.Component {
                     label={ strings.modules.parametres.submodules.utilisateurs.edition.first } 
                   /> */}
               <div className="droits-wrapper">
-                <div className={ `subttl${allchecked?' allchecked':''}`} onClick={() => { this.checkAllDroits(droits) }}>{ strings.modules.parametres.submodules.utilisateurs.liste.droits }</div>
+                <div className={ `subttl${allchecked?' allchecked':''}`} onClick={() => { this.checkAllDroits(droits) }} title={ allchecked ? strings.general.check.aucun : strings.general.check.tous }>{ strings.modules.parametres.submodules.utilisateurs.liste.droits }</div>
                 <div className="sep"></div>
                 { Object.keys(strings.modules.parametres.submodules.utilisateurs.edition.droits).map((field, i) => (
                   <SwitchCheckbox 

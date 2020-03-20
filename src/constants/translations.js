@@ -31,6 +31,10 @@ const data = {
                 cancel: "Annuler",
                 clear: "Effacer",
                 save: "Enregistrer"
+            },
+            check: {
+                tous: 'Tout sélectionner',
+                aucun: 'Tout désélectionner'
             }
         },
         footer: {

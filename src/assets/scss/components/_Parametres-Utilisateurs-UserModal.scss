@@ -58,12 +58,12 @@
        // width: 100%;
         display: inline-block;
         cursor: pointer;
-        background-image: linear-gradient($vert 0%, $vert 100%); 
+        background-image: url('./../../images/ico_switch-on.svg'); 
         &.allchecked {
-          background-image: linear-gradient($rouge 0%, $rouge 100%); 
+          background-image: url('./../../images/ico_switch-off.svg'); 
         }
         background-repeat: no-repeat;
-        background-size: 20px 20px;
+        background-size: 24px 24px;
         background-position: right center;
         user-select: none;
 
