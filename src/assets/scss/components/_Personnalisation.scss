@@ -42,7 +42,7 @@
       display: inline-flex;
       flex-direction: column;
       justify-content: center;
-      align-items: flex-start;
+      align-items: center;
       position: relative;
       width: calc(25% - 6px);
       height: 90px;
@@ -61,8 +61,7 @@
       
       div.btnlabel {
         user-select: none;
-        text-align: left;
-        margin-left: 20px;
+        text-align: center;
         line-height: 1.0em;
         div.supplt {
           padding-top: 7px;
@@ -111,9 +110,6 @@
         }
       }
       &.with-qtebtn {
-        div.btnlabel {
-          margin-left: 40px;
-        }
         .qte-btn {
           display: flex;
         }

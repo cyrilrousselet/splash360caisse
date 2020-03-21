@@ -31,8 +31,10 @@ import Box from '@material-ui/core/Box';
 import StdButton from './common/StdButton';
 import PrinterIcon from './common/icon/PrinterIcon';
 import ReglementCont from '../containers/ReglementCont';
-import { Modal, Fab } from '@material-ui/core';
+import { Modal, Fab, Input } from '@material-ui/core';
 import CloseIcon from './common/icon/CloseIcon';
+import PillField from './common/PillField';
+import NumberKeyboard from './common/NumberKeyboard';
 
 let strings = new LocalizedStrings(data);
 
@@ -142,10 +144,9 @@ function ImpressionTicketPopin(props) {
 }
 
 
-
 class ListeCommandes extends React.Component {
-
-
+  
+  
   constructor(props) {
     super(props);
     this.state = {
@@ -154,7 +155,10 @@ class ListeCommandes extends React.Component {
       openTab: 0,
       reglementOpen: false,
       commandeId: null,
-      printOpen: false
+      printOpen: false,
+      searchval:'',
+      inputfocus: true,
+      keyboardOpen: false
     };
     this.setSelectedDate = this.setSelectedDate.bind(this);
     this.handleChangeTab = this.handleChangeTab.bind(this);
@@ -163,8 +167,16 @@ class ListeCommandes extends React.Component {
     this.closeReglement = this.closeReglement.bind(this);
     this.openPrint = this.openPrint.bind(this);
     this.closePrint = this.closePrint.bind(this);
+    this.searchHandler = this.searchHandler.bind(this);
+    this.searchBtn = this.searchBtn.bind(this);
+    this.send_to_search = this.send_to_search.bind(this);
+    this.keyboardButtonHandler = this.keyboardButtonHandler.bind(this);
+    this.closeKeyboard = this.closeKeyboard.bind(this);
   }
-
+  
+  lock = false;
+  search_tmo = -1;
+  
   componentDidMount() {
     console.log('ListeCommandes.componentDidMount()');
     this.props.getCommandesList();
@@ -212,10 +224,112 @@ class ListeCommandes extends React.Component {
     console.log(`print ticket '${ticket}' pour #${cmdid}`);
   }
 
+
+  searchHandler(event) {
+
+    if (event.keyCode==13) {
+      console.log(event.target.value);
+      this.decodeQRCode(event.target.value);
+      event.target.value = '';
+    }
+
+    // if (this.lock) { return; }
+    // this.lock = true;
+    // if (this.search_tmo!=-1) {
+    //   clearTimeout(this.search_tmo);
+    //   this.search_tmo = -1;  
+    // }
+    // if (event.target.value) {
+    //   let val = event.target.value;
+    //   this.search_tmo = setTimeout(() => {
+    //     this.lock = false;
+    //     console.log(val);
+    //     // this.decodeQRCode(value);
+    //     event.target.value = '';
+    //     this.search_tmo = -1;
+    //   }, 200);
+    // }
+    
+  }
+
+  searchBtn() {
+    if (this.state.searchval=='') {
+      this.setState({keyboardOpen: true});
+    } else {
+      this.setState({searchval: ''});
+      this.refs.searchInput.value = '';
+    }
+  }
+
+  send_to_search(value) {
+    this.setState({searchval: value});
+  }
+
+  decodeQRCode(value) {
+
+    let decode_table = {
+      win: {
+        'à': 0,
+        '&': 1,
+        'é': 2,
+        '"': 3,
+        "'" : 4,
+        '(' : 5,
+        '-' : 6,
+        'è' : 7,
+        '_' : 8,
+        'ç' : 9
+      },
+      darwin: {
+        'à': 0,
+        '&': 1,
+        'é': 2,
+        '"': 3,
+        "'" : 4,
+        '(' : 5,
+        '§' : 6,
+        'è' : 7,
+        '!' : 8,
+        'ç' : 9
+      }
+    };
+    if (!isNaN(parseInt(value))) {
+      this.send_to_search(value);
+      return;
+    }
+    let decoded = '';
+    for (let caractere of value) {
+      if (!decode_table[process.platform].hasOwnProperty(caractere)) {
+        continue;
+      }
+      decoded += decode_table[process.platform][caractere];
+    }
+    if (!isNaN(parseInt(decoded))) {
+      this.send_to_search(decoded);
+    }
+    return false;
+  }
+  // action on buttons (fill in passphrase)
+  keyboardButtonHandler(text) {
+    const { searchval} = this.state;
+    if (text!=='c') {
+      this.setState({searchval: searchval+text});
+    } else {
+      this.setState({searchval: searchval.slice(0,-1)});
+    }
+  }
+
+  closeKeyboard() {
+    this.setState({keyboardOpen: false});
+  }
+
   render() {
     const { commandeslist, error, loading, tickets, printTicket } = this.props;
 
-    const { startDate, endDate, openTab, commandeId, printOpen } = this.state;
+    const { startDate, endDate, openTab, commandeId, printOpen, searchval, inputfocus, keyboardOpen } = this.state;
+
+    const self = this;
+
 
     let a_encaisserlist = [], standbylist = [], confirmedlist = [];
     
@@ -230,12 +344,13 @@ class ListeCommandes extends React.Component {
       };
       let __start = compareAsc(new Date(value.createdAt), startDate);
       let __end = compareAsc(new Date(value.createdAt), endDate);
-      if (__start>-1 && __end<1) {
-        if (value.status=='a_encaisser') a_encaisserlist.push({id: key, commande: cmd});
+      if ((__start>-1 && __end<1) && (searchval=='' || cmd.id.indexOf(searchval)!=-1)) {
+      if (value.status=='a_encaisser') a_encaisserlist.push({id: key, commande: cmd});
         if (value.status=='standby') standbylist.push({id: key, commande: cmd});
         if (value.status=='confirmed') confirmedlist.push({id: key, commande: cmd});
       }
     }
+    console.log('searchval :',searchval!='');
     
   
     if(loading) {
@@ -258,7 +373,11 @@ class ListeCommandes extends React.Component {
       };
     }
 
-
+    setInterval(function(){
+      if (inputfocus) {
+        if (self.refs.searchInput) self.refs.searchInput.focus();
+      }
+    },200);
 
     return (
      <div className="ListeCommandes container">
@@ -292,18 +411,20 @@ class ListeCommandes extends React.Component {
         </div>
 
         <div className="listes">
+          <input className="search-input" ref="searchInput" onKeyUp={this.searchHandler} />
           <AppBar position="static">
             <Tabs value={openTab} onChange={this.handleChangeTab} aria-label="simple tabs example">
-              <Tab label={ strings.modules.listecommandes.status.a_encaisser } {...a11yProps(0)} />
-              <Tab label={ strings.modules.listecommandes.status.standby } {...a11yProps(1)} />
+              <Tab label={ strings.modules.listecommandes.status.standby } {...a11yProps(0)} />
+              <Tab label={ strings.modules.listecommandes.status.a_encaisser } {...a11yProps(1)} />
               <Tab label={ strings.modules.listecommandes.status.confirmed } {...a11yProps(2)} />
             </Tabs>
+            <PillField value={searchval} className="displayId" innerButton={ `${searchval=='' ? 'keyboard' : 'delete'}`} innerButtonHandler={this.searchBtn} />
           </AppBar>
-          <TabPanel key="a_encaisser-panel" className="panel" value={openTab} index={0}>
-            <TableCommandes className="a_encaisser" id="a_encaisser" openReglement={ this.encaissementHandle } openPrint={ this.openPrint } liste={a_encaisserlist} />
-          </TabPanel>
-          <TabPanel key="standby-panel" className="panel" value={openTab} index={1}>
+          <TabPanel key="standby-panel" className="panel" value={openTab} index={0}>
             <TableCommandes className="standby" id="standby" openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } liste={standbylist} />
+          </TabPanel>
+          <TabPanel key="a_encaisser-panel" className="panel" value={openTab} index={1}>
+            <TableCommandes className="a_encaisser" id="a_encaisser" openReglement={ this.encaissementHandle } openPrint={ this.openPrint } liste={a_encaisserlist} />
           </TabPanel>
           <TabPanel key="confirmed-panel" className="panel" value={openTab} index={2}>
             <TableCommandes className="confirmed" id="confirmed" openPrint={ this.openPrint } liste={confirmedlist} />
@@ -311,6 +432,7 @@ class ListeCommandes extends React.Component {
         </div>
 
         <ReglementCont open={ this.state.reglementOpen } contClass="ListeCommandeReglement" commandeId={ this.state.commandeId } closeReglement={ this.closeReglement } />
+        <NumberKeyboard open={keyboardOpen} numbersOnly={true} buttonHandler={this.keyboardButtonHandler} closeHandler={this.closeKeyboard} />
         <ImpressionTicketPopin tickets={tickets} printOpen={printOpen} closeHandler={this.closePrint} commandeId={ this.state.commandeId } launchTicket={printTicket} />
       </div>
     </div>

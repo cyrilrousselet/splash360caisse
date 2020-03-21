@@ -144,8 +144,8 @@ const data = {
                     end: " au "
                 },
                 status: {
-                    a_encaisser: "À encaisser",
                     standby: "En attente",
+                    a_encaisser: "Livraisons",
                     confirmed: "Terminées"
                 },
                 recherche: {

@@ -25,14 +25,14 @@ const IngredientBtn = ({ id, nom, supplement, step, addIng, removeIng, qte, with
     onClick={ (e) => { e.stopPropagation(); if(!disabled) addIng(id)} }
   ><div className="btnlabel">
     <div className="nom">{ nom }</div>
-  {supplement>0 && <div className="supplt">{ supplement.replace('.',',') }&nbsp;€</div>}
+  {supplement>0 && <div className="supplt">{ Number(supplement).toFixed(2).replace('.',',') }&nbsp;€</div>}
     </div>
   {qte>0 && <div className="qte-label">{qte}</div>}
   {withbuttons && (
     <div className="qte-btn">
-      <Fab aria-label="remove" size="small" className="moins" disabled={qte==0} onClick={(e) => { e.stopPropagation(); removeIng(id)}}>
+      {(qte>0 && <Fab aria-label="remove" size="small" className="moins" onClick={(e) => { e.stopPropagation(); removeIng(id)}}>
         <MinusIcon htmlColor="#ffffff" />
-      </Fab>
+      </Fab>)}
       {/* <Fab aria-label="add" size="small" className="plus" disabled={false} onClick={(e) => { e.stopPropagation(); addIng(id)}}>
         <PlusIcon htmlColor="#ffffff" />
       </Fab> */}

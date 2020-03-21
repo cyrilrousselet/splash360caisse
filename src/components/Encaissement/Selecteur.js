@@ -15,7 +15,7 @@ const ProduitBtn = ({ id, nom, prix, composition, onClick }) => (
     id={id}
     composition={ composition }
     onClick={ () => onClick(id) }
-  ><div>{ nom }</div><div>{ prix.replace('.',',') }&nbsp;€</div></Button>
+  ><div>{ nom }</div><div>{ Number(prix).toFixed(2).replace('.',',') }&nbsp;€</div></Button>
 );
 
 
