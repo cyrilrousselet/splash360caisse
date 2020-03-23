@@ -297,12 +297,15 @@ class ListeCommandes extends React.Component {
       this.send_to_search(value);
       return;
     }
+
+    const platform = process.platform=='darwin' ? 'darwin' : 'win';
+
     let decoded = '';
     for (let caractere of value) {
-      if (!decode_table[process.platform].hasOwnProperty(caractere)) {
+      if (!decode_table[platform].hasOwnProperty(caractere)) {
         continue;
       }
-      decoded += decode_table[process.platform][caractere];
+      decoded += decode_table[platform][caractere];
     }
     if (!isNaN(parseInt(decoded))) {
       this.send_to_search(decoded);

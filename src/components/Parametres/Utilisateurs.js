@@ -163,7 +163,19 @@ class EditUtilisateurPopin extends React.Component {
   
   saveUtilisateur() {
     const user_id = this.props.utilisateur && this.props.utilisateur.user_id || null;
-    this.props.saveUtilisateur(user_id, this.state);
+
+    let state = this.state;
+
+    // si aucun droit n'est défini (cas d'un nouvel utilisateur)
+    // on crée un objet à partir de clés
+    if (state.droits==null || Object.keys(state.droits).length==0) {
+      console.log('remplissage des droits à partir de clés');
+      let droits = {};
+      Object.keys(strings.modules.parametres.submodules.utilisateurs.edition.droits).map( drt => { droits[drt] = false; });
+      state = {...state, droits:droits};
+    }
+
+    this.props.saveUtilisateur(user_id, state);
     this.resetPopin();
     this.props.closeHandler();
   }
@@ -383,7 +395,6 @@ class Utilisateurs extends React.Component {
     else {
       this.props.createUser(valeurs);
     }
-  //  this.setState({editOpen: false});
   }
 
  render() {
