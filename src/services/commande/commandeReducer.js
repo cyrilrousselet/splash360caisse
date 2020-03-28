@@ -47,11 +47,14 @@ export function commandeReducer(state = initialState, action) {
     case commandeActionTypes.ADD_PRODUIT:
 
       items = commande.items;
+      let start = commande.start;
+      if (items.length==0) start = new Date();
       items.push(action.commandeItem);
+
 
       return {
         ...state,
-        commande: {...commande, items}
+        commande: {...commande, items, start}
       }
 
     case commandeActionTypes.UPDATE_PRODUIT:

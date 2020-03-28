@@ -27,6 +27,9 @@ function getNewCommande(params) {
         items: [],
         reglements: [],
         rendus: [],
+        start: null,
+        end: null,
+        chrono: 0,
         total: 0,
         mode: 'surplace',
         status: 'pending'
@@ -641,7 +644,7 @@ function saveCommande(commande, catalogueReducer) {
     })
   });
 
-
+  
 
   const __c = {
     ...commande,

@@ -1,5 +1,6 @@
 import { commandeActionTypes } from './commandeActionTypes';
 import { commandeServices } from './commandeServices';
+import { differenceInMilliseconds } from 'date-fns';
 
 
 
@@ -93,6 +94,8 @@ function standByCommande(payload) {
     dispatch({ type: commandeActionTypes.STANDBY_COMMANDE });
 
     payload.status = 'standby';
+    payload.end = new Date();
+    payload.chrono = Math.round(differenceInMilliseconds(payload.end, payload.start)/10)/100;
     console.log(payload);
     const state = getState();
     
@@ -120,6 +123,8 @@ function livraisonCommande(payload) {
     dispatch({ type: commandeActionTypes.AENCAISSER_COMMANDE });
 
     payload.status = 'a_encaisser';
+    payload.end = new Date();
+    payload.chrono = Math.round(differenceInMilliseconds(payload.end, payload.start)/10)/100;
     console.log(payload);
     const state = getState();
     

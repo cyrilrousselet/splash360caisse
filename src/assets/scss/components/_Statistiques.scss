@@ -3,11 +3,16 @@
   .MainZone {
     height: calc(100% - 100px);
   }
+  .liste-header {
+    height: 75px;
+    align-items: center;
+  }
   .caption {
     font-family: $f_blk;
     font-size: 18px;
     color: $noir;
     letter-spacing: 0;
+    text-transform: uppercase;
   }
   .dates {
     display: inline-flex;
@@ -39,19 +44,33 @@
       padding: 0 5px !important;
     }
   } // --- /.dates
-
+  .shortcuts {
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 340px;
+    .shortcut {
+      width: 105px !important;
+      height: 30px;
+      &.shortcut-jour {
+        background-color: $jaune;
+      }
+      &.shortcut-semaine {
+        background-color: $wheel3;
+      }
+      &.shortcut-mois {
+        background-color: $orange;
+      }
+    }
+  }
   .panel {
     height: calc(100% - 25px);
-    .MuiBox-root {
-      height: 100%;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-    }
-    .table-cont {
-      height: 100%;
-    }
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    background-color: $blanc;
+    border-radius: 15px;
   }
   .listes {
     margin-top: 10px;
@@ -139,9 +158,42 @@
     }
     .zonebtn {
       width: 100%;
+      height: 80px;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
+      padding: 0 15px;
+    }
+
+    .zonecharts {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      height: calc(100% - 120px);
+      padding: 0 15px;
+      .chartblock {
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 10px;
+        .chart-titre {
+          font-family: $f_hea;
+          font-size: 14px;
+          color: $noir;
+          text-align: center;
+          text-transform: uppercase;
+        }
+        width: calc(50% - 20px);
+        height: calc(50% - 10px);
+        border-radius: 10px;
+        box-shadow: inset 0 0 0 5px $noir;
+        .chartcont {
+          height: 145px;
+          width: 250px;
+        }
+      }
     }
 
     .StdButton {

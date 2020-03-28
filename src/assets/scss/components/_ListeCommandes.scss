@@ -151,6 +151,17 @@
           background-color: $blanc-fonce;
         }
       }
+      .MuiTableRow-root:not(.color-0) {
+        
+        .liste-heure,
+        .liste-montant,
+        .liste-actions,
+        .liste-date,
+        .liste-numero,
+        .liste-client {
+          background-image: linear-gradient(rgba(255,0,0,0.5) 0%, rgba(255,0,0,0.5) 100%);
+        }
+      }
 
       .liste-actions {
         text-align: right;

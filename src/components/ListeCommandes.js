@@ -92,7 +92,7 @@ function TableCommandes(props) {
         </TableHead>
         <TableBody>
           {liste.map((row, i) => (
-            <TableRow key={row.id} className={(i%2)?'odd':'even'}>
+            <TableRow key={row.id} className={ `${(i%2)?'odd':'even'} color-${row.commande.caisse}` }>
               <TableCell key={`${row.id}-date`} className="liste-date">{ row.commande.date }</TableCell>
               <TableCell key={`${row.id}-heure`} className="liste-heure">{ row.commande.heure }</TableCell>
               <TableCell key={`${row.id}-numero`} className="liste-numero">{ row.commande.id }</TableCell>
@@ -226,30 +226,11 @@ class ListeCommandes extends React.Component {
 
 
   searchHandler(event) {
-
     if (event.keyCode==13) {
       console.log(event.target.value);
       this.decodeQRCode(event.target.value);
       event.target.value = '';
-    }
-
-    // if (this.lock) { return; }
-    // this.lock = true;
-    // if (this.search_tmo!=-1) {
-    //   clearTimeout(this.search_tmo);
-    //   this.search_tmo = -1;  
-    // }
-    // if (event.target.value) {
-    //   let val = event.target.value;
-    //   this.search_tmo = setTimeout(() => {
-    //     this.lock = false;
-    //     console.log(val);
-    //     // this.decodeQRCode(value);
-    //     event.target.value = '';
-    //     this.search_tmo = -1;
-    //   }, 200);
-    // }
-    
+    }    
   }
 
   searchBtn() {
@@ -343,7 +324,8 @@ class ListeCommandes extends React.Component {
         date: format(new Date(value.createdAt), "d MMM yyyy", { locale: this.locale }),
         heure: format(new Date(value.createdAt), "H:mm:ss"),
         montant: `${value.total.toFixed(2).replace('.',',')} €`,
-        client: 'Anonyme'
+        client: 'Anonyme',
+        caisse: value.caisse
       };
       let __start = compareAsc(new Date(value.createdAt), startDate);
       let __end = compareAsc(new Date(value.createdAt), endDate);
@@ -421,7 +403,7 @@ class ListeCommandes extends React.Component {
               <Tab label={ strings.modules.listecommandes.status.a_encaisser } {...a11yProps(1)} />
               <Tab label={ strings.modules.listecommandes.status.confirmed } {...a11yProps(2)} />
             </Tabs>
-            <PillField value={searchval} className="displayId" innerButton={ `${searchval=='' ? 'keyboard' : 'delete'}`} innerButtonHandler={this.searchBtn} />
+            <PillField value={searchval} type="text" className="displayId" innerButton={ `${searchval=='' ? 'keyboard' : 'delete'}`} innerButtonHandler={this.searchBtn} />
           </AppBar>
           <TabPanel key="standby-panel" className="panel" value={openTab} index={0}>
             <TableCommandes className="standby" id="standby" openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } liste={standbylist} />

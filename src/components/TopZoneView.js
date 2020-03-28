@@ -14,7 +14,7 @@ const TopZone = ({ cashname, username, userid, homename, onClickUseraccount }) =
 TopZone.propTypes = {
   cashname: PropTypes.string.isRequired,
   username: PropTypes.string.isRequired,
-  userid: PropTypes.number.isRequired,
+  userid: PropTypes.string.isRequired,
   homename: PropTypes.string,
   onClickUseraccount: PropTypes.func.isRequired,
 }

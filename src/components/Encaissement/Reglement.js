@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Modal, Fab, List, ListItem, Button } from '@material-ui/core';
-
+import { differenceInMilliseconds } from 'date-fns';
 import StdButton from '../common/StdButton';
 import CloseIcon from '../common/icon/CloseIcon';
 import EspecesIcon from '../common/icon/EspecesIcon';
@@ -116,6 +116,10 @@ class Reglement extends React.Component {
       this.props.printTicket('commande');
       this.props.printTicket('sac');
       this.props.printTicket('cuisine');
+      if (this.props.commande.status=='pending') {
+        this.props.commande.end = new Date();
+        this.props.commande.chrono = Math.round(differenceInMilliseconds(this.props.commande.end, this.props.commande.start)/10)/100;
+      }
       this.props.commande.status = 'confirmed';
       this.props.validateCommande(this.props.commande);
     }

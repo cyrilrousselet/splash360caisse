@@ -50,6 +50,7 @@ PillField.propTypes = {
   innerButton: PropTypes.oneOf([
     'delete',
     'submit',
+    'keyboard',
     'none'
   ]).isRequired
 }

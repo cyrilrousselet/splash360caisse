@@ -247,7 +247,30 @@ const data = {
                 cloture_z: "Clôture Z"
             },
             stocks: { nom: "Stocks" },
-            statistiques: { nom: "Statistiques" },
+            statistiques: { 
+                nom: "Statistiques",
+                pickers: {
+                    du: "Statistiques du",
+                    au: "au"
+                },
+                shortcut: {
+                    jour: "Jour",
+                    semaine: "Semaine",
+                    mois: "Mois"
+                },
+                totaux: {
+                    ca: "Chiffre d’affaire",
+                    tickets: "Nbre de commandes",
+                    moyen: "Panier moyen",
+                    chrono: "Prise commande"
+                },
+                charts: {
+                    canal: "Ventes par canal",
+                    moyen: "Règlements",
+                    mode: "Ventes",
+                    vendeur: "CA par Employé"
+                }
+            },
             menu: { nom: "Menu" },
             clients: { 
                 nom: "Clients",
