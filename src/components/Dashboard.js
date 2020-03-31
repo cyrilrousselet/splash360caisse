@@ -65,7 +65,9 @@ class Dashboard extends Component {
       <div className="Dashboard">
         <div className="topzone">
           <div className="cashName">{ cashname }</div>
-          <div className="userName" onClick={()=>{onClickUseraccount(userid)} }>{ username }</div>
+          <div className="userName" 
+            // onClick={()=>{onClickUseraccount(userid)} }
+          >{ username }</div>
           <div className={ `points${points==null ? ' nopoint':''}` }>{ `${points}${strings.dashboard.points}` }</div>
         </div>
         <div className="modules">

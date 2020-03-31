@@ -53,13 +53,13 @@
       width: 105px !important;
       height: 30px;
       &.shortcut-jour {
-        background-color: $jaune;
+        background-color: $gris-bleu;
       }
       &.shortcut-semaine {
-        background-color: $wheel3;
+        background-color: $gris-bleu;
       }
       &.shortcut-mois {
-        background-color: $orange;
+        background-color: $gris-bleu;
       }
     }
   }
@@ -356,6 +356,8 @@
             font-family: $f_blk;
             font-size: 11px;
             color: $blanc;
+            min-width: 17px;
+            min-height: 17px;
             display: inline-flex;
             justify-content: center;
             align-items: center;

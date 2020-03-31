@@ -10,12 +10,22 @@ import {data} from '../../constants/translations';
 let strings = new LocalizedStrings(data);
 
 const ProduitBtn = ({ id, nom, prix, composition, onClick }) => (
-  <Button
+  // <Button
+  //   className="ProduitBtn"
+  //   id={id}
+  //   composition={ composition }
+  //   onClick={ () => onClick(id) }
+  // ><div>{ nom }</div><div>{ Number(prix).toFixed(2).replace('.',',') }&nbsp;€</div></Button>
+  <div
     className="ProduitBtn"
     id={id}
     composition={ composition }
     onClick={ () => onClick(id) }
-  ><div>{ nom }</div><div>{ Number(prix).toFixed(2).replace('.',',') }&nbsp;€</div></Button>
+  ><div className="btnlabel">
+    <div className="nom">{ nom }</div>
+    <div className="supplt">{ Number(prix).toFixed(2).replace('.',',') }&nbsp;€</div>
+    </div>
+  </div>
 );
 
 

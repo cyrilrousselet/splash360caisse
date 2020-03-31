@@ -62,7 +62,7 @@ class Login extends React.Component {
   }
 
   resetPassphrase() {
-    this.setState({passphrase:''});
+    this.setState({passphrase:'', activated: false});
   }
 
   prepareToSetAdmin() {
@@ -138,6 +138,8 @@ class Login extends React.Component {
         }
       }
     }
+
+    if (activated && !error) connectBtnHandler();
 
     return (
       <div className="Login">

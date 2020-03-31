@@ -120,15 +120,21 @@ class Personnalisation extends React.Component {
   }
 
 
+
   render() {
     
-    const { open, closePersonnalisation, contClass, stepObject, step, itemSteps, item, ingredientTypes, addIngredient, removeIngredient, noIngredientForStep, itemIngredients, completeStep, valide, previousstep } = this.props;
+    const { open, closePersonnalisation, contClass, stepObject, step, itemSteps, item, ingredientTypes, addIngredient, removeIngredient, noIngredientForStep, itemIngredients, completeStep, valide, previousstep, updateProduit } = this.props;
 
     if (null==stepObject || Object.entries(stepObject).length==0) return <Modal open={open}><LoadingSpinner /></Modal>;
 
     if (null==ingredientTypes || Object.entries(ingredientTypes).length==0) return <Modal open={open}><LoadingSpinner /></Modal>;
 
     const isTypesMax = this.isIngredientTypeMaxnum(ingredientTypes, itemIngredients);
+
+    const onClickDelete = () => {
+      updateProduit({itemid: item, quantite: 0});
+      closePersonnalisation('popin');
+    }
 
     return (
       <Modal
@@ -183,6 +189,9 @@ class Personnalisation extends React.Component {
               <StdButton identifier="btnsuivant" elementclass="btnsuivant" key="btnsuivant" text={strings.modules.encaissement.personnalisation.valider} disabled={!valide} onClick={ () => { completeStep({itemid: item, stepid: step}) }} />
             </div>
           </div>
+          <Fab aria-label="close" size="small" className="close-button" onClick={ onClickDelete }>
+            <CloseIcon />
+          </Fab>
         </div>
       </Modal>
     );

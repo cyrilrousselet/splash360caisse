@@ -26,6 +26,7 @@ class EditUtilisateurPopin extends React.Component {
       user_id: null,
       nom: '',
       identifiant: '', 
+      status: 'active',
       droits: '',
       error_nom: false,
       error_identifiant: false
@@ -55,6 +56,13 @@ class EditUtilisateurPopin extends React.Component {
   updateValue(value) {
     console.log(value);
     this.setState(value);
+  }
+
+  updateStatus(status) {
+
+    console.log('updateStatus', status);
+    this.setState({...status});
+
   }
 
   updateDroit(droit) {
@@ -114,7 +122,7 @@ class EditUtilisateurPopin extends React.Component {
 
   getValues() {
     
-    const { droits, nom, identifiant } = this.props.utilisateur || {droits:{}, nom:null, identifiant:null};
+    const { droits, nom, identifiant, status } = this.props.utilisateur || {droits:{}, nom:null, identifiant:null};
     console.log('getValues()', this.props.utilisateur);
     console.log('getValues() droits', droits);
     // si aucun droit n'est défini (cas d'un nouvel utilisateur)
@@ -139,12 +147,14 @@ class EditUtilisateurPopin extends React.Component {
 
     const snom = this.state.nom;
     const sidentifiant = this.state.identifiant;
+    const sstatus = this.state.status;
 
     return {
       droits: vdroits,
       nom: snom || nom,
       identifiant: sidentifiant || identifiant,
-      allchecked: all
+      allchecked: all,
+      status: sstatus || status
     }
   }
 
@@ -196,9 +206,11 @@ class EditUtilisateurPopin extends React.Component {
 
   }
 
+
+
   render() {
     const { utilisateur, editOpen, closeHandler } = this.props;
-    const { nom, identifiant, droits, allchecked } = this.getValues();
+    const { nom, identifiant, droits, allchecked, status } = this.getValues();
     console.log("utilisateur: ",this.state)
  
     // const a_nom = nom || utilisateur && utilisateur.nom;
@@ -240,15 +252,15 @@ class EditUtilisateurPopin extends React.Component {
                   onChange={(val)=>{ this.checkIdentifiant(val.value) }}
                   label={ strings.modules.parametres.submodules.utilisateurs.liste.passe }
               />
-              {/* <SwitchCheckbox 
-                    isChecked={utilisateur && utilisateur.first } 
-                    key="first"
-                    name="first" 
-                    className="first"
+              <SwitchCheckbox 
+                    isChecked={ status!='disabled' } 
+                    key="status"
+                    name="status" 
+                    className="status"
                     small={ true }
-                    onChange={ console.log } 
-                    label={ strings.modules.parametres.submodules.utilisateurs.edition.first } 
-                  /> */}
+                    onChange={ (name,checked) => { this.updateStatus(Object.fromEntries([[name, checked?'active':'disabled']])) }} 
+                    label={ strings.modules.parametres.submodules.utilisateurs.edition.status } 
+                  />
               <div className="droits-wrapper">
                 <div className={ `subttl${allchecked?' allchecked':''}`} onClick={() => { this.checkAllDroits(droits) }} title={ allchecked ? strings.general.check.aucun : strings.general.check.tous }>{ strings.modules.parametres.submodules.utilisateurs.liste.droits }</div>
                 <div className="sep"></div>
@@ -257,6 +269,7 @@ class EditUtilisateurPopin extends React.Component {
                     isChecked={ droits && (droits[field]==true) } 
                     labelLeft={ true } 
                     key={`${field}-${i}`}
+                    disabled={status=='disabled'}
                     name={ field } 
                     onChange={ (name,checked) => { this.updateDroit(Object.fromEntries([[name, checked]])) }} 
                     label={ strings.modules.parametres.submodules.utilisateurs.edition.droits[field] } 
@@ -307,7 +320,7 @@ export function DroitsPopper(props) {
 
   return (
     <div>
-      <PillButton onClick={handleClick} elementclass="droits-btn" id={id} text={ strings.modules.parametres.submodules.utilisateurs.liste.droits } />
+      <PillButton onClick={handleClick} elementclass="droits-btn" id={id} text={ `${strings.modules.parametres.submodules.utilisateurs.liste.droits}...` } />
       <Popper id={id} className="Parametres-Utilisateurs-Popper" open={open} anchorEl={anchorEl} placement="left-start">
           <Paper><div className="popper-cont">
 
@@ -344,7 +357,7 @@ function TableUtilisateurs(props) {
       <TableBody>
         {liste.map((row, i) => (
           <TableRow key={row.id} className={(i%2)?'odd':'even'}>
-            <TableCell key={`${i}-nom`} className="liste-nom"><div onClick={ () => { openEdit(i) } }>{ row.nom }</div></TableCell>
+            <TableCell key={`${i}-nom`} className={ `liste-nom${ (row.status && row.status=='disabled')?' user-disabled':''}` }><div onClick={ () => { openEdit(i) } }>{ row.nom }</div></TableCell>
             <TableCell key={`${i}-passe`} className="liste-passe">{ row.identifiant }</TableCell>
             <TableCell key={`${i}-droits`} className="liste-droits"><DroitsPopper id={`drt${i}`} droits={row.droits}></DroitsPopper></TableCell>
           </TableRow>

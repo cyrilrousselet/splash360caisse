@@ -50,6 +50,10 @@ const data = {
             erreur: {
                 titre: 'Erreur !',
                 texte: 'Veuillez vérifier votre identifiant'
+            },
+            denied: {
+                titre: 'Utilisateur désactivé !',
+                texte: 'Cet utilisateur est désactivé'
             }
         },
         dashboard: {
@@ -387,6 +391,7 @@ const data = {
                             ajouter: 'Ajouter un utilisateur',
                             editer: 'Édition de l’utilisateur',
                             first: 'L’utilisateur doit changer de mot de passe à la prochaine connexion',
+                            status: 'Actif',
                             droits: {
                                 clients: "Accès Clients",
                                 stocks: "Accès Stocks",

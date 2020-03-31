@@ -26,19 +26,8 @@ const getModulesFromDroits = (droits) => {
 }
 
 
-const userLogout = () => {
-  Swal.fire({
-    type: 'warning',
-    title: strings.dashboard.logout.titre,
-    text: strings.dashboard.logout.texte,
-    showCancelButton: true,
-    focusCancel: true,
-    focusConfirm: false
-  }).then((result)=> {
-    if (result.value) {
-      history.push(paths.LOGIN);
-    }
-  });
+const userAccount = () => {
+  console.log('userAccount');
 }
 
 
@@ -107,7 +96,7 @@ const mapDispatchToProps = (dispatch) => {
   }, dispatch);
   return {
     ...binded,
-    onClickUseraccount: userLogout,
+    onClickUseraccount: userAccount,
     onClickModule: beforeClickModule
   };
 }

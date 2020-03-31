@@ -1,6 +1,6 @@
 // @flow
 import * as React from 'react';
-import Footer from '../components/Footer';
+import FooterCont from '../containers/FooterCont';
 import './../assets/scss/styles.scss'
 
 type Props = {
@@ -12,6 +12,6 @@ export default class App extends React.Component<Props> {
 
   render() {
     const { children } = this.props;
-    return <React.Fragment>{children}<Footer /></React.Fragment>;
+    return <React.Fragment>{children}<FooterCont /></React.Fragment>;
   }
 }

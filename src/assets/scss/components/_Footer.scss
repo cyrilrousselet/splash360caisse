@@ -1,6 +1,6 @@
 .Footer {
     position: fixed;
-    padding: 0 50px 0 23px;
+    padding: 0 25px 0 23px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -40,5 +40,17 @@
     }
     .heure {
         display: inline-block;
+    }
+    .logout {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        margin-left: 50px;
+    }
+    .right {
+        display: inline-flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
     }
 }

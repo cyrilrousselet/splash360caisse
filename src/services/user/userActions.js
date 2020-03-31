@@ -25,12 +25,17 @@ function login(passphrase) {
             user => {
               if (user) {
 
-                dispatch({ type: userActionTypes.LOGIN_SUCCESS, user });
+                // si l'utilisateur n'est pas actif -> refus
+                if (user.status=='disabled') {
+                  dispatch({ type: userActionTypes.LOGIN_DENIED, payload: strings.login.denied.titre });
+                } else {
+                  dispatch({ type: userActionTypes.LOGIN_SUCCESS, user });
+                  // store user details and jwt token in local storage to keep user logged in between page refreshes
+                  localStorage.setItem('user', JSON.stringify(user));
+                  
+                  history.push(paths.DASHBOARD);
+                }
                 
-                // store user details and jwt token in local storage to keep user logged in between page refreshes
-                localStorage.setItem('user', JSON.stringify(user));
-                
-                history.push(paths.DASHBOARD);
               }
               else {
                 dispatch({ type: userActionTypes.LOGIN_FAILURE, payload: strings.login.erreur.titre });

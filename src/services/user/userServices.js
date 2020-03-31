@@ -41,6 +41,7 @@ function setAdmin(passphrase) {
     user_id: 'usr0',
     nom: 'Admin',
     identifiant: passphrase,
+    status: 'active',
     droits: {
       'cartes': true,
       'clients': true,

@@ -17,6 +17,7 @@ export function authentication(state = initialState, action) {
         user: action.user
       };
     case userActionTypes.LOGIN_FAILURE:
+    case userActionTypes.LOGIN_DENIED:
       return {
         loggedIn: false,
         error: action.payload
@@ -27,7 +28,8 @@ export function authentication(state = initialState, action) {
         error: null
       };
     case userActionTypes.LOGOUT:
-      return {};
+      
+      return {loggedIn: false};
     default:
       return state
   }

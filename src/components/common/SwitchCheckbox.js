@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const SwitchCheckbox = ({ name, isChecked, onChange, className, label, labelLeft, small }) => (
-      <div className={ `switch-container${labelLeft ? ' labelleft' : ''}${small ? ' switch-small' : ''}${className?' '+className:''}` }>
+const SwitchCheckbox = ({ name, isChecked, onChange, className, label, labelLeft, disabled, small }) => (
+      <div className={ `switch-container${labelLeft ? ' labelleft' : ''}${small ? ' switch-small' : ''}${disabled ? ' switch-disabled' : ''}${className?' '+className:''}` }>
         <label>
           <input
             type="checkbox"
@@ -10,6 +10,7 @@ const SwitchCheckbox = ({ name, isChecked, onChange, className, label, labelLeft
             id={`switchid-${name}`}
             name={name}
             checked={ isChecked }
+            disabled={ disabled }
             onChange={ (event) => onChange(name, !isChecked) }
           />
           <div><div></div></div>

@@ -24,7 +24,7 @@ const actions = {
   dbUsersLogin: async (req,res) => {
     const {payload} = req;
 
-    const user = await _findUser({identifiant: payload.identifiant});
+    const user = await _findUser({$and:[{identifiant: payload.identifiant}, {$not:{status: 'disabled'}}]});
 
     res.send(user);
   },
@@ -107,7 +107,7 @@ async function _fillinUsers() {
 }
 
 async function _findUsers(prd_criteriae={}) {
-  const _users = await db.users.find({});
+  const _users = await db.users.find(prd_criteriae);
   return { _users };
 }
 

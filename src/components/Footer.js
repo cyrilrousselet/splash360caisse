@@ -1,6 +1,7 @@
 import React from 'react';
 import LocalizedStrings from 'react-localization';
 import { data } from '../constants/translations';
+import LogoutIcon from './common/icon/LogoutIcon';
 
 let strings = new LocalizedStrings(data);
 
@@ -47,6 +48,7 @@ class Footer extends React.Component {
 
     render() {
 
+        const { userLogout } = this.props;
 
         return (
           <div className="Footer">
@@ -56,6 +58,9 @@ class Footer extends React.Component {
             <div className="right">
               <div className="date">{ this.state.date }</div>
               <div className="heure">{ this.state.heure }</div>
+              <div className="logout">
+                  <LogoutIcon onClick={userLogout} />
+              </div>
             </div>
           </div>
         );

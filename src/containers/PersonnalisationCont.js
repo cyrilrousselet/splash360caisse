@@ -103,6 +103,7 @@ const mapDispatchToProps = (dispatch) => {
     addIngredient: commandeActions.addIngredient,
     removeIngredient: commandeActions.removeIngredient,
     noIngredientForStep: commandeActions.noIngredientForStep,
+    updateProduit: commandeActions.updateProduit,
     completeStep: commandeActions.completeStep
     // getCommande: commandeActions.getCommande,
     // updateCommande: commandeActions.updateCommande,

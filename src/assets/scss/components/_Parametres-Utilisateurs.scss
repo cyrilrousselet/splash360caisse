@@ -70,6 +70,9 @@
             div {
                 cursor: pointer;
             }
+            &.user-disabled {
+              color: $rouge;
+            }
         }
         .odd {
             background-color: $noir_005;
@@ -111,8 +114,9 @@
       }
       height: 25px;
       line-height: 25px;
-      background-color: $blanc-fonce;
-      box-shadow: inset 0 0 0 1px $noir;
+      background-color: transparent;
+      border: none;
+      box-shadow: none;
     }
 
   }

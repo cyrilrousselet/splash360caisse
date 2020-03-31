@@ -252,6 +252,10 @@ class Statistiques extends React.Component {
         if (!moyen.hasOwnProperty(rgl.moyen)) { moyen[rgl.moyen] = 0; }
         moyen[rgl.moyen] += Number(rgl.valeur);
       });
+      // soustraction de la valeur du rendu-monnaie
+      value.rendus.forEach(rdn => {
+        moyen[rdn.moyen] -= Number(rdn.valeur);
+      });
 
       // par canal
       if (!canal.hasOwnProperty(value.caisse)) { canal[value.caisse] = 0; }

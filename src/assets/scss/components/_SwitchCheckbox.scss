@@ -3,6 +3,9 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    &.switch-disabled {
+        opacity: .5;
+    }
 }
 
 input[type="checkbox"].switch {
