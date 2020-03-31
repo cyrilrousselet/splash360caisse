@@ -113,9 +113,10 @@ class Reglement extends React.Component {
     const { reste, rendu } = this.updateValeurs();
     console.log(reste, rendu);
     if (reste==0) {
-      this.props.printTicket('commande');
-      this.props.printTicket('sac');
-      this.props.printTicket('cuisine');
+      console.warn('!!! DEV - rétablir l’impression des tickets');
+      // this.props.printTicket('commande');
+      // this.props.printTicket('sac');
+      // this.props.printTicket('cuisine');
       if (this.props.commande.status=='pending') {
         this.props.commande.end = new Date();
         this.props.commande.chrono = Math.round(differenceInMilliseconds(this.props.commande.end, this.props.commande.start)/10)/100;

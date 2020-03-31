@@ -16,13 +16,27 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import StdButton from './common/StdButton';
-import { Doughnut, Bar, HorizontalBar, Bubble } from 'react-chartjs-2';
+import { Doughnut } from 'react-chartjs-2';
 import history from '../helpers/history';
 import paths from '../constants/routes';
 
 import fakecont from './../assets/images/fake_contenu_statistiques.png';
 
 let strings = new LocalizedStrings(data);
+
+
+const _colorWheel = [
+  '#FE485F',
+  '#FDC24F',
+  '#C784D5',
+  '#1EA9DF',
+  '#4A4A4A',
+  '#554ED0',
+  '#9EB3BB',
+  '#EE7886',
+  '#7D9FC7',
+  '#ECA36A'
+];
 
 class LocalizedUtils extends DateFnsUtils {
   getDatePickerHeaderText(date) {
@@ -45,6 +59,100 @@ function TabPanel(props) {
     >
       {value === index && <Box p={3}>{children}</Box>}
     </Typography>
+  );
+}
+
+
+function CanalChart(props) {
+  const { data } = props;
+
+  let i = 0;
+  const max = Object.values(data).sort((a,b)=>b-a);
+
+  const __items = Object.entries(data).map(([nom,valeur]) =>
+    <div className="canal-item">
+      <div className="tracker">
+      { `${valeur.toFixed(2).replace('.',',')} €` }
+        <div className="jauge" style={{ backgroundColor: _colorWheel[i++],  width:`calc(${ Math.round(valeur/max[0]*100) }% - 4px)` }}>{ `${valeur.toFixed(2).replace('.',',')} €` }</div>
+      </div>
+      <div className="nom">{nom}</div>
+    </div>
+  );
+
+  return (
+    <div className="CanalChart">{ __items }</div>
+  );
+}
+
+
+function MoyenChart(props) {
+  const { data } = props;
+
+  let i = 0;
+  const max = Object.values(data).sort((a,b)=>b-a);
+
+  const __items = Object.entries(data).map(([nom,valeur]) =>  
+    <div className="moyen-item">
+      <div className="tracker">
+        <div className="jauge" style={{ backgroundColor: _colorWheel[i++],  height:`calc(${ Math.round(valeur/max[0]*100) }% - 2px)` }}></div>
+      </div>
+      <div className="nom">{ `${valeur.toFixed(2).replace('.',',')} €` }</div>
+    </div>
+  );
+
+  i = 0;
+  const __legende = Object.entries(data).map(([nom,valeur]) =>  
+  <div className="moyen-legende">
+    <div className="spot" style={{ backgroundColor: _colorWheel[i++] }}></div><div className="nom">{ strings.modules.encaissement.reglement.moyens[nom] }</div>
+  </div>
+);
+
+  return (
+    <div className="MoyenChart">
+      <div className="items">{ __items }</div>
+      <div className="legende">{ __legende }</div>
+    </div>
+  );
+}
+
+
+
+function ModeChart(props) {
+  const { data } = props;
+
+  let i = 0;
+  const max = Object.values(data).sort((a,b)=>b-a);
+  let total = 0;
+  Object.values(data).forEach(val=>total+=val);
+
+  const __items = Object.entries(data).map(([nom,valeur]) =>  
+    <div className="mode-item">
+      <div className="tracker" style={{ 
+        backgroundImage: `linear-gradient(${_colorWheel[i]} 0%, ${_colorWheel[i]} 100%)`, 
+        height:`calc(${ Math.round(valeur/max[0]*100) }% - 2px)` 
+      }}>
+        <div className="jauge" style={{ 
+          backgroundColor: _colorWheel[i], 
+          width:`${ Math.round(valeur/max[0]*50) }px`,
+          height:`${ Math.round(valeur/max[0]*50) }px`
+           }}>{ `${ Math.round(valeur/total*100) }%` }</div>
+        <div className="point" style={{ backgroundColor: _colorWheel[i++] }}></div>
+      </div>
+    </div>
+  );
+
+  i = 0;
+  const __legende = Object.entries(data).map(([nom,valeur]) =>  
+  <div className="mode-legende">
+    <div className="spot" style={{ backgroundColor: _colorWheel[i++] }}></div><div className="nom">{ strings.modules.encaissement.panier.mode[nom] }</div>
+  </div>
+);
+
+  return (
+    <div className="ModeChart">
+      <div className="items">{ __items }</div>
+      <div className="legende">{ __legende }</div>
+    </div>
   );
 }
 
@@ -102,7 +210,7 @@ class Statistiques extends React.Component {
   const { commandeslist, error, loading } = this.props;
   const { startDate, endDate, openTab } = this.state;
 
-  let ca_total = 0, ca_confirmes = 0, nbre_total = 0, nbre_confirmes = 0, moy = 0, tps_total = 0, canal = {}, moyen = {}, vendeur = {}, mode = {}, modes = {};
+  let ca_total = 0, chrono_total = 0, ca_confirmes = 0, nbre_total = 0, nbre_confirmes = 0, moy = 0, tps_total = 0, canal = {}, moyen = {}, vendeur = {}, mode = {}, modes = {};
   for (let [key, value] of Object.entries(commandeslist)) {
     // let cmd = {
     //   id: value.ticketId,
@@ -113,37 +221,46 @@ class Statistiques extends React.Component {
     //   client: 'Anonyme',
     //   caisse: value.caisse
     // };
+
     let __start = compareAsc(new Date(value.createdAt), startDate);
     let __end = compareAsc(new Date(value.createdAt), endDate);
     if (__start>-1 && __end<1) {
 
       if (value.status=='confirmed') {
-        ca_confirmes += value.total;
+        ca_confirmes += Number(value.total);
         nbre_confirmes++;
       }
       nbre_total++;
-      ca_total += value.total;
+
+      ca_total += Number(value.total);
+
+      // calcul du temps moyen (uniquement pour les commandes chonométrées)
       tps_total += value.chrono || 0;
+      if (value.chrono) chrono_total++;
+
+
+
+
+      
+
+      // par mode
+      if (!mode.hasOwnProperty(value.mode)) { mode[value.mode] = 0; }
+      mode[value.mode] += Number(value.total);
+      
+      // par moyen
+      value.reglements.forEach(rgl => {
+        if (!moyen.hasOwnProperty(rgl.moyen)) { moyen[rgl.moyen] = 0; }
+        moyen[rgl.moyen] += Number(rgl.valeur);
+      });
+
+      // par canal
+      if (!canal.hasOwnProperty(value.caisse)) { canal[value.caisse] = 0; }
+      canal[value.caisse] += Number(value.total);
+
+      // par vendeur
+      if (!vendeur.hasOwnProperty(value.operator.nom)) { vendeur[value.operator.nom] = 0; }
+      vendeur[value.operator.nom] += Number(value.total);
     }
-
-    // par mode
-    if (!mode.hasOwnProperty(value.mode)) { mode[value.mode] = 0; }
-    mode[value.mode] += value.total;
-    
-    // par moyen
-    value.reglements.forEach(rgl => {
-      if (!moyen.hasOwnProperty(rgl.moyen)) { moyen[rgl.moyen] = 0; }
-      moyen[rgl.moyen] += rgl.valeur;
-    });
-
-    // par canal
-    if (!canal.hasOwnProperty(value.caisse)) { canal[value.caisse] = 0; }
-    canal[value.caisse] += value.total;
-
-    // par vendeur
-    if (!vendeur.hasOwnProperty(value.operator)) { vendeur[value.operator.nom] = 0; }
-    vendeur[value.operator.nom] += value.total;
-
   }
 
 
@@ -152,89 +269,6 @@ class Statistiques extends React.Component {
     return <LoadingSpinner />
   }
 
-
-  const _colorWheel = [
-    '#FF6384',
-    '#36A2EB',
-    '#FFCE56'
-  ];
-
-
-  // on boucle sur la liste
-
-  // ventilation par moyen de paiement
-  let moyen_data = {
-    labels: [],
-    datasets: [
-      {
-        label: '',
-        backgroundColor: [],
-        borderColor: [],
-        borderWidth: 1,
-        hoverBackgroundColor: 'rgba(255,99,132,0.4)',
-        hoverBorderColor: 'rgba(255,99,132,1)',
-        data: [30,30]
-      }
-    ]
-  };
-  let i = 0;
-  for(let [id,val] of Object.entries(moyen)) {
-    moyen_data.labels.push(id);
-    moyen_data.datasets[0].backgroundColor.push(_colorWheel[i++]);
-    moyen_data.datasets[0].data.push(Math.round(val));
-  }
-
-
-  const moyen_options = {
-    maintainAspectRation: true,
-    responsive: true,
-    legend: {
-      display: false
-    }
-  }
-
-  // ventilation par mode de commande
-  const mode_data = {
-    labels: [],
-    datasets: [
-      {
-        label: 'CA',
-        fill: true,
-        lineTension: 0.1,
-        backgroundColor: [],
-        borderColor: 'transparent',
-        pointBorderColor: 'rgba(75,192,192,1)',
-        pointBackgroundColor: '#fff',
-        pointBorderWidth: 1,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-        pointHoverBorderColor: 'rgba(220,220,220,1)',
-        pointHoverBorderWidth: 2,
-        pointRadius: 1,
-        pointHitRadius: 10,
-        data: []
-      }
-    ]
-  };
-  i = 0;
-  for(let [id,val] of Object.entries(mode)) {
-    mode_data.labels.push(id);
-    mode_data.datasets[0].backgroundColor.push(_colorWheel[i++]);
-    mode_data.datasets[0].data.push(
-      {
-        x: i,
-        y: Math.round(val),
-        r: Math.min(5, Math.min(80, Math.round(val/10)))
-      });
-  }
-
-  const mode_options = {
-    maintainAspectRation: true,
-    responsive: true,
-    legend: {
-      display: false
-    }
-  }
 
   // ventilation par vendeur
   const vendeur_data = {
@@ -245,7 +279,7 @@ class Statistiques extends React.Component {
       hoverBackgroundColor: []
     }]
   };
-  i = 0;
+  let i = 0;
   for(let [id,val] of Object.entries(vendeur)) {
     vendeur_data.labels.push(`${id} ${val.toFixed(2).replace('.',',')}€`);
     vendeur_data.datasets[0].data.push(Math.round(val));
@@ -261,38 +295,6 @@ class Statistiques extends React.Component {
     },
       cutoutPercentage: 75
   }
-
-  // ventilation par canal
-  const canal_data = {
-    labels: [],
-    datasets: [
-      {
-        label: '',
-        backgroundColor: [],
-        borderColor: [],
-        borderWidth: 1,
-        hoverBackgroundColor: 'rgba(255,99,132,0.4)',
-        hoverBorderColor: 'rgba(255,99,132,1)',
-        data: []
-      }
-    ]
-  };
-
-  i = 0;
-  for(let [id,val] of Object.entries(canal)) {
-    canal_data.labels.push(`${id} ${val.toFixed(2).replace('.',',')}€`);
-    canal_data.datasets[0].data.push(Math.round(val));
-    canal_data.datasets[0].backgroundColor.push(_colorWheel[i++]);
-  }
-
-  const canal_options = {
-    maintainAspectRation: true,
-    responsive: true,
-    legend: {
-      display: false
-    }
-  }
-
 
   const a11yProps = (index) => {
     return {
@@ -350,30 +352,30 @@ class Statistiques extends React.Component {
               <StdButton key="ca" identifier='ca' elementclass="action action-ca" noStroke={false} text={ `${ strings.modules.statistiques.totaux.ca } ${ ca_confirmes.toFixed(2).replace('.',',') + nbsp }€` } onClick={ ()=>void(0) } />
               <StdButton key="nbrcmd" identifier='nbrcmd' elementclass="action action-nbrcmd" noStroke={false} text={ `${ strings.modules.statistiques.totaux.tickets } ${nbre_confirmes}` } onClick={ ()=>void(0) } />
               <StdButton key="cart" identifier='cart' elementclass="action action-cart" noStroke={false} text={ `${ strings.modules.statistiques.totaux.moyen } ${ panier_moyen.toFixed(2).replace('.',',') + nbsp }€` } onClick={ ()=>void(0) } />
-              <StdButton key="tpscmd" identifier='tpscmd' elementclass="action action-tpscmd" noStroke={false} text={ `${ strings.modules.statistiques.totaux.chrono } ${ Number(tps_total/nbre_total).toFixed(2).replace('.',',') + nbsp }SEC` } onClick={ ()=>void(0) } />
+              <StdButton key="tpscmd" identifier='tpscmd' elementclass="action action-tpscmd" noStroke={false} text={ `${ strings.modules.statistiques.totaux.chrono } ${ isNaN(tps_total/nbre_total)? 0 :(Number(tps_total/nbre_total).toFixed(2).replace('.',',')) + nbsp }SEC` } onClick={ ()=>void(0) } />
             </div>
             <div className="zonecharts">
               <div className="chartblock chart-canal">
                 <div className="chart-titre">{ strings.modules.statistiques.charts.canal }</div>
                 <div className="chartcont">
-                  <HorizontalBar data={canal_data} options={canal_options} />
+                  <CanalChart data={ canal } />
                 </div>
               </div>
               <div className="chartblock chart-moyen">
                 <div className="chart-titre">{ strings.modules.statistiques.charts.moyen }</div>
                 <div className="chartcont">
-                  <Bar data={moyen_data} options={moyen_options} />
+                  <MoyenChart data={ moyen } />
                 </div>
               </div>
               <div className="chartblock chart-mode">
                 <div className="chart-titre">{ strings.modules.statistiques.charts.mode }</div>
                 <div className="chartcont">
-                  <Bubble data={mode_data} options={mode_options} />
+                  <ModeChart data={mode} />
                 </div>
               </div>
               <div className="chartblock chart-vendeur">
                 <div className="chart-titre">{ strings.modules.statistiques.charts.vendeur }</div>
-                <div className="chartcont">
+                <div className="chartcont chart-doughnut">
                   <Doughnut data={vendeur_data} options={vendeur_options} />
                 </div>
               </div>

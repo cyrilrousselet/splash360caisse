@@ -191,7 +191,204 @@
         box-shadow: inset 0 0 0 5px $noir;
         .chartcont {
           height: 145px;
-          width: 250px;
+          width: calc(100% - 40px);
+          &.chart-doughnut {
+            width: 250px;
+          }
+        }
+      }
+    }
+
+    .CanalChart {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+      .canal-item {
+        display: table-row;
+        margin-bottom: 5px;
+        height: 26px;
+        .tracker {
+          display: table-cell;
+          height: 24px;
+          line-height: 22px;
+          width: 100%;
+          border-radius: 12px;
+          border: 1px solid $noir;
+          text-align: left;
+          padding-left: 7px;
+          color: $noir;
+          font-family: $f_blk;
+          font-size: 12px;
+          position: relative;
+          .jauge {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            height: 18px;
+            border-radius: 10px;
+            text-align: left;
+            padding: 5px;
+            color: $blanc;
+            font-family: $f_blk;
+            font-size: 12px;
+            line-height: 7px;
+            overflow-x: hidden;
+            white-space: nowrap;
+          }
+        }
+        .nom {
+          display: table-cell;
+          font-family: $f_blk;
+          font-size: 12px;
+          color: $noir;
+          padding-left: 10px;
+
+        }
+      }
+    }
+    .MoyenChart {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      height: 100%;
+      .items {
+        width: 70%;
+      }
+      .moyen-item {
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        width: 25%;
+        height: 100%;
+        text-align: center;
+        background-image: linear-gradient($noir 0%, $noir 100%);
+        background-repeat: no-repeat;
+        background-size: 100% 1px;
+        background-position: 0px calc(100% - 19px);
+        .tracker {
+          display: inline-block;
+          width: 24px;
+          height: calc(100% - 22px);
+          border-radius: 12px 12px 0 0;
+          background-color: $blanc-fonce;
+          position: relative;
+          .jauge {
+            position: absolute;
+            bottom: 0;
+            left: 2px;
+            width: calc(100% - 4px);
+            border-radius: 10px 10px 0 0;
+            background-image: radial-gradient($blanc 0%, $blanc 50%, transparent 51%, transparent 100%);
+            background-repeat: no-repeat;
+            background-position: center 2px;
+            background-size: 16px 16px;
+          }
+        }
+        .nom {
+          height: 20px;
+          line-height: 26px;
+          font-family: $f_hea;
+          font-size: 14px;
+          color: $noir;
+        }
+      }
+      .legende {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        .moyen-legende {
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-start;
+          align-items: center;
+          .spot {
+            width: 10px;
+            height: 10px;
+            margin-right: 10px;
+          }
+          .nom {
+            display: table-cell;
+            font-family: $f_hea;
+            font-size: 14px;
+            color: $noir;
+            text-align: left;
+          }
+        }
+      }
+    }
+    .ModeChart {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      height: 100%;
+      .items {
+        width: 70%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: flex-end;
+      }
+      .mode-item {
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        width: 25%;
+        height: 100%;
+        text-align: center;
+        background-image: linear-gradient($noir 0%, $noir 100%);
+        background-repeat: no-repeat;
+        background-size: 100% 1px;
+        background-position: 0px calc(100% - 7px);
+        .tracker {
+          display: inline-flex;
+          flex-direction: column;
+          justify-content: space-between;
+          background-repeat: no-repeat;
+          align-items: center;
+          background-size: 3px 100%;
+          background-position: center top;
+          position: relative;
+          .jauge {
+            border-radius: 50%;
+            font-family: $f_blk;
+            font-size: 11px;
+            color: $blanc;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+          }
+          .point {
+            display: block;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+          }
+        }
+      }
+      .legende {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        .mode-legende {
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-start;
+          align-items: center;
+          .spot {
+            width: 10px;
+            height: 10px;
+            margin-right: 10px;
+          }
+          .nom {
+            display: table-cell;
+            font-family: $f_hea;
+            font-size: 14px;
+            color: $noir;
+            text-align: left;
+          }
         }
       }
     }
