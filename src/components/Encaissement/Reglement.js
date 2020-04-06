@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { isDev } from 'electron-is-dev';
+
 import { Modal, Fab, List, ListItem, Button } from '@material-ui/core';
 import { differenceInMilliseconds } from 'date-fns';
 import StdButton from '../common/StdButton';
@@ -114,9 +116,11 @@ class Reglement extends React.Component {
     console.log(reste, rendu);
     if (reste==0) {
       console.warn('!!! DEV - rétablir l’impression des tickets');
-      this.props.printTicket('commande');
-      this.props.printTicket('sac');
-      this.props.printTicket('cuisine');
+      if (!isDev) {
+        this.props.printTicket('commande');
+        this.props.printTicket('sac');
+        this.props.printTicket('cuisine');
+      }
       if (this.props.commande.status=='pending') {
         this.props.commande.end = new Date();
         this.props.commande.chrono = Math.round(differenceInMilliseconds(this.props.commande.end, this.props.commande.start)/10)/100;

@@ -16,9 +16,9 @@ class MainLoader extends React.Component {
   componentDidMount() {
 
     console.log('MainLoader.componentDidMount()');
+      this.props.getParametres();
       this.props.getCommandesList();
       this.props.getAllActive();
-      this.props.getParametres();
       this.props.getCurrentPeriode();
   }
 

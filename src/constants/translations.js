@@ -288,6 +288,10 @@ const data = {
                     partielle: {
                         titre: "Clôture partielle",
                         texte: "Les commandes comptabilisées dans cette clôture partielle seront archivées et ne figureront pas dans les clôtures suivantes"
+                    },
+                    different: {
+                        titre: "Comptage différent",
+                        texte: "Votre comptage diffère du calcul théorique des recettes. Vous devez corriger pour pouvoir clôturer."
                     }
                 }
             },

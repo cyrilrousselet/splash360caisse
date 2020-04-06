@@ -66,7 +66,7 @@ class Login extends React.Component {
   }
 
   prepareToSetAdmin() {
-    this.setState({prepareToSet:true, passphrase:''});
+    this.setState({prepareToSet:true});
   }
 
   displayError(error) {
@@ -117,6 +117,7 @@ class Login extends React.Component {
           else {
             // on attend l'identifiant par défaut
             if (passphrase==defaultPassphrase) {
+              this.resetPassphrase();
               this.prepareToSetAdmin();
             } 
             // sinon message d'erreur

@@ -62,7 +62,7 @@ function setAdmin(passphrase) {
             // store user details and jwt token in local storage to keep user logged in between page refreshes
             localStorage.setItem('user', JSON.stringify(user));
 
-            history.push(paths.DASHBOARD);
+            history.push(paths.MAIN_LOADER);
         },
         error => dispatch({ type: userActionTypes.SET_ADMIN_FAILURE, payload: error.toString() })
       )
