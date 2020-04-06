@@ -9,6 +9,7 @@ export const commandeServices = {
   addReglement,
   addRendu,
   saveCommande,
+  archiveCommands,
   addIngredient,
   removeIngredient,
   noIngredientForStep,
@@ -654,6 +655,10 @@ function saveCommande(commande, catalogueReducer) {
 
 
   return emit('dbCommandePersist', {commande:__c});
+}
+
+function archiveCommands(commandesid) {
+  return emit('dbCommandeArchive', {ids:commandesid});
 }
 
 

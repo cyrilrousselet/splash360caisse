@@ -108,6 +108,7 @@ async function _persistParametres(payload) {
   let _param = await db.parametres.findOne({domaine: payload.domaine, cle: payload.cle});
   if (_param) {
     let __upd = {..._param, ...payload};
+    log.info('persistParametres', __upd);
     _param = await db.parametres.update({domaine: payload.domaine, cle: payload.cle}, __upd);
   } else {
     _param = await db.parametres.insert(payload);

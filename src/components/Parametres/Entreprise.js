@@ -20,7 +20,7 @@ const data_ent = {
   auto_update: true,
   clavier: false,
   avoirs: false,
-  service: true,
+  service: false,
   heure_fin: '00:00',
   message_ticket: 'Bon appétit, merci de votre visite et à bientôt !'
 };

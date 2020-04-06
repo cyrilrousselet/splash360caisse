@@ -13,46 +13,46 @@ class Dashboard extends Component {
   constructor(props) {
     super(props);
 
-    this.calculeCA = this.calculeCA.bind(this);
+    // this.calculeCA = this.calculeCA.bind(this);
   }
 
   componentDidMount() {
     console.log('Dashboard.componentDidMount()');
-    this.props.getCommandesList();
-    this.props.getAllActive();
-    this.props.getParametres();
+    // this.props.getCommandesList();
+    // this.props.getAllActive();
+    // this.props.getParametres();
     this.props.getCurrentPeriode();
   }
 
 
-  calculeCA(){
+  // calculeCA(){
 
-    const { commandeslist } = this.props;
+  //   const { commandeslist } = this.props;
 
-    let __ca = 0;
-    let __tickets = 0;
-    if (commandeslist) {
-      for (let [key,value] of Object.entries(commandeslist)) {
-        __ca += value.total;
-        if (value.caisse==this.props.caisse) __tickets++;
-      }
-    }
+  //   let __ca = 0;
+  //   let __tickets = 0;
+  //   if (commandeslist) {
+  //     for (let [key,value] of Object.entries(commandeslist)) {
+  //       __ca += value.total;
+  //       console.log(value.caisse.id);
+  //       if (value.caisse.id==this.props.caisse.id) __tickets++;
+  //     }
+  //   }
 
-    // évaluation du chiffre d'affaire vis à vis de l'objectif défini dans les settings
-    console.log('TODO: set ca_eval');
+  //   // évaluation du chiffre d'affaire vis à vis de l'objectif défini dans les settings
+  //   console.log('TODO: set ca_eval');
 
-    return {chiffredaffaires: __ca, ca_eval:'good', ticketsNum: __tickets};
-  }
+  //   return {chiffredaffaires: __ca, ca_eval:'good', ticketsNum: __tickets};
+  // }
 
 
   render() {
 
     const { cashname, username, userid, modules, points, devise, onClickUseraccount, onClickModule, periode } = this.props;
     const { ca, numtickets } = periode;
-    
   
     if (ca==undefined) {
-      return <LoadingSpinner />;
+      return <LoadingSpinner className="Dashboard-loader" />;
     }
 
 

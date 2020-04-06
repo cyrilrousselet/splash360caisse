@@ -4,6 +4,7 @@ import Cloture from '../components/Cloture';
 import { commandeActions } from '../services/commande/commandeActions';
 import { clotureActions } from '../services/cloture/clotureActions';
 import { peripheralActions } from '../services/peripheral/peripheralActions';
+import { parametresActions } from '../services/parametres/parametresActions';
 import { getPeriode } from '../services/cloture/clotureReducer';
 
 // import {data} from '../constants/translations';
@@ -13,13 +14,17 @@ import { getPeriode } from '../services/cloture/clotureReducer';
 
 const mapStateToProps = (state) => {
   return {
-    periode: getPeriode(state)
+    periode: getPeriode(state),
+    listeCommandes: state.commandesListReducer.commandeslist,
+    catalogue: state.catalogueReducer,
+    fonddecaissetheo: (state.parametresReducer.parametres.financier && state.parametresReducer.parametres.financier.fonddecaisse_activation) ? state.parametresReducer.parametres.financier.fonddecaisse_montant : 0 
   };
 }
 
 const mapDispatchToProps = (dispatch) => {
   const binded = bindActionCreators({
     // getCommandesList: commandeActions.getCommandesList,
+    // getParametres: parametresActions.getAll,
     getCurrentPeriode: clotureActions.getCurrentPeriode,
     printPeriodeX: peripheralActions.printPeriodeX
   }, dispatch);

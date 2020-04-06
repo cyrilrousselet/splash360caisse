@@ -234,21 +234,62 @@ const data = {
                         heure: "Heure",
                         editeur: "Éditeur"
                     },
-                    reprint: "Ré-Imprimer"
+                    reprint: "Ré-Imprimer",
+                    aucune: "Aucune clôture enregistrée"
                 },
                 selection: {
                     vendeur: "Vendeur",
                     vendeur_all: "Tous les vendeurs",
                     caisse: "Caisse",
-                    caisse_all: "Toutes les caisses"
+                    caisse_all: "Toutes les caisses",
+                    comptagebtn: "Comptage",
+                    comptagebtn_partiel: "Comptage sélection",
                 },
-                comptagebtn: "Comptage",
+                comptage: {
+                    titre: "Comptage",
+                    moyens: {
+                        carte: "Carte Bleue :",
+                        ticket: "Tickets restau :",
+                        cheque: "Chèques :",
+                        especes: "Espèces :"
+                    },
+                    especes: {
+                        titre: 'Balance des transactions\<br \/\>en espèces',
+                        total_fdcaisse: "Total Fond de caisse :",
+                        total_especes: "Total Espèces :",
+                        total_depenses: "Total Dépenses :",
+                        total_rembourse: "Total Remboursé :",
+                        total_montant: "Total montant :"
+                    },
+                    toutes: {
+                        titre: "Balance des transactions<br />Autres",
+                        total: "Total :",
+                        total_recu: "Total reçu :"
+                    },
+                    saisie: {
+                        titre: "Entrez vos montants comptés"
+                    },
+                    actions: {
+                        validation: "Vérification",
+                        outilcomptage: "Comptage espèces"
+                    }
+                },
                 print_x: "Imprime X Caisse",
+                print_partiel: "Imprime X partiel",
+                total_fdcaisse: "Total fond de caisse",
                 total_caisse_theo: "Total en caisse théorique",
                 total_caisse_cmpt: "Total en caisse compté",
+                fondcaisse_default: "Fond de caisse par défaut",
                 prelevement: "Prélèvement en clôture",
                 fond_de_caisse: "Nouveau fond de caisse",
-                cloture_z: "Clôture Z"
+                cloture_z: "Clôture Z",
+                cloture_partielle: "Clôture partielle Z",
+                alerte: {
+                    partielle: {
+                        titre: "Clôture partielle",
+                        texte: "Les commandes comptabilisées dans cette clôture partielle seront archivées et ne figureront pas dans les clôtures suivantes"
+                    }
+                }
             },
             stocks: { nom: "Stocks" },
             statistiques: { 
@@ -425,6 +466,13 @@ const data = {
                             debut: 'Heure début',
                             fin: 'Heure fin',
                             remise: 'Remise'
+                        },
+                        fonddecaisse: {
+                            titre: 'Fonds de caisse',
+                            activation: 'Actif',
+                            montant: 'Montant',
+                            par_vendeur: 'Par vendeur',
+                            par_caisse: 'Par caisse'
                         },
                         fidelite: {
                             titre: 'Fidélité',

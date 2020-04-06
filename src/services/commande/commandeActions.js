@@ -34,7 +34,8 @@ function getCommande(commandeId=null) {
       console.log('on demande une nouvelle commande');
       const state = getState();
       const { user } = state.authentication;
-      const commande = commandeServices.getNewCommande({operator:user, caisse:0});
+      const { caisse } = state.parametresReducer.parametres.options;
+      const commande = commandeServices.getNewCommande({operator:user, caisse:caisse});
       dispatch({ type: commandeActionTypes.GET_COMMANDE_SUCCESS, commande });
     }
     // avec id de commande, on va chercher la commande en base
@@ -59,12 +60,13 @@ function validateCommande(payload) {
 
    // payload.status = 'confirmed';
     const catalogueReducer = getState().catalogueReducer;
+    const { caisse } = getState().parametresReducer.parametres.options;
     
     return commandeServices.saveCommande(payload, catalogueReducer)
     .then(
       confirm => {
         const { user } = getState().authentication;
-        const commande = commandeServices.getNewCommande({operator:user, caisse:0});
+        const commande = commandeServices.getNewCommande({operator:user, caisse: caisse});
         dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
       },
       error => {
@@ -103,7 +105,9 @@ function standByCommande(payload) {
     .then(
       confirm => {
         const { user } = state.authentication;
-        const commande = commandeServices.getNewCommande({operator:user, caisse:0});
+        const { caisse } = state.parametresReducer.parametres.options;
+
+        const commande = commandeServices.getNewCommande({operator:user, caisse:caisse});
         dispatch(getCommandesList());
         return dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
       },
@@ -132,7 +136,8 @@ function livraisonCommande(payload) {
     .then(
       confirm => {
         const { user } = state.authentication;
-        const commande = commandeServices.getNewCommande({operator:user, caisse:0});
+        const { caisse } = state.parametresReducer.parametres.options;
+        const commande = commandeServices.getNewCommande({operator:user, caisse:caisse});
         dispatch(getCommandesList());
         return dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
       },
@@ -302,6 +307,28 @@ function removeRendu(payload) {
   }
 }
 
+function archiveCommands(payload) {
+
+  return (dispatch) => {
+
+    dispatch({ type: commandeActionTypes.ARCHIVE_REQUEST });
+
+    const ids = payload.map(cmd => cmd.ticketId);
+
+    commandeServices.archiveCommands(ids)
+    .then(
+      confirm => {
+        dispatch({ type: commandeActionTypes.ARCHIVE_SUCCESS, ids:ids });
+        dispatch(getCommandesList());
+      },
+      error => {
+        dispatch({ type: commandeActionTypes.ARCHIVE_FAILURE, error: error.toString() });
+      }
+    );
+  }
+
+}
+
 
 function setCommandeFromAPI(payload) {
   return (dispatch, getState) => {
@@ -346,6 +373,7 @@ export const commandeActions = {
   validateCommandeAndUpdateList,
   addIngredient,
   removeIngredient,
+  archiveCommands,
   setCommandeFromAPI,
   noIngredientForStep,
   completeStep

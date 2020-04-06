@@ -11,7 +11,8 @@ const mapStateToProps = (state) => {
   return {
     loading: getCommandesListLoading(state),
     error: getCommandesListError(state),
-    commandeslist: getCommandesList(state)
+    commandeslist: getCommandesList(state),
+    canaux: state.parametresReducer.parametres.options.canaux || []
   }
 }
 

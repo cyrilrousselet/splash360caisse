@@ -1,5 +1,7 @@
 import { clotureActionTypes } from './clotureActionTypes';
 import { clotureServices } from './clotureServices';
+import { commandeActions } from '../commande/commandeActions';
+import { peripheralActions } from '../peripheral/peripheralActions';
 
 import { startOfToday, endOfToday } from 'date-fns';
 
@@ -12,18 +14,57 @@ function getCurrentPeriode(params={}) {
     const state = getState();
     const catalogue = state.catalogueReducer;
     const {commandeslist} = state.commandesListReducer;
+    const {financier, entreprise} = state.parametresReducer.parametres;
+
+    console.log(params);
+
+    const default_params =  {
+      user: state.authentication.user,
+      caisses: [], //[{id:0, nom: 'caisse 0'}],
+      vendeurs: [], //[state.authentication.user],
+      fdcaisse: (financier && financier.fonddecaisse_activation) ? Number(financier.fonddecaisse_montant) : 0,
+      debut: startOfToday(),
+      fin: endOfToday(),
+      extract: 'x'
+    };
+
+    params = {...default_params, ...params};
+    
+
+    const {periode} = clotureServices.getCurrentPeriode(commandeslist, catalogue, params)
+    dispatch({ type: clotureActionTypes.GET_CURRENT_PERIODE, periode });
+  }
+}
+
+function makeCloture(params={}) {
+  return (dispatch, getState) => {
+   
+    const state = getState();
+    const catalogue = state.catalogueReducer;
+    const {commandeslist} = state.commandesListReducer;
+    const {financier, entreprise} = state.parametresReducer.parametres;
 
     console.log(commandeslist);
-    const cloture_params =  {
-                                      user: state.authentication.user,
-                                      caisses: [{id:0, nom: 'caisse 0'}],
-                                      vendeurs: [state.authentication.user],
-                                      fdcaisse: 0,
-                                      debut: startOfToday(),
-                                      fin: endOfToday()
-                                    };
-    const periode = clotureServices.getCurrentPeriode(commandeslist, catalogue, cloture_params)
-    dispatch({ type: clotureActionTypes.GET_CURRENT_PERIODE, periode });
+
+    const default_params =  {
+      user: state.authentication.user,
+      caisses: [], //[{id:0, nom: 'caisse 0'}],
+      vendeurs: [], //[state.authentication.user],
+      fdcaisse: financier.fonddecaisse_activation ? Number(financier.fonddecaisse_montant) : 0,
+      debut: startOfToday(),
+      fin: endOfToday(),
+      extract: 'z'
+    };
+
+    params = {...default_params, ...params};
+    
+
+    const {periode, cmdtoarchive} = clotureServices.makeCloture(commandeslist, catalogue, params)
+
+    dispatch(commandeActions.archiveCommands(cmdtoarchive));
+    dispatch(peripheralActions.printCloture());
+
+    dispatch({ type: clotureActionTypes.MAKE_CLOTURE, periode });
   }
 }
 

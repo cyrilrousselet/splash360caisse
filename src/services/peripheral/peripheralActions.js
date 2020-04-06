@@ -405,10 +405,19 @@ function printPeriodeX(payload={}) {
   }
 }
 
+function printCloture(payload={}) {
+  return (dispatch) => {
+
+    console.warn('TODO: print ticket cloture');
+    return dispatch({ type: peripheralActionTypes.PRINT_PERIODE_Z })
+  }
+}
+
 export const peripheralActions = {
   printTest,
   printTicket,
   printPeriodeX,
+  printCloture,
   openDrawer,
   closeDrawer
 };

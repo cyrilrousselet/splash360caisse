@@ -28,7 +28,14 @@ const actions = {
       const confirm = await _persistCommande(payload.commande);
 
       res.send(confirm);
+  },
+  dbCommandeArchive: async (req,res) => {
+    const { payload } = req;
+    log.info('dbCommandeArchive('+payload.ids+') in API');
 
+    const confirm = await _setArchived(payload.ids);
+
+    res.send(confirm);
   }
 
 }
@@ -96,6 +103,11 @@ function _parseCommandes(_rawdata) {
   });
 
   return {commandeslist: __commandes};
+}
+
+async function _setArchived(ids) {
+  let _cmd = await db.commandes.update({ticketId:{$in:ids}}, {archived: new Date()}, {multi: true});
+  return _cmd != null;
 }
 
 module.exports = actions;

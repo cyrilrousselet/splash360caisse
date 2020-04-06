@@ -9,16 +9,23 @@ class LabelledField extends React.Component {
     this.state = { svalue: props.value || '', option: props.optionvalue };
     this.handleChange = this.handleChange.bind(this);
     this.optionChange = this.optionChange.bind(this);
+    this.handleKeyup = this.handleKeyup.bind(this);
   }
 
-  handleChange = (e) => {
-    this.setState({ svalue: e.target.value });
-    this.props.onChange({ value: e.target.value, option: this.state.option });
+  handleChange(event) {
+    this.setState({ svalue: event.target.value });
+    this.props.onChange({ value: event.target.value, option: this.state.option });
+  }
+
+  handleKeyup(event) {
+    if (event.keyCode==13) {
+      this.props.onSubmit(this.props.name, event.target.value);
+    }
   }
   
-  optionChange(e) {
-    this.setState({ option: e.target.value });
-    this.props.onChange({ value: this.state.svalue, option: e.target.value });
+  optionChange(event) {
+    this.setState({ option: event.target.value });
+    this.props.onChange({ value: this.state.svalue, option: event.target.value });
   }
 
   render() {
@@ -29,7 +36,7 @@ class LabelledField extends React.Component {
     const withpostvalue = postvalue ? ' with-postvalue' : '';
     const disabledvalue = disabled ? ' disabled' : '';
 
-    const val = value || svalue;
+    const val = svalue || value;
 
     // (options && options.length>0) && console.log(value+' :: option: '+option);
 
@@ -45,6 +52,7 @@ class LabelledField extends React.Component {
               value={val}
               readOnly={ readOnly }
               onChange={ this.handleChange }
+              onKeyUp={ this.handleKeyup }
               placeholder={placeholder}
               size={maxLength}
               />
@@ -73,7 +81,7 @@ LabelledField.propTypes = {
   //   PropTypes.string, 
   //   PropTypes.number
   // ]).isRequired,
-  onChange: PropTypes.func.isRequired,
+  onChange: PropTypes.func,
   readOnly: PropTypes.bool,
   disabled: PropTypes.bool,
   placeholder: PropTypes.string,

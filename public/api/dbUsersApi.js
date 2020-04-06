@@ -72,7 +72,7 @@ function _parseUsers(_rawdata) {
 
   const __users = [];
   _rawdata._users.forEach(u => {
-    __users.push({user_id: u.user_id, nom: u.nom, identifiant: u.identifiant, points: u.points, droits: u.droits});
+    __users.push({user_id: u.user_id, nom: u.nom, status: u.status, identifiant: u.identifiant, points: u.points, droits: u.droits});
   });
 
   return {users: __users};
@@ -119,7 +119,7 @@ async function _findUser(prd_criteriae={}) {
   const u = await db.users.findOne(prd_criteriae);
   let user = null;
   if (u) {
-    user = {id: u.user_id, nom: u.nom, identifiant: u.identifiant, points: u.points, droits: u.droits};
+    user = {id: u.user_id, nom: u.nom, status: u.status, identifiant: u.identifiant, points: u.points, droits: u.droits};
   }
   return user;
 }

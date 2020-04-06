@@ -40,3 +40,19 @@
     min-height: 30px;
 }
 }
+
+.NumberKeyboardContainer {
+  display: none;
+  background-color: $noir_030;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  &.visible {
+    display: block;
+  }
+  .NumberKeyboard {
+    box-shadow: $boxshadow;
+  }
+}

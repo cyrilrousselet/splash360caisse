@@ -19,8 +19,10 @@ function getCurrentPeriode(commandes, catalogue, params) {
      ,__ventil = {vendeur:[], tva:[], moyen:[]}
      ;
 
-  const vendeurs = params.vendeurs.map(vnd=>vnd.id);
-  const caisses = params.caisses.map(c=>c.id);
+     console.log('clotureServices.getCurrentPeriode()', params);
+
+  const vendeurs = params.vendeurs.length>0 ? params.vendeurs.map(vnd=>vnd.id) : [];
+  const caisses = params.caisses.length>0 ? params.caisses.map(csh=>csh.id) : [];
 
   // filtrage de la liste des commandes
   if (commandes) {
@@ -31,11 +33,14 @@ function getCurrentPeriode(commandes, catalogue, params) {
       // status
       if (cmd.status!='confirmed') __valid = false;
 
+      // si on ne récupère que les cmd non archivées (cas du Z)
+      if (params.extract=='z' && cmd.archived!=null) __valid = false;
+
       // si une liste de vendeurs est fournie
       if (vendeurs.length>0 && vendeurs.indexOf(cmd.operator.id)==-1) __valid = false;
 
       // si une liste de caisse est fournie
-      if (caisses.length>0 && caisses.indexOf(cmd.caisse)==-1) __valid = false;
+      if (caisses.length>0 && caisses.indexOf(cmd.caisse.id)==-1) __valid = false;
 
       // periode
       let updatedAt = parseJSON(cmd.updatedAt);
@@ -50,7 +55,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
       __remb += (cmd.remboursements) ? cmd.remboursements : 0;
       __tickets++;
 
-
+  
       // ventilation par vendeurs
       let __vId = __ventil.vendeur.findIndex(vnd => vnd.id==cmd.operator.id);
       
@@ -164,23 +169,33 @@ function getCurrentPeriode(commandes, catalogue, params) {
 
 
     return {
-      debut: startOfToday(),
-      fin: endOfToday(),
-      editeur: params.user,
-      caisses: params.caisses,
-      vendeurs: params.vendeurs,
-      depenses: __dep,
-      ventes: __vnt,
-      remboursements: __remb,
-      ca: __ca,
-      fdcaisse: params.fdcaisse,
-      mtcaisse: __mtcaisse,
-      numtickets: __tickets,
-      ticket_moyen: __tickets==0 ? 0 : Math.round(__ca/__tickets),
-      ventilation: __ventil
+      periode: {
+        debut: startOfToday(),
+        fin: endOfToday(),
+        editeur: params.user,
+        caisses: params.caisses,
+        vendeurs: params.vendeurs,
+        depenses: __dep,
+        ventes: __vnt,
+        remboursements: __remb,
+        ca: __ca,
+        fdcaisse: params.fdcaisse,
+        mtcaisse: __mtcaisse,
+        numtickets: __tickets,
+        ticket_moyen: __tickets==0 ? 0 : Math.round(__ca/__tickets),
+        ventilation: __ventil
+      },
+      cmdtoarchive: __filtered_cmd
     };
 
   } else {
     return {error: 'pas de commande'};
   }
+}
+
+function makeCloture(commandes, catalogue, params) {
+
+  // récup des données
+  const data = getCurrentPeriode(commandes, catalogue, params);
+
 }

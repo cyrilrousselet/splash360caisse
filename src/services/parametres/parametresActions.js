@@ -19,6 +19,8 @@ function update(payload) {
   return dispatch => {
       dispatch({ type: parametresActionTypes.UPDATE_REQUEST });
 
+      console.log('ParametresActions.update', payload);
+
       parametresServices.update(payload)
           .then(
               data => dispatch({ type: parametresActionTypes.UPDATE_SUCCESS, ...data }),

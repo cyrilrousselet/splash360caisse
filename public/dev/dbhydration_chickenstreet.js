@@ -462,7 +462,9 @@ const hydration = {
   parametres: [
     { domaine: 'entreprise', cle: 'denomination_sociale', valeur: 'Chicken Street'},
     { domaine: 'financier', cle: 'fidelite_activation', valeur: true},
-    { domaine: 'peripheriques', cle: 'imprimantes', valeur: ''}
+    { domaine: 'peripheriques', cle: 'imprimantes', valeur: ''},
+    { domaine: 'options', cle: 'caisse', valeur: {id: 'cash0', nom: 'Caisse 1'} },
+    { domaine: 'options', cle: 'canaux', valeur: [{ids: ['cash0','cash1'], nom: 'caisse'}, {ids: ['borne1'], nom: 'borne'}, {ids: ['wf1'], nom: 'wifi-order'}] }
   ]
 };
 

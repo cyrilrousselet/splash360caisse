@@ -70,7 +70,7 @@ function CanalChart(props) {
   const max = Object.values(data).sort((a,b)=>b-a);
 
   const __items = Object.entries(data).map(([nom,valeur]) =>
-    <div className="canal-item">
+    <div className="canal-item" key={ `canal-${nom}` }>
       <div className="tracker">
       { `${valeur.toFixed(2).replace('.',',')} €` }
         <div className="jauge" style={{ backgroundColor: _colorWheel[i++],  width:`calc(${ Math.round(valeur/max[0]*100) }% - 4px)` }}>{ `${valeur.toFixed(2).replace('.',',')} €` }</div>
@@ -92,7 +92,7 @@ function MoyenChart(props) {
   const max = Object.values(data).sort((a,b)=>b-a);
 
   const __items = Object.entries(data).map(([nom,valeur]) =>  
-    <div className="moyen-item">
+    <div className="moyen-item" key={ `moyen-${nom}` }>
       <div className="tracker">
         <div className="jauge" style={{ backgroundColor: _colorWheel[i++],  height:`calc(${ Math.round(valeur/max[0]*100) }% - 2px)` }}></div>
       </div>
@@ -126,7 +126,7 @@ function ModeChart(props) {
   Object.values(data).forEach(val=>total+=val);
 
   const __items = Object.entries(data).map(([nom,valeur]) =>  
-    <div className="mode-item">
+    <div className="mode-item" key={ `mode-${nom}` }>
       <div className="tracker" style={{ 
         backgroundImage: `linear-gradient(${_colorWheel[i]} 0%, ${_colorWheel[i]} 100%)`, 
         height:`calc(${ Math.round(valeur/max[0]*100) }% - 2px)` 
@@ -207,7 +207,7 @@ class Statistiques extends React.Component {
 
  render() {
 
-  const { commandeslist, error, loading } = this.props;
+  const { commandeslist, error, loading, canaux } = this.props;
   const { startDate, endDate, openTab } = this.state;
 
   let ca_total = 0, chrono_total = 0, ca_confirmes = 0, nbre_total = 0, nbre_confirmes = 0, moy = 0, tps_total = 0, canal = {}, moyen = {}, vendeur = {}, mode = {}, modes = {};
@@ -258,8 +258,13 @@ class Statistiques extends React.Component {
       });
 
       // par canal
-      if (!canal.hasOwnProperty(value.caisse)) { canal[value.caisse] = 0; }
-      canal[value.caisse] += Number(value.total);
+      let can = canaux.find(cnl => {
+        console.log(cnl.ids);
+        return cnl.ids.indexOf(value.caisse.id)!=-1
+      });
+      const nomcanal = (can) ? can.nom : value.caisse.id;
+      if (!canal.hasOwnProperty(nomcanal)) { canal[nomcanal] = 0; }
+      canal[nomcanal] += Number(value.total);
 
       // par vendeur
       if (!vendeur.hasOwnProperty(value.operator.nom)) { vendeur[value.operator.nom] = 0; }

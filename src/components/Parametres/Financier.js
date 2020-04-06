@@ -78,57 +78,84 @@ class Financier extends React.Component {
   
   return (
     <div className="Financier subcontent">
-      <div className="col">
+      <div className="subcontent-wrapper">
+        <div className="col">
+          <div className="section">
+            <div className="subttl">{ strings.modules.parametres.submodules.financier.tva.titre }</div>
+            { tva_data.map((field,i)=>(
+              <LabelledField 
+                id={ `tva-${i}` }
+                key={ `tva-${i}` }
+                name={ `tva-${i}` }
+                value={ field.valeur } 
+                placeholder={ field.nom } 
+                type='number' 
+                readOnly={ false } 
+                onChange={()=>{console.log('click')}}
+                label={ field.nom }
+                postvalue='%'
+              />
+            ))}
+          </div>
+          <div className="section">
+            <div className="subttl">{ strings.modules.parametres.submodules.financier.moyen.titre }</div>
+            <Fab aria-label="addmoyen" size="small" className="addmoyen-button" onClick={ ()=>{ this.openMoyenEdit() } }>
+              <AddIcon htmlColor="#ffffff" />
+            </Fab>
+            <List disablePadding className="liste-moyens">
+              { moyens_data.map((moyen,i)=> (
+                <ListItem
+                key={ `moyen-${i}` }
+                button 
+                disableGutters
+                onClick={ () => this.openMoyenEdit(i) }
+                >
+                  <div className="moyen-nom">{ moyen.nom }</div>
+                  <div className="moyen-identifiant">{ moyen.identifiant }</div>
+              </ListItem>
+              ))}
+            </List>
+          </div>
+
         <div className="section">
-          <div className="subttl">{ strings.modules.parametres.submodules.financier.tva.titre }</div>
-          { tva_data.map((field,i)=>(
-            <LabelledField 
-              id={ `tva-${i}` }
-              key={ `tva-${i}` }
-              name={ `tva-${i}` }
-              value={ field.valeur } 
-              placeholder={ field.nom } 
+          <div className="subttl">{ strings.modules.parametres.submodules.financier.fonddecaisse.titre }</div>
+          <SwitchCheckbox
+            isChecked={ data.fonddecaisse_activation } 
+            key="fonddecaisse-activation"
+            name="fonddecaisse_activation" 
+            className="fonddecaisse-activation" 
+            onChange={ (name, isChecked)=>{
+              updateValeur({
+                domaine: 'financier',
+                cle: name,
+                valeur: isChecked
+              })
+            } } 
+            label={ strings.modules.parametres.submodules.financier.fonddecaisse.activation } 
+          />
+          <LabelledField 
+              id={ `fonddecaisse-montant` }
+              key={ `fonddecaisse-montant` }
+              name={ `fonddecaisse_montant` }
+              value={ data.fonddecaisse_montant } 
+              placeholder=''
               type='number' 
               readOnly={ false } 
-              onChange={()=>{console.log('click')}}
-              label={ field.nom }
-              postvalue='%'
+              onSubmit={(name,value) => {
+                updateValeur({
+                  domaine: 'financier',
+                  cle: name,
+                  valeur: value
+                })
+              }}
+              onChange={(value,option)=>void(0)}
+              label={ strings.modules.parametres.submodules.financier.fonddecaisse.montant }
+              postvalue='€'
             />
-          ))}
-        </div>
-        <div className="section">
-          <div className="subttl">{ strings.modules.parametres.submodules.financier.moyen.titre }</div>
-          <Fab aria-label="addmoyen" size="small" className="addmoyen-button" onClick={ ()=>{ this.openMoyenEdit() } }>
-            <AddIcon htmlColor="#ffffff" />
-          </Fab>
-          <List disablePadding className="liste-moyens">
-            { moyens_data.map((moyen,i)=> (
-              <ListItem
-              key={ `moyen-${i}` }
-              button 
-              disableGutters
-              onClick={ () => this.openMoyenEdit(i) }
-              >
-                <div className="moyen-nom">{ moyen.nom }</div>
-                <div className="moyen-identifiant">{ moyen.identifiant }</div>
-            </ListItem>
-            ))}
-          </List>
-        </div>
-        <div className="section section-livraison">
-          <SwitchCheckbox
-            isChecked={ true } 
-            key="livraison"
-            name="livraison" 
-            className="livraison" 
-            onChange={ console.log } 
-            label={ strings.modules.parametres.submodules.financier.livraison.titre } 
-          />
-          <div className="caption livraison-caption">{ strings.modules.parametres.submodules.financier.livraison.caption }</div>
         </div>
 
-      </div>
-      <div className="col">
+        </div>
+        <div className="col">
         <div className="section">
           <div className="subttl">{ strings.modules.parametres.submodules.financier.happyhours.titre }</div>
           <LabelledField 
@@ -180,6 +207,17 @@ class Financier extends React.Component {
               postvalue='%'
             />
         </div>
+          <div className="section section-livraison">
+            <SwitchCheckbox
+              isChecked={ true } 
+              key="livraison"
+              name="livraison" 
+              className="livraison" 
+              onChange={ console.log } 
+              label={ strings.modules.parametres.submodules.financier.livraison.titre } 
+            />
+            <div className="caption livraison-caption">{ strings.modules.parametres.submodules.financier.livraison.caption }</div>
+          </div>
         <div className="section">
           <div className="subttl">{ strings.modules.parametres.submodules.financier.fidelite.titre }</div>
           <SwitchCheckbox
@@ -227,6 +265,7 @@ class Financier extends React.Component {
             postvalue={ strings.modules.parametres.submodules.financier.fidelite.seuil.split(';')[1] }
           />
         </div>
+      </div>
       </div>
     </div>
   );

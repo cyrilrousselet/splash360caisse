@@ -110,22 +110,56 @@
     }
 
   }
-  .btnreprint {
-    position: absolute;
-    width: 200px;
-    left: 70px;
-    top: 240px;
-    background-color: $gris-bleu;
-    z-index: 1;
+  .blocgauche {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .zone-lastcloture {
+    width: calc(100% - 30px);
+    text-align: center;
+
+    .btnreprint {
+      width: 200px;
+      // left: 70px;
+      // top: 240px;
+      background-color: $gris-bleu;
+    }
+  }
+  .zone-selecteur {
+    width: calc(100% - 30px);
+    .selecteur-caisse,
+    .selecteur-vendeur {
+      width: 100%;
+    }
+    .label {
+      font-family: $f_blk;
+      font-size: 14px;
+      color: $noir;
+      width: 100%;
+      padding: 15px 0 5px;
+    }
+    .selecteur {
+      background-color: $gris-clair;
+      font-family: $f_boo;
+      font-size: 14px;
+      color: $noir;
+      width: 100%;
+      line-height: 0.1em;
+      .MuiOutlinedInput-input {
+        padding: 15px 15px;
+      }
+    }
   }
   .btncomptage {
-    position: absolute;
+    // position: absolute;
     width: 235px;
-    left: 50px;
-    bottom: 160px;
+    // left: 50px;
+    // bottom: 160px;
     background-color: $vert;
     height: 45px;
-    z-index: 1;
+    // z-index: 1;
   }
   .btnx {
     position: absolute;
@@ -146,6 +180,34 @@
     z-index: 1;
   }
 }
+
+.blocdroite {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  .droite-top,
+  .droite-btm {
+    .labelledfield {
+      margin-bottom: 10px;
+      label {
+        font-family: $f_boo;
+        font-size: 14px;
+      }
+      .input-wrapper {
+        width: 100%;
+        input {
+          text-align: right;
+        }
+      }
+      &.strong label {
+          font-family: $f_blk;
+      }
+    }
+  }
+}
+
 .ClotureComptage,
 .ClotureComptcaisse {
   display: inline-block;
@@ -192,20 +254,14 @@
     }
   }
   .btncomptcaisse {
-    position: absolute;
-    bottom: 30px;
-    left: 50px;
-    width: 195px;
+    width: calc(100% - 20px);
     background-color: $vert !important;
     .MuiButton-label {
       padding: 0 25px;
     }
   }
   .btncomptverif {
-    position: absolute;
-    bottom: 30px;
-    right: 50px;
-    width: 215px;
+    width: 100%;
     background-color: $rouge !important;
     .MuiButton-label {
       padding: 0 25px;
@@ -224,6 +280,180 @@
     box-shadow: 0 5px 15px 0 rgba(0,0,0,0.10);
 
   }
+  .body {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px 0 20px;
+    height: 500px;
+  }
+
+  .selecteur {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+
+    .selecteur-caisse,
+    .selecteur-vendeur {
+      width: 250px;
+    }
+    .label {
+      font-family: $f_blk;
+      font-size: 14px;
+      color: $noir;
+      //width: 100%;
+      padding: 0 10px 0;
+    }
+    .selecteur-sel {
+      background-color: $gris-clair;
+      font-family: $f_boo;
+      font-size: 14px;
+      color: $noir;
+      width: 100%;
+      line-height: 0.1em;
+      .MuiOutlinedInput-input {
+        padding: 15px 15px;
+      }
+    }
+    .selecteur-cnt + .label {
+      padding-left: 50px;
+    }
+  }
+  .bloc {
+    padding: 15px;
+    border-radius: 15px;
+    background-color: $blanc-fonce;
+    width: 31%;
+    .bloctitre {
+      font-family: $f_blk;
+      font-size: 16px;
+      text-align: center;
+      height: 70px;
+    }
+    .cptitem {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      box-sizing: content-box;
+      height: 35px;
+      &+.cptitem {
+        padding-top: 10px;
+      }
+      .label {
+        font-family: $f_med;
+        font-size: 14px;
+        color: $noir;
+        line-height: 35px;
+        &:before {
+          content: '-';
+          font-family: $f_blk;
+          font-size: 16px;
+          color: $noir;
+          position: relative;
+          display: inline-block;
+          width: 15px;
+          text-align: center;
+          left: 0;
+          margin-right: 10px;
+        }
+      }
+      .valeur {
+        font-family: $f_blk;
+        font-size: 14px;
+        color: $primary;
+        line-height: 35px;
+      }
+      .btn {
+        width: 24px;
+        min-height: 24px;
+        height: 24px;
+        margin-left: 10px;
+        svg {
+          color: $primary;
+        }
+      }
+    }
+  }
+  .bloc-especes {
+    .cptitem-fdc,
+    .cptitem-dep,
+    .cptitem-remb,
+    .cptitem-mnt {
+      .valeur {
+        padding-right: 34px;
+      }
+    } 
+    .cptitem-fdc,
+    .cptitem-mnt {
+      .label:before {
+        display: none;
+      }
+    }
+
+    .cptitem-esp .label:before {
+      content: '+';
+    }
+    .cptitem-mnt {
+      margin-top: 10px;
+      padding-top: 20px !important;
+      border-top: 1px solid $noir;
+    }
+  }
+  .bloc-toutes {
+
+    .cptitem-total,
+    .cptitem-esp,
+    .cptitem-rec {
+      .valeur {
+        padding-right: 34px;
+      }
+    } 
+    .cptitem-cb,
+    .cptitem-tr,
+    .cptitem-chq,
+    .cptitem-total,
+    .cptitem-rec {
+      .label:before {
+        display: none;
+      }
+    }
+
+    .cptitem-total {
+      margin-top: 20px;
+    }
+    .cptitem-esp .label:before {
+      content: '+';
+    }
+    .cptitem-rec {
+      margin-top: 10px;
+      padding-top: 20px !important;
+      border-top: 1px solid $noir;
+    }
+  }
+  .bloc-saisie {
+    background-color: $blanc;
+    box-shadow: $boxshadow;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    .cptitems-liste {
+      padding-bottom: 20px;
+    }
+    .cptitem {
+      .label:before {
+        display: none;
+      }
+      .valeur {
+        background-color: $blanc-fonce;
+        border-radius: 5px;
+        width: 130px;
+      }
+    }
+  }
+
 }
 .ClotureComptcaisse .Modal-container {
   width: 800px;
@@ -237,4 +467,8 @@
   .MuiButton-label {
     padding: 0 25px;
   }
+}
+.MuiMenuItem-root {
+  font-family: $f_boo !important;
+  font-size: 14px !important;
 }

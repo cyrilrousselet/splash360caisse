@@ -5,41 +5,50 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import TopZone from '../../containers/TopZone';
 import LoadingSpinner from './../common/LoadingSpinner';
+import LabelledField from './../common/LabelledField';
 
 import contimage from '../../assets/images/fake_contenu_cloture.svg';
 import comptageimage from '../../assets/images/fake_contenu_cloturecomptage.svg';
 import comptcaisseimage from '../../assets/images/fake_contenu_cloturecomptcaisse.svg';
-import { Modal, Fab } from '@material-ui/core';
+import { Modal, Fab, FormControl, Select, MenuItem } from '@material-ui/core';
 import CloseIcon from '../common/icon/CloseIcon';
 import StdButton from '../common/StdButton';
 import { format } from "date-fns";
 import frLocale from "date-fns/locale/fr";
+import { startOfToday, endOfToday } from 'date-fns';
+
+import { clotureServices } from './../../services/cloture/clotureServices';
+
+import Comptage from './Comptage';
+
+import { devise } from './../../helpers/toolbox';
+import NumberKeyboard from '../common/NumberKeyboard';
 
 let strings = new LocalizedStrings(data);
 
 
-const ClotureComptage = ({open, closeComptage, openComptcaisse}) => (
+// const ClotureComptage = ({open, closeComptage, openComptcaisse}) => (
 
-    <Modal open={open}>
-      <div className="ClotureComptage">
-        <div className="Modal-container">
-          <div className="header">
-            <div className="title">{ strings.modules.encaissement.reglement.titre }</div>
-          </div>
-          <div className="body">
-            <div className="blocbg"></div>
-            <img src={ comptageimage } className="contimage" />
-            <div className="btncomptcaisse" onClick={ openComptcaisse}></div>
-            <StdButton identifier="btncomptcaisse" elementclass="btncomptcaisse" key="btncomptcaisse" text="Compte Caisse" onClick={ openComptcaisse } />
-            <StdButton identifier="btncomptverif" elementclass="btncomptverif" key="btncomptverif" text="Vérification" onClick={ closeComptage} />
-          </div>
-        </div>
-        <Fab aria-label="close" size="small" className="close-button" onClick={ closeComptage }>
-          <CloseIcon />
-        </Fab>
-      </div>
-    </Modal>
-);
+//     <Modal open={open}>
+//       <div className="ClotureComptage">
+//         <div className="Modal-container">
+//           <div className="header">
+//             <div className="title">{ strings.modules.encaissement.reglement.titre }</div>
+//           </div>
+//           <div className="body">
+//             <div className="blocbg"></div>
+//             <img src={ comptageimage } className="contimage" />
+//             <div className="btncomptcaisse" onClick={ openComptcaisse}></div>
+//             <StdButton identifier="btncomptcaisse" elementclass="btncomptcaisse" key="btncomptcaisse" text="Compte Caisse" onClick={ openComptcaisse } />
+//             <StdButton identifier="btncomptverif" elementclass="btncomptverif" key="btncomptverif" text="Vérification" onClick={ closeComptage} />
+//           </div>
+//         </div>
+//         <Fab aria-label="close" size="small" className="close-button" onClick={ closeComptage }>
+//           <CloseIcon />
+//         </Fab>
+//       </div>
+//     </Modal>
+// );
 
 const ClotureComptcaisse = ({open, closeComptcaisse}) => (
 
@@ -70,48 +79,168 @@ class Cloture extends React.Component {
     super(props);
     this.state = {
       comptageOpen:false,
-      comptcaisseOpen:false
+      comptcaisseOpen:false,
+      comptage: null,
+      selection_operator:{id: 'allope', nom:'Toutes les caisses'},
+      selection_caisse:{id:'allcash', nom:'Toutes les caisses'},
+      keyboardOpen: false,
+      fieldvalue: '',
+      prelevement: 0
     }
     this.shouldComponentRender = this.shouldComponentRender.bind(this);
     this.openComptage = this.openComptage.bind(this);
     this.closeComptage = this.closeComptage.bind(this);
     this.openComptcaisse = this.openComptcaisse.bind(this);
     this.closeComptcaisse = this.closeComptcaisse.bind(this);
+    this.getListeVendeurs = this.getListeVendeurs.bind(this);
+    this.getListeCaisses = this.getListeCaisses.bind(this);
+    this.selectCaisse = this.selectCaisse.bind(this);
+    this.selectVendeur = this.selectVendeur.bind(this);
+    this.validComptage = this.validComptage.bind(this);
+    this.openCommandesListe = this.openCommandesListe.bind(this);
+    this.startSaisie = this.startSaisie.bind(this);
+    this.keyboardButtonHandler = this.keyboardButtonHandler.bind(this);
+    this.closeKeyboard = this.closeKeyboard.bind(this);
   }
 
   componentDidMount() {
-    const { getCommandesList, getCurrentPeriode } = this.props;
+    const { getCommandesList, getCurrentPeriode, Parametres } = this.props;
     // getCommandesList();
-    getCurrentPeriode();
+    //parametres :
+    let params = {};
+    const { selection_caisse, selection_operator} = this.state;
+    if (selection_caisse.id!='allcash') params['caisses'] = [selection_caisse];
+    if (selection_operator.id!='allope') params['vendeurs'] = [selection_operator];
+    getCurrentPeriode(params);
+//    getParametres();
   }
 
- shouldComponentRender() {
- //  const {loading} = this.props;
- //  if(loading===false) return false;
-   return true;
- }
+  shouldComponentRender() {
+  //  const {loading} = this.props;
+  //  if(loading===false) return false;
+    return true;
+  }
 
- openComptage() {
-  this.setState({comptageOpen:true, comptcaisseOpen:false});
-}
- closeComptage() {
-   this.setState({comptageOpen:false});
- }
+  openComptage() {
+    this.setState({comptageOpen:true, comptcaisseOpen:false});
+  }
+  closeComptage() {
+    this.setState({comptageOpen:false});
+  }
 
- openComptcaisse() {
-  this.setState({comptageOpen:false, comptcaisseOpen:true});
-}
-closeComptcaisse() {
-   this.setState({comptcaisseOpen:false, comptageOpen:true});
- }
+  openComptcaisse() {
+    this.setState({comptageOpen:false, comptcaisseOpen:true});
+  }
+  closeComptcaisse() {
+    this.setState({comptcaisseOpen:false, comptageOpen:true});
+  }
+
+  getListeVendeurs() {
+    const { listeCommandes } = this.props;
+    let operators = {'allope':{id:'allope', nom:strings.modules.cloture.selection.vendeur_all}};
+    Object.entries(listeCommandes).forEach(([id,commande]) => {
+      if (!operators.hasOwnProperty(commande.operator.id)) {
+        operators[commande.operator.id] = commande.operator;
+      }
+    });
+    return operators;
+  }
+  getListeCaisses() {
+    const { listeCommandes } = this.props;
+    let caisses = {'allcash':{id:'allcash', nom:strings.modules.cloture.selection.caisse_all}};
+    Object.entries(listeCommandes).forEach(([id,commande]) => {
+      if (!caisses.hasOwnProperty(commande.caisse.id)) {
+        caisses[commande.caisse.id] = commande.caisse;
+      }
+    });
+    return caisses;
+  }
+
+  selectCaisse(event) {
+
+    const caisses = this.getListeCaisses();
+
+    const selection = caisses[event.target.value];
+    this.setState({selection_caisse: selection});
+    
+    let params = {};
+    const {selection_operator} = this.state;
+    params['caisses'] = selection.id=="allcash" ? [] : [selection];
+    if (selection_operator.id!='allope') params['vendeurs'] = [selection_operator];
+    this.props.getCurrentPeriode(params);
+  }
+
+  selectVendeur(event) {
+
+    const vendeurs = this.getListeVendeurs();
+    const selection = vendeurs[event.target.value];
+    this.setState({selection_operator: selection});
+
+    let params = {};
+    const {selection_caisse} = this.state;
+    params['vendeurs'] = selection.id=="allope" ? [] : [selection];
+    if (selection_caisse.id!='allcash') params['caisses'] = [selection_caisse];
+    this.props.getCurrentPeriode(params);
+  }
+
+  validComptage(valeur) {
+    console.log('validComptage()', valeur);
+    this.setState({comptage: valeur, comptageOpen: false});
+  }
+  openCommandesListe() {
+    console.log('openCommandesListe()');
+  }
+  startSaisie() {
+    this.setState({keyboardOpen: true, fieldvalue: this.state.prelevement || ''});
+  }
+
+  // action on buttons (fill in passphrase)
+  keyboardButtonHandler(text) {
+    const { fieldvalue } = this.state;
+    if (text!=='c') {
+      this.setState({fieldvalue: fieldvalue+text});
+    } else {
+      this.setState({fieldvalue: fieldvalue.slice(0,-1)});
+    }
+  }
+
+  closeKeyboard() {
+    const { fieldvalue } = this.state;
+    this.setState({keyboardOpen: false, prelevement:fieldvalue.replace(',','.')});
+  }
 
   render() {
 
-    const { periode, error, loading, printPeriodeX } = this.props;
+    const { periode, error, loading, printPeriodeX, listeCommandes, catalogue, fonddecaissetheo } = this.props;
 
-    const { comptageOpen, comptcaisseOpen} = this.state;
+    const { comptageOpen, comptcaisseOpen, comptage, selection_caisse, selection_operator, keyboardOpen, fieldvalue, prelevement} = this.state;
+
+    let params = {
+      user: periode.editeur,
+      caisses: [],
+      vendeurs: [],
+      fdcaisse: fonddecaissetheo,
+      debut: startOfToday(),
+      fin: endOfToday(),
+      extract: 'z'
+    }
+    if (selection_caisse.id!='allcash') params['caisses'] = [selection_caisse];
+    if (selection_operator.id!='allope') params['vendeurs'] = [selection_operator];
+    const periode_z = clotureServices.getCurrentPeriode(listeCommandes, catalogue, params);
+  //  console.log(periode_z);
 
     const __strimp = strings.modules.cloture.impression;
+
+    const operators = this.getListeVendeurs();
+    const caisses = this.getListeCaisses();
+
+    const prelevement_fv = keyboardOpen ? fieldvalue.replace(',','.') : prelevement;
+
+    console.log('fieldvalue', fieldvalue);
+    console.log('prelevement_fv', prelevement_fv);
+    
+    // console.log('operators', operators);
+    // console.log('caisses', caisses);
 
     if(!this.shouldComponentRender()) {
       return <LoadingSpinner />
@@ -148,10 +277,30 @@ closeComptcaisse() {
         <div className="MainZone">
           <div className="clo-gauche">
             <div className="blocgauche">
-              <StdButton identifier="btnreprint" elementclass="btnreprint" key="btnreprint" text="Ré-imprimer" disabled={true} onClick={ () => void(0) } />
-              <StdButton identifier="btncomptage" elementclass="btncomptage" key="btncomptage" text="Comptage" disabled={true} onClick={ this.openComptage } />
+              <div className="zone-lastcloture">
+                <StdButton identifier="btnreprint" elementclass="btnreprint" key="btnreprint" text="Ré-imprimer" disabled={true} onClick={ () => void(0) } />
+              </div>
+              <div className="zone-selecteur">
+                <div className="label">{ strings.modules.cloture.selection.caisse }</div>
+                <FormControl variant="outlined" className="selecteur-caisse">
+                  <Select value={selection_caisse.id} onChange={this.selectCaisse} className="selecteur selecteur-caisse-select">
+                    {Object.values(caisses).map(cash => (
+                      <MenuItem key={ `cashitm${cash.id}`} value={cash.id}>{cash.nom}</MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+                <div className="label">{ strings.modules.cloture.selection.vendeur }</div>
+                <FormControl variant="outlined" className="selecteur-vendeur">
+                  <Select value={selection_operator.id} onChange={this.selectVendeur} className="selecteur selecteur-vendeur-select">
+                    {Object.values(operators).map(ope => (
+                      <MenuItem key={ `opeitm${ope.id}`} value={ope.id}>{ope.nom}</MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+              </div>
+              <StdButton identifier="btncomptage" elementclass="btncomptage" key="btncomptage" text={(selection_caisse.id!='allcash' || selection_operator.id!='allope') ? strings.modules.cloture.selection.comptagebtn_partiel : strings.modules.cloture.selection.comptagebtn } onClick={ this.openComptage } />
             </div>
-            <StdButton identifier="btnx" elementclass="btnx" key="btnx" text="Imprime X Caisse" onClick={ () => { console.log('printPeriodeX()'); printPeriodeX() } } />
+            <StdButton identifier="btnx" elementclass="btnx" key="btnx" text={(selection_caisse.id!='allcash' || selection_operator.id!='allope') ? strings.modules.cloture.print_partiel : strings.modules.cloture.print_x } onClick={ () => { console.log('printPeriodeX()'); printPeriodeX() } } />
           </div>
           <div className="clo-centre">
             <div className="bloccentre">
@@ -170,116 +319,206 @@ closeComptcaisse() {
                 <div className="recap">
                   <div className="recap-item">
                     <div className="nom">{ __strimp.depenses }</div>
-                    <div className="val">{ Number(periode.depenses).toFixed(2).replace('.',',') }</div>
+                    <div className="val">{ devise(periode.depenses) }</div>
                   </div>
                   <div className="recap-item">
                     <div className="nom">{ __strimp.remboursements }</div>
-                    <div className="val">{ Number(periode.remboursements).toFixed(2).replace('.',',') }</div>
+                    <div className="val">{ devise(periode.remboursements) }</div>
                   </div>
                   <div className="recap-item">
                     <div className="nom">{ __strimp.encaissements }</div>
-                    <div className="val">{ Number(periode.ventes).toFixed(2).replace('.',',') }</div>
+                    <div className="val">{ devise(periode.ventes) }</div>
                   </div>
                   <div className="recap-item">
                     <div className="nom">{ __strimp.mtcaisse }</div>
-                    <div className="val">{ Number(periode.mtcaisse).toFixed(2).replace('.',',') }</div>
+                    <div className="val">{ devise(periode.mtcaisse) }</div>
                   </div>
                 </div>
                 <div className="titre">
                   { __strimp.titre.x }
                 </div>
                 <div className="detail">
-                  <div class="detail-item">
+                  <div className="detail-item">
                     <div className="nom">{__strimp.caption.ventes}</div>
-                    <div className="val">{Number(periode.ventes).toFixed(2).replace('.',',')}</div>
+                    <div className="val">{devise(periode.ventes)}</div>
                   </div>
-                  <div class="detail-item">
+                  <div className="detail-item">
                     <div className="nom">{__strimp.caption.remboursements}</div>
-                    <div className="val">{`-${Number(periode.remboursements).toFixed(2).replace('.',',')}`}</div>
+                    <div className="val">{`-${devise(periode.remboursements)}`}</div>
                   </div>
-                  <div class="detail-item pre-filet post-space">
+                  <div className="detail-item pre-filet post-space">
                     <div className="nom">{__strimp.caption.ca}</div>
-                    <div className="val">{Number(periode.ca).toFixed(2).replace('.',',')}</div>
+                    <div className="val">{devise(periode.ca)}</div>
                   </div>
-                  <div class="detail-item total">
+                  <div className="detail-item total">
                     <div className="nom">{__strimp.caption.numtickets}</div>
                     <div className="val">{periode.numtickets}</div>
                   </div>
-                  <div class="detail-item total">
+                  <div className="detail-item total">
                     <div className="nom">{__strimp.caption.ticket_moyen}</div>
-                    <div className="val">{Number(periode.ticket_moyen).toFixed(2).replace('.',',')}</div>
+                    <div className="val">{devise(periode.ticket_moyen)}</div>
                   </div>
                 </div>
                 <div className="titre">
                   { __strimp.ventilation.vendeur }
                 </div>
                 <div className="ventil intit ventil-vendeur">
-                  <div class="ventil-intit"></div>
-                  <div class="ventil-intit">{__strimp.caption.vente_short}</div>
-                  <div class="ventil-intit">{__strimp.caption.remboursements_short}</div>
-                  <div class="ventil-intit">{__strimp.caption.ca_short}</div>
+                  <div className="ventil-intit"></div>
+                  <div className="ventil-intit">{__strimp.caption.vente_short}</div>
+                  <div className="ventil-intit">{__strimp.caption.remboursements_short}</div>
+                  <div className="ventil-intit">{__strimp.caption.ca_short}</div>
                 </div>
                 {periode.ventilation.vendeur.map(vendeur => (
-                  <div className="ventil ventil-vendeur">
-                    <div class="ventil-nom">{`${vendeur.nom} (${vendeur.id})`}</div>
-                    <div class="ventil-val">{Number(vendeur.ventes).toFixed(2).replace('.',',')}</div>
-                    <div class="ventil-val">{`-${Number(vendeur.remboursements).toFixed(2).replace('.',',')}`}</div>
-                    <div class="ventil-val">{Number(vendeur.ventes-vendeur.remboursements).toFixed(2).replace('.',',')}</div>
+                  <div className="ventil ventil-vendeur" key={`vnd-${vendeur.id}`}>
+                    <div className="ventil-nom">{`${vendeur.nom} (${vendeur.id})`}</div>
+                    <div className="ventil-val">{devise(vendeur.ventes)}</div>
+                    <div className="ventil-val">{`-${devise(vendeur.remboursements)}`}</div>
+                    <div className="ventil-val">{devise(vendeur.ventes-vendeur.remboursements)}</div>
                   </div>
                 ))}
                 <div className="ventil ventil-vendeur total">
-                  <div class="ventil-nom">{__strimp.caption.total}</div>
-                  <div class="ventil-val">{Number(vndvnt).toFixed(2).replace('.',',')}</div>
-                  <div class="ventil-val">{`-${Number(vndrmb).toFixed(2).replace('.',',')}`}</div>
-                  <div class="ventil-val">{Number(vndtotal).toFixed(2).replace('.',',')}</div>
+                  <div className="ventil-nom">{__strimp.caption.total}</div>
+                  <div className="ventil-val">{devise(vndvnt)}</div>
+                  <div className="ventil-val">{`-${devise(vndrmb)}`}</div>
+                  <div className="ventil-val">{devise(vndtotal)}</div>
                 </div>
                 <div className="titre">
                   { __strimp.ventilation.tva }
                 </div>
                 <div className="ventil intit ventil-tva">
-                  <div class="ventil-intit">{__strimp.caption.type}</div>
-                  <div class="ventil-intit">{__strimp.caption.ht}</div>
-                  <div class="ventil-intit">{__strimp.caption.tva}</div>
-                  <div class="ventil-intit">{__strimp.caption.ttc}</div>
+                  <div className="ventil-intit">{__strimp.caption.type}</div>
+                  <div className="ventil-intit">{__strimp.caption.ht}</div>
+                  <div className="ventil-intit">{__strimp.caption.tva}</div>
+                  <div className="ventil-intit">{__strimp.caption.ttc}</div>
                 </div>
                 {periode.ventilation.tva.map(tva => (
                   <div className="ventil ventil-vendeur">
-                    <div class="ventil-nom">{`${Number(tva.taux*100).toFixed(2).replace('.',',')}%`}</div>
-                    <div class="ventil-val">{Number(tva.ht).toFixed(2).replace('.',',')}</div>
-                    <div class="ventil-val">{Number(tva.montant).toFixed(2).replace('.',',')}</div>
-                    <div class="ventil-val">{Number(tva.ttc).toFixed(2).replace('.',',')}</div>
+                    <div className="ventil-nom">{`${devise(tva.taux*100)}%`}</div>
+                    <div className="ventil-val">{devise(tva.ht)}</div>
+                    <div className="ventil-val">{devise(tva.montant)}</div>
+                    <div className="ventil-val">{devise(tva.ttc)}</div>
                   </div>
                 ))}
                 <div className="ventil ventil-vendeur total">
-                  <div class="ventil-nom">{__strimp.caption.total}</div>
-                  <div class="ventil-val">{Number(tvaht).toFixed(2).replace('.',',')}</div>
-                  <div class="ventil-val">{Number(tvamnt).toFixed(2).replace('.',',')}</div>
-                  <div class="ventil-val">{Number(tvattc).toFixed(2).replace('.',',')}</div>
+                  <div className="ventil-nom">{__strimp.caption.total}</div>
+                  <div className="ventil-val">{devise(tvaht)}</div>
+                  <div className="ventil-val">{devise(tvamnt)}</div>
+                  <div className="ventil-val">{devise(tvattc)}</div>
                 </div>
                 <div className="titre">
                   { __strimp.ventilation.moyen }
                 </div>
                 {periode.ventilation.moyen.map(moyen => (
                   <div className="ventil ventil-vendeur">
-                    <div class="ventil-nom">{__strimp.caption.moyens[moyen.moyen]}</div>
-                    <div class="ventil-val">{Number(moyen.valeur).toFixed(2).replace('.',',')}</div>
+                    <div className="ventil-nom">{__strimp.caption.moyens[moyen.moyen]}</div>
+                    <div className="ventil-val">{devise(moyen.valeur)}</div>
                   </div>
                 ))}
                 <div className="ventil ventil-vendeur total">
-                  <div class="ventil-nom">{__strimp.caption.total}</div>
-                  <div class="ventil-val">{Number(moytotal).toFixed(2).replace('.',',')}</div>
+                  <div className="ventil-nom">{__strimp.caption.total}</div>
+                  <div className="ventil-val">{devise(moytotal)}</div>
                 </div>
               </div>
             </div> {/* /.bloccentre */}
 
           </div> {/* /.clo-centre */}
           <div className="clo-droite">
-            <div className="blocdroite"></div>
-            <StdButton identifier="btncloture" elementclass="btncloture" key="btncloture" text="Clôture Z" disabled={true} onClick={ () => void(0) } />
+            <div className="blocdroite">
+              <div className="droite-top">
+                <LabelledField 
+                  id={ `total-fonddecaisse` }
+                  key={ `total-fonddecaisse` }
+                  name={ `total_fonddecaisse` }
+                  value={ devise(periode_z.periode.fdcaisse) } 
+                  placeholder=''
+                  type='text' 
+                  readOnly={ true } 
+                  label={ strings.modules.cloture.total_fdcaisse }
+                  postvalue='€'
+                />
+                <LabelledField 
+                  id={ `total-caisse-theo` }
+                  key={ `total-caisse-theo` }
+                  name={ `total_caisse_theo` }
+                  className='strong'
+                  value={ devise(periode_z.periode.ca) } 
+                  placeholder=''
+                  type='text' 
+                  readOnly={ true } 
+                  label={ strings.modules.cloture.total_caisse_theo }
+                  postvalue='€'
+                />
+                <LabelledField 
+                  id={ `total-caisse-cmpt` }
+                  key={ `total-caisse-cmpt` }
+                  name={ `total_caisse_cmpt` }
+                  className='strong'
+                  value={ Number(comptage).toFixed(2).replace('.',',') } 
+                  placeholder=''
+                  type='text' 
+                  readOnly={ true } 
+                  label={ strings.modules.cloture.total_caisse_cmpt }
+                  postvalue='€'
+                />
+                <LabelledField 
+                  id={ `fonddecaisse-theo` }
+                  key={ `fonddecaisse-theo` }
+                  name={ `fonddecaisse_theo` }
+                  value={ devise(fonddecaissetheo) } 
+                  placeholder=''
+                  type='text' 
+                  readOnly={ true } 
+                  label={ strings.modules.cloture.fondcaisse_default }
+                  postvalue='€'
+                />
+                <div className="prelevementField"
+                  onClick={ () => { this.startSaisie()} }>
+                  <LabelledField 
+                    id={ `prelevement` }
+                    key={ `prelevement` }
+                    name={ `prelevement` }
+                    className='strong'
+                    value={ prelevement_fv } 
+                    placeholder=''
+                    type='text' 
+                    readOnly={ true } 
+                    label={ strings.modules.cloture.prelevement }
+                    postvalue='€'
+                  />
+                </div>
+              </div>
+              <div className="droite-btm">
+                <LabelledField 
+                  id={ `fonddecaisse-new` }
+                  key={ `fonddecaisse-new` }
+                  name={ `fonddecaisse_new` }
+                  value={ devise(Number(comptage - prelevement_fv)) } 
+                  placeholder=''
+                  type='number' 
+                  readOnly={ true } 
+                  label={ strings.modules.cloture.fond_de_caisse }
+                  postvalue='€'
+                />
+              </div>
+            </div>
+            <StdButton identifier="btncloture" elementclass="btncloture" key="btncloture" text={(selection_caisse.id!='allcash' || selection_operator.id!='allope') ? strings.modules.cloture.cloture_partielle : strings.modules.cloture.cloture_z } disabled={comptage!==null} onClick={ () => void(0) } />
           </div>
         </div>
-        <ClotureComptage open={comptageOpen} closeComptage={this.closeComptage} openComptcaisse={this.openComptcaisse} />
+        <Comptage 
+          open={comptageOpen} 
+          closeComptage={this.closeComptage} 
+          openComptcaisse={this.openComptcaisse} 
+          openCommandesListe={this.openCommandesListe}
+          caisses={caisses} 
+          operators={operators} 
+          selection_caisse={selection_caisse} 
+          selection_operator={selection_operator} 
+          periode={ periode_z.periode }
+          commandes={ periode_z.cmdtoarchive }
+          validComptage={ this.validComptage }
+        />
         <ClotureComptcaisse open={comptcaisseOpen} closeComptcaisse={this.closeComptcaisse} />
+        <NumberKeyboard open={keyboardOpen} numbersOnly={false} buttonHandler={this.keyboardButtonHandler} inner={true} closeHandler={this.closeKeyboard} />
       </div>
     );
   }

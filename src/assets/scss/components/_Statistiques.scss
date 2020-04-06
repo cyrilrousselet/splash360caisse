@@ -239,8 +239,9 @@
         }
         .nom {
           display: table-cell;
-          font-family: $f_blk;
-          font-size: 12px;
+          font-family: $f_hea;
+          font-size: 14px;
+          text-transform: capitalize;
           color: $noir;
           padding-left: 10px;
 

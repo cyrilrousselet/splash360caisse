@@ -6,13 +6,21 @@
 
   &.subcontent {
 
-    display: inline-flex;
-    justify-content: flex-start;
-    align-items: start;
-    text-align: left;
+    
     padding: 15px;
-    flex-wrap: wrap;
 
+    .subcontent-wrapper {
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+      padding-right: 15px;
+      overflow: auto;
+      display: inline-flex;
+      justify-content: space-between;
+      align-items: start;
+      text-align: left;
+      flex-wrap: wrap;
+    }
 
     background-color: $blanc;
     border-radius: 15px;
@@ -98,7 +106,11 @@
       .livraison {
         padding: 0 0 10px 0;
         width: 100%;
-        
+        label+label {
+          font-family: $f_blk;
+          font-size: 18px;
+          padding: 10px 0;
+        }
       }
     }
     .happyhour-heure {

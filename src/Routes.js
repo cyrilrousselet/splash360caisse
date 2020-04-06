@@ -17,10 +17,12 @@ import StocksCont from './containers/StocksCont';
 import StatistiquesCont from './containers/StatistiquesCont';
 import MenuCont from './containers/MenuCont';
 import ClientsCont from './containers/ClientsCont';
+import MainLoaderCont from './containers/MainLoaderCont';
 
 export default () => (
   <App>
     <Switch>
+      <PrivateRoute exact path={ paths.MAIN_LOADER } component={MainLoaderCont} />
       <PrivateRoute exact path={ paths.DASHBOARD } component={DashboardCont} />
       <Route path={ paths.LOGIN } component={LoginCont} />
       <PrivateRoute path={ paths.MARKETING } component={MarketingCont} />

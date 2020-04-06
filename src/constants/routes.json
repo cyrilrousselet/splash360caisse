@@ -1,5 +1,6 @@
 {
-    "DASHBOARD": "/",
+    "MAIN_LOADER": "/",
+    "DASHBOARD": "/dashboard",
     "LOGIN": "/login",
     "MARKETING": "/marketing",
     "ENCAISSEMENT": "/encaissement",

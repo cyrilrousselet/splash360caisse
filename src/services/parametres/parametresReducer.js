@@ -21,11 +21,16 @@ export function parametresReducer(state=initialState, action) {
       };
 
     case parametresActionTypes.GETALL_SUCCESS:
+
+      let newparams = action.parametres;
+
+      
+
       return {
         ...state,
         loading: false,
         error: null,
-        parametres: action.parametres
+        parametres: {...parametres, ...newparams}
       };
 
     case parametresActionTypes.GETALL_FAILURE:
@@ -43,10 +48,18 @@ export function parametresReducer(state=initialState, action) {
       };
 
     case parametresActionTypes.UPDATE_SUCCESS:
+
+      const __dom = parametres[action.payload.domaine] || {};
+
+      const __newval = {
+        [action.payload.cle]: action.payload.valeur
+      };
+
       const __upd = {
         ...parametres,
         [action.payload.domaine]: {
-          [action.payload.cle]: action.payload.valeur
+          ...__dom,
+          ...__newval
         }
       };
       return {

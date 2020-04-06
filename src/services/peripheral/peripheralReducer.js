@@ -7,6 +7,7 @@ const initialState = {
 export function peripheralReducer(state = initialState, action) {
   switch (action.type) {
     case peripheralActionTypes.OPEN_DRAWER:
+    case peripheralActionTypes.OPEN_DRAWER_FAILURE:
       return {
         ...state,
         drawerOpen: true

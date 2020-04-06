@@ -18,6 +18,7 @@ $blanc: #FFFFFF;
 $noir: #4A4A4A;
 $noir_010: rgba(0, 0, 0, .1);
 $noir_005: rgba(0, 0, 0, .05);
+$noir_030: rgba(0, 0, 0, .3);
 $wheel1: $prairie;
 $wheel2: #FE485F;
 $wheel3: #FDC24F;
@@ -29,6 +30,8 @@ $wheel8: $gris-bleu;
 $wheel9: #EE7886;
 $wheel10: #7D9FC7;
 $wheel11: #ECA36A;
+// OMBRE
+$boxshadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1);
 // FONTES
 $f_blk: "Livvic-Bold";
 $f_boo: "Livvic-Light";
