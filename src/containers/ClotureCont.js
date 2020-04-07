@@ -17,6 +17,7 @@ const mapStateToProps = (state) => {
     periode: getPeriode(state),
     listeCommandes: state.commandesListReducer.commandeslist,
     catalogue: state.catalogueReducer,
+    clotures: state.clotureReducer.clotures,
     fonddecaissetheo: (state.parametresReducer.parametres.financier && state.parametresReducer.parametres.financier.fonddecaisse_activation) ? state.parametresReducer.parametres.financier.fonddecaisse_montant : 0 
   };
 }
@@ -26,7 +27,8 @@ const mapDispatchToProps = (dispatch) => {
     // getCommandesList: commandeActions.getCommandesList,
     // getParametres: parametresActions.getAll,
     getCurrentPeriode: clotureActions.getCurrentPeriode,
-    printPeriodeX: peripheralActions.printPeriodeX
+    printPeriodeX: peripheralActions.printPeriodeX,
+    makeCloture: clotureActions.makeCloture
   }, dispatch);
   return {
     ...binded    

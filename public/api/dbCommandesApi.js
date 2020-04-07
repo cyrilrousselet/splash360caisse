@@ -31,9 +31,9 @@ const actions = {
   },
   dbCommandeArchive: async (req,res) => {
     const { payload } = req;
-    log.info('dbCommandeArchive('+payload.ids+') in API');
+    log.info('dbCommandeArchive(['+payload.ids+'],'+payload.clotureId+') in API');
 
-    const confirm = await _setArchived(payload.ids);
+    const confirm = await _setArchived(payload.ids, payload.clotureId);
 
     res.send(confirm);
   }
@@ -105,8 +105,10 @@ function _parseCommandes(_rawdata) {
   return {commandeslist: __commandes};
 }
 
-async function _setArchived(ids) {
-  let _cmd = await db.commandes.update({ticketId:{$in:ids}}, {archived: new Date()}, {multi: true});
+async function _setArchived(ids, clotureId) {
+  log.info(ids);
+  let _cmd = await db.commandes.update({ ticketId: {$in: ids}}, { $set: {archived: clotureId} }, {multi: true});
+  // let _cmd = 1;
   return _cmd != null;
 }
 

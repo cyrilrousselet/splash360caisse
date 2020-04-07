@@ -3,7 +3,11 @@ import {emit} from 'eiphop';
 import { startOfToday, endOfToday, isAfter, isBefore, parseJSON } from 'date-fns';
 
 export const clotureServices = {
-  getCurrentPeriode
+  getCurrentPeriode,
+  makeCloture,
+  saveCloture,
+  getClotureById,
+  getCloturesList
 };
 
 
@@ -17,6 +21,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
      ,__ticket_moy = 0
      ,__mtcaisse = 0
      ,__ventil = {vendeur:[], tva:[], moyen:[]}
+     ,__numStandby = 0
      ;
 
      console.log('clotureServices.getCurrentPeriode()', params);
@@ -30,8 +35,8 @@ function getCurrentPeriode(commandes, catalogue, params) {
 
       let __valid = true;
 
-      // status
-      if (cmd.status!='confirmed') __valid = false;
+      console.log('cmd',cmd);
+
 
       // si on ne récupère que les cmd non archivées (cas du Z)
       if (params.extract=='z' && cmd.archived!=null) __valid = false;
@@ -45,6 +50,11 @@ function getCurrentPeriode(commandes, catalogue, params) {
       // periode
       let updatedAt = parseJSON(cmd.updatedAt);
       if (isAfter(updatedAt, params.fin) || isBefore(updatedAt, params.debut)) __valid = false;
+
+      if (__valid && cmd.status!='confirmed') __numStandby++;
+
+      // status
+      if (cmd.status!='confirmed') __valid = false;
 
       return __valid;
     });
@@ -185,7 +195,8 @@ function getCurrentPeriode(commandes, catalogue, params) {
         ticket_moyen: __tickets==0 ? 0 : Math.round(__ca/__tickets),
         ventilation: __ventil
       },
-      cmdtoarchive: __filtered_cmd
+      cmdtoarchive: __filtered_cmd,
+      standby: __numStandby
     };
 
   } else {
@@ -196,6 +207,34 @@ function getCurrentPeriode(commandes, catalogue, params) {
 function makeCloture(commandes, catalogue, params) {
 
   // récup des données
-  const data = getCurrentPeriode(commandes, catalogue, params);
+  const { periode, cmdtoarchive } = getCurrentPeriode(commandes, catalogue, params);
 
+  const archivedcommandesid = cmdtoarchive.map(cmd=>cmd.ticketId);
+
+  return {
+    clotureId: _newClotureId(),
+    periode: periode,
+    cmdtoarchive: cmdtoarchive,
+    archived: new Date(),
+    comptage: params.comptage,
+    prelevement: params.prelevement,
+    archivedcommandesid: archivedcommandesid
+  }
+}
+
+function saveCloture(cloture) {
+  return emit('dbCloturePersist', {cloture:cloture});
+}
+
+
+
+const _newClotureId = () => {
+  let __d = new Date();
+  return 'clo'+__d.getTime().toString();
+}
+function getClotureById(id) {
+  return emit('dbClotureGetCloture', {clotureId: id});
+}
+function getCloturesList(params) {
+  return emit('dbClotureGetAll', params);
 }

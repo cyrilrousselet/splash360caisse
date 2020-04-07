@@ -313,12 +313,12 @@ function archiveCommands(payload) {
 
     dispatch({ type: commandeActionTypes.ARCHIVE_REQUEST });
 
-    const ids = payload.map(cmd => cmd.ticketId);
+    const {cmd,clotureId} = payload;
 
-    commandeServices.archiveCommands(ids)
+    commandeServices.archiveCommands(cmd,clotureId)
     .then(
       confirm => {
-        dispatch({ type: commandeActionTypes.ARCHIVE_SUCCESS, ids:ids });
+        dispatch({ type: commandeActionTypes.ARCHIVE_SUCCESS, ids:cmd });
         dispatch(getCommandesList());
       },
       error => {

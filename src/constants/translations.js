@@ -272,6 +272,11 @@ const data = {
                     actions: {
                         validation: "Vérification",
                         outilcomptage: "Comptage espèces"
+                    },
+                    counttool: {
+                        titre: "Compte Caisse",
+                        total: "Total :",
+                        bouton: "Valider"
                     }
                 },
                 print_x: "Imprime X Caisse",
@@ -291,7 +296,11 @@ const data = {
                     },
                     different: {
                         titre: "Comptage différent",
-                        texte: "Votre comptage diffère du calcul théorique des recettes. Vous devez corriger pour pouvoir clôturer."
+                        texte: "Votre comptage diffère du calcul théorique des recettes pour les valeurs marquées en rouge. Vous devez corriger pour pouvoir clôturer."
+                    },
+                    standby: {
+                        titre: "Commandes en attente",
+                        texte: "Vous ne pouvez pas clôturer tant qu'il reste des commandes en attente."
                     }
                 }
             },

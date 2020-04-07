@@ -13,9 +13,9 @@ import comptcaisseimage from '../../assets/images/fake_contenu_cloturecomptcaiss
 import { Modal, Fab, FormControl, Select, MenuItem } from '@material-ui/core';
 import CloseIcon from '../common/icon/CloseIcon';
 import StdButton from '../common/StdButton';
-import { format } from "date-fns";
+import { startOfToday, endOfToday, parseJSON, format } from 'date-fns';
 import frLocale from "date-fns/locale/fr";
-import { startOfToday, endOfToday } from 'date-fns';
+import Swal from 'sweetalert2';
 
 import { clotureServices } from './../../services/cloture/clotureServices';
 
@@ -26,51 +26,6 @@ import NumberKeyboard from '../common/NumberKeyboard';
 
 let strings = new LocalizedStrings(data);
 
-
-// const ClotureComptage = ({open, closeComptage, openComptcaisse}) => (
-
-//     <Modal open={open}>
-//       <div className="ClotureComptage">
-//         <div className="Modal-container">
-//           <div className="header">
-//             <div className="title">{ strings.modules.encaissement.reglement.titre }</div>
-//           </div>
-//           <div className="body">
-//             <div className="blocbg"></div>
-//             <img src={ comptageimage } className="contimage" />
-//             <div className="btncomptcaisse" onClick={ openComptcaisse}></div>
-//             <StdButton identifier="btncomptcaisse" elementclass="btncomptcaisse" key="btncomptcaisse" text="Compte Caisse" onClick={ openComptcaisse } />
-//             <StdButton identifier="btncomptverif" elementclass="btncomptverif" key="btncomptverif" text="Vérification" onClick={ closeComptage} />
-//           </div>
-//         </div>
-//         <Fab aria-label="close" size="small" className="close-button" onClick={ closeComptage }>
-//           <CloseIcon />
-//         </Fab>
-//       </div>
-//     </Modal>
-// );
-
-const ClotureComptcaisse = ({open, closeComptcaisse}) => (
-
-  <Modal open={open}>
-    <div className="ClotureComptcaisse">
-      <div className="Modal-container">
-        <div className="header">
-          <div className="title">{ strings.modules.encaissement.reglement.titre }</div>
-        </div>
-        <div className="body">
-          <img src={ comptcaisseimage } className="contimage" />
-        </div>
-        <div className="footer">
-          <StdButton identifier="comptcaisseverif" elementclass="btncomptcaisseverif" key="comptcaisseverif" text="Vérification" onClick={ closeComptcaisse} />
-        </div>
-      </div>
-      <Fab aria-label="close" size="small" className="close-button" onClick={ closeComptcaisse }>
-        <CloseIcon />
-      </Fab>
-    </div>
-  </Modal>
-);
 
 
 class Cloture extends React.Component {
@@ -101,6 +56,7 @@ class Cloture extends React.Component {
     this.startSaisie = this.startSaisie.bind(this);
     this.keyboardButtonHandler = this.keyboardButtonHandler.bind(this);
     this.closeKeyboard = this.closeKeyboard.bind(this);
+    this.prepareCloture = this.prepareCloture.bind(this);
   }
 
   componentDidMount() {
@@ -121,8 +77,22 @@ class Cloture extends React.Component {
     return true;
   }
 
-  openComptage() {
-    this.setState({comptageOpen:true, comptcaisseOpen:false});
+  openComptage(periode_z) {
+
+    if (periode_z.standby>0) {
+      Swal.fire({
+        title: strings.modules.cloture.alerte.standby.titre,
+        text: strings.modules.cloture.alerte.standby.texte,
+        focusConfirm: true,
+        showCancelButton: false,
+        customClass: 'standbycommandes',
+        confirmButtonText: 'OK',
+        buttonsStyling: false 
+      }).then((result)=> {
+      });
+    } else {
+      this.setState({comptageOpen:true, comptcaisseOpen:false});
+    }
   }
   closeComptage() {
     this.setState({comptageOpen:false});
@@ -183,9 +153,10 @@ class Cloture extends React.Component {
     this.props.getCurrentPeriode(params);
   }
 
-  validComptage(valeur) {
-    console.log('validComptage()', valeur);
-    this.setState({comptage: valeur, comptageOpen: false});
+  validComptage(comptageobject) {
+    console.log('validComptage()', comptageobject);
+//    this.setState({comptage: valeur, comptageOpen: false});
+    this.setState({comptage: comptageobject});
   }
   openCommandesListe() {
     console.log('openCommandesListe()');
@@ -209,9 +180,38 @@ class Cloture extends React.Component {
     this.setState({keyboardOpen: false, prelevement:fieldvalue.replace(',','.')});
   }
 
+
+  prepareCloture(prelevement) {
+    const { selection_operator, selection_caisse, comptage } = this.state;
+    
+    let params = {};
+    if (selection_caisse.id!='allcash') params['caisses'] = [selection_caisse];
+    if (selection_operator.id!='allope') params['vendeurs'] = [selection_operator];
+    params['comptage'] = comptage
+    params['prelevement'] = prelevement;
+
+    if (selection_caisse.id!='allcash' || selection_operator.id!='allope') {
+      Swal.fire({
+        title: strings.modules.cloture.alerte.partielle.titre,
+        text: strings.modules.cloture.alerte.partielle.texte,
+        focusConfirm: true,
+        showCancelButton: true,
+        customClass: 'cloturepartielle',
+        confirmButtonText: 'OK',
+        cancelButtonText: strings.general.dialog.cancel,
+        buttonsStyling: false 
+      }).then((result)=> {
+        this.props.makeCloture(params);
+      });
+    }
+    else {
+      this.props.makeCloture(params);
+    }
+  }
+
   render() {
 
-    const { periode, error, loading, printPeriodeX, listeCommandes, catalogue, fonddecaissetheo } = this.props;
+    const { periode, clotures, error, loading, printPeriodeX, listeCommandes, catalogue, fonddecaissetheo } = this.props;
 
     const { comptageOpen, comptcaisseOpen, comptage, selection_caisse, selection_operator, keyboardOpen, fieldvalue, prelevement} = this.state;
 
@@ -237,7 +237,11 @@ class Cloture extends React.Component {
     const prelevement_fv = keyboardOpen ? fieldvalue.replace(',','.') : prelevement;
 
     console.log('fieldvalue', fieldvalue);
+    console.log('comptage', comptage);
     console.log('prelevement_fv', prelevement_fv);
+
+    const comptage_total = (null!==comptage) ? devise(comptage.total) : '';
+    const fdcaisse_new = (null!==comptage) ? devise(comptage.total-Number(prelevement_fv)) : '';
     
     // console.log('operators', operators);
     // console.log('caisses', caisses);
@@ -271,6 +275,8 @@ class Cloture extends React.Component {
         moytotal += moyen.valeur;
     });
 
+    const lastCloture = Object.values(clotures).pop();
+
     return (
       <div className="Cloture container">
         <TopZone />
@@ -278,7 +284,27 @@ class Cloture extends React.Component {
           <div className="clo-gauche">
             <div className="blocgauche">
               <div className="zone-lastcloture">
-                <StdButton identifier="btnreprint" elementclass="btnreprint" key="btnreprint" text="Ré-imprimer" disabled={true} onClick={ () => void(0) } />
+                <div className="titre">{ strings.modules.cloture.derniere.titre }</div>
+                {(lastCloture && 
+                <div className="itmliste">
+                  <div className="item item-date">
+                    <div className="label">{ strings.modules.cloture.derniere.caption.date }</div>
+                    <div className="valeur">{ format(parseJSON(lastCloture.archived), 'dd/MM/yyyy') }</div>
+                  </div>
+                  <div className="item item-heure">
+                    <div className="label">{ strings.modules.cloture.derniere.caption.heure }</div>
+                    <div className="valeur">{ format(parseJSON(lastCloture.archived), 'HH:mm:ss') }</div>
+                  </div>
+                  <div className="item item-editeur">
+                    <div className="label">{ strings.modules.cloture.derniere.caption.editeur }</div>
+                    <div className="valeur">{ `${lastCloture.periode.editeur.nom} (${lastCloture.periode.editeur.id})` }</div>
+                  </div>
+                </div>
+                )}
+                {(lastCloture==null && 
+                  <div className="no-item">{ strings.modules.cloture.derniere.aucune }</div>  
+                )}
+                <StdButton identifier="btnreprint" elementclass="btnreprint" key="btnreprint" text="Ré-imprimer" disabled={null==lastCloture} onClick={ () => void(0) } />
               </div>
               <div className="zone-selecteur">
                 <div className="label">{ strings.modules.cloture.selection.caisse }</div>
@@ -298,7 +324,7 @@ class Cloture extends React.Component {
                   </Select>
                 </FormControl>
               </div>
-              <StdButton identifier="btncomptage" elementclass="btncomptage" key="btncomptage" text={(selection_caisse.id!='allcash' || selection_operator.id!='allope') ? strings.modules.cloture.selection.comptagebtn_partiel : strings.modules.cloture.selection.comptagebtn } onClick={ this.openComptage } />
+              <StdButton identifier="btncomptage" elementclass="btncomptage" key="btncomptage" text={(selection_caisse.id!='allcash' || selection_operator.id!='allope') ? strings.modules.cloture.selection.comptagebtn_partiel : strings.modules.cloture.selection.comptagebtn } onClick={ () => {this.openComptage(periode_z) }} />
             </div>
             <StdButton identifier="btnx" elementclass="btnx" key="btnx" text={(selection_caisse.id!='allcash' || selection_operator.id!='allope') ? strings.modules.cloture.print_partiel : strings.modules.cloture.print_x } onClick={ () => { console.log('printPeriodeX()'); printPeriodeX() } } />
           </div>
@@ -392,7 +418,7 @@ class Cloture extends React.Component {
                   <div className="ventil-intit">{__strimp.caption.ttc}</div>
                 </div>
                 {periode.ventilation.tva.map(tva => (
-                  <div className="ventil ventil-vendeur">
+                  <div className="ventil ventil-vendeur" key={ `ventil-${tva.id}` }>
                     <div className="ventil-nom">{`${devise(tva.taux*100)}%`}</div>
                     <div className="ventil-val">{devise(tva.ht)}</div>
                     <div className="ventil-val">{devise(tva.montant)}</div>
@@ -409,7 +435,7 @@ class Cloture extends React.Component {
                   { __strimp.ventilation.moyen }
                 </div>
                 {periode.ventilation.moyen.map(moyen => (
-                  <div className="ventil ventil-vendeur">
+                  <div className="ventil ventil-vendeur" key={ `ventil-${moyen.moyen}` }>
                     <div className="ventil-nom">{__strimp.caption.moyens[moyen.moyen]}</div>
                     <div className="ventil-val">{devise(moyen.valeur)}</div>
                   </div>
@@ -453,7 +479,7 @@ class Cloture extends React.Component {
                   key={ `total-caisse-cmpt` }
                   name={ `total_caisse_cmpt` }
                   className='strong'
-                  value={ Number(comptage).toFixed(2).replace('.',',') } 
+                  value={ comptage_total } 
                   placeholder=''
                   type='text' 
                   readOnly={ true } 
@@ -492,22 +518,21 @@ class Cloture extends React.Component {
                   id={ `fonddecaisse-new` }
                   key={ `fonddecaisse-new` }
                   name={ `fonddecaisse_new` }
-                  value={ devise(Number(comptage - prelevement_fv)) } 
+                  value={ fdcaisse_new } 
                   placeholder=''
-                  type='number' 
+                  type='text' 
                   readOnly={ true } 
                   label={ strings.modules.cloture.fond_de_caisse }
                   postvalue='€'
                 />
               </div>
             </div>
-            <StdButton identifier="btncloture" elementclass="btncloture" key="btncloture" text={(selection_caisse.id!='allcash' || selection_operator.id!='allope') ? strings.modules.cloture.cloture_partielle : strings.modules.cloture.cloture_z } disabled={comptage!==null} onClick={ () => void(0) } />
+            <StdButton identifier="btncloture" elementclass="btncloture" key="btncloture" text={(selection_caisse.id!='allcash' || selection_operator.id!='allope') ? strings.modules.cloture.cloture_partielle : strings.modules.cloture.cloture_z } disabled={comptage==null || periode_z.standby>0} onClick={ () => {this.prepareCloture(Number(prelevement_fv))} } />
           </div>
         </div>
         <Comptage 
           open={comptageOpen} 
           closeComptage={this.closeComptage} 
-          openComptcaisse={this.openComptcaisse} 
           openCommandesListe={this.openCommandesListe}
           caisses={caisses} 
           operators={operators} 
@@ -517,7 +542,6 @@ class Cloture extends React.Component {
           commandes={ periode_z.cmdtoarchive }
           validComptage={ this.validComptage }
         />
-        <ClotureComptcaisse open={comptcaisseOpen} closeComptcaisse={this.closeComptcaisse} />
         <NumberKeyboard open={keyboardOpen} numbersOnly={false} buttonHandler={this.keyboardButtonHandler} inner={true} closeHandler={this.closeKeyboard} />
       </div>
     );

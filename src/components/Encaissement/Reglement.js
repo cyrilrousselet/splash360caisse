@@ -117,9 +117,9 @@ class Reglement extends React.Component {
     if (reste==0) {
       console.warn('!!! DEV - rétablir l’impression des tickets');
       if (!isDev) {
-        this.props.printTicket('commande');
-        this.props.printTicket('sac');
-        this.props.printTicket('cuisine');
+        // this.props.printTicket('commande');
+        // this.props.printTicket('sac');
+        // this.props.printTicket('cuisine');
       }
       if (this.props.commande.status=='pending') {
         this.props.commande.end = new Date();

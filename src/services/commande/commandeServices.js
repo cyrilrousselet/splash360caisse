@@ -657,8 +657,8 @@ function saveCommande(commande, catalogueReducer) {
   return emit('dbCommandePersist', {commande:__c});
 }
 
-function archiveCommands(commandesid) {
-  return emit('dbCommandeArchive', {ids:commandesid});
+function archiveCommands(commandesid, clotureId) {
+  return emit('dbCommandeArchive', {ids:commandesid, clotureId:clotureId});
 }
 
 
