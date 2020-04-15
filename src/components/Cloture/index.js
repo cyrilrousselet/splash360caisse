@@ -84,11 +84,13 @@ class Cloture extends React.Component {
         title: strings.modules.cloture.alerte.standby.titre,
         text: strings.modules.cloture.alerte.standby.texte,
         focusConfirm: true,
-        showCancelButton: false,
+        showCancelButton: true,
         customClass: 'standbycommandes',
         confirmButtonText: 'OK',
+        cancelButtonText: strings.general.dialog.cancel,
         buttonsStyling: false 
       }).then((result)=> {
+        this.setState({comptageOpen:true, comptcaisseOpen:false});
       });
     } else {
       this.setState({comptageOpen:true, comptcaisseOpen:false});

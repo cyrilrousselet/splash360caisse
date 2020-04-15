@@ -15,6 +15,7 @@ class Encaissement extends React.Component {
       personnalisationOpen: false,
       personnalisationReview: false,
       personnalisationValide: false,
+      personnalisationStatus: '',
       personnalisationStep: -1,
       personnalisationPreviousStep: -1,
       commandeItemToPersonnalize: null
@@ -32,13 +33,14 @@ class Encaissement extends React.Component {
   closeReglement() {
     this.setState({reglementOpen: false});
   }
-  openPersonnalisation(itemid, stepid, previousstepid, stepvalidated, from='unknown') {
-    console.log('openPersonnalisation('+itemid+', '+stepid+', '+previousstepid+', '+from+')');
+  openPersonnalisation(itemid, stepid, previousstepid, stepvalidated, itemstatus, from='unknown') {
+    console.log('openPersonnalisation('+itemid+', '+stepid+', '+previousstepid+', '+itemstatus+', '+from+')');
     this.setState({
       personnalisationOpen: true, 
       personnalisationStep: stepid, 
       personnalisationPreviousStep: previousstepid, 
       personnalisationValide: stepvalidated,
+      personnalisationStatus: itemstatus,
       commandeItemToPersonnalize: itemid,});
   }
   closePersonnalisation(from='unknown') {
@@ -76,6 +78,7 @@ class Encaissement extends React.Component {
             previousstep={ this.state.personnalisationPreviousStep }
             valide={ this.state.personnalisationValide }
             item={ this.state.commandeItemToPersonnalize }
+            itemstatus={ this.state.personnalisationStatus }
             contClass="EncaissementPersonnalisation" 
             closePersonnalisation={ this.closePersonnalisation } 
             openPersonnalisation={ this.openPersonnalisation }

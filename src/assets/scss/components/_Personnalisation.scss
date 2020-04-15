@@ -7,7 +7,7 @@
   outline: none;
   .Modal-container {
       background-color: $blanc;
-      width: 900px;
+      width: 950px;
       border-radius: 15px;
       padding: 10px 0 0;
   }
@@ -81,6 +81,7 @@
         position: absolute;
         top: -7px;
         right: 10px;
+        color: $blanc;
         box-shadow: 0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12);
       }
       .qte-btn {
@@ -137,18 +138,42 @@
           background-color: $wheel7;
       }
 
+
+      &.blanc       { background-color: $prdcol_blanc; }
+      &.bleuclair   { background-color: $prdcol_bleuclair; }
+      &.bleufonce   { background-color: $prdcol_bleufonce; }
+      &.gris        { background-color: $prdcol_gris; }
+      &.jaune       { background-color: $prdcol_jaune; }
+      &.jauneorange { background-color: $prdcol_jauneorange; }
+      &.marron      { background-color: $prdcol_marron; }
+      &.noir        { background-color: $prdcol_noir; }
+      &.orange      { background-color: $prdcol_orange; }
+      &.rose        { background-color: $prdcol_rose; }
+      &.rouge       { background-color: $prdcol_rouge; }
+      &.vertclair   { background-color: $prdcol_vertclair; }
+      &.vertfonce   { background-color: $prdcol_vertfonce; }
+      &.violet      { background-color: $prdcol_violet; }
+
+      &.blanc, &.bleuclair, &.gris, &.jaune, &.jauneorange, &.orange, &.rose, &.rouge, &.vertclair {
+        color: $noir;
+      }
+      &.bleufonce, &.marron, &.noir, &.vertfonce, &.violet, &.rouge {
+        color: $blanc;
+      }
+      
       &.btn-disabled {
         cursor: default;
         color: $noir;
         background-color: $gris;
       }
+
     }
 
   }
 
 
   .modal-wrapper {
-    height: 500px;
+    height: 550px;
     overflow-y: auto;
     padding: 0 20px;
   }

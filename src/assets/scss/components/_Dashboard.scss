@@ -21,6 +21,11 @@
                 opacity: 0;
             }
         }
+        .disconnect-button {
+            background-color: $blanc;
+            margin-left: 215px;
+            box-shadow: 0 5px 12px 0 rgba(0, 0, 0, 0.05);
+        }
     }
     .modules {
         display: flex;

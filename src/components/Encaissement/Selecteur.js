@@ -9,7 +9,7 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 let strings = new LocalizedStrings(data);
 
-const ProduitBtn = ({ id, nom, prix, composition, onClick }) => (
+const ProduitBtn = ({ id, nom, prix, composition, color, onClick }) => (
   // <Button
   //   className="ProduitBtn"
   //   id={id}
@@ -17,7 +17,7 @@ const ProduitBtn = ({ id, nom, prix, composition, onClick }) => (
   //   onClick={ () => onClick(id) }
   // ><div>{ nom }</div><div>{ Number(prix).toFixed(2).replace('.',',') }&nbsp;€</div></Button>
   <div
-    className="ProduitBtn"
+    className={ `ProduitBtn ${color}` }
     id={id}
     composition={ composition }
     onClick={ () => onClick(id) }
@@ -56,8 +56,12 @@ class Selecteur extends React.Component {
     
     for (let [key, value] of Object.entries(catalogue)) {
       tlinks.push({id: key, nom: value.nom});
+      value.produits.sort((a,b)=> a.weight - b.weight); 
       tcontents.push({parent: key, liste: value.produits});
     }
+
+
+    // organiser les prd par weight
 
 
     if(loading) {
@@ -92,6 +96,7 @@ class Selecteur extends React.Component {
                   id={ prd.id } 
                   nom={ prd.nom } 
                   prix={ prd.prix } 
+                  color={ prd.color }
                   composition={prd.composition}
                   onClick={ () => addProduit({produitid: prd.id, nom: prd.nom, prix: Number(prd.prix), composition: prd.composition, customizable: prd.customizable, tva_id:prd.tva_id }) } />
               )}

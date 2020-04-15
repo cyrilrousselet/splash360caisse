@@ -161,7 +161,7 @@ class Login extends React.Component {
               })}
           </div>
         </div>
-        <PillConnect activated={activated} onClick={ connectBtnHandler } />
+        {/* <PillConnect activated={activated} onClick={ connectBtnHandler } /> */}
       </div>
     );
   }

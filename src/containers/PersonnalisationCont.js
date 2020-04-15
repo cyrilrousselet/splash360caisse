@@ -40,6 +40,7 @@ const _getIngredientTypes = (state, stepId) => {
   let ingredientTypes = {};
   if (stepObj) {
     const allIng = getIngredients(state);
+
     const allTypes = getIngredientTypes(state);
     stepObj.regles.forEach(regle => {
       const rglType = {nom: allTypes[regle.type].nom, regle:regle.regle, ingredients:[]};
@@ -47,9 +48,14 @@ const _getIngredientTypes = (state, stepId) => {
         rglType.ingredients.push({
           id: ingid,
           nom: allIng[ingid].nom,
-          supplement: allIng[ingid].supplement
+          supplement: allIng[ingid].supplement,
+          color: allIng[ingid].color,
+          weight:  allIng[ingid].weight
         });
       });
+
+      rglType.ingredients.sort((a,b) => a.weight - b.weight);
+
       Object.defineProperty(ingredientTypes, regle.type, {
         value: rglType,
         writable: true,

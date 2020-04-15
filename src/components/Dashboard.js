@@ -4,6 +4,8 @@ import {data} from '../constants/translations';
 import LargeButton from './common/LargeButton';
 import PropTypes from 'prop-types';
 import LoadingSpinner from './common/LoadingSpinner';
+import { Fab } from '@material-ui/core';
+import ConnectIcon from './common/icon/ConnectIcon';
 
 let strings = new LocalizedStrings(data);
 
@@ -48,7 +50,7 @@ class Dashboard extends Component {
 
   render() {
 
-    const { cashname, username, userid, modules, points, devise, onClickUseraccount, onClickModule, periode } = this.props;
+    const { cashname, username, userid, modules, points, devise, onClickUseraccount, userLogout, onClickModule, periode } = this.props;
     const { ca, numtickets } = periode;
   
     if (ca==undefined) {
@@ -68,7 +70,10 @@ class Dashboard extends Component {
           <div className="userName" 
             // onClick={()=>{onClickUseraccount(userid)} }
           >{ username }</div>
-          <div className={ `points${points==null ? ' nopoint':''}` }>{ `${points}${strings.dashboard.points}` }</div>
+          {/* <div className={ `points${points==null ? ' nopoint':''}` }>{ `${points}${strings.dashboard.points}` }</div> */}
+          <Fab aria-label="disconnect" size="small" className="disconnect-button" onClick={userLogout}>
+            <ConnectIcon />
+          </Fab>
         </div>
         <div className="modules">
         {modules.map((module, i) =>

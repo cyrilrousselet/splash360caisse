@@ -17,9 +17,9 @@ let strings = new LocalizedStrings(data);
 
 
 
-const IngredientBtn = ({ id, nom, supplement, step, addIng, removeIng, qte, withbuttons, disabled }) => (
+const IngredientBtn = ({ id, nom, supplement, color, step, addIng, removeIng, qte, withbuttons, disabled }) => (
   <div
-    className={`IngredientBtn${withbuttons ? ' with-qtebtn' :''}${disabled ? ' btn-disabled' :''}`}
+    className={`IngredientBtn${withbuttons ? ' with-qtebtn' :''}${disabled ? ' btn-disabled' :''} ${color}`}
     id={id}
     step={ step }
     onClick={ (e) => { e.stopPropagation(); if(!disabled) addIng(id)} }
@@ -123,7 +123,7 @@ class Personnalisation extends React.Component {
 
   render() {
     
-    const { open, closePersonnalisation, contClass, stepObject, step, itemSteps, item, ingredientTypes, addIngredient, removeIngredient, noIngredientForStep, itemIngredients, completeStep, valide, previousstep, updateProduit } = this.props;
+    const { open, closePersonnalisation, itemstatus, contClass, stepObject, step, itemSteps, item, ingredientTypes, addIngredient, removeIngredient, noIngredientForStep, itemIngredients, completeStep, valide, previousstep, updateProduit } = this.props;
 
     if (null==stepObject || Object.entries(stepObject).length==0) return <Modal open={open}><LoadingSpinner /></Modal>;
 
@@ -132,9 +132,14 @@ class Personnalisation extends React.Component {
     const isTypesMax = this.isIngredientTypeMaxnum(ingredientTypes, itemIngredients);
 
     const onClickDelete = () => {
-      updateProduit({itemid: item, quantite: 0});
+      if (itemstatus=='pending') updateProduit({itemid: item, quantite: 0});
       closePersonnalisation('popin');
     }
+
+    const removeBtnHandler = (payload) => {
+      removeIngredient({...payload, itemstatus:itemstatus});
+    }
+
 
     return (
       <Modal
@@ -155,13 +160,14 @@ class Personnalisation extends React.Component {
                       <IngredientBtn 
                         id={ingredient.id}
                         nom={ingredient.nom}
+                        color={ingredient.color}
                         supplement={ingredient.supplement} 
                         step={step}
                         disabled={isTypesMax[id]}
-                        withbuttons={!RegExp('^(\\?|\\{1\\}|\\{0\\}|\\{0,1\\})').test(type.regle)}
+                        withbuttons={ (!RegExp('^(\\?|\\{1\\}|\\{0\\}|\\{0,1\\})').test(type.regle)) || this.getIngredientQuantity(ingredient.id)>0 }
                         qte={this.getIngredientQuantity(ingredient.id)}
                         addIng={()=>{ addIngredient({itemid: item, stepid: step, ingredientid: ingredient.id, quantite: 1}) }} 
-                        removeIng={()=>{ removeIngredient({itemid: item, stepid: step, ingredientid: ingredient.id, quantite: 1}) }} 
+                        removeIng={()=>{ removeBtnHandler({itemid: item, stepid: step, ingredientid: ingredient.id, quantite: 1}) }} 
                         key={ingredient.id}
                       />
                       )}

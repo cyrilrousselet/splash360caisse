@@ -141,4 +141,26 @@
         &:nth-child(7n) {
             background-color: $wheel7;
         }
+
+        &.blanc       { background-color: $prdcol_blanc; }
+        &.bleuclair   { background-color: $prdcol_bleuclair; }
+        &.bleufonce   { background-color: $prdcol_bleufonce; }
+        &.gris        { background-color: $prdcol_gris; }
+        &.jaune       { background-color: $prdcol_jaune; }
+        &.jauneorange { background-color: $prdcol_jauneorange; }
+        &.marron      { background-color: $prdcol_marron; }
+        &.noir        { background-color: $prdcol_noir; }
+        &.orange      { background-color: $prdcol_orange; }
+        &.rose        { background-color: $prdcol_rose; }
+        &.rouge       { background-color: $prdcol_rouge; }
+        &.vertclair   { background-color: $prdcol_vertclair; }
+        &.vertfonce   { background-color: $prdcol_vertfonce; }
+        &.violet      { background-color: $prdcol_violet; }
+
+        &.blanc, &.bleuclair, &.gris, &.jaune, &.jauneorange, &.orange, &.rose, &.vertclair {
+            color: $noir;
+        }
+        &.bleufonce, &.marron, &.noir, &.vertfonce, &.violet, &.rouge {
+            color: $blanc;
+        }
     }

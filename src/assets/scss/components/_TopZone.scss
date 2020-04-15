@@ -24,6 +24,7 @@
         background-repeat: no-repeat;
         background-size: 28px 25px;
         background-position: 25px center;
+        width: 260px;
     }
     .userName {
         display: inline-block;
@@ -44,7 +45,7 @@
     .dashboardLink {
         display: inline-block;
         padding: 0 40px 0 65px;
-        margin-left: 45px;
+        margin-left: 90px;
         height: 60px;
         line-height: 60px;
         font-family: $f-hea;

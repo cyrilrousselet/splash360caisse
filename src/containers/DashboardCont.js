@@ -86,6 +86,21 @@ const mapStateToProps = (state) => {
 //   }
 // }
 
+const userLogout = () => {
+  Swal.fire({
+    type: 'warning',
+    title: strings.dashboard.logout.titre,
+    text: strings.dashboard.logout.texte,
+    showCancelButton: true,
+    focusCancel: true,
+    focusConfirm: false
+  }).then((result)=> {
+    if (result.value) {
+      history.push(paths.LOGIN);
+    }
+  });
+}
+
 
 const mapDispatchToProps = (dispatch) => {
   const binded = bindActionCreators({
@@ -97,7 +112,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     ...binded,
     onClickUseraccount: userAccount,
-    onClickModule: beforeClickModule
+    onClickModule: beforeClickModule,
+    userLogout: userLogout
   };
 }
 

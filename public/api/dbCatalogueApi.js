@@ -68,7 +68,9 @@ function _parseCatalogue(_rawdata) {
       nom: i.nom,
       tva_id: i.tva,
       supplement: i.supplement,
-      type: i.type
+      type: i.type,
+      weight: i.weight,
+      color: i.color
     };
   });
 
@@ -96,7 +98,9 @@ function _parseCatalogue(_rawdata) {
       tva_id: p.tva,
       prix: p.prix,
       composition: p.composition,
-      customizable: __steps.hasOwnProperty(p.produit_id)
+      customizable: __steps.hasOwnProperty(p.produit_id),
+      weight: p.weight,
+      color: p.color
     });
   });
 
