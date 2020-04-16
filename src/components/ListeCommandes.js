@@ -70,7 +70,7 @@ TabPanel.propTypes = {
 
 
 function TableCommandes(props) {
-  const { liste, id, openReglement, openReprise, openPrint, ...other } = props;
+  const { liste, id, openReglement, openReprise, openPrint, thiscash, ...other } = props;
 
   liste.sort((a,b) => {
     let da = new Date(a.commande.createdAt), db = new Date(b.commande.createdAt);
@@ -92,7 +92,7 @@ function TableCommandes(props) {
         </TableHead>
         <TableBody>
           {liste.map((row, i) => (
-            <TableRow key={row.id} className={ `${(i%2)?'odd':'even'} color-${row.commande.caisse}` }>
+            <TableRow key={row.id} className={ `${(i%2)?'odd':'even'} color-${(row.commande.caisse.id==thiscash.id)?'0':'autre'}` }>
               <TableCell key={`${row.id}-date`} className="liste-date">{ row.commande.date }</TableCell>
               <TableCell key={`${row.id}-heure`} className="liste-heure">{ row.commande.heure }</TableCell>
               <TableCell key={`${row.id}-numero`} className="liste-numero">{ row.commande.id }</TableCell>
@@ -308,7 +308,7 @@ class ListeCommandes extends React.Component {
   }
 
   render() {
-    const { commandeslist, error, loading, tickets, printTicket } = this.props;
+    const { commandeslist, error, loading, tickets, printTicket, thiscash } = this.props;
 
     const { startDate, endDate, openTab, commandeId, printOpen, searchval, inputfocus, keyboardOpen } = this.state;
 
@@ -406,13 +406,13 @@ class ListeCommandes extends React.Component {
             <PillField value={searchval} type="text" className="displayId" innerButton={ `${searchval=='' ? 'keyboard' : 'delete'}`} innerButtonHandler={this.searchBtn} />
           </AppBar>
           <TabPanel key="standby-panel" className="panel" value={openTab} index={0}>
-            <TableCommandes className="standby" id="standby" openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } liste={standbylist} />
+            <TableCommandes className="standby" id="standby" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } liste={standbylist} />
           </TabPanel>
           <TabPanel key="a_encaisser-panel" className="panel" value={openTab} index={1}>
-            <TableCommandes className="a_encaisser" id="a_encaisser" openReglement={ this.encaissementHandle } openPrint={ this.openPrint } liste={a_encaisserlist} />
+            <TableCommandes className="a_encaisser" id="a_encaisser" thiscash={thiscash} openReglement={ this.encaissementHandle } openPrint={ this.openPrint } liste={a_encaisserlist} />
           </TabPanel>
           <TabPanel key="confirmed-panel" className="panel" value={openTab} index={2}>
-            <TableCommandes className="confirmed" id="confirmed" openPrint={ this.openPrint } liste={confirmedlist} />
+            <TableCommandes className="confirmed" id="confirmed" thiscash={thiscash} openPrint={ this.openPrint } liste={confirmedlist} />
           </TabPanel>
         </div>
 

@@ -13,7 +13,8 @@ const mapStateToProps = (state) => {
       loading: getCommandesListLoading(state),
       error: getCommandesListError(state),
       commandeslist: getCommandesList(state),
-      tickets: ['sac','commande', 'cuisine', 'sucré', 'brasserie']
+      tickets: ['sac','commande', 'cuisine', 'sucré', 'brasserie'],
+      thiscash: (state.parametresReducer.parametres.options && state.parametresReducer.parametres.options.caisse) || {}
   }
 }
 

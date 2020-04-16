@@ -27,10 +27,16 @@ function openDrawer() {
 
 // récup des infos
       // -> params imprimante
+      // const imprimante = {
+      //   nom: 'POS Printer',
+      //   connexion: 'usb',
+      //   param: null,
+      //   encoding: 'Cp850'
+      // };
       const imprimante = {
         nom: 'POS Printer',
-        connexion: 'usb',
-        param: null,
+        connexion: 'network',
+        param: '192.168.1.192',
         encoding: 'Cp850'
       };
 
@@ -75,12 +81,19 @@ function printTicket(payload) {
 
     let contenu = {};
 
-    let imprimante = {
+    // let imprimante = {
+    //   nom: 'POS Printer',
+    //   connexion: 'usb',
+    //   param: null,
+    //   encoding: 'Cp850'
+    // };
+    const imprimante = {
       nom: 'POS Printer',
-      connexion: 'usb',
-      param: null,
+      connexion: 'network',
+      param: '192.168.1.192',
       encoding: 'Cp850'
     };
+
     let template = [];
 
     // en fonction du type de ticket demandé
@@ -88,10 +101,16 @@ function printTicket(payload) {
 
       // récup des infos
       // -> params imprimante
+      // imprimante = {
+      //   nom: 'POS Printer',
+      //   connexion: 'usb',
+      //   param: null,
+      //   encoding: 'Cp850'
+      // };
       imprimante = {
         nom: 'POS Printer',
-        connexion: 'usb',
-        param: null,
+        connexion: 'network',
+        param: '192.168.1.192',
         encoding: 'Cp850'
       };
       // -> template ticket
@@ -209,9 +228,11 @@ function printTicket(payload) {
       imprimante = {
         nom: 'Cuisine Printer',
         connexion: 'network',
-        param: '192.168.182.151',
+        param: '192.168.1.192',
+     //   param: '192.168.182.151',
         encoding: 'Cp850'
       };
+      
       // -> template ticket
       template = [
         'cuisine_info', 
@@ -275,10 +296,16 @@ function printTicket(payload) {
 
       // récup des infos
       // -> params imprimante
+      // imprimante = {
+      //   nom: 'POS Printer',
+      //   connexion: 'usb',
+      //   param: null,
+      //   encoding: 'Cp850'
+      // };
       imprimante = {
         nom: 'POS Printer',
-        connexion: 'usb',
-        param: null,
+        connexion: 'network',
+        param: '192.168.1.192',
         encoding: 'Cp850'
       };
       // -> template ticket
@@ -359,10 +386,16 @@ function printPeriodeX(payload={}) {
 
       // récup des infos
       // -> params imprimante
+      // const imprimante = {
+      //   nom: 'POS Printer',
+      //   connexion: 'usb',
+      //   param: null,
+      //   encoding: 'Cp850'
+      // };
       const imprimante = {
         nom: 'POS Printer',
-        connexion: 'usb',
-        param: null,
+        connexion: 'network',
+        param: '192.168.1.192',
         encoding: 'Cp850'
       };
       // -> template ticket
