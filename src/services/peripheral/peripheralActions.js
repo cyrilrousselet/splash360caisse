@@ -87,7 +87,7 @@ function printTicket(payload) {
     //   param: null,
     //   encoding: 'Cp850'
     // };
-    const imprimante = {
+    let imprimante = {
       nom: 'POS Printer',
       connexion: 'network',
       param: '192.168.1.192',
