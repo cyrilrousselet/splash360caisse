@@ -50,6 +50,10 @@ function getCurrentPeriode(params={}) {
   }
 }
 
+function loadCloture(clotureId) {
+  
+}
+
 function makeCloture(params={}) {
   return (dispatch, getState) => {
    
@@ -80,7 +84,7 @@ function makeCloture(params={}) {
           dispatch(commandeActions.archiveCommands({cmd:cloture.archivedcommandesid, clotureId:cloture.clotureId}));
           dispatch({ type: clotureActionTypes.MAKE_CLOTURE, cloture });
           dispatch(getCloturesList());
-  //        dispatch(peripheralActions.printCloture());
+          dispatch(peripheralActions.printCloture());
         }
       )
 
@@ -89,5 +93,7 @@ function makeCloture(params={}) {
 
 export const clotureActions = {
   getCurrentPeriode,
-  makeCloture
+  loadCloture,
+  makeCloture,
+  getCloturesList
 };

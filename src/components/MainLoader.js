@@ -20,6 +20,7 @@ class MainLoader extends React.Component {
       this.props.getCommandesList();
       this.props.getAllActive();
       this.props.getCurrentPeriode();
+      this.props.getCloturesList();
   }
 
   render() {

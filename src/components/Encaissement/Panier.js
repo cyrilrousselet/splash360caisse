@@ -177,6 +177,8 @@ class Panier extends React.Component {
 
     // affichage de la popin "carte de fidelite" si la fidélité est activée
     if (null!==parametres && parametres.hasOwnProperty("financier") && parametres.financier.fidelite_activation) {      
+
+      console.log('fidelite_Activation', parametres.financier.fidelite_activation);
       if (undefined === items || items.length==0) gotoEncaissement();
     }
 

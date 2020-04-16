@@ -23,7 +23,7 @@ function printTest(payload) {
 }
 
 function openDrawer() {
-  return dispatch => {
+  return (dispatch, getState) => {
 
 // récup des infos
       // -> params imprimante
@@ -33,12 +33,17 @@ function openDrawer() {
       //   param: null,
       //   encoding: 'Cp850'
       // };
-      const imprimante = {
-        nom: 'POS Printer',
-        connexion: 'network',
-        param: '192.168.1.192',
-        encoding: 'Cp850'
-      };
+
+    
+      const { imprimantes } = getState().peripheralReducer;
+      const imprimante = Object.values(imprimantes).find(imp=>imp.default);
+      
+      // {
+      //   nom: 'POS Printer',
+      //   connexion: 'network',
+      //   param: '192.168.1.192',
+      //   encoding: 'Cp850'
+      // };
 
     peripheralServices.openDrawer(imprimante)
     .then(
@@ -68,6 +73,7 @@ function printTicket(payload) {
     const types = state.catalogueReducer.ingredientTypes;
     const ingredients = state.catalogueReducer.ingredients;
     const tva = state.catalogueReducer.tva;
+    const { imprimantes, tickets } = state.peripheralReducer;
 
     const caisse = {id:'001'};
     const operateur = cmd.operator;
@@ -87,12 +93,17 @@ function printTicket(payload) {
     //   param: null,
     //   encoding: 'Cp850'
     // };
+
+
+
+
     let imprimante = {
-      nom: 'POS Printer',
-      connexion: 'network',
-      param: '192.168.1.192',
-      encoding: 'Cp850'
+      // nom: 'POS Printer',
+      // connexion: 'network',
+      // param: '192.168.1.192',
+      // encoding: 'Cp850'
     };
+    let ticket = {};
 
     let template = [];
 
@@ -107,12 +118,17 @@ function printTicket(payload) {
       //   param: null,
       //   encoding: 'Cp850'
       // };
-      imprimante = {
-        nom: 'POS Printer',
-        connexion: 'network',
-        param: '192.168.1.192',
-        encoding: 'Cp850'
-      };
+
+      // récup des préf. du ticket et de l'imprimante correspondante
+      ticket = Object.values(tickets).find(tck=>tck.template=='commande');
+      imprimante = Object.values(imprimantes).find(imp=>imp.id==ticket.imprimantes[0]);
+
+      // imprimante = {
+      //   nom: 'POS Printer',
+      //   connexion: 'network',
+      //   param: '192.168.1.192',
+      //   encoding: 'Cp850'
+      // };
       // -> template ticket
       template = [
        // 'logo', 
@@ -224,14 +240,20 @@ function printTicket(payload) {
       
 
       // récup des infos
-      // -> params imprimante
-      imprimante = {
-        nom: 'Cuisine Printer',
-        connexion: 'network',
-        param: '192.168.1.192',
-     //   param: '192.168.182.151',
-        encoding: 'Cp850'
-      };
+    //   // -> params imprimante
+    //   imprimante = {
+    //     nom: 'Cuisine Printer',
+    //     connexion: 'network',
+    //     param: '192.168.1.192',
+    //  //   param: '192.168.182.151',
+    //     encoding: 'Cp850'
+    //   };
+
+
+      // récup des préf. du ticket et de l'imprimante correspondante
+      ticket = Object.values(tickets).find(tck=>tck.template=='partiel');
+      imprimante = Object.values(imprimantes).find(imp=>imp.id==ticket.imprimantes[0]);
+
       
       // -> template ticket
       template = [
@@ -302,12 +324,18 @@ function printTicket(payload) {
       //   param: null,
       //   encoding: 'Cp850'
       // };
-      imprimante = {
-        nom: 'POS Printer',
-        connexion: 'network',
-        param: '192.168.1.192',
-        encoding: 'Cp850'
-      };
+      // imprimante = {
+      //   nom: 'POS Printer',
+      //   connexion: 'network',
+      //   param: '192.168.1.192',
+      //   encoding: 'Cp850'
+      // };
+
+
+      // récup des préf. du ticket et de l'imprimante correspondante
+      ticket = Object.values(tickets).find(tck=>tck.template=='principal');
+      imprimante = Object.values(imprimantes).find(imp=>imp.id==ticket.imprimantes[0]);
+
       // -> template ticket
       template = [
         'sac_info', 
@@ -384,30 +412,21 @@ function printPeriodeX(payload={}) {
 
   return (dispatch, getState) => {
 
-      // récup des infos
-      // -> params imprimante
-      // const imprimante = {
-      //   nom: 'POS Printer',
-      //   connexion: 'usb',
-      //   param: null,
-      //   encoding: 'Cp850'
-      // };
-      const imprimante = {
-        nom: 'POS Printer',
-        connexion: 'network',
-        param: '192.168.1.192',
-        encoding: 'Cp850'
-      };
       // -> template ticket
       const template = [
         'entreprise', 
         'periode_x'
       ];
 
-      const {periode} = getState().clotureReducer;
-      const {impression} = strings.modules.cloture;
+      const { periode } = getState().clotureReducer;
+      const { impression } = strings.modules.cloture;
+      const { imprimantes, tickets } = getState().peripheralReducer;
 
-      const {debut, fin} = periode;
+      // récup des préf. du ticket et de l'imprimante correspondante
+      let ticket = Object.values(tickets).find(tck=>tck.template=='cloture_x');
+      let imprimante = Object.values(imprimantes).find(imp=>imp.id==ticket.imprimantes[0]);
+
+      const { debut, fin } = periode;
       const __debut = format(debut, "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
       const __fin = format(fin, "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
 
@@ -439,10 +458,50 @@ function printPeriodeX(payload={}) {
 }
 
 function printCloture(payload={}) {
-  return (dispatch) => {
+  return (dispatch, getState) => {  
+    
+    // -> template ticket
+    const template = [
+      'entreprise', 
+      'periode_z'
+    ];
 
-    console.warn('TODO: print ticket cloture');
-    return dispatch({ type: peripheralActionTypes.PRINT_PERIODE_Z })
+
+    const { periode } = getState().clotureReducer;
+    const { impression } = strings.modules.cloture;
+    const { imprimantes, tickets } = getState().peripheralReducer;
+
+    // récup des préf. du ticket et de l'imprimante correspondante
+    let ticket = Object.values(tickets).find(tck=>tck.template=='cloture_z');
+    let imprimante = Object.values(imprimantes).find(imp=>imp.id==ticket.imprimantes[0]);
+
+    const { debut, fin } = periode;
+    const __debut = format(debut, "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
+    const __fin = format(fin, "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
+
+
+    const __periode = {...periode, 
+                debut: __debut, 
+                fin: __fin};
+
+    const contenu = {
+      // -> entreprise
+      entreprise: {
+        nom: 'CHICKEN STREET',
+        coordonnees: [ '31, avenue Anatole France', '94600 CHOISY-LE-ROI', 'www.chickenstreet.fr' ],
+        fiscal: [ '844 413 807 RCS Créteil' ]
+      },
+      periode: __periode,
+      strings: impression
+    };
+
+    peripheralServices.printTicket(imprimante, template, contenu)
+    .then(
+      response => {
+        console.log('print Z');
+      }
+    )
+    dispatch({ type: peripheralActionTypes.PRINT_PERIODE_Z });
   }
 }
 

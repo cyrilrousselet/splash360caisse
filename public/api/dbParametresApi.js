@@ -27,16 +27,33 @@ const actions = {
 
 async function _getAll() {
   
-  let __rawdata;
+  let __rawp, __rawi, __rawt;
+
   let __params = await db.parametres.count();
   log.info('count params = '+__params);
   if (__params==0) {
-    __rawdata = await _fillinParametres();
+    __rawp = await _fillinParametres();
   } else {
-    __rawdata = await _findParametres();
+    __rawp = await _findParametres();
+  }
+
+  let __impr = await db.imprimantes.count();
+  log.info('count impr = '+__impr);
+  if (__impr==0) {
+    __rawi = await _fillinImprimantes();
+  } else {
+    __rawi = await _findImprimantes();
+  }
+
+  let __tck = await db.tickets.count();
+  log.info('count tck = '+__tck);
+  if (__tck==0) {
+    __rawt = await _fillinTickets();
+  } else {
+    __rawt = await _findTickets();
   }
   
-  return _parseParametres(__rawdata);
+  return _parseParametres({...__rawp, ...__rawi, ...__rawt});
 }
 
 
@@ -81,11 +98,25 @@ function _parseParametres(_rawdata) {
  * !!! DEV !!!
  * Fill in the DB with fake data from static file
  */
+async function _fillinImprimantes() {
+  const _impr = await db.imprimantes.insert(imprimantes);
+  return { _impr };
+}
+/**
+ * !!! DEV !!!
+ * Fill in the DB with fake data from static file
+ */
+async function _fillinTickets() {
+  const _tck = await db.tickets.insert(tickets);
+  return { _tck };
+}
+/**
+ * !!! DEV !!!
+ * Fill in the DB with fake data from static file
+ */
 async function _fillinParametres() {
   const _param = await db.parametres.insert(parametres);
-  const _impr = await db.imprimantes.insert(imprimantes);
-  const _tck = await db.tickets.insert(tickets);
-  return { _param, _impr, _tck };
+  return { _param };
 }
 
 /**
@@ -93,9 +124,15 @@ async function _fillinParametres() {
  */
 async function _findParametres(prd_criteriae={}) {
   const _param = await db.parametres.find({});
+  return { _param };
+}
+async function _findImprimantes(prd_criteriae={}) {
   const _impr = await db.imprimantes.find({});
+  return { _impr };
+}
+async function _findTickets(prd_criteriae={}) {
   const _tck = await db.tickets.find({});
-  return { _param, _impr, _tck };
+  return { _tck };
 }
 
 
@@ -108,9 +145,10 @@ async function _persistParametres(payload) {
   let _param = await db.parametres.findOne({domaine: payload.domaine, cle: payload.cle});
   if (_param) {
     let __upd = {..._param, ...payload};
-    log.info('persistParametres', __upd);
+    log.info('persistParametres() update', __upd);
     _param = await db.parametres.update({domaine: payload.domaine, cle: payload.cle}, __upd);
   } else {
+    log.info('persistParametres() insert', payload);
     _param = await db.parametres.insert(payload);
   }
 

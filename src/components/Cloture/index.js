@@ -229,7 +229,7 @@ class Cloture extends React.Component {
     if (selection_caisse.id!='allcash') params['caisses'] = [selection_caisse];
     if (selection_operator.id!='allope') params['vendeurs'] = [selection_operator];
     const periode_z = clotureServices.getCurrentPeriode(listeCommandes, catalogue, params);
-  //  console.log(periode_z);
+    console.log(periode_z);
 
     const __strimp = strings.modules.cloture.impression;
 
@@ -326,7 +326,7 @@ class Cloture extends React.Component {
                   </Select>
                 </FormControl>
               </div>
-              <StdButton identifier="btncomptage" elementclass="btncomptage" key="btncomptage" text={(selection_caisse.id!='allcash' || selection_operator.id!='allope') ? strings.modules.cloture.selection.comptagebtn_partiel : strings.modules.cloture.selection.comptagebtn } onClick={ () => {this.openComptage(periode_z) }} />
+              <StdButton identifier="btncomptage" elementclass="btncomptage" key="btncomptage" text={(selection_caisse.id!='allcash' || selection_operator.id!='allope') ? strings.modules.cloture.selection.comptagebtn_partiel : strings.modules.cloture.selection.comptagebtn } disabled={periode_z.cmdtoarchive.length==0} onClick={ () => {this.openComptage(periode_z) }} />
             </div>
             <StdButton identifier="btnx" elementclass="btnx" key="btnx" text={(selection_caisse.id!='allcash' || selection_operator.id!='allope') ? strings.modules.cloture.print_partiel : strings.modules.cloture.print_x } onClick={ () => { console.log('printPeriodeX()'); printPeriodeX() } } />
           </div>
@@ -529,7 +529,7 @@ class Cloture extends React.Component {
                 />
               </div>
             </div>
-            <StdButton identifier="btncloture" elementclass="btncloture" key="btncloture" text={(selection_caisse.id!='allcash' || selection_operator.id!='allope') ? strings.modules.cloture.cloture_partielle : strings.modules.cloture.cloture_z } disabled={comptage==null || periode_z.standby>0} onClick={ () => {this.prepareCloture(Number(prelevement_fv))} } />
+            <StdButton identifier="btncloture" elementclass="btncloture" key="btncloture" text={(selection_caisse.id!='allcash' || selection_operator.id!='allope') ? strings.modules.cloture.cloture_partielle : strings.modules.cloture.cloture_z } disabled={comptage==null || periode_z.standby>0 || periode_z.cmdtoarchive.length==0} onClick={ () => {this.prepareCloture(Number(prelevement_fv))} } />
           </div>
         </div>
         <Comptage 

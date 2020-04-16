@@ -118,10 +118,10 @@ class Comptage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      saisie_carte: '',
-      saisie_ticket: '',
-      saisie_cheque: '',
-      saisie_especes: '',
+      saisie_carte: '0',
+      saisie_ticket: '0',
+      saisie_cheque: '0',
+      saisie_especes: '0',
       error_carte: false,
       error_ticket: false,
       error_cheque: false,
@@ -141,13 +141,13 @@ class Comptage extends React.Component {
     this.keyboardButtonHandler = this.keyboardButtonHandler.bind(this);
     this.closeKeyboard = this.closeKeyboard.bind(this);
     this.getVentilation = this.getVentilation.bind(this);
+    this.checkComptage = this.checkComptage.bind(this);
     this.checkComptageBeforeValidation = this.checkComptageBeforeValidation.bind(this);
     this.openCountTool = this.openCountTool.bind(this);
     this.closeCountTool = this.closeCountTool.bind(this);
     this.validateCountTool = this.validateCountTool.bind(this);
   }
 
-  
 
 
   startSaisie(field, numbersOnly=false) {
@@ -169,13 +169,17 @@ class Comptage extends React.Component {
     const { fieldval, activeField } = this.state;
     const newval = ['saisie_carte','saisie_ticket','saisie_cheque','saisie_especes'].indexOf(activeField)==-1 ? Number(fieldval) : fieldval.replace(',','.');
     this.setState({keyboardOpen: false, [activeField]:newval});
+    setTimeout(()=> {
+      this.checkComptage()
+    },500);
   }
 
-  checkComptageBeforeValidation() {
 
-    const { validComptage, closeComptage, periode } = this.props;
+  checkComptage() {
+
+    const { periode } = this.props;
     const { saisie_carte, saisie_ticket, saisie_cheque, saisie_especes } = this.state;
-    const {especes, carte, ticket, cheque} = this.getVentilation();
+    const { especes, carte, ticket, cheque } = this.getVentilation();
 
 
     console.log(carte.toFixed(2), Number(saisie_carte).toFixed(2));
@@ -221,6 +225,17 @@ class Comptage extends React.Component {
     console.log('checkComptageBeforeValidation()',errors);
 
     this.setState(errors);
+    return valid;
+  }
+
+
+  checkComptageBeforeValidation() {
+
+
+    const { validComptage, closeComptage } = this.props;
+    const { saisie_carte, saisie_ticket, saisie_cheque, saisie_especes } = this.state;
+
+    const valid = this.checkComptage();
 
     if (valid) { 
       let comptage = {

@@ -476,7 +476,8 @@ const hydration = {
     { ticket_id: 'tck1', nom: 'Commande', template: 'commande', imprimantes: ['imp1'] },
     { ticket_id: 'tck2', nom: 'Sac', template: 'principal', imprimantes: ['imp1'] },
     { ticket_id: 'tck3', nom: 'Cuisine', template: 'partiel', imprimantes: ['imp2'] },
-    { ticket_id: 'tck4', nom: 'ClotureX', template: 'cloture_x', imprimantes: ['imp1'] }
+    { ticket_id: 'tck4', nom: 'ClotureX', template: 'cloture_x', imprimantes: ['imp1'] },
+    { ticket_id: 'tck5', nom: 'ClotureZ', template: 'cloture_z', imprimantes: ['imp1'] }
   ],
 
   parametres: [
