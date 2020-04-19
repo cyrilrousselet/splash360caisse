@@ -38,6 +38,10 @@ class Entreprise extends React.Component {
     this.messageHandler = this.messageHandler.bind(this);
   }
 
+  componentDidMount() {
+    this.props.getAll();
+  }
+
 messageHandler(e) {
   this.setState({message_ticket:e.target.value});
 }
@@ -45,6 +49,7 @@ messageHandler(e) {
  render() {
 
   const { message_ticket } = this.state;
+  const { data, updateValeur, getAll } = this.props;
 
   console.log(strings.modules.parametres.submodules.entreprise.options.label.auto_update);
 
@@ -57,7 +62,7 @@ messageHandler(e) {
             id={ `parament-${field}` }
             key={ `${field}-${i}` }
             name={ field }
-            value={ data_ent[field] } 
+            value={ data[field] || '' } 
             placeholder={ strings.modules.parametres.submodules.entreprise.general.placeholder[field] } 
             type='text' 
             readOnly={ true } 
@@ -95,11 +100,18 @@ messageHandler(e) {
             id={ `heure_fin` }
             name={ `heure_fin` }
             className="fieldheure_fin"
-            value={ data_ent.heure_fin } 
-            placeholder='0' 
+            value={ data.heure_fin } 
+            placeholder='00:00' 
             type='text' 
-            readOnly={ false } 
-            onChange={()=>{console.log('click')}}
+            readOnly={ false }
+            onSubmit={(name,value) => {
+              updateValeur({
+                domaine: 'entreprise',
+                cle: name,
+                valeur: value
+              })
+            }}
+            onChange={(value,option)=>void(0)}
             label={ strings.modules.parametres.submodules.entreprise.options.label.heure_fin }
           />
          <div className="caption heure-caption">{ strings.modules.parametres.submodules.entreprise.options.label.heure_fin_caption }</div>

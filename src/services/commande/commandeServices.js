@@ -665,7 +665,7 @@ function archiveCommands(commandesid, clotureId) {
 function setCommandeFromAPI(data, catalogueReducer) {
 
   const commande = getNewCommande(data);
-  commande.status = data.status; // "standby" ou "completed"
+  commande.status = data.status; // "standby" ou "confirmed"
   commande.mode = data.mode; // "emporter", "surplace" ou "livraison"
 
   // on met tous les produits dans le même array

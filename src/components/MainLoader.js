@@ -16,17 +16,31 @@ class MainLoader extends React.Component {
   componentDidMount() {
 
     console.log('MainLoader.componentDidMount()');
-      this.props.getParametres();
-      this.props.getCommandesList();
-      this.props.getAllActive();
-      this.props.getCurrentPeriode();
-      this.props.getCloturesList();
+    
+      // this.props.getParametres();
+      // this.props.getCommandesList();
+      // this.props.getCatalogue();
+      // this.props.getCurrentPeriode();
+      // this.props.getCloturesList();
   }
 
   render() {
-    const { paramLoaded, catLoaded, periLoaded, cloLoaded } = this.props;
+    const { paramLoaded, paramLoading, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, cloLoading } = this.props;
 
-    if (paramLoaded && catLoaded && periLoaded && cloLoaded) {
+    if (!paramLoaded) {
+      this.props.getParametres();
+    }
+    if (paramLoaded && !catLoaded && !catLoading) {
+      this.props.getCatalogue();
+    }
+    if (paramLoaded && catLoaded && !cmdLoaded && !cmdLoading) {
+      this.props.getCommandesList();
+    }
+    if (paramLoaded && catLoaded && cmdLoaded && !cloLoaded && !cloLoading) {
+      this.props.getCloturesList();
+//      this.props.getCurrentPeriode();
+    }
+    if (paramLoaded && catLoaded && cmdLoaded && cloLoaded) {
       this.props.loadingComplete();
     }
     return (      

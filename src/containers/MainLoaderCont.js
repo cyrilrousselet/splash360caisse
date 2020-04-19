@@ -21,20 +21,24 @@ const gotoDashboard = () => {
 
 const mapStateToProps = (state) => {
   return {
+    paramLoading : state.parametresReducer.loading,
     paramLoaded: Object.entries(state.parametresReducer.parametres).length>0,
+    catLoading : state.catalogueReducer.loading,
     catLoaded: Object.entries(state.catalogueReducer.catalogue).length>0,
-    periLoaded: Object.entries(state.peripheralReducer).length>0, 
-    cloLoaded: Object.entries(state.clotureReducer).length>0
+    cmdLoading: state.commandesListReducer.loading,
+    cmdLoaded: Object.entries(state.commandesListReducer.commandeslist).length>0,
+    cloLoading : state.clotureReducer.loading,
+    cloLoaded: Object.entries(state.clotureReducer.clotures).length>0
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   const bound = bindActionCreators({
-    getCommandesList: commandeActions.getCommandesList,
-    getAllActive: catalogueActions.getAllActive,
     getParametres: parametresActions.getAll,
-    getCurrentPeriode: clotureActions.getCurrentPeriode,
+    getCatalogue: catalogueActions.getAllActive,
+    getCommandesList: commandeActions.getCommandesList,
     getCloturesList: clotureActions.getCloturesList,
+    getCurrentPeriode: clotureActions.getCurrentPeriode,
   }, dispatch);
   return {
     ...bound,

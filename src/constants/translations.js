@@ -226,6 +226,7 @@ const data = {
                         },
                         total: 'Total'
                     },
+                    prelevement: 'PRELEVEMENT EN CLOTURE'
                 },
                 derniere: {
                     titre: "Dernière Clôture",
@@ -301,6 +302,10 @@ const data = {
                     standby: {
                         titre: "Commandes en attente",
                         texte: "Vous ne pouvez pas clôturer tant qu'il reste des commandes en attente."
+                    },
+                    cmdnoncloturees: {
+                        titre: "Commandes non clôturées",
+                        texte: "Vous devez clôturer les commandes des jours précédents avant de commencer un nouveau service."
                     }
                 }
             },

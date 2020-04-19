@@ -461,13 +461,25 @@ function printCloture(payload={}) {
   return (dispatch, getState) => {  
     
     // -> template ticket
-    const template = [
+    let template = [
       'entreprise', 
       'periode_z'
     ];
 
+    let periode = {};
+    let prelevement = -1;
+    if (Object.values(payload).length==0) {
+      periode = getState().clotureReducer.periode;
+    } else {
+      periode = payload.periode;
+      prelevement = payload.prelevement;
+      template.push('prelevement');
+    }
 
-    const { periode } = getState().clotureReducer;
+
+    console.log('printCloture()', payload);
+    console.log('printCloture() tpl', template);
+
     const { impression } = strings.modules.cloture;
     const { imprimantes, tickets } = getState().peripheralReducer;
 
@@ -476,8 +488,8 @@ function printCloture(payload={}) {
     let imprimante = Object.values(imprimantes).find(imp=>imp.id==ticket.imprimantes[0]);
 
     const { debut, fin } = periode;
-    const __debut = format(debut, "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
-    const __fin = format(fin, "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
+    const __debut = format(new Date(debut), "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
+    const __fin = format(new Date(fin), "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
 
 
     const __periode = {...periode, 
@@ -492,6 +504,7 @@ function printCloture(payload={}) {
         fiscal: [ '844 413 807 RCS Créteil' ]
       },
       periode: __periode,
+      prelevement: prelevement,
       strings: impression
     };
 

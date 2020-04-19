@@ -28,6 +28,7 @@ const mapDispatchToProps = (dispatch) => {
     // getParametres: parametresActions.getAll,
     getCurrentPeriode: clotureActions.getCurrentPeriode,
     printPeriodeX: peripheralActions.printPeriodeX,
+    printLastCloture: peripheralActions.printCloture,
     makeCloture: clotureActions.makeCloture
   }, dispatch);
   return {

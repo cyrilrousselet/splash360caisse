@@ -52,7 +52,6 @@ class Financier extends React.Component {
 
 
   componentDidMount() {
-    console.log('Parametres/Financier.componentDidMount()');
     this.props.getAll();
   }
 

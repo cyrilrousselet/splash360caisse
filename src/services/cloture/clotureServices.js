@@ -35,7 +35,6 @@ function getCurrentPeriode(commandes, catalogue, params) {
 
       let __valid = true;
 
-      console.log('cmd',cmd);
 
 
       // si on ne récupère que les cmd non archivées (cas du Z)
@@ -49,13 +48,24 @@ function getCurrentPeriode(commandes, catalogue, params) {
 
       // periode
       let updatedAt = parseJSON(cmd.updatedAt);
-      if (isAfter(updatedAt, params.fin) || isBefore(updatedAt, params.debut)) __valid = false;
+      let createdAt = parseJSON(cmd.createdAt);
+      if (params.extract=='x') {
+//        if (isAfter(updatedAt, params.fin) || isBefore(updatedAt, params.debut)) __valid = false;
+        if (isAfter(createdAt, params.fin) || isBefore(createdAt, params.debut)) __valid = false;
+      } 
+      else if (params.extract=='z') {
+      // --- /!\ on récupère aussi les commandes non clôturées des périodes précédentes (pour n'en laisser aucune)
+      // (donc on invalide uniquement les commandes ultérieures)
+     //   if (isAfter(updatedAt, params.fin)) __valid = false;
+        if (isAfter(createdAt, params.fin)) __valid = false;
+      }
 
       if (__valid && cmd.status!='confirmed') __numStandby++;
 
       // status
       if (cmd.status!='confirmed') __valid = false;
 
+      console.log('cmd valid='+__valid,cmd);
       return __valid;
     });
 

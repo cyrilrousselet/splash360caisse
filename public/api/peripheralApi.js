@@ -226,6 +226,9 @@ function _launchPrint(template, printer, contenu) {
     else if ('periode_z' === section) {
       _printPeriodeZ(printer, contenu.periode, contenu.strings);
     }
+    else if ('prelevement' === section) {
+      _printPrelevement(printer, contenu.prelevement, contenu.strings);
+    }
     else if ('cuisine_info' === section) {
       _printCuisineInfo(printer, {info: contenu.info, commande:{id:contenu.detail.id, mode:contenu.detail.mode}}, contenu.strings);
     }
@@ -796,6 +799,17 @@ function _printPeriodeX(printer, data, strings) {
       {text: Number(moytotal).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
     ]);
         
+}
+
+function _printPrelevement(printer, data, strings) {
+  printer
+      .size(1,1)
+      .drawLine()
+      .align('CT')
+      .tableCustom([
+        {text: strings.prelevement, cols:24, align:'LEFT'},
+        {text: Number(data).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
+      ]);
 }
 
 

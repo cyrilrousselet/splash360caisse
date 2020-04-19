@@ -224,6 +224,12 @@ const hydration = {
       { step_id: 'step22',  produit: 'pdt103', titre: 'VOULEZ VOUS UN EXTRA', regles: [{type: 'icat35',regle: '{0,1}',supplement: '0'}], weight: 4 },
       { step_id: 'step23',  produit: 'pdt103', titre: 'CHOISISSEZ VOTRE BOISSON', regles: [{type: 'icat33',regle: '{1,1}',supplement: '0'}], weight: 5 },
       { step_id: 'step24',  produit: 'pdt103', titre: 'DESSERTS', regles: [{type: 'icat29',regle: '{0,1}',supplement: '0'}], weight: 6 },
+      { step_id: 'step252',  produit: 'pdt104', titre: 'CHOISISSEZ JUSQU’A 2 SAUCES', regles: [{type: 'icat31',regle: '{0,2}',supplement: '0'}], weight: 1 },
+      { step_id: 'step253',  produit: 'pdt104', titre: 'AJOUTEZ VOTRE COMPOSITION', regles: [{type: 'icat32',regle: '{0,6}',supplement: '0'}], weight: 2 },
+      { step_id: 'step254',  produit: 'pdt104', titre: 'SOUHAITEZ VOUS DES SUPPLEMENTS', regles: [{type: 'icat34',regle: '{0,9}',supplement: '0'}], weight: 3 },
+      { step_id: 'step255',  produit: 'pdt104', titre: 'VOULEZ VOUS UN EXTRA', regles: [{type: 'icat35',regle: '{0,1}',supplement: '0'}], weight: 4 },
+      { step_id: 'step256',  produit: 'pdt104', titre: 'CHOISISSEZ VOTRE BOISSON', regles: [{type: 'icat33',regle: '{1,1}',supplement: '0'}], weight: 5 },
+      { step_id: 'step257',  produit: 'pdt104', titre: 'DESSERTS', regles: [{type: 'icat29',regle: '{0,1}',supplement: '0'}], weight: 6 },
       { step_id: 'step25',  produit: 'pdt105', titre: 'CHOISISSEZ JUSQU’A 2 SAUCES', regles: [{type: 'icat31',regle: '{0,2}',supplement: '0'}], weight: 1 },
       { step_id: 'step26',  produit: 'pdt105', titre: 'AJOUTEZ VOTRE COMPOSITION', regles: [{type: 'icat32',regle: '{0,6}',supplement: '0'}], weight: 2 },
       { step_id: 'step27',  produit: 'pdt105', titre: 'SOUHAITEZ VOUS DES SUPPLEMENTS', regles: [{type: 'icat34',regle: '{0,9}',supplement: '0'}], weight: 3 },
@@ -481,7 +487,8 @@ const hydration = {
   ],
 
   parametres: [
-    { domaine: 'entreprise', cle: 'denomination_sociale', valeur: 'Chicken Street'},
+    { domaine: 'entreprise', cle: 'denomination', valeur: 'Chicken Street'},
+    { domaine: 'entreprise', cle: 'heure_fin', valeur: '00:00' },
     { domaine: 'financier', cle: 'fidelite_activation', valeur: true},
     { domaine: 'peripheriques', cle: 'imprimantes', valeur: ''},
     { domaine: 'options', cle: 'caisse', valeur: {id: 'cash0', nom: 'Caisse 1'} },

@@ -57,6 +57,7 @@ class Cloture extends React.Component {
     this.keyboardButtonHandler = this.keyboardButtonHandler.bind(this);
     this.closeKeyboard = this.closeKeyboard.bind(this);
     this.prepareCloture = this.prepareCloture.bind(this);
+    this.printLastCloture = this.printLastCloture.bind(this);
   }
 
   componentDidMount() {
@@ -211,6 +212,11 @@ class Cloture extends React.Component {
     }
   }
 
+  printLastCloture() {
+    const { clotures, printLastCloture } = this.props;
+    printLastCloture(Object.values(clotures).pop());
+  }
+
   render() {
 
     const { periode, clotures, error, loading, printPeriodeX, listeCommandes, catalogue, fonddecaissetheo } = this.props;
@@ -306,7 +312,7 @@ class Cloture extends React.Component {
                 {(lastCloture==null && 
                   <div className="no-item">{ strings.modules.cloture.derniere.aucune }</div>  
                 )}
-                <StdButton identifier="btnreprint" elementclass="btnreprint" key="btnreprint" text="Ré-imprimer" disabled={null==lastCloture} onClick={ () => void(0) } />
+                <StdButton identifier="btnreprint" elementclass="btnreprint" key="btnreprint" text="Ré-imprimer" disabled={null==lastCloture} onClick={ () => { this.printLastCloture()} } />
               </div>
               <div className="zone-selecteur">
                 <div className="label">{ strings.modules.cloture.selection.caisse }</div>

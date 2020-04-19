@@ -3,8 +3,16 @@ import { clotureServices } from './clotureServices';
 import { commandeActions } from '../commande/commandeActions';
 import { peripheralActions } from '../peripheral/peripheralActions';
 
-import { startOfToday, endOfToday } from 'date-fns';
+import { startOfToday, endOfToday, getHours, add, sub, formatISO } from 'date-fns';
+import { differenceInMinutes } from 'date-fns/esm';
 
+import history from '../../helpers/history';
+import paths from '../../constants/routes.json';
+
+import LocalizedStrings from 'react-localization';
+import {data} from '../../constants/translations';
+import Swal from 'sweetalert2';
+const strings = new LocalizedStrings(data);
 
 function getCloturesList(params={}) {
 
@@ -32,13 +40,56 @@ function getCurrentPeriode(params={}) {
 
     console.log(params);
 
+    const { heure_fin } = entreprise;
+    const hfin_ar = heure_fin.split(':');
+
+    // début / fin de la période :
+    let periode_start = startOfToday();
+    let periode_end = endOfToday();
+    // si l'heure de fin définie est différente de minuit
+    if (heure_fin!="0:00") {
+      // si l'heure actuelle est < à l'heure de fin, le début était hier
+      if (differenceInMinutes(new Date(), new Date().setHours(hfin_ar[0],hfin_ar[1]))<0) {
+        periode_start = sub(new Date(), {hours: 24}).setHours(hfin_ar[0],hfin_ar[1]);
+        periode_end = new Date().setHours(hfin_ar[0],hfin_ar[1]);
+      }
+      // si l'heure actuelle est > à l'heure de fin, le début était ce aujourd'hui
+      else {
+        periode_start = new Date().setHours(hfin_ar[0],hfin_ar[1]);
+        periode_end = add(new Date(), {hours: 24}).setHours(hfin_ar[0],hfin_ar[1]);
+      }
+    }
+    
+    // récup. cmd non clôturées
+    const cmdopen = Object.values(commandeslist).filter(cmd=>(!cmd.hasOwnProperty('archived') || cmd.archived==null));
+
+    // si les cmd non clôt. proviennent d'une période précédente.
+    if (cmdopen.length>0) {
+      const pastcmdopen = cmdopen.find(oc=>differenceInMinutes(new Date(oc.updatedAt), periode_start)<0);
+      if (pastcmdopen) {
+        dispatch({ type: clotureActionTypes.PREVIOUS_PERIOD_ERROR });
+
+        Swal.fire({
+          title: strings.modules.cloture.alerte.cmdnoncloturees.titre,
+          text: strings.modules.cloture.alerte.cmdnoncloturees.texte,
+          focusConfirm: true,
+          showCancelButton: false,
+          customClass: 'differenterror',
+          confirmButtonText: 'OK',
+          buttonsStyling: false 
+        }).then((result)=> {
+       //   history.push(paths.CLOTURE);
+        });
+      }
+    }
+
     const default_params =  {
       user: state.authentication.user,
       caisses: [], //[{id:0, nom: 'caisse 0'}],
       vendeurs: [], //[state.authentication.user],
       fdcaisse: (financier && financier.fonddecaisse_activation) ? Number(financier.fonddecaisse_montant) : 0,
-      debut: startOfToday(),
-      fin: endOfToday(),
+      debut: periode_start,
+      fin: periode_end,
       extract: 'x'
     };
 
@@ -84,7 +135,7 @@ function makeCloture(params={}) {
           dispatch(commandeActions.archiveCommands({cmd:cloture.archivedcommandesid, clotureId:cloture.clotureId}));
           dispatch({ type: clotureActionTypes.MAKE_CLOTURE, cloture });
           dispatch(getCloturesList());
-          dispatch(peripheralActions.printCloture());
+          dispatch(peripheralActions.printCloture(cloture));
         }
       )
 
