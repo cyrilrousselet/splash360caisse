@@ -26,9 +26,9 @@ const mapStateToProps = (state) => {
     catLoading : state.catalogueReducer.loading,
     catLoaded: Object.entries(state.catalogueReducer.catalogue).length>0,
     cmdLoading: state.commandesListReducer.loading,
-    cmdLoaded: Object.entries(state.commandesListReducer.commandeslist).length>0,
+    cmdLoaded: Object.entries(state.commandesListReducer).length>0,
     cloLoading : state.clotureReducer.loading,
-    cloLoaded: Object.entries(state.clotureReducer.clotures).length>0
+    cloLoaded: Object.entries(state.clotureReducer).length>0
   }
 }
 
