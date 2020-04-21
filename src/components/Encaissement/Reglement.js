@@ -115,18 +115,21 @@ class Reglement extends React.Component {
     const { reste, rendu } = this.updateValeurs();
     console.log(reste, rendu);
     if (reste==0) {
+      if (this.props.commande.status=='pending') {
+        this.props.commande.end = new Date();
+        this.props.commande.chrono = Math.round(differenceInMilliseconds(this.props.commande.end, this.props.commande.start)/10)/100;
+      }
+      this.props.commande.status = 'confirmed';
+
       console.warn('!!! DEV - rétablir l’impression des tickets');
       if (!isDev) {
         this.props.printTicket('commande');
         this.props.printTicket('sac');
         this.props.printTicket('cuisine');
       }
-      if (this.props.commande.status=='pending') {
-        this.props.commande.end = new Date();
-        this.props.commande.chrono = Math.round(differenceInMilliseconds(this.props.commande.end, this.props.commande.start)/10)/100;
-      }
-      this.props.commande.status = 'confirmed';
+
       this.props.validateCommande(this.props.commande);
+
     }
 
     this.props.closeReglement();

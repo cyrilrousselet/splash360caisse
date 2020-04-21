@@ -107,6 +107,21 @@ function printTicket(payload) {
 
     let template = [];
 
+
+
+    // gestion du numéro de commande (s'il en a un, sinon -> ticketId)
+    let cmdnumero = cmd.ticketId;
+    if (cmd.numero) {
+      // si le numéro doit être affiché en hexadécimal
+      if (cmd.numero.hex==true) {
+        cmdnumero = cmd.numero.value.toString(16);
+      }
+      else {
+        cmdnumero = cmd.numero.value;
+      }
+    }
+
+
     // en fonction du type de ticket demandé
     if (payload=='commande') {
 
@@ -194,6 +209,7 @@ function printTicket(payload) {
       
 
       const commande = {
+        numero: cmdnumero,
         id: cmd.ticketId,
         date: `${date} à ${heure}`,
         articles: articles,
@@ -293,6 +309,7 @@ function printTicket(payload) {
 
 
       const cmdcuisine = {
+        numero: cmdnumero,
         id: cmd.ticketId,
         mode: cmd.mode,
         date: `${date} à ${heure}`,
@@ -374,6 +391,7 @@ function printTicket(payload) {
 
 
       const cmdcuisine = {
+        numero: cmdnumero,
         id: cmd.ticketId,
         mode: cmd.mode,
         date: `${date} à ${heure}`,

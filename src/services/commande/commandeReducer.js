@@ -3,7 +3,8 @@ import { commandeActionTypes } from './commandeActionTypes';
 const initialState = {
   loading: false,
   error: null,
-  commande: {}
+  commande: {},
+  numero: JSON.parse(localStorage.getItem('numero'))
 }
 
 export function commandeReducer(state = initialState, action) {
@@ -191,13 +192,25 @@ export function commandeReducer(state = initialState, action) {
           error: action.error
         };
     
-
     case commandeActionTypes.VALIDATE_COMMANDE_SUCCESS:
         return {
           ...state,
           loading: false,
           error: null,
           commande: action.commande
+        };
+    
+    case commandeActionTypes.SET_NEW_NUMERO:
+        return {
+          ...state,
+          commande: {...commande, numero: action.newnumero},
+          numero: action.newnumero
+        }
+
+    case commandeActionTypes.NEW_NUMERO:
+        return {
+          ...state,
+          numero: action.numero
         };
 
     default:

@@ -38,7 +38,7 @@ function getCurrentPeriode(params={}) {
     const {commandeslist} = state.commandesListReducer;
     const {financier, entreprise} = state.parametresReducer.parametres;
 
-    console.log(params);
+  //  console.log(params);
 
     const { heure_fin } = entreprise;
     const hfin_ar = heure_fin.split(':');
@@ -113,7 +113,7 @@ function makeCloture(params={}) {
     const {commandeslist} = state.commandesListReducer;
     const {financier, entreprise} = state.parametresReducer.parametres;
 
-    console.log(commandeslist);
+  //  console.log(commandeslist);
 
     const default_params =  {
       user: state.authentication.user,

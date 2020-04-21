@@ -34,7 +34,8 @@ const mapDispatchToProps = (dispatch) => {
     standByCommande: commandeActions.standByCommande,
     livraisonCommande: commandeActions.livraisonCommande,
     deleteCommande: commandeActions.deleteCommande,
-    openDrawer: peripheralActions.openDrawer
+    setNewNumero: commandeActions.setNewNumero,
+    openDrawer: peripheralActions.openDrawer,
   }, dispatch);
   return {
     ...binded,

@@ -19,7 +19,7 @@ class Dashboard extends Component {
   }
 
   componentDidMount() {
-    console.log('Dashboard.componentDidMount()');
+  //  console.log('Dashboard.componentDidMount()');
     this.props.getCommandesList();
     // this.props.getAllActive();
     // this.props.getParametres();
@@ -61,7 +61,7 @@ class Dashboard extends Component {
     
     const ca_eval = "good";
 
-    console.log(ca);
+  //  console.log(ca);
 
     return (
       <div className="Dashboard">

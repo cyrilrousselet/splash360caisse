@@ -1,6 +1,6 @@
 import { commandeActionTypes } from './commandeActionTypes';
 import { commandeServices } from './commandeServices';
-import { differenceInMilliseconds } from 'date-fns';
+import { differenceInMilliseconds, sub, differenceInMinutes, isBefore, endOfYesterday } from 'date-fns';
 
 
 
@@ -17,6 +17,19 @@ function getCommandesList(params={}) {
     .catch(
       error => { dispatch({ type: commandeActionTypes.GET_ALLCOMMANDES_FAILURE, error: error.toString() }) }
     );
+  }
+}
+
+
+function setNewNumero() {
+
+  return (dispatch, getState) => {
+
+    const { numero } = getState().commandeReducer; 
+
+    const newnumero = commandeServices.getNewNumero( getState().parametresReducer.parametres, numero);
+    dispatch({ type: commandeActionTypes.SET_NEW_NUMERO, newnumero });
+
   }
 }
 
@@ -53,6 +66,7 @@ function getCommande(commandeId=null) {
   }
 }
 
+// payload = commande à sauvegarder
 function validateCommande(payload) {
   return (dispatch, getState) => {
 
@@ -61,6 +75,12 @@ function validateCommande(payload) {
    // payload.status = 'confirmed';
     const catalogueReducer = getState().catalogueReducer;
     const { caisse } = getState().parametresReducer.parametres.options;
+
+    if (payload.numero==null) { 
+      const numero = commandeServices.getNewNumero(getState().parametresReducer.parametres, getState().commandeReducer.numero);
+      payload.numero = numero;
+      dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
+    }
     
     return commandeServices.saveCommande(payload, catalogueReducer)
     .then(
@@ -100,6 +120,12 @@ function standByCommande(payload) {
     payload.chrono = Math.round(differenceInMilliseconds(payload.end, payload.start)/10)/100;
     console.log(payload);
     const state = getState();
+
+    if (payload.numero==null) { 
+      const numero = commandeServices.getNewNumero(state.parametresReducer.parametres, state.commandeReducer.numero);
+      payload.numero = numero;
+      dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
+    }
     
     commandeServices.saveCommande(payload, state.catalogueReducer)
     .then(
@@ -131,6 +157,12 @@ function livraisonCommande(payload) {
     payload.chrono = Math.round(differenceInMilliseconds(payload.end, payload.start)/10)/100;
     console.log(payload);
     const state = getState();
+
+    if (payload.numero==null) { 
+      const numero = commandeServices.getNewNumero(state.parametresReducer.parametres, state.commandeReducer.numero);
+      payload.numero = numero
+      dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
+    }
     
     commandeServices.saveCommande(payload, state.catalogueReducer)
     .then(
@@ -335,7 +367,7 @@ function setCommandeFromAPI(payload) {
 
     const state = getState();
     console.log(payload);
-    const commande = commandeServices.setCommandeFromAPI(payload.data, state.catalogueReducer);
+    const commande = commandeServices.setCommandeFromAPI(payload.data, state.catalogueReducer, state.parametresReducer.parametres, state.commandeReducer.numero);
 
     commandeServices.sendTicketId(commande.ticketId, payload.response);
 
@@ -344,6 +376,8 @@ function setCommandeFromAPI(payload) {
       confirm => {
         dispatch(getCommandesList());
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
+        const { numero } = commande;
+        dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
       },
       error => {
         console.log(error);
@@ -357,24 +391,25 @@ function setCommandeFromAPI(payload) {
 
 
 export const commandeActions = {
+  getCommandesList,
+  setNewNumero,
   getCommande,
+  validateCommande,
+  validateCommandeAndUpdateList,
+  standByCommande,
+  livraisonCommande,
   addProduit,
   updateProduit,
+  addIngredient,
+  removeIngredient,
+  noIngredientForStep,
+  completeStep,
   updateCommande,
   deleteCommande,
   addReglement,
   removeReglement,
   addRendu,
   removeRendu,
-  validateCommande,
-  standByCommande,
-  livraisonCommande,
-  getCommandesList,
-  validateCommandeAndUpdateList,
-  addIngredient,
-  removeIngredient,
   archiveCommands,
-  setCommandeFromAPI,
-  noIngredientForStep,
-  completeStep
+  setCommandeFromAPI
 };

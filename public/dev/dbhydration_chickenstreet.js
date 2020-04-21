@@ -103,7 +103,7 @@ const hydration = {
       { produit_id: 'pdt101', groupe: 'cat15', active: 1, nom: 'MENU NAAN IMPERIAL', prix: '7.9', tva: 'tva1', composition: [], weight: 8, color: 'jauneorange' },
       { produit_id: 'pdt102', groupe: 'cat15', active: 1, nom: 'MENU NAAN STEAK', prix: '6.9', tva: 'tva1', composition: [], weight: 1, color: 'marron' },
       { produit_id: 'pdt103', groupe: 'cat15', active: 1, nom: 'MENU NAAN TENDERS', prix: '6.9', tva: 'tva1', composition: [], weight: 2, color: 'jauneorange' },
-      { produit_id: 'pdt104', groupe: 'cat15', active: 1, nom: 'NAAN TENDERS STEAK', prix: '7.9', tva: 'tva1', composition: [], weight: 10, color: 'orange' },
+      { produit_id: 'pdt104', groupe: 'cat15', active: 1, nom: 'MENU NAAN TENDERS STEAK', prix: '7.9', tva: 'tva1', composition: [], weight: 10, color: 'orange' },
       { produit_id: 'pdt105', groupe: 'cat15', active: 1, nom: 'MENU NAAN FARMER', prix: '8.5', tva: 'tva1', composition: [], weight: 11, color: 'violet' },
       { produit_id: 'pdt106', groupe: 'cat15', active: 1, nom: 'MENU NAAN MIX', prix: '8.5', tva: 'tva1', composition: [], weight: 12, color: 'rose' },
       { produit_id: 'pdt107', groupe: 'cat15', active: 1, nom: 'MENU NAAN THAI', prix: '7.5', tva: 'tva1', composition: [], weight: 6, color: 'orange' },
@@ -491,6 +491,9 @@ const hydration = {
     { domaine: 'entreprise', cle: 'heure_fin', valeur: '00:00' },
     { domaine: 'financier', cle: 'fidelite_activation', valeur: true},
     { domaine: 'peripheriques', cle: 'imprimantes', valeur: ''},
+    { domaine: 'commandes', cle: 'numerotation_start', valeur: '0'},
+    { domaine: 'commandes', cle: 'numerotation_max', valeur: '200'},
+    { domaine: 'commandes', cle: 'numerotation_hex', valeur: false},
     { domaine: 'options', cle: 'caisse', valeur: {id: 'cash0', nom: 'Caisse 1'} },
     { domaine: 'options', cle: 'canaux', valeur: [{ids: ['cash0','cash1'], nom: 'caisse'}, {ids: ['borne1'], nom: 'borne'}, {ids: ['wf1'], nom: 'wifi-order'}] }
   ]

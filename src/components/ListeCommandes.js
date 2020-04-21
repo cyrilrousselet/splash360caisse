@@ -318,8 +318,17 @@ class ListeCommandes extends React.Component {
     let a_encaisserlist = [], standbylist = [], confirmedlist = [];
     
     for (let [key, value] of Object.entries(commandeslist)) {
+
+      let cmdnum = value.ticketId;
+      if (value.numero) {
+        cmdnum = value.numero.value;
+        if (value.numero.hex==true) {
+          cmdnum = value.numero.value.toString(16);
+        }
+      }
+
       let cmd = {
-        id: value.ticketId,
+        id: cmdnum,
         createdAt: value.createdAt,
         date: format(new Date(value.createdAt), "d MMM yyyy", { locale: this.locale }),
         heure: format(new Date(value.createdAt), "H:mm:ss"),

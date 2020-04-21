@@ -11,7 +11,6 @@ const initialState = {
 };
 
 export function catalogueReducer(state = initialState, action) {
-console.log(action);
 
   switch (action.type) {
     case catalogueActionTypes.GETALL_ACTIVE_REQUEST:

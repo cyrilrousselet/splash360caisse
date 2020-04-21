@@ -45,7 +45,7 @@ const mapDispatchToProps = (dispatch) => {
     printTest: peripheralActions.printTest,
     printTicket: peripheralActions.printTicket,
     openDrawer: peripheralActions.openDrawer,
-    closeDrawer: peripheralActions.closeDrawer,
+    closeDrawer: peripheralActions.closeDrawer
   }, dispatch);
 }
 

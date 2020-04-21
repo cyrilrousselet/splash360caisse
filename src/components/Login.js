@@ -96,7 +96,6 @@ class Login extends React.Component {
     }
 
     const connectBtnHandler = () => {
-      console.log('connectBtnHandler', hasUsers);
       // dans le cas où la page de login serait utilisée en popin
       if (this.props.inPopin) {
         this.props.popinAction()

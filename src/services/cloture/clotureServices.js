@@ -65,7 +65,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
       // status
       if (cmd.status!='confirmed') __valid = false;
 
-      console.log('cmd valid='+__valid,cmd);
+    //  console.log('cmd valid='+__valid,cmd);
       return __valid;
     });
 

@@ -230,13 +230,13 @@ function _launchPrint(template, printer, contenu) {
       _printPrelevement(printer, contenu.prelevement, contenu.strings);
     }
     else if ('cuisine_info' === section) {
-      _printCuisineInfo(printer, {info: contenu.info, commande:{id:contenu.detail.id, mode:contenu.detail.mode}}, contenu.strings);
+      _printCuisineInfo(printer, {info: contenu.info, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode}}, contenu.strings);
     }
     else if ('cuisine_detail' ===  section) {
       _printCuisineDetail(printer, contenu.detail, contenu.strings);
     }
     else if ('sac_info' === section) {
-      _printSacInfo(printer, {info: contenu.info, commande:{id:contenu.detail.id, mode:contenu.detail.mode}}, contenu.strings);
+      _printSacInfo(printer, {info: contenu.info, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode}}, contenu.strings);
     }
     else if ('sac_detail' ===  section) {
       _printSacDetail(printer, contenu.detail, contenu.strings);
@@ -265,6 +265,11 @@ function _printCuisineInfo(printer, data, strings) {
     .style('B')
     .size(1,2)
     .text(strings.titre)
+    .size(1,1)
+    .drawLine()
+    .style('B')
+    .size(2,2)
+    .text(`#${data.commande.numero}`)
     .size(1,1)
     .drawLine()
     .style('NORMAL')
@@ -333,6 +338,11 @@ function _printSacInfo(printer, data, strings) {
     .style('B')
     .size(1,2)
     .text(strings.titre)
+    .size(1,1)
+    .drawLine()
+    .style('B')
+    .size(2,2)
+    .text(`#${data.commande.numero}`)
     .size(1,1)
     .drawLine()
     .style('NORMAL')
@@ -420,6 +430,9 @@ function _printCommande(printer, data, strings) {
   printer
     .align('CT')
     .drawLine()
+    .style('B')
+    .size(2,2)
+    .text(`#${data.numero}`)
     .font('A')
     .size(1,1)
     .style('NORMAL')

@@ -183,9 +183,11 @@ class Panier extends React.Component {
     }
 
     const attenteHandler = (event) => {
+      this.props.setNewNumero();
       standByCommande(this.props.commande);
     }
     const livraisonHandler = (event) => {
+      this.props.setNewNumero();
       livraisonCommande(this.props.commande);
     }
 
@@ -197,6 +199,11 @@ class Panier extends React.Component {
       openDrawer();
     }
 
+    const openReglementHandler = () => {
+      this.props.setNewNumero();
+      openReglement();
+    }
+ 
     return (
       <div className={ `Panier ${open && 'reglement-ouvert'}` }>
         <div className="header">
@@ -274,7 +281,7 @@ class Panier extends React.Component {
             <StdButton identifier='livraison' elementclass={ `mode mode-livraison ${(('livraison'===mode) && 'active' : '')}` } disabled={ open } icon={ false } text={ strings.modules.encaissement.panier.mode.livraison } onClick={(value) => { updateCommande({mode:value}) }} />
           </div>
           <div className="actions">
-            <StdButton identifier='encaisser' elementclass="action action-encaisser" disabled={ !__encaissable || open } icon={ false } text={ ('livraison'===mode)?strings.modules.encaissement.panier.action.valider:strings.modules.encaissement.panier.action.encaissement } onClick={ ()=> { ('livraison'===mode)?livraisonHandler():openReglement() }} />
+            <StdButton identifier='encaisser' elementclass="action action-encaisser" disabled={ !__encaissable || open } icon={ false } text={ ('livraison'===mode)?strings.modules.encaissement.panier.action.valider:strings.modules.encaissement.panier.action.encaissement } onClick={ ()=> { ('livraison'===mode)?livraisonHandler():openReglementHandler() }} />
             <StdButton identifier='tiroir' elementclass="action action-tiroir" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.tiroir } onClick={ tiroirHandler } />
             <StdButton identifier='attente' elementclass="action action-attente" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.attente } onClick={ attenteHandler } />
             <StdButton identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.reprise } onClick={gotoListeCommandes} />
