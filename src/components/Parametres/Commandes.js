@@ -174,6 +174,10 @@ class Commandes extends React.Component {
     this.closeEdit = this.closeEdit.bind(this);
     this.resetNumero = this.resetNumero.bind(this);
     this.saveType = this.saveType.bind(this);
+    this.numerotationHexaUpdate = this.numerotationHexaUpdate.bind(this);
+  }
+  componentDidMount() {
+    this.props.getAll();
   }
  
   openEdit(typeid=null) {
@@ -195,10 +199,34 @@ class Commandes extends React.Component {
     console.log(type);
   //  this.setState({editOpen: false});
   }
+  numerotationHexaUpdate(isChecked) {
+    const { updateValeur, data, setNewNumero } = this.props;
+    const { numerotation_start, numerotation_max } = data;
+    let nummax = isChecked ? parseInt(numerotation_max) + 1000 : parseInt(numerotation_max) - 1000;
+    console.log(numerotation_max, nummax);
+    updateValeur([
+      {
+        domaine: 'commandes',
+        cle: 'numerotation_start',
+        valeur: isChecked ? '1000' : '1'
+      },
+      {
+        domaine: 'commandes',
+        cle: 'numerotation_max',
+        valeur: nummax.toString()
+      },
+      {
+        domaine: 'commandes',
+        cle: 'numerotation_hex',
+        valeur: isChecked
+      }
+    ]);
+  }
 
   render() {
 
     const { commandtype, editOpen, currentNumero } = this.state;
+    const { data, lastnumero, updateValeur, getAll, setNewNumero } = this.props;
    
     return (
       <div className="Commandes subcontent">
@@ -212,36 +240,63 @@ class Commandes extends React.Component {
         <div className="subttl">{ strings.modules.parametres.submodules.commandes.numero.nom }</div>
         <div className="numero-wrapper">
           <LabelledField 
-              id={ `debut` }
-              name={ `debut` }
-              className="fielddebut"
-              value={ 1 } 
+              id={ `numerotation_start` }
+              name={ `numerotation_start` }
+              className="fieldnumerotation_start"
+              value={ data.numerotation_start } 
               placeholder='1' 
               type='text' 
               readOnly={ false } 
-              onChange={()=>{console.log('click')}}
+              onChange={(value,option)=>void(0)}
+              onSubmit={(name,value) => {
+                updateValeur({
+                  domaine: 'commandes',
+                  cle: name,
+                  valeur: value
+                })
+              }}
               label={ strings.modules.parametres.submodules.commandes.numero.label.debut }
             />
+            <LabelledField 
+                id={ `numerotation_max` }
+                name={ `numerotation_max` }
+                className="fieldnumerotation_max"
+                value={ data.numerotation_max } 
+                placeholder='1' 
+                type='text' 
+                readOnly={ false } 
+                onChange={(value,option)=>void(0)}
+                onSubmit={(name,value) => {
+                  updateValeur({
+                    domaine: 'commandes',
+                    cle: name,
+                    valeur: value
+                  })
+                }}
+                label={ strings.modules.parametres.submodules.commandes.numero.label.max }
+              />
           <div className="currentnum-wrapper">
             <LabelledField
               id={ `compteur` }
               name={ `compteur` }
               className="fieldcompteur"
-              value={ currentNumero } 
+              value={ lastnumero && lastnumero.value } 
               placeholder='0' 
               type='text' 
               readOnly={ true } 
               onChange={()=>{console.log('click')}}
               label={ strings.modules.parametres.submodules.commandes.numero.label.compteur }
               />
-            <div className="btn-reset" onClick={this.resetNumero}>{ strings.modules.parametres.submodules.commandes.numero.label.reset }</div>
+            <div className="btn-reset" onClick={()=>{ setNewNumero(true) }}>{ strings.modules.parametres.submodules.commandes.numero.label.reset }</div>
           </div>
           <SwitchCheckbox
-            isChecked={ false } 
-            key={`hexa`}
-            name={ `hexa` } 
+            isChecked={ data.numerotation_hex } 
+            key={`numerotation_hex`}
+            name={ `numerotation_hex` } 
             labelLeft={ true }
-            onChange={ console.log } 
+            onChange={ (name, isChecked) => {
+              this.numerotationHexaUpdate(isChecked);
+            } } 
             label={ strings.modules.parametres.submodules.commandes.numero.label.hexa } 
           />
         </div>

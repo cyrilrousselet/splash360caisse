@@ -518,6 +518,7 @@ const data = {
                             nom: 'N° de commande',
                             label: {
                                 debut: 'Début N° de commande',
+                                max: 'Valeur max.',
                                 compteur: 'Compteur',
                                 reset: 'Reset',
                                 hexa: 'Activer N° hexadécimal'

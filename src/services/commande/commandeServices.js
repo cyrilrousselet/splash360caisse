@@ -48,6 +48,7 @@ function getCommandesList(params) {
   return emit('dbCommandeGetAll', params);
 }
 
+
 function getNewNumero(parametres, numero) {
 
   const { heure_fin } = parametres.entreprise;
@@ -58,7 +59,7 @@ function getNewNumero(parametres, numero) {
   let newvalue = null;
 
   // si un numéro est défini
-  if (null!==numero) {
+  if (null!==numero && numero.hasOwnProperty('updated')) {
 
     // *** définition de la fin de la période précédente
     // fin de la période précédente
@@ -96,7 +97,7 @@ function getNewNumero(parametres, numero) {
     newvalue = Number(numerotation_start);
   }
 
-  const newnumero = {value: newvalue, hex: false, updated: new Date};
+  const newnumero = {value: newvalue, hex: numerotation_hex, updated: new Date};
 
   localStorage.setItem('numero', JSON.stringify(newnumero));
   

@@ -49,25 +49,48 @@ export function parametresReducer(state=initialState, action) {
 
     case parametresActionTypes.UPDATE_SUCCESS:
 
-      const __dom = parametres[action.payload.domaine] || {};
+      // update d'une liste de propriétés
+      if (Array.isArray(action.payload)) {
+        const __up = {...parametres};
 
-      const __newval = {
-        [action.payload.cle]: action.payload.valeur
-      };
+        action.payload.forEach(obj => {
+          __up[obj.domaine][obj.cle] = obj.valeur;
+          console.log('up d:'+obj.domaine+', c:'+obj.cle+', v:'+obj.valeur, __up);
+        }, __up);
 
-      const __upd = {
-        ...parametres,
-        [action.payload.domaine]: {
-          ...__dom,
-          ...__newval
-        }
-      };
-      return {
-        ...state,
-        loading: false,
-        error: null,
-        parametres: __upd
-      };
+        return {
+          ...state,
+          loading: false,
+          error: null,
+          parametres: __up
+        };
+
+      } 
+      // update d'une seule propriété
+      else {
+        const __dom = parametres[action.payload.domaine] || {};
+
+        const __newval = {
+          [action.payload.cle]: action.payload.valeur
+        };
+  
+        const __upd = {
+          ...parametres,
+          [action.payload.domaine]: {
+            ...__dom,
+            ...__newval
+          }
+        };
+        return {
+          ...state,
+          loading: false,
+          error: null,
+          parametres: __upd
+        };
+      }
+
+
+      
 
     case parametresActionTypes.UPDATE_FAILURE:
       return {

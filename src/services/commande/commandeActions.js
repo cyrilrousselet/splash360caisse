@@ -21,11 +21,11 @@ function getCommandesList(params={}) {
 }
 
 
-function setNewNumero() {
+function setNewNumero(defaultValue=null) {
 
   return (dispatch, getState) => {
 
-    const { numero } = getState().commandeReducer; 
+    const numero = defaultValue ? {value: defaultValue} : getState().commandeReducer.numero; 
 
     const newnumero = commandeServices.getNewNumero( getState().parametresReducer.parametres, numero);
     dispatch({ type: commandeActionTypes.SET_NEW_NUMERO, newnumero });

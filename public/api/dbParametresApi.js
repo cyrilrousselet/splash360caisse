@@ -115,6 +115,7 @@ async function _fillinTickets() {
  * Fill in the DB with fake data from static file
  */
 async function _fillinParametres() {
+  log.info('_fillinParametres()');
   const _param = await db.parametres.insert(parametres);
   return { _param };
 }
@@ -124,6 +125,8 @@ async function _fillinParametres() {
  */
 async function _findParametres(prd_criteriae={}) {
   const _param = await db.parametres.find({});
+  log.info('_findParametres()');
+  log.info(_param);
   return { _param };
 }
 async function _findImprimantes(prd_criteriae={}) {
@@ -137,22 +140,47 @@ async function _findTickets(prd_criteriae={}) {
 
 
 
-
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
 
 
 async function _persistParametres(payload) {
 
-  let _param = await db.parametres.findOne({domaine: payload.domaine, cle: payload.cle});
-  if (_param) {
-    let __upd = {..._param, ...payload};
-    log.info('persistParametres() update', __upd);
-    _param = await db.parametres.update({domaine: payload.domaine, cle: payload.cle}, __upd);
-  } else {
-    log.info('persistParametres() insert', payload);
-    _param = await db.parametres.insert(payload);
-  }
+  if (Array.isArray(payload)) {
+    let count = 0;
 
-  return _param != null;
+    const start = async () => {
+      await asyncForEach(payload, async (obj) => {
+        let _param = await db.parametres.findOne({domaine: obj.domaine, cle: obj.cle});
+        if (_param) {
+          let __upd = {..._param, ...obj};
+          log.info('persistParametres() update', __upd);
+          if (_param = await db.parametres.update({domaine: obj.domaine, cle: obj.cle}, __upd)) count++;
+        } else {
+          log.info('persistParametres() insert', obj);
+          if (_param = await db.parametres.insert(obj)) count++;
+        }
+      });
+      return count == payload.length;
+    }
+    start();
+
+  }
+  else {
+    let _paramo = await db.parametres.findOne({domaine: payload.domaine, cle: payload.cle});
+    if (_paramo) {
+      let __upd = {..._paramo, ...payload};
+      log.info('persistParametres() update', __upd);
+      _paramo = await db.parametres.update({domaine: payload.domaine, cle: payload.cle}, __upd);
+    } else {
+      log.info('persistParametres() insert', payload);
+      _paramo = await db.parametres.insert(payload);
+    }
+    return _paramo != null;
+  }
 }
 
 
