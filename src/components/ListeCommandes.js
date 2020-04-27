@@ -95,7 +95,7 @@ function TableCommandes(props) {
             <TableRow key={row.id} className={ `${(i%2)?'odd':'even'} color-${(row.commande.caisse.id==thiscash.id)?'0':'autre'}` }>
               <TableCell key={`${row.id}-date`} className="liste-date">{ row.commande.date }</TableCell>
               <TableCell key={`${row.id}-heure`} className="liste-heure">{ row.commande.heure }</TableCell>
-              <TableCell key={`${row.id}-numero`} className="liste-numero">{ row.commande.id }</TableCell>
+              <TableCell key={`${row.id}-numero`} className="liste-numero">{ row.commande.numero }</TableCell>
               <TableCell key={`${row.id}-montant`} className="liste-montant">{ row.commande.montant }</TableCell>
               <TableCell key={`${row.id}-client`} className="liste-client">{ row.commande.client }</TableCell>
               <TableCell key={`${row.id}-actions`} className="liste-actions">
@@ -328,7 +328,8 @@ class ListeCommandes extends React.Component {
       }
 
       let cmd = {
-        id: cmdnum,
+        id: value.ticketId,
+        numero: cmdnum,
         createdAt: value.createdAt,
         date: format(new Date(value.createdAt), "d MMM yyyy", { locale: this.locale }),
         heure: format(new Date(value.createdAt), "H:mm:ss"),

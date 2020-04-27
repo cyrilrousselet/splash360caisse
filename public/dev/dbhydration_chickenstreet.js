@@ -474,9 +474,9 @@ const hydration = {
   ],
 
   imprimantes: [
-    { printer_id: 'imp1', nom: 'POS Printer', connexion: 'usb', param: null, encoding: 'Cp850', default: true },
-    { printer_id: 'imp2', nom: 'Network1', connexion: 'usb', param: null, encoding: 'Cp850', default: true }//,
-//    { printer_id: 'imp2', nom: 'Network1', connexion: 'network', param: '192.168.0.150', encoding: 'Cp850', default: false }
+    { printer_id: 'imp1', nom: 'POS Printer', connexion: 'usb', param: null, encoding: 'Cp850', pardefaut: true },
+    { printer_id: 'imp2', nom: 'Network1', connexion: 'usb', param: null, encoding: 'Cp850', pardefaut: false }//,
+//    { printer_id: 'imp2', nom: 'Network1', connexion: 'network', param: '192.168.0.150', encoding: 'Cp850', pardefaut: false }
   ],
 
   tickets: [

@@ -499,7 +499,68 @@ const data = {
                             seuil: 'Débloquer à partir de;points'
                         }
                     },
-                    peripheriques: { nom: 'Périphériques' },
+                    peripheriques: { 
+                        nom: 'Périphériques',
+                        impression: {
+                            titre: 'Impression',
+                            imprimantes: {
+                                titre: 'Imprimantes',
+                                liste: {
+                                    nom: 'Nom',
+                                    type: 'Connexion',
+                                    parametre: 'Paramètre'
+                                },
+                                edition: {
+                                    new: 'Nouvelle Imprimante',
+                                    edit: 'Édition de l’Imprimante',
+                                    nom: 'Nom',
+                                    connexion: 'Connexion',
+                                    connexion_liste: {
+                                        usb: 'USB',
+                                        network: 'Réseau',
+                                        serial: 'Série'/*,
+                                        bluetooth: 'Bluetooth'*/
+                                    },
+                                    parametre: 'Paramètre',
+                                    encodage: 'Encodage',
+                                    encodage_liste: {
+                                        Cp850: 'CP850'
+                                    },
+                                    default: 'Imprimante par défaut',
+                                    fallback: 'Remplaçante',
+                                    no_fallback: 'Aucune'
+                                }
+                            },
+                            tickets: {
+                                titre: 'Tickets',
+                                liste: {
+                                    nom: 'Nom',
+                                    type: 'Template',
+                                    parametre: 'Imprimé par'
+                                },
+                                edition: {
+                                    new: 'Nouveau ticket',
+                                    edit: 'Édition du ticket',
+                                    nom: 'Nom',
+                                    template: 'Template',
+                                    template_liste: {
+                                        commande: 'Commande',
+                                        principal: 'Principal',
+                                        partiel: 'Partiel',
+                                        cloture_x: 'X de caisse',
+                                        cloture_z: 'Ticket de clôture'
+                                    },
+                                    imprimantes: 'Imprimé sur...'
+                                }
+                            }
+                        },
+                        paiement: {
+                            titre: 'Paiement'
+                        },
+                        affichage: {
+                            titre: 'Affichage'
+                        }
+                    },
                     commandes: { 
                         nom: 'Commandes',
                         types: {

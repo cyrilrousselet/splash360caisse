@@ -61,6 +61,153 @@ function closeDrawer() {
   }
 }
 
+function getAllImprimantes() {
+  return dispatch => {
+      dispatch({ type: peripheralActionTypes.GETALL_IMPRIMANTE_REQUEST });
+
+      peripheralServices.getAllImprimantes()
+        .then(
+            users => dispatch({ type: peripheralActionTypes.GETALL_IMPRIMANTE_SUCCESS, ...users }),
+            error => dispatch({ type: peripheralActionTypes.GETALL_IMPRIMANTE_FAILURE, payload: error.toString() })
+        );
+  }
+};
+
+function updateImprimante(payload) {
+  return (dispatch, getState) => {
+    dispatch({ type: peripheralActionTypes.UPDATE_IMPRIMANTE_REQUEST });
+
+    const {printer_id, data} = payload;
+    const { imprimantes } = getState().peripheralReducer;
+    let imprimante = imprimantes[printer_id];
+
+    // on ne récupère que les propriétés qui ont été mises à jour
+    let updated_data = {};
+    Object.entries(data).map(([key,value]) => {
+      if (value) updated_data[key] = value;
+    });
+
+    imprimante = {...imprimante, ...updated_data};
+
+    console.log('updateImprimante()', imprimante);
+
+    peripheralServices.updateImprimante(imprimante)
+      .then(
+        data => dispatch({ type: peripheralActionTypes.UPDATE_IMPRIMANTE_SUCCESS, ...data }),
+        error => dispatch({ type: peripheralActionTypes.UPDATE_IMPRIMANTE_FAILURE, payload: error.toString() })
+      )
+  }
+}
+
+function deleteImprimante(payload) {
+  return dispatch => {
+    dispatch({ type: peripheralActionTypes.DELETE_IMPRIMANTE_REQUEST });
+
+    peripheralServices.deleteImprimante(payload)
+      .then(
+        data => {
+          dispatch({ type: peripheralActionTypes.DELETE_IMPRIMANTE_SUCCESS, ...data });
+        },
+        error => dispatch({ type: peripheralActionTypes.DELETE_IMPRIMANTE_FAILURE, payload: error.toString() })
+      )
+  }
+}
+function createImprimante(payload) {
+  return dispatch => {
+    dispatch({ type: peripheralActionTypes.CREATE_IMPRIMANTE_REQUEST });
+
+    let updated_data = {};
+    Object.entries(payload).map(([key,value]) => {
+      if (value) updated_data[key] = value;
+    });
+    const newprinter = {...updated_data};
+
+    peripheralServices.updateImprimante(newprinter)
+      .then(
+        data => {
+          const { imprimante, confirm } = data;
+          dispatch({ type: peripheralActionTypes.CREATE_IMPRIMANTE_SUCCESS, user: {...imprimante, printer_id:confirm.printer_id } });
+        },
+        error => dispatch({ type: peripheralActionTypes.CREATE_IMPRIMANTE_FAILURE, payload: error.toString() })
+      )
+  }
+}
+
+
+function getAllTickets() {
+  return dispatch => {
+      dispatch({ type: peripheralActionTypes.GETALL_TICKET_REQUEST });
+
+      peripheralServices.getAllTickets()
+        .then(
+            users => dispatch({ type: peripheralActionTypes.GETALL_TICKET_SUCCESS, ...users }),
+            error => dispatch({ type: peripheralActionTypes.GETALL_TICKET_FAILURE, payload: error.toString() })
+        );
+  }
+};
+
+function updateTicket(payload) {
+  return (dispatch, getState) => {
+    dispatch({ type: peripheralActionTypes.UPDATE_TICKET_REQUEST });
+
+    const {ticket_id, data} = payload;
+    const { tickets } = getState().peripheralReducer;
+    let ticket = tickets[ticket_id];
+
+    // on ne récupère que les propriétés qui ont été mises à jour
+    let updated_data = {};
+    Object.entries(data).map(([key,value]) => {
+      if (value) updated_data[key] = value;
+    });
+
+    ticket = {...ticket, ...updated_data};
+
+     peripheralServices.updateTicket(ticket)
+      .then(
+        data => dispatch({ type: peripheralActionTypes.UPDATE_TICKET_SUCCESS, ...data }),
+        error => dispatch({ type: peripheralActionTypes.UPDATE_TICKET_FAILURE, payload: error.toString() })
+      )
+  }
+}
+
+function deleteTicket(payload) {
+  return dispatch => {
+    dispatch({ type: peripheralActionTypes.DELETE_TICKET_REQUEST });
+
+    peripheralServices.deleteTicket(payload)
+      .then(
+        data => {
+          dispatch({ type: peripheralActionTypes.DELETE_TICKET_SUCCESS, ...data });
+        },
+        error => dispatch({ type: peripheralActionTypes.DELETE_TICKET_FAILURE, payload: error.toString() })
+      )
+  }
+}
+
+function createTicket(payload) {
+  return dispatch => {
+    dispatch({ type: peripheralActionTypes.CREATE_TICKET_REQUEST });
+
+    let updated_data = {};
+    Object.entries(payload).map(([key,value]) => {
+      if (value) updated_data[key] = value;
+    });
+    const newticket = {...updated_data};
+
+    peripheralServices.updateTicket(newticket)
+      .then(
+        data => {
+          const { ticket, confirm } = data;
+          dispatch({ type: peripheralActionTypes.CREATE_TICKET_SUCCESS, user: {...ticket, ticket_id:confirm.ticket_id } });
+        },
+        error => dispatch({ type: peripheralActionTypes.CREATE_TICKET_FAILURE, payload: error.toString() })
+      )
+  }
+}
+
+
+
+
 
 function printTicket(payload) {
   return (dispatch, getState) => {
@@ -136,7 +283,7 @@ function printTicket(payload) {
 
       // récup des préf. du ticket et de l'imprimante correspondante
       ticket = Object.values(tickets).find(tck=>tck.template=='commande');
-      imprimante = Object.values(imprimantes).find(imp=>imp.id==ticket.imprimantes[0]);
+      imprimante = Object.values(imprimantes).find(imp=>imp.printer_id==ticket.imprimantes[0]);
 
       // imprimante = {
       //   nom: 'POS Printer',
@@ -268,7 +415,7 @@ function printTicket(payload) {
 
       // récup des préf. du ticket et de l'imprimante correspondante
       ticket = Object.values(tickets).find(tck=>tck.template=='partiel');
-      imprimante = Object.values(imprimantes).find(imp=>imp.id==ticket.imprimantes[0]);
+      imprimante = Object.values(imprimantes).find(imp=>imp.printer_id==ticket.imprimantes[0]);
 
       
       // -> template ticket
@@ -351,7 +498,7 @@ function printTicket(payload) {
 
       // récup des préf. du ticket et de l'imprimante correspondante
       ticket = Object.values(tickets).find(tck=>tck.template=='principal');
-      imprimante = Object.values(imprimantes).find(imp=>imp.id==ticket.imprimantes[0]);
+      imprimante = Object.values(imprimantes).find(imp=>imp.printer_id==ticket.imprimantes[0]);
 
       // -> template ticket
       template = [
@@ -442,7 +589,7 @@ function printPeriodeX(payload={}) {
 
       // récup des préf. du ticket et de l'imprimante correspondante
       let ticket = Object.values(tickets).find(tck=>tck.template=='cloture_x');
-      let imprimante = Object.values(imprimantes).find(imp=>imp.id==ticket.imprimantes[0]);
+      let imprimante = Object.values(imprimantes).find(imp=>imp.printer_id==ticket.imprimantes[0]);
 
       const { debut, fin } = periode;
       const __debut = format(debut, "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
@@ -503,7 +650,7 @@ function printCloture(payload={}) {
 
     // récup des préf. du ticket et de l'imprimante correspondante
     let ticket = Object.values(tickets).find(tck=>tck.template=='cloture_z');
-    let imprimante = Object.values(imprimantes).find(imp=>imp.id==ticket.imprimantes[0]);
+    let imprimante = Object.values(imprimantes).find(imp=>imp.printer_id==ticket.imprimantes[0]);
 
     const { debut, fin } = periode;
     const __debut = format(new Date(debut), "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
@@ -538,9 +685,17 @@ function printCloture(payload={}) {
 
 export const peripheralActions = {
   printTest,
+  openDrawer,
+  closeDrawer,
+  getAllImprimantes,
+  updateImprimante,
+  deleteImprimante,
+  createImprimante,
+  getAllTickets,
+  updateTicket,
+  deleteTicket,
+  createTicket,
   printTicket,
   printPeriodeX,
   printCloture,
-  openDrawer,
-  closeDrawer
 };

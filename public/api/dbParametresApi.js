@@ -21,8 +21,37 @@ const actions = {
       const confirm = await _persistParametres(payload.payload);
 
       res.send({confirm: confirm, ...payload});
+  },
+  dbParametresUpdateImprimante: async (req,res) => {
+    const {payload} = req;
+    log.info("dbParametresUpdateImprimante() in API");
 
-  }
+    const confirm = await _persistImprimante(payload.imprimante);
+
+    res.send({confirm: confirm, ...payload});
+  },
+  dbParametresGetallImprimantes: async (req,res) => {
+
+    log.info("dbParametresGetallImprimantes() in API");
+
+    const proxies = await _getAllImprimantes();
+    res.send(proxies);
+  },
+  dbParametresGetallTickets: async (req,res) => {
+
+    log.info("dbParametresGetallTickets() in API");
+
+    const proxies = await _getAllTickets();
+    res.send(proxies);
+  },
+  dbParametresUpdateTicket: async (req,res) => {
+    const {payload} = req;
+    log.info("dbParametresUpdateTicket() in API");
+
+    const confirm = await _persistTicket(payload.ticket);
+
+    res.send({confirm: confirm, ...payload});
+  },
 }
 
 async function _getAll() {
@@ -57,6 +86,43 @@ async function _getAll() {
 }
 
 
+async function _getAllImprimantes() {
+
+  let __imprn = await db.imprimantes.count();
+  let __raw;
+  log.info('count impr = '+__imprn);
+  if (__imprn==0) {
+    __raw = await _fillinImprimantes();
+  } else {
+    __raw = await _findImprimantes();
+  }
+  
+  const __impr = {};
+  __raw._impr.forEach(p => {
+    __impr[p.printer_id] = {printer_id: p.printer_id, nom: p.nom, connexion: p.connexion, param: p.param, encoding: p.encoding, pardefaut: p.pardefaut};
+  });
+  return {imprimantes: __impr};
+}
+
+async function _getAllTickets() {
+
+  let __tckn = await db.tickets.count();
+  let __raw;
+  log.info('count tck = '+__tckn);
+  if (__tckn==0) {
+    __raw = await _fillinTickets();
+  } else {
+    __raw = await _findTickets();
+  }
+
+  const __tck = {};
+  __raw._tck.forEach(t => {
+    __tck[t.ticket_id] = {ticket_id: t.ticket_id, nom: t.nom, template: t.template, imprimantes: t.imprimantes};
+  });
+
+  return {tickets: __tck};
+}
+
 /** 
  * 
  * @param {object} data from DB 
@@ -83,11 +149,11 @@ function _parseParametres(_rawdata) {
 
   const __impr = {};
   _rawdata._impr.forEach(p => {
-    __impr[p.printer_id] = {id: p.printer_id, nom: p.nom, connexion: p.connexion, param: p.param, encoding: p.encoding, default: p.default};
+    __impr[p.printer_id] = {printer_id: p.printer_id, nom: p.nom, connexion: p.connexion, param: p.param, encoding: p.encoding, pardefaut: p.pardefaut};
   });
   const __tck = {};
   _rawdata._tck.forEach(t => {
-    __tck[t.ticket_id] = {id: t.ticket_id, nom: t.nom, template: t.template, imprimantes: t.imprimantes};
+    __tck[t.ticket_id] = {ticket_id: t.ticket_id, nom: t.nom, template: t.template, imprimantes: t.imprimantes};
   });
 
   return {parametres: __param, imprimantes: __impr, tickets: __tck};
@@ -184,5 +250,44 @@ async function _persistParametres(payload) {
 }
 
 
+async function _persistImprimante(payload) {
+
+
+  log.info("*** _persistImprimante()");
+  log.info(payload);
+  log.info('***');
+
+  let { printer_id } = payload;
+  let _printer = await db.imprimantes.findOne({printer_id: printer_id});
+  if (_printer) {
+    let __upd = {..._printer, ...payload};
+    log.info('__upd',__upd);
+    _printer = await db.imprimantes.update({printer_id: printer_id}, __upd);
+  } else {
+    printer_id = 'imp'+uniqid();
+     _printer = await db.imprimantes.insert({...payload, printer_id: printer_id});
+  }
+
+  return {confirm:(_printer != null), printer_id:printer_id};
+}
+
+async function _persistTicket(payload) {
+
+  let { ticket_id } = payload;
+  let _ticket = await db.tickets.findOne({ticket_id: ticket_id});
+  if (_ticket) {
+    let __upd = {..._ticket, ...payload};
+    _ticket = await db.tickets.update({ticket_id: ticket_id}, __upd);
+  } else {
+    ticket_id = 'tck'+uniqid();
+    _ticket = await db.tickets.insert({...payload, ticket_id: ticket_id});
+  }
+
+  return {confirm:(_ticket != null), ticket_id:ticket_id};
+}
+
+function uniqid() {
+  return new Date().getTime().toString();
+}
 
 module.exports = actions;

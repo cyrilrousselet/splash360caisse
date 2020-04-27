@@ -46,6 +46,10 @@ if (!gotTheLock) {
     app.quit()
 } else {
 
+    app.on('before-quit', () => {
+        localStorage.removeItem('user');
+    })
+
     app.on('second-instance', (event, commandLine, workingDirectory) => {
       // Someone tried to run a second instance, we should focus our window.
       if (mainWindow) {
@@ -57,6 +61,7 @@ if (!gotTheLock) {
     app.on('ready', createWindow);
 
     app.on('window-all-closed', () => {
+        localStorage.removeItem('user');
         if (process.platform !== 'darwin') {
             app.quit();
         }

@@ -1,0 +1,109 @@
+.EditImprimanteModal {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none;
+  .Modal-container {
+      background-color: $blanc;
+      width: 500px;
+      border-radius: 15px;
+      padding: 0 20px;
+  }
+  .close-button {
+      background-color: $blanc;
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 30px;
+      height: 30px;
+      min-height: 30px;
+  }
+  .header {
+      height: 55px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      .title {
+          font-family: $f_blk;
+          font-size: 18px;
+          color: $noir;
+          text-align: center;
+          text-transform: uppercase;
+      }
+  }
+  .body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-bottom: 30px;
+
+    .labelledfield {
+      width: calc(50% - 7px);
+    }
+
+    .selecteur-group {
+      display: inline-flex;
+      flex-direction: row;
+      align-items: center;
+      width: calc(50% - 7px);
+    }
+    .select-label {
+      font-family: $f_boo;
+      font-size: 14px;
+      color: $noir;
+      padding-right: 10px;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .selecteur {
+      background-color: $blanc-fonce;
+      font-family: $f_boo;
+      font-size: 14px;
+      color: $noir;
+      width: 100%;
+      line-height: 0.1em;
+      .MuiOutlinedInput-input {
+        padding: 15px 15px;
+      }
+    }
+
+    .switch-container {
+      width: calc(50% - 7px);
+    //  padding: 0 0 10px 10px;
+      label {
+        font-family: $f_med;
+        position: relative;
+        user-select: none;
+      }
+      label+label {
+        font-family: $f_med;
+        font-size: 14px;
+        color: $noir;
+      }
+    }
+    .switch-container.labelleft {
+      label {
+        left: 70%;
+      }
+      label+label {
+        position: absolute;
+        left: auto;
+      }
+    }
+  }
+  .footer{
+      text-align: right;
+    .save {
+        background-color:$vert;
+        width: 45%;
+        min-height: 30px;
+        .StdButton-text {
+            font-family: $f_blk;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+    }
+  }
+}

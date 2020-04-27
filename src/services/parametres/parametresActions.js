@@ -47,6 +47,7 @@ function update(payload) {
 };
 
 
+
 export const parametresActions = {
   getAll,
   update

@@ -1,0 +1,106 @@
+.Peripheriques {
+
+
+    header {
+      box-shadow: none;
+      background-color: transparent;
+      flex-direction: row;
+      justify-content: space-between;
+      .MuiButtonBase-root {
+        font-family: $f_hea;
+        font-size: 18px;
+        background-color: $gris-clair;
+        border-radius: 15px 15px 0 0;
+        color: $noir;
+        margin-right: 2px;
+        padding: 8px 25px;
+        &.Mui-selected {
+          background-color: $blanc;
+          color: $primary;
+          font-family: $f_blk;
+        }
+      }
+      .MuiTabs-fixed {
+        width: auto;
+      }
+      .MuiTabs-indicator {
+        background-color: transparent;
+      }
+      .MuiTabs-flexContainer {
+        display: inline-flex;
+      }
+      .displayId {
+        height: 40px;
+        background-color: $blanc;
+        padding-left: 20px;
+        width: 280px;
+        input {
+          height: 40px;
+          width: 200px;
+          margin-top: 0;
+          font-size: 15px;
+          font-family: $f_hea;
+          letter-spacing: 0;
+        }
+        .innerButton {
+          height: 40px;
+          &.btn-keyboard {
+            background-image: url('./../../images/numberkeyboard.svg');
+          }
+        }
+      }
+    }
+
+    .MuiTypography-root {
+      height: 100%;
+      width: 100%;
+      background-color: $blanc;
+      // border-radius: 15px 15px 15px 15px;
+      // &:nth-of-type(1) {
+        border-radius: 0px 15px 15px 15px;
+      // }
+    }
+
+    .Imprimantes,
+    .Tickets {
+      display: inline-flex;
+      justify-content: space-between;
+      flex-direction: row;
+      align-items: start;
+      text-align: left;
+      flex-wrap: wrap;
+      width: 100%;
+      .subttl {
+          font-family: $f_blk;
+          font-size: 18px;
+          padding: 10px 0;
+      }
+      .addprinter-button,
+      .addticket-button {
+          background-color: $primary;
+          position: absolute;
+          right: 60px;
+          width: 30px;
+          height: 30px;
+          min-height: 30px;
+      }
+      .table-wrapper {
+        width: 100%;
+      }
+    }
+    .Imprimantes {
+      padding-bottom: 15px;
+    }
+    tbody {
+      .liste-nom {
+          text-transform: capitalize;
+          text-decoration: underline;
+          div {
+              cursor: pointer;
+          }
+          &.user-disabled {
+            color: $rouge;
+          }
+      }
+    }
+  }
