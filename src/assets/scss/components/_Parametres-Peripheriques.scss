@@ -1,6 +1,5 @@
 .Peripheriques {
 
-
     header {
       box-shadow: none;
       background-color: transparent;
@@ -52,7 +51,7 @@
     }
 
     .MuiTypography-root {
-      height: 100%;
+      height: calc(100% - 48px);
       width: 100%;
       background-color: $blanc;
       // border-radius: 15px 15px 15px 15px;
@@ -86,11 +85,21 @@
       }
       .table-wrapper {
         width: 100%;
+        max-height: 215px;
+        overflow: auto;
       }
     }
     .Imprimantes {
       padding-bottom: 15px;
     }
+
+    .MuiTableCell-head {
+      font-family: $f_hea;
+    }
+    .MuiTableCell-body {
+      font-family: $f_med;
+    }
+    
     tbody {
       .liste-nom {
           text-transform: capitalize;
@@ -101,6 +110,12 @@
           &.user-disabled {
             color: $rouge;
           }
+      }
+      .MuiTableRow-root.disabled {
+        .MuiTableCell-body {
+          font-family: $f_boo;
+          color: $gris;
+        }
       }
     }
   }

@@ -5,6 +5,7 @@
     "version": "0.1.0",
     "private": true,
     "author": {
+        "name": "Splash360",
         "email": "contact@splash360.fr",
         "url": "https://www.splash360.fr"
     },
@@ -26,7 +27,8 @@
         ],
         "directories": {
             "buildResources": "build"
-        }
+        },
+        "buildVersion": "CIRCLE_BUILD_NUM"
     },
     "license": "MIT",
     "homepage": "./",

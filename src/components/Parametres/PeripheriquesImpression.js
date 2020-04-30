@@ -76,7 +76,6 @@ class EditImprimantePopin extends React.Component {
 
 
   resetPopin() {
-    const droits = {};
     const st = {
       printer_id: null,
       nom: '',
@@ -197,6 +196,166 @@ class EditImprimantePopin extends React.Component {
 }
 
 
+class EditTicketPopin extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      ticket_id: null,
+      nom: '',
+      template: null,
+      imprimantes: null
+    }
+
+    this.updateValue = this.updateValue.bind(this);
+    this.getValues = this.getValues.bind(this);
+    this.saveTicket = this.saveTicket.bind(this);
+    this.resetPopin = this.resetPopin.bind(this);
+    this.updateImprimantesSelection = this.updateImprimantesSelection.bind(this);
+  }
+
+  componentDidMount() {
+    const st = {
+      ticket_id: this.props.ticket && this.props.ticket.ticket_id,
+      nom: this.props.ticket && this.props.ticket.nom,
+      template: this.props.ticket && this.props.ticket.template,
+      imprimantes: this.props.ticket && this.props.ticket.imprimantes
+    }
+    console.log('componentDidMount', st);
+    this.setState(st);
+  }
+
+  updateValue(value) {
+    console.log('updateValue', value);
+    this.setState(value);
+  }
+
+  updateImprimantesSelection(value) {
+    const { imprimantes } = this.getValues();
+    let idx = imprimantes.findIndex(prnt=>prnt==value);
+    console.log('updateImprimantesSelection', value);
+    if (idx==-1) {
+      this.setState({imprimantes:[...imprimantes, value]});
+    } else {
+     // const __upd = imprimantes.splice(idx,1);
+      this.setState({imprimantes: imprimantes.filter(imp=>imp!=value)});
+    }
+  }
+
+  getValues() {
+    const { ticket_id, nom, template, imprimantes } = this.props.ticket || {ticket_id:null, nom:null, template:null, imprimantes:[]};
+    
+    const sticket_id = this.state.ticket_id;
+    const snom = this.state.nom;
+    const stemplate = this.state.template;
+    const simprimantes = this.state.imprimantes;
+    
+    return {
+      ticket_id: sticket_id || ticket_id,
+      nom: snom || nom,
+      template: stemplate || template,
+      imprimantes: simprimantes || imprimantes
+    };
+  }
+
+
+  resetPopin() {
+    const st = {
+      ticket_id: null,
+      nom: '',
+      template: null,
+      imprimantes: null
+    }
+    this.setState(st);
+  }
+  
+  saveTicket() {
+
+    const ticket_id = this.props.ticket && this.props.ticket.ticket_id || null;
+    let state = this.state;
+
+    this.props.saveTicket(ticket_id, state);
+    this.resetPopin();
+    this.props.closeHandler();
+
+  }
+
+  render() {
+
+    const { ticket, editOpen, closeHandler, allprinters } = this.props;
+    const { ticket_id, nom, template, imprimantes } = this.getValues();
+
+    const incomplete = !nom || template==null;
+
+    const isImprimanteEnabled = (id) => {
+      return imprimantes.indexOf(id)!=-1;
+    }
+
+    return (
+      <Modal open={ editOpen } >
+        <div className="EditTicketModal">
+          <div className="Modal-container">
+            <div className="header">
+              <div className="title">{ ticket==null ? strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.new : strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.edit }</div>
+            </div>
+            <div className="body">
+              <LabelledField
+                id="nom"
+                name="nom"
+                className="fieldnom"
+                value={ nom }
+                placeholder=""
+                type="text"
+                readOnly={ false }
+                onChange={(val)=>{ this.updateValue({nom:val.value}) }}
+                label={ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.nom }
+              />
+              <FormControl variant="outlined" className="selecteur-group selecteur-template">
+                <div className="select-label">{ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.template }</div>
+                <Select value={template} onChange={(event) => { this.updateValue({template: event.target.value}) }} className="selecteur selecteur-template">
+                  {Object.entries(strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.template_liste).map(([tplid, tplval]) => (
+                    <MenuItem key={ `cashitm${tplid}`} value={ tplid }>{ tplval }</MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+              <div className="imprimantes-liste">
+                <div className="liste-label">{ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.imprimantes }</div>
+                <div className="liste-liste">
+                  {allprinters.map(prnt => (
+                      <SwitchCheckbox 
+                      isChecked={ isImprimanteEnabled(prnt.id) } 
+                      key={ `select-${prnt.id}` }
+                      name={ prnt.id } 
+                      className="imprimante-checkbox"
+                      small={ true }
+                      labelLeft={ false }
+                      onChange={ (name,checked) => { this.updateImprimantesSelection(name) }} 
+                      label={ prnt.nom } 
+                      />
+                    ))}
+                </div>
+              </div>
+            </div>
+            <div className="footer">
+              <StdButton 
+                identifier="modal-save" 
+                elementclass="save" 
+                icon={ false } 
+                disabled={ incomplete }
+                text={ strings.general.dialog.save } 
+                onClick={this.saveTicket} 
+              />
+            </div>
+          </div>
+          <Fab aria-label="close" size="small" className="close-button" onClick={ () => { this.resetPopin(); closeHandler() }}>
+            <CloseIcon />
+          </Fab>
+        </div>
+      </Modal>
+    );
+  }
+}
+
 
 
 
@@ -215,7 +374,7 @@ function ListeImpression(props) {
       </TableHead>
       <TableBody>
         {liste.map((row, i) => (
-          <TableRow key={row.id} className={(i%2)?'odd':'even'}>
+          <TableRow key={row.id} className={` ${((i%2)?'odd':'even')}${ (row.disabled?' disabled':'')}` }>
             <TableCell key={`${i}-imp-nom`} className={ `liste-nom` }><div onClick={ () => { openEdit(row.id) } }>{ row.nom }</div></TableCell>
             <TableCell key={`${i}-imp-connexion`} className="liste-type">{ row.type }</TableCell>
             <TableCell key={`${i}-param`} className="liste-param">{row.param}</TableCell>
@@ -311,18 +470,23 @@ class PeripheriquesImpression extends React.Component {
         nom: imp.nom,
         id: imp.printer_id,
         type: imp.connexion,
-        param: imp.param
+        param: imp.param,
+        disabled: false
       };
     });
-    const tickets_liste = Object.values(tickets).map(tck => {
+    let tickets_liste = Object.values(tickets).map(tck => {
       const printlist = tck.imprimantes.map(i=>imprimantes[i].nom);
-      return {
-        nom: tck.nom,
-        id: tck.ticket_id,
-        type: tck.template,
-        param: printlist.join(', ')
-      };
+        return {
+          nom: tck.nom,
+          id: tck.ticket_id,
+          type: tck.template,
+          param: printlist.join(', '),
+          weight: tck.weight,
+          disabled: printlist.length==0
+        };
     });
+    tickets_liste = tickets_liste.sort((a,b)=>a.weight-b.weight);
+    tickets_liste = tickets_liste.filter(tck=>(['commande','cloture_x','cloture_z']).indexOf(tck.type)==-1);
 
     return (
     <div className="PeripheriquesImpression sectioncontent">
@@ -337,14 +501,15 @@ class PeripheriquesImpression extends React.Component {
       </div>
       <div className="Tickets">
         <div className="subttl">{ strings.modules.parametres.submodules.peripheriques.impression.tickets.titre }</div>
-        <Fab aria-label="addticket" size="small" className="addticket-button" onClick={ ()=>{ this.openTicketEdit() } }>
+        {/* <Fab aria-label="addticket" size="small" className="addticket-button" onClick={ ()=>{ this.openTicketEdit() } }>
           <AddIcon htmlColor="#ffffff" />
-        </Fab>
+        </Fab> */}
         <div className="table-wrapper">
           {tickets && <ListeImpression liste={tickets_liste} type="tickets" id='ticketsliste' openEdit={this.openTicketEdit} />}
         </div>
       </div>
       <EditImprimantePopin imprimante={imprimante} editOpen={editImprimanteOpen} allprinters={imprimantes_liste} closeHandler={this.closeImprimanteEdit} saveImprimante={this.saveImprimante} />
+      <EditTicketPopin ticket={ticket} editOpen={editTicketOpen} allprinters={imprimantes_liste} closeHandler={this.closeTicketEdit} saveTicket={this.saveTicket} />
     </div>
    );
   }

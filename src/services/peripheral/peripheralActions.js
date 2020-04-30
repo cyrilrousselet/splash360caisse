@@ -93,7 +93,10 @@ function updateImprimante(payload) {
 
     peripheralServices.updateImprimante(imprimante)
       .then(
-        data => dispatch({ type: peripheralActionTypes.UPDATE_IMPRIMANTE_SUCCESS, ...data }),
+        data => {
+          dispatch({ type: peripheralActionTypes.UPDATE_IMPRIMANTE_SUCCESS, ...data });
+          dispatch(getAllImprimantes());
+        },
         error => dispatch({ type: peripheralActionTypes.UPDATE_IMPRIMANTE_FAILURE, payload: error.toString() })
       )
   }
@@ -107,6 +110,7 @@ function deleteImprimante(payload) {
       .then(
         data => {
           dispatch({ type: peripheralActionTypes.DELETE_IMPRIMANTE_SUCCESS, ...data });
+          dispatch(getAllImprimantes());
         },
         error => dispatch({ type: peripheralActionTypes.DELETE_IMPRIMANTE_FAILURE, payload: error.toString() })
       )
@@ -127,6 +131,7 @@ function createImprimante(payload) {
         data => {
           const { imprimante, confirm } = data;
           dispatch({ type: peripheralActionTypes.CREATE_IMPRIMANTE_SUCCESS, user: {...imprimante, printer_id:confirm.printer_id } });
+          dispatch(getAllImprimantes());
         },
         error => dispatch({ type: peripheralActionTypes.CREATE_IMPRIMANTE_FAILURE, payload: error.toString() })
       )
@@ -161,10 +166,14 @@ function updateTicket(payload) {
     });
 
     ticket = {...ticket, ...updated_data};
+    console.log('updateTicket()', ticket);
 
      peripheralServices.updateTicket(ticket)
       .then(
-        data => dispatch({ type: peripheralActionTypes.UPDATE_TICKET_SUCCESS, ...data }),
+        data => {
+          dispatch({ type: peripheralActionTypes.UPDATE_TICKET_SUCCESS, ...data });
+          dispatch(getAllTickets());
+        },
         error => dispatch({ type: peripheralActionTypes.UPDATE_TICKET_FAILURE, payload: error.toString() })
       )
   }
@@ -178,6 +187,7 @@ function deleteTicket(payload) {
       .then(
         data => {
           dispatch({ type: peripheralActionTypes.DELETE_TICKET_SUCCESS, ...data });
+          dispatch(getAllTickets());
         },
         error => dispatch({ type: peripheralActionTypes.DELETE_TICKET_FAILURE, payload: error.toString() })
       )
@@ -199,6 +209,7 @@ function createTicket(payload) {
         data => {
           const { ticket, confirm } = data;
           dispatch({ type: peripheralActionTypes.CREATE_TICKET_SUCCESS, user: {...ticket, ticket_id:confirm.ticket_id } });
+          dispatch(getAllTickets());
         },
         error => dispatch({ type: peripheralActionTypes.CREATE_TICKET_FAILURE, payload: error.toString() })
       )

@@ -544,13 +544,13 @@ const data = {
                                     nom: 'Nom',
                                     template: 'Template',
                                     template_liste: {
-                                        commande: 'Commande',
+                                      //  commande: 'Commande',
                                         principal: 'Principal',
-                                        partiel: 'Partiel',
-                                        cloture_x: 'X de caisse',
-                                        cloture_z: 'Ticket de clôture'
+                                        partiel: 'Partiel'//,
+                                      //  cloture_x: 'X de caisse',
+                                      //  cloture_z: 'Ticket de clôture'
                                     },
-                                    imprimantes: 'Imprimé sur...'
+                                    imprimantes: 'Imprimé par...'
                                 }
                             }
                         },

@@ -117,7 +117,7 @@ async function _getAllTickets() {
 
   const __tck = {};
   __raw._tck.forEach(t => {
-    __tck[t.ticket_id] = {ticket_id: t.ticket_id, nom: t.nom, template: t.template, imprimantes: t.imprimantes};
+    __tck[t.ticket_id] = {ticket_id: t.ticket_id, nom: t.nom, template: t.template, imprimantes: t.imprimantes, weight: t.weight};
   });
 
   return {tickets: __tck};
@@ -153,7 +153,7 @@ function _parseParametres(_rawdata) {
   });
   const __tck = {};
   _rawdata._tck.forEach(t => {
-    __tck[t.ticket_id] = {ticket_id: t.ticket_id, nom: t.nom, template: t.template, imprimantes: t.imprimantes};
+    __tck[t.ticket_id] = {ticket_id: t.ticket_id, nom: t.nom, template: t.template, imprimantes: t.imprimantes, weight: t.weight};
   });
 
   return {parametres: __param, imprimantes: __impr, tickets: __tck};
