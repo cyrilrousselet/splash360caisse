@@ -1,13 +1,12 @@
 const db = require('../db.js');
+const lodashId = require('lodash-id');
 const log = require('electron-log');
-const hydration = require('../dev/dbhydration_chickenstreet.js');
-const {users} = hydration;
-
 
 const actions = {
   dbUsersGetAll: async (req,res) => {
     const {payload} = req;
 
+    (await db.users)._.mixin(lodashId);
     log.info("dbUsersGetAll() in API");
 
     const proxies = await _getAll();
@@ -17,6 +16,7 @@ const actions = {
   dbHasUsers: async (req,res) => {
     const hasUsers = await _hasUsers();
 
+    (await db.users)._.mixin(lodashId);
     log.info('dbHasUsers', hasUsers);
     
     res.send(hasUsers);
@@ -24,13 +24,15 @@ const actions = {
   dbUsersLogin: async (req,res) => {
     const {payload} = req;
 
-    const user = await _findUser({$and:[{identifiant: payload.identifiant}, {$not:{status: 'disabled'}}]});
-
+    (await db.users)._.mixin(lodashId);
+    const user = await _findUser((u => (u.identifiant==payload.identifiant && u.status!='disabled')));
+    
     res.send(user);
   },
   dbAddUser: async (req,res) => {
     const {payload} = req;
 
+    (await db.users)._.mixin(lodashId);
     log.info('dbAddUser', payload.user);
 
     const __usr = await _insertUser(payload.user);
@@ -41,6 +43,7 @@ const actions = {
     const {payload} = req;
     log.info("dbUpdateUser() in API");
 
+    (await db.users)._.mixin(lodashId);
     const confirm = await _persistUser(payload.user);
 
     res.send({confirm: confirm, ...payload});
@@ -49,78 +52,33 @@ const actions = {
 
 
 async function _hasUsers() {
-  
-  let __rawdata;
-  let __users = await db.users.count();
-  log.info('count users = '+__users);
-  if (__users==0) {
-    __rawdata = await _fillinUsers();
-  } else {
-    __users = await db.users.count();
-  }
-  
-  return __users>0;
+  const __users = await (await db.users).has('users').value();
+  log.info('_hasUsers()', __users);
+  return __users;
 }
-
-
-
-/** 
- * 
- * @param {object} data from DB 
- */
-function _parseUsers(_rawdata) {
-
-  const __users = [];
-  _rawdata._users.forEach(u => {
-    __users.push({user_id: u.user_id, nom: u.nom, status: u.status, identifiant: u.identifiant, points: u.points, droits: u.droits});
-  });
-
-  return {users: __users};
-}
-
-
 
 
 async function _getAll() {
   
-  let __rawdata;
-  let __users = await db.users.count();
-  log.info('count users = '+__users);
-  if (__users==0) {
-    __rawdata = await _fillinUsers();
-  } else {
-    __rawdata = await _findUsers();
-  }
+  const __rawdata = await _findUsers();
   
-  return _parseUsers(__rawdata);
+  return {users: __rawdata};
 }
 
 
-
-/**
- * !!! DEV !!!
- * Fill in the DB with fake data from static file
- */
-async function _fillinUsers() {
-  const _users = await db.users.insert(users);
-  return { _users };
-}
-
-async function _findUsers(prd_criteriae={}) {
-  const _users = await db.users.find(prd_criteriae);
-  return { _users };
+async function _findUsers() {
+  const users = await (await db.users).get('users').value();
+  return users;
 }
 
 
 /**
  * Renvoie l'utilisateur dans l'identifiant est passé dans les critères
  */
-async function _findUser(prd_criteriae={}) {
-  const u = await db.users.findOne(prd_criteriae);
-  let user = null;
-  if (u) {
-    user = {id: u.user_id, nom: u.nom, status: u.status, identifiant: u.identifiant, points: u.points, droits: u.droits};
-  }
+async function _findUser(filterFn) {
+  const user = await (await db.users).get('users')
+                                     .find(filterFn)
+                                     .value();
   return user;
 }
 
@@ -128,25 +86,42 @@ async function _findUser(prd_criteriae={}) {
 async function _persistUser(payload) {
 
   let { user_id } = payload;
-  let _user = await db.users.findOne({user_id: user_id});
+  let _user = await (await db.users).get('users')
+                                    .find({user_id: user_id})
+                                    .value();
+
   if (_user) {
-    let __upd = {..._user, ...payload};
-    _user = await db.users.update({user_id: user_id}, __upd);
+    const __now = new Date().getTime();
+    let __upd = {..._user, ...payload, updatedAt:__now};
+    _user = await (await db.users).get('users')
+                                  .find({user_id: user_id})
+                                  .assign(__upd)
+                                  .write();
   } else {
-     user_id = 'usr'+uniqid();
-    _user = await db.users.insert({...payload, user_id: user_id});
+    _insertUser(payload);
+    //  user_id = 'usr'+uniqid();
+    // _user = await (await db.users).get('users')
+    //                               .push({...payload, user_id: user_id})
+    //                               .write();
   }
 
   return {confirm:(_user != null), user_id:user_id};
 }
 
+
 async function _insertUser(payload) {
 
   log.info('_insertUser()')
 
-  _user = await db.users.insert(payload);
+  const user_id = 'usr'+uniqid();
+  const __now = new Date().getTime();
+  let __upd = {...payload, user_id: user_id, createdAt: __now, updatedAt: __now};
 
-  log.info(_user);
+  const _user = await (await db.users).get('users')
+                                .insert(__upd)
+                                .write();
+
+  log.info("new user", _user);
 
   return _user;
 }

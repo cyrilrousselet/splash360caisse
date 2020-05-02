@@ -123,9 +123,9 @@ class Reglement extends React.Component {
 
       console.warn('!!! DEV - rétablir l’impression des tickets');
       if (!isDev) {
-        this.props.printTicket('commande');
-        this.props.printTicket('sac');
-        this.props.printTicket('cuisine');
+        this.props.printTicket('all');
+     //   this.props.printTicket('sac');
+     //   this.props.printTicket('cuisine');
       }
 
       this.props.validateCommande(this.props.commande);

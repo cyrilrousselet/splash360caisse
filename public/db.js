@@ -1,28 +1,63 @@
 // src/db.js
-const { app } = require('electron');
-const Datastore = require('nedb-promises');
+// const Datastore = require('nedb-promises');
 
-const dbFactory = (fileName) => Datastore.create({
- filename: `${process.env.NODE_ENV === 'dev' ? '.' :  app.getPath('userData')}/data/${fileName}`,
- timestampData: true,
- autoload: true
-});
+const { app } = require('electron');
+
+const low = require('lowdb');
+const FileAsync = require('lowdb/adapters/FileAsync');
+
+const hydration = require('./dev/dbhydration_chickenstreet.js');
+const {categories, groupes, tva, types, ingredients, produits, steps} = hydration;
+const {commandes} = hydration;
+const {parametres, imprimantes, tickets} = hydration;
+const {users} = hydration;
+const {clotures} = hydration;
+
+
+// const dbFactory = (fileName) => Datastore.create({
+//  filename: `${process.env.NODE_ENV === 'dev' ? '.' :  app.getPath('userData')}/data/${fileName}`,
+//  timestampData: true,
+//  autoload: true
+// });
+
+// const db = {
+//  categories: dbFactory('categories.db'),
+//  groupes: dbFactory('groupes.db'),
+//  tva: dbFactory('tva.db'),
+//  ingredienttypes: dbFactory('ingredienttypes.db'),
+//  ingredients: dbFactory('ingredients.db'),
+//  produits: dbFactory('produits.db'),
+//  steps: dbFactory('steps.db'),
+//  settings: dbFactory('settings.db'),
+//  commandes: dbFactory('commandes.db'),
+//  imprimantes: dbFactory('imprimantes.db'),
+//  tickets: dbFactory('tickets.db'),
+//  parametres: dbFactory('parametres.db'),
+//  users: dbFactory('users.db'),
+//  clotures: dbFactory('clotures.db')
+// };
+
+const dbFactory = (fileName, defaultValue) => low(
+    new FileAsync(
+      `${process.env.NODE_ENV === 'dev' ? '.' :  app.getPath('userData')}/data/${fileName}`,
+      {defaultValue: defaultValue}
+    )
+);
 
 const db = {
- categories: dbFactory('categories.db'),
- groupes: dbFactory('groupes.db'),
- tva: dbFactory('tva.db'),
- ingredienttypes: dbFactory('ingredienttypes.db'),
- ingredients: dbFactory('ingredients.db'),
- produits: dbFactory('produits.db'),
- steps: dbFactory('steps.db'),
- settings: dbFactory('settings.db'),
- commandes: dbFactory('commandes.db'),
- imprimantes: dbFactory('imprimantes.db'),
- tickets: dbFactory('tickets.db'),
- parametres: dbFactory('parametres.db'),
- users: dbFactory('users.db'),
- clotures: dbFactory('clotures.db')
+ categories: dbFactory('categories.json', {categories: categories}),
+ groupes: dbFactory('groupes.json', {groupes: groupes}),
+ tva: dbFactory('tva.json', {tva: tva}),
+ ingredienttypes: dbFactory('ingredienttypes.json', {types: types}),
+ ingredients: dbFactory('ingredients.json', {ingredients: ingredients}),
+ produits: dbFactory('produits.json', {produits: produits}),
+ steps: dbFactory('steps.json', {steps: steps}),
+ commandes: dbFactory('commandes.json', {commandes: commandes}),
+ imprimantes: dbFactory('imprimantes.json', {imprimantes: imprimantes}),
+ tickets: dbFactory('tickets.json', {tickets: tickets}),
+ parametres: dbFactory('parametres.json', {parametres: parametres}),
+ users: dbFactory('users.json', {users: users}),
+ clotures: dbFactory('clotures.json', {clotures: clotures})
 };
 
 module.exports = db;

@@ -6,8 +6,11 @@ import { format, compareAsc, startOfToday, endOfToday, startOfDay, endOfDay, par
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 
+import { templates } from '../../constants/templates';
+
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
+import { commandeActions } from '../commande/commandeActions';
 const strings = new LocalizedStrings(data);
 
 function printTest(payload) {
@@ -24,27 +27,10 @@ function printTest(payload) {
 
 function openDrawer() {
   return (dispatch, getState) => {
-
-// récup des infos
-      // -> params imprimante
-      // const imprimante = {
-      //   nom: 'POS Printer',
-      //   connexion: 'usb',
-      //   param: null,
-      //   encoding: 'Cp850'
-      // };
-
     
-      const { imprimantes } = getState().peripheralReducer;
-      const imprimante = Object.values(imprimantes).find(imp=>imp.default);
+    const { imprimantes } = getState().peripheralReducer;
+    const imprimante = Object.values(imprimantes).find(imp=>imp.default);
       
-      // {
-      //   nom: 'POS Printer',
-      //   connexion: 'network',
-      //   param: '192.168.1.192',
-      //   encoding: 'Cp850'
-      // };
-
     peripheralServices.openDrawer(imprimante)
     .then(
         data => { dispatch({ type: peripheralActionTypes.OPEN_DRAWER }) }
@@ -72,7 +58,6 @@ function getAllImprimantes() {
         );
   }
 };
-
 function updateImprimante(payload) {
   return (dispatch, getState) => {
     dispatch({ type: peripheralActionTypes.UPDATE_IMPRIMANTE_REQUEST });
@@ -101,7 +86,6 @@ function updateImprimante(payload) {
       )
   }
 }
-
 function deleteImprimante(payload) {
   return dispatch => {
     dispatch({ type: peripheralActionTypes.DELETE_IMPRIMANTE_REQUEST });
@@ -150,7 +134,6 @@ function getAllTickets() {
         );
   }
 };
-
 function updateTicket(payload) {
   return (dispatch, getState) => {
     dispatch({ type: peripheralActionTypes.UPDATE_TICKET_REQUEST });
@@ -178,7 +161,6 @@ function updateTicket(payload) {
       )
   }
 }
-
 function deleteTicket(payload) {
   return dispatch => {
     dispatch({ type: peripheralActionTypes.DELETE_TICKET_REQUEST });
@@ -193,7 +175,6 @@ function deleteTicket(payload) {
       )
   }
 }
-
 function createTicket(payload) {
   return dispatch => {
     dispatch({ type: peripheralActionTypes.CREATE_TICKET_REQUEST });
@@ -217,6 +198,19 @@ function createTicket(payload) {
 }
 
 
+function _getTicketsToPrint(filtre, tickets) {
+
+  let liste;
+  if (filtre=='all') {
+    liste = Object.values(tickets).filter((tck) => (tck.imprimantes.length>0 && (['commande','partiel','principal']).indexOf(tck.template)!=-1));
+  } else if (filtre.hasOwnProperty('templates')) {
+    liste = Object.values(tickets).filter((tck) => (tck.imprimantes.length>0 && filtre.templates.indexOf(tck.template)!=-1));
+  } else if (filtre.hasOwnProperty('ids')) {
+    liste = Object.values(tickets).filter((tck) => (tck.imprimantes.length>0 && filtre.ids.indexOf(tck.ticket_id)!=-1));
+  }
+
+  return liste;
+}
 
 
 
@@ -232,8 +226,10 @@ function printTicket(payload) {
     const ingredients = state.catalogueReducer.ingredients;
     const tva = state.catalogueReducer.tva;
     const { imprimantes, tickets } = state.peripheralReducer;
+    const { peripheriques, entreprise } = state.parametresReducer.parametres;
+    const { impression } = peripheriques;
 
-    const caisse = {id:'001'};
+    const caisse = cmd.caisse;
     const operateur = cmd.operator;
 
     let __createdAt = new Date();
@@ -244,23 +240,10 @@ function printTicket(payload) {
     const heure = format(__createdAt, "H:mm:ss");
 
     let contenu = {};
+    let imprimante = {};
+    let target_imprimantes = [];
+    let impression_ordre = {};
 
-    // let imprimante = {
-    //   nom: 'POS Printer',
-    //   connexion: 'usb',
-    //   param: null,
-    //   encoding: 'Cp850'
-    // };
-
-
-
-
-    let imprimante = {
-      // nom: 'POS Printer',
-      // connexion: 'network',
-      // param: '192.168.1.192',
-      // encoding: 'Cp850'
-    };
     let ticket = {};
 
     let template = [];
@@ -280,306 +263,286 @@ function printTicket(payload) {
     }
 
 
-    // en fonction du type de ticket demandé
-    if (payload=='commande') {
+    // récup de la liste des tickets à imprimer
+    const ticketsListe = _getTicketsToPrint(payload, tickets);
 
-      // récup des infos
-      // -> params imprimante
-      // imprimante = {
-      //   nom: 'POS Printer',
-      //   connexion: 'usb',
-      //   param: null,
-      //   encoding: 'Cp850'
-      // };
+    // pour chaque ticket à imprimer, on prépare les params et contenus
+    ticketsListe.forEach(ticket => {
 
-      // récup des préf. du ticket et de l'imprimante correspondante
-      ticket = Object.values(tickets).find(tck=>tck.template=='commande');
-      imprimante = Object.values(imprimantes).find(imp=>imp.printer_id==ticket.imprimantes[0]);
+      impression_ordre = impression.find(it => it.ticket==ticket.ticket_id);
+      target_imprimantes = Object.values(imprimantes).filter((imp)=>(ticket.imprimantes.indexOf(imp.printer_id)!=-1));
+      imprimante = target_imprimantes[0];
 
-      // imprimante = {
-      //   nom: 'POS Printer',
-      //   connexion: 'network',
-      //   param: '192.168.1.192',
-      //   encoding: 'Cp850'
-      // };
-      // -> template ticket
-      template = [
-       // 'logo', 
-        'entreprise', 
-        'commande', 
-      //  'message', 
-        'legal'
-      ];
+      // en fonction du type de ticket demandé
+      if (ticket.template==='commande') {
+     
+        // -> template ticket
+        template = templates.commande;
 
-      const cmdTva = {};
-      let articles = [];
-      let total = 0;
-      cmd.items.forEach(article => {
+        const cmdTva = {};
+        let articles = [];
+        let total = 0;
+        cmd.items.forEach(article => {
 
-        let articleIngredients = [];
-        total += article.quantite * article.prix;
+          let articleIngredients = [];
+          total += article.quantite * article.prix;
 
-        article.ingredients.forEach(ing => {
+          article.ingredients.forEach(ing => {
 
-          let __onticketcmd = types[ing.type].print.find(p=>p.ticket=='tck1');
+            // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
+            let __noprint = types[ing.type].noprint.find(p=>p==ticket.ticket_id);
 
-          if (ing.fromStep!=null && __onticketcmd!=undefined) {
-            articleIngredients.push({
-              qte: ing.qte,
-              codetva: tva[ingredients[ing.ingredient].tva_id].code,
-              nom: ing.nom,
-              pu: ing.prix==0 ? '' : Number(ing.prix).toFixed(2),
-              prix: ing.prix==0 ? '' : (Number(ing.prix)*ing.qte).toFixed(2),
-              weight: __onticketcmd.weight
+            // ordre du type d'ingrédient
+            let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
+            // ordre du type d'ingrédient (défini dans les paramètres)
+            if (impression_ordre) {
+              let __typeweight = impression_ordre.types.findIndex(t=>t==ing.type);
+              if (__typeweight!=-1) __ingweight = __typeweight;
+            }
+
+            if (ing.fromStep!=null && !__noprint) {
+              articleIngredients.push({
+                qte: ing.qte,
+                codetva: tva[ingredients[ing.ingredient].tva_id].code,
+                nom: ing.nom,
+                pu: ing.prix==0 ? '' : Number(ing.prix).toFixed(2),
+                prix: ing.prix==0 ? '' : (Number(ing.prix)*ing.qte).toFixed(2),
+                weight: __ingweight
+              });
+            }
+          });
+
+          articleIngredients.sort((a,b)=>a.weight-b.weight);
+
+          articles.push({
+            qte: article.quantite,
+            codetva: article.tva.code,
+            nom: article.nom,
+            pu: Number(article.prix).toFixed(2),
+            prix: (Number(article.prix)*article.quantite).toFixed(2),
+            ingredients: articleIngredients
+          });
+
+          if (!cmdTva.hasOwnProperty(article.tva.code)) {
+            Object.defineProperty(cmdTva, article.tva.code, {
+              value: {taux:`${Number(article.tva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
+              writable: true,
+              enumerable: true
             });
           }
-        });
 
-        articleIngredients.sort((a,b)=>a.weight-b.weight);
 
-        articles.push({
-          qte: article.quantite,
-          codetva: article.tva.code,
-          nom: article.nom,
-          pu: Number(article.prix).toFixed(2),
-          prix: (Number(article.prix)*article.quantite).toFixed(2),
-          ingredients: articleIngredients
-        });
-        if (!cmdTva.hasOwnProperty(article.tva.code)) {
-          Object.defineProperty(cmdTva, article.tva.code, {
-            value: {taux:`${Number(article.tva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
-            writable: true,
-            enumerable: true
+          let ht = (Number(article.prix)*article.quantite) / (1 + Number(article.tva.valeur));
+
+          cmdTva[article.tva.code] = Object.assign(cmdTva[article.tva.code], {
+            montant: cmdTva[article.tva.code].montant + (ht * Number(article.tva.valeur)),
+            ht: cmdTva[article.tva.code].ht + ht,
+            ttc: cmdTva[article.tva.code].ttc + Number(article.prix)*article.quantite
           });
-        }
+          
 
-
-        let ht = (Number(article.prix)*article.quantite) / (1 + Number(article.tva.valeur));
-
-        cmdTva[article.tva.code] = Object.assign(cmdTva[article.tva.code], {
-          montant: cmdTva[article.tva.code].montant + (ht * Number(article.tva.valeur)),
-          ht: cmdTva[article.tva.code].ht + ht,
-          ttc: cmdTva[article.tva.code].ttc + Number(article.prix)*article.quantite
         });
         
 
-      });
-      
-
-      const commande = {
-        numero: cmdnumero,
-        id: cmd.ticketId,
-        date: `${date} à ${heure}`,
-        articles: articles,
-        total: {
-          total: total.toFixed(2),
-          tva: cmdTva
-        },
-        reglements: cmd.reglements,
-        rendus: cmd.rendus
-      };
+        const commande = {
+          numero: cmdnumero,
+          id: cmd.ticketId,
+          date: `${date} à ${heure}`,
+          articles: articles,
+          total: {
+            total: total.toFixed(2),
+            tva: cmdTva
+          },
+          reglements: cmd.reglements,
+          rendus: cmd.rendus
+        };
 
 
-      // contenu :
-      contenu = {
-        // -> logo
-        logo: null,
-        // -> entreprise
-        entreprise: {
-          nom: 'CHICKEN STREET',
-          coordonnees: [ '31, avenue Anatole France', '94600 CHOISY-LE-ROI', 'www.chickenstreet.fr' ],
-          fiscal: [ '844 413 807 RCS Créteil' ]
-        },
-        // -> commande (id, date, articles, remises, totaux, tva, réglements)
-        commande: commande,
-        // -> message
-        message: [ 'Notre restaurant est ouvert', 'Du lundi au samedi', 'De 11h à 14h et de 18h à 22h30', 'Et le dimanche', 'de 18h à 22h30', 'MERCI ET BON APPÉTIT !' ],
-        // -> infos légales (type d'opération, code vendeur, code caisse, code centre profit, code opération, version logiciel)
-        // et infos ticket : numéro ticket, date
-        legal: {
-          type: 'VENTE',
-          vendeur: operateur.nom+' - '+operateur.id,
-          caisse: caisse.id,
-          centre: 'Rest.01',
-          version: '0.1.0',
-          ticketid: `T${caisse.id}-0001`,
-          printid: 1,
-          date: `${date} - ${heure}`
-        },
-        strings: strings.tickets.commande
-      };
+        const siret = entreprise.siret;
 
-    }
-    else if (payload==="cuisine") {
-      
+        // contenu :
+        contenu = {
+          // -> logo
+          logo: null,
+          // -> entreprise
+          entreprise: {
+            nom: String(entreprise.denomination).toUpperCase(),
+            coordonnees: [ entreprise.adresse, `${entreprise.code_postal} ${String(entreprise.ville).toUpperCase()}`, entreprise.site_web ],
+            fiscal: [ `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` ]
+          },
+          // -> commande (id, date, articles, remises, totaux, tva, réglements)
+          commande: commande,
+          // -> message
+          message: [ 'Notre restaurant est ouvert', 'Du lundi au samedi', 'De 11h à 14h et de 18h à 22h30', 'Et le dimanche', 'de 18h à 22h30', 'MERCI ET BON APPÉTIT !' ],
+          // -> infos légales (type d'opération, code vendeur, code caisse, code centre profit, code opération, version logiciel)
+          // et infos ticket : numéro ticket, date
+          legal: {
+            type: 'VENTE',
+            vendeur: operateur.nom+' - '+operateur.id,
+            caisse: caisse.id,
+            centre: 'Rest.01',
+            version: '0.1.0',
+            ticketid: `T${caisse.id}-${Number(cmd.printnum)+1}`,
+            printid: Number(cmd.printnum)+1,
+            date: `${date} - ${heure}`
+          },
+          nomticket: ticket.nom,
+          strings: strings.tickets.commande
+        };
 
-      // récup des infos
-    //   // -> params imprimante
-    //   imprimante = {
-    //     nom: 'Cuisine Printer',
-    //     connexion: 'network',
-    //     param: '192.168.1.192',
-    //  //   param: '192.168.182.151',
-    //     encoding: 'Cp850'
-    //   };
+      }
+      else if (ticket.template==="partiel") {
+        
+        // -> template ticket
+        template = templates.partiel;
 
 
-      // récup des préf. du ticket et de l'imprimante correspondante
-      ticket = Object.values(tickets).find(tck=>tck.template=='partiel');
-      imprimante = Object.values(imprimantes).find(imp=>imp.printer_id==ticket.imprimantes[0]);
+        let articles = [];
+        cmd.items.forEach(article => {
 
-      
-      // -> template ticket
-      template = [
-        'cuisine_info', 
-        'cuisine_detail'
-      ];
+          let articleIngredients = [];
+
+          article.ingredients.forEach(ing => {
+
+            // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
+            let __noprint = types[ing.type].noprint.find(p=>p==ticket.ticket_id);
+
+            // ordre du type d'ingrédient
+            let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
+            // ordre du type d'ingrédient (défini dans les paramètres)
+            if (impression_ordre) {
+              let __typeweight = impression_ordre.types.findIndex(t=>t==ing.type);
+              if (__typeweight!=-1) __ingweight = __typeweight;
+            }
 
 
+            if (ing.fromStep!=null && !__noprint) {
+              articleIngredients.push({
+                qte: ing.qte,
+                nom: ing.nom,
+                weight: __ingweight
+              });
+            }
+          });
 
-      let articles = [];
-      cmd.items.forEach(article => {
+          articleIngredients.sort((a,b)=>a.weight-b.weight);
 
-        let articleIngredients = [];
+          articles.push({
+            qte: article.quantite,
+            nom: article.nom,
+            ingredients: articleIngredients
+          });        
 
-        article.ingredients.forEach(ing => {
-
-          let __onticketcsn = types[ing.type].print.find(p=>p.ticket=='tck3');
-          if (ing.fromStep!=null && __onticketcsn!=undefined) {
-            articleIngredients.push({
-              qte: ing.qte,
-              nom: ing.nom,
-              weight: __onticketcsn.weight
-            });
-          }
         });
 
-        articleIngredients.sort((a,b)=>a.weight-b.weight);
 
-        articles.push({
-          qte: article.quantite,
-          nom: article.nom,
-          ingredients: articleIngredients
-        });        
-
-      });
-
+        const cmdcuisine = {
+          numero: cmdnumero,
+          id: cmd.ticketId,
+          mode: cmd.mode,
+          date: `${date} à ${heure}`,
+          articles: articles
+        };
 
 
-      const cmdcuisine = {
-        numero: cmdnumero,
-        id: cmd.ticketId,
-        mode: cmd.mode,
-        date: `${date} à ${heure}`,
-        articles: articles
-      };
+        contenu = {
+          info: {
+            date: date,
+            heure: heure
+          },
+          nomticket: ticket.nom,
+          detail: cmdcuisine,
+          strings: strings.tickets.cuisine
+        }
 
 
-
-
-      contenu = {
-        info: {
-          date: date,
-          heure: heure
-        },
-        detail: cmdcuisine,
-        strings: strings.tickets.cuisine
       }
+      else if (ticket.template==="principal") {
+        
+
+        template = templates.principal;
 
 
-    }
-    else if (payload==="sac") {
-      
+        let articles = [];
+        cmd.items.forEach(article => {
 
-      // récup des infos
-      // -> params imprimante
-      // imprimante = {
-      //   nom: 'POS Printer',
-      //   connexion: 'usb',
-      //   param: null,
-      //   encoding: 'Cp850'
-      // };
-      // imprimante = {
-      //   nom: 'POS Printer',
-      //   connexion: 'network',
-      //   param: '192.168.1.192',
-      //   encoding: 'Cp850'
-      // };
+          let articleIngredients = [];
+
+          article.ingredients.forEach(ing => {
 
 
-      // récup des préf. du ticket et de l'imprimante correspondante
-      ticket = Object.values(tickets).find(tck=>tck.template=='principal');
-      imprimante = Object.values(imprimantes).find(imp=>imp.printer_id==ticket.imprimantes[0]);
+            // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
+            let __noprint = types[ing.type].noprint.find(p=>p==ticket.ticket_id);
 
-      // -> template ticket
-      template = [
-        'sac_info', 
-        'sac_detail'
-      ];
+            // ordre du type d'ingrédient
+            let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
+            // ordre du type d'ingrédient (défini dans les paramètres)
+            if (impression_ordre) {
+              let __typeweight = impression_ordre.types.findIndex(t=>t==ing.type);
+              if (__typeweight!=-1) __ingweight = __typeweight;
+            }
 
 
 
-      let articles = [];
-      cmd.items.forEach(article => {
+            if (ing.fromStep!=null && !__noprint) {
+              articleIngredients.push({
+                qte: ing.qte,
+                nom: ing.nom,
+                weight: __ingweight
+              });
+            }
+          });
 
-        let articleIngredients = [];
+          articleIngredients.sort((a,b)=>a.weight-b.weight);
 
-        article.ingredients.forEach(ing => {
+          articles.push({
+            qte: article.quantite,
+            nom: article.nom,
+            ingredients: articleIngredients
+          });        
 
-          let __onticketsac = types[ing.type].print.find(p=>p.ticket=='tck2');
-          if (ing.fromStep!=null && __onticketsac!=undefined) {
-            articleIngredients.push({
-              qte: ing.qte,
-              nom: ing.nom,
-              weight: __onticketsac.weight
-            });
-          }
         });
 
-        articleIngredients.sort((a,b)=>a.weight-b.weight);
-
-        articles.push({
-          qte: article.quantite,
-          nom: article.nom,
-          ingredients: articleIngredients
-        });        
-
-      });
 
 
-
-      const cmdcuisine = {
-        numero: cmdnumero,
-        id: cmd.ticketId,
-        mode: cmd.mode,
-        date: `${date} à ${heure}`,
-        articles: articles
-      };
+        const cmdcuisine = {
+          numero: cmdnumero,
+          id: cmd.ticketId,
+          mode: cmd.mode,
+          date: `${date} à ${heure}`,
+          articles: articles
+        };
 
 
 
 
-      contenu = {
-        info: {
-          date: date,
-          heure: heure
-        },
-        detail: cmdcuisine,
-        strings: strings.tickets.sac
+        contenu = {
+          info: {
+            date: date,
+            heure: heure
+          },
+          nomticket: ticket.nom,
+          detail: cmdcuisine,
+          strings: strings.tickets.sac
+        }
+
+      }
+
+      peripheralServices.printTicket(target_imprimantes[0], template, contenu)
+      .then(
+        response => {
+          console.log(response);
+        }
+      )
+      dispatch({ type: peripheralActionTypes.PRINT_TICKET });
+      if (ticket.template=='commande') {
+        dispatch(commandeActions.updateCommande({...cmd, printnum: Number(cmd.printnum)+1}));
       }
 
 
-    }
+    });
 
 
-
-    peripheralServices.printTicket(imprimante, template, contenu)
-    .then(
-      response => {
-        console.log(response);
-      }
-    )
-    dispatch({ type: peripheralActionTypes.PRINT_TICKET });
   }
 }
 
@@ -597,6 +560,7 @@ function printPeriodeX(payload={}) {
       const { periode } = getState().clotureReducer;
       const { impression } = strings.modules.cloture;
       const { imprimantes, tickets } = getState().peripheralReducer;
+      const { entreprise } = getState().parametresReducer.parametres;
 
       // récup des préf. du ticket et de l'imprimante correspondante
       let ticket = Object.values(tickets).find(tck=>tck.template=='cloture_x');
@@ -611,12 +575,13 @@ function printPeriodeX(payload={}) {
                  debut: __debut, 
                  fin: __fin};
 
+      const siret = entreprise.siret;
       const contenu = {
         // -> entreprise
         entreprise: {
-          nom: 'CHICKEN STREET',
-          coordonnees: [ '31, avenue Anatole France', '94600 CHOISY-LE-ROI', 'www.chickenstreet.fr' ],
-          fiscal: [ '844 413 807 RCS Créteil' ]
+          nom: String(entreprise.denomination).toUpperCase(),
+          coordonnees: [ entreprise.adresse, `${entreprise.code_postal} ${String(entreprise.ville).toUpperCase()}`, entreprise.site_web ],
+          fiscal: [ `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` ]
         },
         periode: __periode,
         strings: impression
@@ -658,6 +623,7 @@ function printCloture(payload={}) {
 
     const { impression } = strings.modules.cloture;
     const { imprimantes, tickets } = getState().peripheralReducer;
+    const { entreprise } = getState().parametresReducer.parametres;
 
     // récup des préf. du ticket et de l'imprimante correspondante
     let ticket = Object.values(tickets).find(tck=>tck.template=='cloture_z');
@@ -672,12 +638,13 @@ function printCloture(payload={}) {
                 debut: __debut, 
                 fin: __fin};
 
+    const siret = entreprise.siret;
     const contenu = {
       // -> entreprise
       entreprise: {
-        nom: 'CHICKEN STREET',
-        coordonnees: [ '31, avenue Anatole France', '94600 CHOISY-LE-ROI', 'www.chickenstreet.fr' ],
-        fiscal: [ '844 413 807 RCS Créteil' ]
+        nom: String(entreprise.denomination).toUpperCase(),
+        coordonnees: [ entreprise.adresse, `${entreprise.code_postal} ${String(entreprise.ville).toUpperCase()}`, entreprise.site_web ],
+        fiscal: [ `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` ]
       },
       periode: __periode,
       prelevement: prelevement,

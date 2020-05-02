@@ -1,7 +1,6 @@
 const db = require('../db.js');
+const lodashId = require('lodash-id');
 const log = require('electron-log');
-const hydration = require('../dev/dbhydration_chickenstreet.js');
-const {clotures} = hydration;
 
 
 const actions = {
@@ -9,6 +8,7 @@ const actions = {
     const {payload} = req;
     log.info("dbClotureGetAll() in API");
     
+    (await db.clotures)._.mixin(lodashId);
     const proxies = await _getAll();
       
   //  log.info(proxies);
@@ -17,6 +17,7 @@ const actions = {
   dbClotureGetCloture: async (req,res) => {
     const {payload} = req;
     log.info("dbClotureGetCloture("+payload.clotureId+") in API");
+    (await db.clotures)._.mixin(lodashId);
     const proxies = await _findCommande({ticketId: payload.clotureId});
     log.info(proxies);
     res.send(proxies);
@@ -25,6 +26,7 @@ const actions = {
       const {payload} = req;
       log.info("dbCloturePersist() in API");
 
+      (await db.clotures)._.mixin(lodashId);
       const confirm = await _persistCloture(payload.cloture);
 
       res.send(confirm);
@@ -36,26 +38,10 @@ const actions = {
 
 async function _getAll() {
   
-  let __rawdata;
-  let __clonum = await db.clotures.count();
-  if (__clonum==0) {
-    log.info('dbClotureApi._getAll() : init DB');
-    __rawdata = await _fillinCloture();
-  } else {
-    __rawdata = await _findCloture();
-  }
+  const __rawdata = await _findCloture();
   return _parseCloture(__rawdata);
 }
 
-
-/**
- * !!! DEV !!!
- * Fill in the DB with fake data from static file
- */
-async function _fillinCloture() {
-  const _clo = await db.clotures.insert(clotures);
-  return { _clo };
-}
 
 /**
  * Get clotures data from DB
@@ -64,25 +50,37 @@ async function _findCloture(criteriae={}) {
   log.info(criteriae);
   let _clo = [];
   if ("clotureId" in criteriae) {
-    _clo = await db.clotures.findOne(criteriae);
+    _clo = await (await db.clotures).get('clotures')
+                                    .find(criteriae)
+                                    .value();
   } else {
-    _clo = await db.clotures.find(criteriae);
+    _clo = await (await db.clotures).get('clotures')
+                                    .value();
   }
   return { _clo };
 }
 
 async function _persistCloture(payload) {
 
-  let _clo = await db.clotures.findOne({clotureId: payload.clotureId});
+  const __now = new Date().getTime();
+  let _clo = await (await db.clotures).get('clotures')
+                                      .find({clotureId: payload.clotureId})
+                                      .value();
   log.info(_clo);
   if (_clo) {
     log.info('clo existe, donc on update');
-    let __upd = {..._clo, ...payload};
-    _clo = await db.clotures.update({clotureId: payload.clotureId}, __upd);
+    let __upd = {..._clo, ...payload, updatedAt: __now};
+    _clo = await (await db.clotures).get('clotures')
+                                    .find({clotureId: payload.clotureId})
+                                    .assign(__upd)
+                                    .write();
   }
   else {
     log.info('pas de clo donc on insert');
-    _clo = await db.clotures.insert(payload);
+    let __ins = {...payload, createdAt: __now, updatedAt: __now};
+    _clo = await (await db.clotures).get('clotures')
+                                    .insert(__ins)
+                                    .write();
   }
 
   return _clo != null;

@@ -17,6 +17,9 @@ function printTest() {
 }
 
 function printTicket(imprimante, template, contenu) {
+
+  console.log('printTicket imprimante', imprimante);
+
   return emit('printTicket', {imprimante, template, contenu});
 }
 

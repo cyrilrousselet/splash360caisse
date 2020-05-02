@@ -116,9 +116,6 @@ function TableCommandes(props) {
 function ImpressionTicketPopin(props) {
   const { tickets, printOpen, closeHandler, commandeId, launchTicket } = props;
 
-  const tous = strings.modules.listecommandes.impression.tous; 
-
-  const _tickets = [tous , ...tickets];
 
   return (
     <Modal
@@ -130,8 +127,9 @@ function ImpressionTicketPopin(props) {
             <div className="title">{ strings.modules.listecommandes.impression.titre }</div>
           </div>
           <div className="body">
-          { _tickets.map((tkt,i) =>
-            <StdButton identifier={ `${tkt}` } key={i} elementclass="ticket" icon={ false } text={ tkt } onClick={(value) => { launchTicket(tkt) }} />
+            <StdButton identifier="all" key={tickets.length} elementclass="ticket" icon={ false } text={ strings.modules.listecommandes.impression.tous } onClick={(value) => { launchTicket("all") }} />
+          { tickets.map((tkt,i) =>
+            <StdButton identifier={ tkt.ticket_id } key={i} elementclass="ticket" icon={ false } text={ tkt.nom } onClick={(value) => { launchTicket({ids:[tkt.ticket_id]}) }} />
           )}
           </div>
         </div>

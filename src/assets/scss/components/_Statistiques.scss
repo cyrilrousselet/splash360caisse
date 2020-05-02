@@ -352,13 +352,14 @@
           background-size: 3px 100%;
           background-position: center top;
           position: relative;
+          min-height: 20px;
           .jauge {
             border-radius: 50%;
             font-family: $f_blk;
             font-size: 11px;
             color: $blanc;
-            min-width: 17px;
-            min-height: 17px;
+            min-width: 24px;
+            min-height: 24px;
             display: inline-flex;
             justify-content: center;
             align-items: center;

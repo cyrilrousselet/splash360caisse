@@ -1,7 +1,7 @@
 const db = require('../db.js');
+const lodashId = require('lodash-id');
 const log = require('electron-log');
-const hydration = require('../dev/dbhydration_chickenstreet.js');
-const {categories, groupes, tva, types, ingredients, produits, steps} = hydration;
+
 
 
 const actions = {
@@ -11,6 +11,14 @@ const actions = {
   },
   dbCatalogueGetAllActive: async (req,res) => {
     const {payload} = req;
+
+    (await db.categories)._.mixin(lodashId);
+    (await db.groupes)._.mixin(lodashId);
+    (await db.tva)._.mixin(lodashId);
+    (await db.ingredienttypes)._.mixin(lodashId);
+    (await db.ingredients)._.mixin(lodashId);
+    (await db.produits)._.mixin(lodashId);
+    (await db.steps)._.mixin(lodashId);
 
     log.info("dbCatalogueGetAllActive() in API");
 
@@ -23,18 +31,15 @@ const actions = {
   }
 }
 
+
 async function _getAllActive() {
   
-  let __rawdata;
-  let __prdnum = await db.produits.count();
-  if (__prdnum==0) {
-    log.info('dbCatalogueApi._getAllActive() : init DB');
-    __rawdata = await _fillinCatalogue();
-  } else {
-    __rawdata = await _findCatalogue({active: 1});
-  }
+  let __rawdata = await _findCatalogue({active: 1});
+  
   return _parseCatalogue(__rawdata);
 }
+
+
 
 /** 
  * 
@@ -77,7 +82,7 @@ function _parseCatalogue(_rawdata) {
 
   const __ingredientTypes = {};
   _rawdata._igt.forEach(t => {
-    __ingredientTypes[t.type_id] = {nom: t.nom, ingredients: [], print: t.print};
+    __ingredientTypes[t.type_id] = {nom: t.nom, ingredients: [], noprint: t.noprint, weight: t.weight};
   });
 
   _rawdata._ing.forEach(i => {
@@ -87,7 +92,7 @@ function _parseCatalogue(_rawdata) {
 
   const __catalogue = {};
   _rawdata._grp.forEach(g => {
-    __catalogue[g.groupe_id] = {nom: g.nom, produits: [], print: g.print};
+    __catalogue[g.groupe_id] = {nom: g.nom, produits: [], noprint: g.noprint, weight: g.weight};
   });
   
   _rawdata._prd.forEach(p => {
@@ -110,32 +115,18 @@ function _parseCatalogue(_rawdata) {
 //  return __catalogue;
 }
 
-/**
- * !!! DEV !!!
- * Fill in the DB with fake data from static file
- */
-async function _fillinCatalogue() {
-  const _cat = await db.categories.insert(categories);
-  const _grp = await db.groupes.insert(groupes);
-  const _tva = await db.tva.insert(tva);
-  const _igt = await db.ingredienttypes.insert(types);
-  const _ing = await db.ingredients.insert(ingredients);
-  const _prd = await db.produits.insert(produits);
-  const _stp = await db.steps.insert(steps);
-  return { _cat, _grp, _tva, _igt, _ing, _prd, _stp };
-}
 
 /**
  * Get all catalogue data from DB
  */
 async function _findCatalogue(prd_criteriae={}) {
-  const _cat = await db.categories.find({});
-  const _grp = await db.groupes.find({}).sort({ weight: 1 });
-  const _tva = await db.tva.find({});
-  const _igt = await db.ingredienttypes.find({});
-  const _ing = await db.ingredients.find({}).sort({ weight: 1 });
-  const _prd = await db.produits.find(prd_criteriae);
-  const _stp = await db.steps.find({}).sort({ weight: 1 });
+  const _cat = await (await db.categories).get('categories').value();
+  const _grp = await (await db.groupes).get('groupes').sortBy('weight').value();
+  const _tva = await (await db.tva).get('tva').value();
+  const _igt = await (await db.ingredienttypes).get('types').value();
+  const _ing = await (await db.ingredients).get('ingredients').sortBy('weight').value();
+  const _prd = await (await db.produits).get('produits').filter(prd_criteriae).value();
+  const _stp = await (await db.steps).get('steps').sortBy('weight').value();
   return { _cat, _grp, _tva, _igt, _ing, _prd, _stp };
 }
 

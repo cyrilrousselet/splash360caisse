@@ -324,19 +324,24 @@ class PanierListeItem extends React.Component {
     if (steps) {
       steps.forEach(stp => {
         let ing = ingredients.filter(ingrd => ingrd.fromStep==stp.id);
+        
         // s'il n'y a aucun ingrédient pour le step,
         // on ajoute un item "aucun" pour permettre d'ouvrir la popin de personnalisation pour ce step
-        if (0==ing.length) {
+        // if (0==ing.length) {
           
-          ing = [{
-            fromStep: stp.id,
-            ingredient: i--,
-            nom: strings.modules.encaissement.personnalisation.aucun,
-            qte: 0,
-            prix: 0
-          }];
+        //   ing = [{
+        //     fromStep: stp.id,
+        //     ingredient: i--,
+        //     nom: strings.modules.encaissement.personnalisation.aucun,
+        //     qte: 0,
+        //     prix: 0
+        //   }];
+        // }
+
+        // s'il y a un ingrédient pour le step, on l'ajoute
+        if (ing.length>0) {  
+          customIng = [...customIng, ...ing];
         }
-        customIng = [...customIng, ...ing];
       });
     }
 

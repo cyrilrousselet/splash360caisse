@@ -229,17 +229,14 @@ function _launchPrint(template, printer, contenu) {
     else if ('prelevement' === section) {
       _printPrelevement(printer, contenu.prelevement, contenu.strings);
     }
-    else if ('cuisine_info' === section) {
-      _printCuisineInfo(printer, {info: contenu.info, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode}}, contenu.strings);
+    else if ('info' === section) {
+      _printInfo(printer, {info: contenu.info, nomticket: contenu.nomticket, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode}}, contenu.strings);
     }
-    else if ('cuisine_detail' ===  section) {
-      _printCuisineDetail(printer, contenu.detail, contenu.strings);
+    else if ('partiel_detail' ===  section) {
+      _printPartielDetail(printer, contenu.detail, contenu.strings);
     }
-    else if ('sac_info' === section) {
-      _printSacInfo(printer, {info: contenu.info, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode}}, contenu.strings);
-    }
-    else if ('sac_detail' ===  section) {
-      _printSacDetail(printer, contenu.detail, contenu.strings);
+    else if ('principal_detail' ===  section) {
+      _printPrincipalDetail(printer, contenu.detail, contenu.strings);
     }
 
     // fin du ticket
@@ -258,13 +255,13 @@ function _launchPrint(template, printer, contenu) {
 
 
 // informations sur le ticket cuisine
-function _printCuisineInfo(printer, data, strings) {
+function _printInfo(printer, data, strings) {
   printer
     .font('A')
     .align('CT')
     .style('B')
     .size(1,2)
-    .text(strings.titre)
+    .text(data.nomticket)
     .size(1,1)
     .drawLine()
     .style('B')
@@ -281,7 +278,7 @@ function _printCuisineInfo(printer, data, strings) {
     .size(1,1);
 }
 
-function _printCuisineDetail(printer, data, strings) {
+function _printPartielDetail(printer, data, strings) {
   printer
     .align('CT')
     .size(1,1)
@@ -354,7 +351,7 @@ function _printSacInfo(printer, data, strings) {
     .size(1,1);
 }
 
-function _printSacDetail(printer, data, strings) {
+function _printPrincipalDetail(printer, data, strings) {
   printer
     .align('CT')
     .size(1,1)

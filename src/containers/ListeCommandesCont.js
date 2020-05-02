@@ -8,12 +8,21 @@ import { catalogueActions } from '../services/catalogue/catalogueActions';
 import { getCommandesListError, getCommandesListLoading, getCommandesList } from '../services/commande/commandesListReducer';
 import { peripheralActions } from '../services/peripheral/peripheralActions';
 
+
+const getTicketsListe = (state) => {
+
+  const { tickets } = state.peripheralReducer;
+  const liste = Object.values(tickets).filter(tck => (tck.imprimantes.length>0 && (['commande','partiel','principal']).indexOf(tck.template)!=-1));
+  return liste;
+}
+
+
 const mapStateToProps = (state) => {
   return {
       loading: getCommandesListLoading(state),
       error: getCommandesListError(state),
       commandeslist: getCommandesList(state),
-      tickets: ['sac','commande', 'cuisine', 'sucré', 'brasserie'],
+      tickets: getTicketsListe(state),
       thiscash: (state.parametresReducer.parametres.options && state.parametresReducer.parametres.options.caisse) || {}
   }
 }

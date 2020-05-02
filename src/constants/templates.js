@@ -7,12 +7,12 @@ export const templates = {
      'legal'
   ],
   partiel: [
-    'cuisine_info', 
-    'cuisine_detail'
+    'info', 
+    'partiel_detail'
   ],
   principal: [
-    'cuisine_info', 
-    'cuisine_detail',
+    'info', 
+    'principal_detail',
     'recap'
   ]
-}
+};

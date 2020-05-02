@@ -36,6 +36,7 @@ function getNewCommande(params) {
         end: null,
         chrono: 0,
         total: 0,
+        printnum: 0,
         mode: 'surplace',
         status: 'pending'
     }

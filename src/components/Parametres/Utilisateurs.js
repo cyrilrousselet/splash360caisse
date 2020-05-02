@@ -26,7 +26,7 @@ class EditUtilisateurPopin extends React.Component {
       user_id: null,
       nom: '',
       identifiant: '', 
-      status: 'active',
+      status: null,
       droits: '',
       error_nom: false,
       error_identifiant: false
@@ -122,7 +122,7 @@ class EditUtilisateurPopin extends React.Component {
 
   getValues() {
     
-    const { droits, nom, identifiant, status } = this.props.utilisateur || {droits:{}, nom:null, identifiant:null};
+    const { droits, nom, identifiant, status } = this.props.utilisateur || {droits:{}, nom:null, identifiant:null, status:'active'};
     console.log('getValues()', this.props.utilisateur);
     console.log('getValues() droits', droits);
     // si aucun droit n'est défini (cas d'un nouvel utilisateur)
@@ -165,6 +165,7 @@ class EditUtilisateurPopin extends React.Component {
       nom: '',
       identifiant: '', 
       droits: droits,
+      status: null,
       error_nom: false,
       error_identifiant: false
     }
@@ -211,7 +212,8 @@ class EditUtilisateurPopin extends React.Component {
   render() {
     const { utilisateur, editOpen, closeHandler } = this.props;
     const { nom, identifiant, droits, allchecked, status } = this.getValues();
-    console.log("utilisateur: ",this.state)
+    console.log("utilisateur: ", utilisateur);
+    console.log('status',status);
  
     // const a_nom = nom || utilisateur && utilisateur.nom;
     // const a_identifiant = identifiant || utilisateur && utilisateur.identifiant;
@@ -245,7 +247,7 @@ class EditUtilisateurPopin extends React.Component {
                   name={ `identifiant` }
                   className={ `fieldpasse ${(this.state.error_identifiant ? ' erreur' : '')}` }
                   value={ identifiant } 
-                  placeholder='' 
+                  placeholder={ strings.modules.parametres.submodules.utilisateurs.liste.passe_placeholder } 
                   type='text' 
                   maxLength={passphrase_length}
                   readOnly={ false } 

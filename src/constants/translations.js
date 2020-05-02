@@ -429,6 +429,7 @@ const data = {
                             titre: 'Liste des utilisateurs',
                             nom: 'Nom',
                             passe: 'Identifiant',
+                            passe_placeholder: 'code à 6 chiffres',
                             droits: 'Droits',
                             droits_liste: {
                                 clients: "Accès Clients",
