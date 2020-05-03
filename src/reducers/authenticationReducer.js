@@ -17,6 +17,7 @@ export function authentication(state = initialState, action) {
         user: action.user
       };
     case userActionTypes.LOGIN_FAILURE:
+    case userActionTypes.LOGIN_ERROR:
     case userActionTypes.LOGIN_DENIED:
       return {
         loggedIn: false,

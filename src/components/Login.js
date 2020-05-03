@@ -17,7 +17,7 @@ let strings = new LocalizedStrings(data);
 
 // passphrase number of characters
 const NUMCHAR = 6;
-const defaultPassphrase = '000000';
+const DEFAULT_PASSPHRASE = '000000';
 
 class Login extends React.Component {
 
@@ -38,7 +38,7 @@ class Login extends React.Component {
     this.resetPassphrase = this.resetPassphrase.bind(this);
     this.prepareToSetAdmin = this.prepareToSetAdmin.bind(this);
     this.displayError = this.displayError.bind(this);
-
+    this.submitPassphrase = this.submitPassphrase.bind(this);
   }
 
   componentDidMount() {
@@ -80,10 +80,60 @@ class Login extends React.Component {
     }).then((result)=> {
       if (result.value) {
         this.props.resetError();
-        this.resetPassphrase();
       }
     });
   }
+
+  submitPassphrase(passphrase) {
+    const { prepareToSet } = this.state; 
+    const { hasUsers, inPopin, popinAction, setAdmin, login } = this.props;
+
+    this.resetPassphrase();
+    // dans le cas où la page de login serait utilisée en popin
+    if (inPopin) {
+      popinAction(passphrase)
+    } 
+    // sinon, dans son usage normal
+    else {
+      // cas de personnalisation du login d'Admin
+      if (prepareToSet) {
+        setAdmin(passphrase);
+      } 
+      // login normal
+      else {
+        // s'il y a au moins un user en base
+        if (hasUsers) {
+          login(passphrase);
+        } 
+        // si aucun user n'est en base
+        else {
+          // on attend l'identifiant par défaut
+          if (passphrase===DEFAULT_PASSPHRASE) {
+            this.resetPassphrase();
+            this.prepareToSetAdmin();
+          } 
+          // sinon message d'erreur
+          else {
+
+            Swal.fire({
+              type: 'warning',
+              title: strings.login.erreur.titre,
+              text: strings.login.erreur.texte,
+              showCancelButton: false,
+              focusConfirm: false
+            }).then((result)=> {
+              if (result.value) {
+                this.resetPassphrase();
+              }
+            });
+          }
+        }
+      }
+    }
+  }
+
+
+
 
   render() {
 
@@ -95,51 +145,8 @@ class Login extends React.Component {
       this.displayError(error);
     }
 
-    const connectBtnHandler = () => {
-      // dans le cas où la page de login serait utilisée en popin
-      if (this.props.inPopin) {
-        this.props.popinAction(passphrase)
-      } 
-      // sinon, dans son usage normal
-      else {
-        // cas de personnalisation du login d'Admin
-        if (prepareToSet) {
-          this.props.setAdmin(passphrase);
-        } 
-        // login normal
-        else {
-          // s'il y a au moins un user en base
-          if (hasUsers) {
-            this.props.login(passphrase);
-          } 
-          // si aucun user n'est en base
-          else {
-            // on attend l'identifiant par défaut
-            if (passphrase===defaultPassphrase) {
-              this.resetPassphrase();
-              this.prepareToSetAdmin();
-            } 
-            // sinon message d'erreur
-            else {
 
-              Swal.fire({
-                type: 'warning',
-                title: strings.login.erreur.titre,
-                text: strings.login.erreur.texte,
-                showCancelButton: false,
-                focusConfirm: false
-              }).then((result)=> {
-                if (result.value) {
-                  this.resetPassphrase();
-                }
-              });
-            }
-          }
-        }
-      }
-    }
-
-    if (activated && !error) connectBtnHandler();
+    if (activated && !error) this.submitPassphrase(passphrase);
 
     return (
       <div className="Login">

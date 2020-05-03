@@ -40,6 +40,9 @@ class Cloture extends React.Component {
       selection_caisse:{id:'allcash', nom:'Toutes les caisses'},
       keyboardOpen: false,
       fieldvalue: '',
+      activeField: null,
+      saisie_prelevement: '0',
+      saisie_comptage: '',
       prelevement: 0
     }
     this.shouldComponentRender = this.shouldComponentRender.bind(this);
@@ -164,33 +167,39 @@ class Cloture extends React.Component {
   openCommandesListe() {
     console.log('openCommandesListe()');
   }
-  startSaisie() {
-    this.setState({keyboardOpen: true, fieldvalue: this.state.prelevement || ''});
+  startSaisie(field) {
+    console.log('startSaisie',field);
+    let comptage = this.state.comptage;
+    if (field=='saisie_comptage') {
+      comptage = null;
+    }
+    this.setState({keyboardOpen: true, comptage: comptage, fieldvalue: this.state[field], activeField: field});
   }
 
   // action on buttons (fill in passphrase)
   keyboardButtonHandler(text) {
     const { fieldvalue } = this.state;
     if (text!=='c') {
-      this.setState({fieldvalue: fieldvalue+text});
+      this.setState({fieldvalue: String(fieldvalue)+text});
     } else {
-      this.setState({fieldvalue: fieldvalue.slice(0,-1)});
+      this.setState({fieldvalue: String(fieldvalue).slice(0,-1)});
     }
   }
 
   closeKeyboard() {
-    const { fieldvalue } = this.state;
-    this.setState({keyboardOpen: false, prelevement:fieldvalue.replace(',','.')});
+    const { fieldvalue, activeField } = this.state;
+    const newval = ['saisie_prelevement','saisie_comptage'].indexOf(activeField)==-1 ? Number(fieldvalue) : fieldvalue.replace(',','.');
+    this.setState({keyboardOpen: false, [activeField]:newval});
   }
 
 
-  prepareCloture(prelevement) {
+  prepareCloture(prelevement, comptagemanuel) {
     const { selection_operator, selection_caisse, comptage } = this.state;
     
     let params = {};
     if (selection_caisse.id!='allcash') params['caisses'] = [selection_caisse];
     if (selection_operator.id!='allope') params['vendeurs'] = [selection_operator];
-    params['comptage'] = comptage
+    params['comptage'] = (comptage!==null) ? comptage : {total:comptagemanuel};
     params['prelevement'] = prelevement;
 
     if (selection_caisse.id!='allcash' || selection_operator.id!='allope') {
@@ -221,7 +230,7 @@ class Cloture extends React.Component {
 
     const { periode, clotures, error, loading, printPeriodeX, listeCommandes, catalogue, fonddecaissetheo } = this.props;
 
-    const { comptageOpen, comptcaisseOpen, comptage, selection_caisse, selection_operator, keyboardOpen, fieldvalue, prelevement} = this.state;
+    const { saisie_prelevement, saisie_comptage, activeField, comptageOpen, comptcaisseOpen, comptage, selection_caisse, selection_operator, keyboardOpen, fieldvalue, prelevement} = this.state;
 
     let params = {
       user: periode.editeur,
@@ -242,14 +251,18 @@ class Cloture extends React.Component {
     const operators = this.getListeVendeurs();
     const caisses = this.getListeCaisses();
 
-    const prelevement_fv = keyboardOpen ? fieldvalue.replace(',','.') : prelevement;
+  //  const prelevement_fv = keyboardOpen ? fieldvalue.replace(',','.') : prelevement;
 
-    console.log('fieldvalue', fieldvalue);
+    // la valeur doit être une chaîne avec 
+    const prelevement_fv = activeField=='saisie_prelevement' ? String(fieldvalue).replace(',','.') : saisie_prelevement;
+    const comptage_fv = activeField=='saisie_comptage' ? String(fieldvalue).replace(',','.') : saisie_comptage;
+
+    console.log('fieldvalue', activeField, fieldvalue);
     console.log('comptage', comptage);
-    console.log('prelevement_fv', prelevement_fv);
+    console.log('prelevement_fv l.258', prelevement_fv);
 
-    const comptage_total = (null!==comptage) ? devise(comptage.total) : '';
-    const fdcaisse_new = (null!==comptage) ? devise(comptage.total-Number(prelevement_fv)) : '';
+    const comptage_total = (null!==comptage) ? comptage.total : Number(comptage_fv);
+    const fdcaisse_new = (null!==comptage) ? devise(comptage.total-Number(prelevement_fv.replace(',','.'))) : devise(Number(comptage_fv)-Number(prelevement_fv.replace(',','.')));
     
     // console.log('operators', operators);
     // console.log('caisses', caisses);
@@ -459,70 +472,45 @@ class Cloture extends React.Component {
           <div className="clo-droite">
             <div className="blocdroite">
               <div className="droite-top">
-                <LabelledField 
-                  id={ `total-fonddecaisse` }
-                  key={ `total-fonddecaisse` }
-                  name={ `total_fonddecaisse` }
-                  value={ devise(periode_z.periode.fdcaisse) } 
-                  placeholder=''
-                  type='text' 
-                  readOnly={ true } 
-                  label={ strings.modules.cloture.total_fdcaisse }
-                  postvalue='€'
-                />
-                <LabelledField 
-                  id={ `total-caisse-theo` }
-                  key={ `total-caisse-theo` }
-                  name={ `total_caisse_theo` }
-                  className='strong'
-                  value={ devise(periode_z.periode.ca) } 
-                  placeholder=''
-                  type='text' 
-                  readOnly={ true } 
-                  label={ strings.modules.cloture.total_caisse_theo }
-                  postvalue='€'
-                />
-                <LabelledField 
-                  id={ `total-caisse-cmpt` }
-                  key={ `total-caisse-cmpt` }
-                  name={ `total_caisse_cmpt` }
-                  className='strong'
-                  value={ comptage_total } 
-                  placeholder=''
-                  type='text' 
-                  readOnly={ true } 
-                  label={ strings.modules.cloture.total_caisse_cmpt }
-                  postvalue='€'
-                />
-                <LabelledField 
-                  id={ `fonddecaisse-theo` }
-                  key={ `fonddecaisse-theo` }
-                  name={ `fonddecaisse_theo` }
-                  value={ devise(fonddecaissetheo) } 
-                  placeholder=''
-                  type='text' 
-                  readOnly={ true } 
-                  label={ strings.modules.cloture.fondcaisse_default }
-                  postvalue='€'
-                />
-                <div className="prelevementField"
-                  onClick={ () => { this.startSaisie()} }>
-                  <LabelledField 
-                    id={ `prelevement` }
-                    key={ `prelevement` }
-                    name={ `prelevement` }
-                    className='strong'
-                    value={ prelevement_fv } 
-                    placeholder=''
-                    type='text' 
-                    readOnly={ true } 
-                    label={ strings.modules.cloture.prelevement }
-                    postvalue='€'
-                  />
+
+              <div key={ `total-fonddecaisse` } className="valeur-input">
+                  <label>{ strings.modules.cloture.total_fdcaisse }</label>
+                  <div className="input">{ `${devise(periode_z.periode.fdcaisse)} €` }</div>
+                </div>
+
+                <div key={ `total-caisse-theo` } className="valeur-input">
+                  <label>{ strings.modules.cloture.total_caisse_theo }</label>
+                  <div className="input">{ `${devise(periode_z.periode.ca)} €` }</div>
+                </div>
+
+                <div className="totalcomptageField editable"
+                  onClick={ () => { this.startSaisie('saisie_comptage')} }>
+                  <div key={ `total-caisse-cmpt` } className="valeur-input strong">
+                    <label>{ strings.modules.cloture.total_caisse_cmpt }</label>
+                    <div className="input">{ `${(comptage_total ? devise(comptage_total)+' €' : '')}` }</div>
+                  </div>
+                </div>
+ 
+                <div key={ `fonddecaisse-theo` } className="valeur-input">
+                  <label>{ strings.modules.cloture.fondcaisse_default }</label>
+                  <div className="input">{ `${devise(fonddecaissetheo)} €` }</div>
+                </div>
+
+                <div className="prelevementField editable"
+                  onClick={ () => { this.startSaisie('saisie_prelevement')} }>
+                  <div className="valeur-input strong">
+                    <label>{ strings.modules.cloture.prelevement }</label>
+                    <div className="input">{ `${(prelevement_fv ? devise(prelevement_fv)+' €' : '')}` }</div>
+                  </div>
                 </div>
               </div>
               <div className="droite-btm">
-                <LabelledField 
+
+              <div key={ `fonddecaisse-new` } className="valeur-input">
+                  <label>{ strings.modules.cloture.fond_de_caisse }</label>
+                  <div className="input">{ `${fdcaisse_new} €` }</div>
+                </div>
+                {/* <LabelledField 
                   id={ `fonddecaisse-new` }
                   key={ `fonddecaisse-new` }
                   name={ `fonddecaisse_new` }
@@ -532,10 +520,10 @@ class Cloture extends React.Component {
                   readOnly={ true } 
                   label={ strings.modules.cloture.fond_de_caisse }
                   postvalue='€'
-                />
+                /> */}
               </div>
             </div>
-            <StdButton identifier="btncloture" elementclass="btncloture" key="btncloture" text={(selection_caisse.id!='allcash' || selection_operator.id!='allope') ? strings.modules.cloture.cloture_partielle : strings.modules.cloture.cloture_z } disabled={comptage==null || periode_z.standby>0 || periode_z.cmdtoarchive.length==0} onClick={ () => {this.prepareCloture(Number(prelevement_fv))} } />
+            <StdButton identifier="btncloture" elementclass="btncloture" key="btncloture" text={(selection_caisse.id!='allcash' || selection_operator.id!='allope') ? strings.modules.cloture.cloture_partielle : strings.modules.cloture.cloture_z } disabled={(comptage==null && comptage_fv=='') || periode_z.standby>0 || periode_z.cmdtoarchive.length==0} onClick={ () => {this.prepareCloture(Number(prelevement_fv.replace(',','.')), comptage_total)} } />
           </div>
         </div>
         <Comptage 

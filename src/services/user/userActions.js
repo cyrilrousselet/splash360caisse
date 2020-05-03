@@ -38,7 +38,7 @@ function login(passphrase) {
                 
               }
               else {
-                dispatch({ type: userActionTypes.LOGIN_FAILURE, payload: strings.login.erreur.titre });
+                dispatch({ type: userActionTypes.LOGIN_ERROR, payload: strings.login.erreur.titre });
               }
             },
             error => {

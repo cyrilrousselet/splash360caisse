@@ -17,8 +17,9 @@ const server = require('./server.js');
 setupMainHandler(electron, {
                   ...dbCatalogueApi, 
                   ...dbCommandesApi,
-                  ...dbEmployesApi,
+                  ...dbCloturesApi,
                   ...dbParametresApi,
+                  ...dbEmployesApi,
                   ...dbUsersApi,
                   ...peripheralApi,
                   ...server
