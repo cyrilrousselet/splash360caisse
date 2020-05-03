@@ -23,7 +23,7 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-  const binded = bindActionCreators({
+  const bound = bindActionCreators({
     // getCommandesList: commandeActions.getCommandesList,
     // getParametres: parametresActions.getAll,
     getCurrentPeriode: clotureActions.getCurrentPeriode,
@@ -32,7 +32,7 @@ const mapDispatchToProps = (dispatch) => {
     makeCloture: clotureActions.makeCloture
   }, dispatch);
   return {
-    ...binded    
+    ...bound    
   };
 }
 

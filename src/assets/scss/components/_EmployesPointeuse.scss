@@ -46,7 +46,7 @@
   }
 }
 
-.ChangeEmploye {
+.ValidationPointage {
   display: inline-block;
   position: absolute;
   left: 50%;
@@ -79,6 +79,14 @@
         color: $noir;
         text-align: center;
         text-transform: uppercase;
+    }
+  }
+  .body {
+    .soustitre {
+      font-family: $f_blk;
+      font-size: 15px;
+      color: $noir;
+      text-align: center;
     }
   }
 }

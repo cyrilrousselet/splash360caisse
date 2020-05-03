@@ -56,3 +56,4 @@ export function userReducer(state = initialState, action) {
 }
 
 export const hasUsers = state => state.userReducer.hasUsers;
+export const getUsers = state => state.userReducer.users;

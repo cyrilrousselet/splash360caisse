@@ -459,19 +459,13 @@ const hydration = {
       { step_id: 'step250', produit: 'pdt196', titre: 'DESSERTS', regles: [{type: 'icat29',regle: '{0,1}',supplement: '0'}], weight: 3 }
   ],
   
-  
+  commandes: [],
 
-  commandes: [
-    
-  ],
+  clotures: [],
 
-  clotures: [
-    
-  ],
+  users: [],
 
-  users: [
-
-  ],
+  pointages: [],
 
   imprimantes: [
     { printer_id: 'imp1', nom: 'POS Printer', connexion: 'usb', param: null, encoding: 'Cp850', pardefaut: true },

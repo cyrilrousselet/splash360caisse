@@ -139,7 +139,33 @@ const data = {
                     valider: 'Valider'
                 }
             },
-            employes: { nom: "Employés" },
+            employes: { 
+                nom: "Employés",
+                pointeuse: {
+                    titre: 'Pointeuse',
+                    btn_arrivee: 'Arrivée',
+                    btn_depart: 'Départ',
+                    validation: {
+                        titre_arrivee: 'Arrivée le ',
+                        titre_depart: 'Départ le ',
+                        identification: 'Identification :'
+                    },
+                    erreur: {
+                        inconnu: {
+                            titre: 'Employé inconnu',
+                            texte: 'Veuillez vérifier votre indentifiant'
+                        },
+                        aucun: {
+                            titre: 'Pas de pointage en cours',
+                            texte: 'Vous n’avez pas pointé lors de votre arrivée'
+                        },
+                        deja: {
+                            titre: 'Pointage déjà en cours',
+                            texte: 'Vous n’avez pas pointé lors de votre précédent départ'
+                        }
+                    }
+                }
+            },
             depenses: { nom: "Dépenses" },
             listecommandes: { 
                 nom: "Liste Commandes",

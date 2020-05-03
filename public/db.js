@@ -2,6 +2,7 @@
 // const Datastore = require('nedb-promises');
 
 const { app } = require('electron');
+const fs = require('fs');
 
 const low = require('lowdb');
 const FileAsync = require('lowdb/adapters/FileAsync');
@@ -12,37 +13,28 @@ const {commandes} = hydration;
 const {parametres, imprimantes, tickets} = hydration;
 const {users} = hydration;
 const {clotures} = hydration;
+const {pointages} = hydration;
 
 
-// const dbFactory = (fileName) => Datastore.create({
-//  filename: `${process.env.NODE_ENV === 'dev' ? '.' :  app.getPath('userData')}/data/${fileName}`,
-//  timestampData: true,
-//  autoload: true
-// });
+const checkDirectorySync = (directory) => {  
+  try {
+    fs.statSync(directory);
+  } catch(e) {
+    fs.mkdirSync(directory);
+  }
+}
 
-// const db = {
-//  categories: dbFactory('categories.db'),
-//  groupes: dbFactory('groupes.db'),
-//  tva: dbFactory('tva.db'),
-//  ingredienttypes: dbFactory('ingredienttypes.db'),
-//  ingredients: dbFactory('ingredients.db'),
-//  produits: dbFactory('produits.db'),
-//  steps: dbFactory('steps.db'),
-//  settings: dbFactory('settings.db'),
-//  commandes: dbFactory('commandes.db'),
-//  imprimantes: dbFactory('imprimantes.db'),
-//  tickets: dbFactory('tickets.db'),
-//  parametres: dbFactory('parametres.db'),
-//  users: dbFactory('users.db'),
-//  clotures: dbFactory('clotures.db')
-// };
-
-const dbFactory = (fileName, defaultValue) => low(
+const dbFactory = (fileName, defaultValue) => {
+  
+  checkDirectorySync(`${process.env.NODE_ENV === 'dev' ? '.' :  app.getPath('userData')}/data`);
+  
+  return low(
     new FileAsync(
       `${process.env.NODE_ENV === 'dev' ? '.' :  app.getPath('userData')}/data/${fileName}`,
       {defaultValue: defaultValue}
     )
-);
+  )
+};
 
 const db = {
  categories: dbFactory('categories.json', {categories: categories}),
@@ -57,7 +49,8 @@ const db = {
  tickets: dbFactory('tickets.json', {tickets: tickets}),
  parametres: dbFactory('parametres.json', {parametres: parametres}),
  users: dbFactory('users.json', {users: users}),
- clotures: dbFactory('clotures.json', {clotures: clotures})
+ clotures: dbFactory('clotures.json', {clotures: clotures}),
+ pointages: dbFactory('pointages.json', {pointages: pointages})
 };
 
 module.exports = db;

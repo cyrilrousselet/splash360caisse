@@ -1,14 +1,22 @@
 // @flow
 import { connect } from 'react-redux'
 import Employes from '../components/Employes';
+import { getPointages } from '../services/employes/employesReducer';
+import { employesActions } from '../services/employes/employesActions';
+import { userActions } from '../services/user/userActions';
 
 
 const mapStateToProps = (state) => {
-  return {}
+  return {
+    pointages: getPointages(state)
+  }
 }
 
 const mapDispatchToProps = (dispatch) => {
-  return {}
+  return {
+    getAllPointages: employesActions.getPointagesList,
+    getAllUsers: userActions.getAll
+  }
 }
 
 const EmployesCont = connect(

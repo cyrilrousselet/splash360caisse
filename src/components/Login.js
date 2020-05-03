@@ -4,9 +4,9 @@ import shuffle from 'lodash/shuffle';
 
 import PillButton from './common/PillButton';
 import PillField from './common/PillField';
-import PillConnect from './PillConnect';
+// import PillConnect from './PillConnect';
 
-import YoutillLogoIcon from './common/icon/YoutillLogoIcon';
+// import YoutillLogoIcon from './common/icon/YoutillLogoIcon';
 import Swal from 'sweetalert2';
 
 
@@ -88,7 +88,7 @@ class Login extends React.Component {
   render() {
 
     const {passphrase, activated, boutons, prepareToSet} = this.state;
-    const {hasUsers, error} = this.props;
+    const {hasUsers, error, inPopin} = this.props;
 
 
     if (error) {
@@ -98,7 +98,7 @@ class Login extends React.Component {
     const connectBtnHandler = () => {
       // dans le cas où la page de login serait utilisée en popin
       if (this.props.inPopin) {
-        this.props.popinAction()
+        this.props.popinAction(passphrase)
       } 
       // sinon, dans son usage normal
       else {
@@ -115,7 +115,7 @@ class Login extends React.Component {
           // si aucun user n'est en base
           else {
             // on attend l'identifiant par défaut
-            if (passphrase==defaultPassphrase) {
+            if (passphrase===defaultPassphrase) {
               this.resetPassphrase();
               this.prepareToSetAdmin();
             } 
@@ -143,9 +143,9 @@ class Login extends React.Component {
 
     return (
       <div className="Login">
-        <div className="logo">
+        {!inPopin && <div className="logo">
           {/* <YoutillLogoIcon className="logoImg" /> */}
-        </div>
+        </div>}
         <div className={ `panel${(prepareToSet ? ' prepareAdmin' : '')}` }>
           {(!hasUsers) && <div className="prepareTitle">{ strings.login.premiere.titre }</div> }
           <PillField type="password" innerButton="delete" charNum={ NUMCHAR } value={passphrase} innerButtonHandler={this.deleteHandler}/>

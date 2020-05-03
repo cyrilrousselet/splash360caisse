@@ -52,9 +52,9 @@ const actions = {
 
 
 async function _hasUsers() {
-  const __users = await (await db.users).has('users').value();
+  const __users = await (await db.users).get('users').size().value();
   log.info('_hasUsers()', __users);
-  return __users;
+  return __users>0;
 }
 
 

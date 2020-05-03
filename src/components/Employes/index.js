@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
@@ -9,10 +9,10 @@ import LoadingSpinner from './../common/LoadingSpinner';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { PrivateRoute } from '../common/PrivateRoute';
 import Plannings from './Plannings';
-import Pointeuse from './Pointeuse';
 import Paies from './Paies';
 import LargeButton from '../common/LargeButton';
 import history from '../../helpers/history';
+import EmployesPointeuseCont from '../../containers/EmployesPointeuseCont';
 
 let strings = new LocalizedStrings(data);
 
@@ -23,10 +23,11 @@ class Employes extends React.Component {
     this.shouldComponentRender = this.shouldComponentRender.bind(this);
   }
 
- componentWillMount() {
-  // const { getAllActive } = this.props;
-  // getAllActive();
- }
+  componentDidMount() {
+    const { getAllPointages, getAllUsers } = this.props;
+    getAllPointages();
+    getAllUsers();
+  }
 
  shouldComponentRender() {
  //  const {loading} = this.props;
@@ -48,14 +49,14 @@ class Employes extends React.Component {
       <div className="MainZone">          
           <Switch>
             <PrivateRoute exact path={ paths.EMPLOYES_PLANNING } component={ Plannings } />
-            <PrivateRoute exact path={ paths.EMPLOYES_POINTEUSE } component={ Pointeuse } />
+            <PrivateRoute exact path={ paths.EMPLOYES_POINTEUSE } component={ EmployesPointeuseCont } />
             {/* <PrivateRoute exact path={ paths.EMPLOYES_PAIES } component={ Paies } /> */}
             <Route path={ paths.EMPLOYES }>
               <div className="Employes-sommaire">
                 <div className="titre"><LargeButton identifier='btntitre' elementclass='btntitre' icon={ true } text={ 'Employes' } onClick={() => void(0) }></LargeButton></div>
-                <div class="sommaire-item"><LargeButton identifier='btnplanning' elementclass='btnplanning' icon={ false } text={ 'Planning' } onClick={() => { history.push(paths.EMPLOYES_PLANNING) }}></LargeButton></div>
-                <div class="sommaire-item"><LargeButton identifier='btnpointeuse' elementclass='btnpointeuse' icon={ false } text={ 'Pointeuse' } onClick={() => { history.push(paths.EMPLOYES_POINTEUSE) }}></LargeButton></div>
-                <div class="sommaire-item"><LargeButton identifier='btnpaies' elementclass='btnpaies' icon={ false } text={ 'Paies' } onClick={() => void(0) }></LargeButton></div>
+                <div className="sommaire-item"><LargeButton identifier='btnplanning' elementclass='btnplanning' icon={ false } text={ 'Planning' } onClick={() => { history.push(paths.EMPLOYES_PLANNING) }}></LargeButton></div>
+                <div className="sommaire-item"><LargeButton identifier='btnpointeuse' elementclass='btnpointeuse' icon={ false } text={ strings.modules.employes.pointeuse.titre } onClick={() => { history.push(paths.EMPLOYES_POINTEUSE) }}></LargeButton></div>
+                <div className="sommaire-item"><LargeButton identifier='btnpaies' elementclass='btnpaies' icon={ false } text={ 'Paies' } onClick={() => void(0) }></LargeButton></div>
               </div>
             </Route>
           </Switch>
