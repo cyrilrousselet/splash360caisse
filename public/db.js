@@ -3,6 +3,7 @@
 
 const { app } = require('electron');
 const fs = require('fs');
+const mkdirp = require('mkdirp')
 
 const low = require('lowdb');
 const FileAsync = require('lowdb/adapters/FileAsync');
@@ -20,7 +21,8 @@ const checkDirectorySync = (directory) => {
   try {
     fs.statSync(directory);
   } catch(e) {
-    fs.mkdirSync(directory);
+    // fs.mkdirSync(directory);
+    mkdirp.sync(directory);
   }
 }
 

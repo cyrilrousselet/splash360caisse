@@ -2,7 +2,7 @@
     "name": "splash360",
     "productName": "Splash360",
     "description": "Cash application",
-    "version": "0.1.201250030",
+    "version": "0.1.201251556",
     "private": true,
     "author": {
         "name": "Splash360",
@@ -55,6 +55,7 @@
         "lodash": "^4.17.15",
         "lodash-id": "^0.14.0",
         "lowdb": "^1.0.0",
+        "mkdirp": "^1.0.4",
         "nedb": "^1.8.0",
         "nedb-promises": "^4.0.0",
         "node-sass-chokidar": "^1.3.5",
