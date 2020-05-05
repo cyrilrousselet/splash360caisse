@@ -8,6 +8,7 @@ import CloseIcon from '../common/icon/CloseIcon';
 import StdButton from '../common/StdButton';
 import LabelledField from '../common/LabelledField';
 import SwitchCheckbox from '../common/SwitchCheckbox';
+import Swal from 'sweetalert2';
 
 import Popper from '@material-ui/core/Popper';
 import PillButton from '../common/PillButton';
@@ -31,6 +32,7 @@ class EditUtilisateurPopin extends React.Component {
       error_nom: false,
       error_identifiant: false
     }
+    this.supprimerUtilisateur = this.supprimerUtilisateur.bind(this);
     this.updateValue = this.updateValue.bind(this);
     this.updateDroit = this.updateDroit.bind(this);
     this.saveUtilisateur = this.saveUtilisateur.bind(this);
@@ -62,6 +64,28 @@ class EditUtilisateurPopin extends React.Component {
 
     console.log('updateStatus', status);
     this.setState({...status});
+
+  }
+
+  supprimerUtilisateur() {
+
+    const { nom } = this.getValues();
+    const self = this;
+
+    Swal.fire({
+      title: strings.modules.parametres.submodules.utilisateurs.edition.suppression.confirm.titre,
+      text: strings.modules.parametres.submodules.utilisateurs.edition.suppression.confirm.texte.replace('%NOM%', nom),
+      showCancelButton: true,
+      focusCancel: true,
+      focusConfirm: false
+    }).then((result)=> {
+      if (result.value) {
+        self.setState({
+          status: 'deleted'
+        });
+        self.saveUtilisateur();
+      }
+    });
 
   }
 
@@ -281,6 +305,14 @@ class EditUtilisateurPopin extends React.Component {
             </div>
             <div className="footer">
               <StdButton 
+                identifier="modal-suppr" 
+                elementclass="suppr" 
+                icon={ false } 
+                disabled={ utilisateur==null }
+                text={ strings.modules.parametres.submodules.utilisateurs.edition.suppression.bouton } 
+                onClick={this.supprimerUtilisateur} 
+              />
+              <StdButton 
                 identifier="modal-save" 
                 elementclass="save" 
                 icon={ false } 
@@ -358,11 +390,11 @@ function TableUtilisateurs(props) {
       </TableHead>
       <TableBody>
         {liste.map((row, i) => (
-          <TableRow key={row.id} className={(i%2)?'odd':'even'}>
+          (row.status!=='deleted') && (<TableRow key={row.id} className={(i%2)?'odd':'even'}>
             <TableCell key={`${i}-nom`} className={ `liste-nom${ (row.status && row.status=='disabled')?' user-disabled':''}` }><div onClick={ () => { openEdit(i) } }>{ row.nom }</div></TableCell>
             <TableCell key={`${i}-passe`} className="liste-passe">{ row.identifiant }</TableCell>
             <TableCell key={`${i}-droits`} className="liste-droits"><DroitsPopper id={`drt${i}`} droits={row.droits}></DroitsPopper></TableCell>
-          </TableRow>
+          </TableRow>)
         ))}
       </TableBody>
     </Table>

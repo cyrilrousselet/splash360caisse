@@ -210,7 +210,19 @@ class Statistiques extends React.Component {
   const { commandeslist, error, loading, canaux } = this.props;
   const { startDate, endDate, openTab } = this.state;
 
-  let ca_total = 0, chrono_total = 0, ca_confirmes = 0, nbre_total = 0, nbre_confirmes = 0, moy = 0, tps_total = 0, canal = {}, moyen = {}, vendeur = {}, mode = {}, modes = {};
+  let /*ca_total = 0,*/ 
+    chrono_total = 0, 
+    ca_confirmes = 0, 
+    nbre_total = 0, 
+    nbre_confirmes = 0, 
+    moy = 0, 
+    tps_total = 0, 
+    canal = {}, 
+    moyen = {}, 
+    vendeur = {}, 
+    mode = {}, 
+    modes = {}
+    ;
   for (let [key, value] of Object.entries(commandeslist)) {
     // let cmd = {
     //   id: value.ticketId,
@@ -232,7 +244,7 @@ class Statistiques extends React.Component {
       }
       nbre_total++;
 
-      ca_total += Number(value.total);
+   //   ca_total += Number(value.total);
 
       // calcul du temps moyen (uniquement pour les commandes chonométrées)
       tps_total += value.chrono || 0;
@@ -244,31 +256,35 @@ class Statistiques extends React.Component {
       
 
       // par mode
-      if (!mode.hasOwnProperty(value.mode)) { mode[value.mode] = 0; }
-      mode[value.mode] += Number(value.total);
+      if (value.status=='confirmed') {
+
+        if (!mode.hasOwnProperty(value.mode)) { mode[value.mode] = 0; }
+        mode[value.mode] += Number(value.total);
       
-      // par moyen
-      value.reglements.forEach(rgl => {
-        if (!moyen.hasOwnProperty(rgl.moyen)) { moyen[rgl.moyen] = 0; }
-        moyen[rgl.moyen] += Number(rgl.valeur);
-      });
-      // soustraction de la valeur du rendu-monnaie
-      value.rendus.forEach(rdn => {
-        moyen[rdn.moyen] -= Number(rdn.valeur);
-      });
+        // par moyen
+        value.reglements.forEach(rgl => {
+          if (!moyen.hasOwnProperty(rgl.moyen)) { moyen[rgl.moyen] = 0; }
+          moyen[rgl.moyen] += Number(rgl.valeur);
+        });
+        // soustraction de la valeur du rendu-monnaie
+        value.rendus.forEach(rdn => {
+          moyen[rdn.moyen] -= Number(rdn.valeur);
+        });
 
-      // par canal
-      let can = canaux.find(cnl => {
-        console.log(cnl.ids);
-        return cnl.ids.indexOf(value.caisse.id)!=-1
-      });
-      const nomcanal = (can) ? can.nom : value.caisse.id;
-      if (!canal.hasOwnProperty(nomcanal)) { canal[nomcanal] = 0; }
-      canal[nomcanal] += Number(value.total);
+        // par canal
+        let can = canaux.find(cnl => {
+          console.log(cnl.ids);
+          return cnl.ids.indexOf(value.caisse.id)!=-1
+        });
+        const nomcanal = (can) ? can.nom : value.caisse.id;
+        if (!canal.hasOwnProperty(nomcanal)) { canal[nomcanal] = 0; }
+        canal[nomcanal] += Number(value.total);
 
-      // par vendeur
-      if (!vendeur.hasOwnProperty(value.operator.nom)) { vendeur[value.operator.nom] = 0; }
-      vendeur[value.operator.nom] += Number(value.total);
+        // par vendeur
+        if (!vendeur.hasOwnProperty(value.operator.nom)) { vendeur[value.operator.nom] = 0; }
+        vendeur[value.operator.nom] += Number(value.total);
+        
+      }
     }
   }
 

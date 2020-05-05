@@ -26,7 +26,7 @@ function login(passphrase) {
               if (user) {
 
                 // si l'utilisateur n'est pas actif -> refus
-                if (user.status=='disabled') {
+                if (user.status!=='active') {
                   dispatch({ type: userActionTypes.LOGIN_DENIED, payload: strings.login.denied.titre });
                 } else {
                   dispatch({ type: userActionTypes.LOGIN_SUCCESS, user });
@@ -99,6 +99,7 @@ function updateUser(payload) {
     let updated_data = {};
     Object.entries(data).map(([key,value]) => {
       if (value) updated_data[key] = value;
+      if (key==='status' && value==='deleted') updated_data['identifiant'] = '';
     });
 
     user = {...user, ...updated_data};

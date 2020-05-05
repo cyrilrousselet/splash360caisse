@@ -75,18 +75,21 @@ function validateCommande(payload) {
    // payload.status = 'confirmed';
     const catalogueReducer = getState().catalogueReducer;
     const { caisse } = getState().parametresReducer.parametres.options;
+    const { user } = getState().authentication;
 
     if (payload.numero==null) { 
       const numero = commandeServices.getNewNumero(getState().parametresReducer.parametres, getState().commandeReducer.numero);
       payload.numero = numero;
       dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
     }
+
+    payload.operator_encaissement = {id: user.id, nom: user.nom};
+    payload.caisse_encaissement = caisse;
     
     return commandeServices.saveCommande(payload, catalogueReducer)
     .then(
       confirm => {
-        const { user } = getState().authentication;
-        const commande = commandeServices.getNewCommande({operator:user, caisse: caisse});
+        const commande = commandeServices.getNewCommande({operator:{id: user.id, nom: user.nom}, caisse: caisse});
         dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
       },
       error => {
@@ -366,8 +369,21 @@ function setCommandeFromAPI(payload) {
   return (dispatch, getState) => {
 
     const state = getState();
-    console.log(payload);
-    const commande = commandeServices.setCommandeFromAPI(payload.data, state.catalogueReducer, state.parametresReducer.parametres, state.commandeReducer.numero);
+    let { data } = payload;
+
+    if (data.status=='confirmed') {
+
+      data = {
+        ...data,
+        operator_encaissement: data.operator, 
+        caisse_encaissement: data.caisse,
+        reglements: [{moyen: 'carte', reglementId: new Date().getTime(), valeur: data.total}]
+      };
+    }
+
+
+    console.log(data);
+    const commande = commandeServices.setCommandeFromAPI(data, state.catalogueReducer, state.parametresReducer.parametres, state.commandeReducer.numero);
 
     commandeServices.sendTicketId(commande.ticketId, payload.response);
 

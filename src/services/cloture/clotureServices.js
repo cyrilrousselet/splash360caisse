@@ -41,10 +41,10 @@ function getCurrentPeriode(commandes, catalogue, params) {
       if (params.extract=='z' && cmd.archived!=null) __valid = false;
 
       // si une liste de vendeurs est fournie
-      if (vendeurs.length>0 && vendeurs.indexOf(cmd.operator.id)==-1) __valid = false;
+      if (vendeurs.length>0 && vendeurs.indexOf(cmd.operator_encaissement.id)==-1) __valid = false;
 
       // si une liste de caisse est fournie
-      if (caisses.length>0 && caisses.indexOf(cmd.caisse.id)==-1) __valid = false;
+      if (caisses.length>0 && caisses.indexOf(cmd.caisse_encaissement.id)==-1) __valid = false;
 
       // periode
       let updatedAt = parseJSON(cmd.updatedAt);
@@ -77,15 +77,15 @@ function getCurrentPeriode(commandes, catalogue, params) {
 
   
       // ventilation par vendeurs
-      let __vId = __ventil.vendeur.findIndex(vnd => vnd.id==cmd.operator.id);
+      let __vId = __ventil.vendeur.findIndex(vnd => vnd.id==cmd.operator_encaissement.id);
       
       // si le vendeur n'est pas enregistré ds la liste
       if (__vId==-1) {
         // on ajoute un objet pour le vendeur dans le tableau
         // et on récupère son index (length - 1)
         __vId = __ventil.vendeur.push({
-                          id: cmd.operator.id,
-                          nom: cmd.operator.nom,
+                          id: cmd.operator_encaissement ? cmd.operator_encaissement.id : cmd.operator.id,
+                          nom: cmd.operator_encaissement ? cmd.operator_encaissement.nom : cmd.operator.nom,
                           ventes: 0, remboursements: 0
                         }) - 1;
       }

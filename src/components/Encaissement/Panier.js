@@ -20,15 +20,23 @@ class Panier extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedIndex: -1
+      selectedIndex: -1,
+      inputfocus: true,
+      searchval:''
     }
     this.setSelectedIndex = this.setSelectedIndex.bind(this);
+    this.searchHandler = this.searchHandler.bind(this);
+    this.decodeQRCode = this.decodeQRCode.bind(this);
+    this.send_to_search = this.send_to_search.bind(this);
   }
 
+  lock = false;
+  search_tmo = -1;
 
   componentDidMount() {
-    const { getCommande, getParametres } = this.props;
+    const { getCommande, getParametres, getListeCommandes } = this.props;
     getCommande();
+    getListeCommandes();
     getParametres();    
   }
   componentDidUpdate() {
@@ -69,11 +77,86 @@ class Panier extends React.Component {
   }
 
 
+  searchHandler(event) {
+    if (event.keyCode==13) {
+      console.log(event.target.value);
+      this.decodeQRCode(event.target.value);
+      event.target.value = '';
+    }    
+  }
+  decodeQRCode(value) {
+
+    let decode_table = {
+      win: {
+        'à': 0,
+        '&': 1,
+        'é': 2,
+        '"': 3,
+        "'" : 4,
+        '(' : 5,
+        '-' : 6,
+        'è' : 7,
+        '_' : 8,
+        'ç' : 9
+      },
+      darwin: {
+        'à': 0,
+        '&': 1,
+        'é': 2,
+        '"': 3,
+        "'" : 4,
+        '(' : 5,
+        '§' : 6,
+        'è' : 7,
+        '!' : 8,
+        'ç' : 9
+      }
+    };
+    if (!isNaN(parseInt(value))) {
+      this.send_to_search(value);
+      return;
+    }
+
+    const platform = process.platform=='darwin' ? 'darwin' : 'win';
+
+    let decoded = '';
+    for (let caractere of value) {
+      if (!decode_table[platform].hasOwnProperty(caractere)) {
+        continue;
+      }
+      decoded += decode_table[platform][caractere];
+    }
+    if (!isNaN(parseInt(decoded))) {
+      this.send_to_search(decoded);
+    }
+    return false;
+  }
+
+
+  send_to_search(value) {
+    const {commandeslist, getCommande } = this.props;
+
+    if (commandeslist) {
+      const cmd = Object.values(commandeslist).find((c)=>c.ticketId==value);
+      console.log('s2s', cmd);
+      if (cmd && cmd.status=='standby') {
+        this.setState({inputfocus: false});
+        this.props.getCommande(value);
+      }
+    }
+
+  }
+
   render() {
 
-    const { error, loading, updateProduit, updateCommande, standByCommande, livraisonCommande, deleteCommande, gotoListeCommandes, openReglement, open, openDrawer, parametres, itemToPersonnalize } = this.props;
+    const { commandeslist, error, loading, updateProduit, updateCommande, standByCommande, livraisonCommande, deleteCommande, gotoListeCommandes, openReglement, open, openDrawer, parametres, itemToPersonnalize } = this.props;
     const { commentaire, items, status, ticketId, mode } = this.props.commande;
     
+    const {inputfocus, searchval} = this.state;
+
+
+    console.log('searchval', searchval);
+
     const total = this.calculateTotal(items);
     const devise = '€';
     const { selectedIndex } = this.state;
@@ -96,7 +179,23 @@ class Panier extends React.Component {
        }
     }
 
+    const self = this;
+
+    if (items) console.log('items', items.length);
+    else console.log('items null');
+
+    // if (!items || items.length==0) {
+    //   clearInterval(this.search_tmo);
+    //   this.search_tmo = -1;
+    // }
     
+    // if (this.search_tmo==-1) {
+      setInterval(function(){
+        if (inputfocus && (!items || items.length==0)) {
+          if (self.refs.searchInput) self.refs.searchInput.focus();
+        }
+      },200);
+    // }
 
 
     
@@ -121,6 +220,7 @@ class Panier extends React.Component {
       }).then((result)=> {
         if (result.value) {
           this.setSelectedIndex(null, -1);
+          this.setState({inputfocus: true});
           deleteCommande();
         }
       });
@@ -211,7 +311,7 @@ class Panier extends React.Component {
           <div className="ticketComment"></div>
         </div>
         <div className="body">
-
+          <input className="search-input" ref="searchInput" onKeyUp={this.searchHandler} />
           <div className="PanierListe">
             <div className="Liste">
               <div className="liste-header">
@@ -301,6 +401,7 @@ Panier.propTypes = {
   parametres: PropTypes.object,
   getCommande: PropTypes.func,
   getParametres: PropTypes.func,
+  getListeCommandes: PropTypes.func,
   updateCommande: PropTypes.func,
   standByCommande: PropTypes.func,
   livraisonCommande: PropTypes.func,

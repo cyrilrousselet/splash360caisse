@@ -43,7 +43,7 @@ const actions = {
 
     const { imprimante } = req.payload;
 
-    log.debug('openDrawer');
+    log.debug('openDrawer', imprimante);
 
     // déclaration de l'imprimante
     let device;

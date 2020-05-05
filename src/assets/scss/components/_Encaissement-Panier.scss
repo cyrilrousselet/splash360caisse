@@ -10,6 +10,15 @@
     border-radius: 15px;
     padding: 10px;
 
+    .search-input {
+        position: absolute;
+        right: 30px;
+        top: 120px;
+        outline: none;
+        opacity: 0;
+        user-select: none;
+      }
+
     &.reglement-ouvert {
         z-index: 1301;
     }

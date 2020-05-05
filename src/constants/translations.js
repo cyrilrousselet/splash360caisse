@@ -489,6 +489,13 @@ const data = {
                                 depenses: "Accès Dépenses",
                                 employes: "Accès Employés",
                                 remise: "Remise"
+                            },
+                            suppression: {
+                                bouton: 'Supprimer l’Utilisateur',
+                                confirm: {
+                                    titre: 'Confirmation de suppression',
+                                    texte: '%NOM% sera supprimé de la liste et il ne pourra plus se connecter à la caisse'
+                                }
                             }
                         }
                     },

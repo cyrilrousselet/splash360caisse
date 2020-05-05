@@ -29,7 +29,8 @@ function openDrawer() {
   return (dispatch, getState) => {
     
     const { imprimantes } = getState().peripheralReducer;
-    const imprimante = Object.values(imprimantes).find(imp=>imp.default);
+    const imprimante = Object.values(imprimantes).find(imp=>imp.pardefaut);
+
       
     peripheralServices.openDrawer(imprimante)
     .then(

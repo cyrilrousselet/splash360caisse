@@ -4,6 +4,7 @@ import { commandeActions } from '../services/commande/commandeActions';
 import { getAll, parametresActions } from '../services/parametres/parametresActions';
 import { peripheralActions } from '../services/peripheral/peripheralActions';
 import { getCommandeError, getCommandeLoading, getCommande } from '../services/commande/commandeReducer';
+import { getCommandesList } from '../services/commande/commandesListReducer';
 import { getSteps } from '../services/catalogue/catalogueReducer';
 import { getParametres } from '../services/parametres/parametresReducer';
 import Panier from '../components/Encaissement/Panier';
@@ -19,6 +20,7 @@ const mapStateToProps = (state) => {
   return {
     loading: getCommandeLoading(state),
     commande: getCommande(state),
+    commandeslist: getCommandesList(state),
     error: getCommandeError(state),
     steps: getSteps(state),
     parametres: getParametres(state)
@@ -29,6 +31,7 @@ const mapDispatchToProps = (dispatch) => {
   const binded = bindActionCreators({
     getCommande: commandeActions.getCommande,
     getParametres: parametresActions.getAll,
+    getListeCommandes: commandeActions.getCommandesList,
     updateProduit: commandeActions.updateProduit,
     updateCommande: commandeActions.updateCommande,
     standByCommande: commandeActions.standByCommande,

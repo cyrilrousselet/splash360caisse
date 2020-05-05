@@ -291,6 +291,7 @@ class ListeCommandes extends React.Component {
     }
     return false;
   }
+  
   // action on buttons (fill in passphrase)
   keyboardButtonHandler(text) {
     const { searchval} = this.state;

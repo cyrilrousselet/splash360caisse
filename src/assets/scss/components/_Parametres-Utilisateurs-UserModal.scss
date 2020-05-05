@@ -125,7 +125,20 @@
 
   }
   .footer{
-      text-align: right;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    .suppr {
+        background-color:$rouge;
+        width: 45%;
+        min-height: 30px;
+        .StdButton-text {
+            font-family: $f_boo;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+    }
     .save {
         background-color:$vert;
         width: 45%;
