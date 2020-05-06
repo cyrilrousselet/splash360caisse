@@ -49,6 +49,13 @@
                 background-image: url('./../../images/ico_marketing.svg');
                 background-size: 30px 30px;
             }
+
+            &.Mui-disabled {
+                .LargeButton-icon {
+                    background-image: url('./../../images/ico_marketing-noir.svg');
+                    background-size: 30px 30px;
+                }
+            }
         }
         &.encaissement {
             background-color: #9CD04E;
@@ -103,6 +110,13 @@
                 background-image: url('./../../images/ico_menu.svg');
                 background-size: 30px 30px;
             }
+
+            &.Mui-disabled {
+                .LargeButton-icon {
+                    background-image: url('./../../images/ico_menu-noir.svg');
+                    background-size: 30px 30px;
+                }
+            }
         }
         &.clients {
             background-color: #167093;
@@ -112,17 +126,20 @@
             }
         }
         &.parametres {
-            background-color: #EFEFEF;
+            background-color: rgb(172, 97, 223);
             .LargeButton-icon {
-                background-image: url('./../../images/ico_parametres.svg');
+                background-image: url('./../../images/ico_parametres-blanc.svg');
                 background-size: 46px 30px;
             }
             .LargeButton-text {
-                color: $noir;
+                color: $blanc;
             }
         }
         &.Mui-disabled {
-            background-color: $gris-pale;
+            background-color: #EFEFEF;
+            .LargeButton-text {
+                color: $noir;
+            }
         }
     }
     .tickets,
