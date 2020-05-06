@@ -1,0 +1,108 @@
+.Paies {
+
+  .back-button {
+    background-color: $blanc;
+  }
+
+  .liste-header {
+    height: 75px;
+    align-items: center;
+  }
+  .caption {
+    font-family: $f_blk;
+    font-size: 18px;
+    color: $noir;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    text-align: right;
+    &.start {
+      width:190px;
+    }
+  }
+  header {
+    box-shadow: none;
+    background-color: transparent;
+    width: calc(100% - 40px);
+    &.MuiAppBar-root {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    .MuiButtonBase-root {
+      font-family: $f_hea;
+      font-size: 18px;
+      background-color: $gris-clair;
+      border-radius: 15px 15px 0 0;
+      color: $noir;
+      margin-right: 2px;
+      padding: 8px 25px;
+      &.Mui-selected {
+        background-color: $blanc;
+        color: $primary;
+        font-family: $f_blk;
+      }
+    }
+    .MuiTabs-indicator {
+      background-color: transparent;
+    }
+  }
+
+  .dates {
+    display: inline-flex;
+    align-items: center;
+    .MuiFormControl-marginNormal {
+      margin: 0 10px;
+      width: 200px;
+      &:hover .MuiInput-underline:before,
+      &:hover .MuiInput-underline:after,
+      .MuiInput-underline:before,
+      .MuiInput-underline:after {
+        border: 0;
+      }
+      .MuiInput-formControl {
+        background-color: $blanc;
+        border-radius: 2px;
+        padding: 2px 0px 2px 5px;
+      }
+      input {
+        color: $primary;
+        font-family: $f_blk;
+        font-size: 18px;
+        text-align: center;
+      }
+    }
+    button {
+      background-color: transparent !important;
+      border-radius: 0;
+      padding: 0 5px !important;
+    }
+  } // --- /.dates
+  .shortcuts {
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 280px;
+    .shortcut {
+      width: 80px !important;
+      height: 30px;
+      &.shortcut-jour {
+        background-color: $gris-bleu;
+      }
+      &.shortcut-semaine {
+        background-color: $gris-bleu;
+      }
+      &.shortcut-mois {
+        background-color: $gris-bleu;
+      }
+    }
+  }
+
+  .MuiTypography-root {
+    height: 100%;
+    background-color: $blanc;
+    border-radius: 0 0 15px 15px;
+  }
+
+  .zoneliste {
+    height: calc(100% - 100px) !important;
+  }
+}

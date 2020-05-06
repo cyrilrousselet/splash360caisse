@@ -164,6 +164,25 @@ const data = {
                             texte: 'Vous n’avez pas pointé lors de votre précédent départ'
                         }
                     }
+                },
+                paies: {
+                    nom: "Temps de travail",
+                    pickers: {
+                        du: "Temps de travail du",
+                        au: "au"
+                    },
+                    shortcut: {
+                        jour: "Jour",
+                        semaine: "Semaine",
+                        mois: "Mois"
+                    },
+                    liste: {
+                        nom: 'Nom',
+                        reel: 'Volume horaire réel',
+                        prevu: 'Volume horaire prévu',
+                        ecart: 'Écart',
+                        travail: 'Tps travail'
+                    }
                 }
             },
             depenses: { nom: "Dépenses" },
