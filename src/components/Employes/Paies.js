@@ -18,27 +18,42 @@ let strings = new LocalizedStrings(data);
 
 class Paies extends React.Component {
 
- 
+  constructor(props) {
+    super(props);
 
- render() {
+    this.state = {
+      vue: 'jour',
+      start: null
+    }
+
+  }
+
+  componentDidMount() {
+    this.props.getUser();
+    this.props.getAllPointages();
+  }
+
+  render() {
+
+    const { users, pointages } = this.props;
 
 
-  return (
-    <div className="Paies">
-      <div className="zoneBoutons">
-        <div className="buttons">
-          <StdButton identifier="btnretour" elementclass="btnretour" key="btnretour" text="Retour" onClick={ () => { history.push(paths.EMPLOYES) }} />
-          <StdButton identifier="btnnew" elementclass="btnnew" key="btnnew" text="Nouveau" onClick={ () => void(0) } />
+    return (
+      <div className="Paies">
+        <div className="zoneBoutons">
+          <div className="buttons">
+            <StdButton identifier="btnretour" elementclass="btnretour" key="btnretour" text="Retour" onClick={ () => { history.push(paths.EMPLOYES) }} />
+            <StdButton identifier="btnnew" elementclass="btnnew" key="btnnew" text="Nouveau" onClick={ () => void(0) } />
+          </div>
+          <div className="titre">Paies</div>
+          <div className="search"></div>
         </div>
-        <div className="titre">Paies</div>
-        <div className="search"></div>
-      </div>
-      <div className="zoneliste">
-        <div class="wrapper">
-  liste
+        <div className="zoneliste">
+          <div class="wrapper">
+    liste
+          </div>
         </div>
       </div>
-    </div>
     );
   }
 }

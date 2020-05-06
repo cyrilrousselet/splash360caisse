@@ -31,7 +31,7 @@ import Box from '@material-ui/core/Box';
 import StdButton from './common/StdButton';
 import PrinterIcon from './common/icon/PrinterIcon';
 import ReglementCont from '../containers/ReglementCont';
-import { Modal, Fab, Input } from '@material-ui/core';
+import { Modal, Fab, Input, Badge } from '@material-ui/core';
 import CloseIcon from './common/icon/CloseIcon';
 import PillField from './common/PillField';
 import NumberKeyboard from './common/NumberKeyboard';
@@ -291,7 +291,7 @@ class ListeCommandes extends React.Component {
     }
     return false;
   }
-  
+
   // action on buttons (fill in passphrase)
   keyboardButtonHandler(text) {
     const { searchval} = this.state;
@@ -408,9 +408,9 @@ class ListeCommandes extends React.Component {
           <input className="search-input" ref="searchInput" onKeyUp={this.searchHandler} />
           <AppBar position="static">
             <Tabs value={openTab} onChange={this.handleChangeTab} aria-label="simple tabs example">
-              <Tab label={ strings.modules.listecommandes.status.standby } {...a11yProps(0)} />
-              <Tab label={ strings.modules.listecommandes.status.a_encaisser } {...a11yProps(1)} />
-              <Tab label={ strings.modules.listecommandes.status.confirmed } {...a11yProps(2)} />
+              <Tab label={<Badge color="primary" badgeContent={standbylist.length}>{ strings.modules.listecommandes.status.standby }</Badge>} {...a11yProps(0)} />
+              <Tab label={<Badge color="primary" badgeContent={a_encaisserlist.length}>{ strings.modules.listecommandes.status.a_encaisser }</Badge>} {...a11yProps(1)} />
+              <Tab label={<Badge color="primary" badgeContent={confirmedlist.length}>{ strings.modules.listecommandes.status.confirmed }</Badge>} {...a11yProps(2)} />
             </Tabs>
             <PillField value={searchval} type="text" className="displayId" innerButton={ `${searchval=='' ? 'keyboard' : 'delete'}`} innerButtonHandler={this.searchBtn} />
           </AppBar>

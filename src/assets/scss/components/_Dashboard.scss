@@ -121,6 +121,9 @@
                 color: $noir;
             }
         }
+        &.Mui-disabled {
+            background-color: $gris-pale;
+        }
     }
     .tickets,
     .ca {

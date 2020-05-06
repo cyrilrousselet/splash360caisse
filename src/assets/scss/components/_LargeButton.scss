@@ -35,4 +35,7 @@
         border: 1px solid $gris;
         outline: none;
     }
+    &.Mui-disabled {
+        background-color: $gris;
+    }
 }

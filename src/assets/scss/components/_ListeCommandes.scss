@@ -83,6 +83,10 @@
       .MuiTabs-flexContainer {
         display: inline-flex;
       }
+      .MuiBadge-badge {
+        top: 5px !important;
+        right: -10px !important;
+      }
       .displayId {
         height: 40px;
         background-color: $blanc;
