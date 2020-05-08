@@ -1,7 +1,61 @@
 .Paies {
 
-  .back-button {
-    background-color: $blanc;
+  .zoneboutons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    .btnretour {
+      flex-grow: unset;
+      flex-shrink: unset;
+      background-color: $gris-bleu;
+    }
+    .dates {
+      width: calc(100% - 500px);
+      display: inline-flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      .nomperiode {
+        font-family: $f_blk;
+        font-size: 18px;
+        color: $noir;
+        text-align: center;
+        .ttl {
+          text-transform: uppercase;
+        }
+        .periode {
+          text-transform: capitalize;
+        }
+      }
+    }
+
+    .views {
+      display: inline-flex;
+      flex-direction: row;
+      justify-content: space-between;
+      width: 390px;
+      .view {
+        width: 80px !important;
+        height: 30px;
+        &.view-aujourdhui {
+          background-color: $vert;
+          width: 120px !important;
+        }
+        &.view-jour {
+          background-color: $gris-bleu;
+        }
+        &.view-semaine {
+          background-color: $gris-bleu;
+        }
+        &.view-mois {
+          background-color: $gris-bleu;
+        }
+        &.selected {
+          background-color: $primary;
+        }
+      }
+    }
   }
 
   .liste-header {
@@ -46,55 +100,42 @@
     }
   }
 
-  .dates {
-    display: inline-flex;
-    align-items: center;
-    .MuiFormControl-marginNormal {
-      margin: 0 10px;
-      width: 200px;
-      &:hover .MuiInput-underline:before,
-      &:hover .MuiInput-underline:after,
-      .MuiInput-underline:before,
-      .MuiInput-underline:after {
-        border: 0;
-      }
-      .MuiInput-formControl {
-        background-color: $blanc;
-        border-radius: 2px;
-        padding: 2px 0px 2px 5px;
-      }
-      input {
-        color: $primary;
-        font-family: $f_blk;
-        font-size: 18px;
-        text-align: center;
-      }
-    }
-    button {
-      background-color: transparent !important;
-      border-radius: 0;
-      padding: 0 5px !important;
-    }
-  } // --- /.dates
-  .shortcuts {
-    display: inline-flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 280px;
-    .shortcut {
-      width: 80px !important;
-      height: 30px;
-      &.shortcut-jour {
-        background-color: $gris-bleu;
-      }
-      &.shortcut-semaine {
-        background-color: $gris-bleu;
-      }
-      &.shortcut-mois {
-        background-color: $gris-bleu;
-      }
-    }
+  .MuiTableCell-body.liste-nom {
+    font-family: $f_blk;
+    text-transform: uppercase;
+    cursor: pointer;
   }
+
+  // .dates {
+  //   display: inline-flex;
+  //   align-items: center;
+  //   .MuiFormControl-marginNormal {
+  //     margin: 0 10px;
+  //     width: 200px;
+  //     &:hover .MuiInput-underline:before,
+  //     &:hover .MuiInput-underline:after,
+  //     .MuiInput-underline:before,
+  //     .MuiInput-underline:after {
+  //       border: 0;
+  //     }
+  //     .MuiInput-formControl {
+  //       background-color: $blanc;
+  //       border-radius: 2px;
+  //       padding: 2px 0px 2px 5px;
+  //     }
+  //     input {
+  //       color: $primary;
+  //       font-family: $f_blk;
+  //       font-size: 18px;
+  //       text-align: center;
+  //     }
+  //   }
+  //   button {
+  //     background-color: transparent !important;
+  //     border-radius: 0;
+  //     padding: 0 5px !important;
+  //   }
+  // } // --- /.dates
 
   .MuiTypography-root {
     height: 100%;

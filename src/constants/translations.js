@@ -30,7 +30,8 @@ const data = {
                 ok: "Valider",
                 cancel: "Annuler",
                 clear: "Effacer",
-                save: "Enregistrer"
+                save: "Enregistrer",
+                back: 'Retour'
             },
             check: {
                 tous: 'Tout sélectionner',
@@ -171,17 +172,24 @@ const data = {
                         du: "Temps de travail du",
                         au: "au"
                     },
-                    shortcut: {
+                    titre: {
+                        jour: 'Volume horaire journalier',
+                        semaine: 'Volume horaire hebdomadaire',
+                        mois: 'Volume horaire mensuel'
+                    },
+                    view: {
+                        today: "Aujourd’hui",
                         jour: "Jour",
                         semaine: "Semaine",
                         mois: "Mois"
                     },
                     liste: {
                         nom: 'Nom',
-                        reel: 'Volume horaire réel',
-                        prevu: 'Volume horaire prévu',
+                        reel: 'Réel',
+                        prevu: 'Prévu',
                         ecart: 'Écart',
-                        travail: 'Tps travail'
+                        travail: 'Tps travail',
+                        semaine: 'Semaine du '
                     }
                 }
             },

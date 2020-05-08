@@ -10,7 +10,7 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 
 import 'date-fns';
-import { format, compareAsc, startOfToday, endOfToday, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, getHours, getMinutes } from "date-fns";
+import { Interval, format, compareAsc, startOfToday, endOfToday, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, getHours, getMinutes, differenceInDays, differenceInHours, differenceInSeconds, subDays, subWeeks, subMonths, addDays, addWeeks } from "date-fns";
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
@@ -20,13 +20,15 @@ import paths from '../../constants/routes';
 
 import fakeliste from '../../assets/images/fake_stocks_fournisseurs.svg';
 import BackIcon from '../common/icon/BackIcon';
+import { addMonths } from 'date-fns/esm';
+import NextIcon from '../common/icon/NextIcon';
 
 let strings = new LocalizedStrings(data);
 
 
 class LocalizedUtils extends DateFnsUtils {
   getDatePickerHeaderText(date) {
-    return format(date, "d MMM yyyy", { locale: this.locale });
+    return format(date, "d MMM yyyy", { locale: frLocale });
   }
 }
 
@@ -37,11 +39,15 @@ class Paies extends React.Component {
 
     this.state = {
       openTab: 0,
-      startDate: startOfToday(),
-      endDate: endOfToday()
+      view: 'mois',
+      startDate: startOfMonth(new Date()),
+      endDate: endOfMonth(new Date())
     }
 
-    this.datesShortcut = this.datesShortcut.bind(this);
+    this.datesView = this.datesView.bind(this);
+    this.changePeriode = this.changePeriode.bind(this);
+    this.dateToday = this.dateToday.bind(this);
+    this.getNomPeriode = this.getNomPeriode.bind(this);
   }
 
   componentDidMount() {
@@ -59,37 +65,115 @@ class Paies extends React.Component {
     }
   }
 
-  datesShortcut(short) {
-    let startDate, endDate;
-    switch (short) {
-      case "jour":
-        startDate = startOfToday();
-        endDate = endOfToday();
+  datesView(view) {
+    const { startDate } = this.state;
+
+    let start, end;
+    switch(view) {
+      case 'jour':
+        start = startOfDay(startDate);
+        end = endOfDay(startDate);
         break;
-      case "semaine":
-        startDate = startOfWeek(new Date(), {weekStartsOn:1});
-        endDate = endOfWeek(new Date(), {weekStartsOn:1});
+      case 'semaine':
+        start = startOfWeek(startDate, {weekStartsOn:1});
+        end = endOfWeek(startDate, {weekStartsOn:1});
         break;
-      case "mois":
-        startDate = startOfMonth(new Date());
-        endDate = endOfMonth(new Date());
+      case 'mois':
+        start = startOfMonth(startDate);
+        end = endOfMonth(startDate);
         break;
     }
-    this.setState({startDate:startDate, endDate:endDate});
+
+
+    // switch (short) {
+    //   case "jour":
+    //     startDate = startOfToday();
+    //     endDate = endOfToday();
+    //     break;
+    //   case "semaine":
+    //     startDate = startOfWeek(new Date(), {weekStartsOn:1});
+    //     endDate = endOfWeek(new Date(), {weekStartsOn:1});
+    //     break;
+    //   case "mois":
+    //     startDate = startOfMonth(new Date());
+    //     endDate = endOfMonth(new Date());
+    //     break;
+    // }
+    this.setState({view: view, startDate: start, endDate: end});
     
   }
+
+  dateToday() {
+    const { view } = this.state;
+
+    let start, end, now = new Date();
+    switch(view) {
+      case 'jour':
+        start = startOfDay(now);
+        end = endOfDay(now);
+        break;
+      case 'semaine':
+        start = startOfWeek(now, {weekStartsOn:1});
+        end = endOfWeek(now, {weekStartsOn:1});
+        break;
+      case 'mois':
+        start = startOfMonth(now);
+        end = endOfMonth(now);
+        break;
+    }
+    this.setState({startDate: start, endDate: end});
+  }
+
+
+  changePeriode(suivant=false) {
+    const { view, startDate } = this.state;
+    let start, end;
+    switch(view) {
+      case 'jour':
+        start = startOfDay(suivant?addDays(startDate,1):subDays(startDate,1));
+        end = endOfDay(suivant?addDays(startDate,1):subDays(startDate,1));
+        break;
+      case 'semaine':
+        start = startOfWeek(suivant?addWeeks(startDate,1):subWeeks(startDate,1), {weekStartsOn:1});
+        end = endOfWeek(suivant?addWeeks(startDate,1):subWeeks(startDate,1), {weekStartsOn:1});
+        break;
+      case 'mois':
+        start = startOfMonth(suivant?addMonths(startDate,1):subMonths(startDate,1));
+        end = endOfMonth(suivant?addMonths(startDate,1):subMonths(startDate,1));
+        break;
+    }
+    this.setState({startDate: start, endDate: end});
+  }
+
+  getNomPeriode() {
+    const {view,startDate} = this.state;
+    switch(view) {
+      case 'jour':
+        return format(startDate, 'EEEE d MMMM yyyy', { locale: frLocale });
+      case 'semaine':
+        return `${strings.modules.employes.paies.liste.semaine} ${format(startDate, 'd MMMM yyyy', { locale: frLocale })}`;
+      case 'mois':
+        return format(startDate, 'MMMM yyyy', { locale: frLocale });
+    }    
+  }
+
 
   render() {
 
     const { users, pointages } = this.props;
-    const { startDate, endDate, openTab } = this.state;
+    const { startDate, endDate, openTab, view } = this.state;
+
+    console.log(this.state);
 
 
     const _ecartToHmm = (ms) => {
-      const d = 3600 * 1000;
+      const h = 3600 * 1000;
       const s = ms<0 ? '-':'';
-      let m = getMinutes(Math.abs(ms)-d);
-      return `${s}${getHours(Math.abs(ms)-d)}:${(m.toString().length==2?m:'0'+m)}`;
+      // let m = getMinutes(Math.abs(ms)-d);
+      // return `${s}${getHours(Math.abs(ms)-d)}:${(m.toString().length==2?m:'0'+m)}`;
+      const dh = Math.floor(Math.abs(ms)/h);
+      const dm = Math.round((Math.abs(ms)%h)/60000).toString().padStart(2, '0');
+      return `${s} ${dh}h${(dm!='00'?dm:'')}`;
     }
 
     const _toHmm = (ms) => {
@@ -99,13 +183,13 @@ class Paies extends React.Component {
     }
 
 
-    console.log('pointages', pointages);
+
     
     let liste = [];
     if (users && pointages) {
       users.forEach(usr => {
         if (usr.status!=='deleted') {
-         
+          console.log('user',usr.nom);
           let usr_obj = {
             id: usr.user_id, 
             nom: usr.nom, 
@@ -127,6 +211,7 @@ class Paies extends React.Component {
           if (usr_obj.pointages) {
             usr_obj.pointages.forEach(up => {
               usr_obj.reel += up.clockout - up.clockin;
+              console.log('ptn', {itv: `${differenceInDays(up.clockout, up.clockin)}j ${differenceInHours(up.clockout, up.clockin)}h ${differenceInSeconds(up.clockout, up.clockin)}s`, id:up.pointage_id});
             });
           }
 
@@ -138,7 +223,7 @@ class Paies extends React.Component {
           /* TODO - filtrage et comptage des shifts de la période */
 
           // calcul de l'écart
-          usr_obj.ecart = usr_obj.prevu - usr_obj.reel;
+          usr_obj.ecart = usr_obj.reel - usr_obj.prevu;
 
           // temps de travail retenu (après application de l'ajustement)
           usr_obj.travail = usr_obj.reel;
@@ -155,47 +240,53 @@ class Paies extends React.Component {
 
     return (
       <div className="Paies">
-        <div className="zoneBoutons">
-          <div className="buttons">
-            <Fab aria-label="back" size="small" className="back-button" onClick={ () => { history.push(paths.EMPLOYES) }}>
+        <div className="zoneboutons">
+          <StdButton identifier="btnretour" elementclass="btnretour" key="btnretour" text={ strings.general.dialog.back } onClick={ () => { history.push(paths.EMPLOYES) }} />
+          <div className="dates">
+            <Fab aria-label="previous" size="small" className="previous-button" onClick={ () => { this.changePeriode(false) }}>
               <BackIcon />
             </Fab>
-          </div>
+            <div className="nomperiode">
+              <div className="ttl">{ strings.modules.employes.paies.titre[view] }</div>
+              <div className="periode">{ this.getNomPeriode() }</div>
+            </div>
+            <Fab aria-label="next" size="small" className="next-button" onClick={ () => { this.changePeriode(true) }}>
+              <NextIcon />
+            </Fab>
 
-          <AppBar position="static" className="liste-header">
-            <div className="dates">
-              <MuiPickersUtilsProvider utils={LocalizedUtils} locale={ frLocale }>
-                <div className="caption start">{ strings.modules.employes.paies.pickers.du }</div>
-                <KeyboardDatePicker
-                  id="startdatepicker"
-                  margin="normal"
-                  value={ startDate }
-                  format="d MMM yyyy"
-                  onChange={date => { this.setSelectedDate('start', date) }}
-                  KeyboardButtonProps={{ 'aria-label': 'change date' }}
-                  clearLabel={ strings.general.dialog.clear }
-                  cancelLabel={ strings.general.dialog.cancel }
-                  />
-                <div className="caption">{ strings.modules.employes.paies.pickers.au }</div>
-                <KeyboardDatePicker
-                  id="enddatepicker"
-                  margin="normal"
-                  value={ endDate }
-                  format="d MMM yyyy"
-                  onChange={date => { this.setSelectedDate('end', date) }}
-                  KeyboardButtonProps={{ 'aria-label': 'change date' }}
-                  clearLabel={ strings.general.dialog.clear }
-                  cancelLabel={ strings.general.dialog.cancel }
-                  />
-              </MuiPickersUtilsProvider>
-            </div>
-            <div className="shortcuts">
-              <StdButton key="short-jour" identifier="jour" elementclass="shortcut shortcut-jour" text={ strings.modules.employes.paies.shortcut.jour } noStroke={true} onClick={ ()=>{ this.datesShortcut('jour') } } />
-              <StdButton key="short-semaine" identifier="semaine" elementclass="shortcut shortcut-semaine" text={ strings.modules.employes.paies.shortcut.semaine } noStroke={true} onClick={ ()=>{ this.datesShortcut('semaine') } } />
-              <StdButton key="short-mois" identifier="mois" elementclass="shortcut shortcut-mois" text={ strings.modules.employes.paies.shortcut.mois } noStroke={true} onClick={ ()=>{ this.datesShortcut('mois') } } />
-            </div>
-          </AppBar>
+            {/* <MuiPickersUtilsProvider utils={LocalizedUtils} locale={ frLocale }>
+              <div className="caption start">{ strings.modules.employes.paies.pickers.du }</div>
+              <KeyboardDatePicker
+                id="startdatepicker"
+                margin="normal"
+                value={ startDate }
+                format="d MMM yyyy"
+                onChange={date => { this.setSelectedDate('start', date) }}
+                KeyboardButtonProps={{ 'aria-label': 'change date' }}
+                clearLabel={ strings.general.dialog.clear }
+                cancelLabel={ strings.general.dialog.cancel }
+                />
+              <div className="caption">{ strings.modules.employes.paies.pickers.au }</div>
+              <KeyboardDatePicker
+                id="enddatepicker"
+                margin="normal"
+                value={ endDate }
+                format="d MMM yyyy"
+                onChange={date => { this.setSelectedDate('end', date) }}
+                KeyboardButtonProps={{ 'aria-label': 'change date' }}
+                clearLabel={ strings.general.dialog.clear }
+                cancelLabel={ strings.general.dialog.cancel }
+                />
+            </MuiPickersUtilsProvider> */}
+          </div>
+          <div className="views">
+            <StdButton key="aujourdhui" identifier="aujourdhui" elementclass={ `view view-aujourdhui`} text={ strings.modules.employes.paies.view.today } noStroke={true} onClick={ ()=>{ this.dateToday() } } />
+            <StdButton key="view-jour" identifier="jour" elementclass={ `view view-jour${(view==='jour'?' selected':'')}`} text={ strings.modules.employes.paies.view.jour } noStroke={true} onClick={ ()=>{ this.datesView('jour') } } />
+            <StdButton key="view-semaine" identifier="semaine" elementclass={ `view view-semaine${(view==='semaine'?' selected':'')}`} text={ strings.modules.employes.paies.view.semaine } noStroke={true} onClick={ ()=>{ this.datesView('semaine') } } />
+            <StdButton key="view-mois" identifier="mois" elementclass={ `view view-mois${(view==='mois'?' selected':'')}`} text={ strings.modules.employes.paies.view.mois } noStroke={true} onClick={ ()=>{ this.datesView('mois') } } />
+          </div>
         </div>
+
         <div className="zoneliste">
           <div class="wrapper">
     <TableContainer className="table-cont">
@@ -213,10 +304,10 @@ class Paies extends React.Component {
           {liste.map((row, i) => (
             <TableRow key={row.id} className={ `${(i%2)?'odd':'even'}` }>
               <TableCell key={`${row.id}-nom`} className="liste-nom">{ row.nom }</TableCell>
-              <TableCell key={`${row.id}-reel`} className="liste-reel">{ _toHmm(row.reel) }</TableCell>
-              <TableCell key={`${row.id}-prevu`} className="liste-prevu">{ _toHmm(row.prevu) }</TableCell>
+              <TableCell key={`${row.id}-reel`} className="liste-reel">{ _ecartToHmm(row.reel) }</TableCell>
+              <TableCell key={`${row.id}-prevu`} className="liste-prevu">{ _ecartToHmm(row.prevu) }</TableCell>
               <TableCell key={`${row.id}-ecart`} className="liste-ecart">{ _ecartToHmm(row.ecart) }</TableCell>
-              <TableCell key={`${row.id}-travail`} className="liste-travail">{ _toHmm(row.travail) }</TableCell>
+              <TableCell key={`${row.id}-travail`} className="liste-travail">{ _ecartToHmm(row.travail) }</TableCell>
             </TableRow>
           ))}
         </TableBody>
