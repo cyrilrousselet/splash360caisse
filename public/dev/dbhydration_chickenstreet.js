@@ -467,6 +467,13 @@ const hydration = {
 
   pointages: [],
 
+  shifts: [
+    { shift_id: 'sh01', employe: 'usr1588601256757', poste: 'st01', start:'09:00:00', end:'14:00:00', recurrence:{periode:'semaine', rythme:1}, date:'2020-01-01', jours:[1,2,4,5] },
+    { shift_id: 'sh02', employe: 'usr1588601256757', poste: 'st02', start:'11:00:00', end:'15:00:00', recurrence:{periode:'semaine', rythme:1}, date:'2020-01-01', jours:[3,6,0] }
+  ],
+
+  timeadjusts: [],
+
   imprimantes: [
     { printer_id: 'imp1', nom: 'POS Printer', connexion: 'usb', param: null, encoding: 'Cp850', pardefaut: true },
     { printer_id: 'imp2', nom: 'Network1', connexion: 'usb', param: null, encoding: 'Cp850', pardefaut: false }//,
@@ -508,7 +515,8 @@ const hydration = {
     { domaine: 'commandes', cle: 'numerotation_max', valeur: '200'},
     { domaine: 'commandes', cle: 'numerotation_hex', valeur: false},
     { domaine: 'options', cle: 'caisse', valeur: {id: 'cash0', nom: 'Caisse 1'} },
-    { domaine: 'options', cle: 'canaux', valeur: [{ids: ['cash0','cash1'], nom: 'caisse'}, {ids: ['borne1'], nom: 'borne'}, {ids: ['wf1'], nom: 'wifi-order'}] }
+    { domaine: 'options', cle: 'canaux', valeur: [{ids: ['cash0','cash1'], nom: 'caisse'}, {ids: ['borne1'], nom: 'borne'}, {ids: ['wf1'], nom: 'wifi-order'}] },
+    { domaine: 'planning', cle: 'shifttypes', valeur: [{id:'st01', nom:'cuisine', couleur: 'bleu'}, {id:'st02', nom:'caisse', couleur: 'vert'}, {id:'st03', nom:'salle', couleur: 'jaune'}, {id:'st04', nom:'livraison', couleur: 'orange'}, {id:'st05', nom:'fermeture', couleur: 'turquoise'}, {id:'st06', nom:'repos heb.', couleur: 'gris'}] }
   ]
 };
 

@@ -14,7 +14,7 @@ const {commandes} = hydration;
 const {parametres, imprimantes, tickets} = hydration;
 const {users} = hydration;
 const {clotures} = hydration;
-const {pointages} = hydration;
+const {pointages, shifts, timeadjusts} = hydration;
 
 
 const checkDirectorySync = (directory) => {  
@@ -52,7 +52,9 @@ const db = {
  parametres: dbFactory('parametres.json', {parametres: parametres}),
  users: dbFactory('users.json', {users: users}),
  clotures: dbFactory('clotures.json', {clotures: clotures}),
- pointages: dbFactory('pointages.json', {pointages: pointages})
+ pointages: dbFactory('pointages.json', {pointages: pointages}),
+ shifts: dbFactory('shifts.json', {shifts: shifts}),
+ timeadjusts: dbFactory('timeadjusts.json', {timeadjusts: timeadjusts})
 };
 
 module.exports = db;

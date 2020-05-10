@@ -9,6 +9,10 @@
       flex-grow: unset;
       flex-shrink: unset;
       background-color: $gris-bleu;
+      .StdButton-text {
+        text-decoration: underline;
+        color: $blanc;
+      }
     }
     .dates {
       width: calc(100% - 500px);
@@ -38,21 +42,28 @@
       .view {
         width: 80px !important;
         height: 30px;
+        background-color: $blanc;
+        .StdButton-text {
+          color: $noir;
+        }
         &.view-aujourdhui {
           background-color: $vert;
           width: 120px !important;
+          .StdButton-text {
+            color: $blanc;
+          }
         }
-        &.view-jour {
-          background-color: $gris-bleu;
-        }
-        &.view-semaine {
-          background-color: $gris-bleu;
-        }
-        &.view-mois {
-          background-color: $gris-bleu;
-        }
+        // &.view-jour {
+          //   background-color: $gris-bleu;
+        // }
+        // &.view-semaine {
+        //   background-color: $gris-bleu;
+        // }
+        // &.view-mois {
+        //   background-color: $gris-bleu;
+        // }
         &.selected {
-          background-color: $primary;
+          text-decoration: underline;
         }
       }
     }
@@ -141,6 +152,15 @@
     height: 100%;
     background-color: $blanc;
     border-radius: 0 0 15px 15px;
+  }
+
+  .liste-ecart {
+    &.over {
+      color: $vert;
+    }
+    &.under {
+      color: $rouge;
+    }
   }
 
   .zoneliste {

@@ -31,7 +31,8 @@ const data = {
                 cancel: "Annuler",
                 clear: "Effacer",
                 save: "Enregistrer",
-                back: 'Retour'
+                back: 'Retour',
+                delete: 'Supprimer'
             },
             check: {
                 tous: 'Tout sélectionner',
@@ -188,8 +189,67 @@ const data = {
                         reel: 'Réel',
                         prevu: 'Prévu',
                         ecart: 'Écart',
+                        taux: 'Tx hor.',
                         travail: 'Tps travail',
+                        salaire: 'Salaire',
                         semaine: 'Semaine du '
+                    },
+                    employe: {
+                        reel: 'Volume horaire réel',
+                        prevu: 'Volume horaire planning',
+                        ecart: 'Écart',
+                        travail: 'Temps de travail'
+                    }
+                },
+                planning: {
+                    grille: {
+                        employes: 'Employés',
+                        total: 'Total',
+                        heures: 'Heures travaillées'
+                    },
+                    edit: {
+                        titre_new: 'Nouveau shift',
+                        titre_edit: 'Édition du shift',
+                        date: 'Début du shift',
+                        poste: 'Poste',
+                        start: 'Heure de début',
+                        end: 'Heure de fin',
+                        employe: 'Employé',
+                        recurrence: {
+                            nom: 'Récurrence',
+                            choix: {
+                                none: 'Aucune',
+                                semaine: 'Semaine',
+                                mois: 'Mois'
+                            },
+                            rythme: {
+                                semaine: ['toutes les','semaine(s)'],
+                                mois: ['tous les','mois']
+                            },
+                            jours: {
+                                semaine: 'le :',
+                                mois: 'tous les :',
+                                mois_choix: {
+                                    mch0: 'le premier jour',
+                                    'mch-1': 'le dernier jour' 
+                                }
+                            },
+                            limite: 'fin récurrence :'
+                        },
+                        suppression: {
+                            bouton: 'Supprimer le shift',
+                            alerte: {
+                                titre: 'Suppression du shift',
+                                texte: 'Êtes-vous sûr de vouloir supprimer le shift et toutes les données liées ?<br />Cette action est irréversible.'
+                            }
+                        },
+                        error: {
+                            titre: 'Heure invalide',
+                            texte: {
+                                start: 'L’heure de début doit être avant l’heure de fin !',
+                                end: 'L’heure de fin doit être après l’heure de début !'
+                            }
+                        }
                     }
                 }
             },
@@ -505,6 +565,7 @@ const data = {
                             editer: 'Édition de l’utilisateur',
                             first: 'L’utilisateur doit changer de mot de passe à la prochaine connexion',
                             status: 'Actif',
+                            taux_horaire: 'Taux horaire',
                             droits: {
                                 clients: "Accès Clients",
                                 stocks: "Accès Stocks",

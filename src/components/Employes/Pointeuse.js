@@ -228,14 +228,14 @@ class Pointeuse extends React.Component {
   return (
     <div className="Pointeuse">
       <div className="zoneBoutons">
-          <div className="buttons">
+          {/* <div className="buttons">
             <Fab aria-label="back" size="small" className="back-button" onClick={ () => { history.push(paths.EMPLOYES) }}>
               <BackIcon />
             </Fab>
-          </div>
-        {/* <div className="buttons">
+          </div> */}
+        <div className="buttons">
           <StdButton identifier="btnretour" elementclass="btnretour" key="btnretour" text="Retour" onClick={ () => { history.push(paths.EMPLOYES) }} />
-        </div> */}
+        </div>
         <div className="titre">{ strings.modules.employes.pointeuse.titre }</div>
         <div className="search"></div>
       </div>

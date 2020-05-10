@@ -5,7 +5,8 @@ import { getPointages, getShifts } from '../services/employes/employesReducer';
 import { getUsers } from '../services/user/userReducer';
 import { employesActions } from '../services/employes/employesActions';
 import { userActions } from '../services/user/userActions';
-import Paies from '../components/Employes/Paies';
+import Planning from '../components/Employes/Plannings';
+import { parametresActions } from '../services/parametres/parametresActions';
 
 
 const getActiveUsers = (state) => {
@@ -16,11 +17,12 @@ const getActiveUsers = (state) => {
   }
 }
 
+
 const mapStateToProps = (state) => {
   return {
     pointages: getPointages(state),
-    users: getUsers(state),
     shifts: getShifts(state),
+    params: state.parametresReducer.parametres.planning,
     employes: getActiveUsers(state)
   }
 }
@@ -29,16 +31,20 @@ const mapDispatchToProps = (dispatch) => {
   const bound = bindActionCreators({
     getAllPointages: employesActions.getPointagesList,
     getAllShifts: employesActions.getShiftsList,
-    getUsers: userActions.getAll
+    getParametres: parametresActions.getAll,
+    getUsers: userActions.getAll,
+    createShift: employesActions.createShift,
+    updateShift: employesActions.updateShift,
+    deleteShift: employesActions.deleteShift
   }, dispatch);
   return {
     ...bound
   };
 }
 
-const EmployesPaiesCont = connect(
+const EmployesPlanningCont = connect(
   mapStateToProps,
   mapDispatchToProps
-)(Paies);
+)(Planning);
 
-export default EmployesPaiesCont;
+export default EmployesPlanningCont;

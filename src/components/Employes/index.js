@@ -13,6 +13,8 @@ import LargeButton from '../common/LargeButton';
 import history from '../../helpers/history';
 import EmployesPointeuseCont from '../../containers/EmployesPointeuseCont';
 import EmployesPaiesCont from '../../containers/EmployesPaiesCont';
+import EmployesPlanningCont from '../../containers/EmployesPlanningCont';
+
 
 let strings = new LocalizedStrings(data);
 
@@ -48,7 +50,7 @@ class Employes extends React.Component {
       <TopZone />
       <div className="MainZone">          
           <Switch>
-            <PrivateRoute exact path={ paths.EMPLOYES_PLANNING } component={ Plannings } />
+            <PrivateRoute exact path={ paths.EMPLOYES_PLANNING } component={ EmployesPlanningCont } />
             <PrivateRoute exact path={ paths.EMPLOYES_POINTEUSE } component={ EmployesPointeuseCont } />
             <PrivateRoute exact path={ paths.EMPLOYES_PAIES } component={ EmployesPaiesCont } />
             <Route path={ paths.EMPLOYES }>

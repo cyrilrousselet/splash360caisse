@@ -27,6 +27,7 @@ class EditUtilisateurPopin extends React.Component {
       user_id: null,
       nom: '',
       identifiant: '', 
+      taux_horaire: null,
       status: null,
       droits: '',
       error_nom: false,
@@ -48,7 +49,8 @@ class EditUtilisateurPopin extends React.Component {
       nom: this.props.utilisateur && this.props.utilisateur.nom,
       identifiant: this.props.utilisateur && this.props.utilisateur.identifiant, 
       first: this.props.utilisateur && this.props.utilisateur.first,
-      droits: this.props.utilisateur && this.props.utilisateur.droits
+      droits: this.props.utilisateur && this.props.utilisateur.droits,
+      taux_horaire: this.props.utilisateur && this.props.utilisateur.taux_horaire
     }
     console.log('componentDidMount', st);
     
@@ -146,7 +148,7 @@ class EditUtilisateurPopin extends React.Component {
 
   getValues() {
     
-    const { droits, nom, identifiant, status } = this.props.utilisateur || {droits:{}, nom:null, identifiant:null, status:'active'};
+    const { droits, nom, identifiant, status, taux_horaire } = this.props.utilisateur || {droits:{}, nom:null, identifiant:null, status:'active', taux_horaire:null};
     console.log('getValues()', this.props.utilisateur);
     console.log('getValues() droits', droits);
     // si aucun droit n'est défini (cas d'un nouvel utilisateur)
@@ -172,13 +174,15 @@ class EditUtilisateurPopin extends React.Component {
     const snom = this.state.nom;
     const sidentifiant = this.state.identifiant;
     const sstatus = this.state.status;
+    const staux_horaire = this.state.taux_horaire;
 
     return {
       droits: vdroits,
       nom: snom || nom,
       identifiant: sidentifiant || identifiant,
       allchecked: all,
-      status: sstatus || status
+      status: sstatus || status,
+      taux_horaire: staux_horaire || taux_horaire
     }
   }
 
@@ -191,7 +195,8 @@ class EditUtilisateurPopin extends React.Component {
       droits: droits,
       status: null,
       error_nom: false,
-      error_identifiant: false
+      error_identifiant: false,
+      taux_horaire: null
     }
     this.setState(st);
   }
@@ -235,7 +240,7 @@ class EditUtilisateurPopin extends React.Component {
 
   render() {
     const { utilisateur, editOpen, closeHandler } = this.props;
-    const { nom, identifiant, droits, allchecked, status } = this.getValues();
+    const { nom, identifiant, droits, allchecked, status, taux_horaire } = this.getValues();
     console.log("utilisateur: ", utilisateur);
     console.log('status',status);
  
@@ -287,6 +292,16 @@ class EditUtilisateurPopin extends React.Component {
                     onChange={ (name,checked) => { this.updateStatus(Object.fromEntries([[name, checked?'active':'disabled']])) }} 
                     label={ strings.modules.parametres.submodules.utilisateurs.edition.status } 
                   />
+              <LabelledField 
+                  id={ `taux_horaire` }
+                  name={ `taux_horaire` }
+                  className={ `taux_horaire` }
+                  value={ taux_horaire } 
+                  type='number' 
+                  readOnly={ false } 
+                  onChange={(val)=>{ this.updateValue({taux_horaire:val.value}) }}
+                  label={ strings.modules.parametres.submodules.utilisateurs.edition.taux_horaire }
+              />
               <div className="droits-wrapper">
                 <div className={ `subttl${allchecked?' allchecked':''}`} onClick={() => { this.checkAllDroits(droits) }} title={ allchecked ? strings.general.check.aucun : strings.general.check.tous }>{ strings.modules.parametres.submodules.utilisateurs.liste.droits }</div>
                 <div className="sep"></div>
