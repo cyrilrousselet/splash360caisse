@@ -190,9 +190,22 @@ const data = {
                         prevu: 'Prévu',
                         ecart: 'Écart',
                         taux: 'Tx hor.',
+                        correction: 'Ajust.',
                         travail: 'Tps travail',
                         salaire: 'Salaire',
                         semaine: 'Semaine du '
+                    },
+                    timeadjust: {
+                        titre: 'Ajustement de temps',
+                        employe: 'Employé',
+                        periode: {
+                            jour: 'Pour le ',
+                            semaine: 'Pour la semaine du ',
+                            mois: 'Pour le mois de '
+                        },
+                        heures: 'h',
+                        minutes: 'min',
+                        valeur: 'Nouvel écart'
                     },
                     employe: {
                         reel: 'Volume horaire réel',

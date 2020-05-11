@@ -13,7 +13,7 @@ import history from '../../helpers/history';
 import paths from '../../constants/routes';
 
 import 'date-fns';
-import { format, startOfWeek, isValid, isToday, addDays, getDay, getWeek, isFirstDayOfMonth, isLastDayOfMonth, isAfter, getMonth, startOfToday, add, addWeeks, subWeeks } from "date-fns";
+import { format, startOfWeek, isValid, isToday, addDays, getDay, getWeek, isFirstDayOfMonth, isLastDayOfMonth, isAfter, getMonth, startOfToday, add, addWeeks, subWeeks, startOfDay } from "date-fns";
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import { MuiPickersUtilsProvider, KeyboardDatePicker, KeyboardTimePicker } from '@material-ui/pickers';
@@ -304,7 +304,7 @@ class ShiftEditModal extends React.Component {
                     <MuiPickersUtilsProvider utils={LocalizedDayUtils} locale={ frLocale }>
                       <KeyboardDatePicker
                         id="limite"
-                        margin="normal"
+                        margin="dense"
                         value={ date }
                         format="d MMM yyyy"
                         onChange={(val) => { this.updateValue({date: val})}}
@@ -318,9 +318,10 @@ class ShiftEditModal extends React.Component {
                 <MuiPickersUtilsProvider utils={LocalizedDayUtils} locale={frLocale}>
 
                   <KeyboardTimePicker
-                            margin="normal"
+                            margin="dense"
                             id="start"
                             ampm={false}
+                            className="heure"
                             label={ strings.modules.employes.planning.edit.start }
                             value={display_start}
                             onChange={(heure) => { this.checkHour(heure,'start') }}
@@ -329,9 +330,10 @@ class ShiftEditModal extends React.Component {
                             }}
                           />
                   <KeyboardTimePicker
-                            margin="normal"
+                            margin="dense"
                             id="end"
                             ampm={false}
+                            className="heure"
                             label={ strings.modules.employes.planning.edit.end }
                             value={display_end}
                             onChange={(heure) => { this.checkHour(heure,'end') }}
@@ -467,7 +469,9 @@ class PlanningSemaine extends React.Component {
         const start = shift.start.split(':');
         const end = shift.end.split(':');
         console.log('start-end', start, end);
-        total += add(startOfToday(), {hours:Number(end[0]), minutes:Number(end[1])}).getTime() - add(startOfToday(), {hours:Number(start[0]), minutes:Number(start[1])}).getTime();
+        if (shift.poste.tps) {
+          total += add(startOfToday(), {hours:Number(end[0]), minutes:Number(end[1])}).getTime() - add(startOfToday(), {hours:Number(start[0]), minutes:Number(start[1])}).getTime();
+        }
       });
     });
     return total;
@@ -485,7 +489,7 @@ class PlanningSemaine extends React.Component {
         // si la règle de récurrence n'est pas remplie
         // -> pas de shift
         // s'il y a une date de début de la règle
-        if (isBefore(date, shdate)) ok = false;
+        if (isBefore(startOfDay(date), startOfDay(shdate))) ok = false;
         // s'il y a une date de fin de la règle
         if (sh.recurrence.limite && isAfter(date, sh.recurrence.limite)) ok = false;
           

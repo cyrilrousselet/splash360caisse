@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 
-import { Modal, Fab, AppBar, TableContainer, Table, TableHead, TableCell, TableBody, TableRow } from '@material-ui/core';
+import { Modal, Fab, AppBar, TableContainer, Table, TableHead, TableCell, TableBody, TableRow, TextField, InputAdornment, IconButton } from '@material-ui/core';
 import CloseIcon from '../common/icon/CloseIcon';
 import StdButton from '../common/StdButton';
 
@@ -10,7 +10,7 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 
 import 'date-fns';
-import { Interval, format, compareAsc, startOfToday, endOfToday, startOfDay, endOfDay, isAfter, getWeek, getDay, getMonth, isFirstDayOfMonth, isLastDayOfMonth, add, isBefore, startOfWeek, endOfWeek, startOfMonth, endOfMonth, getHours, getMinutes, differenceInDays, differenceInHours, differenceInSeconds, subDays, subWeeks, subMonths, addDays, addWeeks, isSameDay } from "date-fns";
+import { Interval, format, compareAsc, startOfToday, endOfToday, startOfDay, endOfDay, isAfter, getWeek, getDay, getMonth, isFirstDayOfMonth, isLastDayOfMonth, add, isBefore, startOfWeek, endOfWeek, startOfMonth, endOfMonth, getHours, getMinutes, differenceInDays, differenceInHours, differenceInSeconds, subDays, subWeeks, subMonths, addDays, addWeeks, isSameDay, isToday, isEqual } from "date-fns";
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
@@ -34,6 +34,149 @@ class LocalizedUtils extends DateFnsUtils {
   }
 }
 
+class TimeadjustPopin extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      newvaleur:null
+    };
+    this.setNewValeur = this.setNewValeur.bind(this);
+    this.saveTimeadjust = this.saveTimeadjust.bind(this);
+    this.resetPopin = this.resetPopin.bind(this);
+    this.setNewValeurSign = this.setNewValeurSign.bind(this);
+  }
+
+  _getHeures(ms) {
+    return Math.floor(Math.abs(ms)/(3600 * 1000));
+  }
+  _getMinutes(ms) {
+    return Math.round((Math.abs(ms)%(3600 * 1000))/60000);
+  }
+
+  setNewValeur(champ, val) {
+    const nv = this.state.newvaleur || this.props.valeur;
+    const hrs = this._getHeures(nv);
+    const min = this._getMinutes(nv);
+
+console.log('setNewValeur',champ,val);
+
+    if (champ=='minutes') {
+      this.setState({newvaleur:((hrs*3600)+val)*1000});
+    }
+    else if (champ=='heures') {
+      this.setState({newvaleur:((val*3600)+min)*1000});
+    }
+  }
+  setNewValeurSign() {
+    const nv = this.state.newvaleur || this.props.valeur;
+    console.log('sign',nv, (0-nv));
+    this.setState({newvaleur:(0-nv)});
+  }
+  saveTimeadjust() {
+    const { user, employe, fin, valeur } = this.props;
+    const { newvaleur } = this.state;
+
+    if (newvaleur!=valeur) {
+
+      console.log('nv,v',newvaleur,valeur);
+
+      this.props.saveTimeadjust({
+        employe: employe.user_id,
+        user: user,
+        valeur: newvaleur!==null ? (newvaleur - valeur) : 0,
+        date: fin.getTime()
+      });
+    } 
+    this.resetPopin();
+    this.props.closeHandler();
+  }
+
+  resetPopin() {
+    this.setState({newvaleur:null});
+  }
+
+  render() {
+    const { open, user, employe, periode, debut, fin, valeur, closeHandler } = this.props;
+    const newvaleur = this.state.newvaleur || valeur;
+
+
+    console.log("newvaleur",newvaleur);
+
+    return (
+      <Modal
+        open={open}
+        >
+        <div className={ `PaieTimeadjustEditModal`}>
+          <div className="Modal-container">
+            <div className="header">
+              <div className="title">{ strings.modules.employes.paies.timeadjust.titre }</div>
+            </div>
+            <div className="body">
+              <div className="form-group group-employe">
+                <div className="label">{ strings.modules.employes.paies.timeadjust.employe }</div>
+                <div className="valeur nom-employe">{ employe && employe.nom }</div>
+              </div>
+              <div className="form-group group-periode">
+                <div className="label">{ strings.modules.employes.paies.timeadjust.periode[periode] }</div>
+                <div className="valeur periode">{ debut && (periode=='mois' ? format(debut, 'MMMM yyyy', { locale: frLocale }) : format(debut, 'd MMMM yyyy', { locale: frLocale })) }</div>
+              </div>
+              <div className="form-group group-valeur">
+                <div className="label">{ strings.modules.employes.paies.timeadjust.valeur }</div>
+                <TextField 
+                  className="input valeur-heures" 
+                  InputProps={{
+                    startAdornment: 
+                      <InputAdornment position="start">
+                        <IconButton
+                          className="signe-btn"
+                          aria-label="toggle value sign"
+                          onClick={ this.setNewValeurSign }>
+                            { newvaleur>=0 ? '+' : '-'}
+                        </IconButton>
+                      </InputAdornment>,
+                    endAdornment: <InputAdornment position="end">{ strings.modules.employes.paies.timeadjust.heures }</InputAdornment>,
+                  }} 
+                  type="number" 
+                  name="valeur-heures" 
+                  defaultValue={this._getHeures(newvaleur)} 
+                  onChange={(event) => { this.setNewValeur('heures', event.target.value) }} 
+                />
+                <TextField 
+                  className="input valeur-heures" 
+                  InputProps={{
+                    endAdornment: <InputAdornment position="end">{ strings.modules.employes.paies.timeadjust.minutes }</InputAdornment>
+                  }}
+                  type="number" 
+                  name="valeur-heures" 
+                  defaultValue={this._getMinutes(newvaleur)} 
+                  onChange={(event) => { this.setNewValeur('minutes', event.target.value) }} 
+                />
+              </div>
+            </div>
+            <div className="footer">
+              <StdButton 
+                identifier="modal-save" 
+                elementclass="save" 
+                icon={ false } 
+                // disabled={ !readytovalidate }
+                text={ strings.general.dialog.save } 
+                onClick={this.saveTimeadjust} 
+              />
+            </div>
+          </div>
+          <Fab aria-label="close" size="small" className="close-button" onClick={ ()=>{this.resetPopin(); closeHandler()} }>
+            <CloseIcon />
+          </Fab>
+        </div>
+      </Modal>
+
+
+    );
+  }
+
+}
+
 class Paies extends React.Component {
 
   constructor(props) {
@@ -43,19 +186,26 @@ class Paies extends React.Component {
       openTab: 0,
       view: 'mois',
       startDate: startOfMonth(new Date()),
-      endDate: endOfMonth(new Date())
+      endDate: endOfMonth(new Date()),
+      timeadjustOpen: false,
+      tmaEmploye: null,
+      tmaValeur: null
     }
 
     this.datesView = this.datesView.bind(this);
     this.changePeriode = this.changePeriode.bind(this);
     this.dateToday = this.dateToday.bind(this);
     this.getNomPeriode = this.getNomPeriode.bind(this);
+    this.openTimeadjust = this.openTimeadjust.bind(this);
+    this.closeTimeadjust = this.closeTimeadjust.bind(this);
   }
 
   componentDidMount() {
     this.props.getUsers();
     this.props.getAllPointages();
     this.props.getAllShifts();
+    this.props.getAllTimeadjusts();
+    this.props.getParametres();
   }
 
   setSelectedDate(bound,date) {
@@ -163,20 +313,48 @@ class Paies extends React.Component {
 
 
 
-  getPlanningTotal(shifts) {
+  getPlanningTotal(shifts, types, date=null) {
     let total = 0;
     shifts.map(shift => {
-      const start = shift.start.split(':');
-      const end = shift.end.split(':');
-      console.log('start-end', start, end);
-      total += add(startOfToday(), {hours:Number(end[0]), minutes:Number(end[1])}).getTime() - add(startOfToday(), {hours:Number(start[0]), minutes:Number(start[1])}).getTime();
+      const type = types.find(t=>t.id==shift.poste);
+      if (type.tps) {
+        
+        const start = shift.start.split(':');
+        const end = shift.end.split(':');
+        const debut = add(startOfToday(), {hours:Number(start[0]), minutes:Number(start[1])});
+        const fin = add(startOfToday(), {hours:Number(end[0]), minutes:Number(end[1])});
+        const now = new Date();
+
+        // si la date n'est pas fournie, on additionne tout le shift
+        if (date==null) {
+          total += fin.getTime() - debut.getTime();
+        }
+        // si la date est fournie, on additionne uniquement le temps passé
+        else {
+          // si c'est avant aujourd'hui
+          if (isBefore(startOfDay(date), startOfToday())) {
+            total += fin.getTime() - debut.getTime();
+          } 
+          // si c'est aujourd'hui
+          else if (isEqual(startOfDay(date), startOfToday())) {
+            // si la fin du creneau est avant maintenant, on compte tout
+            if (isBefore(fin, now)) {
+              total += fin.getTime() - debut.getTime();
+            }
+            // si la fin n'est pas arrivée mais que le début a commencé
+            else if (isBefore(debut, now)) {
+              // on calcule le temps qui s'est écoulé depuis le début
+              total += now.getTime() - debut.getTime();
+            }
+          }
+        }
+
+      }
     });
     return total;
   }
 
   getPlanningJour(date, shiftslist) {
-
- //   console.log('getPlanningJour', date, shiftslist);
 
     const __shifts = shiftslist.filter(sh => {
 
@@ -188,11 +366,10 @@ class Paies extends React.Component {
         // si la règle de récurrence n'est pas remplie
         // -> pas de shift
         // s'il y a une date de début de la règle
-        if (isBefore(date, shdate)) ok = false;
+        if (isBefore(startOfDay(date), startOfDay(shdate))) ok = false;
         // s'il y a une date de fin de la règle
         if (sh.recurrence.limite && isAfter(date, sh.recurrence.limite)) ok = false;
-          
-        
+                  
         // si la règle est remplie
         if (ok) {
           // récurrence valide :
@@ -229,14 +406,20 @@ class Paies extends React.Component {
     return __shifts;
   }
 
+  openTimeadjust(employe_id, valeur) {
+    const {employes} = this.props;
+    this.setState({timeadjustOpen:true, tmaEmploye:employes.find(e=>e.user_id==employe_id), tmaValeur: valeur});
+  }
+  closeTimeadjust() {
+    this.setState({timeadjustOpen:false, tmaEmploye:null, tmaValeur:null});
+  }
 
 
   render() {
 
-    const { users, employes, pointages, shifts } = this.props;
-    const { startDate, endDate, openTab, view } = this.state;
-
-    console.log(this.state);
+    const { users, params, employes, pointages, shifts, adjusts, createTimeadjust, admin } = this.props;
+    const { startDate, endDate, openTab, view, timeadjustOpen, tmaEmploye, tmaValeur } = this.state;
+    const { shifttypes } = params || {shifttypes:null};
 
 
     const _ecartToHmm = (ms) => {
@@ -279,7 +462,10 @@ class Paies extends React.Component {
           shifts: [], 
           reel: 0, 
           prevu: 0, 
+          prevurealtime: 0,
           ecart: 0, 
+          adjust: 0,
+          correction: 0,
           travail: 0
         };
 
@@ -293,7 +479,18 @@ class Paies extends React.Component {
         if (usr_obj.pointages) {
           usr_obj.pointages.forEach(up => {
             usr_obj.reel += up.clockout - up.clockin;
-            console.log('ptn', {itv: `${differenceInDays(up.clockout, up.clockin)}j ${differenceInHours(up.clockout, up.clockin)}h ${differenceInSeconds(up.clockout, up.clockin)}s`, id:up.pointage_id});
+            // console.log('ptn', {itv: `${differenceInDays(up.clockout, up.clockin)}j ${differenceInHours(up.clockout, up.clockin)}h ${differenceInSeconds(up.clockout, up.clockin)}s`, id:up.pointage_id});
+          });
+        }
+
+        usr_obj.adjust = adjusts.filter(a=>(
+          a.employe==usr.user_id &&
+          a.date>=startDate.getTime() &&
+          a.date<=endDate.getTime()
+        ));
+        if (usr_obj.adjust) {
+          usr_obj.adjust.forEach(ua => {
+            usr_obj.correction += ua.valeur;
           });
         }
 
@@ -301,9 +498,6 @@ class Paies extends React.Component {
       //   usr_obj.reel /= (1000 * 3600);
         
         const jours = differenceInDays(endDate, startDate);
-        console.log('jours', jours);
-
-
 
         // récup du temps prévu
        // usr_obj.shifts = [];
@@ -311,25 +505,32 @@ class Paies extends React.Component {
         const shiftlist = shifts.filter(sh=>sh.employe==usr.user_id);
 
         let sh = [];
+        let shrt = [];
 
         if (jours>0) {
           [...Array(jours+1).keys()].forEach((v,i) => {
-            const __s = this.getPlanningJour(addDays(startDate, i), shiftlist);
-            sh = [...sh, ...__s];
+            // const __s = {date:, shifts: this.getPlanningJour(addDays(startDate, i), shiftlist)};
+            sh.push({date:addDays(startDate, i), shifts: this.getPlanningJour(addDays(startDate, i), shiftlist)});
           });
         } else {
-          usr_obj.shifts = this.getPlanningJour(startDate, shiftlist);
+//          sh = this.getPlanningJour(startDate, shiftlist);
+          sh.push({date:startDate, shifts: this.getPlanningJour(startDate, shiftlist)});
         }
+        sh.forEach(s => {
+          usr_obj.prevu += this.getPlanningTotal(s.shifts, shifttypes);
+          usr_obj.prevurealtime += this.getPlanningTotal(s.shifts, shifttypes, s.date);
+        });
 
-        usr_obj.prevu = this.getPlanningTotal(sh);
+        console.log(_ecartToHmm(usr_obj.prevu), _ecartToHmm(usr_obj.prevurealtime));
 
         /* TODO - filtrage et comptage des shifts de la période */
 
         // calcul de l'écart
-        usr_obj.ecart = usr_obj.reel - usr_obj.prevu;
+//        usr_obj.ecart = usr_obj.reel - usr_obj.prevu;
+        usr_obj.ecart = usr_obj.reel - usr_obj.prevurealtime;
 
         // temps de travail retenu (après application de l'ajustement)
-        usr_obj.travail = usr_obj.reel;
+        usr_obj.travail = usr_obj.reel + usr_obj.correction;
         
         liste.push(usr_obj);
 
@@ -397,8 +598,9 @@ class Paies extends React.Component {
             <TableCell key={`hd-reel`} className="liste-reel">{ strings.modules.employes.paies.liste.reel }</TableCell>
             <TableCell key={`hd-prevu`} className="liste-prevu">{ strings.modules.employes.paies.liste.prevu }</TableCell>
             <TableCell key={`hd-ecart`} className="liste-ecart">{ strings.modules.employes.paies.liste.ecart }</TableCell>
-            <TableCell key={`hd-taux`} className="liste-taux">{ strings.modules.employes.paies.liste.taux }</TableCell>
+            <TableCell key={`hd-correction`} className="liste-correction">{ strings.modules.employes.paies.liste.correction }</TableCell>
             <TableCell key={`hd-travail`} className="liste-travail">{ strings.modules.employes.paies.liste.travail }</TableCell>
+            <TableCell key={`hd-taux`} className="liste-taux">{ strings.modules.employes.paies.liste.taux }</TableCell>
             <TableCell key={`hd-salaire`} className="liste-salaire">{ strings.modules.employes.paies.liste.salaire }</TableCell>
           </TableRow>
         </TableHead>
@@ -407,10 +609,12 @@ class Paies extends React.Component {
             <TableRow key={row.id} className={ `${(i%2)?'odd':'even'}` }>
               <TableCell key={`${row.id}-nom`} className="liste-nom">{ row.nom }</TableCell>
               <TableCell key={`${row.id}-reel`} className="liste-reel">{ _ecartToHmm(row.reel) }</TableCell>
-              <TableCell key={`${row.id}-prevu`} className="liste-prevu">{ _ecartToHmm(row.prevu) }</TableCell>
+              {/* <TableCell key={`${row.id}-prevu`} className="liste-prevu">{ _ecartToHmm(row.prevu) }</TableCell> */}
+              <TableCell key={`${row.id}-prevu`} className="liste-prevu">{ _ecartToHmm(row.prevurealtime) }</TableCell>
               <TableCell key={`${row.id}-ecart`} className={ `liste-ecart${ (row.ecart>0 ? ' over': (row.ecart==0 ? '':' under')) }`}>{ _ecartToHmm(row.ecart) }</TableCell>
-              <TableCell key={`${row.id}-taux`} className="liste-taux">{ row.taux }</TableCell>
+              <TableCell key={`${row.id}-correction`} className={ `liste-correction`}><div className="ecart-correction" onClick={()=>{ this.openTimeadjust(row.id,row.ecart) }}>{ _ecartToHmm(row.correction) }</div></TableCell>
               <TableCell key={`${row.id}-travail`} className="liste-travail">{ _ecartToHmm(row.travail) }</TableCell>
+              <TableCell key={`${row.id}-taux`} className="liste-taux">{ row.taux }</TableCell>
               <TableCell key={`${row.id}-salaire`} className="liste-salaire">{ _salaire(row.taux, row.travail) }</TableCell>
             </TableRow>
           ))}
@@ -419,6 +623,17 @@ class Paies extends React.Component {
     </TableContainer>
           </div>
         </div>
+        <TimeadjustPopin 
+          open={timeadjustOpen}
+          user={admin.user_id}
+          employe={tmaEmploye}
+          periode={view}
+          debut={startDate}
+          fin={endDate}
+          valeur={tmaValeur}
+          closeHandler={this.closeTimeadjust}
+          saveTimeadjust={createTimeadjust}
+        />
       </div>
     );
   }

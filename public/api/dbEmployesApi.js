@@ -68,7 +68,25 @@ const actions = {
       
   //  log.info(proxies);
     res.send(proxies);
-  }
+  },
+  dbTimeadjustPersist: async (req,res) => {
+      const {payload} = req;
+      log.info("dbTimeadjustPersist() in API");
+
+      (await db.timeadjusts)._.mixin(lodashId);
+      const confirm = await _persistTimeadjust(payload.timeadjust);
+
+      res.send(confirm);
+  },
+  dbTimeadjustDelete: async (req,res) => {
+    const {payload} = req;
+    log.info("dbTimeadjustDelete() in API");
+
+    (await db.timeadjusts)._.mixin(lodashId);
+    const confirm = await _deleteTimeadjust(payload.adjust_id);
+
+    res.send(confirm);
+  },
 
 }
 
@@ -267,5 +285,14 @@ function _parseTimeadjust(_rawdata) {
   return {timeadjustslist: _rawdata._tma};
 }
 
+
+async function _deleteTimeadjust(adjust_id) {
+
+  const _tma = await (await db.timeadjusts).get('timeadjusts')
+                                      .remove({ adjust_id: adjust_id })
+                                      .write();
+  return _tma.length>0;
+
+}
 
 module.exports = actions;

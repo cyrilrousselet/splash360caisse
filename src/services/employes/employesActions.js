@@ -1,5 +1,6 @@
 import { employesActionTypes } from "./employesActionTypes";
 import { employesServices } from "./employesServices";
+import { getTimeadjusts } from "./employesReducer";
 
 function getPointagesList(params={}) {
 
@@ -27,21 +28,6 @@ function getShiftsList(params={}) {
     )
     .catch(
       error => { dispatch({ type: employesActionTypes.GET_SHIFTS_LIST_FAILURE, error: error.toString() }) }
-    );
-  }
-}
-
-function getTimeadjustsList(params={}) {
-
-  return dispatch => {
-    dispatch({ type: employesActionTypes.GET_TIMEADJUSTS_LIST_REQUEST });
-
-    return employesServices.getTimeajustsList(params)
-    .then(
-        data => { dispatch({ type: employesActionTypes.GET_TIMEADJUSTS_LIST_SUCCESS, ...data }) }
-    )
-    .catch(
-      error => { dispatch({ type: employesActionTypes.GET_TIMEADJUSTS_LIST_FAILURE, error: error.toString() }) }
     );
   }
 }
@@ -94,6 +80,73 @@ function deleteShift(payload) {
   }
 }
 
+
+
+function getTimeadjustsList(params={}) {
+
+  return dispatch => {
+    dispatch({ type: employesActionTypes.GET_TIMEADJUSTS_LIST_REQUEST });
+
+    return employesServices.getTimeajustsList(params)
+    .then(
+        data => { dispatch({ type: employesActionTypes.GET_TIMEADJUSTS_LIST_SUCCESS, ...data }) }
+    )
+    .catch(
+      error => { dispatch({ type: employesActionTypes.GET_TIMEADJUSTS_LIST_FAILURE, error: error.toString() }) }
+    );
+  }
+}
+
+function createTimeadjust(payload) {
+  return dispatch => {
+    dispatch({ type: employesActionTypes.CREATE_TIMEADJUST_REQUEST });
+    
+    employesServices.createTimeadjust(payload)
+    .then(
+      data => {
+        dispatch({ type: employesActionTypes.CREATE_TIMEADJUST_SUCCESS, ...data });
+        dispatch(getTimeadjustsList());
+      },
+      error => dispatch({ type: employesActionTypes.CREATE_TIMEADJUST_FAILURE, error: error.toString() })
+    );
+  }
+}
+
+function updateTimeadjust(payload) {
+  return (dispatch, getState) => {
+    dispatch({ type: employesActionTypes.UPDATE_TIMEADJUST_REQUEST });
+    
+    const { timeajusts } = getState().employesReducer;
+    const timeajust = timeajusts.find(ta => ta.adjust_id = payload.adjust_id);
+
+    employesServices.updateTimeadjust({...timeajust, ...payload})
+    .then(
+      data => {
+        dispatch({ type: employesActionTypes.UPDATE_TIMEADJUST_SUCCESS, ...data });
+        dispatch(getTimeadjustsList());
+      },
+      error => dispatch({ type: employesActionTypes.UPDATE_TIMEADJUST_FAILURE, error: error.toString() })
+    );
+  }
+}
+
+function deleteTimeadjust(payload) {
+  return dispatch => {
+    dispatch({ type: employesActionTypes.DELETE_TIMEADJUST_REQUEST });
+
+    employesServices.deleteTimeadjust(payload)
+    .then(
+      data => {
+        dispatch({ type: employesActionTypes.DELETE_TIMEADJUST_SUCCESS, ...data });
+        dispatch(getTimeadjustsList());
+      },
+      error => dispatch({ type: employesActionTypes.DELETE_TIMEADJUST_FAILURE, error: error.toString() })
+    );
+  }
+}
+
+
+
 function setClockIn(payload) {
 
   return dispatch => {
@@ -141,6 +194,9 @@ export const employesActions = {
   updateShift,
   deleteShift,
   getTimeadjustsList,
+  createTimeadjust,
+  updateTimeadjust,
+  deleteTimeadjust,
   setClockIn,
   setClockOut
 };

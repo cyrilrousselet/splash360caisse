@@ -8,7 +8,10 @@ export const employesServices = {
   updatePointage,
   createShift,
   updateShift,
-  deleteShift
+  deleteShift,
+  createTimeadjust,
+  updateTimeadjust,
+  deleteTimeadjust
 }
 
 function getPointagesList(params) {
@@ -63,9 +66,35 @@ function deleteShift(shift_id) {
   return emit('dbShiftDelete', {shift_id:shift_id});
 }
 
+
+function createTimeadjust(params) {
+
+  const timeadjust = {
+    adjust_id: _newTimeadjustId(),
+    employe: params.employe,
+    user: params.user,
+    date: params.date,
+    valeur: params.valeur
+  }
+
+  return emit('dbTimeadjustPersist', {timeadjust:timeadjust});
+}
+
+function updateTimeadjust(timeadjust) {
+  return emit('dbTimeadjustPersist', {timeadjust:timeadjust});
+}
+
+function deleteTimeadjust(adjust_id) {
+  return emit('dbTimeadjustDelete', {adjust_id:adjust_id});
+}
+
 const _newPointageId = () => {
   let __d = new Date();
   return 'clock'+__d.getTime().toString();
+}
+const _newTimeadjustId = () => {
+  let __d = new Date();
+  return 'clockADJ'+__d.getTime().toString();
 }
 const _newShiftId = () => {
   let __d = new Date();

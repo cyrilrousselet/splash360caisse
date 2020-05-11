@@ -178,7 +178,7 @@
     &.color-gris { 
       background-color: $shfcol_gris;
       .creneau { color: $blanc }
-      .poste { color: $shfcol_bleufonce } 
+      .poste { color: $blanc } 
     };
     &.color-jaune { 
       background-color: $shfcol_jaune;
@@ -188,7 +188,7 @@
     &.color-jauneorange { 
       background-color: $shfcol_jauneorange;
       .creneau { color: $blanc }
-      .poste { color: $shfcol_bleufonce }
+      .poste { color: $shfcol_orange }
     };
     &.color-orange { 
       background-color: $shfcol_orange;
@@ -198,12 +198,12 @@
     &.color-rose { 
       background-color: $shfcol_rose;
       .creneau { color: $blanc }
-      .poste { color: $shfcol_bleufonce }
+      .poste { color: $shfcol_violet }
     };
     &.color-rouge { 
       background-color: $shfcol_rouge;
       .creneau { color: $blanc }
-      .poste { color: $shfcol_bleufonce }
+      .poste { color: $blanc }
     };
     &.color-vert { 
       background-color: $shfcol_vertclair;
@@ -213,7 +213,7 @@
     &.color-violet { 
       background-color: $shfcol_violet;
       .creneau { color: $blanc }
-      .poste { color: $blanc }
+      .poste { color: $noir }
     };
     .creneau {
       font-family: $f_med;
@@ -374,6 +374,25 @@
         -webkit-user-select: none;
         user-select: none;
         display: inline-block;
+      }
+
+    }
+    .date {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      padding-top: 15px;
+    }
+    .heures {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 15px;
+      .heure {
+        width: calc(50% - 5px);
       }
 
     }
