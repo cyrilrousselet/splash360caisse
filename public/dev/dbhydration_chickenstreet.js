@@ -1,5 +1,5 @@
 const hydration = {
-  categories: [{categorie_id: 'catg1', nom: 'Chamas Tacos', description: ''}],
+  categories: [{categorie_id: 'catg1', nom: 'ChickenStreet', description: ''}],
   groupes: [
       {groupe_id: 'cat15', categorie: 'catg1', nom: 'MENU NAAN', description: '', noprint: [], weight: 1},
       {groupe_id: 'cat16', categorie: 'catg1', nom: 'MENU BURGER', description: '', noprint: [], weight: 2},
