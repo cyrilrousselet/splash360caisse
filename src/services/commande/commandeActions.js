@@ -289,6 +289,16 @@ function completeStep(payload) {
   }
 }
 
+function uncheckItemSteps(payload) {
+  return (dispatch, getState) => {
+    const { itemid, stepid } = payload;
+    const item = getState().commandeReducer.commande.items.find(itm => itm.itemid===itemid);
+
+    const commandeItem = commandeServices.uncheckItemSteps(item, stepid);
+    dispatch({ type: commandeActionTypes.STEP_UNCOMPLETE, commandeItem });
+  }
+}
+
 
 function updateCommande(payload) {
   return (dispatch) => {
@@ -420,6 +430,7 @@ export const commandeActions = {
   removeIngredient,
   noIngredientForStep,
   completeStep,
+  uncheckItemSteps,
   updateCommande,
   deleteCommande,
   addReglement,

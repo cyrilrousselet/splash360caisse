@@ -21,10 +21,12 @@ class Panier extends React.Component {
     super(props);
     this.state = {
       selectedIndex: -1,
+      selectedIngredient: null,
       inputfocus: true,
       searchval:''
     }
     this.setSelectedIndex = this.setSelectedIndex.bind(this);
+    this.setSelectedIngredient = this.setSelectedIngredient.bind(this);
     this.searchHandler = this.searchHandler.bind(this);
     this.decodeQRCode = this.decodeQRCode.bind(this);
     this.send_to_search = this.send_to_search.bind(this);
@@ -44,26 +46,47 @@ class Panier extends React.Component {
 
     // s'il y a des items dans la commande
     if (undefined!==items && items.length>0) {
-    
-      // vérifie si un item est 'pending'
-      // si c'est le cas, on ouvre la Personnalisation avec le premier step non complet
       
-      const __pendingItem = items.find(item => item.status==='pending');
-      if (__pendingItem) {
-        const __nextStep = __pendingItem.steps.find(step => step.completed===false);
-        let __stepIndex = __pendingItem.steps.findIndex(s=>s.id==__nextStep.id);
-        let __previd = (__stepIndex<=0 ) ? -1 : __pendingItem.steps[__stepIndex-1].id;
-        this.props.openPersonnalisation(__pendingItem.itemid, __nextStep.id, __previd, __nextStep.validated, __pendingItem.status, 'Panier.componentDidUpdate()');
-      //  this.props.validatePersonnalisation(__nextStep.validated);
-      } else {
-        this.props.closePersonnalisation('Panier.componentDidUpdate()');
-      }
+        // vérifie si un item est 'pending'
+        // si c'est le cas, on ouvre la Personnalisation avec le premier step non complet
+        
+        const __pendingItem = items.find(item => item.status==='pending');
+        const __forceItem = (this.props.forcePersonnalisationItem) ? items.find(item => item.itemid===this.props.forcePersonnalisationItem) : null;
+        // le prochain step que l'on affiche est celui qui n'a pas encore été revu
+        let __stepToRun = null;
+        let __item = null;
+        if (__forceItem) {
+          console.log('Panier.componentDidUpdate(), modif de personnalisation DEMANDÉE', __forceItem);
+          __stepToRun = __forceItem.steps.find(step => step.checked===false );
+          __item = __forceItem;
+        }
+         else if (__pendingItem) {
+          console.log('Panier.componentDidUpdate(), pas de modif de personnalisation', __pendingItem);
+          __stepToRun = __pendingItem.steps.find(step => step.checked===false );
+          __item = __pendingItem;
+        }
+
+        if (__stepToRun) {
+          // id du step précédent et suivant
+          let __stepIndex = __item.steps.findIndex(s=>s.id==__stepToRun.id);
+          let __previd = (__stepIndex<=0 ) ? -1 : __item.steps[__stepIndex-1].id;
+          let __nextid = (__stepIndex>=__item.steps.length-1 ) ? -1 : __item.steps[__stepIndex+1].id;
+          this.props.openPersonnalisation(__item.itemid, __stepToRun.id, __previd, __nextid, __stepToRun.validated, __item.status, __forceItem===null ? 'Panier.componentDidUpdate()' : 'item');
+        } 
+        // si aucun item n'est 'pending'
+        else {
+          this.props.closePersonnalisation('Panier.componentDidUpdate()');
+        }
     }
   }
 
-  setSelectedIndex(event=null,index) {
+  setSelectedIndex(index) {
     index = index===this.state.selectedIndex ? -1 : index;
-    this.setState({selectedIndex: index})
+    this.setState({selectedIndex: index, selectedIngredient: null})
+  }
+
+  setSelectedIngredient(ingid) {
+    this.setState({selectedIngredient: ingid})
   }
 
   calculateTotal(items) {
@@ -149,7 +172,7 @@ class Panier extends React.Component {
 
   render() {
 
-    const { commandeslist, error, loading, updateProduit, updateCommande, standByCommande, livraisonCommande, deleteCommande, gotoListeCommandes, openReglement, open, openDrawer, parametres, itemToPersonnalize } = this.props;
+    const { commandeslist, error, loading, updateProduit, updateCommande, standByCommande, livraisonCommande, deleteCommande, gotoListeCommandes, openReglement, open, openDrawer, parametres, itemToPersonnalize, uncompleteStep } = this.props;
     const { commentaire, items, status, ticketId, mode } = this.props.commande;
     
     const {inputfocus, searchval} = this.state;
@@ -159,7 +182,7 @@ class Panier extends React.Component {
 
     const total = this.calculateTotal(items);
     const devise = '€';
-    const { selectedIndex } = this.state;
+    const { selectedIndex, selectedIngredient } = this.state;
 
 
     /* GESTION DE LA PERSONNALISATION */
@@ -336,15 +359,33 @@ class Panier extends React.Component {
                           disabled={ open }
                           commentaire={ itm.commentaire!=='' }
                           selected={ selectedIndex===i }
+                          selectedIng={ selectedIngredient }
                           composition={ itm.composition }
                           ingredients={ itm.ingredients }
                           steps={ itm.steps }
-                          _onClick={ this.setSelectedIndex }
-                          _onSubClick={ (stepid) => { 
-                            let __step = itm.steps.find(s=>s.id==stepid);
-                            let __stepIndex = itm.steps.findIndex(s=>s.id==stepid);
-                            let __previd = (__stepIndex==0) ? -1 : itm.steps[__stepIndex-1].id;
-                            this.props.openPersonnalisation(itm.itemid.toString(), stepid, __previd, __step.validated, itm.status, 'subitem');
+                          _onClick={ (id) => {
+                            console.log('_onClick', id, selectedIndex);
+                            if (selectedIndex==id) {
+                              let __prevstepid = -1;
+                              let __nextstepid = (itm.steps.length>1) ? itm.steps[1].id : -1;
+                              this.props.uncheckItemSteps({itemid:itm.itemid.toString(), stepid:null});
+                              this.props.openPersonnalisation(itm.itemid.toString(), itm.steps[0].id, __prevstepid, __nextstepid, itm.steps[0].validated, itm.status, 'item');
+                            } else {
+                              this.setSelectedIndex(id); 
+                            }
+                          }}
+                          _onSubClick={ (ingid, stepid) => { 
+                            console.log('_onSubClick', ingid, stepid, selectedIngredient);
+                            if (ingid==selectedIngredient) {
+                              let __step = itm.steps.find(s=>s.id==stepid);
+                              let __stepIndex = itm.steps.findIndex(s=>s.id==stepid);
+                              let __previd = (__stepIndex==0) ? -1 : itm.steps[__stepIndex-1].id;
+                              let __nextid = (__stepIndex>=itm.steps.length-1) ? -1 : itm.steps[__stepIndex+1].id;
+                              this.props.uncheckItemSteps({itemid:itm.itemid.toString(), stepid: stepid});
+                              this.props.openPersonnalisation(itm.itemid.toString(), stepid, __previd, __nextid, __step.validated, itm.status, 'item');
+                            } else {
+                              this.setSelectedIngredient(ingid);
+                            }
                           } } />
                   )}
                   </List>
@@ -416,7 +457,7 @@ Panier.propTypes = {
 class PanierListeItem extends React.Component {
 
   render() {
-    const {id, itemid, nom, quantite, prix, commentaire, selected, disabled, ingredients, steps, _onClick, _onSubClick} = this.props;
+    const {id, itemid, nom, quantite, prix, commentaire, selected, selectedIng, disabled, ingredients, steps, _onClick, _onSubClick} = this.props;
 
     // on définit la liste des ingrédients à partir de l'ordre des steps de personnalisation de l'item
     // (pour exclure les ingrédients non personnalisables et conserver l'ordre des steps)
@@ -453,7 +494,7 @@ class PanierListeItem extends React.Component {
           disableGutters
           selected={ selected }
           disabled={ disabled }
-          onClick={ event => _onClick(event, id) }
+          onClick={ () => _onClick(id) }
           >
           <div className="litm nom">{nom}</div> 
           <div className="litm quantite">{quantite}</div> 
@@ -465,9 +506,9 @@ class PanierListeItem extends React.Component {
             <ListItem
               button
               disableGutters
-              selected={selected}
+              selected={selectedIng==ing.ingredient}
               disabled={disabled}
-              onClick={ event => _onSubClick(ing.fromStep)}
+              onClick={ event => _onSubClick(ing.ingredient,ing.fromStep)}
               key={`itm${itemid}-ing${ing.ingredient}`}
               >
               <div className="lsitm nom">{ ing.nom }</div>

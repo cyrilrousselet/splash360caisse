@@ -28,7 +28,7 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-  const binded = bindActionCreators({
+  const bound = bindActionCreators({
     getCommande: commandeActions.getCommande,
     getParametres: parametresActions.getAll,
     getListeCommandes: commandeActions.getCommandesList,
@@ -38,10 +38,11 @@ const mapDispatchToProps = (dispatch) => {
     livraisonCommande: commandeActions.livraisonCommande,
     deleteCommande: commandeActions.deleteCommande,
     setNewNumero: commandeActions.setNewNumero,
+    uncheckItemSteps: commandeActions.uncheckItemSteps,
     openDrawer: peripheralActions.openDrawer,
   }, dispatch);
   return {
-    ...binded,
+    ...bound,
     gotoListeCommandes: gotoListeCommandes
   };
 }

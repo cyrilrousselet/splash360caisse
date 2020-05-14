@@ -197,7 +197,9 @@ const data = {
                     },
                     timeadjust: {
                         titre: 'Ajustement de temps',
-                        employe: 'Employé',
+                        employe: 'Employé :',
+                        reel: 'Tps réel :',
+                        prevu: 'Tps prévu :',
                         periode: {
                             jour: 'Pour le ',
                             semaine: 'Pour la semaine du ',
@@ -205,7 +207,7 @@ const data = {
                         },
                         heures: 'h',
                         minutes: 'min',
-                        valeur: 'Nouvel écart'
+                        valeur: 'Nouvel écart :'
                     },
                     employe: {
                         reel: 'Volume horaire réel',

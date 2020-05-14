@@ -53,9 +53,8 @@ class TimeadjustPopin extends React.Component {
   _getMinutes(ms) {
     return Math.round((Math.abs(ms)%(3600 * 1000))/60000);
   }
-
   setNewValeur(champ, val) {
-    const nv = this.state.newvaleur || this.props.valeur;
+    const nv = (this.state.newvaleur!==null) ? this.state.newvaleur : this.props.valeur;
     const hrs = this._getHeures(nv);
     const min = this._getMinutes(nv);
 
@@ -79,14 +78,16 @@ console.log('setNewValeur',champ,val);
 
     if (newvaleur!=valeur) {
 
-      console.log('nv,v',newvaleur,valeur);
-
-      this.props.saveTimeadjust({
+      const ta = {
         employe: employe.user_id,
         user: user,
         valeur: newvaleur!==null ? (newvaleur - valeur) : 0,
         date: fin.getTime()
-      });
+      };
+
+      console.log('nv,v', newvaleur, valeur, ta);
+
+      this.props.saveTimeadjust(ta);
     } 
     this.resetPopin();
     this.props.closeHandler();
@@ -97,8 +98,8 @@ console.log('setNewValeur',champ,val);
   }
 
   render() {
-    const { open, user, employe, periode, debut, fin, valeur, closeHandler } = this.props;
-    const newvaleur = this.state.newvaleur || valeur;
+    const { open, user, employe, periode, debut, fin, valeur, reel, prevu, closeHandler } = this.props;
+    const newvaleur = (this.state.newvaleur!==null) ? this.state.newvaleur : valeur;
 
 
     console.log("newvaleur",newvaleur);
@@ -120,6 +121,16 @@ console.log('setNewValeur',champ,val);
               <div className="form-group group-periode">
                 <div className="label">{ strings.modules.employes.paies.timeadjust.periode[periode] }</div>
                 <div className="valeur periode">{ debut && (periode=='mois' ? format(debut, 'MMMM yyyy', { locale: frLocale }) : format(debut, 'd MMMM yyyy', { locale: frLocale })) }</div>
+              </div>
+              <div className="rappels">
+                <div className="form-group group-reel">
+                  <div className="label">{ strings.modules.employes.paies.timeadjust.reel }</div>
+                  <div className="valeur reel">{ `${this._getHeures(reel)}${strings.modules.employes.paies.timeadjust.heures}${this._getMinutes(reel).toString().padStart(2, '0')}${strings.modules.employes.paies.timeadjust.minutes}` }</div>
+                </div>
+                <div className="form-group group-prevu">
+                  <div className="label">{ strings.modules.employes.paies.timeadjust.prevu }</div>
+                  <div className="valeur prevu">{ `${this._getHeures(prevu)}${strings.modules.employes.paies.timeadjust.heures}${this._getMinutes(prevu).toString().padStart(2, '0')}${strings.modules.employes.paies.timeadjust.minutes}` }</div>
+                </div>
               </div>
               <div className="form-group group-valeur">
                 <div className="label">{ strings.modules.employes.paies.timeadjust.valeur }</div>
@@ -189,7 +200,9 @@ class Paies extends React.Component {
       endDate: endOfMonth(new Date()),
       timeadjustOpen: false,
       tmaEmploye: null,
-      tmaValeur: null
+      tmaValeur: null,
+      tmaPrevu: null,
+      tmaReel: null
     }
 
     this.datesView = this.datesView.bind(this);
@@ -406,19 +419,19 @@ class Paies extends React.Component {
     return __shifts;
   }
 
-  openTimeadjust(employe_id, valeur) {
+  openTimeadjust(employe_id, valeur, reel, prevu) {
     const {employes} = this.props;
-    this.setState({timeadjustOpen:true, tmaEmploye:employes.find(e=>e.user_id==employe_id), tmaValeur: valeur});
+    this.setState({timeadjustOpen:true, tmaEmploye:employes.find(e=>e.user_id==employe_id), tmaValeur: valeur, tmaReel:reel, tmaPrevu:prevu});
   }
   closeTimeadjust() {
-    this.setState({timeadjustOpen:false, tmaEmploye:null, tmaValeur:null});
+    this.setState({timeadjustOpen:false, tmaEmploye:null, tmaValeur:null, tmaReel:null, tmaPrevu:null});
   }
 
 
   render() {
 
     const { users, params, employes, pointages, shifts, adjusts, createTimeadjust, admin } = this.props;
-    const { startDate, endDate, openTab, view, timeadjustOpen, tmaEmploye, tmaValeur } = this.state;
+    const { startDate, endDate, openTab, view, timeadjustOpen, tmaEmploye, tmaValeur, tmaReel, tmaPrevu } = this.state;
     const { shifttypes } = params || {shifttypes:null};
 
 
@@ -521,7 +534,7 @@ class Paies extends React.Component {
           usr_obj.prevurealtime += this.getPlanningTotal(s.shifts, shifttypes, s.date);
         });
 
-        console.log(_ecartToHmm(usr_obj.prevu), _ecartToHmm(usr_obj.prevurealtime));
+     //   console.log(_ecartToHmm(usr_obj.prevu), _ecartToHmm(usr_obj.prevurealtime));
 
         /* TODO - filtrage et comptage des shifts de la période */
 
@@ -612,7 +625,7 @@ class Paies extends React.Component {
               {/* <TableCell key={`${row.id}-prevu`} className="liste-prevu">{ _ecartToHmm(row.prevu) }</TableCell> */}
               <TableCell key={`${row.id}-prevu`} className="liste-prevu">{ _ecartToHmm(row.prevurealtime) }</TableCell>
               <TableCell key={`${row.id}-ecart`} className={ `liste-ecart${ (row.ecart>0 ? ' over': (row.ecart==0 ? '':' under')) }`}>{ _ecartToHmm(row.ecart) }</TableCell>
-              <TableCell key={`${row.id}-correction`} className={ `liste-correction`}><div className="ecart-correction" onClick={()=>{ this.openTimeadjust(row.id,row.ecart) }}>{ _ecartToHmm(row.correction) }</div></TableCell>
+              <TableCell key={`${row.id}-correction`} className={ `liste-correction`}><div className="ecart-correction" onClick={()=>{ this.openTimeadjust(row.id, (row.ecart+row.correction), row.reel, row.prevu) }}>{ _ecartToHmm(row.correction) }</div></TableCell>
               <TableCell key={`${row.id}-travail`} className="liste-travail">{ _ecartToHmm(row.travail) }</TableCell>
               <TableCell key={`${row.id}-taux`} className="liste-taux">{ row.taux }</TableCell>
               <TableCell key={`${row.id}-salaire`} className="liste-salaire">{ _salaire(row.taux, row.travail) }</TableCell>
@@ -630,6 +643,8 @@ class Paies extends React.Component {
           periode={view}
           debut={startDate}
           fin={endDate}
+          reel={tmaReel}
+          prevu={tmaPrevu}
           valeur={tmaValeur}
           closeHandler={this.closeTimeadjust}
           saveTimeadjust={createTimeadjust}

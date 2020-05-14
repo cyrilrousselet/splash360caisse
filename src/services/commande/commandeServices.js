@@ -16,6 +16,7 @@ export const commandeServices = {
   removeIngredient,
   noIngredientForStep,
   completeStep,
+  uncheckItemSteps,
   getRuleValues,
   setCommandeFromAPI,
   sendTicketId
@@ -129,7 +130,7 @@ function addProduit(payload, tva, items, steps) {
 
     let steps_list = [];
     steps.forEach(step => {
-      steps_list.push({id: step.step_id, completed: false, validated: isStepOptionnal(step)});
+      steps_list.push({id: step.step_id, completed: false, validated: isStepOptionnal(step), checked: false});
     });
 
     item = {
@@ -249,13 +250,14 @@ function addIngredient(ingredient, quantite, step, item, produitSteps) {
   const itemstepid = steps.findIndex(st => st.id == step.step_id);
   steps[itemstepid].validated = validated;
   steps[itemstepid].completed = completed;
+  steps[itemstepid].checked = validated && completed;
   item.steps = [...steps];
 
   if (validated) {
     
-    // si tous les steps sont "completed", 
+    // si tous les steps sont "validated" (dans les règles) et "checked" (personnalisé)
     // on passe le status de l'item de "pending" à "completed"
-    if (-1==steps.findIndex(st => st.completed == false)) {
+    if (-1==steps.findIndex(st => st.validated == false || st.checked == false )) {
       item.status = 'completed';
     }
   }
@@ -303,13 +305,14 @@ function removeIngredient(ingredient, quantite, step, item, produitSteps) {
   const itemstepid = steps.findIndex(st => st.id == step.step_id);
   steps[itemstepid].validated = validated;
   steps[itemstepid].completed = completed;
+  steps[itemstepid].checked = validated && completed;
   
   item.steps = [...steps];
   
   if (validated) {
-    // si tous les steps sont "completed", 
+    // si tous les steps sont "validated" (dans les règles) et "checked" (personnalisé)
     // on passe le status de l'item de "pending" à "completed"
-    if (-1==steps.findIndex(st => st.completed == false)) {
+    if (-1==steps.findIndex(st => st.validated == false || st.checked == false)) {
       item.status = 'completed';
     }
   }
@@ -347,12 +350,13 @@ function noIngredientForStep(step, item, produitSteps) {
     const itemstepid = steps.findIndex(st => st.id == step.step_id);
     steps[itemstepid].validated = true;
     steps[itemstepid].completed = completed;
+    steps[itemstepid].checked = true;
     
     item.steps = [...steps];
 
-    // si tous les steps sont "completed", 
+    // si tous les steps sont "validated" (dans les règles) et "checked" (personnalisé)
     // on passe le status de l'item de "pending" à "completed"
-    if (-1==steps.findIndex(st => st.completed == false)) {
+    if (-1==steps.findIndex(st => st.validated == false || st.checked == false)) {
       item.status = 'completed';
     }
   }
@@ -363,22 +367,36 @@ function noIngredientForStep(step, item, produitSteps) {
   return item;
 }
 
+function uncheckItemSteps(item, stepid) {
+  const {steps} = item;
+  if (stepid!=null) {
+    const itemstepid = steps.findIndex(st => st.id == stepid);
+    steps[itemstepid].checked = false;
+    item.steps = [...steps];
+  } else {
+    const uncheckedSteps = steps.map( st => ({...st, checked:false}) );
+    item.steps = uncheckedSteps;
+  }
+
+
+  return item;
+}
 
 function completeStep(step, item, produitSteps) {
 
   const {steps} = item;
 
-  const {validated} = _checkStepRegles(step, item);
+  const {validated, completed } = _checkStepRegles(step, item);
   if (validated) {
     const itemstepid = steps.findIndex(st => st.id == step.step_id);
-    steps[itemstepid].validated = true;
-    steps[itemstepid].completed = true;
+    steps[itemstepid].checked = true;
+    steps[itemstepid].completed = completed;
     
     item.steps = [...steps];
 
-    // si tous les steps sont "completed", 
+    // si tous les steps sont "validated" (dans les règles) et "checked" (personnalisé)
     // on passe le status de l'item de "pending" à "completed"
-    if (-1==steps.findIndex(st => st.completed == false)) {
+    if (-1==steps.findIndex(st => st.validated == false || st.checked == false)) {
       item.status = 'completed';
     }
   }
@@ -424,16 +442,17 @@ function _mustBeUnique(step, ingredient) {
   // et que la règle vaut pour tous les types
   if (step.regles.length == 1 || (step.regles.length>1 && step.regles[0].regle.toLowerCase().indexOf('g') != -1)) {
     // si la règle impose un max. d'1 ingrédient:
-    if (RegExp('^(\\?|\\{0,1\\}|\\{1\\})').test(step.regles[0].regle)) __unique = true;
+    if (RegExp('^(\\?|\\{1,1\\}|\\{0,1\\}|\\{1\\})').test(step.regles[0].regle)) __unique = true;
+    
   }
-  
   // s'il y a plusieurs types d'ingrédients
   else if (step.regles.length>1) {
     const __regle = step.regles.find(st=>st.type==ingredient.type);
 
     // si la règle impose un max. d'1 ingrédient
     // on récupère le type correspondant à l'ingrédient
-    if (RegExp('^(\\?|\\{1\\})').test(__regle.regle)) {
+    if (RegExp('^(\\?|\\{1,1\\}|\\{0,1\\}|\\{1\\})').test(__regle.regle)) {
+    // if (RegExp('^(\\?|\\{1\\})').test(__regle.regle)) {
       __unique = true;
       __type = ingredient.type;
     }

@@ -123,7 +123,7 @@ class Personnalisation extends React.Component {
 
   render() {
     
-    const { open, closePersonnalisation, itemstatus, contClass, stepObject, step, itemSteps, item, ingredientTypes, addIngredient, removeIngredient, noIngredientForStep, itemIngredients, completeStep, valide, previousstep, updateProduit } = this.props;
+    const { open, closePersonnalisation, itemstatus, contClass, stepObject, step, itemSteps, item, ingredientTypes, addIngredient, removeIngredient, noIngredientForStep, itemIngredients, completeStep, valide, previousstep, updateProduit, validatePersonnalisation } = this.props;
 
     if (null==stepObject || Object.entries(stepObject).length==0) return <Modal open={open}><LoadingSpinner /></Modal>;
 
@@ -192,7 +192,7 @@ class Personnalisation extends React.Component {
             <div className="footer">
               {(this.props.previousstep!=-1) && <StdButton identifier="btnprecedent" elementclass="btnprecedent" key="btnprecedent" text={strings.modules.encaissement.personnalisation.precedent} onClick={ () => { this.gotoPreviousStep() }} />}
               <div className="intercalaire"></div>
-              <StdButton identifier="btnsuivant" elementclass="btnsuivant" key="btnsuivant" text={strings.modules.encaissement.personnalisation.valider} disabled={!valide} onClick={ () => { completeStep({itemid: item, stepid: step}) }} />
+              <StdButton identifier="btnsuivant" elementclass="btnsuivant" key="btnsuivant" text={strings.modules.encaissement.personnalisation.valider} disabled={!valide} onClick={ () => { completeStep({itemid: item, stepid: step}); }} />
             </div>
           </div>
           <Fab aria-label="close" size="small" className="close-button" onClick={ onClickDelete }>

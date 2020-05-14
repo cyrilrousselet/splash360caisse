@@ -154,17 +154,108 @@
     border-radius: 0 0 15px 15px;
   }
 
+  // .MuiTableBody-root .MuiTableRow-root {
+  //   position: relative;
+  // }
+  .liste-reel {
+    position: relative;
+    // &:after {
+    //   content: '-';
+    //   padding: 0 10px;
+    //   box-sizing: border-box;
+    //   display: inline-block;
+    //   position: absolute;
+    //   right: 0;
+    // }
+  }
+  .liste-prevu {
+    position: relative;
+    background-color: $gris-clair;
+    color: $gris-fonce;
+    padding-left: 30px;
+
+    &:before {
+      content: '-';
+      box-sizing: border-box;
+      display: inline-block;
+      position: absolute;
+      left: 10px;
+    }
+    &:after {
+      content: '=';
+      padding: 0 10px;
+      box-sizing: border-box;
+      display: inline-block;
+      position: absolute;
+      right: 0;
+    }
+  }
+
   .liste-ecart {
+    background-color: $gris-clair;
+    color: $gris-fonce;
     &.over {
       color: $vert;
     }
     &.under {
       color: $rouge;
     }
+    // &:before {
+    //   content: '( ';
+    //   padding-right: 5px;
+    //   box-sizing: border-box;
+    //   display: inline-block;
+    // }
+    // &:after {
+    //   content: ' )';
+    //   display: inline-block;
+    //   box-sizing: border-box;
+    //   padding-left: 5px;
+    // }
+  }
+
+  .liste-correction {
+    position: relative;
+    padding-left: 30px;
+    &:before {
+      content: '+';
+      box-sizing: border-box;
+      display: inline-block;
+      position: absolute;
+      left: 10px;
+    }
   }
   .ecart-correction {
     text-decoration: underline;
     cursor: pointer;
+
+  }
+  .liste-travail {
+    position: relative;
+    &:before {
+      content: '=';
+      display: inline-block;
+      position: absolute;
+      left: -20px;
+    }
+  }
+  .liste-taux {
+    position: relative;
+    &:before {
+      content: '*';
+      display: inline-block;
+      position: absolute;
+      left: -20px;
+    }
+  }
+  .liste-salaire {
+    position: relative;
+    &:before {
+      content: '=';
+      display: inline-block;
+      position: absolute;
+      left: -20px;
+    }
   }
 
   .zoneliste {
@@ -256,6 +347,13 @@
       justify-content: center;
       align-items: center;
       padding-bottom: 15px;
+    }
+    .rappels {
+      display: flex;
+      width: 100%;
+      flex-direction: row;
+      justify-content: space-between;
+      padding-bottom: 30px;
     }
     .group-valeur {
       display: flex;
