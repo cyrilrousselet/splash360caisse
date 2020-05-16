@@ -20,6 +20,8 @@ export function commandeReducer(state = initialState, action) {
     , rendus = []
     , rndIndex = -1
     , rnd = {}
+    , comments = []
+    , cmtIndex = -1
     ;
 
   switch (action.type) {
@@ -120,6 +122,50 @@ export function commandeReducer(state = initialState, action) {
       return {
         ...state,
         commande: {...commande, items}
+      };
+
+    case commandeActionTypes.ADD_COMMENT:
+
+      comments = commande.comments;
+      comments.push(action.comment);
+
+      return {
+        ...state,
+        commande: {...commande, comments}
+      };
+
+
+    case commandeActionTypes.UPDATE_COMMENT:
+
+      const {commentId, texte} = action.payload;
+
+      comments = commande.comments;
+      cmtIndex = comments.findIndex((obj => obj.comment_id == commentId));
+
+      if (-1 < cmtIndex) { 
+        
+        const cmt = comments[cmtIndex];
+        comments[cmtIndex] = {...cmt, texte:texte};
+  
+        return {
+          ...state,
+          commande: {...commande, comments:comments}
+        }
+      };
+
+
+    case commandeActionTypes.DELETE_COMMENT:
+
+      comments = commande.comments;
+      cmtIndex = comments.findIndex((obj => obj.commentId == action.commentId));
+      
+      if (-1 < cmtIndex) { 
+        comments.splice(cmtIndex,1);
+        
+        return {
+          ...state,
+          commande: {...commande, comments}
+        }
       }
 
     case commandeActionTypes.ADD_REGLEMENT:

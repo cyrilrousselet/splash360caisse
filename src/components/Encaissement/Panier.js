@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import StdButton from '../common/StdButton';
 
-import { List, ListItem, Fab } from '@material-ui/core';
+import { List, ListItem, Fab, Modal, TextField } from '@material-ui/core';
 import Swal from 'sweetalert2';
 
 import PlusIcon from '../common/icon/PlusIcon';
@@ -13,7 +13,151 @@ import CommentIcon from '../common/icon/CommentIcon';
 import CrossIcon from '../common/icon/CrossIcon';
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
+import CloseIcon from '../common/icon/CloseIcon';
 let strings = new LocalizedStrings(data);
+
+
+class CommentModal extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      texte: null
+    };
+    this.deleteComment = this.deleteComment.bind(this);
+    this.saveComment = this.saveComment.bind(this);
+    this.resetPopin = this.resetPopin.bind(this);
+    this.changeHandler = this.changeHandler.bind(this);
+    this.setComment = this.setComment.bind(this);
+  }
+
+  deleteComment() {
+    const {commentid, deleteHandler} = this.props;
+    if (commentid!==null) {
+
+      Swal.fire({
+        title: strings.modules.encaissement.commentaires.suppression.titre,
+        text: strings.modules.encaissement.commentaires.suppression.titre,
+        focusConfirm: true,
+        showCancelButton: true,
+        customClass: 'deleteconfirm',
+        confirmButtonText: strings.general.dialog.delete,
+        cancelButtonText: strings.general.dialog.cancel,
+        buttonsStyling: false 
+      })
+      .then((result) => {
+        if (result.value) {
+          deleteHandler({commendId:commentid});
+          this.resetPopin();
+          this.props.closeHandler();
+        }
+      });
+    }
+  }
+
+  saveComment() {
+    const { commentid, item, ingredient, sa } = this.props;
+    const { texte } = this.state;
+
+    console.log('saveComment()');
+
+    this.props.saveHandler(commentid, item, ingredient, texte);
+    this.resetPopin();
+    this.props.closeHandler();
+
+  }
+  resetPopin() {
+    this.setState({texte:null});
+  }
+  changeHandler(event) {
+   // console.log('CommentModal.changeHandler()', event.target.value);
+    this.setState({texte:String(event.target.value).toUpperCase()});
+  }
+  setComment(message) {
+    const { texte } = this.state;
+    let newtexte = (texte===null) ? '' : texte+', ';
+    this.setState({texte: newtexte+message});
+  }
+  render() {
+
+    const { commentid, item, ingredient, cmtlib, closeHandler, deleteHandler, commenttexte, open } = this.props;
+    const { texte } = this.state;
+
+    const vtexte = texte==null ? commenttexte : texte;
+    console.log('commenttexte', commenttexte);
+
+    setTimeout(() => {
+      if (this.refs.commentInput) this.refs.commentInput.focus();
+    },500);
+
+    const __mttl = (ingredient) ? 'titre_ing' : (item) ? 'titre_itm' : 'titre_cmd';
+
+    const readytosave = texte!==null;
+
+    return (
+      <Modal
+      open={open}
+      >
+      <div className={ `CommentModal`}>
+        <div className="Modal-container">
+          <div className="header">
+            <div className="title">{ strings.modules.encaissement.commentaires[__mttl] }</div>
+          </div>
+          <div className="body">
+            <div className="form-group">
+                <div className="label">{ strings.modules.encaissement.commentaires.texte }</div>
+                <div className="valeur">
+                  <TextField
+                    multiline
+                    id="texte"
+                    value={vtexte}
+                    rowsMax={3}
+                    ref="commentInput"
+                    onChange={this.changeHandler}
+                    variant="filled"
+                  />
+                  <div className="caption">{ strings.modules.encaissement.commentaires.caption }</div>
+                </div>
+            </div>
+            <div className="form-group">
+              <div className="label">{ strings.modules.encaissement.commentaires.predefini }</div>
+              <div className="choix">
+                {cmtlib && cmtlib.map(cmt=>(
+                  <div className="cmtlib-item" key={`cmt-${cmt.id}`} onClick={()=>{this.setComment(cmt.message)}}>{cmt.message}</div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="footer">
+            <StdButton 
+                identifier="modal-suppr" 
+                elementclass="suppr" 
+                icon={ false } 
+                disabled={ commentid==null }
+                text={ strings.modules.encaissement.commentaires.suppression.bouton } 
+                onClick={this.deleteComment} 
+              />
+            <StdButton 
+              identifier="modal-save" 
+              elementclass="save" 
+              icon={ false } 
+              disabled={ !readytosave }
+              text={ strings.general.dialog.save } 
+              onClick={this.saveComment} 
+            />
+          </div>
+        </div>
+        <Fab aria-label="close" size="small" className="close-button" onClick={ ()=>{this.resetPopin(); closeHandler()} }>
+          <CloseIcon />
+        </Fab>
+      </div>
+    </Modal>
+
+    );
+  }
+
+}
+
 
 class Panier extends React.Component {
 
@@ -21,15 +165,22 @@ class Panier extends React.Component {
     super(props);
     this.state = {
       selectedIndex: -1,
-      selectedIngredient: null,
+      selectedIngredient: -1,
       inputfocus: true,
-      searchval:''
+      searchval:'',
+      commentOpen: false, 
+      commentId:null, 
+      commentItemId:null, 
+      commentIngredientId:null
     }
     this.setSelectedIndex = this.setSelectedIndex.bind(this);
     this.setSelectedIngredient = this.setSelectedIngredient.bind(this);
     this.searchHandler = this.searchHandler.bind(this);
     this.decodeQRCode = this.decodeQRCode.bind(this);
     this.send_to_search = this.send_to_search.bind(this);
+    this.openComment = this.openComment.bind(this);
+    this.saveComment = this.saveComment.bind(this);
+    this.closeComment = this.closeComment.bind(this);
   }
 
   lock = false;
@@ -81,12 +232,21 @@ class Panier extends React.Component {
   }
 
   setSelectedIndex(index) {
-    index = index===this.state.selectedIndex ? -1 : index;
-    this.setState({selectedIndex: index, selectedIngredient: null})
+    const {selectedIndex, selectedIngredient} = this.state;
+    if (selectedIngredient===-1) {
+      index = index===this.state.selectedIndex ? -1 : index;
+    }
+    this.setState({selectedIndex: index, selectedIngredient: -1})
   }
 
-  setSelectedIngredient(ingid) {
-    this.setState({selectedIngredient: ingid})
+  setSelectedIngredient(index,ingidx) {
+    console.log(`setSelectedIngredient(${index}, ${ingidx})`)
+    const {selectedIndex, selectedIngredient} = this.state;
+    if (index==selectedIndex) {
+      index = ingidx===selectedIngredient ? -1 : index;
+      ingidx = ingidx===selectedIngredient ? -1 : ingidx;
+    }
+    this.setState({selectedIndex: index, selectedIngredient: ingidx})
   }
 
   calculateTotal(items) {
@@ -170,19 +330,100 @@ class Panier extends React.Component {
 
   }
 
+
+
+
+  openComment() {
+
+    const {comments, items } = this.props.commande;
+    const {selectedIndex, selectedIngredient} = this.state;
+
+    // récup des id d'item et d'ingrédients en fonction de la sélection du panier
+    const itemid = (selectedIndex!==-1) ? items[selectedIndex].itemid : null;
+    const ingredientid = (selectedIngredient!==-1) ? items[selectedIndex].ingredients[selectedIngredient].ingredient : null;
+
+    // si l'id de l'item est défini : 
+    // - soit un comment d'item
+    // - soit un comment d'ingrédient
+    // si pas d'id d'item : comment de commande
+    const comment = comments.find(cmt => cmt.item==itemid && cmt.ingredient==ingredientid);
+
+    const commentId = (comment) ? comment.comment_id : null;
+
+    this.setState({
+      commentOpen: true, 
+      commentId: commentId, 
+      commentItemId: itemid, 
+      commentIngredientId: ingredientid,
+      inputfocus: false
+    });
+  }
+
+  saveComment(commentid, itemid, ingredientid, texte) {
+    if (commentid===null) {
+      this.props.addComment({
+        item: itemid,
+        ingredient: ingredientid,
+        texte: texte
+      });
+    } else {
+      this.props.updateComment({
+        commentId: commentid, 
+        texte: texte
+      });
+    }
+  }
+
+
+
+  closeComment() {
+    this.setState({
+      commentOpen: false, 
+      commentId:null, 
+      commentItemId:null, 
+      commentIngredientId:null,
+      inputfocus: true
+    });
+  }
+
+  interval = 0;
+
   render() {
 
-    const { commandeslist, error, loading, updateProduit, updateCommande, standByCommande, livraisonCommande, deleteCommande, gotoListeCommandes, openReglement, open, openDrawer, parametres, itemToPersonnalize, uncompleteStep } = this.props;
-    const { commentaire, items, status, ticketId, mode } = this.props.commande;
-    
-    const {inputfocus, searchval} = this.state;
+    const { commandeslist, 
+            error, 
+            loading, 
+            updateProduit, 
+            updateCommande, 
+            standByCommande, 
+            livraisonCommande, 
+            deleteCommande, 
+            gotoListeCommandes, 
+            openReglement, 
+            open, 
+            openDrawer, 
+            parametres, 
+            itemToPersonnalize, 
+            uncompleteStep,
+            deleteComment } = this.props;
 
+    const { comments, items, status, ticketId, mode } = this.props.commande;
+    
+    const {inputfocus, searchval, commentOpen, commentId, commentItemId, commentIngredientId} = this.state;
+
+    // récup du texte en fonction de l'id du commentaire (s'il est défini)
+    const commentTexte = (commentId!==null) ? comments.find(cmt=>cmt.comment_id==commentId).texte : '';
+    // choix de messages prédéfinis pour les commentaires :
+    const cmtlib = (parametres && parametres.commandes) ? parametres.commandes.comment_predefini : [];
 
     console.log('searchval', searchval);
 
     const total = this.calculateTotal(items);
     const devise = '€';
     const { selectedIndex, selectedIngredient } = this.state;
+
+
+    console.log(`index:${selectedIndex}, ingIndex:${selectedIngredient}`);
 
 
     /* GESTION DE LA PERSONNALISATION */
@@ -202,23 +443,20 @@ class Panier extends React.Component {
        }
     }
 
-    const self = this;
-
-    if (items) console.log('items', items.length);
-    else console.log('items null');
-
-    // if (!items || items.length==0) {
-    //   clearInterval(this.search_tmo);
-    //   this.search_tmo = -1;
-    // }
     
-    // if (this.search_tmo==-1) {
-      setInterval(function(){
-        if (inputfocus && (!items || items.length==0)) {
-          if (self.refs.searchInput) self.refs.searchInput.focus();
-        }
-      },200);
-    // }
+    // gestion du focus sur le champ de recherche (scan QR code)
+    clearInterval(this.interval);
+    
+    const self = this;
+    if (inputfocus && (!items || items.length==0)) {      
+      this.interval = setInterval(() => {
+        if (self.refs.searchInput) self.refs.searchInput.focus();
+       },500);
+    } else {
+      clearInterval(this.interval);
+      this.interval = 0;
+    }
+    
 
 
     
@@ -363,30 +601,23 @@ class Panier extends React.Component {
                           composition={ itm.composition }
                           ingredients={ itm.ingredients }
                           steps={ itm.steps }
-                          _onClick={ (id) => {
-                            console.log('_onClick', id, selectedIndex);
-                            if (selectedIndex==id) {
-                              let __prevstepid = -1;
-                              let __nextstepid = (itm.steps.length>1) ? itm.steps[1].id : -1;
-                              this.props.uncheckItemSteps({itemid:itm.itemid.toString(), stepid:null});
-                              this.props.openPersonnalisation(itm.itemid.toString(), itm.steps[0].id, __prevstepid, __nextstepid, itm.steps[0].validated, itm.status, 'item');
-                            } else {
-                              this.setSelectedIndex(id); 
-                            }
+                          _onClick={ this.setSelectedIndex }
+                          _onDoubleClick={ (id) => {
+                            let __prevstepid = -1;
+                            let __nextstepid = (itm.steps.length>1) ? itm.steps[1].id : -1;
+                            this.props.uncheckItemSteps({itemid:itm.itemid.toString(), stepid:null});
+                            this.props.openPersonnalisation(itm.itemid.toString(), itm.steps[0].id, __prevstepid, __nextstepid, itm.steps[0].validated, itm.status, 'item');
                           }}
-                          _onSubClick={ (ingid, stepid) => { 
-                            console.log('_onSubClick', ingid, stepid, selectedIngredient);
-                            if (ingid==selectedIngredient) {
-                              let __step = itm.steps.find(s=>s.id==stepid);
-                              let __stepIndex = itm.steps.findIndex(s=>s.id==stepid);
-                              let __previd = (__stepIndex==0) ? -1 : itm.steps[__stepIndex-1].id;
-                              let __nextid = (__stepIndex>=itm.steps.length-1) ? -1 : itm.steps[__stepIndex+1].id;
-                              this.props.uncheckItemSteps({itemid:itm.itemid.toString(), stepid: stepid});
-                              this.props.openPersonnalisation(itm.itemid.toString(), stepid, __previd, __nextid, __step.validated, itm.status, 'item');
-                            } else {
-                              this.setSelectedIngredient(ingid);
-                            }
-                          } } />
+                          _onSubClick={ this.setSelectedIngredient }
+                          _onSubDoubleClick={ (stepid) => { 
+                            console.log('_onSubDoubleClick', stepid);
+                            let __step = itm.steps.find(s=>s.id==stepid);
+                            let __stepIndex = itm.steps.findIndex(s=>s.id==stepid);
+                            let __previd = (__stepIndex==0) ? -1 : itm.steps[__stepIndex-1].id;
+                            let __nextid = (__stepIndex>=itm.steps.length-1) ? -1 : itm.steps[__stepIndex+1].id;
+                            this.props.uncheckItemSteps({itemid:itm.itemid.toString(), stepid: stepid});
+                            this.props.openPersonnalisation(itm.itemid.toString(), stepid, __previd, __nextid, __step.validated, itm.status, 'item');
+                          }} />
                   )}
                   </List>
               </div> {/* /.wrapper */}
@@ -400,7 +631,7 @@ class Panier extends React.Component {
                 <Fab aria-label="discount" size="small" className="tool discount" disabled={selectedIndex===-1 || open}>
                   <DiscountIcon />
                 </Fab>
-                <Fab aria-label="comment" size="small" className="tool comment" disabled={selectedIndex===-1 || open}>
+                <Fab aria-label="comment" size="small" className="tool comment" disabled={open} onClick={this.openComment}>
                   <CommentIcon />
                 </Fab>
                 <Fab aria-label="delete" size="small" className="tool delete" disabled={ undefined===items || items.length===0 || open } onClick={onClickDelete}>
@@ -428,6 +659,17 @@ class Panier extends React.Component {
             <StdButton identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.reprise } onClick={gotoListeCommandes} />
           </div>
         </div>
+        <CommentModal 
+          open={commentOpen} 
+          closeHandler={this.closeComment} 
+          saveHandler={this.saveComment}
+          deleteHandler={deleteComment}
+          commentid={commentId} 
+          item={commentItemId} 
+          commenttexte={ commentTexte }
+          ingredient={commentIngredientId}
+          cmtlib={ cmtlib }
+          />
       </div>
     );
   }
@@ -456,8 +698,26 @@ Panier.propTypes = {
 
 class PanierListeItem extends React.Component {
 
+ 
   render() {
-    const {id, itemid, nom, quantite, prix, commentaire, selected, selectedIng, disabled, ingredients, steps, _onClick, _onSubClick} = this.props;
+    const {id, itemid, nom, quantite, prix, commentaire, selected, selectedIng, disabled, ingredients, steps, _onClick, _onDoubleClick, _onSubClick, _onSubDoubleClick} = this.props;
+
+    let timer = 0;
+    let prevent = false;
+  
+    const handleClick = () => {
+      timer = setTimeout(() => {
+        if (!prevent) {
+          _onClick(id);
+        }
+        prevent = true;
+      }, 200);
+    }
+    const handleDoubleClick = () => {
+      clearTimeout(timer);
+      prevent = true;
+      _onDoubleClick(id);
+    }
 
     // on définit la liste des ingrédients à partir de l'ordre des steps de personnalisation de l'item
     // (pour exclure les ingrédients non personnalisables et conserver l'ordre des steps)
@@ -488,13 +748,14 @@ class PanierListeItem extends React.Component {
     }
 
     return (
-      <div className="PanierListeItem">
+      <div className="PanierListeItem" key={`pli-${id}`}>
         <ListItem 
           button 
           disableGutters
-          selected={ selected }
+          selected={ selected && selectedIng===-1 }
           disabled={ disabled }
-          onClick={ () => _onClick(id) }
+          onClick={ handleClick }
+          onDoubleClick={ handleDoubleClick }
           >
           <div className="litm nom">{nom}</div> 
           <div className="litm quantite">{quantite}</div> 
@@ -502,19 +763,21 @@ class PanierListeItem extends React.Component {
         </ListItem>
       {customIng.length>0 && (
         <div className="litm ingredients-list">
-          {customIng.map(ing => (
-            <ListItem
-              button
-              disableGutters
-              selected={selectedIng==ing.ingredient}
-              disabled={disabled}
-              onClick={ event => _onSubClick(ing.ingredient,ing.fromStep)}
-              key={`itm${itemid}-ing${ing.ingredient}`}
-              >
-              <div className="lsitm nom">{ ing.nom }</div>
-              <div className="lsitm quantite">{ ing.qte }</div>
-              <div className="lsitm prix">{ ing.prix.toFixed(2).replace('.',',') }</div>
-            </ListItem>
+          {customIng.map((ing, i) => ( 
+            <PanierListeSubItem 
+              nom={ ing.nom }
+              quantite={ ing.qte } 
+              prix={ ing.prix }
+              ingredient={ ing.ingredient }
+              produitIndex={ id }
+              ingredientIndex={ i }
+              fromStep={ ing.fromStep }
+              _key={ `itm${itemid}-ing${ing.ingredient}` }
+              _selected={ selectedIng===i && selected }
+              _disabled={ disabled }
+              _onClick={ _onSubClick }
+              _onDoubleClick={ _onSubDoubleClick }
+            />
           ))}
         </div>
       )}
@@ -537,3 +800,44 @@ PanierListeItem.propTypes = {
   _onClick: PropTypes.func,
   _onSubClick: PropTypes.func
 };
+
+class PanierListeSubItem extends React.Component {
+
+  render() {
+    const { nom, quantite, prix, ingredient, produitIndex, ingredientIndex, fromStep, _key, _selected, _disabled, _onClick, _onDoubleClick } = this.props;
+
+    let timer = 0;
+    let prevent = false;
+  
+    const handleClick = () => {
+      timer = setTimeout(() => {
+        if (!prevent) {
+          _onClick(produitIndex, ingredientIndex);
+        }
+        prevent = true;
+      }, 200);
+    }
+    const handleDoubleClick = () => {
+      clearTimeout(timer);
+      prevent = true;
+      _onDoubleClick(fromStep);
+    }
+
+    return (
+      <ListItem
+        button
+        disableGutters
+        selected={_selected}
+        disabled={_disabled}
+        onClick={handleClick}
+        onDoubleClick={handleDoubleClick}
+        key={_key}
+      >
+      <div className="lsitm nom">{ nom }</div>
+      <div className="lsitm quantite">{ quantite }</div>
+      <div className="lsitm prix">{ prix.toFixed(2).replace('.',',') }</div>
+    </ListItem>
+    );
+  }
+
+}

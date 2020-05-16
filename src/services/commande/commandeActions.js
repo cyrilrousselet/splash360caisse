@@ -352,6 +352,27 @@ function removeRendu(payload) {
   }
 }
 
+function addComment(payload) {
+  return (dispatch, getState) => {
+    const comments = getState().commandeReducer.commande.comments;
+
+    const comment = commandeServices.addComment(payload, comments);
+    dispatch({ type: commandeActionTypes.ADD_COMMENT, comment });
+  }
+}
+function updateComment(payload) {
+  return (dispatch, getState) => {
+    const {commentId, texte} = payload;
+    console.log('CommandeActions.updateComment', payload);
+    dispatch({ type: commandeActionTypes.UPDATE_COMMENT, payload: payload });
+  }
+}
+function deleteComment(payload) {
+  return (dispatch, getState) => {
+    dispatch({ type: commandeActionTypes.DELETE_COMMENT, commentId: payload.commentId });
+  }
+}
+
 function archiveCommands(payload) {
 
   return (dispatch) => {
@@ -438,5 +459,8 @@ export const commandeActions = {
   addRendu,
   removeRendu,
   archiveCommands,
+  addComment,
+  updateComment,
+  deleteComment,
   setCommandeFromAPI
 };

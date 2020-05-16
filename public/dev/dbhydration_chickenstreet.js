@@ -509,11 +509,12 @@ const hydration = {
     { domaine: 'entreprise', cle: 'tva', valeur: ''},
     { domaine: 'entreprise', cle: 'site_web', valeur: 'www.chickenstreet.fr'},
     { domaine: 'entreprise', cle: 'heure_fin', valeur: '00:00' },
-    { domaine: 'financier', cle: 'fidelite_activation', valeur: true},
+    { domaine: 'financier', cle: 'fidelite_activation', valeur: false},
     { domaine: 'peripheriques', cle: 'impression', valeur: [{ticket:'tck1',groupes:['cat15','cat16','cat17','cat18','cat19','cat20','cat21','cat22','cat23','cat24','cat25','cat26','cat27','cat28','cat29','cat30'], types:['icat29','icat31','icat32','icat33','icat34','icat35','icat36','icat37']},{ticket:'tck2',groupes:['cat15','cat16','cat17','cat18','cat19','cat20','cat21','cat22','cat23','cat24','cat25','cat26','cat27','cat28','cat29','cat30'], types:['icat29','icat31','icat32','icat33','icat34','icat35','icat36','icat37']},{ticket:'tck3',groupes:['cat15','cat16','cat17','cat18','cat19','cat20','cat21','cat22','cat23','cat24','cat25','cat26','cat27','cat28','cat29','cat30'], types:['icat29','icat31','icat32','icat33','icat34','icat35','icat36','icat37']}]},
     { domaine: 'commandes', cle: 'numerotation_start', valeur: '0'},
     { domaine: 'commandes', cle: 'numerotation_max', valeur: '200'},
     { domaine: 'commandes', cle: 'numerotation_hex', valeur: false},
+    { domaine: 'commandes', cle: 'comment_predefini', valeur:[{id:0,message:'SANS FRITE'}, {id:1,message:'SANS SAUCE'}, {id:2,message:'BIEN CUIT'}]},
     { domaine: 'options', cle: 'caisse', valeur: {id: 'cash0', nom: 'Caisse 1'} },
     { domaine: 'options', cle: 'canaux', valeur: [{ids: ['cash0','cash1'], nom: 'caisse'}, {ids: ['borne1'], nom: 'borne'}, {ids: ['wf1'], nom: 'wifi-order'}] },
     { domaine: 'planning', cle: 'shifttypes', valeur: [{id:'st01', nom:'cuisine', couleur: 'bleu'}, {id:'st02', nom:'caisse', couleur: 'vert'}, {id:'st03', nom:'salle', couleur: 'jaune'}, {id:'st04', nom:'livraison', couleur: 'orange'}, {id:'st05', nom:'fermeture', couleur: 'turquoise'}, {id:'st06', nom:'repos heb.', couleur: 'gris'}] }

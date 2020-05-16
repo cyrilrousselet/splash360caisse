@@ -293,6 +293,18 @@ function _printPartielDetail(printer, data, strings) {
 
     printer.drawLine();
 
+
+    if (data.comment!=='') {
+      printer.style('B').tableCustom([
+        {text:'', cols:3},
+        {text: '* ', cols:2, align:'RIGHT'},
+        {text: data.comment, cols:32, align:'LEFT'},
+        {text: ' *', cols:2, align:'RIGHT'},
+        {text:'', cols:3}
+      ]);
+      printer.drawLine();
+    }
+
     let numarticles = 0;
     data.articles.forEach((article) => {
       printer.style('B').tableCustom([
@@ -302,6 +314,16 @@ function _printPartielDetail(printer, data, strings) {
         {text: article.nom, cols:30, align:'LEFT'},
         {text:'', cols:3}
       ]);
+      if (article.comment!=='') {
+        printer.style('B').tableCustom([
+          {text:'', cols:3},
+          {text: '* ', cols:2, align:'RIGHT'},
+          {text: article.comment, cols:32, align:'LEFT'},
+          {text: ' *', cols:2, align:'RIGHT'},
+          {text:'', cols:3}
+        ]);
+      }
+
       numarticles++;
 
     if (article.ingredients.length>0) {
@@ -313,6 +335,17 @@ function _printPartielDetail(printer, data, strings) {
           {text: '  '+ingredient.nom, cols:30, align:'LEFT'},
           {text:'', cols:3}
         ]);
+
+        if (ingredient.comment!=='') {
+          printer.style('B').tableCustom([
+            {text:'', cols:3},
+            {text: '* ', cols:2, align:'RIGHT'},
+            {text: ingredient.comment, cols:32, align:'LEFT'},
+            {text: ' *', cols:2, align:'RIGHT'},
+            {text:'', cols:3}
+          ]);
+        }
+
       });
 
       printer.feed(1);
@@ -366,6 +399,19 @@ function _printPrincipalDetail(printer, data, strings) {
 
     printer.drawLine();
 
+
+    if (data.comment!=='') {
+      printer.style('B').tableCustom([
+        {text:'', cols:3},
+        {text: '* ', cols:2, align:'RIGHT'},
+        {text: data.comment, cols:32, align:'LEFT'},
+        {text: ' *', cols:2, align:'RIGHT'},
+        {text:'', cols:3}
+      ]);
+      printer.drawLine();
+    }
+
+
     let numarticles = 0;
     data.articles.forEach((article) => {
       printer.style('B').tableCustom([
@@ -375,6 +421,15 @@ function _printPrincipalDetail(printer, data, strings) {
         {text: article.nom, cols:30, align:'LEFT'},
         {text:'', cols:3}
       ]);
+      if (article.comment!=='') {
+        printer.style('B').tableCustom([
+          {text:'', cols:3},
+          {text: '* ', cols:2, align:'RIGHT'},
+          {text: article.comment, cols:32, align:'LEFT'},
+          {text: ' *', cols:2, align:'RIGHT'},
+          {text:'', cols:3}
+        ]);
+      }
       numarticles++;
 
     if (article.ingredients.length>0) {
@@ -386,6 +441,16 @@ function _printPrincipalDetail(printer, data, strings) {
           {text: '  '+ingredient.nom, cols:30, align:'LEFT'},
           {text:'', cols:3}
         ]);
+
+        if (ingredient.comment!=='') {
+          printer.style('B').tableCustom([
+            {text:'', cols:3},
+            {text: '* ', cols:2, align:'RIGHT'},
+            {text: ingredient.comment, cols:32, align:'LEFT'},
+            {text: ' *', cols:2, align:'RIGHT'},
+            {text:'', cols:3}
+          ]);
+        }
       });
 
       printer.feed(1);
@@ -438,6 +503,18 @@ function _printCommande(printer, data, strings) {
     .drawLine()
     ;
 
+
+    if (data.comment!=='') {
+      printer.style('B').tableCustom([
+        {text:'', cols:3},
+        {text: '* ', cols:2, align:'RIGHT'},
+        {text: data.comment, cols:32, align:'LEFT'},
+        {text: ' *', cols:2, align:'RIGHT'},
+        {text:'', cols:3}
+      ]);
+      printer.drawLine();
+    }
+
   // articles
   // header
   printer
@@ -474,6 +551,17 @@ function _printCommande(printer, data, strings) {
         {text:'', cols:1},
         {text: article.codetva, cols:1}
       ]);
+      if (article.comment!=='') {
+        printer.style('B').tableCustom([
+          {text:'', cols:3},
+          {text: '* ', cols:2, align:'RIGHT'},
+          {text: article.comment, cols:32, align:'LEFT'},
+          {text: ' *', cols:2, align:'RIGHT'},
+          {text:'', cols:3}
+        ]);
+        printer.drawLine();
+        _linecount++;
+      }
       _linecount++;
 
     if (article.ingredients.length>0) {
@@ -489,6 +577,17 @@ function _printCommande(printer, data, strings) {
           {text:'', cols:1},
           {text: ingredient.codetva, cols:1}
         ]);
+        if (ingredient.comment!=='') {
+          printer.style('B').tableCustom([
+            {text:'', cols:3},
+            {text: '* ', cols:2, align:'RIGHT'},
+            {text: ingredient.comment, cols:32, align:'LEFT'},
+            {text: ' *', cols:2, align:'RIGHT'},
+            {text:'', cols:3}
+          ]);
+          printer.drawLine();
+          _linecount++;
+        }
         _linecount++;
       });
     }

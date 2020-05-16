@@ -40,6 +40,9 @@ const mapDispatchToProps = (dispatch) => {
     setNewNumero: commandeActions.setNewNumero,
     uncheckItemSteps: commandeActions.uncheckItemSteps,
     openDrawer: peripheralActions.openDrawer,
+    addComment: commandeActions.addComment,
+    updateComment: commandeActions.updateComment,
+    deleteComment: commandeActions.deleteComment
   }, dispatch);
   return {
     ...bound,

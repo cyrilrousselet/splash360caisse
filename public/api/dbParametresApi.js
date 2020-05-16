@@ -83,14 +83,13 @@ async function _getAll() {
 
 async function _getAllImprimantes() {
   const __rawi = await _findImprimantes();
-  const __impr = _parseImprimantes(__rawi);
+  const __impr = _parseImprimantes(__rawi._impr);
   return {imprimantes: __impr};
 }
 
 async function _getAllTickets() {
   const __rawt = await _findTickets();
-  const __tck = _parseTickets(__rawt);
-
+  const __tck = _parseTickets(__rawt._tck);
   return {tickets: __tck};
 }
 

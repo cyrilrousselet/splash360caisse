@@ -10,6 +10,7 @@ export const commandeServices = {
   updateProduit,
   addReglement,
   addRendu,
+  addComment,
   saveCommande,
   archiveCommands,
   addIngredient,
@@ -29,7 +30,7 @@ function getNewCommande(params) {
         numero: null,
         operator: {id:params.operator.id, nom:params.operator.nom},
         caisse: params.caisse,
-        commentaire: '',
+        comments: [],
         operator_encaissement: params.operator_encaissement || null,
         caisse_encaissement: params.caisse_encaissement || null,
         items: [],
@@ -185,11 +186,10 @@ function addProduit(payload, tva, items, steps) {
 
 
 function updateProduit(payload, item) {
-  const { quantite, commentaire } = payload;
+  const { quantite } = payload;
 
   let mode = 'update';
   item.quantite = quantite;
-  item.commentaire = commentaire;
   if (item.quantite===0) mode = 'delete';
 
   return {commandeItem:item, mode:mode};
@@ -690,13 +690,23 @@ function addRendu(payload, rendus) {
 }
 
 
+function addComment(payload, comments) {
+  const {item, ingredient, texte} = payload;
+
+  return {
+    comment_id: _newCommentId(),
+    item: item,
+    ingredient: ingredient,
+    texte: texte
+  };
+}
+
 function saveCommande(commande, catalogueReducer) {
 /*
   let __cmd = {
     commande_id: payload.ticketId,
     operator: {id: payload.operator.id, nom: payload.operator.nom},
     caisse: payload.caisse,
-    commentaire: payload.commentaire,
     mode: payload.mode,
     status: payload.status,
     items: [],
@@ -708,7 +718,6 @@ function saveCommande(commande, catalogueReducer) {
       produit_id: itm.produitid,
       prix: itm.prix,
       quantite: itm.quantite,
-      commentaire: itm.commentaire ? itm.commentaire : '',
       composition: []
     };
     if (itm.composition.length>0) {
@@ -855,6 +864,10 @@ const _newRenduId = () => {
     return __d.getTime().toString();
 }
 const _newCommandeItemId = () => {
+    let __d = new Date();
+    return __d.getTime().toString();
+}
+const _newCommentId = () => {
     let __d = new Date();
     return __d.getTime().toString();
 }

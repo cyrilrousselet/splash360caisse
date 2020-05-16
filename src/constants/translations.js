@@ -109,6 +109,19 @@ const data = {
                         }
                     }
                 },
+                commentaires: {
+                    titre_cmd: "Commentaire de ticket",
+                    titre_itm: "Commentaire de produit",
+                    titre_ing: "Commentaire d’ingrédient",
+                    texte: "Saisissez votre commentaire :",
+                    caption: "Texte libre, max 126 car.",
+                    predefini: "Commentaire prédéfini :",
+                    suppression: {
+                        bouton: "Supprimer commentaire",
+                        titre: "Suppression du commentaire",
+                        texte: "Êtes-vous sûr de supprimer le commentaire ?<br />Cette opération est définitive"
+                    }
+                },
                 reglement: {
                     titre: "Encaissement",
                     liste: {

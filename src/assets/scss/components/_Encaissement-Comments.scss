@@ -1,0 +1,108 @@
+.CommentModal {
+
+
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none;
+  .Modal-container {
+      background-color: $blanc;
+      width: 500px;
+      border-radius: 15px;
+      padding: 0 20px;
+  }
+  .close-button {
+      background-color: $blanc;
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 30px;
+      height: 30px;
+      min-height: 30px;
+  }
+  .header {
+      height: 55px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      .title {
+          font-family: $f_blk;
+          font-size: 18px;
+          color: $noir;
+          text-align: center;
+          text-transform: uppercase;
+      }
+  }
+  .body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-bottom: 30px;
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      width: 100%;
+      .label {
+        font-family: $f_boo;
+        font-size: 14px;
+        color: $noir;
+        padding-right: 10px;
+        -webkit-user-select: none;
+        user-select: none;
+        display: inline-block;
+      }
+      .valeur {
+        width: 100%;
+        font-family: $f_blk;
+        font-size: 14px;
+        color: $noir;
+        -webkit-user-select: none;
+        user-select: none;
+        display: inline-block;
+        .MuiTextField-root {
+          width: 100%;
+        }
+      }
+      .caption {
+        font-family: $f_boo;
+        font-size: 13px;
+        width: 100%;
+        text-align: right;
+        color: $noir;
+        -webkit-user-select: none;
+        user-select: none;
+        display: inline-block;
+      }
+    }
+    .cmtlib-item {
+      font-family: $f_blk;
+      font-size: 14px;
+      color: $noir;
+      -webkit-user-select: none;
+      user-select: none;
+      display: inline-block;
+      text-decoration: underline;
+      padding: 5px 10px;
+      border-radius: 3px;
+      background-color: $blanc-fonce;
+    }
+  }
+  .footer {
+      text-align: right;
+    .save {
+        background-color:$vert;
+        width: 45%;
+        min-height: 30px;
+        .StdButton-text {
+            font-family: $f_blk;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+    }
+  }
+}

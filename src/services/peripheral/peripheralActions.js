@@ -283,10 +283,13 @@ function printTicket(payload) {
         const cmdTva = {};
         let articles = [];
         let total = 0;
+        let __comment = null;
         cmd.items.forEach(article => {
 
           let articleIngredients = [];
           total += article.quantite * article.prix;
+
+
 
           article.ingredients.forEach(ing => {
 
@@ -301,6 +304,9 @@ function printTicket(payload) {
               if (__typeweight!=-1) __ingweight = __typeweight;
             }
 
+            // commentaire pour l'ingrédient
+            __comment = cmd.comments.find(c => c.item==article.itemid && c.ingredient==ing.ingredient)
+
             if (ing.fromStep!=null && !__noprint) {
               articleIngredients.push({
                 qte: ing.qte,
@@ -308,12 +314,17 @@ function printTicket(payload) {
                 nom: ing.nom,
                 pu: ing.prix==0 ? '' : Number(ing.prix).toFixed(2),
                 prix: ing.prix==0 ? '' : (Number(ing.prix)*ing.qte).toFixed(2),
-                weight: __ingweight
+                weight: __ingweight,
+                comment: __comment ? __comment.texte : ''
               });
             }
           });
 
           articleIngredients.sort((a,b)=>a.weight-b.weight);
+
+
+          // commentaire pour l'article
+          __comment = cmd.comments.find(c => c.item==article.itemid && c.ingredient==null);
 
           articles.push({
             qte: article.quantite,
@@ -321,7 +332,8 @@ function printTicket(payload) {
             nom: article.nom,
             pu: Number(article.prix).toFixed(2),
             prix: (Number(article.prix)*article.quantite).toFixed(2),
-            ingredients: articleIngredients
+            ingredients: articleIngredients,
+            comment: __comment ? __comment.texte : ''
           });
 
           if (!cmdTva.hasOwnProperty(article.tva.code)) {
@@ -344,6 +356,9 @@ function printTicket(payload) {
 
         });
         
+        
+        // commentaire pour la commande
+        __comment = cmd.comments.find(c => c.item==null && c.ingredient==null);
 
         const commande = {
           numero: cmdnumero,
@@ -355,7 +370,8 @@ function printTicket(payload) {
             tva: cmdTva
           },
           reglements: cmd.reglements,
-          rendus: cmd.rendus
+          rendus: cmd.rendus,
+          comment: __comment ? __comment.texte : ''
         };
 
 
@@ -397,7 +413,7 @@ function printTicket(payload) {
         // -> template ticket
         template = templates.partiel;
 
-
+        let __comment = null;
         let articles = [];
         cmd.items.forEach(article => {
 
@@ -416,33 +432,44 @@ function printTicket(payload) {
               if (__typeweight!=-1) __ingweight = __typeweight;
             }
 
+            // commentaire pour l'ingrédient :
+            __comment = cmd.comments.find(c => c.item==article.itemid && c.ingredient==ing.ingredient);
+
 
             if (ing.fromStep!=null && !__noprint) {
               articleIngredients.push({
                 qte: ing.qte,
                 nom: ing.nom,
-                weight: __ingweight
+                weight: __ingweight,
+                comment: __comment ? __comment.texte : ''
               });
             }
           });
 
           articleIngredients.sort((a,b)=>a.weight-b.weight);
 
+          // commentaire pour l'article :
+          __comment = cmd.comments.find(c => c.item==article.itemid && c.ingredient==null);
+
           articles.push({
             qte: article.quantite,
             nom: article.nom,
-            ingredients: articleIngredients
+            ingredients: articleIngredients,
+            comment: __comment ? __comment.texte : ''
           });        
 
         });
 
+        // commentaire pour la commande :
+        __comment = cmd.comments.find(c => c.item==null && c.ingredient==null);
 
         const cmdcuisine = {
           numero: cmdnumero,
           id: cmd.ticketId,
           mode: cmd.mode,
           date: `${date} à ${heure}`,
-          articles: articles
+          articles: articles,
+          comment: __comment ? __comment.texte : ''
         };
 
 
@@ -463,7 +490,7 @@ function printTicket(payload) {
 
         template = templates.principal;
 
-
+        let __comment = null;
         let articles = [];
         cmd.items.forEach(article => {
 
@@ -483,27 +510,36 @@ function printTicket(payload) {
               if (__typeweight!=-1) __ingweight = __typeweight;
             }
 
-
+            // commentaire pour l'ingrédient :
+            __comment = cmd.comments.find(c => c.item==article.itemid && c.ingredient==ing.ingredient);
 
             if (ing.fromStep!=null && !__noprint) {
               articleIngredients.push({
                 qte: ing.qte,
                 nom: ing.nom,
-                weight: __ingweight
+                weight: __ingweight,
+                comment: __comment ? __comment.texte : ''
               });
             }
           });
 
           articleIngredients.sort((a,b)=>a.weight-b.weight);
 
+          // commentaire pour l'article :
+          __comment = cmd.comments.find(c => c.item==article.itemid && c.ingredient==null);
+
           articles.push({
             qte: article.quantite,
             nom: article.nom,
-            ingredients: articleIngredients
+            ingredients: articleIngredients,
+            comment: __comment ? __comment.texte : ''
           });        
 
         });
 
+
+        // commentaire pour la commande :
+        __comment = cmd.comments.find(c => c.item==null && c.ingredient==null);
 
 
         const cmdcuisine = {
@@ -511,7 +547,8 @@ function printTicket(payload) {
           id: cmd.ticketId,
           mode: cmd.mode,
           date: `${date} à ${heure}`,
-          articles: articles
+          articles: articles,
+          comment: __comment ? __comment.texte : ''
         };
 
 
