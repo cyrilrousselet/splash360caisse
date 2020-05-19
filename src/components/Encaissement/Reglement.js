@@ -131,7 +131,7 @@ class Reglement extends React.Component {
       this.props.validateCommande(this.props.commande);
 
     }
-
+    this.setState({input: false});
     this.props.closeReglement();
   }
 
