@@ -345,6 +345,8 @@ const hydration = {
     { ticket_id: 'tck12', nom: 'Ticket 9', template: 'partiel', imprimantes: [], weight: 12 },
     { ticket_id: 'tck13', nom: 'Ticket 10', template: 'partiel', imprimantes: [], weight: 13 }
   ],
+  
+  avoirs: [],
 
   parametres: [
     { domaine: 'entreprise', cle: 'denomination', valeur: 'Chicken Street'},

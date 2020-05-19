@@ -15,6 +15,7 @@ import {data} from '../constants/translations';
 import LocalizedStrings from 'react-localization';
 import { catalogueActions } from '../services/catalogue/catalogueActions';
 import { parametresActions } from '../services/parametres/parametresActions';
+import { marketingActions } from '../services/marketing/marketingActions';
 let strings = new LocalizedStrings(data);
 
 const getModulesFromDroits = (droits) => {
@@ -107,7 +108,7 @@ const mapDispatchToProps = (dispatch) => {
     getCommandesList: commandeActions.getCommandesList,
     getAllActive: catalogueActions.getAllActive,
     getParametres: parametresActions.getAll,
-    getCurrentPeriode: clotureActions.getCurrentPeriode,
+    getCurrentPeriode: clotureActions.getCurrentPeriode
   }, dispatch);
   return {
     ...binded,

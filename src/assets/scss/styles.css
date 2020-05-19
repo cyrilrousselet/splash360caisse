@@ -14,41 +14,40 @@
   font-family: 'Livvic-SemiBold';
   src: url("./../../fonts/Livvic-SemiBold.woff") format("woff"); }
 
-.swal2-container .swal2-icon {
-  font-family: "Livvic-SemiBold"; }
-
-.swal2-container .swal2-title {
-  font-family: "Livvic-SemiBold";
-  font-size: 25px; }
-
-.swal2-container .swal2-content {
-  font-family: "Livvic-Light"; }
-
-.swal2-container .swal2-actions button {
-  min-width: 40px;
-  height: 40px;
-  line-height: 40px;
-  text-align: center;
-  border-radius: 20px;
-  background-color: #E6E6E6;
-  border: none;
-  padding: 0 20px;
-  box-shadow: inset 0 0 0 4px #FFFFFF, 0 3px 8px 0 rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: background-color .3s ease-out;
-  font-family: "Livvic-Bold";
-  padding: 0 20px;
-  font-size: 16px;
-  color: #4A4A4A; }
-  .swal2-container .swal2-actions button.swal2-confirm {
-    background-color: #5AC8FA; }
-  .swal2-container .swal2-actions button:focus {
-    outline: none;
-    text-decoration: underline; }
-  .swal2-container .swal2-actions button:active {
-    background-color: #8F8E94; }
-    .swal2-container .swal2-actions button:active .PillButton-text {
-      color: #FFFFFF; }
+.swal2-container {
+  z-index: 2000 !important; }
+  .swal2-container .swal2-icon {
+    font-family: "Livvic-SemiBold"; }
+  .swal2-container .swal2-title {
+    font-family: "Livvic-SemiBold";
+    font-size: 25px; }
+  .swal2-container .swal2-content {
+    font-family: "Livvic-Light"; }
+  .swal2-container .swal2-actions button {
+    min-width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border-radius: 20px;
+    background-color: #E6E6E6;
+    border: none;
+    padding: 0 20px;
+    box-shadow: inset 0 0 0 4px #FFFFFF, 0 3px 8px 0 rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background-color .3s ease-out;
+    font-family: "Livvic-Bold";
+    padding: 0 20px;
+    font-size: 16px;
+    color: #4A4A4A; }
+    .swal2-container .swal2-actions button.swal2-confirm {
+      background-color: #5AC8FA; }
+    .swal2-container .swal2-actions button:focus {
+      outline: none;
+      text-decoration: underline; }
+    .swal2-container .swal2-actions button:active {
+      background-color: #8F8E94; }
+      .swal2-container .swal2-actions button:active .PillButton-text {
+        color: #FFFFFF; }
 
 .BrowserLocation {
   font-size: 12px;
@@ -93,9 +92,15 @@ body {
   body.swal2-height-auto {
     height: 100% !important; }
 
+.LoadingSpinner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%); }
+
 .Footer {
   position: fixed;
-  padding: 0 50px 0 23px;
+  padding: 0 25px 0 23px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -131,6 +136,16 @@ body {
     padding-right: 50px; }
   .Footer .heure {
     display: inline-block; }
+  .Footer .logout {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    margin-left: 50px; }
+  .Footer .right {
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center; }
 
 .PillButton {
   display: inline-block;
@@ -191,6 +206,8 @@ body {
     box-shadow: 0 0 0 10px #8F8E94, 0 20px 15px 0 rgba(0, 0, 0, 0);
     border: 1px solid #8F8E94;
     outline: none; }
+  .LargeButton.Mui-disabled {
+    background-color: #8F8E94; }
 
 .StdButton {
   display: inline-block;
@@ -287,6 +304,8 @@ body {
   flex-direction: row;
   align-items: center;
   justify-content: space-between; }
+  .switch-container.switch-disabled {
+    opacity: .5; }
 
 input[type="checkbox"].switch {
   position: absolute;
@@ -374,7 +393,8 @@ input[type="checkbox"].switch {
     background-image: url("./../../images/ico_store_black.svg");
     background-repeat: no-repeat;
     background-size: 28px 25px;
-    background-position: 25px center; }
+    background-position: 25px center;
+    width: 260px; }
   .topzone .userName {
     display: inline-block;
     border-radius: 25px;
@@ -388,12 +408,11 @@ input[type="checkbox"].switch {
     text-align: center;
     background: #FFFFFF;
     text-transform: uppercase;
-    text-decoration: underline;
-    cursor: pointer; }
+    box-shadow: 0 5px 12px 0 rgba(0, 0, 0, 0.05); }
   .topzone .dashboardLink {
     display: inline-block;
     padding: 0 40px 0 65px;
-    margin-left: 45px;
+    margin-left: 90px;
     height: 60px;
     line-height: 60px;
     font-family: "Livvic-SemiBold";
@@ -447,18 +466,76 @@ input[type="checkbox"].switch {
     padding-right: 15px; }
   .labelledfield .MuiSelect-select:focus {
     background: transparent; }
+  .labelledfield.disabled label {
+    opacity: .5; }
+
+.NumberKeyboard {
+  display: inline-block;
+  vertical-align: top;
+  width: 200px;
+  height: 240px;
+  border-radius: 15px;
+  background-color: #F7F7F7;
+  padding: 15px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); }
+  .NumberKeyboard .keyboard {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 170px;
+    height: 210px;
+    padding: 0 6px; }
+  .NumberKeyboard .PillButton {
+    background-color: #FFFFFF; }
+  .NumberKeyboard .empty {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: none;
+    padding: 0; }
+  .NumberKeyboard .close-button {
+    background-color: #FFFFFF;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px; }
+
+.NumberKeyboardContainer {
+  display: none;
+  background-color: rgba(0, 0, 0, 0.3);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0; }
+  .NumberKeyboardContainer.visible {
+    display: block; }
+  .NumberKeyboardContainer .NumberKeyboard {
+    box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1); }
 
 .Login {
   height: calc(100% - 60px);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center; }
-  .Login .logo .logoImg {
-    width: 120px;
+  align-items: center;
+  background-image: url("./../../images/VISU_SPLASH.jpg");
+  background-size: cover; }
+  .Login .logo {
+    width: 350px;
     height: auto;
-    margin: 10px 0; }
-    .Login .logo .logoImg path {
+    padding-bottom: 120px;
+    margin: 10px 0 10px 20px;
+    background-image: url("./../../images/SplashLogo.png");
+    background-repeat: no-repeat;
+    background-size: contain; }
+    .Login .logo path {
       fill: #1EA9DF; }
   .Login .panel {
     width: 320px;
@@ -468,6 +545,21 @@ input[type="checkbox"].switch {
     border-radius: 15px;
     box-sizing: border-box;
     margin: 20px 0; }
+  .Login .prepareTitle {
+    text-align: center;
+    font-family: "Livvic-Bold";
+    text-transform: uppercase;
+    padding-bottom: 10px;
+    font-size: 18px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale; }
+  .Login .prepareTexte {
+    text-align: center;
+    font-family: "Livvic-Light";
+    padding-top: 10px;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale; }
   .Login .keyboard {
     padding: 10px;
     text-align: center; }
@@ -500,7 +592,9 @@ input[type="checkbox"].switch {
       background-color: #FF2D55; }
 
 .Dashboard {
-  height: calc(100% - 60px); }
+  height: calc(100% - 60px);
+  background-image: url("./../../images/VISU_SPLASH-2.jpg");
+  background-size: cover; }
   .Dashboard .topzone .points {
     display: inline-block;
     padding: 0 60px 0 85px;
@@ -517,6 +611,12 @@ input[type="checkbox"].switch {
     background-repeat: no-repeat;
     background-size: 24px 23px;
     background-position: 25px center; }
+    .Dashboard .topzone .points.nopoint {
+      opacity: 0; }
+  .Dashboard .topzone .disconnect-button {
+    background-color: #FFFFFF;
+    margin-left: 215px;
+    box-shadow: 0 5px 12px 0 rgba(0, 0, 0, 0.05); }
   .Dashboard .modules {
     display: flex;
     flex-direction: row;
@@ -533,6 +633,9 @@ input[type="checkbox"].switch {
     background-color: #7AD4F6; }
     .Dashboard .LargeButton.marketing .LargeButton-icon {
       background-image: url("./../../images/ico_marketing.svg");
+      background-size: 30px 30px; }
+    .Dashboard .LargeButton.marketing.Mui-disabled .LargeButton-icon {
+      background-image: url("./../../images/ico_marketing-noir.svg");
       background-size: 30px 30px; }
   .Dashboard .LargeButton.encaissement {
     background-color: #9CD04E; }
@@ -572,17 +675,24 @@ input[type="checkbox"].switch {
     .Dashboard .LargeButton.menu .LargeButton-icon {
       background-image: url("./../../images/ico_menu.svg");
       background-size: 30px 30px; }
+    .Dashboard .LargeButton.menu.Mui-disabled .LargeButton-icon {
+      background-image: url("./../../images/ico_menu-noir.svg");
+      background-size: 30px 30px; }
   .Dashboard .LargeButton.clients {
     background-color: #167093; }
     .Dashboard .LargeButton.clients .LargeButton-icon {
       background-image: url("./../../images/ico_clients.svg");
       background-size: 50px 24px; }
   .Dashboard .LargeButton.parametres {
-    background-color: #EFEFEF; }
+    background-color: #ac61df; }
     .Dashboard .LargeButton.parametres .LargeButton-icon {
-      background-image: url("./../../images/ico_parametres.svg");
+      background-image: url("./../../images/ico_parametres-blanc.svg");
       background-size: 46px 30px; }
     .Dashboard .LargeButton.parametres .LargeButton-text {
+      color: #FFFFFF; }
+  .Dashboard .LargeButton.Mui-disabled {
+    background-color: #EFEFEF; }
+    .Dashboard .LargeButton.Mui-disabled .LargeButton-text {
       color: #4A4A4A; }
   .Dashboard .tickets,
   .Dashboard .ca {
@@ -712,22 +822,28 @@ input[type="checkbox"].switch {
 
 .Encaissement .ProduitBtn {
   display: inline-flex;
-  width: 33.33333%;
-  height: 100px;
-  border-radius: 0;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: calc(33% - 6px);
+  height: 90px;
+  border-radius: 15px;
   color: #FFFFFF;
   font-family: "Livvic-Bold";
-  font-size: 16px;
+  font-size: 15px;
   vertical-align: top;
   text-transform: uppercase;
   box-sizing: border-box;
   padding: 5px;
-  box-shadow: inset 0 0 0 2px #FFFFFF; }
-  .Encaissement .ProduitBtn span {
-    display: block; }
-  .Encaissement .ProduitBtn div {
+  margin: 3px 3px 3px;
+  box-shadow: inset 0 0 0 3px #FFFFFF, 0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+  cursor: pointer; }
+  .Encaissement .ProduitBtn div.btnlabel {
+    user-select: none;
+    text-align: center;
     line-height: 1.0em; }
-    .Encaissement .ProduitBtn div + div {
+    .Encaissement .ProduitBtn div.btnlabel div.supplt {
       padding-top: 7px; }
   .Encaissement .ProduitBtn:nth-child(7n+1) {
     background-color: #9CD04E; }
@@ -743,6 +859,38 @@ input[type="checkbox"].switch {
     background-color: #4A4A4A; }
   .Encaissement .ProduitBtn:nth-child(7n) {
     background-color: #554ED0; }
+  .Encaissement .ProduitBtn.blanc {
+    background-color: #FFFFFF; }
+  .Encaissement .ProduitBtn.bleuclair {
+    background-color: #5AC8FA; }
+  .Encaissement .ProduitBtn.bleufonce {
+    background-color: #0065E5; }
+  .Encaissement .ProduitBtn.gris {
+    background-color: #8F8E94; }
+  .Encaissement .ProduitBtn.jaune {
+    background-color: #FFE700; }
+  .Encaissement .ProduitBtn.jauneorange {
+    background-color: #FDC54F; }
+  .Encaissement .ProduitBtn.marron {
+    background-color: #7F592A; }
+  .Encaissement .ProduitBtn.noir {
+    background-color: #4A4A4A; }
+  .Encaissement .ProduitBtn.orange {
+    background-color: #FF9500; }
+  .Encaissement .ProduitBtn.rose {
+    background-color: #FF9DFF; }
+  .Encaissement .ProduitBtn.rouge {
+    background-color: #FF2D55; }
+  .Encaissement .ProduitBtn.vertclair {
+    background-color: #9CD04E; }
+  .Encaissement .ProduitBtn.vertfonce {
+    background-color: #628133; }
+  .Encaissement .ProduitBtn.violet {
+    background-color: #9867B6; }
+  .Encaissement .ProduitBtn.blanc, .Encaissement .ProduitBtn.bleuclair, .Encaissement .ProduitBtn.gris, .Encaissement .ProduitBtn.jaune, .Encaissement .ProduitBtn.jauneorange, .Encaissement .ProduitBtn.orange, .Encaissement .ProduitBtn.rose, .Encaissement .ProduitBtn.vertclair {
+    color: #4A4A4A; }
+  .Encaissement .ProduitBtn.bleufonce, .Encaissement .ProduitBtn.marron, .Encaissement .ProduitBtn.noir, .Encaissement .ProduitBtn.vertfonce, .Encaissement .ProduitBtn.violet, .Encaissement .ProduitBtn.rouge {
+    color: #FFFFFF; }
 
 .Encaissement .Panier {
   display: inline-block;
@@ -754,6 +902,13 @@ input[type="checkbox"].switch {
   background-color: #FFFFFF;
   border-radius: 15px;
   padding: 10px; }
+  .Encaissement .Panier .search-input {
+    position: absolute;
+    right: 30px;
+    top: 120px;
+    outline: none;
+    opacity: 0;
+    user-select: none; }
   .Encaissement .Panier.reglement-ouvert {
     z-index: 1301; }
   .Encaissement .Panier .header {
@@ -856,7 +1011,8 @@ input[type="checkbox"].switch {
   .Encaissement .Panier .PanierListeItem .MuiButtonBase-root {
     padding: 0 !important;
     display: table-row; }
-  .Encaissement .Panier .PanierListeItem .litm {
+  .Encaissement .Panier .PanierListeItem .litm,
+  .Encaissement .Panier .PanierListeItem .lsitm {
     font-family: "Livvic-Regular";
     font-size: 15px;
     color: #4A4A4A;
@@ -864,6 +1020,10 @@ input[type="checkbox"].switch {
     padding: 7px 10px;
     text-align: center;
     vertical-align: middle; }
+  .Encaissement .Panier .PanierListeItem .lsitm {
+    font-family: "Livvic-Light";
+    font-size: 14px;
+    color: #4A4A4A; }
   .Encaissement .Panier .PanierListeItem .MuiListItem-root.Mui-selected {
     background-color: #1EA9DF; }
     .Encaissement .Panier .PanierListeItem .MuiListItem-root.Mui-selected .litm {
@@ -875,8 +1035,19 @@ input[type="checkbox"].switch {
   .Encaissement .Panier .PanierListeItem .quantite {
     width: 40px;
     padding: 7px 6px; }
+    .Encaissement .Panier .PanierListeItem .quantite:after {
+      content: '\00d7';
+      display: inline-block;
+      position: absolute;
+      padding-left: 3px; }
   .Encaissement .Panier .PanierListeItem .prix {
     width: 80px; }
+  .Encaissement .Panier .PanierListeItem .ingredients-list {
+    display: table;
+    width: 100%;
+    padding: 0; }
+    .Encaissement .Panier .PanierListeItem .ingredients-list .nom {
+      padding-left: 20px; }
 
 .Reglement {
   display: inline-block;
@@ -1042,6 +1213,97 @@ input[type="checkbox"].switch {
       background-color: red;
       box-shadow: none; }
 
+.CommentModal {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none; }
+  .CommentModal .Modal-container {
+    background-color: #FFFFFF;
+    width: 500px;
+    border-radius: 15px;
+    padding: 0 20px; }
+  .CommentModal .close-button {
+    background-color: #FFFFFF;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px; }
+  .CommentModal .header {
+    height: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; }
+    .CommentModal .header .title {
+      font-family: "Livvic-Bold";
+      font-size: 18px;
+      color: #4A4A4A;
+      text-align: center;
+      text-transform: uppercase; }
+  .CommentModal .body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-bottom: 30px; }
+    .CommentModal .body .form-group {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      width: 100%; }
+      .CommentModal .body .form-group .label {
+        font-family: "Livvic-Light";
+        font-size: 14px;
+        color: #4A4A4A;
+        padding-right: 10px;
+        -webkit-user-select: none;
+        user-select: none;
+        display: inline-block; }
+      .CommentModal .body .form-group .valeur {
+        width: 100%;
+        font-family: "Livvic-Bold";
+        font-size: 14px;
+        color: #4A4A4A;
+        -webkit-user-select: none;
+        user-select: none;
+        display: inline-block; }
+        .CommentModal .body .form-group .valeur .MuiTextField-root {
+          width: 100%; }
+      .CommentModal .body .form-group .caption {
+        font-family: "Livvic-Light";
+        font-size: 13px;
+        width: 100%;
+        text-align: right;
+        color: #4A4A4A;
+        -webkit-user-select: none;
+        user-select: none;
+        display: inline-block; }
+    .CommentModal .body .cmtlib-item {
+      font-family: "Livvic-Bold";
+      font-size: 14px;
+      color: #4A4A4A;
+      -webkit-user-select: none;
+      user-select: none;
+      display: inline-block;
+      text-decoration: underline;
+      padding: 5px 10px;
+      border-radius: 3px;
+      background-color: #F7F7F7; }
+  .CommentModal .footer {
+    text-align: right; }
+    .CommentModal .footer .save {
+      background-color: #7FAD3B;
+      width: 45%;
+      min-height: 30px; }
+      .CommentModal .footer .save .StdButton-text {
+        font-family: "Livvic-Bold";
+        font-size: 14px;
+        text-transform: uppercase; }
+
 .subcontent {
   display: inline-flex;
   flex-direction: column;
@@ -1140,6 +1402,7 @@ input[type="checkbox"].switch {
   .Parametres .Commandes.subcontent .numero-wrapper {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     width: 100%; }
@@ -1316,6 +1579,8 @@ input[type="checkbox"].switch {
     text-decoration: underline; }
     .Parametres .Utilisateurs.subcontent tbody .liste-nom div {
       cursor: pointer; }
+    .Parametres .Utilisateurs.subcontent tbody .liste-nom.user-disabled {
+      color: #FF2D55; }
   .Parametres .Utilisateurs.subcontent tbody .odd {
     background-color: rgba(0, 0, 0, 0.05); }
   .Parametres .Utilisateurs.subcontent .subttl {
@@ -1340,20 +1605,35 @@ input[type="checkbox"].switch {
     background-repeat: no-repeat;
     background-size: calc(100% - 300px) 100%, 100px 100%;
     background-position: 0 0, 100% 0; }
+  .Parametres .Utilisateurs.subcontent .droits-btn {
+    height: 25px;
+    line-height: 25px;
+    background-color: transparent;
+    border: none;
+    box-shadow: none; }
+    .Parametres .Utilisateurs.subcontent .droits-btn .PillButton-text {
+      font-family: "Livvic-SemiBold";
+      font-size: 12px; }
 
 .Parametres .Financier div {
   box-sizing: content-box; }
 
 .Parametres .Financier.subcontent {
-  display: inline-flex;
-  justify-content: flex-start;
-  align-items: start;
-  text-align: left;
   padding: 15px;
-  flex-wrap: wrap;
   background-color: #FFFFFF;
   border-radius: 15px;
   box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1); }
+  .Parametres .Financier.subcontent .subcontent-wrapper {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding-right: 15px;
+    overflow: auto;
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: start;
+    text-align: left;
+    flex-wrap: wrap; }
   .Parametres .Financier.subcontent .col {
     width: 45%; }
     .Parametres .Financier.subcontent .col .labelledfield {
@@ -1417,6 +1697,10 @@ input[type="checkbox"].switch {
     .Parametres .Financier.subcontent .section-livraison .livraison {
       padding: 0 0 10px 0;
       width: 100%; }
+      .Parametres .Financier.subcontent .section-livraison .livraison label + label {
+        font-family: "Livvic-Bold";
+        font-size: 18px;
+        padding: 10px 0; }
   .Parametres .Financier.subcontent .happyhour-heure input {
     text-align: center; }
   .Parametres .Financier.subcontent .liste-jours {
@@ -1429,6 +1713,103 @@ input[type="checkbox"].switch {
       width: 43%; }
   .Parametres .Financier.subcontent .fidelite-valeur label, .Parametres .Financier.subcontent .fidelite-seuil label {
     text-align: right; }
+
+.Parametres .Peripheriques header {
+  box-shadow: none;
+  background-color: transparent;
+  flex-direction: row;
+  justify-content: space-between; }
+  .Parametres .Peripheriques header .MuiButtonBase-root {
+    font-family: "Livvic-SemiBold";
+    font-size: 18px;
+    background-color: #E6E6E6;
+    border-radius: 15px 15px 0 0;
+    color: #4A4A4A;
+    margin-right: 2px;
+    padding: 8px 25px; }
+    .Parametres .Peripheriques header .MuiButtonBase-root.Mui-selected {
+      background-color: #FFFFFF;
+      color: #1EA9DF;
+      font-family: "Livvic-Bold"; }
+  .Parametres .Peripheriques header .MuiTabs-fixed {
+    width: auto; }
+  .Parametres .Peripheriques header .MuiTabs-indicator {
+    background-color: transparent; }
+  .Parametres .Peripheriques header .MuiTabs-flexContainer {
+    display: inline-flex; }
+  .Parametres .Peripheriques header .displayId {
+    height: 40px;
+    background-color: #FFFFFF;
+    padding-left: 20px;
+    width: 280px; }
+    .Parametres .Peripheriques header .displayId input {
+      height: 40px;
+      width: 200px;
+      margin-top: 0;
+      font-size: 15px;
+      font-family: "Livvic-SemiBold";
+      letter-spacing: 0; }
+    .Parametres .Peripheriques header .displayId .innerButton {
+      height: 40px; }
+      .Parametres .Peripheriques header .displayId .innerButton.btn-keyboard {
+        background-image: url("./../../images/numberkeyboard.svg"); }
+
+.Parametres .Peripheriques .MuiTypography-root {
+  height: calc(100% - 48px);
+  width: 100%;
+  background-color: #FFFFFF;
+  border-radius: 0px 15px 15px 15px; }
+
+.Parametres .Peripheriques .Imprimantes,
+.Parametres .Peripheriques .Tickets {
+  display: inline-flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: start;
+  text-align: left;
+  flex-wrap: wrap;
+  width: 100%; }
+  .Parametres .Peripheriques .Imprimantes .subttl,
+  .Parametres .Peripheriques .Tickets .subttl {
+    font-family: "Livvic-Bold";
+    font-size: 18px;
+    padding: 10px 0; }
+  .Parametres .Peripheriques .Imprimantes .addprinter-button,
+  .Parametres .Peripheriques .Imprimantes .addticket-button,
+  .Parametres .Peripheriques .Tickets .addprinter-button,
+  .Parametres .Peripheriques .Tickets .addticket-button {
+    background-color: #1EA9DF;
+    position: absolute;
+    right: 60px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px; }
+  .Parametres .Peripheriques .Imprimantes .table-wrapper,
+  .Parametres .Peripheriques .Tickets .table-wrapper {
+    width: 100%;
+    max-height: 215px;
+    overflow: auto; }
+
+.Parametres .Peripheriques .Imprimantes {
+  padding-bottom: 15px; }
+
+.Parametres .Peripheriques .MuiTableCell-head {
+  font-family: "Livvic-SemiBold"; }
+
+.Parametres .Peripheriques .MuiTableCell-body {
+  font-family: "Livvic-Regular"; }
+
+.Parametres .Peripheriques tbody .liste-nom {
+  text-transform: capitalize;
+  text-decoration: underline; }
+  .Parametres .Peripheriques tbody .liste-nom div {
+    cursor: pointer; }
+  .Parametres .Peripheriques tbody .liste-nom.user-disabled {
+    color: #FF2D55; }
+
+.Parametres .Peripheriques tbody .MuiTableRow-root.disabled .MuiTableCell-body {
+  font-family: "Livvic-Light";
+  color: #8F8E94; }
 
 .EditTypeModal {
   display: inline-block;
@@ -1531,7 +1912,17 @@ input[type="checkbox"].switch {
     .EditUserModal .body .subttl {
       font-family: "Livvic-Bold";
       font-size: 18px;
-      padding: 10px 0;
+      padding: 10px 40px 10px 0;
+      display: inline-block;
+      cursor: pointer;
+      background-image: url("./../../images/ico_switch-on.svg");
+      background-repeat: no-repeat;
+      background-size: 24px 24px;
+      background-position: right center;
+      user-select: none; }
+      .EditUserModal .body .subttl.allchecked {
+        background-image: url("./../../images/ico_switch-off.svg"); }
+    .EditUserModal .body .sep {
       width: 100%; }
     .EditUserModal .body .switch-container {
       width: 45%;
@@ -1556,13 +1947,173 @@ input[type="checkbox"].switch {
         display: block; }
       .EditUserModal .body .labelledfield .input-wrapper {
         width: 100%; }
+      .EditUserModal .body .labelledfield.erreur label,
+      .EditUserModal .body .labelledfield.erreur .labelledfield-field {
+        color: #FF2D55; }
+      .EditUserModal .body .labelledfield.erreur .input-wrapper {
+        box-shadow: inset 0 0 0 1px #FF2D55; }
+    .EditUserModal .body .status.switch-container {
+      justify-content: flex-start; }
+      .EditUserModal .body .status.switch-container label + label {
+        margin-left: 15px;
+        font-family: "Livvic-Bold"; }
   .EditUserModal .footer {
-    text-align: right; }
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center; }
+    .EditUserModal .footer .suppr {
+      background-color: #FF2D55;
+      width: 45%;
+      min-height: 30px; }
+      .EditUserModal .footer .suppr .StdButton-text {
+        font-family: "Livvic-Light";
+        font-size: 14px;
+        text-transform: uppercase; }
     .EditUserModal .footer .save {
       background-color: #7FAD3B;
       width: 45%;
       min-height: 30px; }
       .EditUserModal .footer .save .StdButton-text {
+        font-family: "Livvic-Bold";
+        font-size: 14px;
+        text-transform: uppercase; }
+
+.Parametres-Utilisateurs-Popper .popper-cont {
+  font-family: "Livvic-Light";
+  font-size: 14px;
+  padding: 10px 10px; }
+  .Parametres-Utilisateurs-Popper .popper-cont ul {
+    padding: 0;
+    margin: 0;
+    list-style: none; }
+
+.EditImprimanteModal,
+.EditTicketModal {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none; }
+  .EditImprimanteModal .Modal-container,
+  .EditTicketModal .Modal-container {
+    background-color: #FFFFFF;
+    width: 500px;
+    border-radius: 15px;
+    padding: 0 20px; }
+  .EditImprimanteModal .close-button,
+  .EditTicketModal .close-button {
+    background-color: #FFFFFF;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px; }
+  .EditImprimanteModal .header,
+  .EditTicketModal .header {
+    height: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; }
+    .EditImprimanteModal .header .title,
+    .EditTicketModal .header .title {
+      font-family: "Livvic-Bold";
+      font-size: 18px;
+      color: #4A4A4A;
+      text-align: center;
+      text-transform: uppercase; }
+  .EditImprimanteModal .body,
+  .EditTicketModal .body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-bottom: 30px; }
+    .EditImprimanteModal .body .labelledfield,
+    .EditTicketModal .body .labelledfield {
+      width: calc(50% - 7px); }
+    .EditImprimanteModal .body .selecteur-group,
+    .EditTicketModal .body .selecteur-group {
+      display: inline-flex;
+      flex-direction: row;
+      align-items: center;
+      width: calc(50% - 7px); }
+    .EditImprimanteModal .body .select-label,
+    .EditTicketModal .body .select-label {
+      font-family: "Livvic-Light";
+      font-size: 14px;
+      color: #4A4A4A;
+      padding-right: 10px;
+      -webkit-user-select: none;
+      user-select: none; }
+    .EditImprimanteModal .body .selecteur,
+    .EditTicketModal .body .selecteur {
+      background-color: #F7F7F7;
+      font-family: "Livvic-Light";
+      font-size: 14px;
+      color: #4A4A4A;
+      width: 100%;
+      line-height: 0.1em; }
+      .EditImprimanteModal .body .selecteur .MuiOutlinedInput-input,
+      .EditTicketModal .body .selecteur .MuiOutlinedInput-input {
+        padding: 15px 15px; }
+    .EditImprimanteModal .body .switch-container,
+    .EditTicketModal .body .switch-container {
+      width: calc(50% - 7px); }
+      .EditImprimanteModal .body .switch-container label,
+      .EditTicketModal .body .switch-container label {
+        font-family: "Livvic-Regular";
+        position: relative;
+        user-select: none; }
+      .EditImprimanteModal .body .switch-container label + label,
+      .EditTicketModal .body .switch-container label + label {
+        font-family: "Livvic-Regular";
+        font-size: 14px;
+        color: #4A4A4A; }
+    .EditImprimanteModal .body .switch-container.labelleft label,
+    .EditTicketModal .body .switch-container.labelleft label {
+      left: 70%; }
+    .EditImprimanteModal .body .switch-container.labelleft label + label,
+    .EditTicketModal .body .switch-container.labelleft label + label {
+      position: absolute;
+      left: auto; }
+    .EditImprimanteModal .body .imprimantes-liste,
+    .EditTicketModal .body .imprimantes-liste {
+      padding-top: 15px;
+      width: 100%; }
+      .EditImprimanteModal .body .imprimantes-liste .liste-label,
+      .EditTicketModal .body .imprimantes-liste .liste-label {
+        font-family: "Livvic-Regular";
+        position: relative;
+        user-select: none;
+        font-size: 14px;
+        color: #4A4A4A;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale; }
+      .EditImprimanteModal .body .imprimantes-liste .liste-liste,
+      .EditTicketModal .body .imprimantes-liste .liste-liste {
+        padding: 15px;
+        width: 100%;
+        min-height: 60px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-start; }
+        .EditImprimanteModal .body .imprimantes-liste .liste-liste .switch-container,
+        .EditTicketModal .body .imprimantes-liste .liste-liste .switch-container {
+          width: auto; }
+  .EditImprimanteModal .footer,
+  .EditTicketModal .footer {
+    text-align: right; }
+    .EditImprimanteModal .footer .save,
+    .EditTicketModal .footer .save {
+      background-color: #7FAD3B;
+      width: 45%;
+      min-height: 30px; }
+      .EditImprimanteModal .footer .save .StdButton-text,
+      .EditTicketModal .footer .save .StdButton-text {
         font-family: "Livvic-Bold";
         font-size: 14px;
         text-transform: uppercase; }
@@ -1604,9 +2155,18 @@ input[type="checkbox"].switch {
 .ListeCommandes .listes {
   margin-top: 10px;
   height: calc(100% - 80px); }
+  .ListeCommandes .listes .search-input {
+    position: absolute;
+    right: 30px;
+    top: 120px;
+    outline: none;
+    opacity: 0;
+    user-select: none; }
   .ListeCommandes .listes header {
     box-shadow: none;
-    background-color: transparent; }
+    background-color: transparent;
+    flex-direction: row;
+    justify-content: space-between; }
     .ListeCommandes .listes header .MuiButtonBase-root {
       font-family: "Livvic-SemiBold";
       font-size: 18px;
@@ -1619,8 +2179,31 @@ input[type="checkbox"].switch {
         background-color: #FFFFFF;
         color: #1EA9DF;
         font-family: "Livvic-Bold"; }
+    .ListeCommandes .listes header .MuiTabs-fixed {
+      width: auto; }
     .ListeCommandes .listes header .MuiTabs-indicator {
       background-color: transparent; }
+    .ListeCommandes .listes header .MuiTabs-flexContainer {
+      display: inline-flex; }
+    .ListeCommandes .listes header .MuiBadge-badge {
+      top: 5px !important;
+      right: -10px !important; }
+    .ListeCommandes .listes header .displayId {
+      height: 40px;
+      background-color: #FFFFFF;
+      padding-left: 20px;
+      width: 280px; }
+      .ListeCommandes .listes header .displayId input {
+        height: 40px;
+        width: 200px;
+        margin-top: 0;
+        font-size: 15px;
+        font-family: "Livvic-SemiBold";
+        letter-spacing: 0; }
+      .ListeCommandes .listes header .displayId .innerButton {
+        height: 40px; }
+        .ListeCommandes .listes header .displayId .innerButton.btn-keyboard {
+          background-image: url("./../../images/numberkeyboard.svg"); }
   .ListeCommandes .listes .MuiTypography-root {
     height: 100%;
     background-color: #FFFFFF;
@@ -1651,6 +2234,13 @@ input[type="checkbox"].switch {
   .ListeCommandes .listes tbody .MuiTableRow-root.odd .liste-montant,
   .ListeCommandes .listes tbody .MuiTableRow-root.odd .liste-actions {
     background-color: #F7F7F7; }
+  .ListeCommandes .listes tbody .MuiTableRow-root:not(.color-0) .liste-heure,
+  .ListeCommandes .listes tbody .MuiTableRow-root:not(.color-0) .liste-montant,
+  .ListeCommandes .listes tbody .MuiTableRow-root:not(.color-0) .liste-actions,
+  .ListeCommandes .listes tbody .MuiTableRow-root:not(.color-0) .liste-date,
+  .ListeCommandes .listes tbody .MuiTableRow-root:not(.color-0) .liste-numero,
+  .ListeCommandes .listes tbody .MuiTableRow-root:not(.color-0) .liste-client {
+    background-image: linear-gradient(rgba(0, 174, 255, 0.5) 0%, rgba(0, 174, 255, 0.5) 100%); }
   .ListeCommandes .listes tbody .liste-actions {
     text-align: right; }
   .ListeCommandes .listes .StdButton {
@@ -1829,35 +2419,157 @@ input[type="checkbox"].switch {
   position: relative;
   z-index: 1; }
 
+.Cloture .MainZone {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between; }
+
+.Cloture .clo-gauche,
+.Cloture .clo-centre,
+.Cloture .clo-droite {
+  width: 30%;
+  height: 100%; }
+
+.Cloture .clo-centre {
+  width: 38%;
+  font-family: "Livvic-Light";
+  font-size: 12px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
 .Cloture .blocgauche,
+.Cloture .bloccentre,
 .Cloture .blocdroite {
   background-color: #FFFFFF;
   box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1);
   border-radius: 15px;
-  width: 28%;
-  height: calc(100% - 260px);
-  position: absolute;
-  top: 110px; }
+  width: 100%;
+  height: calc(100% - 60px); }
 
-.Cloture .blocdroite {
-  right: 30px; }
+.Cloture .bloccentre {
+  box-shadow: none;
+  height: 100%;
+  border: 1px dashed #4A4A4A;
+  padding: 20px;
+  overflow-y: scroll; }
+  .Cloture .bloccentre .wrapper {
+    height: 100%;
+    width: 100%; }
+  .Cloture .bloccentre .periode {
+    padding-bottom: 10px; }
+    .Cloture .bloccentre .periode .val {
+      text-align: center; }
+  .Cloture .bloccentre .sel {
+    padding-bottom: 10px; }
+  .Cloture .bloccentre .recap {
+    padding-bottom: 10px; }
+    .Cloture .bloccentre .recap .recap-item {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between; }
+  .Cloture .bloccentre .titre {
+    text-align: center;
+    border-top: 1px solid #4A4A4A;
+    border-bottom: 1px solid #4A4A4A;
+    padding: 5px 0;
+    margin: 10px 0 5px; }
+  .Cloture .bloccentre .detail .detail-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; }
+    .Cloture .bloccentre .detail .detail-item.pre-filet {
+      margin-top: 5px;
+      padding-top: 5px;
+      border-top: 1px solid #4A4A4A; }
+    .Cloture .bloccentre .detail .detail-item.post-space {
+      padding-bottom: 10px; }
+    .Cloture .bloccentre .detail .detail-item.total {
+      padding-left: 20px; }
+  .Cloture .bloccentre .ventil {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; }
+    .Cloture .bloccentre .ventil .ventil-nom,
+    .Cloture .bloccentre .ventil .ventil-intit:nth-child(1) {
+      width: 30%; }
+    .Cloture .bloccentre .ventil.total {
+      padding-top: 10px; }
+    .Cloture .bloccentre .ventil.intit {
+      padding-bottom: 5px; }
 
-.Cloture .btnreprint {
-  position: absolute;
-  width: 200px;
-  left: 70px;
-  top: 240px;
-  background-color: #9EB3BB;
-  z-index: 1; }
+.Cloture .blocgauche {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center; }
+
+.Cloture .zone-lastcloture {
+  width: calc(100% - 30px);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  min-height: 220px; }
+  .Cloture .zone-lastcloture .titre {
+    text-align: left;
+    font-family: "Livvic-Bold";
+    font-size: 14px;
+    color: #4A4A4A;
+    padding-bottom: 10px;
+    width: 100%; }
+  .Cloture .zone-lastcloture .itmliste {
+    width: 100%;
+    padding-bottom: 10px; }
+  .Cloture .zone-lastcloture .item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0; }
+    .Cloture .zone-lastcloture .item .label {
+      font-family: "Livvic-Light";
+      font-size: 14px;
+      color: #4A4A4A; }
+    .Cloture .zone-lastcloture .item .valeur {
+      font-family: "Livvic-Regular";
+      font-size: 14px;
+      color: #4A4A4A; }
+  .Cloture .zone-lastcloture .no-item {
+    text-align: center;
+    font-family: "Livvic-Regular";
+    font-size: 14px;
+    color: #4A4A4A; }
+  .Cloture .zone-lastcloture .btnreprint {
+    width: 200px;
+    background-color: #9EB3BB; }
+
+.Cloture .zone-selecteur {
+  width: calc(100% - 30px); }
+  .Cloture .zone-selecteur .selecteur-caisse,
+  .Cloture .zone-selecteur .selecteur-vendeur {
+    width: 100%; }
+  .Cloture .zone-selecteur .label {
+    font-family: "Livvic-Bold";
+    font-size: 14px;
+    color: #4A4A4A;
+    width: 100%;
+    padding: 15px 0 5px; }
+  .Cloture .zone-selecteur .selecteur {
+    background-color: #E6E6E6;
+    font-family: "Livvic-Light";
+    font-size: 14px;
+    color: #4A4A4A;
+    width: 100%;
+    line-height: 0.1em; }
+    .Cloture .zone-selecteur .selecteur .MuiOutlinedInput-input {
+      padding: 15px 15px; }
 
 .Cloture .btncomptage {
-  position: absolute;
   width: 235px;
-  left: 50px;
-  bottom: 160px;
   background-color: #7FAD3B;
-  height: 45px;
-  z-index: 1; }
+  height: 45px; }
 
 .Cloture .btnx {
   position: absolute;
@@ -1873,9 +2585,63 @@ input[type="checkbox"].switch {
   width: 235px;
   right: 50px;
   bottom: 75px;
-  background-color: #9EB3BB;
+  background-color: #FF2D55;
   height: 45px;
   z-index: 1; }
+
+.blocdroite {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center; }
+  .blocdroite .droite-top,
+  .blocdroite .droite-btm {
+    width: 100%; }
+    .blocdroite .droite-top .labelledfield,
+    .blocdroite .droite-btm .labelledfield {
+      margin-bottom: 10px; }
+      .blocdroite .droite-top .labelledfield label,
+      .blocdroite .droite-btm .labelledfield label {
+        font-family: "Livvic-Light";
+        font-size: 14px; }
+      .blocdroite .droite-top .labelledfield .input-wrapper,
+      .blocdroite .droite-btm .labelledfield .input-wrapper {
+        width: 100%; }
+        .blocdroite .droite-top .labelledfield .input-wrapper input,
+        .blocdroite .droite-btm .labelledfield .input-wrapper input {
+          text-align: right; }
+      .blocdroite .droite-top .labelledfield.strong label,
+      .blocdroite .droite-btm .labelledfield.strong label {
+        font-family: "Livvic-Bold"; }
+  .blocdroite .editable .input {
+    width: 100%;
+    background-image: url("../../images/ico_edit.svg");
+    background-size: 18px 18px;
+    background-position: 10px center;
+    background-repeat: no-repeat; }
+  .blocdroite .valeur-input {
+    width: 100%;
+    margin-bottom: 10px; }
+    .blocdroite .valeur-input label {
+      font-family: "Livvic-Light";
+      font-size: 14px;
+      color: #4A4A4A; }
+    .blocdroite .valeur-input.strong label {
+      font-family: "Livvic-Bold"; }
+    .blocdroite .valeur-input .input {
+      width: 100%;
+      height: 30px;
+      border-radius: 5px;
+      background-color: #F7F7F7;
+      padding: 0 10px;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
+      font-family: "Livvic-Light";
+      font-size: 14px;
+      color: #4A4A4A; }
 
 .ClotureComptage,
 .ClotureComptcaisse {
@@ -1924,20 +2690,14 @@ input[type="checkbox"].switch {
       text-transform: uppercase; }
   .ClotureComptage .btncomptcaisse,
   .ClotureComptcaisse .btncomptcaisse {
-    position: absolute;
-    bottom: 30px;
-    left: 50px;
-    width: 195px;
+    width: calc(100% - 20px);
     background-color: #7FAD3B !important; }
     .ClotureComptage .btncomptcaisse .MuiButton-label,
     .ClotureComptcaisse .btncomptcaisse .MuiButton-label {
       padding: 0 25px; }
   .ClotureComptage .btncomptverif,
   .ClotureComptcaisse .btncomptverif {
-    position: absolute;
-    bottom: 30px;
-    right: 50px;
-    width: 215px;
+    width: 100%;
     background-color: #FF2D55 !important; }
     .ClotureComptage .btncomptverif .MuiButton-label,
     .ClotureComptcaisse .btncomptverif .MuiButton-label {
@@ -1953,6 +2713,147 @@ input[type="checkbox"].switch {
   height: calc(100% - 130px);
   box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1); }
 
+.ClotureComptage .body {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px 0 20px;
+  height: 500px; }
+
+.ClotureComptage .selecteur {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center; }
+  .ClotureComptage .selecteur .selecteur-caisse,
+  .ClotureComptage .selecteur .selecteur-vendeur {
+    width: 250px; }
+  .ClotureComptage .selecteur .label {
+    font-family: "Livvic-Bold";
+    font-size: 14px;
+    color: #4A4A4A;
+    padding: 0 10px 0; }
+  .ClotureComptage .selecteur .selecteur-sel {
+    background-color: #E6E6E6;
+    font-family: "Livvic-Light";
+    font-size: 14px;
+    color: #4A4A4A;
+    width: 100%;
+    line-height: 0.1em; }
+    .ClotureComptage .selecteur .selecteur-sel .MuiOutlinedInput-input {
+      padding: 15px 15px; }
+  .ClotureComptage .selecteur .selecteur-cnt + .label {
+    padding-left: 50px; }
+
+.ClotureComptage .bloc {
+  padding: 15px;
+  border-radius: 15px;
+  background-color: #F7F7F7;
+  width: 31%; }
+  .ClotureComptage .bloc .bloctitre {
+    font-family: "Livvic-Bold";
+    font-size: 16px;
+    text-align: center;
+    height: 70px; }
+  .ClotureComptage .bloc .cptitem {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    box-sizing: content-box;
+    height: 35px; }
+    .ClotureComptage .bloc .cptitem + .cptitem {
+      padding-top: 10px; }
+    .ClotureComptage .bloc .cptitem .label {
+      font-family: "Livvic-Regular";
+      font-size: 14px;
+      color: #4A4A4A;
+      line-height: 35px; }
+      .ClotureComptage .bloc .cptitem .label:before {
+        content: '-';
+        font-family: "Livvic-Bold";
+        font-size: 16px;
+        color: #4A4A4A;
+        position: relative;
+        display: inline-block;
+        width: 15px;
+        text-align: center;
+        left: 0;
+        margin-right: 10px; }
+    .ClotureComptage .bloc .cptitem .valeur {
+      font-family: "Livvic-Bold";
+      font-size: 14px;
+      color: #1EA9DF;
+      line-height: 35px; }
+    .ClotureComptage .bloc .cptitem .btn {
+      width: 24px;
+      min-height: 24px;
+      height: 24px;
+      margin-left: 10px; }
+      .ClotureComptage .bloc .cptitem .btn svg {
+        color: #1EA9DF; }
+
+.ClotureComptage .bloc-especes .cptitem-fdc .valeur,
+.ClotureComptage .bloc-especes .cptitem-dep .valeur,
+.ClotureComptage .bloc-especes .cptitem-remb .valeur,
+.ClotureComptage .bloc-especes .cptitem-mnt .valeur {
+  padding-right: 34px; }
+
+.ClotureComptage .bloc-especes .cptitem-fdc .label:before,
+.ClotureComptage .bloc-especes .cptitem-mnt .label:before {
+  display: none; }
+
+.ClotureComptage .bloc-especes .cptitem-esp .label:before {
+  content: '+'; }
+
+.ClotureComptage .bloc-especes .cptitem-mnt {
+  margin-top: 10px;
+  padding-top: 20px !important;
+  border-top: 1px solid #4A4A4A; }
+
+.ClotureComptage .bloc-toutes .cptitem-total .valeur,
+.ClotureComptage .bloc-toutes .cptitem-esp .valeur,
+.ClotureComptage .bloc-toutes .cptitem-rec .valeur {
+  padding-right: 34px; }
+
+.ClotureComptage .bloc-toutes .cptitem-cb .label:before,
+.ClotureComptage .bloc-toutes .cptitem-tr .label:before,
+.ClotureComptage .bloc-toutes .cptitem-chq .label:before,
+.ClotureComptage .bloc-toutes .cptitem-total .label:before,
+.ClotureComptage .bloc-toutes .cptitem-rec .label:before {
+  display: none; }
+
+.ClotureComptage .bloc-toutes .cptitem-total {
+  margin-top: 20px; }
+
+.ClotureComptage .bloc-toutes .cptitem-esp .label:before {
+  content: '+'; }
+
+.ClotureComptage .bloc-toutes .cptitem-rec {
+  margin-top: 10px;
+  padding-top: 20px !important;
+  border-top: 1px solid #4A4A4A; }
+
+.ClotureComptage .bloc-saisie {
+  background-color: #FFFFFF;
+  box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center; }
+  .ClotureComptage .bloc-saisie .cptitems-liste {
+    padding-bottom: 20px; }
+  .ClotureComptage .bloc-saisie .cptitem .label:before {
+    display: none; }
+  .ClotureComptage .bloc-saisie .cptitem .valeur {
+    background-color: #F7F7F7;
+    border-radius: 5px;
+    width: 130px;
+    padding: 0 5px;
+    text-align: right; }
+  .ClotureComptage .bloc-saisie .cptitem.cptitem-error .label, .ClotureComptage .bloc-saisie .cptitem.cptitem-error .valeur {
+    color: #FF2D55; }
+
 .ClotureComptcaisse .Modal-container {
   width: 800px; }
   .ClotureComptcaisse .Modal-container .footer {
@@ -1963,6 +2864,119 @@ input[type="checkbox"].switch {
   background-color: #7FAD3B !important; }
   .btncomptcaisseverif .MuiButton-label {
     padding: 0 25px; }
+
+.MuiMenuItem-root {
+  font-family: "Livvic-Light" !important;
+  font-size: 14px !important; }
+
+.swal2-container .differenterror .swal2-actions,
+.swal2-container .standbycommandes .swal2-actions {
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 110px; }
+  .swal2-container .differenterror .swal2-actions button,
+  .swal2-container .standbycommandes .swal2-actions button {
+    border-radius: 12px;
+    height: 50px;
+    width: 220px;
+    color: #FFFFFF; }
+    .swal2-container .differenterror .swal2-actions button.swal2-confirm,
+    .swal2-container .standbycommandes .swal2-actions button.swal2-confirm {
+      background-color: #FF2D55; }
+    .swal2-container .differenterror .swal2-actions button.swal2-cancel,
+    .swal2-container .standbycommandes .swal2-actions button.swal2-cancel {
+      background-color: #5AC8FA; }
+
+.CountTool {
+  position: absolute;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: #FFFFFF;
+  border-radius: 15px; }
+  .CountTool.counttool-open {
+    display: block; }
+  .CountTool .tete {
+    height: 50px;
+    line-height: 50px;
+    text-align: center; }
+    .CountTool .tete .titre {
+      font-family: "Livvic-Bold";
+      font-size: 16px;
+      color: #4A4A4A; }
+  .CountTool .corps {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px 20px; }
+    .CountTool .corps .colonne {
+      background-color: #F7F7F7;
+      border-radius: 15px;
+      padding: 30px 60px;
+      display: flex;
+      flex-direction: column;
+      width: calc(50% - 10px); }
+      .CountTool .corps .colonne + .colonne {
+        justify-content: space-between; }
+      .CountTool .corps .colonne .champ {
+        height: 35px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%; }
+        .CountTool .corps .colonne .champ + .champ {
+          margin-top: 10px; }
+        .CountTool .corps .colonne .champ .nom {
+          font-family: "Livvic-Light";
+          font-size: 14px;
+          color: #4A4A4A;
+          width: 80px;
+          line-height: 35px; }
+        .CountTool .corps .colonne .champ .field {
+          background-color: #FFFFFF;
+          width: 100px;
+          border-radius: 5px;
+          text-align: right;
+          padding: 0 5px;
+          font-family: "Livvic-Light";
+          color: #8F8E94;
+          font-size: 14px;
+          line-height: 35px; }
+        .CountTool .corps .colonne .champ .subtotal {
+          text-align: right;
+          padding: 0 5px;
+          font-family: "Livvic-Regular";
+          font-size: 14px;
+          line-height: 35px;
+          width: 100px; }
+        .CountTool .corps .colonne .champ.filled .field {
+          font-family: "Livvic-Regular";
+          color: #4A4A4A; }
+        .CountTool .corps .colonne .champ.filled .subtotal {
+          font-family: "Livvic-Bold";
+          color: #1EA9DF; }
+      .CountTool .corps .colonne .counttotal {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between; }
+        .CountTool .corps .colonne .counttotal .ttl {
+          font-family: "Livvic-Bold";
+          font-size: 16px;
+          color: #4A4A4A; }
+        .CountTool .corps .colonne .counttotal .val {
+          font-family: "Livvic-Bold";
+          font-size: 20px;
+          color: #1EA9DF; }
+  .CountTool .pied {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; }
+    .CountTool .pied .btnvalidcounttool {
+      background-color: #7FAD3B;
+      width: 250px; }
 
 .ClientModal {
   display: inline-block;
@@ -2093,11 +3107,16 @@ input[type="checkbox"].switch {
 .Statistiques .MainZone {
   height: calc(100% - 100px); }
 
+.Statistiques .liste-header {
+  height: 75px;
+  align-items: center; }
+
 .Statistiques .caption {
   font-family: "Livvic-Bold";
   font-size: 18px;
   color: #4A4A4A;
-  letter-spacing: 0; }
+  letter-spacing: 0;
+  text-transform: uppercase; }
 
 .Statistiques .dates {
   display: inline-flex;
@@ -2124,16 +3143,29 @@ input[type="checkbox"].switch {
     border-radius: 0;
     padding: 0 5px !important; }
 
+.Statistiques .shortcuts {
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 340px; }
+  .Statistiques .shortcuts .shortcut {
+    width: 105px !important;
+    height: 30px; }
+    .Statistiques .shortcuts .shortcut.shortcut-jour {
+      background-color: #9EB3BB; }
+    .Statistiques .shortcuts .shortcut.shortcut-semaine {
+      background-color: #9EB3BB; }
+    .Statistiques .shortcuts .shortcut.shortcut-mois {
+      background-color: #9EB3BB; }
+
 .Statistiques .panel {
-  height: calc(100% - 25px); }
-  .Statistiques .panel .MuiBox-root {
-    height: 100%;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around; }
-  .Statistiques .panel .table-cont {
-    height: 100%; }
+  height: calc(100% - 25px);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  background-color: #FFFFFF;
+  border-radius: 15px; }
 
 .Statistiques .listes {
   margin-top: 10px;
@@ -2194,9 +3226,210 @@ input[type="checkbox"].switch {
     text-align: right; }
   .Statistiques .listes .zonebtn {
     width: 100%;
+    height: 80px;
     display: flex;
     flex-direction: row;
-    justify-content: space-between; }
+    justify-content: space-between;
+    padding: 0 15px; }
+  .Statistiques .listes .zonecharts {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    height: calc(100% - 120px);
+    padding: 0 15px; }
+    .Statistiques .listes .zonecharts .chartblock {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 10px;
+      width: calc(50% - 20px);
+      height: calc(50% - 10px);
+      border-radius: 10px;
+      box-shadow: inset 0 0 0 5px #4A4A4A; }
+      .Statistiques .listes .zonecharts .chartblock .chart-titre {
+        font-family: "Livvic-SemiBold";
+        font-size: 14px;
+        color: #4A4A4A;
+        text-align: center;
+        text-transform: uppercase; }
+      .Statistiques .listes .zonecharts .chartblock .chartcont {
+        height: 145px;
+        width: calc(100% - 40px); }
+        .Statistiques .listes .zonecharts .chartblock .chartcont.chart-doughnut {
+          width: 250px; }
+  .Statistiques .listes .CanalChart {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%; }
+    .Statistiques .listes .CanalChart .canal-item {
+      display: table-row;
+      margin-bottom: 5px;
+      height: 26px; }
+      .Statistiques .listes .CanalChart .canal-item .tracker {
+        display: table-cell;
+        height: 24px;
+        line-height: 22px;
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid #4A4A4A;
+        text-align: left;
+        padding-left: 7px;
+        color: #4A4A4A;
+        font-family: "Livvic-Bold";
+        font-size: 12px;
+        position: relative; }
+        .Statistiques .listes .CanalChart .canal-item .tracker .jauge {
+          position: absolute;
+          top: 2px;
+          left: 2px;
+          height: 18px;
+          border-radius: 10px;
+          text-align: left;
+          padding: 5px;
+          color: #FFFFFF;
+          font-family: "Livvic-Bold";
+          font-size: 12px;
+          line-height: 7px;
+          overflow-x: hidden;
+          white-space: nowrap; }
+      .Statistiques .listes .CanalChart .canal-item .nom {
+        display: table-cell;
+        font-family: "Livvic-SemiBold";
+        font-size: 14px;
+        text-transform: capitalize;
+        color: #4A4A4A;
+        padding-left: 10px; }
+  .Statistiques .listes .MoyenChart {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 100%; }
+    .Statistiques .listes .MoyenChart .items {
+      width: 70%; }
+    .Statistiques .listes .MoyenChart .moyen-item {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      width: 25%;
+      height: 100%;
+      text-align: center;
+      background-image: linear-gradient(#4A4A4A 0%, #4A4A4A 100%);
+      background-repeat: no-repeat;
+      background-size: 100% 1px;
+      background-position: 0px calc(100% - 19px); }
+      .Statistiques .listes .MoyenChart .moyen-item .tracker {
+        display: inline-block;
+        width: 24px;
+        height: calc(100% - 22px);
+        border-radius: 12px 12px 0 0;
+        background-color: #F7F7F7;
+        position: relative; }
+        .Statistiques .listes .MoyenChart .moyen-item .tracker .jauge {
+          position: absolute;
+          bottom: 0;
+          left: 2px;
+          width: calc(100% - 4px);
+          border-radius: 10px 10px 0 0;
+          background-image: radial-gradient(#FFFFFF 0%, #FFFFFF 50%, transparent 51%, transparent 100%);
+          background-repeat: no-repeat;
+          background-position: center 2px;
+          background-size: 16px 16px; }
+      .Statistiques .listes .MoyenChart .moyen-item .nom {
+        height: 20px;
+        line-height: 26px;
+        font-family: "Livvic-SemiBold";
+        font-size: 14px;
+        color: #4A4A4A; }
+    .Statistiques .listes .MoyenChart .legende {
+      display: flex;
+      flex-direction: column;
+      justify-content: center; }
+      .Statistiques .listes .MoyenChart .legende .moyen-legende {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center; }
+        .Statistiques .listes .MoyenChart .legende .moyen-legende .spot {
+          width: 10px;
+          height: 10px;
+          margin-right: 10px; }
+        .Statistiques .listes .MoyenChart .legende .moyen-legende .nom {
+          display: table-cell;
+          font-family: "Livvic-SemiBold";
+          font-size: 14px;
+          color: #4A4A4A;
+          text-align: left; }
+  .Statistiques .listes .ModeChart {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 100%; }
+    .Statistiques .listes .ModeChart .items {
+      width: 70%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: flex-end; }
+    .Statistiques .listes .ModeChart .mode-item {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      width: 25%;
+      height: 100%;
+      text-align: center;
+      background-image: linear-gradient(#4A4A4A 0%, #4A4A4A 100%);
+      background-repeat: no-repeat;
+      background-size: 100% 1px;
+      background-position: 0px calc(100% - 7px); }
+      .Statistiques .listes .ModeChart .mode-item .tracker {
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background-repeat: no-repeat;
+        align-items: center;
+        background-size: 3px 100%;
+        background-position: center top;
+        position: relative;
+        min-height: 20px; }
+        .Statistiques .listes .ModeChart .mode-item .tracker .jauge {
+          border-radius: 50%;
+          font-family: "Livvic-Bold";
+          font-size: 11px;
+          color: #FFFFFF;
+          min-width: 24px;
+          min-height: 24px;
+          display: inline-flex;
+          justify-content: center;
+          align-items: center; }
+        .Statistiques .listes .ModeChart .mode-item .tracker .point {
+          display: block;
+          width: 14px;
+          height: 14px;
+          border-radius: 50%; }
+    .Statistiques .listes .ModeChart .legende {
+      display: flex;
+      flex-direction: column;
+      justify-content: center; }
+      .Statistiques .listes .ModeChart .legende .mode-legende {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center; }
+        .Statistiques .listes .ModeChart .legende .mode-legende .spot {
+          width: 10px;
+          height: 10px;
+          margin-right: 10px; }
+        .Statistiques .listes .ModeChart .legende .mode-legende .nom {
+          display: table-cell;
+          font-family: "Livvic-SemiBold";
+          font-size: 14px;
+          color: #4A4A4A;
+          text-align: left; }
   .Statistiques .listes .StdButton {
     margin: 0 2px !important;
     padding: 0 10px !important;
@@ -2230,6 +3463,16 @@ input[type="checkbox"].switch {
   padding-top: 10px;
   height: 410px;
   align-self: center; }
+
+.Statistiques .zonedeclic {
+  background-color: transparent;
+  border-radius: 15px;
+  cursor: pointer;
+  width: 25%;
+  height: 25%;
+  position: absolute;
+  bottom: 10px;
+  right: 10px; }
 
 .Promotions div {
   box-sizing: content-box; }
@@ -2405,14 +3648,6 @@ input[type="checkbox"].switch {
     width: 30px;
     height: 30px;
     min-height: 30px; }
-  .NewFournisseur .close-button {
-    background-color: #FFFFFF;
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    width: 30px;
-    height: 30px;
-    min-height: 30px; }
   .NewFournisseur .header {
     height: 55px;
     display: flex;
@@ -2445,14 +3680,6 @@ input[type="checkbox"].switch {
     width: 690px;
     border-radius: 15px;
     padding: 0 20px; }
-  .NewArticle .close-button {
-    background-color: #FFFFFF;
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    width: 30px;
-    height: 30px;
-    min-height: 30px; }
   .NewArticle .close-button {
     background-color: #FFFFFF;
     position: absolute;
@@ -2640,11 +3867,12 @@ input[type="checkbox"].switch {
       .Employes .Plannings .zoneBoutons .buttons .btnretour,
       .Employes .Paies .zoneBoutons .buttons .btnretour,
       .Employes .Pointeuse .zoneBoutons .buttons .btnretour {
-        background-color: #E6E6E6; }
+        background-color: #9EB3BB; }
         .Employes .Plannings .zoneBoutons .buttons .btnretour .StdButton-text,
         .Employes .Paies .zoneBoutons .buttons .btnretour .StdButton-text,
         .Employes .Pointeuse .zoneBoutons .buttons .btnretour .StdButton-text {
-          text-decoration: underline; }
+          text-decoration: underline;
+          color: #FFFFFF; }
     .Employes .Plannings .zoneBoutons .titre,
     .Employes .Paies .zoneBoutons .titre,
     .Employes .Pointeuse .zoneBoutons .titre {
@@ -2710,6 +3938,708 @@ input[type="checkbox"].switch {
   height: 50px;
   width: 250px; }
 
+.ValidationPointage {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none; }
+  .ValidationPointage .Modal-container {
+    background-color: #FFFFFF;
+    width: 690px;
+    border-radius: 15px;
+    padding: 0 20px 30px; }
+  .ValidationPointage .close-button {
+    background-color: #FFFFFF;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px; }
+  .ValidationPointage .header {
+    height: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; }
+    .ValidationPointage .header .title {
+      font-family: "Livvic-Bold";
+      font-size: 18px;
+      color: #4A4A4A;
+      text-align: center;
+      text-transform: uppercase; }
+  .ValidationPointage .body .soustitre {
+    font-family: "Livvic-Bold";
+    font-size: 15px;
+    color: #4A4A4A;
+    text-align: center; }
+
+.Plannings .buttons {
+  width: 200px !important;
+  align-items: center; }
+  .Plannings .buttons .MuiFormControl-marginNormal {
+    margin: 0 10px;
+    width: 230px; }
+    .Plannings .buttons .MuiFormControl-marginNormal:hover .MuiInput-underline:before,
+    .Plannings .buttons .MuiFormControl-marginNormal:hover .MuiInput-underline:after,
+    .Plannings .buttons .MuiFormControl-marginNormal .MuiInput-underline:before,
+    .Plannings .buttons .MuiFormControl-marginNormal .MuiInput-underline:after {
+      border: 0; }
+    .Plannings .buttons .MuiFormControl-marginNormal .MuiInput-formControl {
+      background-color: #FFFFFF;
+      border-radius: 2px;
+      padding: 2px 0px 2px 5px; }
+    .Plannings .buttons .MuiFormControl-marginNormal input {
+      color: #1EA9DF;
+      font-family: "Livvic-SemiBold";
+      font-size: 15px;
+      text-align: center; }
+
+.Plannings .dates {
+  display: inline-flex;
+  width: calc(100% - 200px);
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 200px; }
+
+.Plannings .MuiTableCell-root {
+  padding: 1px;
+  width: 95px; }
+
+.Plannings .h-jour,
+.Plannings .h-employe,
+.Plannings .h-total {
+  font-family: "Livvic-Bold";
+  font-size: 14px;
+  text-align: center;
+  text-transform: capitalize;
+  color: #4A4A4A;
+  padding: 3px; }
+  .Plannings .h-jour.jour-today,
+  .Plannings .h-employe.jour-today,
+  .Plannings .h-total.jour-today {
+    background-color: #bedde9 !important; }
+
+.Plannings .h-employe {
+  text-align: left; }
+
+.Plannings .h-total {
+  text-align: right; }
+
+.Plannings .btns {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center; }
+
+.Plannings .add-btn {
+  background-color: #4A4A4A;
+  color: #F7F7F7;
+  font-family: "Livvic-Bold";
+  font-size: 14px;
+  width: 15px;
+  height: 15px;
+  line-height: 12px;
+  border-radius: 50%;
+  text-align: center;
+  cursor: pointer; }
+  .Plannings .add-btn.closed {
+    opacity: .5;
+    cursor: default; }
+
+.Plannings .lock-btn {
+  background-color: #4A4A4A;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  text-align: center;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer; }
+  .Plannings .lock-btn .lock {
+    width: 11px;
+    height: 11px;
+    display: none; }
+  .Plannings .lock-btn .lockopen {
+    width: 11px;
+    height: 11px;
+    display: block; }
+  .Plannings .lock-btn.closed .lock {
+    display: block; }
+  .Plannings .lock-btn.closed .lockopen {
+    display: none; }
+
+.Plannings .b-employe {
+  font-family: "Livvic-Bold";
+  font-size: 14px;
+  text-transform: uppercase;
+  color: #4A4A4A; }
+
+.Plannings .b-jour.jour-today {
+  background-color: #bedde9; }
+
+.Plannings .MuiTableRow-root {
+  height: 60px; }
+
+.Plannings .shift {
+  height: 60px;
+  width: 100%;
+  border-radius: 10px;
+  box-sizing: border-box;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer; }
+  .Plannings .shift.color-blanc {
+    background-color: #FFFFFF; }
+    .Plannings .shift.color-blanc .creneau {
+      color: #4A4A4A; }
+    .Plannings .shift.color-blanc .poste {
+      color: #4A4A4A; }
+  .Plannings .shift.color-bleu {
+    background-color: #5AC8FA; }
+    .Plannings .shift.color-bleu .creneau {
+      color: #FFFFFF; }
+    .Plannings .shift.color-bleu .poste {
+      color: #0065E5; }
+  .Plannings .shift.color-gris {
+    background-color: #8F8E94; }
+    .Plannings .shift.color-gris .creneau {
+      color: #FFFFFF; }
+    .Plannings .shift.color-gris .poste {
+      color: #FFFFFF; }
+  .Plannings .shift.color-jaune {
+    background-color: #FFE700; }
+    .Plannings .shift.color-jaune .creneau {
+      color: #4A4A4A; }
+    .Plannings .shift.color-jaune .poste {
+      color: #FF9500; }
+  .Plannings .shift.color-jauneorange {
+    background-color: #FDC54F; }
+    .Plannings .shift.color-jauneorange .creneau {
+      color: #FFFFFF; }
+    .Plannings .shift.color-jauneorange .poste {
+      color: #FF9500; }
+  .Plannings .shift.color-orange {
+    background-color: #FF9500; }
+    .Plannings .shift.color-orange .creneau {
+      color: #FFFFFF; }
+    .Plannings .shift.color-orange .poste {
+      color: #7F592A; }
+  .Plannings .shift.color-rose {
+    background-color: #FF9DFF; }
+    .Plannings .shift.color-rose .creneau {
+      color: #FFFFFF; }
+    .Plannings .shift.color-rose .poste {
+      color: #9867B6; }
+  .Plannings .shift.color-rouge {
+    background-color: #FF2D55; }
+    .Plannings .shift.color-rouge .creneau {
+      color: #FFFFFF; }
+    .Plannings .shift.color-rouge .poste {
+      color: #FFFFFF; }
+  .Plannings .shift.color-vert {
+    background-color: #9CD04E; }
+    .Plannings .shift.color-vert .creneau {
+      color: #FFFFFF; }
+    .Plannings .shift.color-vert .poste {
+      color: #628133; }
+  .Plannings .shift.color-violet {
+    background-color: #9867B6; }
+    .Plannings .shift.color-violet .creneau {
+      color: #FFFFFF; }
+    .Plannings .shift.color-violet .poste {
+      color: #4A4A4A; }
+  .Plannings .shift .creneau {
+    font-family: "Livvic-Regular";
+    font-size: 12px;
+    width: 100%;
+    text-align: left; }
+  .Plannings .shift .poste {
+    font-family: "Livvic-SemiBold";
+    font-size: 14px;
+    text-transform: capitalize; }
+
+.b-jour.closed .shift {
+  cursor: default; }
+
+.PlanningShiftEditModal {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none; }
+  .PlanningShiftEditModal .Modal-container {
+    background-color: #FFFFFF;
+    width: 500px;
+    border-radius: 15px;
+    padding: 0 20px; }
+  .PlanningShiftEditModal .close-button {
+    background-color: #FFFFFF;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px; }
+  .PlanningShiftEditModal .header {
+    height: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; }
+    .PlanningShiftEditModal .header .title {
+      font-family: "Livvic-Bold";
+      font-size: 18px;
+      color: #4A4A4A;
+      text-align: center;
+      text-transform: uppercase; }
+  .PlanningShiftEditModal .body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-bottom: 30px; }
+    .PlanningShiftEditModal .body .labelledfield {
+      width: calc(50% - 7px); }
+    .PlanningShiftEditModal .body .selecteur-group {
+      display: inline-flex;
+      flex-direction: row;
+      align-items: center;
+      width: calc(50% - 7px); }
+    .PlanningShiftEditModal .body .select-label {
+      font-family: "Livvic-Light";
+      font-size: 14px;
+      color: #4A4A4A;
+      padding-right: 10px;
+      -webkit-user-select: none;
+      user-select: none; }
+    .PlanningShiftEditModal .body .selecteur {
+      background-color: #F7F7F7;
+      font-family: "Livvic-Light";
+      font-size: 14px;
+      color: #4A4A4A;
+      width: 100%;
+      line-height: 0.1em; }
+      .PlanningShiftEditModal .body .selecteur .MuiOutlinedInput-input {
+        padding: 15px 15px; }
+    .PlanningShiftEditModal .body .switch-container {
+      width: calc(50% - 7px); }
+      .PlanningShiftEditModal .body .switch-container label {
+        font-family: "Livvic-Regular";
+        position: relative;
+        user-select: none; }
+      .PlanningShiftEditModal .body .switch-container label + label {
+        font-family: "Livvic-Regular";
+        font-size: 14px;
+        color: #4A4A4A; }
+    .PlanningShiftEditModal .body .switch-container.labelleft label {
+      left: 70%; }
+    .PlanningShiftEditModal .body .switch-container.labelleft label + label {
+      position: absolute;
+      left: auto; }
+    .PlanningShiftEditModal .body .imprimantes-liste {
+      padding-top: 15px;
+      width: 100%; }
+      .PlanningShiftEditModal .body .imprimantes-liste .liste-label {
+        font-family: "Livvic-Regular";
+        position: relative;
+        user-select: none;
+        font-size: 14px;
+        color: #4A4A4A;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale; }
+      .PlanningShiftEditModal .body .imprimantes-liste .liste-liste {
+        padding: 15px;
+        width: 100%;
+        min-height: 60px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-start; }
+        .PlanningShiftEditModal .body .imprimantes-liste .liste-liste .switch-container {
+          width: auto; }
+    .PlanningShiftEditModal .body .form-group .label {
+      font-family: "Livvic-Light";
+      font-size: 14px;
+      color: #4A4A4A;
+      padding-right: 10px;
+      -webkit-user-select: none;
+      user-select: none;
+      display: inline-block; }
+    .PlanningShiftEditModal .body .form-group .valeur {
+      font-family: "Livvic-Bold";
+      font-size: 14px;
+      color: #4A4A4A;
+      -webkit-user-select: none;
+      user-select: none;
+      display: inline-block; }
+    .PlanningShiftEditModal .body .date {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      padding-top: 15px; }
+    .PlanningShiftEditModal .body .heures {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 15px; }
+      .PlanningShiftEditModal .body .heures .heure {
+        width: calc(50% - 5px); }
+    .PlanningShiftEditModal .body .recurrence-params {
+      display: flex;
+      width: 100%;
+      padding-top: 20px;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center; }
+    .PlanningShiftEditModal .body .rythme {
+      width: 50%;
+      display: inline-flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center; }
+      .PlanningShiftEditModal .body .rythme .rythme-val {
+        width: 40px; }
+    .PlanningShiftEditModal .body .form-group.jours {
+      padding-top: 20px;
+      display: inline-flex;
+      flex-direction: row;
+      justify-content: flex-start; }
+      .PlanningShiftEditModal .body .form-group.jours.semaine {
+        align-items: center; }
+      .PlanningShiftEditModal .body .form-group.jours.mois {
+        align-items: flex-start; }
+      .PlanningShiftEditModal .body .form-group.jours .jours-semaine {
+        display: inline-block; }
+    .PlanningShiftEditModal .body .form-group.limite {
+      display: inline-flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center; }
+    .PlanningShiftEditModal .body .jour {
+      position: relative;
+      background-color: #F7F7F7;
+      box-shadow: inset 0 0 0 1px #E6E6E6;
+      width: 25px;
+      height: 25px;
+      display: inline-block;
+      cursor: pointer; }
+      .PlanningShiftEditModal .body .jour .jour-check-label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        line-height: 25px;
+        font-family: "Livvic-Regular";
+        font-size: 13px;
+        text-align: center;
+        color: #4A4A4A;
+        text-transform: uppercase; }
+      .PlanningShiftEditModal .body .jour input {
+        opacity: 0;
+        width: 100%;
+        height: 100%; }
+      .PlanningShiftEditModal .body .jour.checked {
+        background-color: #1EA9DF; }
+        .PlanningShiftEditModal .body .jour.checked .jour-check-label {
+          font-family: "Livvic-Bold";
+          font-size: 13px;
+          color: #FFFFFF; }
+    .PlanningShiftEditModal .body .jours-mois {
+      display: inline-flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-items: flex-start;
+      width: calc(25 * 7px); }
+  .PlanningShiftEditModal .footer {
+    text-align: right; }
+    .PlanningShiftEditModal .footer .save {
+      background-color: #7FAD3B;
+      width: 45%;
+      min-height: 30px; }
+      .PlanningShiftEditModal .footer .save .StdButton-text {
+        font-family: "Livvic-Bold";
+        font-size: 14px;
+        text-transform: uppercase; }
+
+.Paies .zoneboutons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center; }
+  .Paies .zoneboutons .btnretour {
+    flex-grow: unset;
+    flex-shrink: unset;
+    background-color: #9EB3BB; }
+    .Paies .zoneboutons .btnretour .StdButton-text {
+      text-decoration: underline;
+      color: #FFFFFF; }
+  .Paies .zoneboutons .dates {
+    width: calc(100% - 500px);
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center; }
+    .Paies .zoneboutons .dates .nomperiode {
+      font-family: "Livvic-Bold";
+      font-size: 18px;
+      color: #4A4A4A;
+      text-align: center; }
+      .Paies .zoneboutons .dates .nomperiode .ttl {
+        text-transform: uppercase; }
+      .Paies .zoneboutons .dates .nomperiode .periode {
+        text-transform: capitalize; }
+  .Paies .zoneboutons .views {
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 390px; }
+    .Paies .zoneboutons .views .view {
+      width: 80px !important;
+      height: 30px;
+      background-color: #FFFFFF; }
+      .Paies .zoneboutons .views .view .StdButton-text {
+        color: #4A4A4A; }
+      .Paies .zoneboutons .views .view.view-aujourdhui {
+        background-color: #7FAD3B;
+        width: 120px !important; }
+        .Paies .zoneboutons .views .view.view-aujourdhui .StdButton-text {
+          color: #FFFFFF; }
+      .Paies .zoneboutons .views .view.selected {
+        text-decoration: underline; }
+
+.Paies .liste-header {
+  height: 75px;
+  align-items: center; }
+
+.Paies .caption {
+  font-family: "Livvic-Bold";
+  font-size: 18px;
+  color: #4A4A4A;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  text-align: right; }
+  .Paies .caption.start {
+    width: 190px; }
+
+.Paies header {
+  box-shadow: none;
+  background-color: transparent;
+  width: calc(100% - 40px); }
+  .Paies header.MuiAppBar-root {
+    flex-direction: row;
+    justify-content: space-between; }
+  .Paies header .MuiButtonBase-root {
+    font-family: "Livvic-SemiBold";
+    font-size: 18px;
+    background-color: #E6E6E6;
+    border-radius: 15px 15px 0 0;
+    color: #4A4A4A;
+    margin-right: 2px;
+    padding: 8px 25px; }
+    .Paies header .MuiButtonBase-root.Mui-selected {
+      background-color: #FFFFFF;
+      color: #1EA9DF;
+      font-family: "Livvic-Bold"; }
+  .Paies header .MuiTabs-indicator {
+    background-color: transparent; }
+
+.Paies .MuiTableCell-body.liste-nom {
+  font-family: "Livvic-Bold";
+  text-transform: uppercase;
+  cursor: pointer; }
+
+.Paies .MuiTypography-root {
+  height: 100%;
+  background-color: #FFFFFF;
+  border-radius: 0 0 15px 15px; }
+
+.Paies .liste-reel {
+  position: relative; }
+
+.Paies .liste-prevu {
+  position: relative;
+  background-color: #E6E6E6;
+  color: #666666;
+  padding-left: 30px; }
+  .Paies .liste-prevu:before {
+    content: '-';
+    box-sizing: border-box;
+    display: inline-block;
+    position: absolute;
+    left: 10px; }
+  .Paies .liste-prevu:after {
+    content: '=';
+    padding: 0 10px;
+    box-sizing: border-box;
+    display: inline-block;
+    position: absolute;
+    right: 0; }
+
+.Paies .liste-ecart {
+  background-color: #E6E6E6;
+  color: #666666; }
+  .Paies .liste-ecart.over {
+    color: #7FAD3B; }
+  .Paies .liste-ecart.under {
+    color: #FF2D55; }
+
+.Paies .liste-correction {
+  position: relative;
+  padding-left: 30px; }
+  .Paies .liste-correction:before {
+    content: '+';
+    box-sizing: border-box;
+    display: inline-block;
+    position: absolute;
+    left: 10px; }
+
+.Paies .ecart-correction {
+  text-decoration: underline;
+  cursor: pointer; }
+
+.Paies .liste-travail {
+  position: relative; }
+  .Paies .liste-travail:before {
+    content: '=';
+    display: inline-block;
+    position: absolute;
+    left: -20px; }
+
+.Paies .liste-taux {
+  position: relative; }
+  .Paies .liste-taux:before {
+    content: '*';
+    display: inline-block;
+    position: absolute;
+    left: -20px; }
+
+.Paies .liste-salaire {
+  position: relative; }
+  .Paies .liste-salaire:before {
+    content: '=';
+    display: inline-block;
+    position: absolute;
+    left: -20px; }
+
+.Paies .zoneliste {
+  height: calc(100% - 100px) !important; }
+
+.PaieTimeadjustEditModal {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none; }
+  .PaieTimeadjustEditModal .Modal-container {
+    background-color: #FFFFFF;
+    width: 500px;
+    border-radius: 15px;
+    padding: 0 20px; }
+  .PaieTimeadjustEditModal .close-button {
+    background-color: #FFFFFF;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px; }
+  .PaieTimeadjustEditModal .header {
+    height: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; }
+    .PaieTimeadjustEditModal .header .title {
+      font-family: "Livvic-Bold";
+      font-size: 18px;
+      color: #4A4A4A;
+      text-align: center;
+      text-transform: uppercase; }
+  .PaieTimeadjustEditModal .body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-bottom: 30px; }
+    .PaieTimeadjustEditModal .body .form-group {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      width: 100%; }
+      .PaieTimeadjustEditModal .body .form-group .label {
+        font-family: "Livvic-Light";
+        font-size: 14px;
+        color: #4A4A4A;
+        padding-right: 10px;
+        -webkit-user-select: none;
+        user-select: none;
+        display: inline-block; }
+      .PaieTimeadjustEditModal .body .form-group .valeur {
+        font-family: "Livvic-Bold";
+        font-size: 14px;
+        color: #4A4A4A;
+        -webkit-user-select: none;
+        user-select: none;
+        display: inline-block; }
+    .PaieTimeadjustEditModal .body .group-employe {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      padding-top: 15px;
+      padding-bottom: 15px; }
+    .PaieTimeadjustEditModal .body .group-periode {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      padding-bottom: 15px; }
+    .PaieTimeadjustEditModal .body .rappels {
+      display: flex;
+      width: 100%;
+      flex-direction: row;
+      justify-content: space-between;
+      padding-bottom: 30px; }
+    .PaieTimeadjustEditModal .body .group-valeur {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center; }
+      .PaieTimeadjustEditModal .body .group-valeur .input {
+        margin-left: 10px;
+        width: 100px; }
+        .PaieTimeadjustEditModal .body .group-valeur .input.valeur-heures {
+          width: 120px; }
+      .PaieTimeadjustEditModal .body .group-valeur .signe-btn {
+        background-color: #F7F7F7;
+        width: 30px;
+        height: 30px;
+        line-height: 0px; }
+  .PaieTimeadjustEditModal .footer {
+    text-align: right; }
+    .PaieTimeadjustEditModal .footer .save {
+      background-color: #7FAD3B;
+      width: 45%;
+      min-height: 30px; }
+      .PaieTimeadjustEditModal .footer .save .StdButton-text {
+        font-family: "Livvic-Bold";
+        font-size: 14px;
+        text-transform: uppercase; }
+
 .sidebar {
   display: inline-block;
   box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1);
@@ -2767,3 +4697,167 @@ input[type="checkbox"].switch {
     .sidebar .module-item.active .NavigationButton {
       background-color: #1EA9DF;
       color: #FFFFFF; }
+
+.Personnalisation {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none; }
+  .Personnalisation .Modal-container {
+    background-color: #FFFFFF;
+    width: 950px;
+    border-radius: 15px;
+    padding: 10px 0 0; }
+  .Personnalisation .close-button {
+    background-color: #FFFFFF;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px; }
+  .Personnalisation .header {
+    height: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; }
+    .Personnalisation .header .title {
+      user-select: none;
+      font-family: "Livvic-Bold";
+      font-size: 18px;
+      color: #4A4A4A;
+      text-align: center;
+      text-transform: uppercase; }
+  .Personnalisation .body .IngredientBtn {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: calc(25% - 6px);
+    height: 90px;
+    border-radius: 15px;
+    color: #FFFFFF;
+    font-family: "Livvic-Bold";
+    font-size: 15px;
+    vertical-align: top;
+    text-transform: uppercase;
+    box-sizing: border-box;
+    padding: 5px;
+    margin: 3px 3px 8px;
+    box-shadow: inset 0 0 0 8px #FFFFFF, 0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+    cursor: pointer; }
+    .Personnalisation .body .IngredientBtn div.btnlabel {
+      user-select: none;
+      text-align: center;
+      line-height: 1.0em; }
+      .Personnalisation .body .IngredientBtn div.btnlabel div.supplt {
+        padding-top: 7px; }
+    .Personnalisation .body .IngredientBtn .qte-label {
+      user-select: none;
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0;
+      min-width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #FF2D55;
+      position: absolute;
+      top: -7px;
+      right: 10px;
+      color: #FFFFFF;
+      box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12); }
+    .Personnalisation .body .IngredientBtn .qte-btn {
+      display: none;
+      position: absolute;
+      width: 30px;
+      left: 10px;
+      top: -7px;
+      flex-direction: row;
+      justify-content: space-around; }
+      .Personnalisation .body .IngredientBtn .qte-btn button {
+        width: 30px;
+        height: 30px;
+        min-height: 30px; }
+    .Personnalisation .body .IngredientBtn .plus {
+      background-color: #7FAD3B; }
+      .Personnalisation .body .IngredientBtn .plus:disabled {
+        filter: brightness(0.5); }
+    .Personnalisation .body .IngredientBtn .moins {
+      background-color: #FF2D55; }
+      .Personnalisation .body .IngredientBtn .moins:disabled {
+        filter: brightness(0.5); }
+    .Personnalisation .body .IngredientBtn.with-qtebtn .qte-btn {
+      display: flex; }
+    .Personnalisation .body .IngredientBtn:nth-child(7n+1) {
+      background-color: #9CD04E; }
+    .Personnalisation .body .IngredientBtn:nth-child(7n+2) {
+      background-color: #FE485F; }
+    .Personnalisation .body .IngredientBtn:nth-child(7n+3) {
+      background-color: #FDC24F; }
+    .Personnalisation .body .IngredientBtn:nth-child(7n+4) {
+      background-color: #C784D5; }
+    .Personnalisation .body .IngredientBtn:nth-child(7n+5) {
+      background-color: #1EA9DF; }
+    .Personnalisation .body .IngredientBtn:nth-child(7n+6) {
+      background-color: #4A4A4A; }
+    .Personnalisation .body .IngredientBtn:nth-child(7n) {
+      background-color: #554ED0; }
+    .Personnalisation .body .IngredientBtn.blanc {
+      background-color: #FFFFFF; }
+    .Personnalisation .body .IngredientBtn.bleuclair {
+      background-color: #5AC8FA; }
+    .Personnalisation .body .IngredientBtn.bleufonce {
+      background-color: #0065E5; }
+    .Personnalisation .body .IngredientBtn.gris {
+      background-color: #8F8E94; }
+    .Personnalisation .body .IngredientBtn.jaune {
+      background-color: #FFE700; }
+    .Personnalisation .body .IngredientBtn.jauneorange {
+      background-color: #FDC54F; }
+    .Personnalisation .body .IngredientBtn.marron {
+      background-color: #7F592A; }
+    .Personnalisation .body .IngredientBtn.noir {
+      background-color: #4A4A4A; }
+    .Personnalisation .body .IngredientBtn.orange {
+      background-color: #FF9500; }
+    .Personnalisation .body .IngredientBtn.rose {
+      background-color: #FF9DFF; }
+    .Personnalisation .body .IngredientBtn.rouge {
+      background-color: #FF2D55; }
+    .Personnalisation .body .IngredientBtn.vertclair {
+      background-color: #9CD04E; }
+    .Personnalisation .body .IngredientBtn.vertfonce {
+      background-color: #628133; }
+    .Personnalisation .body .IngredientBtn.violet {
+      background-color: #9867B6; }
+    .Personnalisation .body .IngredientBtn.blanc, .Personnalisation .body .IngredientBtn.bleuclair, .Personnalisation .body .IngredientBtn.gris, .Personnalisation .body .IngredientBtn.jaune, .Personnalisation .body .IngredientBtn.jauneorange, .Personnalisation .body .IngredientBtn.orange, .Personnalisation .body .IngredientBtn.rose, .Personnalisation .body .IngredientBtn.rouge, .Personnalisation .body .IngredientBtn.vertclair {
+      color: #4A4A4A; }
+    .Personnalisation .body .IngredientBtn.bleufonce, .Personnalisation .body .IngredientBtn.marron, .Personnalisation .body .IngredientBtn.noir, .Personnalisation .body .IngredientBtn.vertfonce, .Personnalisation .body .IngredientBtn.violet, .Personnalisation .body .IngredientBtn.rouge {
+      color: #FFFFFF; }
+    .Personnalisation .body .IngredientBtn.btn-disabled {
+      cursor: default;
+      color: #4A4A4A;
+      background-color: #8F8E94; }
+  .Personnalisation .modal-wrapper {
+    height: 550px;
+    overflow-y: auto;
+    padding: 0 20px; }
+  .Personnalisation .igtype {
+    padding: 5px 0 10px; }
+  .Personnalisation .igtype-nom {
+    font-family: "Livvic-SemiBold";
+    font-size: 16px; }
+  .Personnalisation .footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px 20px; }
+    .Personnalisation .footer .btnprecedent {
+      background-color: #5AC8FA; }
+    .Personnalisation .footer .btnsuivant {
+      background-color: #7FAD3B; }

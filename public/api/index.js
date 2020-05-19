@@ -7,7 +7,8 @@ const dbCatalogueApi = require('./dbCatalogueApi.js');
 const dbCommandesApi = require('./dbCommandesApi.js');
 const dbCloturesApi = require('./dbCloturesApi.js');
 const dbParametresApi = require('./dbParametresApi.js');
-const dbEmployesApi = require('./dbEmployesApi');
+const dbEmployesApi = require('./dbEmployesApi.js');
+const dbMarketingApi = require('./dbMarketingApi.js');
 const dbUsersApi = require('./dbUsersApi.js');
 
 const peripheralApi = require('./peripheralApi.js');
@@ -20,6 +21,7 @@ setupMainHandler(electron, {
                   ...dbCloturesApi,
                   ...dbParametresApi,
                   ...dbEmployesApi,
+                  ...dbMarketingApi,
                   ...dbUsersApi,
                   ...peripheralApi,
                   ...server

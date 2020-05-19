@@ -469,6 +469,7 @@ class PlanningSemaine extends React.Component {
         const start = shift.start.split(':');
         const end = shift.end.split(':');
         console.log('start-end', start, end);
+        console.log('shift poste tps', shift.poste);
         if (shift.poste.tps) {
           total += add(startOfToday(), {hours:Number(end[0]), minutes:Number(end[1])}).getTime() - add(startOfToday(), {hours:Number(start[0]), minutes:Number(start[1])}).getTime();
         }

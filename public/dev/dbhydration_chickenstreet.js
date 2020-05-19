@@ -496,6 +496,10 @@ const hydration = {
     { ticket_id: 'tck13', nom: 'Ticket 10', template: 'partiel', imprimantes: [], weight: 13 }
   ],
 
+  avoirs: [],
+  reglespanier: [],
+  reglescatalogue: [],
+
   parametres: [
     { domaine: 'entreprise', cle: 'denomination', valeur: 'Chicken Street'},
     { domaine: 'entreprise', cle: 'enseigne', valeur: 'Chicken Street'},
@@ -517,7 +521,7 @@ const hydration = {
     { domaine: 'commandes', cle: 'comment_predefini', valeur:[{id:0,message:'SANS FRITE'}, {id:1,message:'SANS SAUCE'}, {id:2,message:'BIEN CUIT'}]},
     { domaine: 'options', cle: 'caisse', valeur: {id: 'cash0', nom: 'Caisse 1'} },
     { domaine: 'options', cle: 'canaux', valeur: [{ids: ['cash0','cash1'], nom: 'caisse'}, {ids: ['borne1'], nom: 'borne'}, {ids: ['wf1'], nom: 'wifi-order'}] },
-    { domaine: 'planning', cle: 'shifttypes', valeur: [{id:'st01', nom:'cuisine', couleur: 'bleu'}, {id:'st02', nom:'caisse', couleur: 'vert'}, {id:'st03', nom:'salle', couleur: 'jaune'}, {id:'st04', nom:'livraison', couleur: 'orange'}, {id:'st05', nom:'fermeture', couleur: 'turquoise'}, {id:'st06', nom:'repos heb.', couleur: 'gris'}] }
+    { domaine: 'planning', cle: 'shifttypes', valeur: [{id:'st01', nom:'cuisine', couleur: 'bleu', tps: true}, {id:'st02', nom:'caisse', couleur: 'vert', tps: true}, {id:'st03', nom:'salle', couleur: 'jaune', tps: true}, {id:'st04', nom:'livraison', couleur: 'orange', tps: true}, {id:'st05', nom:'fermeture', couleur: 'rose', tps: true}, {id:'st06', nom:'repos heb.', couleur: 'gris', tps: true}] }
   ]
 };
 
