@@ -8,7 +8,8 @@ const mkdirp = require('mkdirp')
 const low = require('lowdb');
 const FileAsync = require('lowdb/adapters/FileAsync');
 
-const hydration = require('./dev/dbhydration_chickenstreet.js');
+//const hydration = require('./dev/dbhydration_chickenstreet.js');
+const hydration = require('./dev/dbhydration_chamas.js');
 const {categories, groupes, tva, types, ingredients, produits, steps} = hydration;
 const {commandes} = hydration;
 const {parametres, imprimantes, tickets} = hydration;
