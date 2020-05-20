@@ -10,6 +10,8 @@ import ConnectIcon from './common/icon/ConnectIcon';
 let strings = new LocalizedStrings(data);
 
 
+const DISABLED_MODULES = ['menu', 'marketing', 'stocks'];
+
 class Dashboard extends Component {
 
   constructor(props) {
@@ -78,7 +80,7 @@ class Dashboard extends Component {
         <div className="modules">
         {modules.map((module, i) =>
           <div className="module-item" key={ i }>
-            <LargeButton identifier={ module.toUpperCase() } disabled={['menu','marketing'].indexOf(module)!=-1} elementclass={ module } icon={ true } text={ strings.modules[module].nom } onClick={(value) => { onClickModule(value) }}></LargeButton>
+            <LargeButton identifier={ module.toUpperCase() } disabled={DISABLED_MODULES.indexOf(module)!=-1} elementclass={ module } icon={ true } text={ strings.modules[module].nom } onClick={(value) => { onClickModule(value) }}></LargeButton>
           </div>
         )}
         </div>
