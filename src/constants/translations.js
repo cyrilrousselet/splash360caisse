@@ -70,7 +70,7 @@ const data = {
         },
         modules: {
             marketing: { 
-                nom: "Marketing",
+                nom: "Promotions",
                 submodules: {
                     promotions: { nom: 'Promotions' },
                     newsletter: { nom: 'Newsletter' },
