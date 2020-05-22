@@ -25,10 +25,13 @@ class MainLoader extends React.Component {
   }
 
   render() {
-    const { paramLoaded, paramLoading, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, cloLoading } = this.props;
+    const { paramLoaded, paramLoading, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, cloLoading, sseInit } = this.props;
 
     if (!paramLoaded) {
       this.props.getParametres();
+    }
+    if (paramLoaded && !sseInit) {
+      this.props.initSSE();
     }
     if (paramLoaded && !catLoaded && !catLoading) {
       this.props.getCatalogue();

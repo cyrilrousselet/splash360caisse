@@ -286,6 +286,16 @@
       color: $noir;
     }
   }
+  .totalcomptageField {
+    .valeur-input .input {
+      height: 40px;
+      background-color: $primary;
+      color: $blanc;
+      font-family: $f_blk;
+      font-size: 16px;
+      background-image: url('../../images/ico_edit-blanc.svg');
+    }
+  }
 }
 
 .ClotureComptage,

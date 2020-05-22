@@ -7,7 +7,7 @@ export const modulesList = [
   'stocks',
   'statistiques',
   'menu',
-  'clients',
+//  'clients',
   'parametres'
 ];
 

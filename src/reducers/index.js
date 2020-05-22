@@ -10,6 +10,7 @@ import { parametresReducer } from './../services/parametres/parametresReducer';
 import { clotureReducer } from './../services/cloture/clotureReducer';
 import { employesReducer } from './../services/employes/employesReducer';
 import { marketingReducer } from './../services/marketing/marketingReducer';
+import { notificationReducer } from './../services/notification/notificationReducer';
 import { authentication } from './authenticationReducer';
 
 export default function createRootReducer(history) {
@@ -24,6 +25,7 @@ export default function createRootReducer(history) {
         clotureReducer,
         employesReducer,
         marketingReducer,
+        notificationReducer,
         authentication
     });
 }

@@ -10,6 +10,7 @@ import {ipcRenderer} from 'electron';
 import {setupFrontendListener} from 'eiphop';
 
 import { commandeActions } from './services/commande/commandeActions';
+import { notificationActions } from './services/notification/notificationActions';
 
 //import routes from './Routes';
 
@@ -35,6 +36,20 @@ console.log(process.env.REACT_APP_PRODUCT_AUTHOR);
 // listener sur la réception de commande via '/public/server.js'
 ipcRenderer.on('setCommande', (event, commande) => {
   commandeActions.setCommandeFromAPI(commande)(store.dispatch, store.getState);
+});
+
+// listener sur la réception de notification (depuis le serveur mercure)
+ipcRenderer.on('getNotification', (event, data) => {
+  console.log('getNotification()', event, data);
+
+  if (data.type=='orders.notification') {
+    // vérifie si LocalStorage contient un token et s'il est toujours valide
+    //const _token = notificationActions.get
+
+
+  }
+
+
 });
 
 // log.transports.file.level = 'info';

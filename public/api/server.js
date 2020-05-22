@@ -3,6 +3,7 @@ const log = require('electron-log');
 const cors = require('cors');
 
 
+
 const allowedOrigins = [
   'http://127.0.0.1',
   'http://localhost',
@@ -15,6 +16,8 @@ let responses = [];
 const server = {
   init: (webContents) => {
     const xpr = express();
+
+    log.info('server.init()');
 
 
     // xpr.use(cors({
@@ -72,6 +75,8 @@ const actions = {
   }
 };
 
+
+    
 module.exports = {
   ...server,
   ...actions

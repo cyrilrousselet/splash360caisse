@@ -53,9 +53,11 @@ class Reglement extends React.Component {
 
   calculetteClick(value) {
     let __t = this.state.total;
+    let __i = true;
     switch (value) {
       case 'c':
         __t = 0;
+        __i = false;
         break;
       case '00':
         __t *= 100;
@@ -66,11 +68,11 @@ class Reglement extends React.Component {
       default:
         __t = (__t*10) + (value/100);
     }
-    this.setState({total:__t, input: true});
+    this.setState({total:__t, input: __i});
   }
 
   deleteCalculette() {
-    this.setState({total: 0, input: true});
+    this.setState({total: 0, input: false});
   }
 
   updateValeurs() {

@@ -70,7 +70,7 @@ const data = {
         },
         modules: {
             marketing: { 
-                nom: "Marketing",
+                nom: "Promotions",
                 submodules: {
                     promotions: { nom: 'Promotions' },
                     newsletter: { nom: 'Newsletter' },
@@ -530,7 +530,8 @@ const data = {
                                 telephone: 'Numéro de téléphone',
                                 siret: 'No SIRET',
                                 ape: 'Code APE',
-                                tva: 'No TVA'
+                                tva: 'No TVA',
+                                restaurant_id: 'ID Restaurant'
                             },
                             placeholder: {
                                 denomination: 'votre dénomination ici',

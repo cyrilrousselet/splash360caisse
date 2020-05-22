@@ -13,6 +13,7 @@ const dbUsersApi = require('./dbUsersApi.js');
 
 const peripheralApi = require('./peripheralApi.js');
 const server = require('./server.js');
+const sse = require('./sseApi.js');
 
 
 setupMainHandler(electron, {
@@ -24,5 +25,6 @@ setupMainHandler(electron, {
                   ...dbMarketingApi,
                   ...dbUsersApi,
                   ...peripheralApi,
-                  ...server
+                  ...server,
+                  ...sse
                 }, true);

@@ -25,7 +25,7 @@ const data_ent = {
   message_ticket: 'Bon appétit, merci de votre visite et à bientôt !'
 };
 
-const general_fields = ['denomination', 'enseigne', 'adresse', 'code_postal', 'ville', 'telephone', 'siret', 'ape', 'tva'];
+const general_fields = ['denomination', 'enseigne', 'adresse', 'code_postal', 'ville', 'telephone', 'siret', 'ape', 'tva', 'restaurant_id'];
 const general_switch = ['auto_update', 'clavier', 'avoirs', 'service'];
 
 class Entreprise extends React.Component {

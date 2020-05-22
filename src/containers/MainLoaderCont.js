@@ -5,6 +5,7 @@ import { commandeActions } from '../services/commande/commandeActions';
 import { clotureActions } from '../services/cloture/clotureActions';
 import { catalogueActions } from '../services/catalogue/catalogueActions';
 import { parametresActions } from '../services/parametres/parametresActions';
+import { notificationActions } from '../services/notification/notificationActions';
 
 import history from '../helpers/history';
 import paths from './../constants/routes.json';
@@ -28,7 +29,8 @@ const mapStateToProps = (state) => {
     cmdLoading: state.commandesListReducer.loading,
     cmdLoaded: Object.entries(state.commandesListReducer).length>0,
     cloLoading : state.clotureReducer.loading,
-    cloLoaded: Object.entries(state.clotureReducer).length>0
+    cloLoaded: Object.entries(state.clotureReducer).length>0,
+    sseInit: state.notificationReducer.sseInit
   }
 }
 
@@ -39,6 +41,7 @@ const mapDispatchToProps = (dispatch) => {
     getCommandesList: commandeActions.getCommandesList,
     getCloturesList: clotureActions.getCloturesList,
     getCurrentPeriode: clotureActions.getCurrentPeriode,
+    initSSE: notificationActions.initSSE
   }, dispatch);
   return {
     ...bound,
