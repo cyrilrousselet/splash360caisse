@@ -1,7 +1,7 @@
 const EventSource = require('eventsource');
 const log = require('electron-log');
 
-const externalUrls = require('../../src/constants/externalUrls.json');
+// const externalUrls = require('../../src/constants/externalUrls.json');
 
 let _webContents = null;
 
@@ -35,10 +35,10 @@ const actions = {
 
     const { restaurant_id } = req.payload;
 
-    log.info('sseInit', externalUrls.notification + restaurant_id);
+    log.info('sseInit', "http://api.splash360.fr:3030/.well-known/mercure?topic=" + restaurant_id);
 
     // const es = new EventSource('http://api.splash360.fr:3030/.well-known/mercure?topic=819b4b71-bb93-4a91-9503-3c7af1e4e622');
-    const es = new EventSource(externalUrls.notification + restaurant_id);
+    const es = new EventSource("http://api.splash360.fr:3030/.well-known/mercure?topic=" + restaurant_id);
 
     es.onmessage = (evt) => {
       log.info('onmessage', evt);
