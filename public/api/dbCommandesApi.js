@@ -39,7 +39,37 @@ const actions = {
     const confirm = await _setArchived(payload.ids, payload.clotureId);
 
     res.send(confirm);
+  },
+
+
+  dbTicketsRestauGetAll: async (req,res) => {
+    const {payload} = req;
+    log.info("dbTicketsRestauGetAll() in API");
+    
+    (await db.ticketsrestau)._.mixin(lodashId);
+    const proxies = await _getAllTicketsRestau();
+      
+    res.send(proxies);
+  },
+  dbTicketsRestauGetOne: async (req,res) => {
+    const {payload} = req;
+    log.info("dbTicketsRestauGetOne("+payload.ticketrestau_id+") in API");
+
+    (await db.ticketsrestau)._.mixin(lodashId);
+    const proxies = await _findTicketRestau({ticketrestau_id: payload.ticketrestau_id});
+
+    res.send(proxies);
+  },
+  dbTicketsRestauPersist: async (req,res) => {
+      const {payload} = req;
+      log.info("dbTicketsRestauPersist() in API");
+
+      (await db.ticketsrestau)._.mixin(lodashId);
+      const confirm = await _persistTicketRestau(payload.payload);
+
+      res.send(confirm);
   }
+
 
 }
 
@@ -122,5 +152,121 @@ async function _setArchived(ids, clotureId) {
   // let _cmd = 1;
   return _cmd != null;
 }
+
+
+
+/**
+ * Get ticketsrestau data from DB
+ */
+async function _getAllTicketsRestau() {
+  
+  const __rawdata = await _findTicketRestau();
+  return _parseTicketsRestau(__rawdata);
+}
+
+
+/**
+ * Get ticketsrestau data from DB
+ */
+async function _findTicketRestau(criteriae={}) {
+  log.info(criteriae);
+  let _tr = [];
+  if ("ticketrestau_id" in criteriae) {
+    _tr = await (await db.ticketsrestau).get('ticketsrestau')
+                                        .find(criteriae)
+                                        .value();
+  } else {
+    _tr = await (await db.ticketsrestau).get('ticketsrestau')
+                                        .value();
+  }
+  return { _tr };
+}
+
+
+
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
+
+
+/**
+ * Insert or Update ticketsrestau data into DB
+ */
+async function _persistTicketRestau(payload) {
+
+  const __now = new Date().getTime();
+
+  if (Array.isArray(payload)) {
+    let count = 0;
+
+    const start = async () => {
+      await asyncForEach(payload, async (obj) => {
+        let _tr = await (await db.ticketsrestau).get('ticketsrestau')
+                                                .find({ticketrestau_id: payload.ticketrestau_id})
+                                                .value();
+
+        if (_tr) {
+          log.info('_tr existe, donc on update');
+          let __upd = {..._tr, ...obj, updatedAt:__now};
+          _tr = await (await db.paramticketsrestauetres).get('ticketsrestau')
+                                                        .find({ticketrestau_id: payload.ticketrestau_id})
+                                                        .assign(__upd)
+                                                        .write();
+          if (_tr!=null) count++;
+        } else {
+          _tr = await _insertTicketRestau(obj);
+          if (_tr!=null) count++;
+        }
+      });
+      return count == payload.length;
+    }
+    start();
+
+  }
+  else {
+
+    let _tr_o = await (await db.ticketsrestau).get('ticketsrestau')
+                                            .find({ticketrestau_id: payload.ticketrestau_id})
+                                            .value();
+    if (_tr_o) {
+      log.info('_tr_o existe, donc on update');
+      let __upd = {..._tr_o, ...payload, updatedAt: __now};
+      _tr_o = await (await db.ticketsrestau).get('ticketsrestau')
+                                          .find({ticketrestau_id: payload.ticketrestau_id})
+                                          .assign(__upd)
+                                          .write();
+    }
+    else {
+      log.info('pas de _tr donc on insert');
+      _tr_o = _insertTicketRestau(payload);
+    }
+
+    return _tr_o != null;
+  }
+}
+
+
+async function _insertTicketRestau(payload) {
+
+  log.info('_insertTicketRestau()');
+  const __now = new Date().getTime();
+  const __ins = {...payload, createdAt: __now, updatedAt: __now};
+  const _tr = await (await db.ticketsrestau).get('ticketsrestau')
+                                            .insert(__ins)
+                                            .write();
+  log.info("new tr", _tr);                                            
+  return _tr;
+}
+
+
+/**
+ * Parse ticketsrestau data (actually no treatment!)
+ */
+function _parseTicketsRestau(_rawdata) {
+  return {ticketsrestaulist: _rawdata._tr};
+}
+
 
 module.exports = actions;

@@ -350,6 +350,13 @@
       padding: 0 25px;
     }
   }
+  .btncompttr {
+    width: calc(100% - 20px);
+    background-color: $vert !important;
+    .MuiButton-label {
+      padding: 0;
+    }
+  }
   .btncomptverif {
     width: 100%;
     background-color: $rouge !important;
@@ -595,11 +602,13 @@
   }
 }
 
-.CountTool {
+.CountTool,
+.CountTRTool {
   position: absolute;
 
   display: none;
-  &.counttool-open {
+  &.counttool-open,
+  &.counttrtool-open {
     display: block;
   }
   
@@ -702,9 +711,84 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    .btnvalidcounttool {
+    .btnvalidcounttool,
+    .btnvalidcounttrtool {
       background-color: $vert;
       width: 250px;
     }
+  }
+}
+
+.CountTRTool {
+  .corps {
+    height: calc(100% - 105px);
+  }
+  .MuiTableContainer-root {
+    position: relative;
+    height: 100%;
+  }
+  .liste {
+    margin-left: 50px;
+    width: calc(100% - 100px);
+    background-color: $blanc-fonce;
+    border-radius: 10px;
+    .liste-body {
+      height: calc(100% - 110px);
+      width: 100%;
+      overflow: scroll;
+    }
+    .liste-wrapper {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+    }
+    .head-id,
+    .prix,
+    .body-id,
+    .footer-id {
+      padding: 0 20px;
+    }
+    .liste-row {
+      border-bottom: 1px solid $blanc;
+    }
+
+    .liste-head {
+      border-bottom: 1px solid $noir_030;
+    }
+    .liste-footer {
+      border-top: 1px solid $noir_030;
+    }
+    
+    .liste-head,
+    .liste-row,
+    .liste-footer {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      height: 55px;
+      width: 100%;
+      font-family: $f_blk;
+      font-size: 14px;
+      color: $noir;
+    }
+
+    .liste-row {
+      font-family: $f_med;
+      height: 40px;
+    }
+  }
+  .prix {
+    text-align: right;
+  }
+  .tr-input {
+    opacity: 0;
+    position: absolute;
+    right: 30px;
+    top: 120px;
+    outline: none;
+    user-select: none;
   }
 }

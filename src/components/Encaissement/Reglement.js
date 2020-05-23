@@ -14,6 +14,7 @@ import ChequeIcon from '../common/icon/ChequeIcon';
 import Calculette from './Calculette';
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
+import Swal from 'sweetalert2';
 let strings = new LocalizedStrings(data);
 
 const RACCOURCIS = [5,10,20,50];
@@ -24,7 +25,8 @@ class Reglement extends React.Component {
     super(props);
     this.state = {
       total: 0,
-      input: false
+      input: false,
+      trlist: []
     }
     this.addValeur = this.addValeur.bind(this);
     this.calculetteClick = this.calculetteClick.bind(this);
@@ -37,7 +39,13 @@ class Reglement extends React.Component {
     this.toRemoveReglement = this.toRemoveReglement.bind(this);
 
     this.closeTiroir = this.closeTiroir.bind(this);
+
+    this.trHandler = this.trHandler.bind(this);
+    this.decodeQRCode = this.decodeQRCode.bind(this);
+    this.parseTR = this.parseTR.bind(this);
   }
+
+  interval = 0;
 
   componentDidMount() {
     const { getCommande, commandeId } = this.props;
@@ -115,6 +123,7 @@ class Reglement extends React.Component {
   beforeCloseReglement() {
 
     const { reste, rendu } = this.updateValeurs();
+    const { trlist } = this.state;
     console.log(reste, rendu);
     if (reste==0) {
       if (this.props.commande.status=='pending') {
@@ -123,13 +132,10 @@ class Reglement extends React.Component {
       }
       this.props.commande.status = 'confirmed';
 
-      console.warn('!!! DEV - rétablir l’impression des tickets');
-      if (!isDev) {
-        this.props.printTicket('all');
-     //   this.props.printTicket('sac');
-     //   this.props.printTicket('cuisine');
-      }
+      this.props.printTicket('all');
 
+      // enregistrement des TR en base (pour contrôle ultérieur)
+      if (trlist.length>0) this.props.persistTicketsRestaurants(trlist);
       this.props.validateCommande(this.props.commande);
 
     }
@@ -181,6 +187,99 @@ class Reglement extends React.Component {
   }
 
 
+  trHandler(event) {
+    if (event.keyCode==13) {
+      console.log(event.target.value);
+      this.decodeQRCode(event.target.value);
+      event.target.value = '';
+    }
+  }
+
+
+  decodeQRCode(value) {
+
+    let decode_table = {
+      win: {
+        'à': 0,
+        '&': 1,
+        'é': 2,
+        '"': 3,
+        "'" : 4,
+        '(' : 5,
+        '-' : 6,
+        'è' : 7,
+        '_' : 8,
+        'ç' : 9
+      },
+      darwin: {
+        'à': 0,
+        '&': 1,
+        'é': 2,
+        '"': 3,
+        "'" : 4,
+        '(' : 5,
+        '§' : 6,
+        'è' : 7,
+        '!' : 8,
+        'ç' : 9
+      }
+    };
+    if (!isNaN(parseInt(value))) {
+      this.parseTR(value);
+      return;
+    }
+
+    const platform = process.platform=='darwin' ? 'darwin' : 'win';
+
+    let decoded = '';
+    for (let caractere of value) {
+      if (!decode_table[platform].hasOwnProperty(caractere)) {
+        continue;
+      }
+      decoded += decode_table[platform][caractere];
+    }
+    if (!isNaN(parseInt(decoded))) {
+      this.parseTR(decoded);
+    }
+    return false;
+  }
+
+
+  parseTR(value) {
+    const { trlist } = this.state;
+    let error = '';
+
+    const __value = String(value);
+
+    const __trValue = Number(__value.substr(11,5)) / 100;
+    const __trValid = Number(__value.substr(16,4));
+
+    const __now = new Date().getFullYear();
+
+    if (trlist.indexOf(__value)!==-1) error = 'yet';
+    if (__trValid<__now) error = 'deprecated';
+
+    if (error==='') {
+      this.toAddReglement('ticket',__trValue);
+      this.setState({ trlist: [...trlist, __value] });
+    } else {
+      if (error=='deprecated') {
+        Swal.fire({
+          type: 'warning',
+          title: strings.modules.encaissement.reglement.erreur.ticket[error].titre,
+          html: strings.modules.encaissement.reglement.erreur.ticket[error].texte,
+          showCancelButton: false,
+          focusCancel: false,
+          focusConfirm: true
+        });
+      }
+    }
+
+    console.log('tr', __trValue, __trValid);
+
+  }
+
+
   render() {
 
     const { open, valueToPay, contClass, closeReglement, addReglement, addRendu, tiroirOuvert } = this.props;
@@ -189,6 +288,22 @@ class Reglement extends React.Component {
     const { total, input } = this.state;
     
     const aAfficher = input ? total : Math.max(0,reste);
+
+
+    // gestion du focus sur le champ de recherche (scan QR code)
+    clearInterval(this.interval);
+    
+    const self = this;
+    if (open) {      
+      this.interval = setInterval(() => {
+        if (self.refs.trInput) self.refs.trInput.focus();
+       },500);
+    } else {
+      clearInterval(this.interval);
+      this.interval = 0;
+    }
+
+
     
     return (
     <Modal
@@ -203,6 +318,7 @@ class Reglement extends React.Component {
             } */}
           </div>
           <div className="body">
+            <input className="tr-input" ref="trInput" onKeyUp={this.trHandler} /> 
             <div className="calculette">
               <Calculette total={ aAfficher } buttonHandler={ this.calculetteClick } deleteHandler={ this.deleteCalculette } />
             </div>

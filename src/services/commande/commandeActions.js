@@ -21,6 +21,34 @@ function getCommandesList(params={}) {
 }
 
 
+function getAllTicketsRestaurant() {
+  return dispatch => {
+    dispatch({ type: commandeActionTypes.GETALL_TICKETSRESTAU_REQUEST });
+    commandeServices.getAllTicketsRestaurant()
+    .then(
+      data => dispatch({ type: commandeActionTypes.GETALL_TICKETSRESTAU_SUCCESS, ...data }),
+      error => dispatch({ type: commandeActionTypes.GET_TICKETRESTAU_FAILURE, error: error })
+    );
+  }
+}
+
+
+function persistTicketsRestaurants(liste) {
+  return dispatch => {
+    dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_REQUEST });
+
+    return commandeServices.persistTicketsRestaurants(liste)
+    .then(
+      data => {
+        dispatch({type: commandeActionTypes.PERSIST_TICKETRESTAU_SUCCESS});
+        dispatch( getAllTicketsRestaurant());
+      },
+      error => dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_FAILURE, error: error })
+    );
+  }
+}
+
+
 function setNewNumero(defaultValue=null) {
 
   return (dispatch, getState) => {
@@ -462,5 +490,7 @@ export const commandeActions = {
   addComment,
   updateComment,
   deleteComment,
-  setCommandeFromAPI
+  setCommandeFromAPI,
+  getAllTicketsRestaurant,
+  persistTicketsRestaurants
 };

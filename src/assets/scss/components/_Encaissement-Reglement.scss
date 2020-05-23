@@ -38,6 +38,14 @@
         }
     }
     .body {
+        .tr-input {
+            opacity:0;
+            position: absolute;
+            right: 30px;
+            top: 120px;
+            outline: none;
+            user-select: none;
+        }
         .calculette {
             display: inline-block;
             vertical-align: top;

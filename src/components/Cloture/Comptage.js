@@ -3,7 +3,7 @@ import React from 'react';
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 
-import { Modal, Fab, FormControl, Select, MenuItem } from '@material-ui/core';
+import { Modal, Fab, FormControl, Select, MenuItem, List, Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TableFooter } from '@material-ui/core';
 import CloseIcon from '../common/icon/CloseIcon';
 import InfoIcon from '@material-ui/icons/Info';
 import StdButton from '../common/StdButton';
@@ -14,6 +14,188 @@ import Swal from 'sweetalert2';
 import { useState } from 'react';
 
 let strings = new LocalizedStrings(data);
+
+
+class CountTRTool extends React.Component {
+
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      liste: [],
+      counttotal: 0
+    }
+    this.trHandler = this.trHandler.bind(this);
+    this.decodeQRCode = this.decodeQRCode.bind(this);
+    this.parseTR = this.parseTR.bind(this);
+    this.resetPopin = this.resetPopin.bind(this);
+  }
+
+  interval = 0;
+
+
+  trHandler(event) {
+    if (event.keyCode==13) {
+      console.log(event.target.value);
+      this.decodeQRCode(event.target.value);
+      event.target.value = '';
+    }
+  }
+
+
+  decodeQRCode(value) {
+
+    let decode_table = {
+      win: {
+        'à': 0,
+        '&': 1,
+        'é': 2,
+        '"': 3,
+        "'" : 4,
+        '(' : 5,
+        '-' : 6,
+        'è' : 7,
+        '_' : 8,
+        'ç' : 9
+      },
+      darwin: {
+        'à': 0,
+        '&': 1,
+        'é': 2,
+        '"': 3,
+        "'" : 4,
+        '(' : 5,
+        '§' : 6,
+        'è' : 7,
+        '!' : 8,
+        'ç' : 9
+      }
+    };
+    if (!isNaN(parseInt(value))) {
+      this.parseTR(value);
+      return;
+    }
+
+    const platform = process.platform=='darwin' ? 'darwin' : 'win';
+
+    let decoded = '';
+    for (let caractere of value) {
+      if (!decode_table[platform].hasOwnProperty(caractere)) {
+        continue;
+      }
+      decoded += decode_table[platform][caractere];
+    }
+    if (!isNaN(parseInt(decoded))) {
+      this.parseTR(decoded);
+    }
+    return false;
+  }
+
+
+  parseTR(value) {
+    const { liste, counttotal } = this.state;
+    let error = '';
+
+    const __value = String(value);
+
+    const __trValue = Number(__value.substr(11,5)) / 100;
+    const __trValid = Number(__value.substr(16,4));
+
+    const __now = new Date().getFullYear();
+    if (liste.find(tr=>tr.id==__value)) error = 'yet';
+    if (__trValid<__now) error = 'deprecated';
+
+    if (error==='') {
+      this.setState({ 
+        liste: [...liste, {id:__value, valeur:__trValue}], 
+        counttotal: counttotal+__trValue  
+      });
+      if (this.refs.listeBody) this.refs.listeBody.scrollTop = this.refs.listeBody.scrollHeight;
+
+    } else {
+      if (error=='deprecated') {
+        Swal.fire({
+          type: 'warning',
+          title: strings.modules.cloture.comptage.counttrtool.erreur[error].titre,
+          html: strings.modules.cloture.comptage.counttrtool.erreur[error].texte,
+          showCancelButton: false,
+          focusCancel: false,
+          focusConfirm: true
+        });
+      }
+    }
+
+    console.log('tr', __trValue, __trValid);
+
+  }
+
+
+  resetPopin() {
+
+  }
+
+
+  render() {
+    const {open, onValidate, closeHandler} = this.props;
+
+    const { liste, counttotal } = this.state;
+
+
+    // gestion du focus sur le champ de recherche (scan QR code)
+    clearInterval(this.interval);
+    
+    const self = this;
+    if (open) {      
+      this.interval = setInterval(() => {
+        if (self.refs.trInput) self.refs.trInput.focus();
+       },500);
+    } else {
+      clearInterval(this.interval);
+      this.interval = 0;
+    }
+
+ 
+    return (
+      <div className={ `CountTRTool${(open?' counttrtool-open':'')}` }>
+        <div className="tete">
+          <div className="titre">{ strings.modules.cloture.comptage.counttrtool.titre }</div>
+        </div>
+        <div className="corps">
+          <input className="tr-input" ref="trInput" onKeyUp={this.trHandler} /> 
+          <div className="liste">
+            <div className="liste-head">
+              <div className="head-id">{ strings.modules.cloture.comptage.counttrtool.id }</div>
+              <div className="prix">{ strings.modules.cloture.comptage.counttrtool.montant }</div>
+            </div>
+            <div className="liste-body" ref="listeBody">
+              <div className="liste-wrapper">
+            {liste && liste.map(tr => (
+              <div className="liste-row">
+                <div className="body-id">{ tr.id }</div>
+                <div className="prix">{ `${devise(tr.valeur)} €` }</div>
+              </div>
+              ))}
+              </div>
+            </div>
+            <div className="liste-footer">
+                <div className="footer-id">{ strings.modules.cloture.comptage.counttrtool.total }</div>
+                <div className="prix">{ `${devise(counttotal)} €` }</div>
+            </div>
+          </div>
+        </div>
+        <div className="pied">
+          <StdButton identifier="btnvalidcounttrtool" elementclass="btnvalidcounttrtool" key="btnvalidcounttrtool" disabled={ false } text={ strings.modules.cloture.comptage.counttrtool.bouton } onClick={ () => { onValidate(counttotal); this.resetPopin() } } />
+        </div>
+      </div>
+    )
+  }
+
+}
+
+
+
+
+
 
 
 const CountTool = ({open, onValidate, startSaisie, closeHandler, counttotal, monnaie}) => {
@@ -127,6 +309,7 @@ class Comptage extends React.Component {
       error_cheque: false,
       error_especes: false,
       counttoolOpen: false,
+      counttrtoolOpen: false,
       keyboardOpen: false,
       numbersOnly: false,
       fieldval: '',
@@ -146,6 +329,9 @@ class Comptage extends React.Component {
     this.openCountTool = this.openCountTool.bind(this);
     this.closeCountTool = this.closeCountTool.bind(this);
     this.validateCountTool = this.validateCountTool.bind(this);
+    this.openCountTRTool = this.openCountTRTool.bind(this);
+    this.closeCountTRTool = this.closeCountTRTool.bind(this);
+    this.validateCountTRTool = this.validateCountTRTool.bind(this);
   }
 
 
@@ -293,6 +479,15 @@ class Comptage extends React.Component {
   validateCountTool(valeur) {
     this.setState({saisie_especes: valeur, counttoolOpen:false});
   }
+  openCountTRTool() {
+    this.setState({counttrtoolOpen:true});
+  }
+  closeCountTRTool() {
+    this.setState({counttrtoolOpen:false});
+  }
+  validateCountTRTool(valeur) {
+    this.setState({saisie_ticket: valeur, counttrtoolOpen:false});
+  }
 
   render() {
 
@@ -313,6 +508,7 @@ class Comptage extends React.Component {
       error_cheque,
       error_ticket,
       counttoolOpen,
+      counttrtoolOpen,
       cent1,cent2,cent5,
       cent10,cent20,cent50,
       eur1,eur2,eur5,
@@ -478,6 +674,7 @@ class Comptage extends React.Component {
                   </div>
                 </div>
                   <StdButton identifier="btncomptcaisse" elementclass="btncomptcaisse" key="btncomptcaisse" text={ strings.modules.cloture.comptage.actions.outilcomptage } onClick={ this.openCountTool } />
+                  <StdButton identifier="btncompttr" elementclass="btncompttr" key="btncompttr" text={ strings.modules.cloture.comptage.actions.outilcomptagetr } onClick={ this.openCountTRTool } />
               </div>
               <StdButton identifier="btncomptverif" elementclass="btncomptverif" key="btncomptverif" disabled={saisie_carte=='' || saisie_cheque=='' || saisie_ticket=='' || saisie_especes==''} text={ strings.modules.cloture.comptage.actions.validation } onClick={ () => { this.checkComptageBeforeValidation() } } />          
             </div>
@@ -488,6 +685,7 @@ class Comptage extends React.Component {
           <CloseIcon />
         </Fab>
         <CountTool open={counttoolOpen} monnaie={monnaie} startSaisie={this.startSaisie} counttotal={counttotal} onValidate={ this.validateCountTool } closeHandler={this.closeCountTool} />
+        <CountTRTool open={counttrtoolOpen} onValidate={ this.validateCountTRTool } closeHandler={this.closeCountTRTool} />
         <NumberKeyboard open={keyboardOpen} numbersOnly={numbersOnly} buttonHandler={this.keyboardButtonHandler} inner={true} closeHandler={this.closeKeyboard} />
       </div>
     </Modal>

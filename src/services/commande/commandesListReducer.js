@@ -3,7 +3,8 @@ import { commandeActionTypes } from './commandeActionTypes';
 const initialState = {
   loading: false,
   error: null,
-  commandeslist: {}
+  commandeslist: {},
+  ticketsrestau: []
 }
 
 
@@ -11,6 +12,7 @@ export function commandesListReducer(state = initialState, action) {
 
   switch (action.type) {
     case commandeActionTypes.GET_ALLCOMMANDES_REQUEST:
+    case commandeActionTypes.GETALL_TICKETSRESTAU_REQUEST:
       return {
         ...state,
         loading: true,
@@ -31,6 +33,14 @@ export function commandesListReducer(state = initialState, action) {
         loading: false,
         error: action.error
       };
+    
+    case commandeActionTypes.GETALL_TICKETSRESTAU_SUCCESS:
+      console.log('trlist', action.ticketsrestaulist);
+      return {
+        ...state,
+        loading: false,
+        ticketsrestau: action.ticketsrestaulist
+      };
 
     default:
     return state;
@@ -40,3 +50,4 @@ export function commandesListReducer(state = initialState, action) {
 export const getCommandesList = state => state.commandesListReducer.commandeslist;
 export const getCommandesListLoading = state => state.commandesListReducer.loading;
 export const getCommandesListError = state => state.commandesListReducer.error;
+export const getTicketsRestau = state => state.commandesListReducer.ticketsrestau;

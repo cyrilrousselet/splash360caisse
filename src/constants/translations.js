@@ -144,7 +144,19 @@ const data = {
                         "10 €",
                         "20 €",
                         "50 €"
-                    ]
+                    ],
+                    erreur: {
+                        ticket: {
+                            yet: {
+                                titre: 'Erreur Ticket Restaurant',
+                                texte: 'Le Ticket Restaurant a déjà été utilisé.'
+                            },
+                            deprecated: {
+                                titre: 'Erreur Ticket Restaurant',
+                                texte: 'Le Ticket Restaurant est périmé.'
+                            }
+                        }
+                    }
                 },
                 personnalisation: {
                     titre: 'Personnalisation',
@@ -413,12 +425,30 @@ const data = {
                     },
                     actions: {
                         validation: "Vérification",
-                        outilcomptage: "Comptage espèces"
+                        outilcomptage: "Comptage espèces",
+                        outilcomptagetr: "Comptage Tickets restau"
                     },
                     counttool: {
-                        titre: "Compte Caisse",
+                        titre: "Comptage Caisse",
                         total: "Total :",
                         bouton: "Valider"
+                    },
+                    counttrtool: {
+                        titre: "Comptage Tickets Restaurant",
+                        id: "ID",
+                        montant: "Montant",
+                        total: "Total :",
+                        bouton: "Valider",
+                        erreur: {
+                            yet: {
+                                titre: 'Erreur Ticket restaurant',
+                                texte: 'Ce ticket restaurant n’est pas valide'
+                            },
+                            deprecated: {
+                                titre: 'Ticket restaurant périmé',
+                                texte: 'Ce ticket restaurant n’est plus valable.'
+                            }
+                        }
                     }
                 },
                 print_x: "Imprime X Caisse",
