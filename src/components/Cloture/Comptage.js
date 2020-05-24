@@ -99,9 +99,9 @@ class CountTRTool extends React.Component {
     const __value = String(value);
 
     const __trValue = Number(__value.substr(11,5)) / 100;
-    const __trValid = Number(__value.substr(16,4));
+    const __trValid = Number(__value.substr(16,2));
 
-    const __now = new Date().getFullYear();
+    const __now = new Date().getFullYear() - 2000;
     if (liste.find(tr=>tr.id==__value)) error = 'yet';
     if (__trValid<__now) error = 'deprecated';
 

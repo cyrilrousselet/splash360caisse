@@ -46,6 +46,14 @@
             outline: none;
             user-select: none;
         }
+        .avr-input {
+            opacity:0;
+            position: absolute;
+            right: 30px;
+            top: 120px;
+            outline: none;
+            user-select: none;
+        }
         .calculette {
             display: inline-block;
             vertical-align: top;
@@ -127,6 +135,17 @@
                 &.rendable {
                     color: $noir;
                 }
+
+                .create-avoir {
+                    box-shadow: 0 3px 8px 0 rgba(0,0,0,.1);
+                    background-color: $vert;
+                    height: 30px;
+                    line-height: 30px;
+                    .PillButton-text {
+                        color: $blanc;
+                        font-size: 17px;
+                    }
+                }
             }
         }
         .boutons {
@@ -174,6 +193,14 @@
                         .StdButton-text {
                             font-family: $f_blk;
                             font-size: 17px;
+                        }
+                    }
+                    &.avr {
+                        .StdButton-icon {
+                            height: 20px;
+                        }
+                        &.actif {
+                            background-color: $rouge;
                         }
                     }
                 }

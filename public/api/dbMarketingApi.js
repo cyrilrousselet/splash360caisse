@@ -131,26 +131,26 @@ async function _persistAvoir(payload) {
 
   const __now = new Date().getTime();
   let _avr = await (await db.avoirs).get('avoirs')
-                                      .find({avoir_id: payload.avoir_id})
-                                      .value();
+                                    .find({avoir_id: payload.avoir_id})
+                                    .value();
   log.info(_avr);
   if (_avr) {
     log.info('avr existe, donc on update');
     let __upd = {..._avr, ...payload, updatedAt: __now};
     _avr = await (await db.avoirs).get('avoirs')
-                                    .find({avoir_id: payload.avoir_id})
-                                    .assign(__upd)
-                                    .write();
+                                  .find({avoir_id: payload.avoir_id})
+                                  .assign(__upd)
+                                  .write();
   }
   else {
     log.info('pas de avr donc on insert');
     let __ins = {...payload, createdAt: __now, updatedAt: __now};
     _avr = await (await db.avoirs).get('avoirs')
-                                    .insert(__ins)
-                                    .write();
+                                  .insert(__ins)
+                                  .write();
   }
 
-  return _avr != null;
+  return _avr;
 }
 
 function _parseAvoir(_rawdata) {

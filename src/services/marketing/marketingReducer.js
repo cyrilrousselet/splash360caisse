@@ -11,6 +11,14 @@ const initialState = {
 export function marketingReducer(state = initialState, action) {
 
   switch (action.type) {
+
+    
+    case marketingActionTypes.GET_AVOIRS_LIST_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        avoirs: action.avoirslist
+      };
     default:
       return state;
   }

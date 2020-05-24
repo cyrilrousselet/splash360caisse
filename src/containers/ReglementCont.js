@@ -3,8 +3,10 @@ import { bindActionCreators } from 'redux';
 import { commandeActions } from '../services/commande/commandeActions'
 import { getCommandeError, getCommandeLoading, getCommande } from '../services/commande/commandeReducer';
 import { getTiroirOuvert } from '../services/peripheral/peripheralReducer';
+import { getParametres } from '../services/parametres/parametresReducer';
 import Reglement from '../components/Encaissement/Reglement';
 import { peripheralActions } from '../services/peripheral/peripheralActions';
+import { marketingActions } from '../services/marketing/marketingActions';
 
 
 const getCommandeTotal = (items) => {
@@ -30,7 +32,9 @@ const mapStateToProps = (...args) => {
     tiroirOuvert: getTiroirOuvert(state),
     loading: getCommandeLoading(state),
     commande: getCommande(state),
-    error: getCommandeError(state)
+    error: getCommandeError(state),
+    params: getParametres(state).entreprise,
+    avoirs: state.marketingReducer.avoirs
   };
 }
 
@@ -46,7 +50,9 @@ const mapDispatchToProps = (dispatch) => {
     printTicket: peripheralActions.printTicket,
     openDrawer: peripheralActions.openDrawer,
     closeDrawer: peripheralActions.closeDrawer,
-    persistTicketsRestaurants: commandeActions.persistTicketsRestaurants
+    persistTicketsRestaurants: commandeActions.persistTicketsRestaurants,
+    createAvoir: marketingActions.createAvoir,
+    updateAvoir: marketingActions.updateAvoir
   }, dispatch);
 }
 

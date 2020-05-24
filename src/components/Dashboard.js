@@ -26,6 +26,7 @@ class Dashboard extends Component {
     // this.props.getAllActive();
     // this.props.getParametres();
     this.props.getCurrentPeriode();
+    this.props.getAvoirsList();
   }
 
 
@@ -84,8 +85,8 @@ class Dashboard extends Component {
           </div>
         )}
         </div>
-        <div className="tickets">{ strings.dashboard.ticketsnum }<span>{ numtickets }</span></div>
-        <div className="ca">{ strings.dashboard.ca }<span className={ ca_eval }>{ ca.toFixed(2).replace(/\./g,',') }{ devise }</span></div>
+        { modules.indexOf('statistiques')!==-1 && ( <div className="tickets">{ strings.dashboard.ticketsnum }<span>{ numtickets }</span></div> )}
+        { modules.indexOf('statistiques')!==-1 && ( <div className="ca">{ strings.dashboard.ca }<span className={ ca_eval }>{ ca.toFixed(2).replace(/\./g,',') }{ devise }</span></div> )}
       </div>
     );
   }

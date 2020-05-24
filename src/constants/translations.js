@@ -75,6 +75,14 @@ const data = {
                     promotions: { nom: 'Promotions' },
                     newsletter: { nom: 'Newsletter' },
                     sms: { nom: 'Sms' }
+                },
+                avoir: {
+                    impression: {
+                        nom: 'AVOIR',
+                        montant: 'Montant',
+                        validite: 'Validité',
+                        client: 'Numero client'
+                    }
                 } 
             },
             encaissement: { 
@@ -130,15 +138,19 @@ const data = {
                         especes: "Espece",
                         carte: "Carte Bleue",
                         cheque: "Chèque",
+                        avoir: "Avoir",
                         rendre: "À rendre :",
-                        trop: "Trop perçu :"
+                        trop: "Trop perçu :",
+                        create_avoir: "Faire un avoir"
                     },
                     moyens: {
                         ticket: "Ticket restau",
                         especes: "Espèces",
                         carte: "Carte Bleue",
-                        cheque: "Chèque"
+                        cheque: "Chèque",
+                        avoir: "Avoir"
                     },
+                    scan_avoir: "Scan Avoir",
                     raccourcis: [
                         "5 €",
                         "10 €",
@@ -154,6 +166,24 @@ const data = {
                             deprecated: {
                                 titre: 'Erreur Ticket Restaurant',
                                 texte: 'Le Ticket Restaurant est périmé.'
+                            }
+                        },
+                        avoir: {
+                            burnt: {
+                                titre: 'Erreur Avoir',
+                                texte: 'L’Avoir a déjà été utilisé.'
+                            },
+                            deprecated: {
+                                titre: 'Erreur Avoir',
+                                texte: 'L’Avoir est périmé.'
+                            },
+                            inconnu: {
+                                titre: 'Erreur Avoir',
+                                texte: 'L’Avoir n’est pas reconnu.'
+                            },
+                            client: {
+                                titre: 'Erreur Avoir',
+                                texte: 'L’Avoir est réservé à un autre client'
                             }
                         }
                     }

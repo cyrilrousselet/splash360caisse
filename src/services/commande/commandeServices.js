@@ -666,7 +666,7 @@ function  getRuleValues(rule) {
  * @param {Array} reglements : liste des réglements de la commande
  */
 function addReglement(payload, reglements) {
-  const { moyen, valeur } = payload;
+  const { moyen, valeur, info } = payload;
 
   const esp = reglements.filter(rgl=>rgl.moyen=='especes');
   
@@ -681,7 +681,8 @@ function addReglement(payload, reglements) {
   return {
     reglementId: _newReglementId(),
     moyen: moyen,
-    valeur: valeur
+    valeur: valeur,
+    info: info
   };
 }
 

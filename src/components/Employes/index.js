@@ -39,7 +39,7 @@ class Employes extends React.Component {
 
  render() {
 
- // const { catalogue, error, loading } = this.props;
+   const { submodules } = this.props;
 
   if(!this.shouldComponentRender()) {
     return <LoadingSpinner />
@@ -50,15 +50,15 @@ class Employes extends React.Component {
       <TopZone />
       <div className="MainZone">          
           <Switch>
-            <PrivateRoute exact path={ paths.EMPLOYES_PLANNING } component={ EmployesPlanningCont } />
+            { submodules.indexOf('planning')!==-1 && <PrivateRoute exact path={ paths.EMPLOYES_PLANNING } component={ EmployesPlanningCont } />}
             <PrivateRoute exact path={ paths.EMPLOYES_POINTEUSE } component={ EmployesPointeuseCont } />
-            <PrivateRoute exact path={ paths.EMPLOYES_PAIES } component={ EmployesPaiesCont } />
+            { submodules.indexOf('paies')!==-1 && <PrivateRoute exact path={ paths.EMPLOYES_PAIES } component={ EmployesPaiesCont } />}
             <Route path={ paths.EMPLOYES }>
               <div className="Employes-sommaire">
                 <div className="titre"><LargeButton identifier='btntitre' elementclass='btntitre' icon={ true } text={ 'Employes' } onClick={() => void(0) }></LargeButton></div>
-                <div className="sommaire-item"><LargeButton identifier='btnplanning' elementclass='btnplanning' icon={ false } text={ 'Planning' } onClick={() => { history.push(paths.EMPLOYES_PLANNING) }}></LargeButton></div>
+                { submodules.indexOf('planning')!==-1 && <div className="sommaire-item"><LargeButton identifier='btnplanning' elementclass='btnplanning' icon={ false } text={ 'Planning' } onClick={() => { history.push(paths.EMPLOYES_PLANNING) }}></LargeButton></div> }
                 <div className="sommaire-item"><LargeButton identifier='btnpointeuse' elementclass='btnpointeuse' icon={ false } text={ strings.modules.employes.pointeuse.titre } onClick={() => { history.push(paths.EMPLOYES_POINTEUSE) }}></LargeButton></div>
-                <div className="sommaire-item"><LargeButton identifier='btnpaies' elementclass='btnpaies' icon={ false } text={ 'Paies' } onClick={() => history.push(paths.EMPLOYES_PAIES) }></LargeButton></div>
+                { submodules.indexOf('paies')!==-1 &&  <div className="sommaire-item"><LargeButton identifier='btnpaies' elementclass='btnpaies' icon={ false } text={ 'Paies' } onClick={() => history.push(paths.EMPLOYES_PAIES) }></LargeButton></div> }
               </div>
             </Route>
           </Switch>

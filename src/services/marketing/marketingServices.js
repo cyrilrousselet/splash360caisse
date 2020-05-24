@@ -26,12 +26,16 @@ function createAvoir(payload) {
   const avoir = {
     avoir_id: _newAvoirId(),
     emission: new Date().getTime(),
-    limite: add(new Date(),{month:1}).getTime(),
+    limite: add(new Date(),{months:1}).getTime(),
     operator: payload.operator_id,
     client: payload.client_id,
+    commande: payload.ticket_id,
     valeur: payload.valeur,
-    code: new Date().getTime().toString(16)
+    // code: new Date().getTime().toString(16)
+    code: new Date().getTime().toString()
   }
+
+  console.log('MktSv.createAvoir()', avoir);
 
   return emit('dbAvoirPersist', {avoir:avoir});
 }

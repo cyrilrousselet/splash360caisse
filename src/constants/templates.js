@@ -14,5 +14,10 @@ export const templates = {
     'info', 
     'principal_detail',
     'recap'
+  ],
+  avoir: [
+    'entreprise',
+    'avoir',
+    'qrcode'
   ]
 };

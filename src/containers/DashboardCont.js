@@ -19,7 +19,7 @@ import { marketingActions } from '../services/marketing/marketingActions';
 let strings = new LocalizedStrings(data);
 
 const getModulesFromDroits = (droits) => {
-  droits = {...droits, encaissement: true, listecommandes: true};
+  droits = {...droits, employes: true, encaissement: true, listecommandes: true};
   return modulesList.filter(function(value) {
     // return droits.indexOf(value) > -1;
     return (droits.hasOwnProperty(value) && droits[value]==true);
@@ -108,7 +108,8 @@ const mapDispatchToProps = (dispatch) => {
     getCommandesList: commandeActions.getCommandesList,
     getAllActive: catalogueActions.getAllActive,
     getParametres: parametresActions.getAll,
-    getCurrentPeriode: clotureActions.getCurrentPeriode
+    getCurrentPeriode: clotureActions.getCurrentPeriode,
+    getAvoirsList: marketingActions.getAvoirsList
   }, dispatch);
   return {
     ...binded,

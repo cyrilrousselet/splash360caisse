@@ -28,7 +28,7 @@ class EditUtilisateurPopin extends React.Component {
       nom: '',
       identifiant: '', 
       taux_horaire: null,
-      status: null,
+      status: 'active',
       droits: '',
       error_nom: false,
       error_identifiant: false
@@ -193,7 +193,7 @@ class EditUtilisateurPopin extends React.Component {
       nom: '',
       identifiant: '', 
       droits: droits,
-      status: null,
+      status: 'active',
       error_nom: false,
       error_identifiant: false,
       taux_horaire: null

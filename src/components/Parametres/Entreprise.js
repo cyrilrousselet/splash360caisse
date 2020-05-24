@@ -17,16 +17,13 @@ const data_ent = {
   ape: '6202A',
   tva: 'FR53800457335',
   ca: 0,
-  auto_update: true,
+  auto_update: false,
   clavier: false,
-  avoirs: false,
-  service: false,
-  heure_fin: '00:00',
   message_ticket: 'Bon appétit, merci de votre visite et à bientôt !'
 };
 
 const general_fields = ['denomination', 'enseigne', 'adresse', 'code_postal', 'ville', 'telephone', 'siret', 'ape', 'tva', 'restaurant_id'];
-const general_switch = ['auto_update', 'clavier', 'avoirs', 'service'];
+const general_switch = ['auto_update', 'clavier'];
 
 class Entreprise extends React.Component {
 
@@ -55,70 +52,100 @@ messageHandler(e) {
 
   return (
     <div className="Entreprise subcontent">
-      <div className="col">
-        <div className="subttl">{ strings.modules.parametres.submodules.entreprise.general.titre }</div>
-        { general_fields.map((field, i) => (
+      <div className="wrapper">
+        <div className="col">
+          <div className="subttl">{ strings.modules.parametres.submodules.entreprise.general.titre }</div>
+          { general_fields.map((field, i) => (
+            <LabelledField 
+              id={ `parament-${field}` }
+              key={ `${field}-${i}` }
+              name={ field }
+              value={ data[field] || '' } 
+              placeholder={ strings.modules.parametres.submodules.entreprise.general.placeholder[field] } 
+              type='text' 
+              readOnly={ true } 
+              onChange={()=>{console.log('click')}}
+              label={ strings.modules.parametres.submodules.entreprise.general.label[field] }
+            />
+          ))}
+          <div className="subttl">{ strings.modules.parametres.submodules.entreprise.objectif.titre }</div>
           <LabelledField 
-            id={ `parament-${field}` }
-            key={ `${field}-${i}` }
-            name={ field }
-            value={ data[field] || '' } 
-            placeholder={ strings.modules.parametres.submodules.entreprise.general.placeholder[field] } 
-            type='text' 
-            readOnly={ true } 
-            onChange={()=>{console.log('click')}}
-            label={ strings.modules.parametres.submodules.entreprise.general.label[field] }
-          />
-        ))}
-        <div className="subttl">{ strings.modules.parametres.submodules.entreprise.objectif.titre }</div>
-        <LabelledField 
-            id={ `parament-ca` }
-            name={ `ca` }
-            value={ data_ent.ca.toString() } 
-            placeholder='0' 
-            type='text' 
-            readOnly={ false } 
-            onChange={()=>{console.log('click')}}
-            label={ strings.modules.parametres.submodules.entreprise.objectif.label.ca }
-            postvalue='€'
-          />
-         <div className="caption ca-caption">{ strings.modules.parametres.submodules.entreprise.objectif.label.ca_caption }</div>
-      </div>
-      <div className="col">
-        <div className="subttl">{ strings.modules.parametres.submodules.entreprise.options.titre }</div>
-        { general_switch.map((field, i) => (
+              id={ `parament-ca` }
+              name={ `ca` }
+              value={ data_ent.ca.toString() } 
+              placeholder='0' 
+              type='text' 
+              readOnly={ false } 
+              onChange={()=>{console.log('click')}}
+              label={ strings.modules.parametres.submodules.entreprise.objectif.label.ca }
+              postvalue='€'
+            />
+          <div className="caption ca-caption">{ strings.modules.parametres.submodules.entreprise.objectif.label.ca_caption }</div>
+        </div>
+        <div className="col">
+          <div className="subttl">{ strings.modules.parametres.submodules.entreprise.options.titre }</div>
+          { general_switch.map((field, i) => (
+            <SwitchCheckbox 
+              isChecked={ data_ent[field] } 
+              labelLeft={ true } 
+              key={`${field}-${i}`}
+              name={ field } 
+              onChange={ console.log } 
+              label={ strings.modules.parametres.submodules.entreprise.options.label[field] } 
+            />
+          ))}
           <SwitchCheckbox 
-            isChecked={ data_ent[field] } 
+            isChecked={ data.avoirs } 
             labelLeft={ true } 
-            key={`${field}-${i}`}
-            name={ field } 
-            onChange={ console.log } 
-            label={ strings.modules.parametres.submodules.entreprise.options.label[field] } 
-          />
-        ))}
-        <LabelledField 
-            id={ `heure_fin` }
-            name={ `heure_fin` }
-            className="fieldheure_fin"
-            value={ data.heure_fin } 
-            placeholder='00:00' 
-            type='text' 
-            readOnly={ false }
-            onSubmit={(name,value) => {
+            key={`avoirs`}
+            name={ `avoirs` } 
+            onChange={ (name, isChecked)=>{
               updateValeur({
                 domaine: 'entreprise',
                 cle: name,
-                valeur: value
+                valeur: isChecked
               })
-            }}
-            onChange={(value,option)=>void(0)}
-            label={ strings.modules.parametres.submodules.entreprise.options.label.heure_fin }
+            } } 
+            label={ strings.modules.parametres.submodules.entreprise.options.label.avoirs } 
           />
-         <div className="caption heure-caption">{ strings.modules.parametres.submodules.entreprise.options.label.heure_fin_caption }</div>
-         <div className="message-ticket">
-          <label>{ strings.modules.parametres.submodules.entreprise.options.label.message_ticket }</label>
-          <textarea onChange={this.messageHandler}>{ message_ticket }</textarea>
-         </div>
+          <SwitchCheckbox 
+            isChecked={ data.service } 
+            labelLeft={ true } 
+            key={`service`}
+            name={ `service` } 
+            onChange={ (name, isChecked)=>{
+              updateValeur({
+                domaine: 'entreprise',
+                cle: name,
+                valeur: isChecked
+              })
+            } } 
+            label={ strings.modules.parametres.submodules.entreprise.options.label.service } 
+          />
+          <LabelledField 
+              id={ `heure_fin` }
+              name={ `heure_fin` }
+              className="fieldheure_fin"
+              value={ data.heure_fin } 
+              placeholder='00:00' 
+              type='text' 
+              readOnly={ false }
+              onSubmit={(name,value) => {
+                updateValeur({
+                  domaine: 'entreprise',
+                  cle: name,
+                  valeur: value
+                })
+              }}
+              onChange={(value,option)=>void(0)}
+              label={ strings.modules.parametres.submodules.entreprise.options.label.heure_fin }
+            />
+          <div className="caption heure-caption">{ strings.modules.parametres.submodules.entreprise.options.label.heure_fin_caption }</div>
+          <div className="message-ticket">
+            <label>{ strings.modules.parametres.submodules.entreprise.options.label.message_ticket }</label>
+            <textarea onChange={this.messageHandler}>{ message_ticket }</textarea>
+          </div>
+        </div>
       </div>
     </div>
   );

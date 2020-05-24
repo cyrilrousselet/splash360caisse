@@ -35,7 +35,6 @@ export function commandesListReducer(state = initialState, action) {
       };
     
     case commandeActionTypes.GETALL_TICKETSRESTAU_SUCCESS:
-      console.log('trlist', action.ticketsrestaulist);
       return {
         ...state,
         loading: false,

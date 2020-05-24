@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { isDev } from 'electron-is-dev';
 
 import { Modal, Fab, List, ListItem, Button } from '@material-ui/core';
-import { differenceInMilliseconds } from 'date-fns';
+import { differenceInMilliseconds, isBefore, endOfDay } from 'date-fns';
 import StdButton from '../common/StdButton';
 import CloseIcon from '../common/icon/CloseIcon';
 import EspecesIcon from '../common/icon/EspecesIcon';
@@ -15,6 +15,9 @@ import Calculette from './Calculette';
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import Swal from 'sweetalert2';
+import PillButton from '../common/PillButton';
+import QRCodeIcon from '../common/icon/QRCodeIcon';
+import { endOfToday } from 'date-fns/esm';
 let strings = new LocalizedStrings(data);
 
 const RACCOURCIS = [5,10,20,50];
@@ -26,7 +29,8 @@ class Reglement extends React.Component {
     this.state = {
       total: 0,
       input: false,
-      trlist: []
+      trlist: [],
+      inputTarget: 'tr'
     }
     this.addValeur = this.addValeur.bind(this);
     this.calculetteClick = this.calculetteClick.bind(this);
@@ -43,6 +47,11 @@ class Reglement extends React.Component {
     this.trHandler = this.trHandler.bind(this);
     this.decodeQRCode = this.decodeQRCode.bind(this);
     this.parseTR = this.parseTR.bind(this);
+
+    this.avrHandler = this.avrHandler.bind(this);
+    this.parseAvoir = this.parseAvoir.bind(this);
+    this.createAvoir = this.createAvoir.bind(this);
+    this.startAvoirScan = this.startAvoirScan.bind(this);
   }
 
   interval = 0;
@@ -144,7 +153,10 @@ class Reglement extends React.Component {
   }
 
 
-  toAddReglement(moyen, valeur=-1) {
+  toAddReglement(moyen, valeur=-1, info=null) {
+
+
+    const { addReglement, openDrawer, params } = this.props;
 
     let montant = 0;
     if (valeur==-1) {
@@ -156,9 +168,10 @@ class Reglement extends React.Component {
     }
 
     if (montant > 0) {
-      this.props.addReglement({moyen: moyen, valeur: montant});
+      addReglement({moyen: moyen, valeur: montant, info:info});
       const { reste } = this.updateValeurs();
-      if (moyen=='especes') this.props.openDrawer();
+      if (moyen=='especes') openDrawer();
+      if (moyen=='ticket' && reste<0) openDrawer();
       this.setState({total: 0, input: false});
 
       // s'il ne reste rien à payer ni à rendre, 
@@ -169,6 +182,15 @@ class Reglement extends React.Component {
   }
 
   toRemoveReglement(id) {
+
+    const { trlist } = this.state;
+    const { reglements } = this.props.commande;
+
+    const rgt = reglements.find(r=>r.reglementId==id);
+    if (rgt && rgt.moyen=='ticket') {
+      this.setState({trlist: trlist.filter(t => t!=rgt.info)});
+    }
+
     this.props.removeReglement({reglementId: id});
   }
 
@@ -190,13 +212,20 @@ class Reglement extends React.Component {
   trHandler(event) {
     if (event.keyCode==13) {
       console.log(event.target.value);
-      this.decodeQRCode(event.target.value);
+      this.decodeQRCode(event.target.value, this.parseTR);
       event.target.value = '';
     }
   }
 
+  avrHandler(event)  {
+    if (event.keyCode==13) {
+      console.log(event.target.value);
+      this.decodeQRCode(event.target.value, this.parseAvoir);
+      event.target.value = '';
+    }
+  }
 
-  decodeQRCode(value) {
+  decodeQRCode(value, targetFn) {
 
     let decode_table = {
       win: {
@@ -225,7 +254,7 @@ class Reglement extends React.Component {
       }
     };
     if (!isNaN(parseInt(value))) {
-      this.parseTR(value);
+      targetFn(value);
       return;
     }
 
@@ -239,7 +268,7 @@ class Reglement extends React.Component {
       decoded += decode_table[platform][caractere];
     }
     if (!isNaN(parseInt(decoded))) {
-      this.parseTR(decoded);
+      targetFn(decoded);
     }
     return false;
   }
@@ -252,15 +281,15 @@ class Reglement extends React.Component {
     const __value = String(value);
 
     const __trValue = Number(__value.substr(11,5)) / 100;
-    const __trValid = Number(__value.substr(16,4));
+    const __trValid = Number(__value.substr(16,2));
 
-    const __now = new Date().getFullYear();
+    const __now = new Date().getFullYear() - 2000;
 
     if (trlist.indexOf(__value)!==-1) error = 'yet';
     if (__trValid<__now) error = 'deprecated';
 
     if (error==='') {
-      this.toAddReglement('ticket',__trValue);
+      this.toAddReglement('ticket',__trValue, value);
       this.setState({ trlist: [...trlist, __value] });
     } else {
       if (error=='deprecated') {
@@ -280,12 +309,69 @@ class Reglement extends React.Component {
   }
 
 
+  parseAvoir(value) {
+    console.log('avoirID', value);
+
+    const { avoirs, updateAvoir, commande } = this.props;
+    let error = '';
+    const avoir = avoirs.find(av => av.code==value);
+    // s'il y a un avoir correspondant au code
+    // on vérifie qu'il n'a pas déjà été utilisé
+    // et qu'il n'est pas périmé
+    // AJOUTER ICI : la vérification du client
+    if (avoir) {
+     if (avoir.hasOwnProperty('burnt')) error = 'burnt';
+     if (isBefore(endOfDay(new Date(avoir.limite)), endOfToday())) error = 'deprecated';
+    //  if (avoir.client && avoir.client!==commande.client_id) error = 'client';
+    } else {
+      error = 'inconnu';
+    }
+
+    if (error==='') {
+      this.toAddReglement('avoir', avoir.valeur, avoir.avoir_id);
+      updateAvoir({
+        avoir_id: avoir.avoir_id, 
+        burnt: new Date().getTime()
+      });
+    } else {
+
+      Swal.fire({
+        type: 'warning',
+        title: strings.modules.encaissement.reglement.erreur.avoir[error].titre,
+        html: strings.modules.encaissement.reglement.erreur.avoir[error].texte,
+        showCancelButton: false,
+        focusCancel: false,
+        focusConfirm: true
+      });
+    }
+
+    this.setState({inputTarget:'tr'});
+  }
+
+  createAvoir(montant) {
+
+    const { commande, createAvoir, addRendu } = this.props;
+
+    createAvoir({
+      client_id: null,
+      ticket_id: commande.ticketId,
+      valeur: montant
+    });
+    addRendu({moyen:'avoir', valeur: montant});
+
+    this.closeTiroir();
+  }
+
+  startAvoirScan() {
+    this.setState({inputTarget:'avoir'});
+  }
+
   render() {
 
-    const { open, valueToPay, contClass, closeReglement, addReglement, addRendu, tiroirOuvert } = this.props;
+    const { open, valueToPay, contClass, closeReglement, addReglement, addRendu, tiroirOuvert, params } = this.props;
     const { items, reglements } = this.props.commande;
     const { paye, reste, rendable } = this.updateValeurs();
-    const { total, input } = this.state;
+    const { total, input, inputTarget } = this.state;
     
     const aAfficher = input ? total : Math.max(0,reste);
 
@@ -296,7 +382,12 @@ class Reglement extends React.Component {
     const self = this;
     if (open) {      
       this.interval = setInterval(() => {
-        if (self.refs.trInput) self.refs.trInput.focus();
+        if (inputTarget=='tr') {
+          if (self.refs.trInput) self.refs.trInput.focus();
+        } else if (inputTarget=='avoir') {
+          if (self.refs.avrInput) self.refs.avrInput.focus();
+        }
+
        },500);
     } else {
       clearInterval(this.interval);
@@ -319,6 +410,7 @@ class Reglement extends React.Component {
           </div>
           <div className="body">
             <input className="tr-input" ref="trInput" onKeyUp={this.trHandler} /> 
+            <input className="avr-input" ref="avrInput" onKeyUp={this.avrHandler} /> 
             <div className="calculette">
               <Calculette total={ aAfficher } buttonHandler={ this.calculetteClick } deleteHandler={ this.deleteCalculette } />
             </div>
@@ -338,6 +430,7 @@ class Reglement extends React.Component {
                           key={ i }
                           moyen={ rgl.moyen }
                           valeur={ rgl.valeur }
+                          info={ rgl.info }
                           removeItem={ this.toRemoveReglement } />
                   )}
                 </List>
@@ -347,7 +440,8 @@ class Reglement extends React.Component {
               { (reste<0) && 
                 <div className="libelle"> 
                 {rendable && strings.modules.encaissement.reglement.liste.rendre }
-                {!rendable && strings.modules.encaissement.reglement.liste.trop }
+                {(!rendable && params.avoirs) && <PillButton elementclass="create-avoir" onClick={()=>{this.createAvoir((0-reste))}} text={strings.modules.encaissement.reglement.liste.create_avoir} />}
+                {(!rendable && !params.avoirs) && strings.modules.encaissement.reglement.liste.trop }
                 </div>
               }
               { (reste<0) && <div className="reste">{ (0-reste).toFixed(2).replace('.',',') }</div> }
@@ -364,6 +458,7 @@ class Reglement extends React.Component {
                   <StdButton identifier="ticket" elementclass="moyen" icon={ <TicketIcon /> } text={ strings.modules.encaissement.reglement.moyens.ticket } onClick={(value) => { this.toAddReglement(value) }} />
                   <StdButton identifier="carte" elementclass="moyen" icon={ <CarteIcon /> } text={ strings.modules.encaissement.reglement.moyens.carte } onClick={(value) => { this.toAddReglement(value) }} />
                   <StdButton identifier="cheque" elementclass="moyen" icon={ <ChequeIcon /> } text={ strings.modules.encaissement.reglement.moyens.cheque } onClick={(value) => { this.toAddReglement(value) }} />
+                { params.avoirs && <StdButton identifier="avoirs" elementclass={ `moyen avr${(inputTarget=="avoir"?' actif':'')}`} icon={ <QRCodeIcon htmlColor="#ffffff" /> } text={ strings.modules.encaissement.reglement.scan_avoir } onClick={() => { this.startAvoirScan() }} /> }
               </div>
             </div>
           </div>
@@ -405,7 +500,7 @@ Reglement.propTypes = {
 };
 
 
-const ReglementListeItem = ({id, reglementid, moyen, valeur, removeItem}) => (
+const ReglementListeItem = ({id, reglementid, moyen, valeur, info, removeItem}) => (
   <div className="ReglementListeItem">
     <ListItem 
       disableGutters
@@ -424,5 +519,6 @@ ReglementListeItem.propTypes = {
   reglementid: PropTypes.string.isRequired,
   moyen: PropTypes.string.isRequired,
   valeur: PropTypes.number,
+  info: PropTypes.string,
   _onClick: PropTypes.func
 };

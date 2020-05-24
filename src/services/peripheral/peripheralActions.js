@@ -6,6 +6,8 @@ import { format, compareAsc, startOfToday, endOfToday, startOfDay, endOfDay, par
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 
+import { devise } from "../../helpers/toolbox";
+
 import { templates } from '../../constants/templates';
 
 import LocalizedStrings from 'react-localization';
@@ -22,6 +24,49 @@ function printTest(payload) {
       }
     )
     dispatch({ type: peripheralActionTypes.PRINT_TEST });
+  }
+}
+
+function printAvoir(payload) {
+  return (dispatch, getState) => {  
+    
+   
+    console.log('printAvoir()', payload);
+
+    const { imprimantes, tickets } = getState().peripheralReducer;
+    const { entreprise } = getState().parametresReducer.parametres;
+
+    // récup des préf. du ticket et de l'imprimante correspondante
+    let ticket = Object.values(tickets).find(tck=>tck.template=='avoir');
+    let imprimante = Object.values(imprimantes).find(imp=>imp.printer_id==ticket.imprimantes[0]);
+
+    const limite = format(new Date(payload.limite), "d MMM yyyy", { locale: frLocale });
+
+
+    const siret = entreprise.siret;
+    const contenu = {
+      // -> entreprise
+      entreprise: {
+        nom: String(entreprise.denomination).toUpperCase(),
+        coordonnees: [ entreprise.adresse, `${entreprise.code_postal} ${String(entreprise.ville).toUpperCase()}`, entreprise.site_web ],
+        fiscal: [ `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` ]
+      },
+      code: payload.code,
+      detail: {
+        limite: limite,
+        valeur: `${devise(payload.valeur)} EUR`,
+        client: payload.client,
+      },
+      strings: strings.modules.marketing.avoir.impression
+    };
+
+    peripheralServices.printTicket(imprimante, templates.avoir, contenu)
+    .then(
+      response => {
+        console.log('print Avoir');
+      }
+    )
+    dispatch({ type: peripheralActionTypes.PRINT_AVOIR });
   }
 }
 
@@ -701,6 +746,7 @@ function printCloture(payload={}) {
 
 export const peripheralActions = {
   printTest,
+  printAvoir,
   openDrawer,
   closeDrawer,
   getAllImprimantes,

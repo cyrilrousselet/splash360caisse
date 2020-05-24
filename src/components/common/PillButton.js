@@ -10,7 +10,7 @@ const PillButton = ({ elementclass, text, onClick }) => (
 PillButton.propTypes = {
   elementclass: PropTypes.string,
   text: PropTypes.string.isRequired,
-  handleClick: PropTypes.func
+  onClick: PropTypes.func
 }
 
 export default PillButton;

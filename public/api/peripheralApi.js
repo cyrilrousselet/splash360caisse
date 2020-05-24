@@ -4,6 +4,10 @@ escpos.USB = require('escpos-usb');
 escpos.Network = require('escpos-network');
 const path = require('path');
 
+const getPixels = require('get-pixels');
+
+const QRCode = require('qrcode');
+
 let printerOpen = false;
 
 
@@ -204,7 +208,7 @@ function _launchPrint(template, printer, contenu) {
     });
   }
 
-  template.forEach((section,i,arr) => {
+  template.forEach(async (section,i,arr) => {
 
     log.debug(section);
 
@@ -237,6 +241,12 @@ function _launchPrint(template, printer, contenu) {
     }
     else if ('principal_detail' ===  section) {
       _printPrincipalDetail(printer, contenu.detail, contenu.strings);
+    }
+    else if ('avoir' ===  section) {
+      _printAvoir(printer, contenu.detail, contenu.strings);
+    }
+    else if ('qrcode' ===  section) {
+      const pqr = await _printQRCode(printer, contenu.code);
     }
 
     // fin du ticket
@@ -484,6 +494,77 @@ function _printEntreprise(printer, data, strings) {
       printer.style('NORMAL').text(string);
     });
     printer.feed(1);
+}
+
+function _printAvoir(printer, data, strings) {
+
+  printer
+    .size(1,1)
+    .drawLine()
+    .font('A')
+    .align('CT')
+    .style('B')
+    .size(1,2)
+    .text(strings.nom)
+    .size(1,1)
+    .drawLine()
+  ;
+
+  printer
+    .style('NORMAL')
+    .size(1,2)
+    .tableCustom([
+      {text: strings.montant, cols:25, align:'LEFT'},
+      {text:'', cols:2},
+      {text: '  '+data.valeur, cols:15, align:'RIGHT'}
+    ])
+    .size(1,1)
+    .tableCustom([
+      {text: strings.validite, cols:15, align:'LEFT'},
+      {text:'', cols:2},
+      {text: '  '+data.limite, cols:25, align:'RIGHT'}
+    ]);
+
+  if (data.client!==null) {
+
+    printer.style('NORMAL').tableCustom(
+      [
+        {text: strings.client, cols:15, align:'LEFT'},
+        {text:'', cols:2},
+        {text: '  '+data.client, cols:25, align:'RIGHT'}
+      ]
+    );
+  }
+
+}
+
+
+
+function getPixelsAsync(url) {
+    return new Promise(function(resolve, reject) {
+       getPixels(url, function(err, pixels) {
+            if (err) reject(false)
+            else resolve(pixels)
+        })
+    })
+}
+
+async function _printQRCode(printer, code) {
+
+  printer.drawLine();
+    
+  const qrimg = await QRCode.toDataURL(code);
+  const pixels = await getPixelsAsync(qrimg);
+  const image = new escpos.Image(pixels);
+  const printQRimage = await _printImage(printer, image);
+
+  printer
+    .size(1,1)
+    .font('A')
+    .align('CT')
+    .text(code)
+  ;
+  
 }
 
 // impression des informations de commande

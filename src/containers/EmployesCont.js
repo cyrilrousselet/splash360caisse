@@ -6,9 +6,17 @@ import { employesActions } from '../services/employes/employesActions';
 import { userActions } from '../services/user/userActions';
 
 
+const getSubModulesFromDroits = (droits) => {
+  if (!droits.employes) {
+    return ['pointeuse'];
+  }
+  return ['paies','pointeuse','planning'];
+}
+
 const mapStateToProps = (state) => {
   return {
-    pointages: getPointages(state)
+    pointages: getPointages(state),
+    submodules: getSubModulesFromDroits(state.authentication.user.droits),
   }
 }
 

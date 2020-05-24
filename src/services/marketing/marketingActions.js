@@ -1,5 +1,6 @@
 import { marketingActionTypes } from "./marketingActionTypes";
 import { marketingServices } from "./marketingServices";
+import { peripheralActions } from "../peripheral/peripheralActions";
 
 
 
@@ -19,13 +20,18 @@ function getAvoirsList(params={}) {
 }
 
 function createAvoir(payload) {
-  return dispatch => {
+  return (dispatch, getState) => {
     dispatch({ type: marketingActionTypes.CREATE_AVOIR_REQUEST });
     
+    const { user } = getState().authentication;
+
+    payload = {...payload, operator_id: user.user_id};
+
     marketingServices.createAvoir(payload)
     .then(
       data => {
         dispatch({ type: marketingActionTypes.CREATE_AVOIR_SUCCESS, ...data });
+        dispatch(peripheralActions.printAvoir(data));
         dispatch(getAvoirsList());
       },
       error => dispatch({ type: marketingActionTypes.CREATE_AVOIR_FAILURE, error: error.toString() })
