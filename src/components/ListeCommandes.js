@@ -35,6 +35,7 @@ import { Modal, Fab, Input, Badge } from '@material-ui/core';
 import CloseIcon from './common/icon/CloseIcon';
 import PillField from './common/PillField';
 import NumberKeyboard from './common/NumberKeyboard';
+import Swal from 'sweetalert2';
 
 let strings = new LocalizedStrings(data);
 
@@ -70,7 +71,7 @@ TabPanel.propTypes = {
 
 
 function TableCommandes(props) {
-  const { liste, id, openReglement, openReprise, openPrint, thiscash, ...other } = props;
+  const { liste, id, openReglement, openReprise, deleteCommande, openPrint, thiscash, ...other } = props;
 
   liste.sort((a,b) => {
     let da = new Date(a.commande.createdAt), db = new Date(b.commande.createdAt);
@@ -100,7 +101,7 @@ function TableCommandes(props) {
               <TableCell key={`${row.id}-client`} className="liste-client">{ row.commande.client }</TableCell>
               <TableCell key={`${row.id}-actions`} className="liste-actions">
                 <StdButton key={`${row.id}-encaissement`} identifier='encaissement' elementclass="action action-encaissement" icon={ false } disabled={id==='confirmed'} noStroke={true} text={ strings.modules.listecommandes.actions.encaissement } onClick={ () => { openReglement(row.id) } } />
-                <StdButton key={`${row.id}-annuler`} identifier='annuler' elementclass="action action-annuler" icon={ false } disabled={id!=='standby'} noStroke={true} text={ strings.modules.listecommandes.actions.annuler } onClick={(value) => { console.log(value) }} />
+                <StdButton key={`${row.id}-annuler`} identifier='annuler' elementclass="action action-annuler" icon={ false } disabled={id!=='standby'} noStroke={true} text={ strings.modules.listecommandes.actions.annuler } onClick={() => { deleteCommande(row.id) }} />
                 <StdButton key={`${row.id}-reprise`} identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={id!=='standby'} noStroke={true} text={ strings.modules.listecommandes.actions.reprise } onClick={() => { openReprise(row.id) }} />
                 <StdButton key={`${row.id}-imprimer`} identifier='imprimer' elementclass="action action-imprimer" icon={ <PrinterIcon /> } noStroke={true} text='' onClick={() => { openPrint(row.id) }} />
               </TableCell>
@@ -170,6 +171,7 @@ class ListeCommandes extends React.Component {
     this.send_to_search = this.send_to_search.bind(this);
     this.keyboardButtonHandler = this.keyboardButtonHandler.bind(this);
     this.closeKeyboard = this.closeKeyboard.bind(this);
+    this.deleteCommande = this.deleteCommande.bind(this);
   }
   
   lock = false;
@@ -306,6 +308,23 @@ class ListeCommandes extends React.Component {
     this.setState({keyboardOpen: false});
   }
 
+  deleteCommande(id) {
+
+    Swal.fire({
+      type: 'warning',
+      title: strings.modules.listecommandes.alerte.annuler.titre,
+      html: strings.modules.listecommandes.alerte.annuler.texte,
+      showCancelButton: true,
+      focusCancel: true,
+      focusConfirm: false
+    }).then((result)=> {
+      if (result.value) {
+        this.props.deleteStandbyCommande({ticketId:id});
+      }
+    });
+
+  }
+
   render() {
     const { commandeslist, error, loading, tickets, printTicket, thiscash } = this.props;
 
@@ -415,7 +434,7 @@ class ListeCommandes extends React.Component {
             <PillField value={searchval} type="text" className="displayId" innerButton={ `${searchval=='' ? 'keyboard' : 'delete'}`} innerButtonHandler={this.searchBtn} />
           </AppBar>
           <TabPanel key="standby-panel" className="panel" value={openTab} index={0}>
-            <TableCommandes className="standby" id="standby" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } liste={standbylist} />
+            <TableCommandes className="standby" id="standby" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } liste={standbylist} />
           </TabPanel>
           <TabPanel key="a_encaisser-panel" className="panel" value={openTab} index={1}>
             <TableCommandes className="a_encaisser" id="a_encaisser" thiscash={thiscash} openReglement={ this.encaissementHandle } openPrint={ this.openPrint } liste={a_encaisserlist} />

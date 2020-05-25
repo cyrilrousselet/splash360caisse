@@ -335,9 +335,33 @@ function updateCommande(payload) {
   }
 }
 
-function deleteCommande() {
-  return (dispatch) => {
-    dispatch({ type: commandeActionTypes.DELETE_COMMANDE });
+function deleteStandbyCommande(payload) {
+  return (dispatch, getState) => {
+    dispatch({ type: commandeActionTypes.DELETE_COMMANDE_REQUEST });
+
+    const { commandeslist } = getState().commandesListReducer;
+    const commande = Object.values(commandeslist).find(cmd => cmd.ticketId==payload.ticketId);
+
+
+    console.log('commande à annuler', commande);
+
+    let error = '';
+    if (!commande) error = 'inconnue';
+    if (commande && commande.status!=='standby') error = 'active';
+
+    if (error==='') {
+      commandeServices.deleteCommande(payload.ticketId)
+      .then(
+        data => {
+          dispatch({ type: commandeActionTypes.DELETE_COMMANDE_SUCCESS, ...data });
+          dispatch(getCommandesList());
+        },
+        error => dispatch({ type: commandeActionTypes.DELETE_COMMANDE_FAILURE, error: error })
+      );
+    } else {
+      console.error('deleteStandbyCommande('+payload.ticketId+') error', 'Impossible de supprimer une commande qui n’est pas en attente.')
+    }
+
   }
 }
 
@@ -481,7 +505,7 @@ export const commandeActions = {
   completeStep,
   uncheckItemSteps,
   updateCommande,
-  deleteCommande,
+  deleteStandbyCommande,
   addReglement,
   removeReglement,
   addRendu,

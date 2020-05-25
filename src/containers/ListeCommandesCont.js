@@ -32,6 +32,7 @@ const mapDispatchToProps = (dispatch) => {
       getAllActive: catalogueActions.getAllActive,
       getCommandesList: commandeActions.getCommandesList,
       getCommande: commandeActions.getCommande,
+      deleteStandbyCommande: commandeActions.deleteStandbyCommande,
       printTicket: peripheralActions.printTicket
   }, dispatch);
   return {

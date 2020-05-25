@@ -18,7 +18,10 @@ import Swal from 'sweetalert2';
 import PillButton from '../common/PillButton';
 import QRCodeIcon from '../common/icon/QRCodeIcon';
 import { endOfToday } from 'date-fns/esm';
+import { decodetable } from '../../constants/decodetable';
+
 let strings = new LocalizedStrings(data);
+
 
 const RACCOURCIS = [5,10,20,50];
 
@@ -29,8 +32,7 @@ class Reglement extends React.Component {
     this.state = {
       total: 0,
       input: false,
-      trlist: [],
-      inputTarget: 'tr'
+      trlist: []
     }
     this.addValeur = this.addValeur.bind(this);
     this.calculetteClick = this.calculetteClick.bind(this);
@@ -44,14 +46,12 @@ class Reglement extends React.Component {
 
     this.closeTiroir = this.closeTiroir.bind(this);
 
-    this.trHandler = this.trHandler.bind(this);
+    this.scanHandler = this.scanHandler.bind(this);
     this.decodeQRCode = this.decodeQRCode.bind(this);
     this.parseTR = this.parseTR.bind(this);
-
-    this.avrHandler = this.avrHandler.bind(this);
     this.parseAvoir = this.parseAvoir.bind(this);
+
     this.createAvoir = this.createAvoir.bind(this);
-    this.startAvoirScan = this.startAvoirScan.bind(this);
   }
 
   interval = 0;
@@ -209,68 +209,34 @@ class Reglement extends React.Component {
   }
 
 
-  trHandler(event) {
+  scanHandler(event) {
     if (event.keyCode==13) {
       console.log(event.target.value);
-      this.decodeQRCode(event.target.value, this.parseTR);
-      event.target.value = '';
-    }
-  }
+      const decoded_string = this.decodeQRCode(event.target.value);
 
-  avrHandler(event)  {
-    if (event.keyCode==13) {
-      console.log(event.target.value);
-      this.decodeQRCode(event.target.value, this.parseAvoir);
-      event.target.value = '';
-    }
-  }
-
-  decodeQRCode(value, targetFn) {
-
-    let decode_table = {
-      win: {
-        'à': 0,
-        '&': 1,
-        'é': 2,
-        '"': 3,
-        "'" : 4,
-        '(' : 5,
-        '-' : 6,
-        'è' : 7,
-        '_' : 8,
-        'ç' : 9
-      },
-      darwin: {
-        'à': 0,
-        '&': 1,
-        'é': 2,
-        '"': 3,
-        "'" : 4,
-        '(' : 5,
-        '§' : 6,
-        'è' : 7,
-        '!' : 8,
-        'ç' : 9
+      if (decoded_string.substr(0,3)==='cdt') {
+        this.parseAvoir(decoded_string)
+      } else {
+        this.parseTR(decoded_string)
       }
-    };
-    if (!isNaN(parseInt(value))) {
-      targetFn(value);
-      return;
+      
+      event.target.value = '';
     }
+  }
+
+
+  decodeQRCode(value) {
 
     const platform = process.platform=='darwin' ? 'darwin' : 'win';
 
     let decoded = '';
     for (let caractere of value) {
-      if (!decode_table[platform].hasOwnProperty(caractere)) {
+      if (!decodetable[platform].hasOwnProperty(caractere)) {
         continue;
       }
-      decoded += decode_table[platform][caractere];
+      decoded += decodetable[platform][caractere];
     }
-    if (!isNaN(parseInt(decoded))) {
-      targetFn(decoded);
-    }
-    return false;
+    return decoded;
   }
 
 
@@ -344,8 +310,6 @@ class Reglement extends React.Component {
         focusConfirm: true
       });
     }
-
-    this.setState({inputTarget:'tr'});
   }
 
   createAvoir(montant) {
@@ -362,9 +326,6 @@ class Reglement extends React.Component {
     this.closeTiroir();
   }
 
-  startAvoirScan() {
-    this.setState({inputTarget:'avoir'});
-  }
 
   render() {
 
@@ -382,13 +343,8 @@ class Reglement extends React.Component {
     const self = this;
     if (open) {      
       this.interval = setInterval(() => {
-        if (inputTarget=='tr') {
-          if (self.refs.trInput) self.refs.trInput.focus();
-        } else if (inputTarget=='avoir') {
-          if (self.refs.avrInput) self.refs.avrInput.focus();
-        }
-
-       },500);
+        if (self.refs.trInput) self.refs.trInput.focus();
+      },500);
     } else {
       clearInterval(this.interval);
       this.interval = 0;
@@ -409,8 +365,7 @@ class Reglement extends React.Component {
             } */}
           </div>
           <div className="body">
-            <input className="tr-input" ref="trInput" onKeyUp={this.trHandler} /> 
-            <input className="avr-input" ref="avrInput" onKeyUp={this.avrHandler} /> 
+            <input className="tr-input" ref="trInput" onKeyUp={this.scanHandler} /> 
             <div className="calculette">
               <Calculette total={ aAfficher } buttonHandler={ this.calculetteClick } deleteHandler={ this.deleteCalculette } />
             </div>
@@ -458,7 +413,7 @@ class Reglement extends React.Component {
                   <StdButton identifier="ticket" elementclass="moyen" icon={ <TicketIcon /> } text={ strings.modules.encaissement.reglement.moyens.ticket } onClick={(value) => { this.toAddReglement(value) }} />
                   <StdButton identifier="carte" elementclass="moyen" icon={ <CarteIcon /> } text={ strings.modules.encaissement.reglement.moyens.carte } onClick={(value) => { this.toAddReglement(value) }} />
                   <StdButton identifier="cheque" elementclass="moyen" icon={ <ChequeIcon /> } text={ strings.modules.encaissement.reglement.moyens.cheque } onClick={(value) => { this.toAddReglement(value) }} />
-                { params.avoirs && <StdButton identifier="avoirs" elementclass={ `moyen avr${(inputTarget=="avoir"?' actif':'')}`} icon={ <QRCodeIcon htmlColor="#ffffff" /> } text={ strings.modules.encaissement.reglement.scan_avoir } onClick={() => { this.startAvoirScan() }} /> }
+                { params.avoirs && <StdButton identifier="avoir" elementclass={ `moyen avr`} icon={ <QRCodeIcon htmlColor="#ffffff" /> } text={ strings.modules.encaissement.reglement.moyens.avoir } onClick={(value) => { this.toAddReglement(value) }} /> }
               </div>
             </div>
           </div>

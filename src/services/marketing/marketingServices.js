@@ -31,8 +31,7 @@ function createAvoir(payload) {
     client: payload.client_id,
     commande: payload.ticket_id,
     valeur: payload.valeur,
-    // code: new Date().getTime().toString(16)
-    code: new Date().getTime().toString()
+    code: `cdt${new Date().getTime().toString(16)}`
   }
 
   console.log('MktSv.createAvoir()', avoir);

@@ -1,0 +1,60 @@
+.Promotions {
+
+
+  div {
+    box-sizing: content-box;
+  }
+
+  &.subcontent {
+
+    display: inline-flex;
+    justify-content: flex-start;
+    align-items: start;
+    text-align: left;
+    padding: 15px;
+    flex-wrap: wrap;
+
+
+    background-color: $blanc;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px 0 rgba(0,0,0,0.10);
+
+  }
+  .contimage {
+    width: 100%;
+    height: auto;
+  }
+}
+.Avoirs {
+
+  div {
+    box-sizing: content-box;
+  }
+
+  &.subcontent {
+
+    display: inline-flex;
+    justify-content: flex-start;
+    align-items: start;
+    text-align: left;
+    padding: 15px;
+    flex-wrap: wrap;
+
+
+    background-color: $blanc;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px 0 rgba(0,0,0,0.10);
+
+  }
+  .burnt {
+    background-color: $primary;
+  }
+  .perime {
+    background-color: $rouge;
+  }
+  .wrapper {
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+  }
+}

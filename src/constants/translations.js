@@ -74,7 +74,21 @@ const data = {
                 submodules: {
                     promotions: { nom: 'Promotions' },
                     newsletter: { nom: 'Newsletter' },
-                    sms: { nom: 'Sms' }
+                    sms: { nom: 'Sms' },
+                    avoirs: {
+                        nom: 'Avoirs',
+                        liste: {
+                            code: 'Code',
+                            valeur: 'Valeur',
+                            limite: 'Validité',
+                            status: {
+                            nom: 'Status',
+                            burnt: 'Burnt',
+                            perime: 'Périmé',
+                            valide: 'Valide'
+                            }
+                        }
+                    }
                 },
                 avoir: {
                     impression: {
@@ -351,6 +365,12 @@ const data = {
                     encaissement: "Encaissement",
                     annuler: "Annuler",
                     reprise: "Reprise"
+                },
+                alerte: {
+                    annuler: {
+                        titre: "Annulation de commande",
+                        texte: "Voulez-vous annuler la commande ? Cette action est irréversible."
+                    }
                 },
                 impression: {
                     titre: "Impression Ticket",

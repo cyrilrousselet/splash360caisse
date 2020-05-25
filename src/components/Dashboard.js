@@ -10,7 +10,7 @@ import ConnectIcon from './common/icon/ConnectIcon';
 let strings = new LocalizedStrings(data);
 
 
-const DISABLED_MODULES = ['menu', 'marketing', 'stocks'];
+const DISABLED_MODULES = ['menu', 'stocks'];
 
 class Dashboard extends Component {
 

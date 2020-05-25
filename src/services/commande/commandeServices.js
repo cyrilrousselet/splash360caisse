@@ -12,6 +12,7 @@ export const commandeServices = {
   addRendu,
   addComment,
   saveCommande,
+  deleteCommande,
   archiveCommands,
   addIngredient,
   removeIngredient,
@@ -50,6 +51,9 @@ function getNewCommande(params) {
 
 function getCommandeById(id) {
   return emit('dbCommandeGetCommande', {ticketId: id});
+}
+function deleteCommande(id) {
+  return emit('dbCommandeDelete', {ticketId: id});
 }
 function getCommandesList(params) {
   return emit('dbCommandeGetAll', params);

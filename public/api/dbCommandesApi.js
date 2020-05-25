@@ -40,6 +40,15 @@ const actions = {
 
     res.send(confirm);
   },
+  dbCommandeDelete: async (req,res) => {
+    const {payload} = req;
+    log.info("dbCommandeDelete() in API");
+
+    (await db.commandes)._.mixin(lodashId);
+    const confirm = await _deleteCommande(payload.ticketId);
+
+    res.send(confirm);
+  },
 
 
   dbTicketsRestauGetAll: async (req,res) => {
@@ -136,6 +145,16 @@ function _parseCommandes(_rawdata) {
 }
 
 
+
+async function _deleteCommande(ticketId) {
+
+  const _cmd = await (await db.commandes).get('commandes')
+                                         .find({ticketId: ticketId})
+                                         .assign({status:'deleted'})
+                                         .write();
+
+  return _cmd.length>0;
+}
 
 
 async function _setArchived(ids, clotureId) {
