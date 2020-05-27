@@ -425,7 +425,8 @@ const data = {
                             especes: 'ESPECES',
                             carte: 'CARTE BLEUE',
                             ticket: 'TICKET RESTAURANT',
-                            cheque: 'CHÈQUE'
+                            cheque: 'CHÈQUE',
+                            avoir: 'AVOIR'
                         },
                         total: 'Total'
                     },
@@ -455,7 +456,9 @@ const data = {
                         carte: "Carte Bleue :",
                         ticket: "Tickets restau :",
                         cheque: "Chèques :",
-                        especes: "Espèces :"
+                        especes: "Espèces :",
+                        avoir: "Avoirs reçus :",
+                        avoir_emis: "Avoirs émis :"
                     },
                     especes: {
                         titre: 'Balance des transactions\<br \/\>en espèces',

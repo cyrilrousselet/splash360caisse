@@ -702,7 +702,6 @@ function printCloture(payload={}) {
 
 
     console.log('printCloture()', payload);
-    console.log('printCloture() tpl', template);
 
     const { impression } = strings.modules.cloture;
     const { imprimantes, tickets } = getState().peripheralReducer;

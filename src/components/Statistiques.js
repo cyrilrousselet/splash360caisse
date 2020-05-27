@@ -20,7 +20,6 @@ import { Doughnut } from 'react-chartjs-2';
 import history from '../helpers/history';
 import paths from '../constants/routes';
 
-import fakecont from './../assets/images/fake_contenu_statistiques.png';
 
 let strings = new LocalizedStrings(data);
 
@@ -268,7 +267,7 @@ class Statistiques extends React.Component {
         });
         // soustraction de la valeur du rendu-monnaie
         value.rendus.forEach(rdn => {
-          moyen[rdn.moyen] -= Number(rdn.valeur);
+          if (rdn.moyen==="especes") moyen[rdn.moyen] -= Number(rdn.valeur);
         });
 
         // par canal

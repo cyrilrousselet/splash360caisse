@@ -7,9 +7,6 @@ import TopZone from '../../containers/TopZone';
 import LoadingSpinner from './../common/LoadingSpinner';
 import LabelledField from './../common/LabelledField';
 
-import contimage from '../../assets/images/fake_contenu_cloture.svg';
-import comptageimage from '../../assets/images/fake_contenu_cloturecomptage.svg';
-import comptcaisseimage from '../../assets/images/fake_contenu_cloturecomptcaisse.svg';
 import { Modal, Fab, FormControl, Select, MenuItem } from '@material-ui/core';
 import CloseIcon from '../common/icon/CloseIcon';
 import StdButton from '../common/StdButton';
@@ -535,6 +532,7 @@ class Cloture extends React.Component {
           selection_caisse={selection_caisse} 
           selection_operator={selection_operator} 
           periode={ periode_z.periode }
+          emission={ periode_z.periode.emission}
           commandes={ periode_z.cmdtoarchive }
           validComptage={ this.validComptage }
         />

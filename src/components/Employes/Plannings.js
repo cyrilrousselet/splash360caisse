@@ -18,7 +18,6 @@ import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import { MuiPickersUtilsProvider, KeyboardDatePicker, KeyboardTimePicker } from '@material-ui/pickers';
 
-import fakeliste from '../../assets/images/fake_employes_plannings.svg';
 import { endOfWeek, isBefore, isSameDay } from 'date-fns/esm';
 import Swal from 'sweetalert2';
 import NextIcon from '../common/icon/NextIcon';

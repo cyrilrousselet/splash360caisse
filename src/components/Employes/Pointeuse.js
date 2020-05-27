@@ -16,7 +16,6 @@ import {data} from '../../constants/translations';
 import history from '../../helpers/history';
 import paths from '../../constants/routes';
 
-import fakeliste from '../../assets/images/fake_stocks_fournisseurs.svg';
 import LargeButton from '../common/LargeButton';
 
 import LoginCont from '../../containers/LoginCont';

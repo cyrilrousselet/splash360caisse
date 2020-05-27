@@ -24,7 +24,7 @@ class Dashboard extends Component {
   //  console.log('Dashboard.componentDidMount()');
     this.props.getCommandesList();
     // this.props.getAllActive();
-    // this.props.getParametres();
+    this.props.getParametres();
     this.props.getCurrentPeriode();
     this.props.getAvoirsList();
   }

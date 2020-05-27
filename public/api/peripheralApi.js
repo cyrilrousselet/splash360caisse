@@ -774,11 +774,12 @@ function _printPeriodeX(printer, data, strings) {
       .size(1,1)
       .drawLine()
       .align('CT')
-      .tableCustom([
-        {text: strings.periode.titre, cols:42, align:'LEFT'},
-        {text: data.debut+' -> '+data.fin, cols:42, align:'CENTER'},
-        {text: strings.editeur+data.editeur.nom+' ('+data.editeur.id+')', cols:42, align:'LEFT'}
-      ])
+      .tableCustom(
+        [{text: strings.periode.titre, cols:42, align:'LEFT'}],
+        [{text: data.debut+' -> '+data.fin, cols:42, align:'CENTER'}],
+        // [{text: strings.editeur+data.editeur.nom+' ('+data.editeur.id+')', cols:42, align:'LEFT'}]
+        [{text: strings.editeur+data.editeur.nom, cols:42, align:'LEFT'}]
+      )
       .feed(1)
       ;
     // vendeur(s) :
@@ -788,7 +789,8 @@ function _printPeriodeX(printer, data, strings) {
       ]);
     } else if (data.vendeurs.length==1){
       printer.tableCustom([
-        {text: strings.vendeurs[0]+data.vendeurs[0].nom+' ('+data.vendeurs[0].id+')', cols:42, align:'LEFT'}
+        // {text: strings.vendeurs[0]+data.vendeurs[0].nom+' ('+data.vendeurs[0].id+')', cols:42, align:'LEFT'}
+        {text: strings.vendeurs[0]+data.vendeurs[0].nom, cols:42, align:'LEFT'}
       ]);
     }
     // caisse(s) :
@@ -1010,11 +1012,12 @@ function _printPeriodeZ(printer, data, strings) {
       .size(1,1)
       .drawLine()
       .align('CT')
-      .tableCustom([
-        {text: strings.periode.titre, cols:42, align:'LEFT'},
-        {text: data.debut+' -> '+data.fin, cols:42, align:'CENTER'},
-        {text: strings.editeur+data.editeur.nom+' ('+data.editeur.id+')', cols:42, align:'LEFT'}
-      ])
+      .tableCustom(
+        [{text: strings.periode.titre, cols:42, align:'LEFT'}],
+        [{text: data.debut+' -> '+data.fin, cols:42, align:'CENTER'}],
+        // [{text: strings.editeur+data.editeur.nom+' ('+data.editeur.id+')', cols:42, align:'LEFT'}]
+        [{text: strings.editeur+data.editeur.nom, cols:42, align:'LEFT'}]
+      )
       .feed(1)
       ;
     // vendeur(s) :

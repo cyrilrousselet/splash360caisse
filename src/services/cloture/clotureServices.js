@@ -13,6 +13,8 @@ export const clotureServices = {
 
 function getCurrentPeriode(commandes, catalogue, params) {
 
+  console.log('clotureServices.getCurrentPeriode()', params);
+
   let __dep = 0
      ,__vnt = 0
      ,__remb = 0
@@ -22,12 +24,14 @@ function getCurrentPeriode(commandes, catalogue, params) {
      ,__mtcaisse = 0
      ,__ventil = {vendeur:[], tva:[], moyen:[]}
      ,__numStandby = 0
+     ,__fdcaisse_courant = Number(params.fdcaisse)
+     ,__emission = 0
      ;
 
-     console.log('clotureServices.getCurrentPeriode()', params);
 
   const vendeurs = params.vendeurs.length>0 ? params.vendeurs.map(vnd=>vnd.id) : [];
   const caisses = params.caisses.length>0 ? params.caisses.map(csh=>csh.id) : [];
+  
 
   // filtrage de la liste des commandes
   if (commandes) {
@@ -36,6 +40,8 @@ function getCurrentPeriode(commandes, catalogue, params) {
       let __valid = true;
 
 
+      // on ne considère pas les commandes en attente annulées :
+      if (cmd.status==='deleted') __valid = false;
 
       // si on ne récupère que les cmd non archivées (cas du Z)
       if (params.extract=='z' && cmd.archived!=null) __valid = false;
@@ -77,7 +83,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
 
   
       // ventilation par vendeurs
-      let __vId = __ventil.vendeur.findIndex(vnd => vnd.id==cmd.operator_encaissement.id);
+      let __vId = __ventil.vendeur.findIndex(vnd => vnd.id===cmd.operator_encaissement.id);
       
       // si le vendeur n'est pas enregistré ds la liste
       if (__vId==-1) {
@@ -104,7 +110,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
       // ventilation par moyens de paiement
       cmd.reglements.forEach(rgl => {
 
-        let __mId = __ventil.moyen.findIndex(moy => moy.moyen==rgl.moyen);
+        let __mId = __ventil.moyen.findIndex(moy => moy.moyen===rgl.moyen);
 
         // si le moyen de paiement n'est pas enregistré ds la liste
         if (__mId==-1) {
@@ -125,36 +131,52 @@ function getCurrentPeriode(commandes, catalogue, params) {
           };
       });
 
-      // rendu monnaie (déduit de la ventilation 'espèces')
+
+      // rendus: 
+      // - monnaie (déduit de la ventilation 'espèces' si possible, sinon déduit du fond de caisse)
+      // - avoirs
       cmd.rendus.forEach(rnd => {
 
-        let __mId = __ventil.moyen.findIndex(moy => moy.moyen=='especes');
+        if (rnd.moyen==='especes') {
+          
+          let __mId = __ventil.moyen.findIndex(moy => moy.moyen==='especes');
 
-        // si le moyen de paiement n'est pas enregistré ds la liste
-        if (__mId==-1) {
-          // on ajoute un objet pour le moyen de paiement dans le tableau
-          // et on récupère son index (length - 1)
-          __mId = __ventil.moyen.push({
-                            moyen: 'espèces',
-                            valeur: 0
-                          }) - 1;
+          // si le moyen de paiement "espèces" n'est pas enregistré ds la liste
+          if (__mId==-1) {
+            // on ajoute un objet pour le moyen de paiement dans le tableau
+            // et on récupère son index (length - 1)
+            __mId = __ventil.moyen.push({
+                              moyen: 'espèces',
+                              valeur: 0
+                            }) - 1;
+          }
+          // on récupère l'objet pour le mettre à jour avec les valeurs de la commande
+          const __moyen = __ventil.moyen[__mId];
+          const { valeur } = __ventil.moyen[__mId];
+
+          let __valeur_c = valeur-rnd.valeur;
+          if (__valeur_c<0) {
+            __ventil.moyen[__mId] = { 
+              ...__moyen, 
+              valeur:0
+            };
+            __fdcaisse_courant += Number(__valeur_c);
+          } else {
+            __ventil.moyen[__mId] = { 
+              ...__moyen, 
+              valeur:(__valeur_c)
+            };
+          }
+        } else if (rnd.moyen==='avoir') {
+          __emission += Number(rnd.valeur);
         }
-        // on récupère l'objet pour le mettre à jour avec les valeurs de la commande
-        const __moyen = __ventil.moyen[__mId];
-        const { valeur } = __ventil.moyen[__mId];
-
-        __ventil.moyen[__mId] = {
-            ...__moyen, 
-            valeur:(valeur-rnd.valeur)
-          };
       });
-
 
       // ventilation par tva
       cmd.items.forEach(itm => {
 
 
-        let __tId = __ventil.tva.findIndex(t => t.id==itm.tva.id);
+        let __tId = __ventil.tva.findIndex(t => t.id===itm.tva.id);
 
         // si la tva n'est pas enregistrée ds la liste
         if (__tId==-1) {
@@ -187,6 +209,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
 
     __mtcaisse = params.fdcaisse + __ca;
 
+    console.log('per.fdcaisse', __fdcaisse_courant);
 
     return {
       periode: {
@@ -199,11 +222,13 @@ function getCurrentPeriode(commandes, catalogue, params) {
         ventes: __vnt,
         remboursements: __remb,
         ca: __ca,
-        fdcaisse: params.fdcaisse,
+        fdcaisse: __fdcaisse_courant,
+        paramfdcaisse: params.fdcaisse,
         mtcaisse: __mtcaisse,
         numtickets: __tickets,
         ticket_moyen: __tickets==0 ? 0 : Math.round(__ca/__tickets),
-        ventilation: __ventil
+        ventilation: __ventil,
+        emission: __emission
       },
       cmdtoarchive: __filtered_cmd,
       standby: __numStandby

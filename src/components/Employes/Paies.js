@@ -18,7 +18,6 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/picker
 import history from '../../helpers/history';
 import paths from '../../constants/routes';
 
-import fakeliste from '../../assets/images/fake_stocks_fournisseurs.svg';
 import BackIcon from '../common/icon/BackIcon';
 import { addMonths } from 'date-fns/esm';
 import NextIcon from '../common/icon/NextIcon';

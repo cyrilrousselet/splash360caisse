@@ -344,14 +344,14 @@
     }
   }
   .btncomptcaisse {
-    width: calc(100% - 20px);
+    width: calc(100% - 10px);
     background-color: $vert !important;
     .MuiButton-label {
       padding: 0 25px;
     }
   }
   .btncompttr {
-    width: calc(100% - 20px);
+    width: calc(100% - 10px);
     background-color: $vert !important;
     .MuiButton-label {
       padding: 0;
@@ -438,7 +438,7 @@
       box-sizing: content-box;
       height: 35px;
       &+.cptitem {
-        padding-top: 10px;
+        padding-top: 5px;
       }
       .label {
         font-family: $f_med;
@@ -504,7 +504,8 @@
 
     .cptitem-total,
     .cptitem-esp,
-    .cptitem-rec {
+    .cptitem-rec,
+    .cptitem-avre {
       .valeur {
         padding-right: 34px;
       }
@@ -513,7 +514,8 @@
     .cptitem-tr,
     .cptitem-chq,
     .cptitem-total,
-    .cptitem-rec {
+    .cptitem-rec,
+    .cptitem-avrr {
       .label:before {
         display: none;
       }

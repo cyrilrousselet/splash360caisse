@@ -61,7 +61,9 @@ function getCurrentPeriode(params={}) {
     }
     
     // récup. cmd non clôturées
-    const cmdopen = Object.values(commandeslist).filter(cmd=>(!cmd.hasOwnProperty('archived') || cmd.archived==null));
+    const cmdopen = Object.values(commandeslist).filter(cmd=>((!cmd.hasOwnProperty('archived') || cmd.archived==null) && cmd.status!=='deleted'));
+
+    console.log('nbre cmd non archivées', cmdopen.length);
 
     // si les cmd non clôt. proviennent d'une période précédente.
     if (cmdopen.length>0) {

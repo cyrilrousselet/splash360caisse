@@ -304,10 +304,12 @@ class Comptage extends React.Component {
       saisie_ticket: '0',
       saisie_cheque: '0',
       saisie_especes: '0',
+      saisie_avoir: '0',
       error_carte: false,
       error_ticket: false,
       error_cheque: false,
       error_especes: false,
+      error_avoir: false,
       counttoolOpen: false,
       counttrtoolOpen: false,
       keyboardOpen: false,
@@ -353,7 +355,7 @@ class Comptage extends React.Component {
 
   closeKeyboard() {
     const { fieldval, activeField } = this.state;
-    const newval = ['saisie_carte','saisie_ticket','saisie_cheque','saisie_especes'].indexOf(activeField)==-1 ? Number(fieldval) : fieldval.replace(',','.');
+    const newval = ['saisie_carte','saisie_ticket','saisie_cheque','saisie_especes','saisie_avoir'].indexOf(activeField)==-1 ? Number(fieldval) : fieldval.replace(',','.');
     this.setState({keyboardOpen: false, [activeField]:newval});
     setTimeout(()=> {
       this.checkComptage()
@@ -364,13 +366,14 @@ class Comptage extends React.Component {
   checkComptage() {
 
     const { periode } = this.props;
-    const { saisie_carte, saisie_ticket, saisie_cheque, saisie_especes } = this.state;
-    const { especes, carte, ticket, cheque } = this.getVentilation();
+    const { saisie_carte, saisie_ticket, saisie_cheque, saisie_especes, saisie_avoir } = this.state;
+    const { especes, carte, ticket, cheque, avoir } = this.getVentilation();
 
 
     console.log(carte.toFixed(2), Number(saisie_carte).toFixed(2));
     console.log(ticket.toFixed(2), Number(saisie_ticket).toFixed(2));
     console.log(cheque.toFixed(2), Number(saisie_cheque).toFixed(2));
+    console.log(avoir.toFixed(2), Number(saisie_avoir).toFixed(2));
     console.log((especes+Number(periode.fdcaisse)).toFixed(2), Number(saisie_especes).toFixed(2));
 
 
@@ -408,6 +411,14 @@ class Comptage extends React.Component {
       errors['error_especes'] = false;
     }
 
+    //check avoirs
+    if (Number(saisie_avoir).toFixed(2) != avoir.toFixed(2)) {
+      errors['error_avoir'] = true;
+      valid = false;
+    } else {
+      errors['error_avoir'] = false;
+    }
+
     console.log('checkComptageBeforeValidation()',errors);
 
     this.setState(errors);
@@ -419,7 +430,7 @@ class Comptage extends React.Component {
 
 
     const { validComptage, closeComptage } = this.props;
-    const { saisie_carte, saisie_ticket, saisie_cheque, saisie_especes } = this.state;
+    const { saisie_carte, saisie_ticket, saisie_cheque, saisie_especes, saisie_avoir } = this.state;
 
     const valid = this.checkComptage();
 
@@ -428,7 +439,8 @@ class Comptage extends React.Component {
         especes: Number(saisie_especes),
         carte: Number(saisie_carte),
         ticket: Number(saisie_ticket),
-        cheque: Number(saisie_cheque)
+        cheque: Number(saisie_cheque),
+        avoir: Number(saisie_avoir)
       };
       const totalcomptage = Object.values(comptage).reduce((a,b)=>a+b,0);
       validComptage({...comptage, total:totalcomptage});
@@ -455,7 +467,9 @@ class Comptage extends React.Component {
     let especes = 0,
         carte = 0,
         ticket = 0,
-        cheque = 0;
+        cheque = 0,
+        avoir = 0;
+
     if (ventilation && ventilation.moyen) {
       const esp = ventilation.moyen.find(moy=>moy.moyen=='especes');
       if (esp) especes = esp.valeur;
@@ -465,9 +479,11 @@ class Comptage extends React.Component {
       if (tr) ticket = tr.valeur;
       const chq = ventilation.moyen.find(moy=>moy.moyen=='cheque');
       if (chq) cheque = chq.valeur;
+      const avr = ventilation.moyen.find(moy=>moy.moyen=='avoir');
+      if (avr) avoir = avr.valeur;
     }
 
-    return {especes, carte, ticket, cheque};
+    return {especes, carte, ticket, cheque, avoir};
   }
 
   openCountTool() {
@@ -491,7 +507,7 @@ class Comptage extends React.Component {
 
   render() {
 
-    const { open, closeComptage, openCommandesListe, caisses, operators, selection_operator, selection_caisse, periode, commandes, validComptage } = this.props;
+    const { open, closeComptage, openCommandesListe, caisses, operators, selection_operator, selection_caisse, periode, commandes, emission, validComptage } = this.props;
 
 
     const { 
@@ -499,6 +515,7 @@ class Comptage extends React.Component {
       saisie_ticket, 
       saisie_cheque, 
       saisie_especes, 
+      saisie_avoir, 
       keyboardOpen, 
       numbersOnly,
       fieldval, 
@@ -507,6 +524,7 @@ class Comptage extends React.Component {
       error_especes,
       error_cheque,
       error_ticket,
+      error_avoir,
       counttoolOpen,
       counttrtoolOpen,
       cent1,cent2,cent5,
@@ -520,9 +538,10 @@ class Comptage extends React.Component {
     let saisie_ticket_fv = activeField=='saisie_ticket' ? String(fieldval).replace(',','.') : saisie_ticket;
     let saisie_cheque_fv = activeField=='saisie_cheque' ? String(fieldval).replace(',','.') : saisie_cheque;
     let saisie_especes_fv = activeField=='saisie_especes' ? String(fieldval).replace(',','.') : saisie_especes;
+    let saisie_avoir_fv = activeField=='saisie_avoir' ? String(fieldval).replace(',','.') : saisie_avoir;
 
 
-    const { especes, carte, ticket, cheque } = this.getVentilation();
+    const { especes, carte, ticket, cheque, avoir } = this.getVentilation();
 
     let mtcaisse = Number(periode.fdcaisse) + especes - Number(periode.depenses) - Number(periode.remboursements);
 
@@ -638,17 +657,29 @@ class Comptage extends React.Component {
                     </Fab>
                   </div>
                 </div>
+                <div className="cptitem cptitem-avrr">
+                  <div className="label">{ strings.modules.cloture.comptage.moyens.avoir }</div>
+                  <div className="valeur">{ `${devise(avoir)} €` }
+                    <Fab className="btn" size="small" onClick={ openCommandesListe }>
+                      <InfoIcon />
+                    </Fab>
+                  </div>
+                </div>
                 <div className="cptitem cptitem-total">
                   <div className="label">{ strings.modules.cloture.comptage.toutes.total }</div>
-                  <div className="valeur">{ `${devise(carte+ticket+cheque)} €` }</div>
+                  <div className="valeur">{ `${devise(carte+ticket+cheque+avoir)} €` }</div>
                 </div>
                 <div className="cptitem cptitem-esp">
                   <div className="label">{ strings.modules.cloture.comptage.moyens.especes }</div>
                   <div className="valeur">{ `${devise(mtcaisse)} €` }</div>
                 </div>
+                <div className="cptitem cptitem-avre">
+                  <div className="label">{ strings.modules.cloture.comptage.moyens.avoir_emis }</div>
+                  <div className="valeur">{ `${devise(emission)} €` }</div>
+                </div>
                 <div className="cptitem cptitem-rec">
                   <div className="label">{ strings.modules.cloture.comptage.toutes.total_recu }</div>
-                  <div className="valeur">{ `${devise(carte+ticket+cheque+mtcaisse)} €` }</div>
+                  <div className="valeur">{ `${devise(carte+ticket+cheque+avoir+mtcaisse)} €` }</div>
                 </div>
               </div>
             </div>
@@ -667,6 +698,10 @@ class Comptage extends React.Component {
                   <div className={ `cptitem cptitem-chq${(error_cheque?' cptitem-error':'')}` }>
                     <div className="label">{ strings.modules.cloture.comptage.moyens.cheque }</div>
                     <div className="valeur" onClick={() => { this.startSaisie('saisie_cheque') }}>{ `${(saisie_cheque_fv ? devise(saisie_cheque_fv)+' €' : '')}` }</div>
+                  </div>
+                  <div className={ `cptitem cptitem-avr${(error_avoir?' cptitem-error':'')}` }>
+                    <div className="label">{ strings.modules.cloture.comptage.moyens.avoir }</div>
+                    <div className="valeur" onClick={() => { this.startSaisie('saisie_avoir') }}>{ `${(saisie_avoir_fv ? devise(saisie_avoir_fv)+' €' : '')}` }</div>
                   </div>
                   <div className={ `cptitem cptitem-esp${(error_especes?' cptitem-error':'')}` }>
                     <div className="label">{ strings.modules.cloture.comptage.moyens.especes }</div>
