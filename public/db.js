@@ -9,7 +9,9 @@ const low = require('lowdb');
 const FileAsync = require('lowdb/adapters/FileAsync');
 
 const hydration = require('./dev/dbhydration_chickenstreet.js');
-// const hydration = require('./dev/dbhydration_chamas.js');
+// const hydration = require('./dev/dbhydration_chamas-valence.js');
+// const hydration = require('./dev/dbhydration_chamas-lyon03.js');
+// const hydration = require('./dev/dbhydration_chamas-lyon07.js');
 const {categories, groupes, tva, types, ingredients, produits, steps} = hydration;
 const {commandes, ticketsrestau} = hydration;
 const {parametres, imprimantes, tickets} = hydration;
