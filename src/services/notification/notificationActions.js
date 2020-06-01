@@ -19,6 +19,23 @@ function initSSE() {
 }
 
 
+function getToken(provider) {
+  return (dispatch, getState) => {
+    dispatch({ type: notificationActionTypes.GET_TOKEN, provider:provider });
+
+
+
+    notificationServices.getToken(provider)
+    .then(
+      data => dispatch({ type: notificationActionTypes.GET_TOKEN_SUCCESS, data}),
+      error => console.log('ça va pas', error)
+    )
+
+  }
+}
+
+
 export const notificationActions = {
-  initSSE
+  initSSE,
+  getToken
 };

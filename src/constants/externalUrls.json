@@ -1,4 +1,0 @@
-{
-  "notification": "http://api.splash360.fr:3030/.well-known/mercure?topic=",
-  "uber_OAuth": "https://login.uber.com/oauth/v2/token"
-}

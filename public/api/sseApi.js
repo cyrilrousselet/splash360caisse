@@ -42,7 +42,8 @@ const actions = {
 
     es.onmessage = (evt) => {
       log.info('onmessage', evt);
-      webContents.send('getNotification', {data: evt.data});
+      const data = JSON.parse(evt.data);
+      _webContents.send('getNotification', {...data});
     }
     es.onerror = (err) => {
       log.info('es.onerror', err.message);

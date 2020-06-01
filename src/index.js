@@ -41,10 +41,15 @@ ipcRenderer.on('setCommande', (event, commande) => {
 // listener sur la réception de notification (depuis le serveur mercure)
 ipcRenderer.on('getNotification', (event, data) => {
   console.log('getNotification()', event, data);
+  
+
+  console.log(data.type);
 
   if (data.type=='orders.notification') {
     // vérifie si LocalStorage contient un token et s'il est toujours valide
-    //const _token = notificationActions.get
+
+    console.log('appelle otificationActions.getToken()');
+    const _token = notificationActions.getToken('uber')(store.dispatch, store.getState);
 
 
   }
