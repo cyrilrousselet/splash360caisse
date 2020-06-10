@@ -1,6 +1,8 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import { createBrowserHistory } from 'history';
 import { routerMiddleware, routerActions } from 'connected-react-router';
+//import Reactotron from '../ReactotronConfig';
+
 // import { persistStore, persistReducer } from 'redux-persist';
 // import createElectronStorage from 'redux-persist-electron-storage';
 import { createLogger } from 'redux-logger';
@@ -59,6 +61,7 @@ export function configureStore() {
 
     //    const store = createStore(persistedReducer, {}, enhancer);
     //    const persistor = persistStore(store);
+   // const store = createStore(rootReducer, {}, compose(enhancer, Reactotron.createEnhancer()));
     const store = createStore(rootReducer, {}, enhancer);
 
 //    return { store, persistor };

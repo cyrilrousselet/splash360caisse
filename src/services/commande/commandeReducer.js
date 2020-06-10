@@ -97,7 +97,7 @@ export function commandeReducer(state = initialState, action) {
         }
       }
 
-    case commandeActionTypes.DELETE_COMMANDE:
+    case commandeActionTypes.DELETE_CURRENT_COMMANDE:
 
       items = commande.items;
       items = [];

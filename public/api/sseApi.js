@@ -1,5 +1,6 @@
 const EventSource = require('eventsource');
 const log = require('electron-log');
+const {net} = require('electron');
 
 // const externalUrls = require('../../src/constants/externalUrls.json');
 
@@ -51,6 +52,104 @@ const actions = {
       es.close();
     }
     res.send({msg:'sse listening'});
+  },
+
+
+  getUberOrder: (req, res) => {
+
+    const { url, access_token } = req.payload;
+
+    let __order = [];
+
+    const __request = net.request({
+      url: url,
+      method: 'get'
+    });
+    __request.setHeader('Authorization','Bearer '+access_token)
+    __request.setHeader('Access-Control-Allow-Origin', '*')
+    __request.setHeader('Content-Type', 'application/json');
+
+    __request.on('response', (response) => {
+      log.info(`STATUS: ${response.statusCode}`);
+      log.info(`HEADERS: ${JSON.stringify(response.headers)}`);
+      response.on('data', (chunk) => {
+
+        __order.push(chunk);
+
+        log.info(`BODY: ${chunk}`)
+      });
+      response.on('end', () => {
+        log.info('Plus de données reçues.')
+        res.send({order: JSON.parse(__order.join(''))});
+      });
+    });
+
+    __request.end();
+
+  },
+
+  acceptUberOrder: (req, res) => {
+
+    const { url, access_token } = req.payload;
+
+    var __acceptObject = {reason: 'Commande acceptée'};
+
+    const __request = net.request({
+      url: url,
+      method: 'post'
+    });
+    __request.setHeader('Authorization','Bearer '+access_token)
+    __request.setHeader('Access-Control-Allow-Origin', '*')
+    __request.setHeader('Content-Type', 'application/json');
+
+    __request.write(JSON.stringify(__acceptObject));
+
+    __request.on('response', (response) => {
+      log.info(`STATUS: ${response.statusCode}`);
+      log.info(`HEADERS: ${JSON.stringify(response.headers)}`);
+      response.on('data', (chunk) => {
+        log.info(`BODY: ${chunk}`)
+        res.send({order: chunk});
+      });
+      response.on('end', () => {
+        log.info('Plus de données reçues.')
+      });
+    });
+
+    __request.end();
+
+  },
+
+  denyUberOrder: (req, res) => {
+
+    const { url, access_token } = req.payload;
+
+    var __denyObject = {reason:{explanation:'Erreur de commande'}};
+
+    const __request = net.request({
+      url: url,
+      method: 'post'
+    });
+    __request.setHeader('Authorization','Bearer '+access_token)
+    __request.setHeader('Access-Control-Allow-Origin', '*')
+    __request.setHeader('Content-Type', 'application/json');
+
+    __request.write(JSON.stringify(__denyObject));
+
+    __request.on('response', (response) => {
+      log.info(`STATUS: ${response.statusCode}`);
+      log.info(`HEADERS: ${JSON.stringify(response.headers)}`);
+      response.on('data', (chunk) => {
+        log.info(`BODY: ${chunk}`)
+        res.send({order: chunk});
+      });
+      response.on('end', () => {
+        log.info('Plus de données reçues.')
+      });
+    });
+
+    __request.end();
+
   }
 }
 

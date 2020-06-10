@@ -90,9 +90,19 @@ function _parseCatalogue(_rawdata) {
   });
 
 
+  // s'il y a plusieurs catégories, la première est celle par défaut
+  const __grp = _rawdata._cat.length>1 
+              ? _rawdata._grp.filter(g => g.categorie==_rawdata._cat[0].categorie_id)
+              : _rawdata._grp
+              ;
+
+
+  const __categories = _rawdata._cat;
+
+
   const __catalogue = {};
   _rawdata._grp.forEach(g => {
-    __catalogue[g.groupe_id] = {nom: g.nom, produits: [], noprint: g.noprint, weight: g.weight};
+    __catalogue[g.groupe_id] = {nom: g.nom, categorie: g.categorie, produits: [], noprint: g.noprint, weight: g.weight};
   });
   
   _rawdata._prd.forEach(p => {
@@ -111,7 +121,7 @@ function _parseCatalogue(_rawdata) {
 
 
 
-  return {catalogue: __catalogue, tva: __tva, steps: __steps, ingredients: __ingredients, ingredientTypes: __ingredientTypes};
+  return {catalogue: __catalogue, tva: __tva, steps: __steps, ingredients: __ingredients, ingredientTypes: __ingredientTypes, categories: __categories};
 //  return __catalogue;
 }
 

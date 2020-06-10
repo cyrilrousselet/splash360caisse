@@ -2,79 +2,102 @@ import {emit} from 'eiphop';
 import externalParams from '../../constants/externalParams.json';
 import { isAfter, isBefore } from 'date-fns';
 import { create } from 'simple-oauth2';
+import devOrder from '../../constants/_devOrder.json';
 
 export const notificationServices = {
   getToken,
+  denyOrder,
+  acceptOrder,
+  getOrder,
   initSSE
  };
 
-async function getToken(provider) {
+
+ async function getToken(provider, task) {
 
 
-  const tokenPrm = new Promise(async (resolve,reject)=> {
+  return new Promise(async (resolve,reject)=> {
     
     if (provider==='uber') {
 
-      const __now = new Date();
+      if (!['getorder','acceptorder','denyorder'].includes(task)) reject(`invalid task '${task}' for Uber API`);
 
-      const token_json = localStorage.getItem('uber_token');
-      const token_obj = token_json ? JSON.parse(token_json) : null;
-      if (!token_json || (token_obj && isBefore(token_obj.expires_at, __now))) {
-
-        console.log('pas ou plus de token dans le localStorage, on va en chercher un nouveau');
-
-        const credientials = {
-          client: {
-            id: externalParams.uber_clientid,
-            secret: externalParams.uber_secret
-          },
-          auth: {
-            tokenHost: externalParams.uber_OAuth
-          }
-        };
-
-        const tokenConfig = {
-          scope: 'eats.store'
-        };
-
-
-        const uberOAuth2 = create(credientials);
-
-        try {
-          const result = await uberOAuth2.clientCredentials.getToken(tokenConfig);
-          const accessToken = uberOAuth2.accessToken.create(result);
-          
-          localStorage.setItem('uber_token', JSON.stringify(accessToken.token));
-          
-          resolve('on y est');
-          
-        } catch (error) {
-          console.log('Access token error', error.message);
-          reject(error.message);
+      const credentials = {
+        client: {
+          id: externalParams.uber.clientid,
+          secret: externalParams.uber.secret
+        },
+        auth: {
+          tokenHost: externalParams.uber.oAuth
         }
+      };
 
+      console.log('credentials', credentials);
+      
+      const tokenConfig = {
+        scope: externalParams.uber[task].scope
+      };
 
+      console.log('tokenConfig', tokenConfig);
 
+      const uberOAuth2 = create(credentials);
 
-      } else {
-        console.log('token dans le localStorage');
-        resolve(token_obj.access_token);
+      try {
+        const result = await uberOAuth2.clientCredentials.getToken(tokenConfig);
+        const accessToken = uberOAuth2.accessToken.create(result);
+        
+     //   localStorage.setItem('uber_token', JSON.stringify(accessToken.token));
+     
+        console.log('token',accessToken);
+
+        resolve(accessToken.token);
+        
+      } catch (error) {
+        console.log('Access token error', error.message);
+        reject(error.message);
       }
-
     }
     else {
       reject(false);
     }
 
-  })
-  return tokenPrm;
+  });
 } 
+
+
+async function denyOrder(provider, order) {
+
+  const __denyOrdertoken = await getToken(provider, 'acceptorder');
+
+  if (__denyOrdertoken.access_token) {
+    var __url = externalParams[provider].denyorder.url.replace('{order_id}', order.id);
+    return emit('denyUberOrder', {url: __url, access_token: __denyOrdertoken.access_token});
+  }
+}
+
+
+async function acceptOrder(provider, order) {
+
+  const __acceptOrdertoken = await getToken(provider, 'acceptorder');
+
+  if (__acceptOrdertoken.access_token) {
+    var __url = externalParams[provider].acceptorder.url.replace('{order_id}', order.id);
+    return emit('acceptUberOrder', {url: __url, access_token: __acceptOrdertoken.access_token});
+  }
+}
+
+async function getOrder(provider, data) {
+
+  const __getOrdertoken = await getToken(provider, 'getorder');
+
+  if (__getOrdertoken.access_token) {
+    return emit('getUberOrder', {url: data.href, access_token: __getOrdertoken.access_token});
+  }
+}
+  
+
 
 
 function initSSE(restaurant_id) {
   return emit('sseInit', {restaurant_id: restaurant_id});
 }
-
-// function update(payload) {
-//   return emit('dbParametresUpdate', {payload: payload});
-// }

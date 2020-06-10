@@ -20,6 +20,7 @@ export const commandeServices = {
   completeStep,
   uncheckItemSteps,
   getRuleValues,
+  setCommandeFromOrder,
   setCommandeFromAPI,
   sendTicketId,
   getAllTicketsRestaurant,
@@ -36,6 +37,7 @@ function getNewCommande(params) {
         comments: [],
         operator_encaissement: params.operator_encaissement || null,
         caisse_encaissement: params.caisse_encaissement || null,
+        centre_revenu: 'restaurant',
         items: [],
         reglements: params.reglements || [],
         rendus: [],
@@ -777,6 +779,91 @@ function saveCommande(commande, catalogueReducer) {
 
 function archiveCommands(commandesid, clotureId) {
   return emit('dbCommandeArchive', {ids:commandesid, clotureId:clotureId});
+}
+
+
+function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
+
+  const commande = getNewCommande(data);
+  commande.centre_revenu = 'uber';
+  commande.status = 'confirmed'; // "standby" ou "confirmed"
+  commande.mode = 'livraison'; // "emporter", "surplace" ou "livraison"
+  commande.numero = getNewNumero(parametres, numero);
+
+  // on met tous les produits dans le même array
+  let produits = [];
+  for (let [key, value] of Object.entries(catalogueReducer.catalogue)) {
+    produits = [...produits, ...value.produits];
+  }
+
+  data.cart.items.forEach(itm => {
+
+    // infos du produit issues du catalogue
+    const prd = produits.find(p => p.id==itm.id);
+
+    if (prd) {
+
+      // steps de personnalisation du produit issus du catalogue
+      let steps = catalogueReducer.steps[itm.id];
+      let steps_list = [];
+      if (steps) {
+        steps.forEach(step => {
+          steps_list.push({id: step.step_id, completed: true, validated: true}); // <-- "completed=true" parce que commande terminée
+        }); 
+      } else {
+        steps = [];
+      }
+      
+
+      // création de l'item (produit dans la commande)
+      const item = {
+        produitid: itm.id,
+        nom: prd.nom,
+//        prix: itm.quantity*Number(prd.prix),
+        prix: itm.quantity*Number(itm.price.unit_price.amount/100),
+        pu: Number(itm.price.unit_price.amount/100),
+        tva: {...catalogueReducer.tva[prd.tva_id]},
+        composition: prd.composition,
+        ingredients: [...prd.composition],
+        steps: steps_list,
+        stepslength: steps.length,
+        quantite: itm.quantity,
+        itemid: _newCommandeItemId(),
+        status: 'completed'
+      };
+
+      // ajout des ingrédients (personnalisation)
+      itm.selected_modifier_groups.forEach(mod => {
+        mod.selected_items.forEach(ing => {
+
+          // infos de l'ingrédient issues du catalogue
+          const ingredient = catalogueReducer.ingredients[ing.id];
+          if (ingredient) {
+
+            const ingredient_step = steps.find(st => {
+              let __istype = false;
+              st.regles.forEach(str => {
+                if (str.type==ingredient.type) __istype = true;
+              });
+              return __istype;
+            });
+
+            item.ingredients.push({ingredient: ing.id, type: ingredient.type, qte: ing.quantity, prix: Number(ing.price.unit_price.amount/100), nom: ingredient.nom, fromStep:ingredient_step.step_id});
+          }
+
+        });
+      });
+
+      item.prix = Number(itm.price.total_price.amount/100);
+      commande.items.push(item);
+    }
+    
+  });
+  
+  commande.total = Number(data.payment.charges.total.amount/100);
+  return commande;
+
+
 }
 
 

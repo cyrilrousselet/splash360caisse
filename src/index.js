@@ -1,3 +1,4 @@
+//import './ReactotronConfig';
 import React from 'react';
 import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
@@ -42,18 +43,7 @@ ipcRenderer.on('setCommande', (event, commande) => {
 ipcRenderer.on('getNotification', (event, data) => {
   console.log('getNotification()', event, data);
   
-
-  console.log(data.type);
-
-  if (data.type=='orders.notification') {
-    // vérifie si LocalStorage contient un token et s'il est toujours valide
-
-    console.log('appelle otificationActions.getToken()');
-    const _token = notificationActions.getToken('uber')(store.dispatch, store.getState);
-
-
-  }
-
+  notificationActions.treatment(data)(store.dispatch, store.getState);
 
 });
 

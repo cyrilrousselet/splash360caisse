@@ -49,13 +49,13 @@ class Selecteur extends React.Component {
 
   render() {
 
-    const { catalogue, error, loading, addProduit } = this.props;
+    const { catalogue, categories, error, loading, addProduit } = this.props;
   
     let tlinks = [];
     let tcontents = [];
     
     for (let [key, value] of Object.entries(catalogue)) {
-      tlinks.push({id: key, nom: value.nom});
+      if (value.categorie==categories[0].categorie_id) tlinks.push({id: key, nom: value.nom});
       value.produits.sort((a,b)=> a.weight - b.weight); 
       tcontents.push({parent: key, liste: value.produits});
     }

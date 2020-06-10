@@ -553,7 +553,7 @@ async function _printQRCode(printer, code) {
 
   printer.drawLine();
     
-  const qrimg = await QRCode.toDataURL(code);
+  const qrimg = await QRCode.toDataURL(code, {width:300});
   const pixels = await getPixelsAsync(qrimg);
   const image = new escpos.Image(pixels);
   const printQRimage = await _printImage(printer, image);

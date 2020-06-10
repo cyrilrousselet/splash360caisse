@@ -1,6 +1,20 @@
 {
   "notification": "http://api.splash360.fr:3030/.well-known/mercure?topic=",
-  "uber_OAuth": "https://login.uber.com/oauth/v2/token",
-  "uber_clientid": "8OpdkXvG_D1IAb9J94Mf8srgdY2CXYif",
-  "uber_secret": "fzik-B4lYFDJXuIwhoj0aULsW4-0EvWWJOsEms68"
+  "uber": {
+    "oAuth": "https://login.uber.com/oauth/v2/token",
+    "clientid": "8OpdkXvG_D1IAb9J94Mf8srgdY2CXYif",
+    "secret": "fzik-B4lYFDJXuIwhoj0aULsW4-0EvWWJOsEms68",
+    "getorder": {
+      "url": "https://api.uber.com/v2/eats/order/{order_id}",
+      "scope": "eats.store.orders.read"
+    },
+    "acceptorder": {
+      "url": "https://api.uber.com/v1/eats/orders/{order_id}/accept_pos_order",
+      "scope": "eats.order"
+    },
+    "denyorder": {
+      "url": "https://api.uber.com/v1/eats/orders/{order_id}/deny_pos_order",
+      "scope": "eats.order"
+    }
+  }
 }

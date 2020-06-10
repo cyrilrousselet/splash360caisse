@@ -213,6 +213,13 @@ function livraisonCommande(payload) {
   }
 }
 
+
+function deleteCurrentCommande() {
+  return (dispatch) => {
+    dispatch({ type: commandeActionTypes.DELETE_CURRENT_COMMANDE });
+  }
+}
+
 function addProduit(payload) {
 
   return (dispatch, getState) => {
@@ -448,6 +455,45 @@ function archiveCommands(payload) {
 }
 
 
+function setCommandeFromOrder(payload) {
+  return (dispatch, getState) => {
+    const state = getState();
+
+    let data = {
+      ...payload,
+      operator: {id:-1, nom:'UberEats'},
+      caisse: {id: -1, nom:'UberEats'},
+      operator_encaissement: {id:-1, nom:'UberEats'}, 
+      caisse_encaissement: {id: -1, nom:'UberEats'},
+      reglements: [{moyen: 'uber', reglementId: new Date().getTime(), valeur: payload.payment.charges.total.amount/100}]
+    };
+    
+
+
+    console.log(data);
+    const commande = commandeServices.setCommandeFromAPI(data, state.catalogueReducer, state.parametresReducer.parametres, state.commandeReducer.numero);
+
+    commandeServices.sendTicketId(commande.ticketId, payload.response);
+
+    commandeServices.saveCommande(commande, state.catalogueReducer)
+    .then(
+      confirm => {
+        dispatch(getCommandesList());
+        dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
+        const { numero } = commande;
+        dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
+      },
+      error => {
+        console.log(error);
+        dispatch({ type:commandeActionTypes.VALIDATE_COMMANDE_FAILURE, error: error.toString() })
+      }
+    );
+    return commande.ticketId;
+
+  }
+}
+
+
 function setCommandeFromAPI(payload) {
   return (dispatch, getState) => {
 
@@ -497,6 +543,7 @@ export const commandeActions = {
   validateCommandeAndUpdateList,
   standByCommande,
   livraisonCommande,
+  deleteCurrentCommande,
   addProduit,
   updateProduit,
   addIngredient,
@@ -514,6 +561,7 @@ export const commandeActions = {
   addComment,
   updateComment,
   deleteComment,
+  setCommandeFromOrder,
   setCommandeFromAPI,
   getAllTicketsRestaurant,
   persistTicketsRestaurants

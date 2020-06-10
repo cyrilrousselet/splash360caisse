@@ -568,6 +568,7 @@ class Panier extends React.Component {
     return (
       <div className={ `Panier ${open && 'reglement-ouvert'}` }>
         <div className="header">
+          {/* <div className="ticketId">{ (this.interval==0?'X':'√')+strings.modules.encaissement.panier.ticket_no+' '+ticketId }</div> */}
           <div className="ticketId">{ strings.modules.encaissement.panier.ticket_no+' '+ticketId }</div>
           <div className="ticketComment"></div>
         </div>

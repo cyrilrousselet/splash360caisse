@@ -32,7 +32,9 @@ const data = {
                 clear: "Effacer",
                 save: "Enregistrer",
                 back: 'Retour',
-                delete: 'Supprimer'
+                delete: 'Supprimer',
+                accept: 'Accepter',
+                deny: 'Refuser'
             },
             check: {
                 tous: 'Tout sélectionner',
@@ -821,6 +823,15 @@ const data = {
                         }
                     },
                     options: { nom: 'Options' },
+                }
+            }
+        },
+        notification: {
+            accept: {
+                uber: {
+                    titre: "Nouvelle commande UBER EATS",
+                    texte: "Acceptez-vous cette nouvelle commande ?",
+                    detail: "Détail: "
                 }
             }
         },
