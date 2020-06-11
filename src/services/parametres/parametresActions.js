@@ -5,7 +5,7 @@ import { commandeActions } from './../commande/commandeActions';
 
 function getAll() {
   return dispatch => {
-      dispatch({ type: parametresActionTypes.GETALL_REQUEST });
+   //   dispatch({ type: parametresActionTypes.GETALL_REQUEST });
 
       parametresServices.getAll()
           .then(
@@ -18,7 +18,7 @@ function getAll() {
 
 function update(payload) {
   return (dispatch, getState) => {
-      dispatch({ type: parametresActionTypes.UPDATE_REQUEST });
+  //    dispatch({ type: parametresActionTypes.UPDATE_REQUEST });
 
       console.log('ParametresActions.update', payload);
 

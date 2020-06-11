@@ -15,6 +15,10 @@
     "denyorder": {
       "url": "https://api.uber.com/v1/eats/orders/{order_id}/deny_pos_order",
       "scope": "eats.order"
+    },
+    "pos": {
+      "url": "https://api.uber.com/v1/eats/stores/{store_id}/pos_data",
+      "scope": "eats.store"
     }
   }
 }

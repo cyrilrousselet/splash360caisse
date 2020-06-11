@@ -9,6 +9,7 @@ export const notificationServices = {
   denyOrder,
   acceptOrder,
   getOrder,
+  setPOS,
   initSSE
  };
 
@@ -20,7 +21,7 @@ export const notificationServices = {
     
     if (provider==='uber') {
 
-      if (!['getorder','acceptorder','denyorder'].includes(task)) reject(`invalid task '${task}' for Uber API`);
+      if (!['getorder','acceptorder','denyorder', 'pos'].includes(task)) reject(`invalid task '${task}' for Uber API`);
 
       const credentials = {
         client: {
@@ -96,6 +97,15 @@ async function getOrder(provider, data) {
 }
   
 
+async function setPOS(provider, data) {
+
+  const __updatePOStoken = await getToken(provider, 'pos');
+
+  if (__updatePOStoken.access_token) {
+    var __url = externalParams[provider].pos.url.replace('{store_id}', data.store_id);
+    return emit('updateUberPOS', {url: __url, access_token: __updatePOStoken.access_token, integration: data.integration});
+  }
+}
 
 
 function initSSE(restaurant_id) {

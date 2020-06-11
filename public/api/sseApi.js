@@ -70,16 +70,16 @@ const actions = {
     __request.setHeader('Content-Type', 'application/json');
 
     __request.on('response', (response) => {
-      log.info(`STATUS: ${response.statusCode}`);
-      log.info(`HEADERS: ${JSON.stringify(response.headers)}`);
+      log.info(`getUberOrder STATUS: ${response.statusCode}`);
+      log.info(`getUberOrder HEADERS: ${JSON.stringify(response.headers)}`);
       response.on('data', (chunk) => {
 
         __order.push(chunk);
 
-        log.info(`BODY: ${chunk}`)
+        log.info(`getUberOrder BODY: ${chunk}`)
       });
       response.on('end', () => {
-        log.info('Plus de données reçues.')
+        log.info('getUberOrder: end')
         res.send({order: JSON.parse(__order.join(''))});
       });
     });
@@ -94,6 +94,8 @@ const actions = {
 
     var __acceptObject = {reason: 'Commande acceptée'};
 
+    let __confirmation = [];
+
     const __request = net.request({
       url: url,
       method: 'post'
@@ -105,14 +107,55 @@ const actions = {
     __request.write(JSON.stringify(__acceptObject));
 
     __request.on('response', (response) => {
-      log.info(`STATUS: ${response.statusCode}`);
-      log.info(`HEADERS: ${JSON.stringify(response.headers)}`);
+      log.info(`acceptUberOrder STATUS: ${response.statusCode}`);
+      log.info(`acceptUberOrder HEADERS: ${JSON.stringify(response.headers)}`);
       response.on('data', (chunk) => {
-        log.info(`BODY: ${chunk}`)
-        res.send({order: chunk});
+        __confirmation.push(chunk);
+        log.info(`acceptUberOrder BODY: ${chunk}`)
       });
       response.on('end', () => {
-        log.info('Plus de données reçues.')
+        log.info('acceptUberOrder: end');
+        // res.send({confirm: JSON.parse(__confirmation.join(''))});
+        res.send({confirm: true});
+      });
+    });
+
+    __request.end();
+
+  },
+
+  updateUberPOS: (req, res) => {
+
+    const { url, access_token, integration } = req.payload;
+
+    var __updateObject = {
+      pos_integration_enabled: integration,
+      order_release_enabled: true
+    };
+
+    let __confirmation = [];
+
+    const __request = net.request({
+      url: url,
+      method: 'patch'
+    });
+    __request.setHeader('Authorization','Bearer '+access_token)
+    __request.setHeader('Access-Control-Allow-Origin', '*')
+    __request.setHeader('Content-Type', 'application/json');
+
+    __request.write(JSON.stringify(__updateObject));
+
+    __request.on('response', (response) => {
+      log.info(`updateUberPOS STATUS: ${response.statusCode}`);
+      log.info(`updateUberPOS HEADERS: ${JSON.stringify(response.headers)}`);
+      response.on('data', (chunk) => {
+        __confirmation.push(chunk);
+        log.info(`updateUberPOS BODY: ${chunk}`)
+      });
+      response.on('end', () => {
+        log.info('updateUberPOS: end');
+        // res.send({confirm: JSON.parse(__confirmation.join(''))});
+        res.send({confirm: true});
       });
     });
 
@@ -126,6 +169,8 @@ const actions = {
 
     var __denyObject = {reason:{explanation:'Erreur de commande'}};
 
+    let __confirmation = [];
+
     const __request = net.request({
       url: url,
       method: 'post'
@@ -137,14 +182,16 @@ const actions = {
     __request.write(JSON.stringify(__denyObject));
 
     __request.on('response', (response) => {
-      log.info(`STATUS: ${response.statusCode}`);
-      log.info(`HEADERS: ${JSON.stringify(response.headers)}`);
+      log.info(`denyUberOrder STATUS: ${response.statusCode}`);
+      log.info(`denyUberOrder HEADERS: ${JSON.stringify(response.headers)}`);
       response.on('data', (chunk) => {
-        log.info(`BODY: ${chunk}`)
-        res.send({order: chunk});
+        log.info(`denyUberOrder BODY: ${chunk}`)
+        __confirmation.push(chunk);
       });
       response.on('end', () => {
-        log.info('Plus de données reçues.')
+        log.info('denyUberOrder: end')
+        // res.send({confirm: JSON.parse(__confirmation.join(''))});
+        res.send({confirm: true});
       });
     });
 

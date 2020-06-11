@@ -799,26 +799,52 @@ const data = {
                     },
                     commandes: { 
                         nom: 'Commandes',
-                        types: {
-                            nom:'Types de commande',
-                            label: {
-                                nom: 'Nom',
-                                identifiant: 'Identifiant',
-                                frais: 'Frais',
-                                remise: 'Remise',
-                                activation: 'Activation',
-                                ajouter: 'Ajouter un type de commande',
-                                editer: 'Édition du type de commande'
+                        general: {
+                            titre: 'Général',
+                            types: {
+                                nom:'Types de commande',
+                                label: {
+                                    nom: 'Nom',
+                                    identifiant: 'Identifiant',
+                                    frais: 'Frais',
+                                    remise: 'Remise',
+                                    activation: 'Activation',
+                                    ajouter: 'Ajouter un type de commande',
+                                    editer: 'Édition du type de commande'
+                                }
+                            },
+                            numero: {
+                                nom: 'N° de commande',
+                                label: {
+                                    debut: 'Début N° de commande',
+                                    max: 'Valeur max.',
+                                    compteur: 'Compteur',
+                                    reset: 'Reset',
+                                    hexa: 'Activer N° hexadécimal'
+                                }
                             }
                         },
-                        numero: {
-                            nom: 'N° de commande',
-                            label: {
-                                debut: 'Début N° de commande',
-                                max: 'Valeur max.',
-                                compteur: 'Compteur',
-                                reset: 'Reset',
-                                hexa: 'Activer N° hexadécimal'
+                        commentaires: {
+                            titre: 'Commentaires'
+                        },
+                        canaux: {
+                            titre: 'Canaux',
+                            uber: {
+                                titre: 'UberEats',
+                                store_id: 'Identifiant (UUID) :',
+                                pos_integration_enabled: 'Point de vente activé',
+                                auto_accept_order: 'Acceptation auto. des commandes',
+                                alerte: {
+                                    enable_noid: {
+                                        titre: 'Activation impossible',
+                                        texte: 'Vous ne pouvez pas activer le point de vente sans UUID'
+                                    },
+                                    noid_enable: {
+                                        titre: 'UUID invalide',
+                                        texte: 'Vous ne pouvez pas activer le point de vente sans UUID',
+                                        force: 'Effacer et désactiver'
+                                    },
+                                }
                             }
                         }
                     },
@@ -831,14 +857,43 @@ const data = {
                 uber: {
                     titre: "Nouvelle commande UBER EATS",
                     texte: "Acceptez-vous cette nouvelle commande ?",
-                    detail: "Détail: "
+                    detail: "Commande #%NUMERO% pour le %DATEHEURE%"
                 }
             }
         },
         tickets: {
             commande: {
                 titre: 'COMMANDE',
-                numero: 'Cmd no '
+                numero: 'Cmd no ',
+                detail: {
+                    quantite: 'QTE',
+                    articles: 'ARTICLES',
+                    prix_unitaire: 'P.U.',
+                    total: 'TOTAL',
+                    code_tva: 'T',
+                    total_ttc: 'TOTAL TTC',
+                    nbr_lignes: 'Nombre de lignes :',
+                },
+                tva: {
+                    code: 'CODE',
+                    taux: 'TAUX',
+                    tva: 'TVA',
+                    ht: 'H.T.',
+                    ttc: 'TTC'
+                },
+                reglements: {
+                    titre: 'REGLEMENT :',
+                    monnaie: 'EUR'
+                },
+                rendu: {
+                    titre: 'RENDU :',
+                    monnaie: 'EUR'
+                }
+            },
+            uber: {
+                titre: 'Commande UberEats',
+                texte: 'LIVRAISON à ',
+                client: 'Client :'
             },
             cuisine: {
                 titre: 'CUISINE',

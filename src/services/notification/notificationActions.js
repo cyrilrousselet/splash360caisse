@@ -5,6 +5,9 @@ import { commandeActions } from '../commande/commandeActions';
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import Swal from 'sweetalert2';
+import { format } from 'date-fns';
+import DateFnsUtils from '@date-io/date-fns';
+import frLocale from "date-fns/locale/fr";
 const strings = new LocalizedStrings(data);
 
 function initSSE() {
@@ -14,12 +17,29 @@ function initSSE() {
     if (restaurant_id) {
       notificationServices.initSSE(restaurant_id)
       .then(
-        data => dispatch({ type: notificationActionTypes.INIT_SSE }),
+        data => dispatch({ type: notificationActionTypes.INIT_SSE, confirm: data.msg }),
         error => dispatch({ type: notificationActionTypes.INIT_SSE_FAILURE, error:error.msg })
       );
     } else {
       console.warn('restaurant_id unknown');
     }
+  }
+}
+
+function setPOS() {
+  return (dispatch, getState) => {
+    const { store_id, pos_integration_enabled } = getState().parametresReducer.parametres.commandes;
+
+    if (store_id && (undefined!==pos_integration_enabled)) {
+      notificationServices.setPOS('uber', {store_id: store_id, integration: pos_integration_enabled})
+                          .then(
+                            success => dispatch({type: notificationActionTypes.SET_POS, integration: pos_integration_enabled}),
+                            error => console.log('POS integration error')
+                          )
+    } else {
+      console.warn('store_id unknown');
+    }
+
   }
 }
 
@@ -45,7 +65,7 @@ function treatment(data) {
             
             Swal.fire({
               title: strings.notification.accept.uber.titre,
-              text: strings.notification.accept.uber.texte+'<br />'+strings.notification.accept.uber.detail+' cmd #'+reponse.order.display_id+' pour '+reponse.order.estimated_ready_for_pickup_at,
+              html: strings.notification.accept.uber.texte+'<br />'+strings.notification.accept.uber.detail.replace('%NUMERO%',reponse.order.display_id).replace('%DATEHEURE%', format(new Date(reponse.order.estimated_ready_for_pickup_at), "d MMM yyyy à HH:mm", { locale: frLocale })),
               focusConfirm: true,
               showCancelButton: true,
               customClass: 'ubernotification',
@@ -70,11 +90,12 @@ function treatment(data) {
 }
 
 function acceptOrder(provider, order) {
+  console.log('acceptOrder');
   return dispatch => {
-    dispatch({ type: notificationActionTypes.ACCEPT_ORDER, id: order.id });
+    dispatch({ type: notificationActionTypes.ACCEPT_ORDER, id: order.display_id });
     notificationServices.acceptOrder(provider, order)
                         .then(
-                          code => dispatch(commandeActions.setCommandeFromOrder(order)),
+                          confirm => dispatch(commandeActions.setCommandeFromOrder(provider, order)),
                           error => dispatch({type: notificationActionTypes.ORDER_ERROR, error: error})
                         )
   }
@@ -105,6 +126,7 @@ function getToken(provider, task) {
 
 export const notificationActions = {
   initSSE,
+  setPOS,
   getToken,
   treatment,
   denyOrder

@@ -1,5 +1,5 @@
 import {emit} from 'eiphop';
-import { differenceInMilliseconds, sub, differenceInMinutes, isBefore, endOfYesterday } from 'date-fns';
+import { differenceInMilliseconds, sub, differenceInMinutes, isBefore, endOfYesterday, parseISO } from 'date-fns';
 
 export const commandeServices = {
   getNewCommande,
@@ -101,7 +101,7 @@ function getNewNumero(parametres, numero) {
 
     // si la dernière numérotation date d'un service précédent,
     // on repart de la valeur du début
-    if (isBefore(numero.updated, lastperiode_end)) {
+    if (isBefore(parseISO(numero.updated), lastperiode_end)) {
       newvalue = Number(numerotation_start);
     } 
     // sinon on continue la numérotation
@@ -840,15 +840,16 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
           const ingredient = catalogueReducer.ingredients[ing.id];
           if (ingredient) {
 
-            const ingredient_step = steps.find(st => {
-              let __istype = false;
-              st.regles.forEach(str => {
-                if (str.type==ingredient.type) __istype = true;
-              });
-              return __istype;
-            });
+            // const ingredient_step = steps.find(st => {
+            //   let __istype = false;
+            //   st.regles.forEach(str => {
+            //     if (str.type==ingredient.type) __istype = true;
+            //   });
+            //   return __istype;
+            // });
 
-            item.ingredients.push({ingredient: ing.id, type: ingredient.type, qte: ing.quantity, prix: Number(ing.price.unit_price.amount/100), nom: ingredient.nom, fromStep:ingredient_step.step_id});
+//            item.ingredients.push({ingredient: ing.id, type: ingredient.type, qte: ing.quantity, prix: Number(ing.price.unit_price.amount/100), nom: ingredient.nom, fromStep:ingredient_step.step_id});
+            item.ingredients.push({ingredient: ing.id, type: ingredient.type, qte: ing.quantity, prix: Number(ing.price.unit_price.amount/100), nom: ingredient.nom});
           }
 
         });

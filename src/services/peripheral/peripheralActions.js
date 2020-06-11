@@ -246,9 +246,13 @@ function createTicket(payload) {
 
 function _getTicketsToPrint(filtre, tickets) {
 
+  console.log('_getTicketsToPrint',filtre);
+
   let liste;
   if (filtre=='all') {
     liste = Object.values(tickets).filter((tck) => (tck.imprimantes.length>0 && (['commande','partiel','principal']).indexOf(tck.template)!=-1));
+  } else if (filtre=='all_uber') {
+    liste = Object.values(tickets).filter((tck) => (tck.imprimantes.length>0 && (['uber','partiel','principal']).indexOf(tck.template)!=-1));
   } else if (filtre.hasOwnProperty('templates')) {
     liste = Object.values(tickets).filter((tck) => (tck.imprimantes.length>0 && filtre.templates.indexOf(tck.template)!=-1));
   } else if (filtre.hasOwnProperty('ids')) {
@@ -259,15 +263,26 @@ function _getTicketsToPrint(filtre, tickets) {
 }
 
 
-
 function printTicket(payload) {
+//function printCommandeTicket(payload) {
+  return (dispatch, getState) => {
+
+    const state = getState();
+
+    const cmd = state.commandeReducer.commande;
+    dispatch(printCommandeTicket(payload, cmd));
+  }
+}
+
+
+function printCommandeTicket(quelstickets, cmd) {
   return (dispatch, getState) => {
 
     const state = getState();
 
 
 
-    const cmd = state.commandeReducer.commande;
+   // const cmd = state.commandeReducer.commande;
     const types = state.catalogueReducer.ingredientTypes;
     const ingredients = state.catalogueReducer.ingredients;
     const tva = state.catalogueReducer.tva;
@@ -310,7 +325,7 @@ function printTicket(payload) {
 
 
     // récup de la liste des tickets à imprimer
-    const ticketsListe = _getTicketsToPrint(payload, tickets);
+    const ticketsListe = _getTicketsToPrint(quelstickets, tickets);
 
     // pour chaque ticket à imprimer, on prépare les params et contenus
     ticketsListe.forEach(ticket => {
@@ -320,10 +335,12 @@ function printTicket(payload) {
       imprimante = target_imprimantes[0];
 
       // en fonction du type de ticket demandé
-      if (ticket.template==='commande') {
+
+      // ticket commande et ticket UberEats
+      if (['commande','uber'].indexOf(ticket.template)!=-1) {
      
         // -> template ticket
-        template = templates.commande;
+        template = (ticket.template==='uber') ? templates.uber : templates.commande;
 
         const cmdTva = {};
         let articles = [];
@@ -449,8 +466,13 @@ function printTicket(payload) {
             date: `${date} - ${heure}`
           },
           nomticket: ticket.nom,
-          strings: strings.tickets.commande
+          strings: {commande: strings.tickets.commande, uber: strings.tickets.uber}
         };
+
+
+        if (ticket.template==='uber') {
+          contenu = {...contenu, uber: cmd.uber};
+        }
 
       }
       else if (ticket.template==="partiel") {
@@ -756,6 +778,7 @@ export const peripheralActions = {
   updateTicket,
   deleteTicket,
   createTicket,
+  printCommandeTicket,
   printTicket,
   printPeriodeX,
   printCloture,

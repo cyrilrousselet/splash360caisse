@@ -8,7 +8,7 @@ import { paramSubmodulesList } from '../../constants/modules';
 
 import ParametresEntrepriseCont from './../../containers/ParametresEntrepriseCont';
 import ParametresFinancierCont from './../../containers/ParametresFinancierCont';
-import ParametresCommandesCont from './../../containers/ParametresCommandesCont';
+import Commandes from './Commandes';
 import Options from './Options';
 import ParametresUtilisateursCont from './../../containers/ParametresUtilisateursCont';
 import Peripheriques from './Peripheriques';
@@ -33,7 +33,7 @@ class Parametres extends React.Component {
             <PrivateRoute exact path={ paths.PARAM_UTILISATEURS } component={ ParametresUtilisateursCont } />
             <PrivateRoute exact path={ paths.PARAM_FINANCIER } component={ ParametresFinancierCont } />
             <PrivateRoute exact path={ paths.PARAM_PERIPHERIQUES } component={ Peripheriques } />
-            <PrivateRoute exact path={ paths.PARAM_COMMANDES } component={ ParametresCommandesCont } />
+            <PrivateRoute exact path={ paths.PARAM_COMMANDES } component={ Commandes } />
             <PrivateRoute exact path={ paths.PARAM_OPTIONS } component={ Options } />
             <Route path={ paths.PARAMETRES }>
               <Redirect to={{ pathname: paths.PARAM_ENTREPRISE }} />

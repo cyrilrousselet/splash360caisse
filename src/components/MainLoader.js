@@ -32,18 +32,19 @@ class MainLoader extends React.Component {
     }
     if (paramLoaded && !sseInit) {
       this.props.initSSE();
+      this.props.setPOS();
     }
-    if (paramLoaded && !catLoaded && !catLoading) {
+    if (paramLoaded && sseInit && !catLoaded && !catLoading) {
       this.props.getCatalogue();
     }
-    if (paramLoaded && catLoaded && !cmdLoaded && !cmdLoading) {
+    if (paramLoaded && sseInit && catLoaded && !cmdLoaded && !cmdLoading) {
       this.props.getCommandesList();
     }
-    if (paramLoaded && catLoaded && cmdLoaded && !cloLoaded && !cloLoading) {
+    if (paramLoaded && sseInit && catLoaded && cmdLoaded && !cloLoaded && !cloLoading) {
       this.props.getCloturesList();
 //      this.props.getCurrentPeriode();
     }
-    if (paramLoaded && catLoaded && cmdLoaded && cloLoaded) {
+    if (paramLoaded && sseInit && catLoaded && cmdLoaded && cloLoaded) {
       this.props.loadingComplete();
     }
     return (      

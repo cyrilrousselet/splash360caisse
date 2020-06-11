@@ -1,7 +1,9 @@
 import { commandeActionTypes } from './commandeActionTypes';
 import { commandeServices } from './commandeServices';
-import { differenceInMilliseconds, sub, differenceInMinutes, isBefore, endOfYesterday } from 'date-fns';
-
+import { differenceInMilliseconds, sub, differenceInMinutes, isBefore, endOfYesterday, parseISO, format } from 'date-fns';
+import { peripheralActions } from '../peripheral/peripheralActions';
+import DateFnsUtils from '@date-io/date-fns';
+import frLocale from "date-fns/locale/fr";
 
 
 
@@ -455,8 +457,12 @@ function archiveCommands(payload) {
 }
 
 
-function setCommandeFromOrder(payload) {
+function setCommandeFromOrder(provider, payload) {
   return (dispatch, getState) => {
+
+
+    console.log('setCommmandeFromOrder()');
+
     const state = getState();
 
     let data = {
@@ -471,9 +477,20 @@ function setCommandeFromOrder(payload) {
 
 
     console.log(data);
-    const commande = commandeServices.setCommandeFromAPI(data, state.catalogueReducer, state.parametresReducer.parametres, state.commandeReducer.numero);
+    const commande = commandeServices.setCommandeFromOrder(data, state.catalogueReducer, state.parametresReducer.parametres, state.commandeReducer.numero);
 
-    commandeServices.sendTicketId(commande.ticketId, payload.response);
+    const cmd = {
+      ...commande, 
+      uber: {
+        display_id: payload.display_id, 
+        date: format(parseISO(payload.estimated_ready_for_pickup_at), 'd MMM yyyy à HH:mm', frLocale),
+        heure: format(parseISO(payload.estimated_ready_for_pickup_at), 'HH:mm', frLocale),
+        eater: payload.eater
+      }
+    };
+
+
+    dispatch(peripheralActions.printCommandeTicket('all_uber', commande));
 
     commandeServices.saveCommande(commande, state.catalogueReducer)
     .then(

@@ -2,6 +2,7 @@ const log = require('electron-log');
 const escpos = require('escpos');
 escpos.USB = require('escpos-usb');
 escpos.Network = require('escpos-network');
+escpos.Serial = require('escpos-serialport');
 const path = require('path');
 
 const getPixels = require('get-pixels');
@@ -55,6 +56,8 @@ const actions = {
       device = new escpos.USB();
     } else if (imprimante.connexion=='network') {
       device = new escpos.Network(imprimante.param); 
+    } else if (imprimante.connexion=='serial') {
+      device = new escpos.Serial(imprimante.param);
     }
     const options = {encoding: imprimante.encoding, width:42};
     const printer = new escpos.Printer(device, options);
@@ -216,7 +219,7 @@ function _launchPrint(template, printer, contenu) {
       _printEntreprise(printer, contenu.entreprise, contenu.strings);
     }
     else if ('commande' === section) {
-      _printCommande(printer, contenu.commande, contenu.strings);
+      _printCommande(printer, contenu.commande, contenu.strings.commande);
     }
     else if ('message' === section) {
       _printMessage(printer, contenu.message, contenu.strings);
@@ -247,6 +250,9 @@ function _launchPrint(template, printer, contenu) {
     }
     else if ('qrcode' ===  section) {
       const pqr = await _printQRCode(printer, contenu.code);
+    }
+    else if ('uber' ===  section) {
+      const pqr = await _printUber(printer, contenu.uber, contenu.strings.uber);
     }
 
     // fin du ticket
@@ -601,15 +607,15 @@ function _printCommande(printer, data, strings) {
   printer
     .style('B')
     .tableCustom([
-      {text:'QTE', cols:3, align:'RIGHT'},
+      {text: strings.detail.quantite, cols:3, align:'RIGHT'},
       {text:'', cols:1},
-      {text:'ARTICLE', cols:22, align:'LEFT'},
+      {text: strings.detail.articles, cols:22, align:'LEFT'},
       {text:'', cols:1},
-      {text:'P.U.', cols:6, align:'RIGHT'},
+      {text: strings.detail.prix_unitaire, cols:6, align:'RIGHT'},
       {text:'', cols:1},
-      {text:'TOTAL', cols:6, align:'RIGHT'},
+      {text: strings.detail.total, cols:6, align:'RIGHT'},
       {text:'', cols:1},
-      {text:'T', cols:1}
+      {text: strings.detail.code_tva, cols:1}
     ])
     .drawLine();
 
@@ -679,7 +685,7 @@ function _printCommande(printer, data, strings) {
     .align('CT')
     .size(1,2)
     .tableCustom([
-      {text: 'TOTAL TTC   '+data.total.total.replace('.',','), cols:42, align:'RIGHT'}
+      {text: `${strings.detail.total_ttc}   ${data.total.total.replace('.',',')}`, cols:42, align:'RIGHT'}
     ])
     .size(1,1)
     .drawLine();
@@ -688,7 +694,7 @@ function _printCommande(printer, data, strings) {
     .font('A')
     .align('CT')
     .tableCustom([
-      {text: 'Nombre de lignes : '+_linecount, cols:42, align:'LEFT'}
+      {text: `${strings.detail.nbr_lignes} ${_linecount}`, cols:42, align:'LEFT'}
     ]);
 
   // tva
@@ -701,15 +707,15 @@ function _printCommande(printer, data, strings) {
     .align('CT')
     .style('B')
     .tableCustom([
-      {text:'CODE', cols:4, align:'LEFT'},
+      {text: strings.tva.code, cols:4, align:'LEFT'},
       {text:'', cols:2},
-      {text:'TAUX', cols:6, align:'RIGHT'},
+      {text: strings.tva.taux, cols:6, align:'RIGHT'},
       {text:'', cols:2},
-      {text:'TVA', cols:8, align:'RIGHT'},
+      {text: strings.tva.tva, cols:8, align:'RIGHT'},
       {text:'', cols:2},
-      {text:'H.T.', cols:8, align:'RIGHT'},
+      {text: strings.tva.ht, cols:8, align:'RIGHT'},
       {text:'', cols:2},
-      {text:'TTC', cols:8, align:'RIGHT'}
+      {text: strings.tva.ttc, cols:8, align:'RIGHT'}
     ])
     .style('NORMAL')
 
@@ -732,14 +738,14 @@ function _printCommande(printer, data, strings) {
   printer
     .align('CT')
     .drawLine()
-    .style('NORMAL').text('REGLEMENT :');
+    .style('NORMAL').text(strings.reglements.titre);
 
     data.reglements.forEach(reglement => {
       printer.style('NORMAL').tableCustom([
         {text:'', cols:1},
         {text: reglement.moyen, cols:28, align:'LEFT'},
         {text:'', cols:1},
-        {text: `${reglement.valeur.toFixed(2).replace('.',',')} EUR`, cols:12, align:'RIGHT'}
+        {text: `${reglement.valeur.toFixed(2).replace('.',',')} ${strings.reglements.monnaie}`, cols:12, align:'RIGHT'}
       ]);
     });
 
@@ -747,14 +753,14 @@ function _printCommande(printer, data, strings) {
   if (data.rendus.length>0) {
     printer
       .drawLine()
-      .style('NORMAL').text('RENDU :');
+      .style('NORMAL').text(strings.rendu.titre);
 
     data.rendus.forEach(rendu => {
       printer.style('NORMAL').tableCustom([
         {text:'', cols:1},
         {text: rendu.moyen, cols:28, align:'LEFT'},
         {text:'', cols:1},
-        {text: `${rendu.valeur.toFixed(2).replace('.',',')} EUR`, cols:12, align:'RIGHT'}
+        {text: `${rendu.valeur.toFixed(2).replace('.',',')} ${strings.rendu.monnaie}`, cols:12, align:'RIGHT'}
       ]);
     });
   }
@@ -1230,6 +1236,26 @@ function _printPeriodeZ(printer, data, strings) {
         
 }
 
+
+function _printUber(printer, data, strings) {
+  printer
+    .align('CT')
+    .style('B')
+    .size(2,2)
+    .text(strings.titre)
+    .text('#'+data.display_id)
+    .font('A')
+    .size(1,1)
+    .style('NORMAL')
+    .feed(1)
+    .text(`${strings.client} ${data.eater.first_name} ${data.eater.last_name}` )
+    .size(1,1)
+    .drawLine()
+    .size(2,2)
+    .text(strings.texte + data.heure)
+    .size(1,1)
+    .drawLine();
+}
 
 // message
 function _printMessage(printer, data, strings) {

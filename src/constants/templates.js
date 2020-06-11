@@ -6,6 +6,12 @@ export const templates = {
    //  'message', 
      'legal'
   ],
+  uber: [
+    'entreprise',
+    'uber',
+    'commande',
+    'legal'
+  ],
   partiel: [
     'info', 
     'partiel_detail'
