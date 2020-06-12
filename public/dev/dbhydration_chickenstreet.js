@@ -803,6 +803,7 @@ const hydration = {
     { domaine: 'entreprise', cle: 'site_web', valeur: 'www.chickenstreet.fr'},
     { domaine: 'entreprise', cle: 'heure_fin', valeur: '00:00' },
     { domaine: 'entreprise', cle: 'restaurant_id', valeur: '1_61aoo53hn8cggko04oowcwg0ww0ow8gk4sc4ks4cg0w88gowg8' },
+    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '6bsvvzhpuagwcswko8cwgcscgkoswgoc0cwkkcgkwkcss0so8o' },
     { domaine: 'entreprise', cle: 'avoirs', valeur: true },
     { domaine: 'financier', cle: 'fidelite_activation', valeur: false},
     { domaine: 'peripheriques', cle: 'impression', valeur: [{ticket:'tck1',groupes:['cat15','cat16','cat17','cat18','cat19','cat20','cat21','cat22','cat23','cat24','cat25','cat26','cat27','cat28','cat29','cat30'], types:['icat29','icat31','icat32','icat33','icat34','icat35','icat36','icat37']},{ticket:'tck2',groupes:['cat15','cat16','cat17','cat18','cat19','cat20','cat21','cat22','cat23','cat24','cat25','cat26','cat27','cat28','cat29','cat30'], types:['icat29','icat31','icat32','icat33','icat34','icat35','icat36','icat37']},{ticket:'tck3',groupes:['cat15','cat16','cat17','cat18','cat19','cat20','cat21','cat22','cat23','cat24','cat25','cat26','cat27','cat28','cat29','cat30'], types:['icat29','icat31','icat32','icat33','icat34','icat35','icat36','icat37']}]},

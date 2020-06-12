@@ -476,7 +476,7 @@ function setCommandeFromOrder(provider, payload) {
     
 
 
-    console.log(data);
+   // console.log(data);
     const commande = commandeServices.setCommandeFromOrder(data, state.catalogueReducer, state.parametresReducer.parametres, state.commandeReducer.numero);
 
     const cmd = {
@@ -490,7 +490,7 @@ function setCommandeFromOrder(provider, payload) {
     };
 
 
-    dispatch(peripheralActions.printCommandeTicket('all_uber', commande));
+    dispatch(peripheralActions.printCommandeTicket('all_uber', cmd));
 
     commandeServices.saveCommande(commande, state.catalogueReducer)
     .then(

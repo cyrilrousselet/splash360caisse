@@ -1239,6 +1239,8 @@ function _printPeriodeZ(printer, data, strings) {
 
 function _printUber(printer, data, strings) {
   printer
+    .size(1,1)
+    .drawLine()
     .align('CT')
     .style('B')
     .size(2,2)
@@ -1253,8 +1255,7 @@ function _printUber(printer, data, strings) {
     .drawLine()
     .size(2,2)
     .text(strings.texte + data.heure)
-    .size(1,1)
-    .drawLine();
+    .size(1,1);
 }
 
 // message
