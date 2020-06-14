@@ -229,7 +229,8 @@ const hydration = {
     { step_id:'step534', produit:'prd1275', titre: 'Coulis', regles: [{type:'typ77', regle:'{0,4}', supplement:'0'}], weight:2 },
     { step_id:'step535', produit:'prd1275', titre: 'Supplément Chantilly', regles: [{type:'typ76', regle:'{0,1}', supplement:'0'}], weight:3 },
     { step_id:'step536', produit:'prd1276', titre: 'Mojitos', regles: [{type:'typ78', regle:'{1,1}', supplement:'0'}], weight:0 },
-    { step_id:'step537', produit:'prd1277', titre: '2 Fruits au choix', regles: [{type:'typ79', regle:'{2,2}', supplement:'0'}], weight:0 }
+    { step_id:'step537', produit:'prd1277', titre: '2 Fruits au choix', regles: [{type:'typ79', regle:'{2,2}', supplement:'0'}], weight:0 },
+    { step_id:'step546', produit:'prd1317', titre: '3 ingredients', regles: [{type:'typ83', regle:'{3,3}', supplement:'0'}], weight:0 }
   ],
   
   commandes: [],

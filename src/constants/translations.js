@@ -871,8 +871,14 @@ const data = {
                     prix_unitaire: 'P.U.',
                     total: 'TOTAL',
                     code_tva: 'T',
+                    sous_total: 'SOUS-TOTAL',
                     total_ttc: 'TOTAL TTC',
                     nbr_lignes: 'Nombre de lignes :',
+                },
+                modificateur: {
+                    charge: 'CHARGE',
+                    discount: 'REDUCTION',
+                    monnaie: 'EUR'
                 },
                 tva: {
                     code: 'CODE',
@@ -893,7 +899,8 @@ const data = {
             uber: {
                 titre: 'Commande UberEats',
                 texte: 'LIVRAISON à ',
-                client: 'Client :'
+                client: 'Client :',
+                couverts: 'AVEC COUVERTS, PAILLE...'
             },
             cuisine: {
                 titre: 'CUISINE',

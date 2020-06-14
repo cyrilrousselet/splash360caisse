@@ -625,9 +625,12 @@ function _printCommande(printer, data, strings) {
 
     let _linecount = 0;
 
+    let _subtotal = 0;
+
       
     data.articles.forEach((article) => {
-      printer.style('B').tableCustom([
+      _subtotal += Number(article.prix);
+      printer.align('CT').style('B').tableCustom([
         {text: article.qte, cols:3, align:'RIGHT'},
         {text:'', cols:1},
         {text: article.nom, cols:22, align:'LEFT'},
@@ -639,7 +642,7 @@ function _printCommande(printer, data, strings) {
         {text: article.codetva, cols:1}
       ]);
       if (article.comment!=='') {
-        printer.style('B').tableCustom([
+        printer.align('CT').style('B').tableCustom([
           {text:'', cols:3},
           {text: '* ', cols:2, align:'RIGHT'},
           {text: article.comment, cols:32, align:'LEFT'},
@@ -653,7 +656,7 @@ function _printCommande(printer, data, strings) {
 
     if (article.ingredients.length>0) {
       article.ingredients.forEach((ingredient) => {
-        printer.style('NORMAL').tableCustom([
+        printer.align('CT').style('NORMAL').tableCustom([
           {text: ingredient.qte, cols:3, align:'RIGHT'},
           {text:'', cols:1},
           {text: '  '+ingredient.nom, cols:22, align:'LEFT'},
@@ -665,7 +668,7 @@ function _printCommande(printer, data, strings) {
           {text: ingredient.codetva, cols:1}
         ]);
         if (ingredient.comment!=='') {
-          printer.style('B').tableCustom([
+          printer.align('CT').style('B').tableCustom([
             {text:'', cols:3},
             {text: '* ', cols:2, align:'RIGHT'},
             {text: ingredient.comment, cols:32, align:'LEFT'},
@@ -679,7 +682,30 @@ function _printCommande(printer, data, strings) {
       });
     }
   });
-  
+
+  // modificateurs (charge ou discount) au niveau de la commande
+  if (data.modificateur) {
+
+  // sous-total
+  printer
+    .drawLine()
+    .align('CT')
+    .size(1,1)
+    .tableCustom([
+      {text: `${strings.detail.sous_total}   ${_subtotal.toFixed(2).toString().replace('.',',')}`, cols:42, align:'right'}
+    ])
+    .size(1,1)
+    .drawLine();
+
+    align('CT')
+    .size(1,1)
+    .tableCustom([
+      {text: `${(data.modificateur>0?strings.modificateur.charge:strings.modificateur.discount)}   ${data.modificateur.toFixed(2).toString().replace('.',',')}`, cols:42, align:'RIGHT'}
+    ])
+    .size(1,1)
+  }
+
+  // total
   printer
     .drawLine()
     .align('CT')

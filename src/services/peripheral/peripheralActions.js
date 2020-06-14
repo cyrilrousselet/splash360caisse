@@ -346,11 +346,11 @@ function printCommandeTicket(quelstickets, cmd) {
         let articles = [];
         let total = 0;
         let __comment = null;
+        let __modificateur = null;
         cmd.items.forEach(article => {
 
           let articleIngredients = [];
           total += article.quantite * article.prix;
-
 
 
           article.ingredients.forEach(ing => {
@@ -369,6 +369,14 @@ function printCommandeTicket(quelstickets, cmd) {
             // commentaire pour l'ingrédient
             __comment = cmd.comments.find(c => c.item==article.itemid && c.ingredient==ing.ingredient)
 
+
+            // modificateurs pour l'ingrédient
+            __modificateur = cmd.modificateurs.find(m => m.item==article.itemid && m.ingredient==ing.ingredient);
+
+            if (__modificateur) {
+              total += Number(__modificateur.valeur);
+            }
+
             if (ing.fromStep!=null && !__noprint) {
               articleIngredients.push({
                 qte: ing.qte,
@@ -377,7 +385,8 @@ function printCommandeTicket(quelstickets, cmd) {
                 pu: ing.prix==0 ? '' : Number(ing.prix).toFixed(2),
                 prix: ing.prix==0 ? '' : (Number(ing.prix)*ing.qte).toFixed(2),
                 weight: __ingweight,
-                comment: __comment ? __comment.texte : ''
+                comment: __comment ? __comment.texte : '',
+                modificateur: __modificateur ? __modificateur.valeur: 0
               });
             }
           });
@@ -388,6 +397,13 @@ function printCommandeTicket(quelstickets, cmd) {
           // commentaire pour l'article
           __comment = cmd.comments.find(c => c.item==article.itemid && c.ingredient==null);
 
+          // modificateurs pour l'article
+          __modificateur = cmd.modificateurs.find(m => m.item==article.itemid && m.ingredient==null);
+
+          if (__modificateur) {
+            total += Number(__modificateur.valeur);
+          }
+
           articles.push({
             qte: article.quantite,
             codetva: article.tva.code,
@@ -395,7 +411,8 @@ function printCommandeTicket(quelstickets, cmd) {
             pu: Number(article.prix).toFixed(2),
             prix: (Number(article.prix)*article.quantite).toFixed(2),
             ingredients: articleIngredients,
-            comment: __comment ? __comment.texte : ''
+            comment: __comment ? __comment.texte : '',
+            modificateur: __modificateur ? __modificateur.valeur: 0
           });
 
           if (!cmdTva.hasOwnProperty(article.tva.code)) {
@@ -422,6 +439,12 @@ function printCommandeTicket(quelstickets, cmd) {
         // commentaire pour la commande
         __comment = cmd.comments.find(c => c.item==null && c.ingredient==null);
 
+        // modificateurs pour la commande
+        __modificateur = cmd.modificateurs.find(c => c.item==null && c.ingredient==null);
+        if (__modificateur) {
+          total += Number(__modificateur.valeur);
+        }
+
         const commande = {
           numero: cmdnumero,
           id: cmd.ticketId,
@@ -433,7 +456,8 @@ function printCommandeTicket(quelstickets, cmd) {
           },
           reglements: cmd.reglements,
           rendus: cmd.rendus,
-          comment: __comment ? __comment.texte : ''
+          comment: __comment ? __comment.texte : '',
+          modificateur: __modificateur ? __modificateur.valeur: 0
         };
 
 

@@ -1,6 +1,11 @@
 import {emit} from 'eiphop';
 import { differenceInMilliseconds, sub, differenceInMinutes, isBefore, endOfYesterday, parseISO } from 'date-fns';
 
+import LocalizedStrings from 'react-localization';
+import {data} from '../../constants/translations';
+import { commandeActions } from '../commande/commandeActions';
+const strings = new LocalizedStrings(data);
+
 export const commandeServices = {
   getNewCommande,
   getCommandeById,
@@ -11,6 +16,7 @@ export const commandeServices = {
   addReglement,
   addRendu,
   addComment,
+  addModificateur,
   saveCommande,
   deleteCommande,
   archiveCommands,
@@ -40,6 +46,7 @@ function getNewCommande(params) {
         centre_revenu: 'restaurant',
         items: [],
         reglements: params.reglements || [],
+        modificateurs: [],
         rendus: [],
         start: null,
         end: null,
@@ -721,6 +728,19 @@ function addComment(payload, comments) {
   };
 }
 
+
+function addModificateur(payload, comments) {
+  const {item, ingredient, valeur} = payload;
+
+  return {
+    modificateur_id: _newModificateurId(),
+    item: item,
+    ingredient: ingredient,
+    valeur: valeur
+  };
+}
+
+
 function saveCommande(commande, catalogueReducer) {
 /*
   let __cmd = {
@@ -832,24 +852,39 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
         status: 'completed'
       };
 
+
+      // ajout commentaire sur item
+      if (itm.special_instructions && itm.special_instructions!=='') {
+        commande.comments.push(addComment({
+                      item: item.itemid, 
+                      ingredient: null, 
+                      texte: itm.special_instructions},null));
+      }
+
       // ajout des ingrédients (personnalisation)
       itm.selected_modifier_groups.forEach(mod => {
         mod.selected_items.forEach(ing => {
-
+          
           // infos de l'ingrédient issues du catalogue
           const ingredient = catalogueReducer.ingredients[ing.id];
+          
+          console.log(ing.id, ingredient);
+          
           if (ingredient) {
 
-            // const ingredient_step = steps.find(st => {
-            //   let __istype = false;
-            //   st.regles.forEach(str => {
-            //     if (str.type==ingredient.type) __istype = true;
-            //   });
-            //   return __istype;
-            // });
+            console.log('steps', steps);
 
-//            item.ingredients.push({ingredient: ing.id, type: ingredient.type, qte: ing.quantity, prix: Number(ing.price.unit_price.amount/100), nom: ingredient.nom, fromStep:ingredient_step.step_id});
-            item.ingredients.push({ingredient: ing.id, type: ingredient.type, qte: ing.quantity, prix: Number(ing.price.unit_price.amount/100), nom: ingredient.nom});
+            const ingredient_step = steps.find(st => {
+              let __istype = false;
+              st.regles.forEach(str => {
+                console.log(str.type, ingredient.type);
+                if (str.type==ingredient.type) __istype = true;
+              });
+              return __istype;
+            });
+
+           item.ingredients.push({ingredient: ing.id, type: ingredient.type, qte: ing.quantity, prix: Number(ing.price.unit_price.amount/100), nom: ingredient.nom, fromStep:ingredient_step.step_id});
+            // item.ingredients.push({ingredient: ing.id, type: ingredient.type, qte: ing.quantity, prix: Number(ing.price.unit_price.amount/100), nom: ingredient.nom });
           }
 
         });
@@ -860,7 +895,26 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
     }
     
   });
-  
+
+  // couverts demandés ?
+  if (data.packaging && data.packaging.disposable_items && data.packaging.disposable_items.should_include) {
+
+    commande.comments.push(addComment({
+      item: null, 
+      ingredient: null, 
+      texte: strings.tickets.uber.couverts
+    },null));
+  }
+
+  // ajout des charges :
+  commande.modificateurs.push(
+    addModificateur({
+      item: null,
+      ingredient: null,
+      valeur: Number(data.payment.charges.total_fee)/100
+    },null)
+  );
+      
   commande.total = Number(data.payment.charges.total.amount/100);
   return commande;
 
@@ -974,6 +1028,10 @@ const _newCommandeItemId = () => {
     return __d.getTime().toString();
 }
 const _newCommentId = () => {
+    let __d = new Date();
+    return __d.getTime().toString();
+}
+const _newModificateurId = () => {
     let __d = new Date();
     return __d.getTime().toString();
 }
