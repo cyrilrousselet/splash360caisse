@@ -906,16 +906,16 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
     },null));
   }
 
-  // ajout des charges :
-  commande.modificateurs.push(
-    addModificateur({
-      item: null,
-      ingredient: null,
-      valeur: Number(data.payment.charges.total_fee)/100
-    },null)
-  );
+  // // ajout des charges :
+  // commande.modificateurs.push(
+  //   addModificateur({
+  //     item: null,
+  //     ingredient: null,
+  //     valeur: Number(data.payment.charges.total_fee.amount)/100
+  //   },null)
+  // );
       
-  commande.total = Number(data.payment.charges.total.amount/100);
+  commande.total = Number(data.payment.charges.sub_total.amount/100);
   return commande;
 
 

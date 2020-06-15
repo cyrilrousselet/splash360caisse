@@ -93,7 +93,7 @@ function TableCommandes(props) {
         </TableHead>
         <TableBody>
           {liste.map((row, i) => (
-            <TableRow key={row.id} className={ `${(i%2)?'odd':'even'} color-${(row.commande.caisse.id==thiscash.id)?'0':'autre'}` }>
+            <TableRow key={row.id} className={ `${(i%2)?'odd':'even'} color-${(row.commande.caisse.id==thiscash.id)?'0':'autre'} ${(row.commande.centre==='uber'?'autrecentre':'')}` }>
               <TableCell key={`${row.id}-date`} className="liste-date">{ row.commande.date }</TableCell>
               <TableCell key={`${row.id}-heure`} className="liste-heure">{ row.commande.heure }</TableCell>
               <TableCell key={`${row.id}-numero`} className="liste-numero">{ row.commande.numero }</TableCell>
@@ -353,7 +353,8 @@ class ListeCommandes extends React.Component {
         heure: format(new Date(value.createdAt), "H:mm:ss"),
         montant: `${value.total.toFixed(2).replace('.',',')} €`,
         client: 'Anonyme',
-        caisse: value.caisse
+        caisse: value.caisse,
+        centre: value.centre_revenu ? value.centre_revenu : 'restaurant'
       };
       let __start = compareAsc(new Date(value.createdAt), startDate);
       let __end = compareAsc(new Date(value.createdAt), endDate);
