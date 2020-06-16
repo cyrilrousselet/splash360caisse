@@ -69,6 +69,8 @@ function treatment(data) {
               focusConfirm: true,
               showCancelButton: true,
               customClass: 'ubernotification',
+              allowOutsideClick: false,
+              allowEscapeKey: false,
               confirmButtonText: strings.general.dialog.accept,
               cancelButtonText: strings.general.dialog.deny,
               buttonsStyling: false 

@@ -39,6 +39,8 @@ function getCurrentPeriode(commandes, catalogue, params) {
 
       let __valid = true;
 
+      // on ne considère pas les commandes des autres centres de revenus
+      if (cmd.hasOwnProperty('centre_revenu') && cmd.centre_revenu!=='restaurant') __valid = false;
 
       // on ne considère pas les commandes en attente annulées :
       if (cmd.status==='deleted') __valid = false;
@@ -47,10 +49,15 @@ function getCurrentPeriode(commandes, catalogue, params) {
       if (params.extract=='z' && cmd.archived!=null) __valid = false;
 
       // si une liste de vendeurs est fournie
-      if (vendeurs.length>0 && vendeurs.indexOf(cmd.operator_encaissement.id)==-1) __valid = false;
+      if (vendeurs.length>0) {
+        if (!cmd.operator_encaissement || (cmd.operator_encaissement && vendeurs.indexOf(cmd.operator_encaissement.id)==-1)) __valid = false;
+      } 
 
       // si une liste de caisse est fournie
-      if (caisses.length>0 && caisses.indexOf(cmd.caisse_encaissement.id)==-1) __valid = false;
+      if (caisses.length>0) {
+        if (!cmd.caisse_encaissement || (caisses.indexOf(cmd.caisse_encaissement.id)==-1)) __valid = false;
+      } 
+        
 
       // periode
       let updatedAt = parseJSON(cmd.updatedAt);

@@ -78,7 +78,9 @@
     // background-color: $blanc;
     // border-radius: 15px;
     // box-shadow: 0 5px 15px 0 rgba(0,0,0,0.10);
-
+    .panel {
+      text-align: left;
+    }
     .CommandesGeneral {
         position: relative;
 
@@ -247,6 +249,24 @@
             }
         }
     }
+    .CommandesCommentaires {
+      position: relative;
+
+      .subttl {
+        font-family: $f_blk;
+        font-size: 18px;
+        padding: 10px 0;
+      }
+      .addcmt-button {
+          background-color: $primary;
+          position: absolute;
+          top: 0;
+          right: 0px;
+          width: 30px;
+          height: 30px;
+          min-height: 30px;
+      }
+    }
     .CommandesCanaux {
 
         text-align: left;
@@ -292,6 +312,24 @@
               left: auto;
             }
           }
+    }
+    .CommandesDiscount {
+      position: relative;
+
+      .subttl {
+        font-family: $f_blk;
+        font-size: 18px;
+        padding: 10px 0;
+      }
+      .adddsc-button {
+          background-color: $primary;
+          position: absolute;
+          top: 0;
+          right: 0px;
+          width: 30px;
+          height: 30px;
+          min-height: 30px;
+      }
     }
   }
 }

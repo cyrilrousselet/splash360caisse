@@ -6,15 +6,17 @@ class LabelledField extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { svalue: props.value || '', option: props.optionvalue };
+    this.state = { svalue: props.value || '', soption: props.optionvalue };
     this.handleChange = this.handleChange.bind(this);
     this.optionChange = this.optionChange.bind(this);
     this.handleKeyup = this.handleKeyup.bind(this);
   }
 
   handleChange(event) {
+    const {option} = this.props;
+    const {soption} = this.state;
     this.setState({ svalue: event.target.value });
-    this.props.onChange({ value: event.target.value, option: this.state.option });
+    this.props.onChange({ value: event.target.value, option: soption || option });
   }
 
   handleKeyup(event) {
@@ -24,19 +26,22 @@ class LabelledField extends React.Component {
   }
   
   optionChange(event) {
+    const {value} = this.props;
+    const {svalue} = this.state;
     this.setState({ option: event.target.value });
-    this.props.onChange({ value: this.state.svalue, option: event.target.value });
+    this.props.onChange({ value: svalue||value, option: event.target.value });
   }
 
   render() {
 
-    const { name, className, placeholder, type, readOnly, label, options, postvalue, disabled, maxLength, value } = this.props;
-    const { svalue, option } = this.state;
+    const { name, className, placeholder, type, readOnly, label, options, option, postvalue, disabled, maxLength, value } = this.props;
+    const { svalue, soption } = this.state;
     const withoptionsclass = (options && options.length>0) ? ' with-options' : '';
     const withpostvalue = postvalue ? ' with-postvalue' : '';
     const disabledvalue = disabled ? ' disabled' : '';
 
     const val = svalue || value;
+    const voption = soption || option;
 
     // (options && options.length>0) && console.log(value+' :: option: '+option);
 
@@ -60,7 +65,7 @@ class LabelledField extends React.Component {
             { (options && options.length>0) && 
             <Select
             disableUnderline
-              value={option}
+              value={voption}
               onChange={this.optionChange}
             >
               { options.map((opt,i)=>(

@@ -164,7 +164,8 @@ const data = {
                         especes: "Espèces",
                         carte: "Carte Bleue",
                         cheque: "Chèque",
-                        avoir: "Avoir"
+                        avoir: "Avoir",
+                        uber: "Uber"
                     },
                     scan_avoir: "Scan Avoir",
                     raccourcis: [
@@ -825,7 +826,26 @@ const data = {
                             }
                         },
                         commentaires: {
-                            titre: 'Commentaires'
+                            titre: 'Commentaires',
+                            popin: {
+                                new: 'Nouveau commentaire',
+                                edit: 'Éditer le commentaire'
+                            },
+                            suppression: {
+                                titre: 'Supprimer le commentaire',
+                                texte: 'Voulez-vous supprimer ce commentaire ?'
+                            }
+                        },
+                        discount: {
+                            titre: 'Réductions',
+                            popin: {
+                                new: 'Nouvelle réduction',
+                                edit: 'Éditer la réduction'
+                            },
+                            suppression: {
+                                titre: 'Supprimer la réduction',
+                                texte: 'Voulez-vous supprimer cette réduction ?'
+                            }
                         },
                         canaux: {
                             titre: 'Canaux',

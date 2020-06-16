@@ -1,5 +1,7 @@
 
-.EditTypeModal {
+.EditTypeModal,
+.CommentaireEditModal,
+.DiscountEditModal {
   display: inline-block;
   position: absolute;
   left: 50%;
@@ -66,4 +68,19 @@
         }
     }
   }
+}
+
+.CommentaireEditModal,
+.DiscountEditModal {
+    .edit-zone {
+        width: 100%;
+    }
+    .edit-input {
+        width: 100% !important;
+    }
+}
+.DiscountEditModal {
+    .edit-input .labelledfield-field { text-align: right;
+
+    }
 }

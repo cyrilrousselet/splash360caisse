@@ -61,7 +61,7 @@ function getCurrentPeriode(params={}) {
     }
     
     // récup. cmd non clôturées
-    const cmdopen = Object.values(commandeslist).filter(cmd=>((!cmd.hasOwnProperty('archived') || cmd.archived==null) && cmd.status!=='deleted'));
+    const cmdopen = Object.values(commandeslist).filter(cmd=>((!cmd.hasOwnProperty('archived') || cmd.archived==null) && cmd.status!=='deleted' && (!cmd.hasOwnProperty('centre_revenu') || cmd.centre_revenu==='restaurant')));
 
     console.log('nbre cmd non archivées', cmdopen.length);
 
