@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import StdButton from '../common/StdButton';
 
-import { List, ListItem, Fab, Modal, TextField } from '@material-ui/core';
+import { List, ListItem, Fab, Modal, TextField, ListItemText, ListItemIcon, ListItemSecondaryAction } from '@material-ui/core';
 import Swal from 'sweetalert2';
 
 import PlusIcon from '../common/icon/PlusIcon';
@@ -14,6 +14,7 @@ import CrossIcon from '../common/icon/CrossIcon';
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import CloseIcon from '../common/icon/CloseIcon';
+import DeleteIcon from '@material-ui/icons/Delete';
 let strings = new LocalizedStrings(data);
 
 
@@ -159,6 +160,151 @@ class CommentModal extends React.Component {
 }
 
 
+class DiscountModal extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      valeur: null
+    };
+    this.deleteDiscount = this.deleteDiscount.bind(this);
+    this.saveDiscount = this.saveDiscount.bind(this);
+    this.resetPopin = this.resetPopin.bind(this);
+    this.changeHandler = this.changeHandler.bind(this);
+    this.setDiscount = this.setDiscount.bind(this);
+  }
+
+  deleteDiscount() {
+    const {discountid, deleteHandler} = this.props;
+    if (discountid!==null) {
+
+      Swal.fire({
+        title: strings.modules.encaissement.discount.suppression.titre,
+        text: strings.modules.encaissement.discount.suppression.titre,
+        focusConfirm: true,
+        showCancelButton: true,
+        customClass: 'deleteconfirm',
+        confirmButtonText: strings.general.dialog.delete,
+        cancelButtonText: strings.general.dialog.cancel,
+        buttonsStyling: false 
+      })
+      .then((result) => {
+        if (result.value) {
+          deleteHandler({discountId:discountid});
+          this.resetPopin();
+          this.props.closeHandler();
+        }
+      });
+    }
+  }
+
+  saveDiscount() {
+    const { discountid, item, ingredient, sa } = this.props;
+    const { valeur } = this.state;
+
+    console.log('saveDiscount()');
+
+    this.props.saveHandler(discountid, item, ingredient, valeur);
+    this.resetPopin();
+    this.props.closeHandler();
+
+  }
+  resetPopin() {
+    this.setState({valeur:null});
+  }
+  changeHandler(event) {
+   // console.log('CommentModal.changeHandler()', event.target.value);
+    this.setState({valeur:Math.abs(event.target.value)});
+  }
+  setDiscount(valeur) {
+    // const { valeur } = this.state;
+    // let newvaleur = (valeur===null) ? '' : texte+', ';
+    this.setState({valeur: valeur});
+  }
+  render() {
+
+    const { discountid, item, ingredient, dsclib, closeHandler, deleteHandler, discountval, open } = this.props;
+    const { valeur } = this.state;
+
+    const vvaleur = valeur==null ? discountval : valeur;
+    console.log('discountval', discountval);
+
+    // setTimeout(() => {
+    //   if (this.refs.commentInput) this.refs.commentInput.focus();
+    // },500);
+
+    const __mttl = (ingredient) ? 'titre_ing' : (item) ? 'titre_itm' : 'titre_cmd';
+
+    const readytosave = valeur!==null;
+
+    return (
+      <Modal
+      open={open}
+      >
+      <div className={ `DiscountModal`}>
+        <div className="Modal-container">
+          <div className="header">
+            <div className="title">{ strings.modules.encaissement.discount[__mttl] }</div>
+          </div>
+          <div className="body">
+            <div className="form-group">
+                <div className="label">{ strings.modules.encaissement.discount.texte }</div>
+                <div className="valeur">
+                  {/* <TextField
+                    multiline
+                    id="texte"
+                    value={vtexte}
+                    rowsMax={3}
+                    ref="commentInput"
+                    onChange={this.changeHandler}
+                    variant="filled"
+                  /> */}
+                  <div className="discount-valeur">{ vvaleur }</div>
+                  <div className="caption">{ strings.modules.encaissement.discount.caption }</div>
+                </div>
+            </div>
+            <div className="form-group">
+              <div className="label">{ strings.modules.encaissement.discount.predefini }</div>
+              <div className="choix">
+                {dsclib && dsclib.map(dsc=>(
+                  <div className="dsclib-item" key={`dsc-${dsc.id}`} onClick={()=>{this.setDiscount(dsc.valeur)}}>{dsc.valeur}</div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="footer">
+            <StdButton 
+                identifier="modal-suppr" 
+                elementclass="suppr" 
+                icon={ false } 
+                disabled={ discountid==null }
+                text={ strings.modules.encaissement.discount.suppression.bouton } 
+                onClick={this.deleteDiscount} 
+              />
+            <StdButton 
+              identifier="modal-save" 
+              elementclass="save" 
+              icon={ false } 
+              disabled={ !readytosave }
+              text={ strings.general.dialog.save } 
+              onClick={this.saveDiscount} 
+            />
+          </div>
+        </div>
+        <Fab aria-label="close" size="small" className="close-button" onClick={ ()=>{this.resetPopin(); closeHandler()} }>
+          <CloseIcon />
+        </Fab>
+      </div>
+    </Modal>
+
+    );
+  }
+
+}
+
+
+
+
 class Panier extends React.Component {
 
   constructor(props) {
@@ -169,9 +315,13 @@ class Panier extends React.Component {
       inputfocus: true,
       searchval:'',
       commentOpen: false, 
-      commentId:null, 
-      commentItemId:null, 
-      commentIngredientId:null
+      commentId: null, 
+      commentItemId: null, 
+      commentIngredientId: null,
+      discountOpen: false, 
+      discountId: null, 
+      discountItemId: null, 
+      discountIngredientId: null
     }
     this.setSelectedIndex = this.setSelectedIndex.bind(this);
     this.setSelectedIngredient = this.setSelectedIngredient.bind(this);
@@ -181,6 +331,10 @@ class Panier extends React.Component {
     this.openComment = this.openComment.bind(this);
     this.saveComment = this.saveComment.bind(this);
     this.closeComment = this.closeComment.bind(this);
+
+    this.openDiscount = this.openDiscount.bind(this);
+    this.saveDiscount = this.saveDiscount.bind(this);
+    this.closeDiscount = this.closeDiscount.bind(this);
   }
 
   lock = false;
@@ -249,13 +403,25 @@ class Panier extends React.Component {
     this.setState({selectedIndex: index, selectedIngredient: ingidx})
   }
 
-  calculateTotal(items) {
+  calculateTotal(items, modificateurs) {
     let __total = 0;
     if (undefined!==items) {
       items.forEach(itm => {
         __total += itm.quantite * itm.prix;
       });
     }
+
+    // en attendant d'avoir un discount sur chaque item / ingredient
+    if (modificateurs && modificateurs.length) {
+      const ispc = String(modificateurs[0].valeur).substr(-1,1)==='%';
+      const val = Math.abs(Number(String(modificateurs[0].valeur).slice(0,-1)));
+      if (ispc) {
+        __total *= (100 - val) / 100;
+      } else {
+        __total -= val;
+      }
+    }
+
     return __total;
   }
 
@@ -333,6 +499,64 @@ class Panier extends React.Component {
 
 
 
+  openDiscount() {
+
+    const {modificateurs, items } = this.props.commande;
+    const {selectedIndex, selectedIngredient} = this.state;
+
+    // récup des id d'item et d'ingrédients en fonction de la sélection du panier
+  //  const itemid = (selectedIndex!==-1) ? items[selectedIndex].itemid : null;
+  //  const ingredientid = (selectedIngredient!==-1) ? items[selectedIndex].ingredients[selectedIngredient].ingredient : null;
+
+    // DEV : pour l'instant on n'utilise que le discount sur le panier entier
+    const itemid = null;
+    const ingredientid = null;
+
+    // si l'id de l'item est défini : 
+    // - soit un comment d'item
+    // - soit un comment d'ingrédient
+    // si pas d'id d'item : comment de commande
+    const discount = modificateurs.find(dsc => dsc.item==itemid && dsc.ingredient==ingredientid);
+
+    const discountId = (discount) ? discount.modificateur_id : null;
+
+    this.setState({
+      discountOpen: true, 
+      discountId: discountId, 
+      discountItemId: itemid, 
+      discountIngredientId: ingredientid,
+      inputfocus: false
+    });
+  }
+
+  saveDiscount(discountid, itemid, ingredientid, valeur) {
+    if (discountid===null) {
+      this.props.addDiscount({
+        item: itemid,
+        ingredient: ingredientid,
+        valeur: valeur
+      });
+    } else {
+      this.props.updateDiscount({
+        discountId: discountid, 
+        valeur: valeur
+      });
+    }
+  }
+
+  closeDiscount() {
+    this.setState({
+      discountOpen: false, 
+      discountId:null, 
+      discountItemId:null, 
+      discountIngredientId:null,
+      inputfocus: true
+    });
+  }
+
+
+
+
   openComment() {
 
     const {comments, items } = this.props.commande;
@@ -405,20 +629,31 @@ class Panier extends React.Component {
             parametres, 
             itemToPersonnalize, 
             uncompleteStep,
-            deleteComment } = this.props;
+            deleteComment,
+            deleteDiscount } = this.props;
 
-    const { comments, items, status, ticketId, mode } = this.props.commande;
+    const { comments, modificateurs, items, status, ticketId, mode } = this.props.commande;
     
-    const {inputfocus, searchval, commentOpen, commentId, commentItemId, commentIngredientId} = this.state;
+    const {inputfocus, searchval, 
+           commentOpen, commentId, commentItemId, commentIngredientId,
+           discountOpen, discountId, discountItemId, discountIngredientId } = this.state;
 
     // récup du texte en fonction de l'id du commentaire (s'il est défini)
     const commentTexte = (commentId!==null) ? comments.find(cmt=>cmt.comment_id==commentId).texte : '';
     // choix de messages prédéfinis pour les commentaires :
     const cmtlib = (parametres && parametres.commandes) ? parametres.commandes.comment_predefini : [];
 
+    // récup de la valeur en fonction de l'id du discount (s'il est défini)
+    const discountVal = (discountId!==null) ? modificateurs.find(dsc=>dsc.modificateur_id==discountId).valeur : '';
+    // choix de discounts prédéfinis pour les discounts :
+    const dsclib = (parametres && parametres.commandes) ? parametres.commandes.discount_predefini : [];
+
+
+
+
     console.log('searchval', searchval);
 
-    const total = this.calculateTotal(items);
+    const total = this.calculateTotal(items, modificateurs);
     const devise = '€';
     const { selectedIndex, selectedIngredient } = this.state;
 
@@ -620,6 +855,15 @@ class Panier extends React.Component {
                             this.props.openPersonnalisation(itm.itemid.toString(), stepid, __previd, __nextid, __step.validated, itm.status, 'item');
                           }} />
                   )}
+                  {modificateurs && <div className="separateur"></div>}
+                  {modificateurs && modificateurs.map(dis => (
+                    <DiscountListItem
+                      valeur={dis.valeur}
+                      id={dis.modificateur_id}
+                      onClick={this.openDiscount}
+                      deleteHandler={deleteDiscount}
+                      />
+                  ))}
                   </List>
               </div> {/* /.wrapper */}
               <div className="tools">
@@ -629,7 +873,7 @@ class Panier extends React.Component {
                 <Fab aria-label="remove" size="small" className="tool remove" disabled={selectedIndex===-1 || open} onClick={onClickRemove}>
                   <MinusIcon htmlColor="#1EA9DF" />
                 </Fab>
-                <Fab aria-label="discount" size="small" className="tool discount" disabled={selectedIndex===-1 || open}>
+                <Fab aria-label="discount" size="small" className="tool discount" disabled={open} onClick={this.openDiscount}>
                   <DiscountIcon />
                 </Fab>
                 <Fab aria-label="comment" size="small" className="tool comment" disabled={open} onClick={this.openComment}>
@@ -671,6 +915,17 @@ class Panier extends React.Component {
           ingredient={commentIngredientId}
           cmtlib={ cmtlib }
           />
+          <DiscountModal 
+            open={discountOpen} 
+            closeHandler={this.closeDiscount} 
+            saveHandler={this.saveDiscount}
+            deleteHandler={deleteDiscount}
+            discountid={discountId} 
+            item={discountItemId} 
+            discountval={ discountVal }
+            ingredient={discountIngredientId}
+            dsclib={ dsclib }
+            />
       </div>
     );
   }
@@ -695,6 +950,41 @@ Panier.propTypes = {
   openDrawer: PropTypes.func
 }
 
+
+function DiscountListItem (props) {
+  const {valeur, id, onClick, deleteHandler} = props;
+
+  const deleteDiscount = () => {
+
+      Swal.fire({
+        title: strings.modules.encaissement.discount.suppression.titre,
+        text: strings.modules.encaissement.discount.suppression.titre,
+        focusConfirm: true,
+        showCancelButton: true,
+        customClass: 'deleteconfirm',
+        confirmButtonText: strings.general.dialog.delete,
+        cancelButtonText: strings.general.dialog.cancel,
+        buttonsStyling: false 
+      })
+      .then((result) => {
+        if (result.value) {
+          deleteHandler({discountId:id});
+        }
+      });
+    }
+
+
+  return (
+    <ListItem className="discount">
+      <ListItemText primary={valeur} onClick={onClick} />
+      <ListItemSecondaryAction>
+        <ListItemIcon onClick={deleteDiscount}>
+          <DeleteIcon />
+        </ListItemIcon>
+      </ListItemSecondaryAction>
+    </ListItem>
+  );
+}
 
 
 class PanierListeItem extends React.Component {

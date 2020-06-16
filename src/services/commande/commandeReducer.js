@@ -22,6 +22,8 @@ export function commandeReducer(state = initialState, action) {
     , rnd = {}
     , comments = []
     , cmtIndex = -1
+    , modificateurs = []
+    , modIndex = -1
     ;
 
   switch (action.type) {
@@ -157,7 +159,7 @@ export function commandeReducer(state = initialState, action) {
     case commandeActionTypes.DELETE_COMMENT:
 
       comments = commande.comments;
-      cmtIndex = comments.findIndex((obj => obj.commentId == action.commentId));
+      cmtIndex = comments.findIndex((obj => obj.comment_id == action.commentId));
       
       if (-1 < cmtIndex) { 
         comments.splice(cmtIndex,1);
@@ -165,6 +167,52 @@ export function commandeReducer(state = initialState, action) {
         return {
           ...state,
           commande: {...commande, comments}
+        }
+      }
+
+
+
+    case commandeActionTypes.ADD_DISCOUNT:
+
+      modificateurs = commande.modificateurs;
+      modificateurs.push(action.modificateur);
+
+      return {
+        ...state,
+        commande: {...commande, modificateurs}
+      };
+
+
+    case commandeActionTypes.UPDATE_DISCOUNT:
+
+      const {discountId, valeur} = action.payload;
+
+      modificateurs = commande.modificateurs;
+      modIndex = modificateurs.findIndex((obj => obj.modificateur_id == discountId));
+
+      if (-1 < modIndex) { 
+        
+        const dsc = modificateurs[modIndex];
+        modificateurs[modIndex] = {...dsc, valeur:valeur};
+  
+        return {
+          ...state,
+          commande: {...commande, modificateurs:modificateurs}
+        }
+      };
+
+
+    case commandeActionTypes.DELETE_DISCOUNT:
+
+      modificateurs = commande.modificateurs;
+      modIndex = modificateurs.findIndex((obj => obj.modificateur_id == action.discountId));
+      
+      if (-1 < modIndex) { 
+        modificateurs.splice(modIndex,1);
+        
+        return {
+          ...state,
+          commande: {...commande, modificateurs}
         }
       }
 

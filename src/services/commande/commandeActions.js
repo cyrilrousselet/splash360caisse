@@ -434,6 +434,27 @@ function deleteComment(payload) {
   }
 }
 
+function addDiscount(payload) {
+  return (dispatch, getState) => {
+    const modificateurs = getState().commandeReducer.commande.modificateurs;
+
+    const modificateur = commandeServices.addModificateur(payload, modificateurs);
+    dispatch({ type: commandeActionTypes.ADD_DISCOUNT, modificateur });
+  }
+}
+function updateDiscount(payload) {
+  return (dispatch, getState) => {
+    const {discountId, valeur} = payload;
+    console.log('CommandeActions.updateDiscount', payload);
+    dispatch({ type: commandeActionTypes.UPDATE_DISCOUNT, payload: payload });
+  }
+}
+function deleteDiscount(payload) {
+  return (dispatch, getState) => {
+    dispatch({ type: commandeActionTypes.DELETE_DISCOUNT, discountId: payload.discountId });
+  }
+}
+
 function archiveCommands(payload) {
 
   return (dispatch) => {
@@ -578,6 +599,9 @@ export const commandeActions = {
   addComment,
   updateComment,
   deleteComment,
+  addDiscount,
+  updateDiscount,
+  deleteDiscount,
   setCommandeFromOrder,
   setCommandeFromAPI,
   getAllTicketsRestaurant,

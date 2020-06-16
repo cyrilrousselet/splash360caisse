@@ -442,7 +442,27 @@ function printCommandeTicket(quelstickets, cmd) {
         // modificateurs pour la commande
         __modificateur = cmd.modificateurs.find(c => c.item==null && c.ingredient==null);
         if (__modificateur) {
-          total += Number(__modificateur.valeur);
+       //   total += Number(__modificateur.valeur);
+
+          const ispc = String(cmd.modificateurs[0].valeur).substr(-1,1)==='%';
+          const val = Math.abs(Number(String(cmd.modificateurs[0].valeur).slice(0,-1)));
+
+          // conversion du modificateur en coefficient
+          const modtx = (ispc) ? (100 - val) / 100 : 1 - (val/total);
+
+          if (ispc) {
+            total *= (100 - val) / 100;
+          } else {
+            total -= val;
+          }
+
+
+          // application de la réduction aux taux de tva
+          Object.entries(cmdTva).forEach(([key, value])=> {
+            cmdTva[key].ht *= modtx; 
+            cmdTva[key].ttc *= modtx; 
+          });
+
         }
 
         const commande = {

@@ -790,7 +790,7 @@ function saveCommande(commande, catalogueReducer) {
   const __c = {
     ...commande,
     items,
-    total: _getCommandeTotal(commande.items)
+    total: _getCommandeTotal(commande.items, commande.modificateurs)
   }
 
 
@@ -995,7 +995,7 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
     
   });
   
-  commande.total = _getCommandeTotal(commande.items);
+  commande.total = _getCommandeTotal(commande.items, []);
   return commande;
 
 
@@ -1037,7 +1037,7 @@ const _newModificateurId = () => {
 }
 
 
-const _getCommandeTotal = (items) => {
+const _getCommandeTotal = (items, modificateurs) => {
   // montant à payer (somme des items)
   let __total = 0;
   if (undefined!==items) {
@@ -1045,5 +1045,17 @@ const _getCommandeTotal = (items) => {
       __total += itm.quantite * itm.prix;      
     });
   }
+
+  // en attendant d'avoir un discount sur chaque item / ingredient
+  if (modificateurs && modificateurs.length) {
+    const ispc = String(modificateurs[0].valeur).substr(-1,1)==='%';
+    const val = Math.abs(Number(String(modificateurs[0].valeur).slice(0,-1)));
+    if (ispc) {
+      __total *= (100 - val) / 100;
+    } else {
+      __total -= val;
+    }
+  }
+
   return __total;
 }

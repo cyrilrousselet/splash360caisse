@@ -146,6 +146,19 @@ const data = {
                         texte: "Êtes-vous sûr de supprimer le commentaire ?<br />Cette opération est définitive"
                     }
                 },
+                discount: {
+                    titre_cmd: "Réduction sur le panier",
+                    titre_itm: "Réduction sur le produit",
+                    titre_ing: "Réduction sur l’ingrédient",
+                    // texte: "Saisissez votre réduction :",
+                    // caption: "Texte libre, max 126 car.",
+                    predefini: "Réduction prédéfinie :",
+                    suppression: {
+                        bouton: "Supprimer réduction",
+                        titre: "Suppression de la réduction",
+                        texte: "Êtes-vous sûr de supprimer la réduction ?<br />Cette opération est définitive"
+                    }
+                },
                 reglement: {
                     titre: "Encaissement",
                     liste: {

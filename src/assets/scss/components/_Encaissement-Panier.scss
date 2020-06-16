@@ -205,5 +205,12 @@
             }
         }
     }
-
+    .separateur {
+        height: 10px;
+    }
+    .discount {
+        border-radius: 20px;
+        background-color: $prairie;
+        padding: 5px 20px;
+    }
 }

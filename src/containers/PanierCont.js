@@ -42,7 +42,10 @@ const mapDispatchToProps = (dispatch) => {
     openDrawer: peripheralActions.openDrawer,
     addComment: commandeActions.addComment,
     updateComment: commandeActions.updateComment,
-    deleteComment: commandeActions.deleteComment
+    deleteComment: commandeActions.deleteComment,
+    addDiscount: commandeActions.addDiscount,
+    updateDiscount: commandeActions.updateDiscount,
+    deleteDiscount: commandeActions.deleteDiscount
   }, dispatch);
   return {
     ...bound,

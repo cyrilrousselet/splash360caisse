@@ -697,10 +697,20 @@ function _printCommande(printer, data, strings) {
     .size(1,1)
     .drawLine();
 
-    align('CT')
+    const ispc = String(data.modificateur).substr(-1,1)==='%';
+    let modval = Math.abs(Number(String(data.modificateur).slice(0,-1)));
+    if (!ispc) {
+      modval = modval.toFixed(2).toString().replace('.',',') + ' EUR';
+    } else {
+      modval += ' %';
+    }
+
+  printer
+    .align('CT')
     .size(1,1)
     .tableCustom([
-      {text: `${(data.modificateur>0?strings.modificateur.charge:strings.modificateur.discount)}   ${data.modificateur.toFixed(2).toString().replace('.',',')}`, cols:42, align:'RIGHT'}
+      {text: strings.modificateur.discount, cols:32, align:'LEFT'},
+      {text: modval, cols:10, align:'RIGHT'}
     ])
     .size(1,1)
   }

@@ -9,7 +9,7 @@ import { peripheralActions } from '../services/peripheral/peripheralActions';
 import { marketingActions } from '../services/marketing/marketingActions';
 
 
-const getCommandeTotal = (items) => {
+const getCommandeTotal = (items, modificateurs) => {
   // montant à payer (somme des items)
   let __total = 0;
   if (undefined!==items) {
@@ -17,6 +17,19 @@ const getCommandeTotal = (items) => {
       __total += itm.quantite * itm.prix;      
     });
   }
+
+    // en attendant d'avoir un discount sur chaque item / ingredient
+    if (modificateurs && modificateurs.length) {
+      const ispc = String(modificateurs[0].valeur).substr(-1,1)==='%';
+      const val = Math.abs(Number(String(modificateurs[0].valeur).slice(0,-1)));
+      if (ispc) {
+        __total *= (100 - val) / 100;
+      } else {
+        __total -= val;
+      }
+    }
+
+
   console.log('getCommandeTotal : '+__total);
   return __total;
 }
@@ -28,7 +41,7 @@ const mapStateToProps = (...args) => {
     const props = args[1];
   return {
     //open: state.openReglement,
-    valueToPay: getCommandeTotal(getCommande(state).items),
+    valueToPay: getCommandeTotal(getCommande(state).items, getCommande(state).modificateurs),
     tiroirOuvert: getTiroirOuvert(state),
     loading: getCommandeLoading(state),
     commande: getCommande(state),
