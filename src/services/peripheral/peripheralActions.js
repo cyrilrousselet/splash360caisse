@@ -289,6 +289,11 @@ function printCommandeTicket(quelstickets, cmd) {
     const { imprimantes, tickets } = state.peripheralReducer;
     const { peripheriques, entreprise } = state.parametresReducer.parametres;
     const { impression } = peripheriques;
+    const { clients } = state.clientsReducer;
+
+
+    console.log(cmd);
+    console.log(clients);
 
     const caisse = cmd.caisse;
     const operateur = cmd.operator;
@@ -478,7 +483,7 @@ function printCommandeTicket(quelstickets, cmd) {
           rendus: cmd.rendus,
           comment: __comment ? __comment.texte : '',
           modificateur: __modificateur ? __modificateur.valeur: 0,
-          client: cmd.client
+          client: cmd.client && clients.find(c=>c.client_id==cmd.client.client_id)
         };
 
 

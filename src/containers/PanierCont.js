@@ -11,6 +11,7 @@ import Panier from '../components/Encaissement/Panier';
 
 import history from './../helpers/history';
 import paths from './../constants/routes.json';
+import { clientsActions } from '../services/clients/clientsActions';
 
 const gotoListeCommandes = () => {
   history.push(paths.LISTECOMMANDES);
@@ -46,7 +47,8 @@ const mapDispatchToProps = (dispatch) => {
     deleteComment: commandeActions.deleteComment,
     addDiscount: commandeActions.addDiscount,
     updateDiscount: commandeActions.updateDiscount,
-    deleteDiscount: commandeActions.deleteDiscount
+    deleteDiscount: commandeActions.deleteDiscount,
+    getClientsList: clientsActions.getClientsList
   }, dispatch);
   return {
     ...bound,

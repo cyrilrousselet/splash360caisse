@@ -613,11 +613,18 @@ function _printCommande(printer, data, strings) {
           .size(1,1)
           .style('NORMAL')
           .tableCustom([
-            {text: `${strings.client.titre} ${data.client.prenom} ${data.client.nom}`, cols:42, align:'CENTER'}
+            {text: `${strings.client.titre} ${data.client.prenom} ${data.client.nom}`, cols:42, align:'LEFT'}
           ])
           .tableCustom([
-            {text: `(${data.client.client_id})`, cols:42, align:'CENTER'}
+            {text: `(${data.client.client_id})`, cols:42, align:'LEFT'}
           ]);
+    if (data.client.adresse!=='') printer.tableCustom([{text: data.client.adresse, cols:42, align:'LEFT'}]);
+    if (data.client.adresse2!=='') printer.tableCustom([{text: data.client.adresse2, cols:42, align:'LEFT'}]);
+    if (data.client.batiment!=='' || data.client.etage!=='') printer.tableCustom([{text: `${((data.client.batiment!=='')?strings.client.batiment+data.client.batiment:'')}${((data.client.batiment!=='' && data.client.etage!=='')?' - ':'')}${((data.client.etage!=='')?strings.client.etage+data.client.etage:'')}`, cols:42, align:'LEFT'}]);
+    if (data.client.codepostal!=='' || data.client.ville!=='') printer.tableCustom([{text: `${data.client.codepostal} ${data.client.ville}`, cols:42, align:'LEFT'}]);
+    if (data.client.telephone!=='' || data.client.telephone2!=='') printer.tableCustom([{text: `${strings.client.tel} ${data.client.telephone}${((data.client.telephone!=='' && data.client.telephone2!=='')?' - ':'')}${data.client.telephone2}`, cols:42, align:'LEFT'}]);
+    if (data.client.commentaire!=='') printer.tableCustom([{text: `${strings.client.commentaire} ${data.client.commentaire}`, cols:42, align:'LEFT'}]);
+
     printer.drawLine();
   }
 

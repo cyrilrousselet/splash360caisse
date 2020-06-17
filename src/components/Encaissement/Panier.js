@@ -348,10 +348,11 @@ class Panier extends React.Component {
   search_tmo = -1;
 
   componentDidMount() {
-    const { getCommande, getParametres, getListeCommandes } = this.props;
+    const { getCommande, getParametres, getListeCommandes, getClientsList } = this.props;
     getCommande();
     getListeCommandes();
     getParametres();    
+    getClientsList();
   }
   componentDidUpdate() {
     const { items } = this.props.commande;
@@ -631,13 +632,17 @@ class Panier extends React.Component {
     });
   }
   selectClient(client) {
-    this.props.updateCommande({
-      client:{
-        nom:client.nom, 
-        prenom:client.prenom, 
-        client_id:client.client_id
-      }
-    });
+    if (client===null) {
+      this.props.updateCommande({client:null});
+    } else {
+      this.props.updateCommande({
+        client:{
+          nom:client.nom, 
+          prenom:client.prenom, 
+          client_id:client.client_id
+        }
+      });
+    }
   }
 
 
@@ -964,7 +969,7 @@ class Panier extends React.Component {
           ingredient={discountIngredientId}
           dsclib={ dsclib }
           />
-        <FicheClientCont open={ficheClientOpen} client={commandeClient} contexte="encaissement" closeHandler={this.closeFicheClient} selectClient={this.selectClient} />
+        <FicheClientCont open={ficheClientOpen} client={commandeClient} mode={commandeClient?'fiche':'recherche'} contexte="encaissement" closeHandler={this.closeFicheClient} selectClient={this.selectClient} />
       </div>
     );
   }

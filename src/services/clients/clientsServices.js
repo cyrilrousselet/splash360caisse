@@ -41,7 +41,11 @@ function createClient(payload) {
 }
 
 function updateClient(client) {
-  return emit('dbClientPersist', {client:client});
+  return emit('dbClientPersist', {client:{
+                                    ...client,
+                                    prenom_canonical: canonicalizeString(client.prenom),
+                                    nom_canonical: canonicalizeString(client.nom),
+                                  }});
 }
 
 function deleteClient(client_id) {

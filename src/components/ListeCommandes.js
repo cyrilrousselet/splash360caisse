@@ -181,6 +181,7 @@ class ListeCommandes extends React.Component {
     console.log('ListeCommandes.componentDidMount()');
     this.props.getCommandesList();
     this.props.getAllActive();
+    this.props.getClientsList();
   }
 
   setSelectedDate(bound,date) {
@@ -352,7 +353,7 @@ class ListeCommandes extends React.Component {
         date: format(new Date(value.createdAt), "d MMM yyyy", { locale: this.locale }),
         heure: format(new Date(value.createdAt), "H:mm:ss"),
         montant: `${value.total.toFixed(2).replace('.',',')} €`,
-        client: 'Anonyme',
+        client: value.client ? value.client.nom+' '+value.client.prenom : 'Anonyme',
         caisse: value.caisse,
         centre: value.centre_revenu ? value.centre_revenu : 'restaurant'
       };

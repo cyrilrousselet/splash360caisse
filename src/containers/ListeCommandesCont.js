@@ -7,6 +7,7 @@ import { commandeActions } from '../services/commande/commandeActions';
 import { catalogueActions } from '../services/catalogue/catalogueActions';
 import { getCommandesListError, getCommandesListLoading, getCommandesList } from '../services/commande/commandesListReducer';
 import { peripheralActions } from '../services/peripheral/peripheralActions';
+import { clientsActions } from '../services/clients/clientsActions';
 
 
 const getTicketsListe = (state) => {
@@ -32,6 +33,7 @@ const mapDispatchToProps = (dispatch) => {
       getAllActive: catalogueActions.getAllActive,
       getCommandesList: commandeActions.getCommandesList,
       getCommande: commandeActions.getCommande,
+      getClientsList: clientsActions.getClientsList,
       deleteStandbyCommande: commandeActions.deleteStandbyCommande,
       printTicket: peripheralActions.printTicket
   }, dispatch);

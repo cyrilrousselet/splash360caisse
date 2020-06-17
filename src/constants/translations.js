@@ -611,7 +611,10 @@ const data = {
                     tel2: 'Téléphone 2',
                     email: 'Email',
                     remarque: 'Remarque',
-                    save_select: 'Enregistrer et Sélectionner'
+                    save_select: 'Enregistrer et Sélectionner',
+                    unselect: 'Désélectionner',
+                    rechercher: 'CLIENT',
+                    input: 'Nom ou téléphone'
                 }
             },
             compte_utilisateur: { nom: "Compte utilisateur" },
@@ -931,7 +934,12 @@ const data = {
                     monnaie: 'EUR'
                 },
                 client: {
-                    titre: 'Client :'
+                    titre: 'Client :',
+                    tel: 'Tel :',
+                    batiment: 'Bat. ',
+                    etage: 'Etage ',
+                    email: 'Email :',
+                    commentaire: 'Cmt. :'
                 }
             },
             uber: {

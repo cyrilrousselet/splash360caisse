@@ -91,11 +91,13 @@ export function commandeReducer(state = initialState, action) {
 
     case commandeActionTypes.UPDATE_COMMANDE:
 
-      let {mode, status, commentaire, client} = action.payload;
+    //  let {mode, status, client} = action.payload;
+      let payload = action.payload;
       return {
         ...state,
         commande: {
-          ...commande, mode, status, commentaire, client
+//          ...commande, mode, status, client
+          ...commande, ...payload
         }
       }
 

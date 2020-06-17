@@ -16,6 +16,9 @@ import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import MapIcon from './../common/icon/MapIcon';
 import { th } from 'date-fns/locale';
+import PlusIcon from '../common/icon/PlusIcon';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
 
 let strings = new LocalizedStrings(data);
 
@@ -28,7 +31,7 @@ class FicheClient extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      mode: 'fiche',
+      innermode: null,
       client_id: null,
       nom: '', 
       prenom: '',
@@ -50,6 +53,11 @@ class FicheClient extends React.Component {
     this.saveClient = this.saveClient.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
     this.closePopin = this.closePopin.bind(this);
+    this.gotoFiche = this.gotoFiche.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.getAll();
   }
 
   getValeurs() {
@@ -102,6 +110,7 @@ class FicheClient extends React.Component {
   }
   resetPopin() {
     const st = { 
+      innermode: null,
       client_id: null,
       nom: '', 
       prenom: '',
@@ -141,11 +150,20 @@ class FicheClient extends React.Component {
   }
 
   handleSelect() {
-    const client_id = this.props.client && this.props.client.client_id || null;
+
+    const { selectClient, client, closeHandler, mode } = this.props;
+
+    const client_id = client && client.client_id || null;
     if (client_id==null) { 
       this.saveClient(true);
     } else {
-      this.props.selectClient(this.props.client);
+      if (mode=='fiche') {
+        selectClient(null);
+        this.resetPopin();
+        closeHandler();
+      } else {
+        selectClient(client);
+      }
     }
   }
 
@@ -156,11 +174,19 @@ class FicheClient extends React.Component {
     closeHandler();
   }
 
+  gotoFiche() {
+    this.setState({innermode:'fiche'});
+  }
+
+  getRecherche(value) {
+     console.log('recherche', value);
+     this.setState({innermode:'fiche', ...value});
+  }
+
 
   render() {
 
-    const {open, client} = this.props;
-    const {mode} = this.state;
+    const {open, client, mode, clients} = this.props;
     const {
       client_id,
       nom, prenom,
@@ -175,12 +201,49 @@ class FicheClient extends React.Component {
     const readytovalidate = nom!=='' && prenom!=='' && (telephone!=='' || EMAIL_REG.test(email));
     const mapid = 'map-none';
 
+    const vmode = this.state.innermode || mode;
+
+    console.log('clients', clients);
+
     return (
-      <Modal open={open && mode==='fiche'}>
+      <Modal open={open}>
         <div className="FicheClient">
-          <div className="Modal-container">
+          { vmode==='recherche' && (<div className="Modal-container recherche">
+            <div className="recherche-cont">
+              <Fab size="small" onClick={this.gotoFiche}>
+                <PlusIcon />
+              </Fab>
+              <div className="titre">{ strings.modules.clients.edition.rechercher }</div>
+              <Autocomplete
+                className="recherche-input"
+                id="clt-recherche"
+                options={clients}
+                onChange={(event, newValue) => {
+                  this.getRecherche(newValue);
+                }}
+                getOptionLabel={(option) => option.prenom+' '+option.nom+' '+option.telephone}
+                renderOption={(option) => (
+                    <React.Fragment>
+                      { option.prenom+' '+option.nom+' '+option.telephone }
+                    </React.Fragment>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label={ strings.modules.clients.edition.input }
+                      variant="filled"
+                      inputProps={{
+                        ...params.inputProps,
+                        autoComplete: 'new-password'
+                      }}
+                    />
+                  )}
+                />
+            </div>
+          </div>)}
+          { vmode==='fiche' && (<div className="Modal-container">
             <div className="body"><div className="col">
-                <div className="title">{client==null ? strings.modules.clients.edition.ajouter : strings.modules.clients.edition.editer }</div>
+                <div className="title">{client_id==null ? strings.modules.clients.edition.ajouter : strings.modules.clients.edition.editer }</div>
                 <div className="section-fidelite">
                   <LabelledField 
                       id={ `clientid` }
@@ -373,7 +436,7 @@ class FicheClient extends React.Component {
                   />
                   <div className="remarque">
                     <label>{ strings.modules.clients.edition.remarque }</label>
-                    <textarea value={ commentaire }></textarea>
+                    <textarea value={ commentaire } onChange={(event)=>{this.updateValue({commentaire:event.target.value}) }} />
                   </div>
                 </div>
               </div>
@@ -386,10 +449,10 @@ class FicheClient extends React.Component {
             <div className="footer">
               <StdButton 
                 identifier="modal-select" 
-                elementclass="select" 
+                elementclass={ `select${((client_id&&client)?' unselect':'')}` } 
                 icon={ false } 
                 disabled={ !readytovalidate }
-                text={ client_id ? strings.general.dialog.select : strings.modules.clients.edition.save_select } 
+                text={ client_id ? client ? strings.modules.clients.edition.unselect : strings.general.dialog.select : strings.modules.clients.edition.save_select } 
                 onClick={this.handleSelect} 
               />
               <StdButton 
@@ -401,7 +464,7 @@ class FicheClient extends React.Component {
                 onClick={this.saveClient} 
               />
             </div>
-          </div>
+          </div>)}
           <Fab aria-label="close" size="small" className="close-button" onClick={ this.closePopin }>
             <CloseIcon />
           </Fab>
