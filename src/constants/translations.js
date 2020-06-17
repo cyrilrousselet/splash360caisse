@@ -31,10 +31,11 @@ const data = {
                 cancel: "Annuler",
                 clear: "Effacer",
                 save: "Enregistrer",
-                back: 'Retour',
-                delete: 'Supprimer',
-                accept: 'Accepter',
-                deny: 'Refuser'
+                back: "Retour",
+                delete: "Supprimer",
+                accept: "Accepter",
+                deny: "Refuser",
+                select: "Sélectionner"
             },
             check: {
                 tous: 'Tout sélectionner',
@@ -609,7 +610,8 @@ const data = {
                     tel1: 'Téléphone 1',
                     tel2: 'Téléphone 2',
                     email: 'Email',
-                    remarque: 'Remarque'
+                    remarque: 'Remarque',
+                    save_select: 'Enregistrer et Sélectionner'
                 }
             },
             compte_utilisateur: { nom: "Compte utilisateur" },
@@ -927,6 +929,9 @@ const data = {
                 rendu: {
                     titre: 'RENDU :',
                     monnaie: 'EUR'
+                },
+                client: {
+                    titre: 'Client :'
                 }
             },
             uber: {

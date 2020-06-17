@@ -1,5 +1,6 @@
 
-.ClientModal {
+.ClientModal,
+.FicheClient {
   display: inline-block;
   position: absolute;
   left: 50%;
@@ -147,17 +148,31 @@
   }
 
   .footer{
-      text-align: right;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
       padding: 0 20px;
-    .save {
-        background-color:$vert;
-        width: 45%;
-        min-height: 30px;
-        .StdButton-text {
-            font-family: $f_blk;
-            font-size: 14px;
-            text-transform: uppercase;
-        }
-    }
+      .select {
+          background-color:$bleu;
+          
+          min-width: 200px;
+          min-height: 30px;
+          .StdButton-text {
+              font-family: $f_blk;
+              font-size: 14px;
+              text-transform: uppercase;
+          }
+      }
+      .save {
+          background-color:$vert;
+          min-width: 200px;
+          min-height: 30px;
+          .StdButton-text {
+              font-family: $f_blk;
+              font-size: 14px;
+              text-transform: uppercase;
+          }
+      }
   }
 }

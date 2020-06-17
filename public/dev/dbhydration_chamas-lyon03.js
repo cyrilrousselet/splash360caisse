@@ -328,6 +328,8 @@ const hydration = {
  
  
    commandes: [],
+
+   clients: [],
  
    clotures: [],
  

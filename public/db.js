@@ -14,7 +14,7 @@ const FileAsync = require('lowdb/adapters/FileAsync');
 const hydration = require(`./dev/dbhydration.js`);
 
 const {categories, groupes, tva, types, ingredients, produits, steps} = hydration;
-const {commandes, ticketsrestau} = hydration;
+const {commandes, clients, ticketsrestau} = hydration;
 const {parametres, imprimantes, tickets} = hydration;
 const {users} = hydration;
 const {clotures} = hydration;
@@ -52,6 +52,7 @@ const db = {
  produits: dbFactory('produits.json', {produits: produits}),
  steps: dbFactory('steps.json', {steps: steps}),
  commandes: dbFactory('commandes.json', {commandes: commandes}),
+ clients: dbFactory('clients.json', {clients: clients}),
  ticketsrestau: dbFactory('ticketsrestau.json', {ticketsrestau: ticketsrestau}),
  imprimantes: dbFactory('imprimantes.json', {imprimantes: imprimantes}),
  tickets: dbFactory('tickets.json', {tickets: tickets}),

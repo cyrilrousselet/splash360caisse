@@ -141,6 +141,8 @@ function _doPrintTicket(imprimante, template, contenu) {
     device = new escpos.USB();
   } else if (imprimante.connexion=='network') {
     device = new escpos.Network(imprimante.param); 
+  } else if (imprimante.connexion=='serial') {
+    device = new escpos.Serial(imprimante.param);
   }
   const options = {encoding: imprimante.encoding, width:42};
   const printer = new escpos.Printer(device, options);
@@ -591,16 +593,34 @@ function _printCommande(printer, data, strings) {
     ;
 
 
-    if (data.comment!=='') {
-      printer.style('B').tableCustom([
-        {text:'', cols:3},
-        {text: '* ', cols:2, align:'RIGHT'},
-        {text: data.comment, cols:32, align:'LEFT'},
-        {text: ' *', cols:2, align:'RIGHT'},
-        {text:'', cols:3}
-      ]);
-      printer.drawLine();
-    }
+  if (data.comment!=='') {
+    printer.style('B').tableCustom([
+      {text:'', cols:3},
+      {text: '* ', cols:2, align:'RIGHT'},
+      {text: data.comment, cols:32, align:'LEFT'},
+      {text: ' *', cols:2, align:'RIGHT'},
+      {text:'', cols:3}
+    ]);
+    printer.font('A')
+          .size(1,1)
+          .style('NORMAL')
+          .drawLine();
+  }
+
+  if (data.client!==null) {
+
+    printer.font('A')
+          .size(1,1)
+          .style('NORMAL')
+          .tableCustom([
+            {text: `${strings.client.titre} ${data.client.prenom} ${data.client.nom}`, cols:42, align:'CENTER'}
+          ])
+          .tableCustom([
+            {text: `(${data.client.client_id})`, cols:42, align:'CENTER'}
+          ]);
+    printer.drawLine();
+  }
+
 
   // articles
   // header
@@ -649,7 +669,6 @@ function _printCommande(printer, data, strings) {
           {text: ' *', cols:2, align:'RIGHT'},
           {text:'', cols:3}
         ]);
-        printer.drawLine();
         _linecount++;
       }
       _linecount++;
@@ -675,7 +694,6 @@ function _printCommande(printer, data, strings) {
             {text: ' *', cols:2, align:'RIGHT'},
             {text:'', cols:3}
           ]);
-          printer.drawLine();
           _linecount++;
         }
         _linecount++;

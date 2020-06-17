@@ -477,7 +477,8 @@ function printCommandeTicket(quelstickets, cmd) {
           reglements: cmd.reglements,
           rendus: cmd.rendus,
           comment: __comment ? __comment.texte : '',
-          modificateur: __modificateur ? __modificateur.valeur: 0
+          modificateur: __modificateur ? __modificateur.valeur: 0,
+          client: cmd.client
         };
 
 

@@ -15,6 +15,8 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import CloseIcon from '../common/icon/CloseIcon';
 import DeleteIcon from '@material-ui/icons/Delete';
+import AccountBoxIcon from '@material-ui/icons/AccountBox';
+import FicheClientCont from '../../containers/FicheClientCont';
 let strings = new LocalizedStrings(data);
 
 
@@ -321,7 +323,8 @@ class Panier extends React.Component {
       discountOpen: false, 
       discountId: null, 
       discountItemId: null, 
-      discountIngredientId: null
+      discountIngredientId: null,
+      ficheClientOpen: false
     }
     this.setSelectedIndex = this.setSelectedIndex.bind(this);
     this.setSelectedIngredient = this.setSelectedIngredient.bind(this);
@@ -335,6 +338,10 @@ class Panier extends React.Component {
     this.openDiscount = this.openDiscount.bind(this);
     this.saveDiscount = this.saveDiscount.bind(this);
     this.closeDiscount = this.closeDiscount.bind(this);
+
+    this.openFicheClient = this.openFicheClient.bind(this);
+    this.closeFicheClient = this.closeFicheClient.bind(this);
+    this.selectClient = this.selectClient.bind(this);
   }
 
   lock = false;
@@ -610,6 +617,31 @@ class Panier extends React.Component {
     });
   }
 
+
+  openFicheClient() {
+    this.setState({
+      ficheClientOpen: true,
+      inputfocus: false
+    });
+  }
+  closeFicheClient() {
+    this.setState({
+      ficheClientOpen: false,
+      inputfocus: true
+    });
+  }
+  selectClient(client) {
+    this.props.updateCommande({
+      client:{
+        nom:client.nom, 
+        prenom:client.prenom, 
+        client_id:client.client_id
+      }
+    });
+  }
+
+
+
   interval = 0;
 
   render() {
@@ -630,13 +662,15 @@ class Panier extends React.Component {
             itemToPersonnalize, 
             uncompleteStep,
             deleteComment,
-            deleteDiscount } = this.props;
+            deleteDiscount,
+            clients } = this.props;
 
-    const { comments, modificateurs, items, status, ticketId, mode } = this.props.commande;
+    const { comments, modificateurs, items, status, ticketId, mode, client } = this.props.commande;
     
     const {inputfocus, searchval, 
            commentOpen, commentId, commentItemId, commentIngredientId,
-           discountOpen, discountId, discountItemId, discountIngredientId } = this.state;
+           discountOpen, discountId, discountItemId, discountIngredientId,
+           ficheClientOpen } = this.state;
 
     // récup du texte en fonction de l'id du commentaire (s'il est défini)
     const commentTexte = (commentId!==null) ? comments.find(cmt=>cmt.comment_id==commentId).texte : '';
@@ -649,6 +683,7 @@ class Panier extends React.Component {
     const dsclib = (parametres && parametres.commandes) ? parametres.commandes.discount_predefini : [];
 
 
+    const commandeClient = client ? clients.find(c=>c.client_id==client.client_id) : null;
 
 
     console.log('searchval', searchval);
@@ -806,6 +841,9 @@ class Panier extends React.Component {
           {/* <div className="ticketId">{ (this.interval==0?'X':'√')+strings.modules.encaissement.panier.ticket_no+' '+ticketId }</div> */}
           <div className="ticketId">{ strings.modules.encaissement.panier.ticket_no+' '+ticketId }</div>
           <div className="ticketComment"></div>
+          <div className="ticketClient">
+            <AccountBoxIcon className={`ico-client ${client?'client-set':'anonymous'}`} onClick={this.openFicheClient} />
+          </div>
         </div>
         <div className="body">
           <input className="search-input" ref="searchInput" onKeyUp={this.searchHandler} />
@@ -915,17 +953,18 @@ class Panier extends React.Component {
           ingredient={commentIngredientId}
           cmtlib={ cmtlib }
           />
-          <DiscountModal 
-            open={discountOpen} 
-            closeHandler={this.closeDiscount} 
-            saveHandler={this.saveDiscount}
-            deleteHandler={deleteDiscount}
-            discountid={discountId} 
-            item={discountItemId} 
-            discountval={ discountVal }
-            ingredient={discountIngredientId}
-            dsclib={ dsclib }
-            />
+        <DiscountModal 
+          open={discountOpen} 
+          closeHandler={this.closeDiscount} 
+          saveHandler={this.saveDiscount}
+          deleteHandler={deleteDiscount}
+          discountid={discountId} 
+          item={discountItemId} 
+          discountval={ discountVal }
+          ingredient={discountIngredientId}
+          dsclib={ dsclib }
+          />
+        <FicheClientCont open={ficheClientOpen} client={commandeClient} contexte="encaissement" closeHandler={this.closeFicheClient} selectClient={this.selectClient} />
       </div>
     );
   }

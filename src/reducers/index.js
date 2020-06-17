@@ -11,6 +11,7 @@ import { clotureReducer } from './../services/cloture/clotureReducer';
 import { employesReducer } from './../services/employes/employesReducer';
 import { marketingReducer } from './../services/marketing/marketingReducer';
 import { notificationReducer } from './../services/notification/notificationReducer';
+import { clientsReducer } from './../services/clients/clientsReducer';
 import { authentication } from './authenticationReducer';
 
 export default function createRootReducer(history) {
@@ -26,6 +27,7 @@ export default function createRootReducer(history) {
         employesReducer,
         marketingReducer,
         notificationReducer,
+        clientsReducer,
         authentication
     });
 }

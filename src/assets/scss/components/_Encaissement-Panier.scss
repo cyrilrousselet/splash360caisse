@@ -23,7 +23,11 @@
         z-index: 1301;
     }
 
-    .header {
+    .header {    
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
         height: 30px;
         .ticketId {
             font-family: $f_med;
@@ -33,6 +37,12 @@
         }
         .ticketComment {
             float: right;
+        }
+        .ticketClient {
+            cursor: pointer;
+            .client-set {
+                fill: $vert;
+            }
         }
     }
 

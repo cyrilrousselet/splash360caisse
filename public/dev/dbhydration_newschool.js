@@ -509,6 +509,8 @@ const hydration = {
   
   commandes: [],
 
+  clients: [],
+
   ticketsrestau: [],
 
   clotures: [],

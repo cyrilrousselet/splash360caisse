@@ -23,7 +23,8 @@ const mapStateToProps = (state) => {
     commandeslist: getCommandesList(state),
     error: getCommandeError(state),
     steps: getSteps(state),
-    parametres: getParametres(state)
+    parametres: getParametres(state),
+    clients: state.clientsReducer.clients
   };
 }
 
