@@ -479,6 +479,7 @@ function printCommandeTicket(quelstickets, cmd) {
             total: total.toFixed(2),
             tva: cmdTva
           },
+          mode: cmd.mode,
           reglements: cmd.reglements,
           rendus: cmd.rendus,
           comment: __comment ? __comment.texte : '',
@@ -586,7 +587,8 @@ function printCommandeTicket(quelstickets, cmd) {
           mode: cmd.mode,
           date: `${date} à ${heure}`,
           articles: articles,
-          comment: __comment ? __comment.texte : ''
+          comment: __comment ? __comment.texte : '',
+          client: cmd.client && clients.find(c=>c.client_id==cmd.client.client_id)
         };
 
 
@@ -665,7 +667,8 @@ function printCommandeTicket(quelstickets, cmd) {
           mode: cmd.mode,
           date: `${date} à ${heure}`,
           articles: articles,
-          comment: __comment ? __comment.texte : ''
+          comment: __comment ? __comment.texte : '',
+          client: cmd.client && clients.find(c=>c.client_id==cmd.client.client_id)
         };
 
 

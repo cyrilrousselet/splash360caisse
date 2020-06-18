@@ -239,7 +239,7 @@ function _launchPrint(template, printer, contenu) {
       _printPrelevement(printer, contenu.prelevement, contenu.strings);
     }
     else if ('info' === section) {
-      _printInfo(printer, {info: contenu.info, nomticket: contenu.nomticket, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode}}, contenu.strings);
+      _printInfo(printer, {info: contenu.info, nomticket: contenu.nomticket, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode, client:contenu.detail.client}}, contenu.strings);
     }
     else if ('partiel_detail' ===  section) {
       _printPartielDetail(printer, contenu.detail, contenu.strings);
@@ -285,7 +285,22 @@ function _printInfo(printer, data, strings) {
     .style('B')
     .size(2,2)
     .text(`#${data.commande.numero}`)
-    .size(1,1)
+    .size(1,1);
+
+  if (data.commande.client!==null) {
+
+    printer
+      .font('A')
+      .size(1,1)
+      .feed(1)
+      .style('NORMAL')
+      .tableCustom([
+        {text: `${strings.client.titre} ${data.commande.client.prenom} ${data.commande.client.nom}`, cols:42, align:'CENTER'}
+      ]);
+  }
+
+
+  printer
     .drawLine()
     .style('NORMAL')
     .text(`${strings.numero}${data.commande.id}`)
@@ -589,6 +604,17 @@ function _printCommande(printer, data, strings) {
     .style('NORMAL')
     .text(data.id)
     .text(data.date)
+    ;
+
+  printer
+    .align('CT')
+    .feed(1)
+    .style('B')
+    .size(1,1)
+    .text(`*** ${strings.mode[data.mode]} ***`)
+    .font('A')
+    .size(1,1)
+    .style('NORMAL')
     .drawLine()
     ;
 
@@ -796,19 +822,34 @@ function _printCommande(printer, data, strings) {
 
 
   // reglements
-  printer
-    .align('CT')
-    .drawLine()
-    .style('NORMAL').text(strings.reglements.titre);
+  if (data.reglements.length>0) {
+    
+    printer
+      .align('CT')
+      .drawLine()
+      .style('NORMAL').text(strings.reglements.titre);
 
-    data.reglements.forEach(reglement => {
-      printer.style('NORMAL').tableCustom([
-        {text:'', cols:1},
-        {text: reglement.moyen, cols:28, align:'LEFT'},
-        {text:'', cols:1},
-        {text: `${reglement.valeur.toFixed(2).replace('.',',')} ${strings.reglements.monnaie}`, cols:12, align:'RIGHT'}
-      ]);
-    });
+      data.reglements.forEach(reglement => {
+        printer.style('NORMAL').tableCustom([
+          {text:'', cols:1},
+          {text: reglement.moyen, cols:28, align:'LEFT'},
+          {text:'', cols:1},
+          {text: `${reglement.valeur.toFixed(2).replace('.',',')} ${strings.reglements.monnaie}`, cols:12, align:'RIGHT'}
+        ]);
+      });
+  }
+  // ou à régler
+  else {
+
+    printer
+      .align('CT')
+      .drawLine()
+      .size(1,2)
+      .tableCustom([
+        {text: `${strings.reglements.a_regler}   ${data.total.total.replace('.',',')}`, cols:42, align:'CENTER'}
+      ])
+      .size(1,1);
+  }
 
   // rendu monnaie
   if (data.rendus.length>0) {

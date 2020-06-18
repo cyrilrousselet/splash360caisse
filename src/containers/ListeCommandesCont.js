@@ -34,7 +34,7 @@ const mapDispatchToProps = (dispatch) => {
       getCommandesList: commandeActions.getCommandesList,
       getCommande: commandeActions.getCommande,
       getClientsList: clientsActions.getClientsList,
-      deleteStandbyCommande: commandeActions.deleteStandbyCommande,
+      deleteCommande: commandeActions.deleteCommande,
       printTicket: peripheralActions.printTicket
   }, dispatch);
   return {

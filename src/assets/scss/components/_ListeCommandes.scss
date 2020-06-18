@@ -117,7 +117,8 @@
     }
 
     .liste-actions {
-      width: 350px;
+      display: flex;
+      width: 300px;
       padding-right: 3px;
     }
     .MuiTableCell-root {
@@ -131,26 +132,32 @@
       background-color: $noir_010;
     }
     tbody {
-      .liste-date,
-      .liste-numero,
-      .liste-client {
+      .liste-heure,
+      .liste-montant,
+      .liste-mode {
         background-color: $blanc-fonce;
       }
+      .MuiTableCell-body {
+        font-size: 12px;
+      }
       .MuiTableRow-root.odd {
-        .liste-date,
-        .liste-numero,
-        .liste-client {
+        
+        .liste-heure,
+        .liste-montant,
+        .liste-mode {
           background-color: $gris-pale;
         }
       }
-      .liste-heure,
-      .liste-montant,
+      .liste-date,
+      .liste-numero,
+      .liste-client,
       .liste-actions {
         background-color: $blanc;
       }
       .MuiTableRow-root.odd {
-        .liste-heure,
-        .liste-montant,
+        .liste-date,
+        .liste-numero,
+        .liste-client,
         .liste-actions {
           background-color: $blanc-fonce;
         }
@@ -162,7 +169,8 @@
         .liste-actions,
         .liste-date,
         .liste-numero,
-        .liste-client {
+        .liste-client,
+        .liste-mode {
           background-image: linear-gradient(rgba(0, 174, 255, 0.5) 0%, rgba(0, 174, 255,0.5) 100%);
         }
       }
@@ -173,7 +181,8 @@
         .liste-actions,
         .liste-date,
         .liste-numero,
-        .liste-client {
+        .liste-client,
+        .liste-mode {
           background-image: linear-gradient(rgba(0, 255, 64, 0.5) 0%, rgba(0, 255, 64, 0.5) 100%);
         }
       }

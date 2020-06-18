@@ -363,7 +363,7 @@ const data = {
                 },
                 status: {
                     standby: "En attente",
-                    a_encaisser: "Livraisons",
+                    a_encaisser: "À Encaisser",
                     confirmed: "Terminées"
                 },
                 recherche: {
@@ -376,10 +376,16 @@ const data = {
                     numero: "Numéro",
                     montant: "Montant",
                     client: "Client",
-                    actions: "Actions"
+                    actions: "Actions",
+                    mode: "Mode",
+                    modes: {
+                        livraison: 'À livrer',
+                        surplace: 'Sur place',
+                        emporter: 'À emporter'
+                    }
                 },
                 actions: {
-                    encaissement: "Encaissement",
+                    encaissement: "Encaisst",
                     annuler: "Annuler",
                     reprise: "Reprise"
                 },
@@ -927,11 +933,17 @@ const data = {
                 },
                 reglements: {
                     titre: 'REGLEMENT :',
-                    monnaie: 'EUR'
+                    monnaie: 'EUR',
+                    a_regler: 'A REGLER :'
                 },
                 rendu: {
                     titre: 'RENDU :',
                     monnaie: 'EUR'
+                },
+                mode: {
+                    livraison: 'À LIVRER',
+                    surplace: 'SUR PLACE',
+                    emporter: 'À EMPORTER'
                 },
                 client: {
                     titre: 'Client :',
@@ -961,6 +973,9 @@ const data = {
                     quantite: 'QTE',
                     articles: 'ARTICLES',
                     num_articles: 'NOMBRE D\'ARTICLES : '
+                },
+                client: {
+                    titre: 'Client :'
                 }
             },
             sac: {
@@ -976,6 +991,9 @@ const data = {
                     quantite: 'QTE',
                     articles: 'ARTICLES',
                     num_articles: 'NOMBRE D\'ARTICLES : '
+                },
+                client: {
+                    titre: 'Client :'
                 }
             }
         }

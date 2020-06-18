@@ -168,7 +168,7 @@ const hydration = {
      { produit_id: 'pdt3', groupe: 'cat1', active: 1, nom: 'MAXI', prix: '9.00', tva: 'tva1', composition: [], weight: 3, color: 'orange' },
      { produit_id: 'pdt4', groupe: 'cat1', active: 1, nom: 'XTREME', prix: '18.50', tva: 'tva1', composition: [], weight: 4, color: 'rouge' },
      { produit_id: 'pdt5', groupe: 'cat2', active: 1, nom: 'SIMPLE GRATINÉ', prix: '6.50', tva: 'tva1', composition: [], weight: 1, color: 'jaune' },
-     { produit_id: 'pdt6', groupe: 'cat2', active: 1, nom: 'DOUBLE GRATINÉ', prix: '7.00', tva: 'tva1', composition: [], weight: 2, color: 'jauneorange' },
+     { produit_id: 'pdt6', groupe: 'cat2', active: 1, nom: 'DOUBLE GRATINÉ', prix: '7.50', tva: 'tva1', composition: [], weight: 2, color: 'jauneorange' },
      { produit_id: 'pdt7', groupe: 'cat2', active: 1, nom: 'TRIPLE GRATINÉ', prix: '10.50', tva: 'tva1', composition: [], weight: 3, color: 'orange' },
      { produit_id: 'pdt8', groupe: 'cat3', active: 1, nom: 'INDIEN SIMPLE', prix: '6.50', tva: 'tva1', composition: [], weight: 1, color: 'jaune' },
      { produit_id: 'pdt9', groupe: 'cat3', active: 1, nom: 'INDIEN DOUBLE', prix: '7.50', tva: 'tva1', composition: [], weight: 2, color: 'jaune' },

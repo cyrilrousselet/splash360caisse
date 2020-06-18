@@ -88,6 +88,7 @@ function TableCommandes(props) {
             <TableCell key={`${id}-hd-numero`} className="liste-numero">{ strings.modules.listecommandes.liste.numero }</TableCell>
             <TableCell key={`${id}-hd-montant`} className="liste-montant">{ strings.modules.listecommandes.liste.montant }</TableCell>
             <TableCell key={`${id}-hd-client`} className="liste-client">{ strings.modules.listecommandes.liste.client }</TableCell>
+            <TableCell key={`${id}-hd-mode`} className="liste-mode">{ strings.modules.listecommandes.liste.mode }</TableCell>
             <TableCell key={`${id}-hd-actions`} className="liste-actions">{ strings.modules.listecommandes.liste.actions }</TableCell>
           </TableRow>
         </TableHead>
@@ -99,11 +100,12 @@ function TableCommandes(props) {
               <TableCell key={`${row.id}-numero`} className="liste-numero">{ row.commande.numero }</TableCell>
               <TableCell key={`${row.id}-montant`} className="liste-montant">{ row.commande.montant }</TableCell>
               <TableCell key={`${row.id}-client`} className="liste-client">{ row.commande.client }</TableCell>
+              <TableCell key={`${row.id}-mode`} className="liste-mode">{ strings.modules.listecommandes.liste.modes[row.commande.mode] }</TableCell>
               <TableCell key={`${row.id}-actions`} className="liste-actions">
                 <StdButton key={`${row.id}-encaissement`} identifier='encaissement' elementclass="action action-encaissement" icon={ false } disabled={id==='confirmed'} noStroke={true} text={ strings.modules.listecommandes.actions.encaissement } onClick={ () => { openReglement(row.id) } } />
-                <StdButton key={`${row.id}-annuler`} identifier='annuler' elementclass="action action-annuler" icon={ false } disabled={id!=='standby'} noStroke={true} text={ strings.modules.listecommandes.actions.annuler } onClick={() => { deleteCommande(row.id) }} />
+                <StdButton key={`${row.id}-annuler`} identifier='annuler' elementclass="action action-annuler" icon={ false } disabled={id==='confirmed'} noStroke={true} text={ strings.modules.listecommandes.actions.annuler } onClick={() => { deleteCommande(row.id) }} />
                 <StdButton key={`${row.id}-reprise`} identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={id!=='standby'} noStroke={true} text={ strings.modules.listecommandes.actions.reprise } onClick={() => { openReprise(row.id) }} />
-                <StdButton key={`${row.id}-imprimer`} identifier='imprimer' elementclass="action action-imprimer" icon={ <PrinterIcon /> } noStroke={true} text='' onClick={() => { openPrint(row.id) }} />
+                <StdButton key={`${row.id}-imprimer`} identifier='imprimer' elementclass="action action-imprimer" icon={ <PrinterIcon /> } disabled={id==='standby'} noStroke={true} text='' onClick={() => { openPrint(row.id) }} />
               </TableCell>
             </TableRow>
           ))}
@@ -320,7 +322,7 @@ class ListeCommandes extends React.Component {
       focusConfirm: false
     }).then((result)=> {
       if (result.value) {
-        this.props.deleteStandbyCommande({ticketId:id});
+        this.props.deleteCommande({ticketId:id, motif:'annulation'});
       }
     });
 
@@ -354,6 +356,7 @@ class ListeCommandes extends React.Component {
         heure: format(new Date(value.createdAt), "H:mm:ss"),
         montant: `${value.total.toFixed(2).replace('.',',')} €`,
         client: value.client ? value.client.nom+' '+value.client.prenom : 'Anonyme',
+        mode: value.mode,
         caisse: value.caisse,
         centre: value.centre_revenu ? value.centre_revenu : 'restaurant'
       };
@@ -439,7 +442,7 @@ class ListeCommandes extends React.Component {
             <TableCommandes className="standby" id="standby" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } liste={standbylist} />
           </TabPanel>
           <TabPanel key="a_encaisser-panel" className="panel" value={openTab} index={1}>
-            <TableCommandes className="a_encaisser" id="a_encaisser" thiscash={thiscash} openReglement={ this.encaissementHandle } openPrint={ this.openPrint } liste={a_encaisserlist} />
+            <TableCommandes className="a_encaisser" id="a_encaisser" thiscash={thiscash} openReglement={ this.encaissementHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } liste={a_encaisserlist} />
           </TabPanel>
           <TabPanel key="confirmed-panel" className="panel" value={openTab} index={2}>
             <TableCommandes className="confirmed" id="confirmed" thiscash={thiscash} openPrint={ this.openPrint } liste={confirmedlist} />

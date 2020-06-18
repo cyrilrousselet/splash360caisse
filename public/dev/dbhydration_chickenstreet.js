@@ -817,6 +817,7 @@ const hydration = {
     { domaine: 'commandes', cle: 'auto_accept_order', valeur: true},
     { domaine: 'commandes', cle: 'store_id', valeur: '819b4b71-bb93-4a91-9503-3c7af1e4e622'},
     { domaine: 'commandes', cle: 'pos_integration_enabled', valeur: true},
+    { domaine: 'commandes', cle: 'motifs_annulation', valeur: [{id:0,message:'Défaut de paiement'}, {id:1,message:'Annulation par le client'}, {id:2,message:'Rupture de stock'}, {id:3,message:'Problème technique'}] },
     { domaine: 'options', cle: 'caisse', valeur: {id: 'cash0', nom: 'Caisse 1'} },
     { domaine: 'options', cle: 'canaux', valeur: [{ids: ['cash0','cash1'], nom: 'caisse'}, {ids: ['borne1'], nom: 'borne'}, {ids: ['wf1'], nom: 'wifi-order'}] },
     { domaine: 'planning', cle: 'shifttypes', valeur: [{id:'st01', nom:'cuisine', couleur: 'bleu', tps: true}, {id:'st02', nom:'caisse', couleur: 'vert', tps: true}, {id:'st03', nom:'salle', couleur: 'jaune', tps: true}, {id:'st04', nom:'livraison', couleur: 'orange', tps: true}, {id:'st05', nom:'fermeture', couleur: 'rose', tps: true}, {id:'st06', nom:'repos heb.', couleur: 'gris', tps: true}] }

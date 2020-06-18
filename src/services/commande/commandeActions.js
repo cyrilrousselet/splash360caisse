@@ -203,6 +203,7 @@ function livraisonCommande(payload) {
         const { user } = state.authentication;
         const { caisse } = state.parametresReducer.parametres.options;
         const commande = commandeServices.getNewCommande({operator:user, caisse:caisse});
+        dispatch(peripheralActions.printTicket('all'));
         dispatch(getCommandesList());
         return dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
       },
@@ -344,22 +345,23 @@ function updateCommande(payload) {
   }
 }
 
-function deleteStandbyCommande(payload) {
+function deleteCommande(payload) {
   return (dispatch, getState) => {
     dispatch({ type: commandeActionTypes.DELETE_COMMANDE_REQUEST });
 
     const { commandeslist } = getState().commandesListReducer;
     const commande = Object.values(commandeslist).find(cmd => cmd.ticketId==payload.ticketId);
 
+    const {ticketId, motif} = payload;
 
     console.log('commande à annuler', commande);
 
     let error = '';
     if (!commande) error = 'inconnue';
-    if (commande && commande.status!=='standby') error = 'active';
+    if (commande && commande.status==='confirmed') error = 'active';
 
     if (error==='') {
-      commandeServices.deleteCommande(payload.ticketId)
+      commandeServices.deleteCommande(ticketId, motif)
       .then(
         data => {
           dispatch({ type: commandeActionTypes.DELETE_COMMANDE_SUCCESS, ...data });
@@ -368,7 +370,7 @@ function deleteStandbyCommande(payload) {
         error => dispatch({ type: commandeActionTypes.DELETE_COMMANDE_FAILURE, error: error })
       );
     } else {
-      console.error('deleteStandbyCommande('+payload.ticketId+') error', 'Impossible de supprimer une commande qui n’est pas en attente.')
+      console.error('deleteCommande('+payload.ticketId+') error', 'Impossible de supprimer une commande qui n’est pas en attente.')
     }
 
   }
@@ -590,7 +592,7 @@ export const commandeActions = {
   completeStep,
   uncheckItemSteps,
   updateCommande,
-  deleteStandbyCommande,
+  deleteCommande,
   addReglement,
   removeReglement,
   addRendu,

@@ -45,7 +45,7 @@ const actions = {
     log.info("dbCommandeDelete() in API");
 
     (await db.commandes)._.mixin(lodashId);
-    const confirm = await _deleteCommande(payload.ticketId);
+    const confirm = await _deleteCommande(payload.ticketId, payload.motif);
 
     res.send(confirm);
   },
@@ -146,11 +146,11 @@ function _parseCommandes(_rawdata) {
 
 
 
-async function _deleteCommande(ticketId) {
+async function _deleteCommande(ticketId, motif) {
 
   const _cmd = await (await db.commandes).get('commandes')
                                          .find({ticketId: ticketId})
-                                         .assign({status:'deleted'})
+                                         .assign({status:'deleted', motif: motif})
                                          .write();
 
   return _cmd.length>0;

@@ -62,8 +62,8 @@ function getNewCommande(params) {
 function getCommandeById(id) {
   return emit('dbCommandeGetCommande', {ticketId: id});
 }
-function deleteCommande(id) {
-  return emit('dbCommandeDelete', {ticketId: id});
+function deleteCommande(id, motif) {
+  return emit('dbCommandeDelete', {ticketId: id, motif: motif});
 }
 function getCommandesList(params) {
   return emit('dbCommandeGetAll', params);
