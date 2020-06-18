@@ -1,56 +1,54 @@
 const hydration = {
   categories: [
-     {categorie_id: 'catg1', nom: 'Chamas Tacos', description: ''}
-   ],
- 
-   groupes: [
-     {groupe_id: 'cat1', categorie: 'catg1', nom: 'TACOS CLASSIQUE', description: '', noprint: [], weight: 1},
-     {groupe_id: 'cat2', categorie: 'catg1', nom: 'TACOS GRATINE', description: '', noprint: [], weight: 2},
-     {groupe_id: 'cat3', categorie: 'catg1', nom: 'SIGNATURES', description: '', noprint: [], weight: 3},
-     {groupe_id: 'cat4', categorie: 'catg1', nom: 'MENUS', description: '', noprint: [], weight: 4},
-     {groupe_id: 'cat5', categorie: 'catg1', nom: 'CH’DIPS', description: '', noprint: [], weight: 5},
-     {groupe_id: 'cat6', categorie: 'catg1', nom: 'CH’ALADES', description: '', noprint: [], weight: 6},
-     {groupe_id: 'cat7', categorie: 'catg1', nom: 'DESSERTS', description: '', noprint: [], weight: 7},
-     {groupe_id: 'cat8', categorie: 'catg1', nom: 'CHONUTS', description: '', noprint: [], weight: 8},
-     {groupe_id: 'cat9', categorie: 'catg1', nom: 'CH’MOOTIES & CH’AKE', description: '', noprint: [], weight: 9},
-     {groupe_id: 'cat10', categorie: 'catg1', nom: 'TIRAMISU', description: '', noprint: [], weight: 10},
-     {groupe_id: 'cat11', categorie: 'catg1', nom: 'BOISSONS', description: '', noprint: [], weight: 11}
-   ],
-   
-   tva: [
-     {tva_id: 'tva1', nom: 'TVA 10 ALL MODE', code:'A', valeur: '0.1'},
-     {tva_id: 'tva2', nom: 'TVA 5,5 A EMPORTER', code:'B', valeur: '0.055'},
-     {tva_id: 'tva3', nom: 'TVA 5,5 ALL MODE', code:'C', valeur: '0.055'}
-   ],
-   
-   types: [
-     { type_id: 'icat12', nom: 'VIANDES', noprint: [], weight:1 },
-     { type_id: 'icat13', nom: 'SAUCES', noprint: [], weight:2 },
-     { type_id: 'icat14', nom: 'GARNITURES & SUPPLEMENTS', noprint: [], weight:3 },
-     { type_id: 'icat15', nom: 'GRATINAGES ', noprint: [], weight:4 },
-     { type_id: 'icat16', nom: 'CHAMANDISES', noprint: [], weight:5 },
-     { type_id: 'icat17', nom: 'NAPPAGE', noprint: [], weight:6 },
-     { type_id: 'icat18', nom: 'TOPPINGS', noprint: [], weight:7 },
-     { type_id: 'icat19', nom: 'VIANDES SALADES', noprint: [], weight:8 },
-     { type_id: 'icat20', nom: 'BOISSONS OFFERTES 50CL', noprint: [], weight:9 },
-     { type_id: 'icat21', nom: 'VIANDES CH’COOL', noprint: [], weight:10 },
-     { type_id: 'icat22', nom: 'BOISSONS OFFERTES 33CL', noprint: [], weight:11 },
-     { type_id: 'icat23', nom: 'CH’ONUTS OFFERTS', noprint: [], weight:12 },
-     { type_id: 'icat24', nom: 'PLAT MENU ENFANT', noprint: [], weight:13 },
-     { type_id: 'icat25', nom: 'SURPRISE', noprint: [], weight:14 },
-     { type_id: 'icat26', nom: 'EXTRA', noprint: [], weight:15 }
-   ],
-   
-   
-   
-   ingredients: [
+    {categorie_id: 'catg1', nom: 'Chamas Tacos', description: ''}
+  ],
+
+  groupes: [
+    {groupe_id: 'cat1', categorie: 'catg1', nom: 'TACOS CLASSIQUE', description: '', noprint: [], weight: 1},
+    {groupe_id: 'cat2', categorie: 'catg1', nom: 'TACOS GRATINE', description: '', noprint: [], weight: 2},
+    {groupe_id: 'cat3', categorie: 'catg1', nom: 'SIGNATURES', description: '', noprint: [], weight: 3},
+    {groupe_id: 'cat4', categorie: 'catg1', nom: 'MENUS', description: '', noprint: [], weight: 4},
+    {groupe_id: 'cat5', categorie: 'catg1', nom: 'CH’DIPS', description: '', noprint: [], weight: 5},
+    {groupe_id: 'cat6', categorie: 'catg1', nom: 'CH’ALADES', description: '', noprint: [], weight: 6},
+    {groupe_id: 'cat7', categorie: 'catg1', nom: 'DESSERTS', description: '', noprint: [], weight: 7},
+    {groupe_id: 'cat8', categorie: 'catg1', nom: 'CHONUTS', description: '', noprint: [], weight: 8},
+    {groupe_id: 'cat9', categorie: 'catg1', nom: 'CH’MOOTIES & CH’AKE', description: '', noprint: [], weight: 9},
+    {groupe_id: 'cat10', categorie: 'catg1', nom: 'TIRAMISU', description: '', noprint: [], weight: 10},
+    {groupe_id: 'cat11', categorie: 'catg1', nom: 'BOISSONS', description: '', noprint: [], weight: 11}
+  ],
+  
+  tva: [
+    {tva_id: 'tva1', nom: 'TVA 10 ALL MODE', code:'A', valeur: '0.1'},
+    {tva_id: 'tva2', nom: 'TVA 5,5 A EMPORTER', code:'B', valeur: '0.055'},
+    {tva_id: 'tva3', nom: 'TVA 5,5 ALL MODE', code:'C', valeur: '0.055'}
+  ],
+  
+  types: [
+    { type_id: 'icat12', nom: 'VIANDES', noprint: [], weight:1 },
+    { type_id: 'icat13', nom: 'SAUCES', noprint: [], weight:2 },
+    { type_id: 'icat14', nom: 'GARNITURES & SUPPLEMENTS', noprint: [], weight:3 },
+    { type_id: 'icat15', nom: 'GRATINAGES ', noprint: [], weight:4 },
+    { type_id: 'icat16', nom: 'CHAMANDISES', noprint: [], weight:5 },
+    { type_id: 'icat17', nom: 'NAPPAGE', noprint: [], weight:6 },
+    { type_id: 'icat18', nom: 'TOPPINGS', noprint: [], weight:7 },
+    { type_id: 'icat19', nom: 'VIANDES SALADES', noprint: [], weight:8 },
+    { type_id: 'icat20', nom: 'BOISSONS OFFERTES 50CL', noprint: [], weight:9 },
+    { type_id: 'icat21', nom: 'VIANDES CH’COOL', noprint: [], weight:10 },
+    { type_id: 'icat22', nom: 'BOISSONS OFFERTES 33CL', noprint: [], weight:11 },
+    { type_id: 'icat23', nom: 'CH’ONUTS OFFERTS', noprint: [], weight:12 },
+    { type_id: 'icat24', nom: 'PLAT MENU ENFANT', noprint: [], weight:13 },
+    { type_id: 'icat25', nom: 'SURPRISE', noprint: [], weight:14 },
+    { type_id: 'icat26', nom: 'EXTRA', noprint: [], weight:15 }
+  ],
+  
+  ingredients: [
     { ingredient_id: 'ing1',  type: 'icat12', nom: 'CORDON BLEU', supplement: '0.00', tva: 'tva1', weight: 1, color: 'jaune' },
     { ingredient_id: 'ing2',  type: 'icat12', nom: 'ESCALOPE', supplement: '0.00', tva: 'tva1', weight: 2, color: 'blanc' },
-    { ingredient_id: 'ing3',  type: 'icat12', nom: 'KEBAB', supplement: '0.00', tva: 'tva1', weight: 3, color: 'marron' },
+    { ingredient_id: 'ing3',  type: 'icat12', nom: 'KEBAB', supplement: '1.00', tva: 'tva1', weight: 3, color: 'marron' },
     { ingredient_id: 'ing4',  type: 'icat12', nom: 'MERGUEZ', supplement: '0.00', tva: 'tva1', weight: 4, color: 'rouge' },
     { ingredient_id: 'ing5',  type: 'icat12', nom: 'NUGGETS', supplement: '0.00', tva: 'tva1', weight: 5, color: 'jaune' },
     { ingredient_id: 'ing6',  type: 'icat12', nom: 'POULET MARINE', supplement: '0.00', tva: 'tva1', weight: 6, color: 'rouge' },
-    { ingredient_id: 'ing7',  type: 'icat12', nom: 'TENDERS', supplement: '0.00', tva: 'tva1', weight: 7, color: 'jaune' },
+    { ingredient_id: 'ing7',  type: 'icat12', nom: 'TENDERS', supplement: '1.00', tva: 'tva1', weight: 7, color: 'jaune' },
     { ingredient_id: 'ing8',  type: 'icat12', nom: 'VIANDE HACHEE', supplement: '0.00', tva: 'tva1', weight: 8, color: 'marron' },
     { ingredient_id: 'ing9',  type: 'icat12', nom: 'VEGGIE', supplement: '0.00', tva: 'tva1', weight: 9, color: 'vertclair' },
     { ingredient_id: 'ing10', type: 'icat13', nom: 'SANS FROMAGERE', supplement: '0.00', tva: 'tva1', weight: 1, color: 'blanc' },
@@ -88,9 +86,9 @@ const hydration = {
     { ingredient_id: 'ing41', type: 'icat14', nom: 'REBLOCHON', supplement: '1.00', tva: 'tva1', weight: 15, color: 'marron' },
     { ingredient_id: 'ing42', type: 'icat14', nom: 'ROQUEFORT', supplement: '1.00', tva: 'tva1', weight: 16, color: 'vertfonce' },
     { ingredient_id: 'ing43', type: 'icat14', nom: 'TOMATE MOZZARELLA', supplement: '1.00', tva: 'tva1', weight: 17, color: 'rouge' },
-    { ingredient_id: 'ing44', type: 'icat14', nom: 'OIGNONS CUIT', supplement: '0.00', tva: 'tva1', weight: 18, color: 'marron' },
-    { ingredient_id: 'ing45', type: 'icat14', nom: 'SALADE', supplement: '0.00', tva: 'tva1', weight: 19, color: 'vertclair' },
-    { ingredient_id: 'ing46', type: 'icat14', nom: 'TOMATE', supplement: '0.00', tva: 'tva1', weight: 20, color: 'rouge' },
+    { ingredient_id: 'ing44', type: 'icat14', nom: 'OIGNONS CUIT', supplement: '0.50', tva: 'tva1', weight: 18, color: 'marron' },
+    { ingredient_id: 'ing45', type: 'icat14', nom: 'SALADE', supplement: '0.50', tva: 'tva1', weight: 19, color: 'vertclair' },
+    { ingredient_id: 'ing46', type: 'icat14', nom: 'TOMATE', supplement: '0.50', tva: 'tva1', weight: 20, color: 'rouge' },
     { ingredient_id: 'ing47', type: 'icat15', nom: 'GRATINÉ CHEDDAR', supplement: '0.00', tva: 'tva1', weight: 1, color: 'jauneorange' },
     { ingredient_id: 'ing48', type: 'icat15', nom: 'GRATINÉ CHEVRE', supplement: '0.00', tva: 'tva1', weight: 2, color: 'blanc' },
     { ingredient_id: 'ing49', type: 'icat15', nom: 'GRATINÉ EMMENTAL', supplement: '0.00', tva: 'tva1', weight: 3, color: 'jaune' },
@@ -170,7 +168,7 @@ const hydration = {
     { produit_id: 'pdt3', groupe: 'cat1', active: 1, nom: 'MAXI', prix: '9.00', tva: 'tva1', composition: [], weight: 3, color: 'orange' },
     { produit_id: 'pdt4', groupe: 'cat1', active: 1, nom: 'XTREME', prix: '18.50', tva: 'tva1', composition: [], weight: 4, color: 'rouge' },
     { produit_id: 'pdt5', groupe: 'cat2', active: 1, nom: 'SIMPLE GRATINÉ', prix: '6.50', tva: 'tva1', composition: [], weight: 1, color: 'jaune' },
-    { produit_id: 'pdt6', groupe: 'cat2', active: 1, nom: 'DOUBLE GRATINÉ', prix: '7.50', tva: 'tva1', composition: [], weight: 2, color: 'jauneorange' },
+    { produit_id: 'pdt6', groupe: 'cat2', active: 1, nom: 'DOUBLE GRATINÉ', prix: '7.00', tva: 'tva1', composition: [], weight: 2, color: 'jauneorange' },
     { produit_id: 'pdt7', groupe: 'cat2', active: 1, nom: 'TRIPLE GRATINÉ', prix: '10.50', tva: 'tva1', composition: [], weight: 3, color: 'orange' },
     { produit_id: 'pdt8', groupe: 'cat3', active: 1, nom: 'INDIEN SIMPLE', prix: '6.50', tva: 'tva1', composition: [], weight: 1, color: 'jaune' },
     { produit_id: 'pdt9', groupe: 'cat3', active: 1, nom: 'INDIEN DOUBLE', prix: '7.50', tva: 'tva1', composition: [], weight: 2, color: 'jaune' },
@@ -199,7 +197,7 @@ const hydration = {
     { produit_id: 'pdt32', groupe: 'cat5', active: 1, nom: 'CROC’ CHAMAS', prix: '2.00', tva: 'tva1', composition: [], weight: 9, color: 'vertclair' },
     { produit_id: 'pdt33', groupe: 'cat6', active: 1, nom: 'CH’ALADE', prix: '6.00', tva: 'tva1', composition: [], weight: 1, color: 'vertclair' },
     { produit_id: 'pdt34', groupe: 'cat7', active: 1, nom: 'TARTE AU DAIM', prix: '2.50', tva: 'tva1', composition: [], weight: 1, color: 'rouge' },
-    { produit_id: 'pdt35', groupe: 'cat7', active: 1, nom: 'BROWNIE', prix: '2.50', tva: 'tva1', composition: [], weight: 2, color: 'marron' },
+    { produit_id: 'pdt35', groupe: 'cat7', active: 1, nom: 'BROWNIE', prix: '2.00', tva: 'tva1', composition: [], weight: 2, color: 'marron' },
     { produit_id: 'pdt36', groupe: 'cat7', active: 1, nom: 'CHOCO CROC', prix: '2.00', tva: 'tva1', composition: [], weight: 3, color: 'noir' },
     { produit_id: 'pdt37', groupe: 'cat8', active: 1, nom: 'CH’ONUTS SUCRE', prix: '2.00', tva: 'tva1', composition: [], weight: 1, color: 'rose' },
     { produit_id: 'pdt38', groupe: 'cat8', active: 1, nom: 'CH’ONUTS CHOCOLAT', prix: '2.00', tva: 'tva1', composition: [], weight: 2, color: 'marron' },
@@ -212,11 +210,11 @@ const hydration = {
     { produit_id: 'pdt45', groupe: 'cat9', active: 1, nom: 'CH’MOOTHIE PECHE', prix: '3.50', tva: 'tva1', composition: [], weight: 2, color: 'orange' },
     { produit_id: 'pdt46', groupe: 'cat9', active: 1, nom: 'CH’MOUTHIE VANILLE', prix: '3.50', tva: 'tva1', composition: [], weight: 3, color: 'jaune' },
     { produit_id: 'pdt47', groupe: 'cat9', active: 1, nom: 'CH’AKE', prix: '3.00', tva: 'tva1', composition: [], weight: 4, color: 'blanc' },
-    { produit_id: 'pdt48', groupe: 'cat10', active: 1, nom: 'TIRAMISU DAIM', prix: '3.50', tva: 'tva1', composition: [], weight: 1, color: 'bleufonce' },
-    { produit_id: 'pdt49', groupe: 'cat10', active: 1, nom: 'TIRAMISU MALTESERS', prix: '3.50', tva: 'tva1', composition: [], weight: 2, color: 'rouge' },
-    { produit_id: 'pdt50', groupe: 'cat10', active: 1, nom: 'TIRAMISU NOISETTE', prix: '2.50', tva: 'tva1', composition: [], weight: 3, color: 'marron' },
-    { produit_id: 'pdt51', groupe: 'cat10', active: 1, nom: 'TIRAMISU OREO', prix: '3.50', tva: 'tva1', composition: [], weight: 4, color: 'noir' },
-    { produit_id: 'pdt52', groupe: 'cat10', active: 1, nom: 'TIRAMISU SNICKERS', prix: '3.50', tva: 'tva1', composition: [], weight: 5, color: 'bleufonce' },
+    { produit_id: 'pdt48', groupe: 'cat10', active: 1, nom: 'TIRAMISU DAIM', prix: '2.90', tva: 'tva1', composition: [], weight: 1, color: 'bleufonce' },
+    { produit_id: 'pdt49', groupe: 'cat10', active: 1, nom: 'TIRAMISU MALTESERS', prix: '2.90', tva: 'tva1', composition: [], weight: 2, color: 'rouge' },
+    { produit_id: 'pdt50', groupe: 'cat10', active: 1, nom: 'TIRAMISU NOISETTE', prix: '2.90', tva: 'tva1', composition: [], weight: 3, color: 'marron' },
+    { produit_id: 'pdt51', groupe: 'cat10', active: 1, nom: 'TIRAMISU OREO', prix: '2.90', tva: 'tva1', composition: [], weight: 4, color: 'noir' },
+    { produit_id: 'pdt52', groupe: 'cat10', active: 1, nom: 'TIRAMISU SNICKERS', prix: '2.90', tva: 'tva1', composition: [], weight: 5, color: 'bleufonce' },
     { produit_id: 'pdt53', groupe: 'cat11', active: 1, nom: 'COCA COLA CHERRY', prix: '1.50', tva: 'tva2', composition: [], weight: 1, color: 'rose' },
     { produit_id: 'pdt54', groupe: 'cat11', active: 1, nom: 'COCA COLA', prix: '1.50', tva: 'tva2', composition: [], weight: 2, color: 'rouge' },
     { produit_id: 'pdt55', groupe: 'cat11', active: 1, nom: 'COCA COLA ZERO', prix: '1.50', tva: 'tva2', composition: [], weight: 3, color: 'noir' },
@@ -238,7 +236,7 @@ const hydration = {
     { produit_id: 'pdt70', groupe: 'cat11', active: 1, nom: 'POM’S', prix: '1.50', tva: 'tva2', composition: [], weight: 19, color: 'vertclair' },
     { produit_id: 'pdt71', groupe: 'cat11', active: 1, nom: 'HAWAI', prix: '1.50', tva: 'tva2', composition: [], weight: 20, color: 'jaune' },
     { produit_id: 'pdt72', groupe: 'cat11', active: 1, nom: 'PERRIER', prix: '1.50', tva: 'tva2', composition: [], weight: 21, color: 'vertfonce' },
-    { produit_id: 'pdt73', groupe: 'cat11', active: 1, nom: 'CRISTALINE', prix: '1.50', tva: 'tva2', composition: [], weight: 22, color: 'bleuclair' },
+    { produit_id: 'pdt73', groupe: 'cat11', active: 1, nom: 'CRISTALINE', prix: '1.00', tva: 'tva2', composition: [], weight: 22, color: 'bleuclair' },
     { produit_id: 'pdt74', groupe: 'cat11', active: 1, nom: 'CRISTALINE FRAISE', prix: '2.00', tva: 'tva2', composition: [], weight: 23, color: 'rouge' },
     { produit_id: 'pdt75', groupe: 'cat11', active: 1, nom: 'CRISTALINE PECHE', prix: '2.00', tva: 'tva2', composition: [], weight: 24, color: 'jaune' },
     { produit_id: 'pdt76', groupe: 'cat11', active: 1, nom: 'CAPRI-SUN', prix: '1.00', tva: 'tva2', composition: [], weight: 25, color: 'bleufonce' },
@@ -250,7 +248,8 @@ const hydration = {
     { produit_id: 'pdt82', groupe: 'cat11', active: 1, nom: 'FUZTEA CAMOMILLE 50CL', prix: '2.50', tva: 'tva2', composition: [], weight: 31, color: 'vertclair' },
     { produit_id: 'pdt83', groupe: 'cat11', active: 1, nom: 'FUZTEA HIBISCUS 50CL', prix: '2.50', tva: 'tva2', composition: [], weight: 32, color: 'rose' },
     { produit_id: 'pdt84', groupe: 'cat11', active: 1, nom: 'TROPICO 50CL', prix: '2.50', tva: 'tva2', composition: [], weight: 33, color: 'bleuclair' },
-    { produit_id: 'pdt85', groupe: 'cat11', active: 1, nom: 'TROPICO TROPICAL 50CL', prix: '2.50', tva: 'tva2', composition: [], weight: 34, color: 'orange' }
+    { produit_id: 'pdt85', groupe: 'cat11', active: 1, nom: 'TROPICO TROPICAL 50CL', prix: '2.50', tva: 'tva2', composition: [], weight: 34, color: 'orange' },
+    { produit_id: 'pdt87', groupe: 'cat11', active: 1, nom: 'FREEZ', prix: '3.00', tva: 'tva2', composition: [], weight: 35, color: 'vert' }
   ],
 
 
@@ -383,12 +382,18 @@ const hydration = {
      { domaine: 'entreprise', cle: 'site_web', valeur: 'www.chamas-tacos.com'},
      { domaine: 'entreprise', cle: 'heure_fin', valeur: '00:00' },
      { domaine: 'entreprise', cle: 'avoirs', valeur: true },
+     { domaine: 'entreprise', cle: 'restaurant_id', valeur: '7_55sqes59c40804sg4gswck4kkgc84wo8c80wowosw8oks8ksss' },
+     { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '5b0vwvx1f400gko0c4804wwo4040kwc0w0wogg88g8ck0csc84' },
      { domaine: 'financier', cle: 'fidelite_activation', valeur: false},
      { domaine: 'peripheriques', cle: 'impression', valeur: [{ticket:'tck1',groupes:['cat15','cat16','cat17','cat18','cat19','cat20','cat21','cat22','cat23','cat24','cat25','cat26','cat27','cat28','cat29','cat30'], types:['icat29','icat31','icat32','icat33','icat34','icat35','icat36','icat37']},{ticket:'tck2',groupes:['cat15','cat16','cat17','cat18','cat19','cat20','cat21','cat22','cat23','cat24','cat25','cat26','cat27','cat28','cat29','cat30'], types:['icat29','icat31','icat32','icat33','icat34','icat35','icat36','icat37']},{ticket:'tck3',groupes:['cat15','cat16','cat17','cat18','cat19','cat20','cat21','cat22','cat23','cat24','cat25','cat26','cat27','cat28','cat29','cat30'], types:['icat29','icat31','icat32','icat33','icat34','icat35','icat36','icat37']}]},
      { domaine: 'commandes', cle: 'numerotation_start', valeur: '0'},
      { domaine: 'commandes', cle: 'numerotation_max', valeur: '200'},
      { domaine: 'commandes', cle: 'numerotation_hex', valeur: false},
      { domaine: 'commandes', cle: 'comment_predefini', valeur:[{id:0,message:'SANS FRITE'}, {id:1,message:'SANS SAUCE'}, {id:2,message:'BIEN CUIT'}]},
+     { domaine: 'commandes', cle: 'discount_predefini', valeur:[]},
+     { domaine: 'commandes', cle: 'auto_accept_order', valeur: false},
+     { domaine: 'commandes', cle: 'store_id', valeur: null},
+     { domaine: 'commandes', cle: 'pos_integration_enabled', valeur: false},
      { domaine: 'options', cle: 'caisse', valeur: {id: 'cash0', nom: 'Caisse 1'} },
      { domaine: 'options', cle: 'canaux', valeur: [{ids: ['cash0','cash1'], nom: 'caisse'}, {ids: ['borne1'], nom: 'borne'}, {ids: ['wf1'], nom: 'wifi-order'}] },
      { domaine: 'planning', cle: 'shifttypes', valeur: [{id:'st01', nom:'cuisine', couleur: 'bleu', tps: true}, {id:'st02', nom:'caisse', couleur: 'vert', tps: true}, {id:'st03', nom:'salle', couleur: 'jaune', tps: true}, {id:'st04', nom:'livraison', couleur: 'orange', tps: true}, {id:'st05', nom:'fermeture', couleur: 'rose', tps: true}, {id:'st06', nom:'repos heb.', couleur: 'gris', tps: false}] }

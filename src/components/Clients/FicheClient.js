@@ -153,17 +153,18 @@ class FicheClient extends React.Component {
 
     const { selectClient, client, closeHandler, mode } = this.props;
 
-    const client_id = client && client.client_id || null;
+    const client_id = this.state.client_id || (client && client.client_id || null);
     if (client_id==null) { 
       this.saveClient(true);
     } else {
       if (mode=='fiche') {
         selectClient(null);
-        this.resetPopin();
-        closeHandler();
       } else {
-        selectClient(client);
+        const { nom, prenom, client_id } = this.getValeurs();
+        selectClient({nom,prenom,client_id});
       }
+      this.resetPopin();
+      closeHandler();
     }
   }
 

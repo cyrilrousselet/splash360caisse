@@ -813,6 +813,7 @@ const hydration = {
     { domaine: 'commandes', cle: 'numerotation_max', valeur: '200'},
     { domaine: 'commandes', cle: 'numerotation_hex', valeur: false},
     { domaine: 'commandes', cle: 'comment_predefini', valeur:[{id:0,message:'SANS FRITE'}, {id:1,message:'SANS SALADE'}, {id:2,message:'SANS TOMATE'}, {id:3,message:'SANS OIGNON'}, {id:4,message:'SANS SAUCE'}]},
+    { domaine: 'commandes', cle: 'discount_predefini', valeur:[]},
     { domaine: 'commandes', cle: 'auto_accept_order', valeur: true},
     { domaine: 'commandes', cle: 'store_id', valeur: '819b4b71-bb93-4a91-9503-3c7af1e4e622'},
     { domaine: 'commandes', cle: 'pos_integration_enabled', valeur: true},
