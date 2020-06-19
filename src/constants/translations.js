@@ -216,6 +216,12 @@ const data = {
                                 titre: 'Erreur Avoir',
                                 texte: 'L’Avoir est réservé à un autre client'
                             }
+                        },
+                        modif: {
+                            depassement: {
+                                titre: 'Erreur de montant',
+                                texte: 'Lors d’une modification, il est impossible de dépasser le montant déjà réglé'
+                            }
                         }
                     }
                 },
@@ -737,8 +743,8 @@ const data = {
                             titre: 'Modes de Paiement',
                         },
                         livraison: {
-                            titre: 'Vente en livraison',
-                            caption: 'Permet la vente à la commande et un encaissement ultérieur'
+                            titre: 'Vente à la commande',
+                            caption: 'Permet de vendre avec un encaissement ultérieur'
                         },
                         happyhours: {
                             titre: 'Happy Hours',

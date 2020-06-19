@@ -149,6 +149,21 @@
                 text-transform: uppercase;
             }
         }
+        .action-mid {
+            width: 46%;
+            .StdButton-text {
+                font-size: 15px;
+            }
+        }
+        .action-valider {
+            background-color: $bleu;
+            min-height: 45px;
+            .StdButton-text {
+                font-family: $f_blk;
+                font-size: 15px;
+                text-transform: uppercase;
+            }
+        }
         .action-tiroir {
             background-color: $noir;
         }

@@ -691,6 +691,14 @@ class Panier extends React.Component {
     const commandeClient = client ? clients.find(c=>c.client_id==client.client_id) : null;
 
 
+    // autorise-t-on la vente avec encaissement ultérieur ?
+    //  - si la propriété n'est pas définie, on fait comme si elle était TRUE (^^)
+    const ventecmd = (parametres && parametres.financier) 
+                     ? (parametres.financier.hasOwnProperty('vente_commande') && parametres.financier.vente_commande===false) 
+                       ? false 
+                       : true 
+                     : true;
+
     console.log('searchval', searchval);
 
     const total = this.calculateTotal(items, modificateurs);
@@ -822,7 +830,7 @@ class Panier extends React.Component {
       this.props.setNewNumero();
       standByCommande(this.props.commande);
     }
-    const livraisonHandler = (event) => {
+    const validationHandler = (event) => {
       this.props.setNewNumero();
       livraisonCommande(this.props.commande);
     }
@@ -941,7 +949,8 @@ class Panier extends React.Component {
             <StdButton identifier='livraison' elementclass={ `mode mode-livraison ${(('livraison'===mode) && 'active' : '')}` } disabled={ open } icon={ false } text={ strings.modules.encaissement.panier.mode.livraison } onClick={(value) => { updateCommande({mode:value}) }} />
           </div>
           <div className="actions">
-            <StdButton identifier='encaisser' elementclass="action action-encaisser" disabled={ !__encaissable || open } icon={ false } text={ ('livraison'===mode)?strings.modules.encaissement.panier.action.valider:strings.modules.encaissement.panier.action.encaissement } onClick={ ()=> { ('livraison'===mode)?livraisonHandler():openReglementHandler() }} />
+            <StdButton identifier='encaisser' elementclass={ `action action-encaisser${(ventecmd && 'surplace'!==mode ? ' action-mid' : '')}` } disabled={ !__encaissable || open } icon={ false } text={ strings.modules.encaissement.panier.action.encaissement } onClick={ ()=> { openReglementHandler() }} />
+            {(ventecmd && 'surplace'!==mode) && (<StdButton identifier='valider' elementclass={ `action action-valider action-mid` } disabled={ !__encaissable || open } icon={ false } text={ strings.modules.encaissement.panier.action.valider } onClick={ ()=> { validationHandler() }} /> )}
             <StdButton identifier='tiroir' elementclass="action action-tiroir" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.tiroir } onClick={ tiroirHandler } />
             <StdButton identifier='attente' elementclass="action action-attente" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.attente } onClick={ attenteHandler } />
             <StdButton identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.reprise } onClick={gotoListeCommandes} />

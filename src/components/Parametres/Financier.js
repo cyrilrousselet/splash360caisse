@@ -206,13 +206,19 @@ class Financier extends React.Component {
               postvalue='%'
             />
         </div>
-          <div className="section section-livraison">
+          <div className="section section-vente_commande">
             <SwitchCheckbox
-              isChecked={ true } 
-              key="livraison"
-              name="livraison" 
-              className="livraison" 
-              onChange={ console.log } 
+              isChecked={ !data.hasOwnProperty('vente_commande') || data.vente_commande===true } 
+              key="vente_commande"
+              name="vente_commande" 
+              className="vente_commande" 
+              onChange={ (name, isChecked)=>{
+                updateValeur({
+                  domaine: 'financier',
+                  cle: name,
+                  valeur: isChecked
+                })
+              }  } 
               label={ strings.modules.parametres.submodules.financier.livraison.titre } 
             />
             <div className="caption livraison-caption">{ strings.modules.parametres.submodules.financier.livraison.caption }</div>

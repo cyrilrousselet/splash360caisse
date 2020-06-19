@@ -156,28 +156,41 @@ class Reglement extends React.Component {
   toAddReglement(moyen, valeur=-1, info=null) {
 
 
-    const { addReglement, openDrawer, params } = this.props;
+    const { addReglement, openDrawer, params, modif } = this.props;
 
     let montant = 0;
+    const { reste } = this.updateValeurs();
     if (valeur==-1) {
       const {input, total} = this.state;
-      const { reste } = this.updateValeurs();
       montant = input ? total : reste;
     } else {
       montant = valeur;
     }
 
-    if (montant > 0) {
-      addReglement({moyen: moyen, valeur: montant, info:info});
-      const { reste } = this.updateValeurs();
-      if (moyen=='especes') openDrawer();
-      if (moyen=='ticket' && reste<0) openDrawer();
-      this.setState({total: 0, input: false});
+    // lors de la modif d'encaissement, 
+    // le montant du réglement ne peut pas être supérieur à la somme à régler
+    if (modif && montant>reste) {
+      Swal.fire({
+        title: strings.modules.encaissement.reglement.erreur.modif.depassement.titre,
+        html: strings.modules.encaissement.reglement.erreur.modif.depassement.texte,
+        showCancelButton: false,
+        focusCancel: false,
+        focusConfirm: true
+      })
+    } else {
+      
+      if (montant > 0) {
+        addReglement({moyen: moyen, valeur: montant, info:info});
+        const { reste } = this.updateValeurs();
+        if (moyen=='especes') openDrawer();
+        if (moyen=='ticket' && reste<0) openDrawer();
+        this.setState({total: 0, input: false});
 
-      // s'il ne reste rien à payer ni à rendre, 
-      // on ferme l'encaissement et on valide la commande
-      if (reste==0) this.beforeCloseReglement();
+        // s'il ne reste rien à payer ni à rendre, 
+        // on ferme l'encaissement et on valide la commande
+        if (reste==0) this.beforeCloseReglement();
 
+      }
     }
   }
 
@@ -329,8 +342,8 @@ class Reglement extends React.Component {
 
   render() {
 
-    const { open, valueToPay, contClass, closeReglement, addReglement, addRendu, tiroirOuvert, params } = this.props;
-    const { items, reglements } = this.props.commande;
+    const { open, valueToPay, contClass, closeReglement, addReglement, addRendu, tiroirOuvert, params, modif } = this.props;
+    const { items, reglements, rendus } = this.props.commande;
     const { paye, reste, rendable } = this.updateValeurs();
     const { total, input, inputTarget } = this.state;
     
@@ -388,6 +401,15 @@ class Reglement extends React.Component {
                           info={ rgl.info }
                           removeItem={ this.toRemoveReglement } />
                   )}
+                  { (undefined !== rendus) &&
+                      rendus.map((rgl,i) => 
+                        (undefined!==rgl) && <RenduListeItem
+                            id={ i } 
+                            renduid={ rgl.renduId.toString() }
+                            key={ i }
+                            moyen={ rgl.moyen }
+                            valeur={ rgl.valeur } />
+                    )}
                 </List>
               </div>
               {/* affichage du trop perçu : affiche si on peut rendre ou non la monnaie */}
@@ -423,6 +445,11 @@ class Reglement extends React.Component {
           <CloseIcon />
         </Fab>
         }
+        { (modif && reste==0) &&
+        <Fab aria-label="close" size="small" className="close-button" onClick={ closeReglement }>
+          <CloseIcon />
+        </Fab>
+        }
          { tiroirOuvert && 
           <Fab aria-label="close" size="small" className="close-button" onClick={ () => this.closeTiroir() }>
           <CloseIcon />
@@ -453,6 +480,18 @@ Reglement.propTypes = {
   openDrawer: PropTypes.func.isRequired,
   closeDrawer: PropTypes.func,
 };
+
+
+const RenduListeItem = ({id, renduid, moyen, valeur}) => (
+  <div className="RenduListeItem">
+    <ListItem 
+      disableGutters
+      >
+      <div className="rnditm moyen">{ strings.modules.encaissement.reglement.moyens[moyen] }</div> 
+      <div className="rnditm valeur">{ `-${valeur.toFixed(2).replace('.',',')}` }</div>
+    </ListItem>
+  </div>
+);
 
 
 const ReglementListeItem = ({id, reglementid, moyen, valeur, info, removeItem}) => (

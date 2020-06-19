@@ -102,7 +102,7 @@ function TableCommandes(props) {
               <TableCell key={`${row.id}-client`} className="liste-client">{ row.commande.client }</TableCell>
               <TableCell key={`${row.id}-mode`} className="liste-mode">{ strings.modules.listecommandes.liste.modes[row.commande.mode] }</TableCell>
               <TableCell key={`${row.id}-actions`} className="liste-actions">
-                <StdButton key={`${row.id}-encaissement`} identifier='encaissement' elementclass="action action-encaissement" icon={ false } disabled={id==='confirmed'} noStroke={true} text={ strings.modules.listecommandes.actions.encaissement } onClick={ () => { openReglement(row.id) } } />
+                <StdButton key={`${row.id}-encaissement`} identifier='encaissement' elementclass="action action-encaissement" icon={ false } disabled={false} noStroke={true} text={ strings.modules.listecommandes.actions.encaissement } onClick={ () => { openReglement(row.id) } } />
                 <StdButton key={`${row.id}-annuler`} identifier='annuler' elementclass="action action-annuler" icon={ false } disabled={id==='confirmed'} noStroke={true} text={ strings.modules.listecommandes.actions.annuler } onClick={() => { deleteCommande(row.id) }} />
                 <StdButton key={`${row.id}-reprise`} identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={id!=='standby'} noStroke={true} text={ strings.modules.listecommandes.actions.reprise } onClick={() => { openReprise(row.id) }} />
                 <StdButton key={`${row.id}-imprimer`} identifier='imprimer' elementclass="action action-imprimer" icon={ <PrinterIcon /> } disabled={id==='standby'} noStroke={true} text='' onClick={() => { openPrint(row.id) }} />
@@ -445,11 +445,11 @@ class ListeCommandes extends React.Component {
             <TableCommandes className="a_encaisser" id="a_encaisser" thiscash={thiscash} openReglement={ this.encaissementHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } liste={a_encaisserlist} />
           </TabPanel>
           <TabPanel key="confirmed-panel" className="panel" value={openTab} index={2}>
-            <TableCommandes className="confirmed" id="confirmed" thiscash={thiscash} openPrint={ this.openPrint } liste={confirmedlist} />
+            <TableCommandes className="confirmed" id="confirmed" thiscash={thiscash} openReglement={ this.encaissementHandle } openPrint={ this.openPrint } liste={confirmedlist} />
           </TabPanel>
         </div>
 
-        <ReglementCont open={ this.state.reglementOpen } contClass="ListeCommandeReglement" commandeId={ this.state.commandeId } closeReglement={ this.closeReglement } />
+        <ReglementCont open={ this.state.reglementOpen } contClass="ListeCommandeReglement" commandeId={ this.state.commandeId } closeReglement={ this.closeReglement } modif={true} />
         <NumberKeyboard open={keyboardOpen} numbersOnly={true} buttonHandler={this.keyboardButtonHandler} closeHandler={this.closeKeyboard} />
         <ImpressionTicketPopin tickets={tickets} printOpen={printOpen} closeHandler={this.closePrint} commandeId={ this.state.commandeId } launchTicket={printTicket} />
       </div>

@@ -207,7 +207,8 @@
             }
         }
     }
-    .ReglementListeItem {
+    .ReglementListeItem,
+    .RenduListeItem {
         background-color: $blanc;
         border-radius: 18px;
         margin-top: 2px;
@@ -220,7 +221,8 @@
             height: 36px;
         }
 
-        .ritm {
+        .ritm,
+        .rnditm {
             &.moyen {
                 font-family: $f_med;
                 font-size: 15px;
@@ -240,6 +242,17 @@
                 background-color: red;
                 box-shadow: none;
             }
+        }
+    }
+
+    .RenduListeItem {
+        background-color: $wheel9;
+        .rnditm.moyen,
+        .rnditm.valeur {
+            color: $blanc;
+        }
+        .MuiListItem-root {
+            padding-right: 40px;
         }
     }
 }
