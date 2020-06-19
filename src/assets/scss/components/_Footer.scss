@@ -34,6 +34,14 @@
             vertical-align: baseline;
         }
     }
+    .build-version {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: $f_med;
+        color: $gris;
+        font-size: 10px;
+    }
     .date {
         display: inline-block;
         padding-right: 50px;

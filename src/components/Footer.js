@@ -2,6 +2,7 @@ import React from 'react';
 import LocalizedStrings from 'react-localization';
 import { data } from '../constants/translations';
 import ConnectIcon from './common/icon/ConnectIcon';
+import packageJson from './../../package.json';
 
 let strings = new LocalizedStrings(data);
 
@@ -55,6 +56,7 @@ class Footer extends React.Component {
             <div className={ `connexion ${this.state.status}` }>
               <span>{ this.state.status === 'on' ? strings.footer.online : strings.footer.offline }</span>
             </div >
+            <div className="build-version">{ `Splash360 Build v. ${packageJson.version}` }</div>
             <div className="right">
               <div className="date">{ this.state.date }</div>
               <div className="heure">{ this.state.heure }</div>
