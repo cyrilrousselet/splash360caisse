@@ -19,6 +19,7 @@ import { th } from 'date-fns/locale';
 import PlusIcon from '../common/icon/PlusIcon';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
+import Clavier from '../common/Clavier';
 
 let strings = new LocalizedStrings(data);
 
@@ -31,6 +32,8 @@ class FicheClient extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      search: '',
+      focusInput: 'search',
       innermode: null,
       client_id: null,
       nom: '', 
@@ -54,6 +57,8 @@ class FicheClient extends React.Component {
     this.handleSelect = this.handleSelect.bind(this);
     this.closePopin = this.closePopin.bind(this);
     this.gotoFiche = this.gotoFiche.bind(this);
+    this.setFocus = this.setFocus.bind(this);
+    this.onKeyboardChange = this.onKeyboardChange.bind(this);
   }
 
   componentDidMount() {
@@ -103,6 +108,20 @@ class FicheClient extends React.Component {
 
   }
 
+  setFocus(event, obj) {
+    console.log('setFocus', event.target.name);
+    if (obj) {
+      this.setState({focusInput: obj.name});
+    } else {
+      this.setState({focusInput: event.target.name});
+    }
+  }
+
+  onKeyboardChange(input) {
+    const {focusInput} = this.state;
+    this.setState({ [focusInput]:input });
+    console.log(`"${focusInput}" changed`, input);
+  };
 
   updateValue(value) {
     console.log('updateValue', value);
@@ -110,6 +129,8 @@ class FicheClient extends React.Component {
   }
   resetPopin() {
     const st = { 
+      search: '',
+      focusInput: 'search',
       innermode: null,
       client_id: null,
       nom: '', 
@@ -176,18 +197,18 @@ class FicheClient extends React.Component {
   }
 
   gotoFiche() {
-    this.setState({innermode:'fiche'});
+    this.setState({innermode:'fiche', focusInput:'prenom'});
   }
 
   getRecherche(value) {
      console.log('recherche', value);
-     this.setState({innermode:'fiche', ...value});
+     this.setState({innermode:'fiche',  search: value, ...value});
   }
 
 
   render() {
 
-    const {open, client, mode, clients} = this.props;
+    const {open, client, mode, clients, clavierOpen} = this.props;
     const {
       client_id,
       nom, prenom,
@@ -199,16 +220,36 @@ class FicheClient extends React.Component {
       inscription
     } = this.getValeurs();
 
+    const { focusInput, search } = this.state;
+
     const readytovalidate = nom!=='' && prenom!=='' && (telephone!=='' || EMAIL_REG.test(email));
     const mapid = 'map-none';
 
     const vmode = this.state.innermode || mode;
 
-    console.log('clients', clients);
+
+    const inputs = {
+      'search': search,
+      'nom': nom,
+      'prenom': prenom,
+      'email': email,
+      'telephone': telephone,
+      'telephone2': telephone2,
+      'adresse': adresse,
+      'adresse2': adresse2,
+      'batiment': batiment,
+      'etage': etage,
+      'codepostal': codepostal,
+      'ville': ville,
+      'commentaire': commentaire
+    };
+
+    console.log(focusInput, inputs[focusInput]);
 
     return (
+      <div>
       <Modal open={open}>
-        <div className="FicheClient">
+        <div className={ `FicheClient${(clavierOpen?' with-clavier':'')} mode-${vmode}`}>
           { vmode==='recherche' && (<div className="Modal-container recherche">
             <div className="recherche-cont">
               <Fab size="small" onClick={this.gotoFiche}>
@@ -222,6 +263,8 @@ class FicheClient extends React.Component {
                 onChange={(event, newValue) => {
                   this.getRecherche(newValue);
                 }}
+                onInputChange={(e,value,r) => { this.updateValue({search:value}) }}
+                inputValue={search}
                 getOptionLabel={(option) => option.prenom+' '+option.nom+' '+option.telephone}
                 renderOption={(option) => (
                     <React.Fragment>
@@ -233,6 +276,8 @@ class FicheClient extends React.Component {
                       {...params}
                       label={ strings.modules.clients.edition.input }
                       variant="filled"
+                      name="search"
+                      onFocus={this.setFocus}
                       inputProps={{
                         ...params.inputProps,
                         autoComplete: 'new-password'
@@ -322,6 +367,7 @@ class FicheClient extends React.Component {
                       placeholder='' 
                       type='text' 
                       readOnly={ false } 
+                      onClick={this.setFocus}
                       onChange={(val)=>{ this.updateValue({nom:val.value}) }}
                       label={ strings.modules.clients.edition.nom }
                   />
@@ -333,17 +379,19 @@ class FicheClient extends React.Component {
                       placeholder='' 
                       type='text' 
                       readOnly={ false } 
+                      onClick={this.setFocus}
                       onChange={(val)=>{ this.updateValue({prenom:val.value}) }}
                       label={ strings.modules.clients.edition.prenom }
                   />
                   <LabelledField 
-                      id={ `adresse1` }
-                      name={ `adresse1` }
-                      className="fieldadresse1"
+                      id={ `adresse` }
+                      name={ `adresse` }
+                      className="fieldadresse"
                       value={ adresse } 
                       placeholder='' 
                       type='text' 
                       readOnly={ false } 
+                      onClick={this.setFocus}
                       onChange={(val)=>{ this.updateValue({adresse:val.value}) }}
                       label={ strings.modules.clients.edition.adresse1 }
                   />
@@ -355,6 +403,7 @@ class FicheClient extends React.Component {
                       placeholder='' 
                       type='text' 
                       readOnly={ false } 
+                      onClick={this.setFocus}
                       onChange={(val)=>{ this.updateValue({adresse2:val.value}) }}
                       label={ strings.modules.clients.edition.adresse2 }
                   />
@@ -366,6 +415,7 @@ class FicheClient extends React.Component {
                       placeholder='' 
                       type='text' 
                       readOnly={ false } 
+                      onClick={this.setFocus}
                       onChange={(val)=>{ this.updateValue({batiment:val.value}) }}
                       label={ strings.modules.clients.edition.batiment }
                   />
@@ -377,6 +427,7 @@ class FicheClient extends React.Component {
                       placeholder='' 
                       type='text' 
                       readOnly={ false } 
+                      onClick={this.setFocus}
                       onChange={(val)=>{ this.updateValue({etage:val.value}) }}
                       label={ strings.modules.clients.edition.etage }
                   />
@@ -388,6 +439,7 @@ class FicheClient extends React.Component {
                       placeholder='' 
                       type='text' 
                       readOnly={ false } 
+                      onClick={this.setFocus}
                       onChange={(val)=>{ this.updateValue({email:val.value}) }}
                       label={ strings.modules.clients.edition.email }
                   />
@@ -399,6 +451,7 @@ class FicheClient extends React.Component {
                       placeholder='' 
                       type='text' 
                       readOnly={ false } 
+                      onClick={this.setFocus}
                       onChange={(val)=>{ this.updateValue({codepostal:val.value}) }}
                       label={ strings.modules.clients.edition.codepostal }
                   />
@@ -410,34 +463,37 @@ class FicheClient extends React.Component {
                       placeholder='' 
                       type='text' 
                       readOnly={ false } 
+                      onClick={this.setFocus}
                       onChange={(val)=>{ this.updateValue({ville:val.value}) }}
                       label={ strings.modules.clients.edition.ville }
                   />
                   <LabelledField 
-                      id={ `tel1` }
-                      name={ `tel1` }
-                      className="fieldtel1"
+                      id={ `telephone` }
+                      name={ `telephone` }
+                      className="fieldtelephone"
                       value={ telephone } 
                       placeholder='' 
                       type='text' 
                       readOnly={ false } 
+                      onClick={this.setFocus}
                       onChange={(val)=>{ this.updateValue({telephone:val.value}) }}
                       label={ strings.modules.clients.edition.tel1 }
                   />
                   <LabelledField 
-                      id={ `tel2` }
-                      name={ `tel2` }
-                      className="fieldtel2"
+                      id={ `telephone2` }
+                      name={ `telephone2` }
+                      className="fieldtelephone2"
                       value={ telephone2 } 
                       placeholder='' 
                       type='text' 
                       readOnly={ false } 
-                      onChange={(val)=>{ this.updateValue({ttelephone2:val.value}) }}
+                      onClick={this.setFocus}
+                      onChange={(val)=>{ this.updateValue({telephone2:val.value}) }}
                       label={ strings.modules.clients.edition.tel2 }
                   />
                   <div className="remarque">
                     <label>{ strings.modules.clients.edition.remarque }</label>
-                    <textarea value={ commentaire } onChange={(event)=>{this.updateValue({commentaire:event.target.value}) }} />
+                    <textarea value={ commentaire } onClick={(evt)=>{this.setFocus(evt,{name:'commentaire',value:commentaire})}} onChange={(event)=>{this.updateValue({commentaire:event.target.value}) }} />
                   </div>
                 </div>
               </div>
@@ -471,6 +527,8 @@ class FicheClient extends React.Component {
           </Fab>
         </div>
       </Modal>
+      { (clavierOpen && open) && <Clavier onChange={this.onKeyboardChange} className="ClavierFicheClient" variant="permanent" baseClass="KBFicheClient" inputName={focusInput} inputVal={inputs[focusInput]} open={open && clavierOpen} /> }
+      </div>
     );
   }
 

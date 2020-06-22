@@ -131,6 +131,7 @@ class Reglement extends React.Component {
 
   beforeCloseReglement() {
 
+    const { modif } = this.props;
     const { reste, rendu } = this.updateValeurs();
     const { trlist } = this.state;
     console.log(reste, rendu);
@@ -139,9 +140,16 @@ class Reglement extends React.Component {
         this.props.commande.end = new Date();
         this.props.commande.chrono = Math.round(differenceInMilliseconds(this.props.commande.end, this.props.commande.start)/10)/100;
       }
+
+      // si on encaisse une commande déjà produite, 
+      // on ne réimprime pas les tickets de production (ms seulmt 'commande')
+      if (this.props.commande.status=='a_encaisser') {
+        this.props.printTicket({templates:['commande']});
+      }
       this.props.commande.status = 'confirmed';
 
-      this.props.printTicket('all');
+      // on imprime tous les tickets (sauf si on modifie juste les réglements)
+      if (!modif) this.props.printTicket('all');
 
       // enregistrement des TR en base (pour contrôle ultérieur)
       if (trlist.length>0) this.props.persistTicketsRestaurants(trlist);

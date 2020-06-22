@@ -104,7 +104,7 @@ function TableCommandes(props) {
               <TableCell key={`${row.id}-actions`} className="liste-actions">
                 <StdButton key={`${row.id}-encaissement`} identifier='encaissement' elementclass="action action-encaissement" icon={ false } disabled={false} noStroke={true} text={ strings.modules.listecommandes.actions.encaissement } onClick={ () => { openReglement(row.id) } } />
                 <StdButton key={`${row.id}-annuler`} identifier='annuler' elementclass="action action-annuler" icon={ false } disabled={id==='confirmed'} noStroke={true} text={ strings.modules.listecommandes.actions.annuler } onClick={() => { deleteCommande(row.id) }} />
-                <StdButton key={`${row.id}-reprise`} identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={id!=='standby'} noStroke={true} text={ strings.modules.listecommandes.actions.reprise } onClick={() => { openReprise(row.id) }} />
+                <StdButton key={`${row.id}-reprise`} identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={id==='confirmed' || row.commande.livreur!==null} noStroke={true} text={ strings.modules.listecommandes.actions.reprise } onClick={() => { openReprise(row.id) }} />
                 <StdButton key={`${row.id}-imprimer`} identifier='imprimer' elementclass="action action-imprimer" icon={ <PrinterIcon /> } disabled={id==='standby'} noStroke={true} text='' onClick={() => { openPrint(row.id) }} />
               </TableCell>
             </TableRow>
@@ -358,12 +358,13 @@ class ListeCommandes extends React.Component {
         client: value.client ? value.client.nom+' '+value.client.prenom : 'Anonyme',
         mode: value.mode,
         caisse: value.caisse,
+        livreur: null,
         centre: value.centre_revenu ? value.centre_revenu : 'restaurant'
       };
       let __start = compareAsc(new Date(value.createdAt), startDate);
       let __end = compareAsc(new Date(value.createdAt), endDate);
       if ((__start>-1 && __end<1) && (searchval=='' || cmd.id.indexOf(searchval)!=-1)) {
-      if (value.status=='a_encaisser') a_encaisserlist.push({id: key, commande: cmd});
+        if (value.status=='a_encaisser') a_encaisserlist.push({id: key, commande: cmd});
         if (value.status=='standby') standbylist.push({id: key, commande: cmd});
         if (value.status=='confirmed') confirmedlist.push({id: key, commande: cmd});
       }
@@ -449,7 +450,7 @@ class ListeCommandes extends React.Component {
           </TabPanel>
         </div>
 
-        <ReglementCont open={ this.state.reglementOpen } contClass="ListeCommandeReglement" commandeId={ this.state.commandeId } closeReglement={ this.closeReglement } modif={true} />
+        <ReglementCont open={ this.state.reglementOpen } contClass="ListeCommandeReglement" commandeId={ this.state.commandeId } closeReglement={ this.closeReglement } modif={openTab==2} />
         <NumberKeyboard open={keyboardOpen} numbersOnly={true} buttonHandler={this.keyboardButtonHandler} closeHandler={this.closeKeyboard} />
         <ImpressionTicketPopin tickets={tickets} printOpen={printOpen} closeHandler={this.closePrint} commandeId={ this.state.commandeId } launchTicket={printTicket} />
       </div>

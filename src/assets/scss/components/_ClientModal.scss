@@ -7,6 +7,13 @@
   top: 50%;
   transform: translate(-50%, -50%);
   outline: none;
+  &.with-clavier {
+    //   transform: translate(-50%, 0);
+    top: calc(50% - 125px);
+    // &.mode-fiche {
+    //   height: calc(100% - 250px);
+    // }
+  }
   .Modal-container {
       background-color: $blanc;
       width: 900px;

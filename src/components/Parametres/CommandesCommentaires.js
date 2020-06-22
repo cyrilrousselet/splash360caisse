@@ -13,14 +13,20 @@ import EditIcon from '../common/icon/EditIcon';
 import CloseIcon from '../common/icon/CloseIcon';
 import StdButton from '../common/StdButton';
 import AddIcon from '../common/icon/AddIcon';
+import Clavier from '../common/Clavier';
 let strings = new LocalizedStrings(data);
 
 
 
 function CommentaireEditModal (props) {
-  const {id, message, editOpen, closeHandler, updateMessage, saveCommentaire} = props;
-  
+  const {id, message, editOpen, closeHandler, clavierOpen, updateMessage, saveCommentaire} = props;
+
+  const onKeyboardChange = (input) => {
+    console.log('change',input);
+  }
+
   return(
+    <div>
       <Modal open={ editOpen } >
         <div className="CommentaireEditModal">
           <div className="Modal-container">
@@ -29,7 +35,7 @@ function CommentaireEditModal (props) {
             </div>
             <div className="body">
               <div className="edit-zone">
-                <TextField className="edit-input" defaultValue={message} onChange={updateMessage} variant="filled" />
+                <TextField className="edit-input" value={message} onChange={updateMessage} variant="filled" />
               </div>
             </div>
             <div className="footer">
@@ -37,6 +43,7 @@ function CommentaireEditModal (props) {
                 identifier="modal-save" 
                 elementclass="save" 
                 icon={ false } 
+                disabled={ message==='' }
                 text={ strings.general.dialog.save } 
                 onClick={() => { saveCommentaire(id) }} 
               />
@@ -47,6 +54,8 @@ function CommentaireEditModal (props) {
           </div>
         </div>
       </Modal>
+      {(clavierOpen && editOpen) && <Clavier onChange={ (input) => { updateMessage({target:{value:input}}) } } className="ClavierParamCmdComment" baseClass="KBParamCmdComment" inputName="edit-input" inputVal={message} open={editOpen && clavierOpen} />}
+      </div>
   )
 }
 
@@ -109,11 +118,12 @@ class CommandesCommentaires extends React.Component {
 
   updateMessage(event) {
     const {value} = event.target;
-    if (value!=='') {
+    console.log('updateMessage',value);
+   // if (value!=='') {
       this.setState({
         editmessage: String(value).toUpperCase()
       });
-    }
+   // }
   }
   saveCommentaire(id) {
 
@@ -171,9 +181,10 @@ class CommandesCommentaires extends React.Component {
   }
 
   render() {
-    const { data, updateValeur, getAll } = this.props;
+    const { data, updateValeur, getAll, entreprise } = this.props;
     const { comment_predefini } = data;
     const { editing, editmessage } = this.state;
+    const { clavier } = entreprise;
 
     return (
     <div className="CommandesCommentaires sectioncontent">
@@ -215,6 +226,7 @@ class CommandesCommentaires extends React.Component {
         closeHandler={this.closeEdit}
         updateMessage={this.updateMessage}
         saveCommentaire={this.saveCommentaire}
+        clavierOpen={clavier}
       />
     </div>
     );

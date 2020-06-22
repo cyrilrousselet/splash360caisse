@@ -494,7 +494,7 @@ function setCommandeFromOrder(provider, payload) {
       caisse: {id: -1, nom:'UberEats'},
       operator_encaissement: {id:-1, nom:'UberEats'}, 
       caisse_encaissement: {id: -1, nom:'UberEats'},
-      reglements: [{moyen: 'uber', reglementId: new Date().getTime(), valeur: payload.payment.charges.total.amount/100}]
+      reglements: [{moyen: 'uber', reglementId: new Date().getTime(), valeur: payload.payment.charges.sub_total.amount/100}]
     };
     
 

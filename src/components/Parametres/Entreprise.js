@@ -23,7 +23,7 @@ const data_ent = {
 };
 
 const general_fields = ['denomination', 'enseigne', 'adresse', 'code_postal', 'ville', 'telephone', 'siret', 'ape', 'tva', 'restaurant_id'];
-const general_switch = ['auto_update', 'clavier'];
+const general_switch = ['auto_update'];
 
 class Entreprise extends React.Component {
 
@@ -94,6 +94,20 @@ messageHandler(e) {
               label={ strings.modules.parametres.submodules.entreprise.options.label[field] } 
             />
           ))}
+          <SwitchCheckbox 
+            isChecked={ data.clavier } 
+            labelLeft={ true } 
+            key={`clavier`}
+            name={ `clavier` } 
+            onChange={ (name, isChecked)=>{
+              updateValeur({
+                domaine: 'entreprise',
+                cle: name,
+                valeur: isChecked
+              })
+            } } 
+            label={ strings.modules.parametres.submodules.entreprise.options.label.clavier } 
+          />
           <SwitchCheckbox 
             isChecked={ data.avoirs } 
             labelLeft={ true } 

@@ -10,6 +10,7 @@ class LabelledField extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.optionChange = this.optionChange.bind(this);
     this.handleKeyup = this.handleKeyup.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
   handleChange(event) {
@@ -30,6 +31,12 @@ class LabelledField extends React.Component {
     const {svalue} = this.state;
     this.setState({ option: event.target.value });
     this.props.onChange({ value: svalue||value, option: event.target.value });
+  }
+
+  handleClick(event) {
+    const {name, value} = this.props;
+    const {svalue} = this.state;
+    if (this.props.onClick) this.props.onClick(event, {name:name, value: svalue||value});
   }
 
   render() {
@@ -58,6 +65,7 @@ class LabelledField extends React.Component {
               readOnly={ readOnly }
               onChange={ this.handleChange }
               onKeyUp={ this.handleKeyup }
+              onClick={ this.handleClick }
               placeholder={placeholder}
               size={maxLength}
               />

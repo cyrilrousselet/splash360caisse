@@ -9,7 +9,8 @@ import { parametresActions } from './../services/parametres/parametresActions';
 
 const mapStateToProps = (state) => {
   return {
-    data: state.parametresReducer.parametres.commandes
+    data: state.parametresReducer.parametres.commandes,
+    entreprise: state.parametresReducer.parametres.entreprise
   }
 }
 

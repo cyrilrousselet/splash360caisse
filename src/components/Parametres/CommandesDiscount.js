@@ -13,14 +13,23 @@ import EditIcon from '../common/icon/EditIcon';
 import CloseIcon from '../common/icon/CloseIcon';
 import StdButton from '../common/StdButton';
 import AddIcon from '../common/icon/AddIcon';
+import Clavier from '../common/Clavier';
 let strings = new LocalizedStrings(data);
 
 
 
 function DiscountEditModal (props) {
-  const {id, discount, editOpen, closeHandler, updateDiscount, saveDiscount} = props;
+  const {id, discount, editOpen, clavierOpen, closeHandler, updateDiscount, saveDiscount} = props;
+
+
+  const onChangeHandler = (val) => {
+    let opt = '€';
+    if ((['€','%']).indexOf(String(discount).substr(-1,1))>-1) opt = String(discount).substr(-1,1);
+    updateDiscount({value:val, option:opt});
+  }
 
   return(
+    <div>
       <Modal open={ editOpen } >
         <div className="DiscountEditModal">
           <div className="Modal-container">
@@ -54,6 +63,8 @@ function DiscountEditModal (props) {
           </div>
         </div>
       </Modal>
+      {(clavierOpen && editOpen) && <Clavier defaultLayout="numeric" onChange={onChangeHandler} className="ClavierParamCmdDiscount" baseClass="KBParamCmdDiscount" inputName="edit-input" inputVal={Number(String(discount).slice(0,-1))} open={editOpen && clavierOpen} />}
+    </div>
   )
 }
 
@@ -181,9 +192,10 @@ class CommandesDiscount extends React.Component {
   }
 
   render() {
-    const { data, updateValeur, getAll } = this.props;
+    const { data, updateValeur, getAll, entreprise } = this.props;
     const { discount_predefini } = data;
     const { editing, editdiscount } = this.state;
+    const { clavier } = entreprise;
 
     return (
     <div className="CommandesDiscount sectioncontent">
@@ -225,6 +237,7 @@ class CommandesDiscount extends React.Component {
         closeHandler={this.closeEdit}
         updateDiscount={this.updateDiscount}
         saveDiscount={this.saveDiscount}
+        clavierOpen={clavier}
       />
     </div>
     );

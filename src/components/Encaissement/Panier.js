@@ -17,7 +17,10 @@ import CloseIcon from '../common/icon/CloseIcon';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import FicheClientCont from '../../containers/FicheClientCont';
+import Clavier from '../common/Clavier';
+
 let strings = new LocalizedStrings(data);
+
 
 
 class CommentModal extends React.Component {
@@ -32,10 +35,11 @@ class CommentModal extends React.Component {
     this.resetPopin = this.resetPopin.bind(this);
     this.changeHandler = this.changeHandler.bind(this);
     this.setComment = this.setComment.bind(this);
+    this.onKeyboardChange = this.onKeyboardChange.bind(this);
   }
 
   deleteComment() {
-    const {commentid, deleteHandler} = this.props;
+    const {commentid, deleteHandler, inputValue} = this.props;
     if (commentid!==null) {
 
       Swal.fire({
@@ -81,23 +85,27 @@ class CommentModal extends React.Component {
     let newtexte = (texte===null) ? '' : texte+', ';
     this.setState({texte: newtexte+message});
   }
+
+
+
+  onKeyboardChange(input) {
+    this.setState({ texte:input });
+    console.log("Comment Input changed", input);
+  };
+
   render() {
 
-    const { commentid, item, ingredient, cmtlib, closeHandler, deleteHandler, commenttexte, open } = this.props;
+    const { commentid, item, ingredient, cmtlib, closeHandler, deleteHandler, commenttexte, open, clavierOpen } = this.props;
     const { texte } = this.state;
 
     const vtexte = texte==null ? commenttexte : texte;
-    console.log('commenttexte', commenttexte);
-
-    setTimeout(() => {
-      if (this.refs.commentInput) this.refs.commentInput.focus();
-    },500);
 
     const __mttl = (ingredient) ? 'titre_ing' : (item) ? 'titre_itm' : 'titre_cmd';
 
     const readytosave = texte!==null;
 
     return (
+      <div>
       <Modal
       open={open}
       >
@@ -115,7 +123,6 @@ class CommentModal extends React.Component {
                     id="texte"
                     value={vtexte}
                     rowsMax={3}
-                    ref="commentInput"
                     onChange={this.changeHandler}
                     variant="filled"
                   />
@@ -154,8 +161,9 @@ class CommentModal extends React.Component {
           <CloseIcon />
         </Fab>
       </div>
-    </Modal>
-
+    </Modal>  
+    {(clavierOpen && open) && <Clavier onChange={this.onKeyboardChange} className="ClavierComment" baseClass="KBComment" inputName="texte" inputVal={vtexte} open={open && clavierOpen} />}
+    </div>
     );
   }
 
@@ -324,7 +332,11 @@ class Panier extends React.Component {
       discountId: null, 
       discountItemId: null, 
       discountIngredientId: null,
-      ficheClientOpen: false
+      ficheClientOpen: false,
+      keyboardLayoutName: 'default',
+      clavierOpen: false,
+      actualInput: null,
+      inputValue: ''
     }
     this.setSelectedIndex = this.setSelectedIndex.bind(this);
     this.setSelectedIngredient = this.setSelectedIngredient.bind(this);
@@ -342,6 +354,7 @@ class Panier extends React.Component {
     this.openFicheClient = this.openFicheClient.bind(this);
     this.closeFicheClient = this.closeFicheClient.bind(this);
     this.selectClient = this.selectClient.bind(this);
+
   }
 
   lock = false;
@@ -506,6 +519,8 @@ class Panier extends React.Component {
 
 
 
+  
+
 
   openDiscount() {
 
@@ -568,6 +583,7 @@ class Panier extends React.Component {
   openComment() {
 
     const {comments, items } = this.props.commande;
+    const {clavier} = this.props.parametres.entreprise;
     const {selectedIndex, selectedIngredient} = this.state;
 
     // récup des id d'item et d'ingrédients en fonction de la sélection du panier
@@ -586,6 +602,7 @@ class Panier extends React.Component {
       commentOpen: true, 
       commentId: commentId, 
       commentItemId: itemid, 
+      clavierOpen: clavier,
       commentIngredientId: ingredientid,
       inputfocus: false
     });
@@ -614,20 +631,24 @@ class Panier extends React.Component {
       commentId:null, 
       commentItemId:null, 
       commentIngredientId:null,
+      clavierOpen: false,
       inputfocus: true
     });
   }
 
 
   openFicheClient() {
+    const {clavier} = this.props.parametres.entreprise;
     this.setState({
       ficheClientOpen: true,
+      clavierOpen: clavier,
       inputfocus: false
     });
   }
   closeFicheClient() {
     this.setState({
       ficheClientOpen: false,
+      clavierOpen: false,
       inputfocus: true
     });
   }
@@ -675,10 +696,12 @@ class Panier extends React.Component {
     const {inputfocus, searchval, 
            commentOpen, commentId, commentItemId, commentIngredientId,
            discountOpen, discountId, discountItemId, discountIngredientId,
-           ficheClientOpen } = this.state;
+           ficheClientOpen,
+           keyboardLayoutName, clavierOpen } = this.state;
 
     // récup du texte en fonction de l'id du commentaire (s'il est défini)
-    const commentTexte = (commentId!==null) ? comments.find(cmt=>cmt.comment_id==commentId).texte : '';
+    let commentTexte = (commentId!==null) ? comments.find(cmt=>cmt.comment_id==commentId).texte : '';
+
     // choix de messages prédéfinis pour les commentaires :
     const cmtlib = (parametres && parametres.commandes) ? parametres.commandes.comment_predefini : [];
 
@@ -949,8 +972,8 @@ class Panier extends React.Component {
             <StdButton identifier='livraison' elementclass={ `mode mode-livraison ${(('livraison'===mode) && 'active' : '')}` } disabled={ open } icon={ false } text={ strings.modules.encaissement.panier.mode.livraison } onClick={(value) => { updateCommande({mode:value}) }} />
           </div>
           <div className="actions">
-            <StdButton identifier='encaisser' elementclass={ `action action-encaisser${(ventecmd && 'surplace'!==mode ? ' action-mid' : '')}` } disabled={ !__encaissable || open } icon={ false } text={ strings.modules.encaissement.panier.action.encaissement } onClick={ ()=> { openReglementHandler() }} />
-            {(ventecmd && 'surplace'!==mode) && (<StdButton identifier='valider' elementclass={ `action action-valider action-mid` } disabled={ !__encaissable || open } icon={ false } text={ strings.modules.encaissement.panier.action.valider } onClick={ ()=> { validationHandler() }} /> )}
+            <StdButton identifier='encaisser' elementclass={ `action action-encaisser${(ventecmd ? ' action-mid' : '')}` } disabled={ !__encaissable || open } icon={ false } text={ strings.modules.encaissement.panier.action.encaissement } onClick={ ()=> { openReglementHandler() }} />
+            {(ventecmd) && (<StdButton identifier='valider' elementclass={ `action action-valider action-mid` } disabled={ !__encaissable || open } icon={ false } text={ strings.modules.encaissement.panier.action.valider } onClick={ ()=> { validationHandler() }} /> )}
             <StdButton identifier='tiroir' elementclass="action action-tiroir" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.tiroir } onClick={ tiroirHandler } />
             <StdButton identifier='attente' elementclass="action action-attente" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.attente } onClick={ attenteHandler } />
             <StdButton identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.reprise } onClick={gotoListeCommandes} />
@@ -966,6 +989,7 @@ class Panier extends React.Component {
           commenttexte={ commentTexte }
           ingredient={commentIngredientId}
           cmtlib={ cmtlib }
+          clavierOpen={ clavierOpen }
           />
         <DiscountModal 
           open={discountOpen} 
@@ -978,7 +1002,7 @@ class Panier extends React.Component {
           ingredient={discountIngredientId}
           dsclib={ dsclib }
           />
-        <FicheClientCont open={ficheClientOpen} client={commandeClient} mode={commandeClient?'fiche':'recherche'} contexte="encaissement" closeHandler={this.closeFicheClient} selectClient={this.selectClient} />
+        <FicheClientCont open={ficheClientOpen} clavierOpen={ clavierOpen } client={commandeClient} mode={commandeClient?'fiche':'recherche'} contexte="encaissement" closeHandler={this.closeFicheClient} selectClient={this.selectClient} />
       </div>
     );
   }
