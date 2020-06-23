@@ -4,6 +4,11 @@ import {data} from '../../constants/translations';
 import LocalizedStrings from 'react-localization';
 import LabelledField from '../common/LabelledField';
 import SwitchCheckbox from '../common/SwitchCheckbox';
+import StdButton from '../common/StdButton';
+import fs from 'fs';
+import mkdirp from 'mkdirp';
+import { remote }  from 'electron';
+const { app, dialog } = remote;
 let strings = new LocalizedStrings(data);
 
 const data_ent = {
@@ -33,6 +38,7 @@ class Entreprise extends React.Component {
       message_ticket: data_ent.message_ticket
     }
     this.messageHandler = this.messageHandler.bind(this);
+    this.browseHandle = this.browseHandle.bind(this);
   }
 
   componentDidMount() {
@@ -41,6 +47,54 @@ class Entreprise extends React.Component {
 
 messageHandler(e) {
   this.setState({message_ticket:e.target.value});
+}
+
+
+
+checkDirectorySync(directory) {  
+  try {
+    fs.statSync(directory);
+  } catch(e) {
+    mkdirp.sync(directory);
+  }
+}
+
+
+browseHandle(e) {
+  dialog.showOpenDialog((fileNames) => {
+    // fileNames is an array that contains all the selected
+    if(fileNames === undefined){
+        console.log("No file selected");
+        return;
+    }
+
+    const platform = process.platform=='darwin' ? 'darwin' : 'win';
+
+    const path_ar = fileNames[0].split(platform=='darwin'?'/':'\\');
+    const file_ar = path_ar.pop().split('.');
+    file_ar[file_ar.length-2] += `_${new Date().getTime()}`;
+    this.checkDirectorySync(`${app.getPath('userData')}/userdata`);
+
+
+    const newFileName = file_ar.join('.');
+
+    fs.copyFile(fileNames[0], `${app.getPath('userData')}/userdata/${newFileName}`, () => {
+      console.log('file copied');
+      this.props.updateValeur({
+        domaine:'entreprise', 
+        cle:'ticket_logo', 
+        valeur: `${app.getPath('userData')}/userdata/${newFileName}`
+      });
+    });
+
+  });
+}
+
+getLogoImg(filePath) {
+
+  let buff = fs.readFileSync(filePath);
+  return `data:image/png;base64, ${buff.toString('base64')}`;
+
 }
 
  render() {
@@ -158,6 +212,15 @@ messageHandler(e) {
           <div className="message-ticket">
             <label>{ strings.modules.parametres.submodules.entreprise.options.label.message_ticket }</label>
             <textarea onChange={this.messageHandler}>{ message_ticket }</textarea>
+          </div>
+          <div className="logo-ticket">
+            <label>{ strings.modules.parametres.submodules.entreprise.options.label.logo_ticket }</label>
+            <div className="caption ticket-caption">{ strings.modules.parametres.submodules.entreprise.options.label.logo_ticket_caption }</div>
+            {data.ticket_logo && <div className="logo-ticket-image"><img src={this.getLogoImg(data.ticket_logo)} /></div>}
+            <div className="logo-boutons">
+              <StdButton identifier={`browse-logo`} elementclass={`browse-logo`} icon={false} noStroke={true} text={`${(data.ticket_logo?strings.modules.parametres.submodules.entreprise.options.label.logo_ticket_replace:strings.general.dialog.browse)}...`} disabled={false} onClick={this.browseHandle} />
+              {data.ticket_logo && <StdButton identifier={`delete-logo`} elementclass={`delete-logo`} icon={false} noStroke={true} text={strings.general.dialog.delete} disabled={false} onClick={() => { updateValeur({domaine:'entreprise', cle:'ticket_logo', valeur:null})}} />}
+            </div>
           </div>
         </div>
       </div>

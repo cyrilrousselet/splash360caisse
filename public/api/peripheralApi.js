@@ -4,6 +4,7 @@ escpos.USB = require('escpos-usb');
 escpos.Network = require('escpos-network');
 escpos.Serial = require('escpos-serialport');
 const path = require('path');
+const fs = require('fs');
 
 const getPixels = require('get-pixels');
 
@@ -150,17 +151,19 @@ function _doPrintTicket(imprimante, template, contenu) {
 
   log.debug('printTicket start');
 
-  const tux = path.join(__dirname, 'default_logo.png');
-  log.debug('img : '+tux);
+  // const tux = path.join(__dirname, 'default_logo.png');
+  // log.debug('img : '+tux);
 
   log.debug('device opened');
 
-  // s'il y a un logo au début du ticket
+  // // s'il y a un logo au début du ticket
   if (template[0]==='logo') {
     log.debug('Image.load -> print');
 
+    const imglogo = getLogoImg(contenu.logo);
+
     // on charge le logo
-    escpos.Image.load(tux, function(image){
+    escpos.Image.load(imglogo, function(image){
 
       // on ouvre la connexion à l'imprimante
       device.open(async function() {
@@ -196,7 +199,7 @@ function _doPrintTicket(imprimante, template, contenu) {
 
 async function _printImage(printer, image) {
 
-  await printer.image(image);
+  await printer.image(image, 'd24');
   return true;
 
 }
@@ -256,6 +259,11 @@ function _launchPrint(template, printer, contenu) {
     else if ('uber' ===  section) {
       const pqr = await _printUber(printer, contenu.uber, contenu.strings.uber);
     }
+    // else if ('logo' === section) {
+    //   if (contenu.logo!==null) {
+    //     const qim = await _printLogo(printer, contenu.logo);
+    //   }
+    // }
 
     // fin du ticket
     if (i === arr.length-1) {
@@ -305,6 +313,7 @@ function _printInfo(printer, data, strings) {
     .style('NORMAL')
     .text(`${strings.numero}${data.commande.id}`)
     .text(`${strings.creation}${data.info.date} à ${data.info.heure}`)
+    .size(2,2)
     .text(`*** ${strings.mode[data.commande.mode]} ***`)
     .size(1,2)
     .drawLine()
@@ -411,6 +420,7 @@ function _printSacInfo(printer, data, strings) {
     .style('NORMAL')
     .text(`${strings.numero}${data.commande.id}`)
     .text(`${strings.creation}${data.info.date} à ${data.info.heure}`)
+    .size(2,2)
     .text(`*** ${strings.mode[data.commande.mode]} ***`)
     .size(1,2)
     .drawLine()
@@ -579,6 +589,7 @@ async function _printQRCode(printer, code) {
   const qrimg = await QRCode.toDataURL(code, {width:300});
   const pixels = await getPixelsAsync(qrimg);
   const image = new escpos.Image(pixels);
+  log.info(image);
   const printQRimage = await _printImage(printer, image);
 
   printer
@@ -588,6 +599,22 @@ async function _printQRCode(printer, code) {
     .text(code)
   ;
   
+}
+
+function getLogoImg(filePath) {
+
+  let buff = fs.readFileSync(filePath);
+  return `data:image/png;base64, ${buff.toString('base64')}`;
+
+}
+
+async function _printLogo(printer, imageUrl) {
+
+  const pixels = await getPixelsAsync(getLogoImg(imageUrl));
+  const image = new escpos.Image(pixels);
+  log.info(image);
+  const printImage = await _printImage(printer, image);
+
 }
 
 // impression des informations de commande
@@ -610,7 +637,7 @@ function _printCommande(printer, data, strings) {
     .align('CT')
     .feed(1)
     .style('B')
-    .size(1,1)
+    .size(2,2)
     .text(`*** ${strings.mode[data.mode]} ***`)
     .font('A')
     .size(1,1)

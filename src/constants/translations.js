@@ -35,7 +35,8 @@ const data = {
                 delete: "Supprimer",
                 accept: "Accepter",
                 deny: "Refuser",
-                select: "Sélectionner"
+                select: "Sélectionner",
+                browse: "Parcourir"
             },
             check: {
                 tous: 'Tout sélectionner',
@@ -677,7 +678,10 @@ const data = {
                                 service: 'Gestion par service',
                                 heure_fin: 'Heure de fin de service',
                                 heure_fin_caption: 'Si la gestion par service est activé, l’heure de fin de service est l’heure indiquée sinon le logiciel considère qu’une journée se termine à minuit et vous devez faire la clôture avant de commencer un nouveau service',
-                                message_ticket: 'Message fin de ticket'
+                                message_ticket: 'Message fin de ticket',
+                                logo_ticket: 'Imprimer un logo sur le ticket',
+                                logo_ticket_caption: 'Sélectionnez une image PNG ou GIF en noir et blanc de 500px de large.',
+                                logo_ticket_replace: 'Remplacer'
                             }
                         }
                     },
@@ -947,9 +951,9 @@ const data = {
                     monnaie: 'EUR'
                 },
                 mode: {
-                    livraison: 'À LIVRER',
+                    livraison: 'LIVRAISON',
                     surplace: 'SUR PLACE',
-                    emporter: 'À EMPORTER'
+                    emporter: 'A EMPORTER'
                 },
                 client: {
                     titre: 'Client :',
@@ -971,9 +975,9 @@ const data = {
                 numero: 'Cmd no ',
                 creation: 'Créée le ',
                 mode: {
-                    livraison: 'À LIVRER',
+                    livraison: 'LIVRAISON',
                     surplace: 'SUR PLACE',
-                    emporter: 'À EMPORTER'
+                    emporter: 'A EMPORTER'
                 },
                 caption: {
                     quantite: 'QTE',
@@ -989,9 +993,9 @@ const data = {
                 numero: 'Cmd no ',
                 creation: 'Créée le ',
                 mode: {
-                    livraison: 'À LIVRER',
+                    livraison: 'LIVRAISON',
                     surplace: 'SUR PLACE',
-                    emporter: 'À EMPORTER'
+                    emporter: 'A EMPORTER'
                 },
                 caption: {
                     quantite: 'QTE',

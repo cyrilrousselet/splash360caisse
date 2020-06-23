@@ -28,8 +28,8 @@ class CommandesCanaux extends React.Component {
       setPOS();
     } else {
       Swal.fire({
-        title: strings.modules.parametres.commandes.canaux.uber.alerte.enable_noid.titre,
-        text: strings.modules.parametres.commandes.canaux.uber.alerte.enable_noid.texte,
+        title: strings.modules.parametres.submodules.commandes.canaux.uber.alerte.enable_noid.titre,
+        text: strings.modules.parametres.submodules.commandes.canaux.uber.alerte.enable_noid.texte,
         showCancelButton: false,
         focusConfirm: true
       });
@@ -40,12 +40,12 @@ class CommandesCanaux extends React.Component {
     const { data, updateValeur, setPOS } = this.props;
     if (value==='' && data.pos_integration_enabled) {
       Swal.fire({
-        title: strings.modules.parametres.commandes.canaux.uber.alerte.noid_enable.titre,
-        text: strings.modules.parametres.commandes.canaux.uber.alerte.noid_enable.texte,
+        title: strings.modules.parametres.submodules.commandes.canaux.uber.alerte.noid_enable.titre,
+        text: strings.modules.parametres.submodules.commandes.canaux.uber.alerte.noid_enable.texte,
         showCancelButton: true,
         focusCancel: true,
         focusConfirm: false,
-        confirmButtonText: strings.modules.parametres.commandes.canaux.uber.alerte.noid_enable.force
+        confirmButtonText: strings.modules.parametres.submodules.commandes.canaux.uber.alerte.noid_enable.force
       })
       .then(result=>{
         if (result.value) {

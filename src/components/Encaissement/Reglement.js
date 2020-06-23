@@ -145,11 +145,13 @@ class Reglement extends React.Component {
       // on ne réimprime pas les tickets de production (ms seulmt 'commande')
       if (this.props.commande.status=='a_encaisser') {
         this.props.printTicket({templates:['commande']});
+        this.props.commande.status = 'confirmed';
+      } else {
+        this.props.commande.status = 'confirmed';
+        // on imprime tous les tickets (sauf si on modifie juste les réglements)
+        if (!modif) this.props.printTicket('all');
       }
-      this.props.commande.status = 'confirmed';
 
-      // on imprime tous les tickets (sauf si on modifie juste les réglements)
-      if (!modif) this.props.printTicket('all');
 
       // enregistrement des TR en base (pour contrôle ultérieur)
       if (trlist.length>0) this.props.persistTicketsRestaurants(trlist);

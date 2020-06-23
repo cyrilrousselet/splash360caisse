@@ -1,12 +1,13 @@
 export const templates = {
   commande: [
-    // 'logo', 
+     'logo', 
      'entreprise', 
      'commande', 
    //  'message', 
      'legal'
   ],
   uber: [
+    'logo', 
     'entreprise',
     'uber',
     'commande',

@@ -298,6 +298,8 @@ function printCommandeTicket(quelstickets, cmd) {
     const caisse = cmd.caisse;
     const operateur = cmd.operator;
 
+    const logo = entreprise.ticket_logo || null;
+
     let __createdAt = new Date();
     if (undefined!=cmd.createdAt) {
       __createdAt = parseJSON(cmd.createdAt);
@@ -493,7 +495,7 @@ function printCommandeTicket(quelstickets, cmd) {
         // contenu :
         contenu = {
           // -> logo
-          logo: null,
+          logo: logo,
           // -> entreprise
           entreprise: {
             nom: String(entreprise.denomination).toUpperCase(),

@@ -67,18 +67,18 @@ function treatment(data) {
               title: strings.notification.accept.uber.titre,
               html: strings.notification.accept.uber.texte+'<br />'+strings.notification.accept.uber.detail.replace('%NUMERO%',reponse.order.display_id).replace('%DATEHEURE%', format(new Date(reponse.order.estimated_ready_for_pickup_at), "d MMM yyyy à HH:mm", { locale: frLocale })),
               focusConfirm: true,
-              showCancelButton: true,
+              showCancelButton: false,
               customClass: 'ubernotification',
               allowOutsideClick: false,
               allowEscapeKey: false,
               confirmButtonText: strings.general.dialog.accept,
-              cancelButtonText: strings.general.dialog.deny,
+              // cancelButtonText: strings.general.dialog.deny,
               buttonsStyling: false 
             }).then((result)=> {
               if (result.value==true) {
                 dispatch(acceptOrder('uber', reponse.order));
-              } else {
-                dispatch(denyOrder('uber', reponse.order));
+              // } else {
+              //   dispatch(denyOrder('uber', reponse.order));
               }
             });
 

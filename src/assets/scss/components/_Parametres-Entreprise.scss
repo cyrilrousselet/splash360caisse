@@ -108,5 +108,38 @@
         resize: none;
       }
     }
+    .logo-ticket {
+      padding-top: 10px;
+      label {
+        font-family: $f_med;
+        font-size: 14px;
+        color: $noir;
+        padding-bottom: 6px;
+        user-select: none;
+        display: block;
+      }
+      .ticket-caption {
+        padding-left: 20px;
+      }
+      .logo-boutons {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .browse-logo {
+        background-color: $bleu;
+      }
+      .delete-logo {
+        background-color: $rouge;
+      }
+      .logo-ticket-image {
+        width: 100%;
+        img {
+          width: 100%;
+          height: auto;
+        }
+      }
+    }
   }
 }
