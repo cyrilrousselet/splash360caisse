@@ -67,11 +67,19 @@
         .liste-nom {
             text-transform: capitalize;
             text-decoration: underline;
+            
             div {
                 cursor: pointer;
+                display: inline-flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
             }
             &.user-disabled {
               color: $rouge;
+            }
+            .delivery {
+              margin-left: 10px;
             }
         }
         .odd {

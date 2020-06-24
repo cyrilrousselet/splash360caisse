@@ -64,7 +64,7 @@ class Clavier extends React.Component {
 
     if (this.keyboard) console.log(this.keyboard.getInput(inputName));
 
-    const vlayout = (defaultLayout) ? ('numeric'===defaultLayout) ? NUMERIC_LAYOUT : layout : layout;
+    const vlayout = (defaultLayout && 'numeric'===defaultLayout) ? NUMERIC_LAYOUT : layout;
     const display_c = (defaultLayout && 'numeric'===defaultLayout) ? {'{bksp}': 'C'} : {};
 
     if (this.keyboard && inputObject) {
@@ -72,8 +72,8 @@ class Clavier extends React.Component {
     }
 
     if (this.keyboard) {
-      this.keyboard.setInput(inputVal, inputName);
-      this.keyboard.setOptions({carretPosition: inputVal.length});
+      this.keyboard.setInput(inputVal || '', inputName);
+      this.keyboard.setOptions({carretPosition: inputVal && inputVal.length || 0});
     } else {
       console.log('keyboard inconnu');
     }
@@ -84,7 +84,6 @@ class Clavier extends React.Component {
           layout={vlayout}
           baseClass={baseClass}
           layoutName={layoutName}
-          display={display_c}
           inputName={inputName}
           disableCaretPositioning={true}
           onChange={(input) => { console.log(`[${inputVal}]`, input); onChange(input)}}

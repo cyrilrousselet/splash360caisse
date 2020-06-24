@@ -12,6 +12,8 @@ import Swal from 'sweetalert2';
 
 import Popper from '@material-ui/core/Popper';
 import PillButton from '../common/PillButton';
+import DeliveryIcon from '../common/icon/DeliveryIcon';
+import Clavier from '../common/Clavier';
 let strings = new LocalizedStrings(data);
 
 const passphrase_length = 6; // nombre de caractères pour l'identifiant
@@ -24,11 +26,13 @@ class EditUtilisateurPopin extends React.Component {
     super(props);
     console.log(props);
     this.state = {
+      focusInput: 'nom',
       user_id: null,
       nom: '',
       identifiant: '', 
       taux_horaire: null,
       status: 'active',
+      livreur: false,
       droits: '',
       error_nom: false,
       error_identifiant: false
@@ -41,6 +45,8 @@ class EditUtilisateurPopin extends React.Component {
     this.checkIdentifiant = this.checkIdentifiant.bind(this);
     this.getValues = this.getValues.bind(this);
     this.resetPopin = this.resetPopin.bind(this);
+    this.setFocus = this.setFocus.bind(this);
+    this.onKeyboardChange = this.onKeyboardChange.bind(this);
   }
 
   componentDidMount() {
@@ -50,6 +56,7 @@ class EditUtilisateurPopin extends React.Component {
       identifiant: this.props.utilisateur && this.props.utilisateur.identifiant, 
       first: this.props.utilisateur && this.props.utilisateur.first,
       droits: this.props.utilisateur && this.props.utilisateur.droits,
+      livreur: this.props.utilisateur && this.props.utilisateur.livreur,
       taux_horaire: this.props.utilisateur && this.props.utilisateur.taux_horaire
     }
     console.log('componentDidMount', st);
@@ -148,7 +155,7 @@ class EditUtilisateurPopin extends React.Component {
 
   getValues() {
     
-    const { droits, nom, identifiant, status, taux_horaire } = this.props.utilisateur || {droits:{}, nom:null, identifiant:null, status:'active', taux_horaire:null};
+    const { droits, nom, identifiant, status, livreur, taux_horaire } = this.props.utilisateur || {droits:{}, nom:null, identifiant:null, status:'active', livreur:false, taux_horaire:null};
     console.log('getValues()', this.props.utilisateur);
     console.log('getValues() droits', droits);
     // si aucun droit n'est défini (cas d'un nouvel utilisateur)
@@ -156,6 +163,11 @@ class EditUtilisateurPopin extends React.Component {
     if (Object.keys(droits).length==0) {
       console.log('remplissage des droits à partir de clés');
       Object.keys(strings.modules.parametres.submodules.utilisateurs.edition.droits).map( drt => { droits[drt] = false; });
+    }
+    // si un nouveau droit a été ajouté depuis la création de l'utilisateur
+    if (Object.keys(strings.modules.parametres.submodules.utilisateurs.edition.droits).length>Object.keys(droits).length) {
+      const nvdrt = Object.keys(strings.modules.parametres.submodules.utilisateurs.edition.droits).filter(d=>Object.keys(droits).indexOf(d)==-1);
+      nvdrt.forEach(d=>{ droits[d] = false});
     }
     
     const sdroits = this.state.droits;
@@ -174,6 +186,7 @@ class EditUtilisateurPopin extends React.Component {
     const snom = this.state.nom;
     const sidentifiant = this.state.identifiant;
     const sstatus = this.state.status;
+    const slivreur = this.state.livreur;
     const staux_horaire = this.state.taux_horaire;
 
     return {
@@ -182,6 +195,7 @@ class EditUtilisateurPopin extends React.Component {
       identifiant: sidentifiant || identifiant,
       allchecked: all,
       status: sstatus || status,
+      livreur: slivreur || livreur,
       taux_horaire: staux_horaire || taux_horaire
     }
   }
@@ -189,11 +203,13 @@ class EditUtilisateurPopin extends React.Component {
   resetPopin() {
     const droits = {};
     const st = {
+      focusInput: 'nom',
       user_id: null,
       nom: '',
       identifiant: '', 
       droits: droits,
       status: 'active',
+      livreur: false,
       error_nom: false,
       error_identifiant: false,
       taux_horaire: null
@@ -236,13 +252,28 @@ class EditUtilisateurPopin extends React.Component {
 
   }
 
+  setFocus(event, obj) {
+    console.log('setFocus', event.target.name);
+    if (obj) {
+      this.setState({focusInput: obj.name});
+    } else {
+      this.setState({focusInput: event.target.name});
+    }
+  }
+
+  onKeyboardChange(input) {
+    const {focusInput} = this.state;
+    this.setState({ [focusInput]:input });
+    console.log(`"${focusInput}" changed`, input);
+  };
 
 
   render() {
-    const { utilisateur, editOpen, closeHandler } = this.props;
-    const { nom, identifiant, droits, allchecked, status, taux_horaire } = this.getValues();
+    const { utilisateur, editOpen, closeHandler, clavierOpen } = this.props;
+    const { nom, identifiant, droits, allchecked, status, livreur, taux_horaire } = this.getValues();
     console.log("utilisateur: ", utilisateur);
     console.log('status',status);
+    const {focusInput} = this.state;
  
     // const a_nom = nom || utilisateur && utilisateur.nom;
     // const a_identifiant = identifiant || utilisateur && utilisateur.identifiant;
@@ -252,9 +283,17 @@ class EditUtilisateurPopin extends React.Component {
     const incomplete = !nom || !identifiant || identifiant.length<passphrase_length || this.state.error_identifiant;
     console.log('incomplete', incomplete);
 
+
+    const inputs = {
+      'nom': nom,
+      'identifiant': identifiant,
+      'taux_horaire': taux_horaire
+    };
+
     return (
+      <div>
       <Modal open={ editOpen } >
-        <div className="EditUserModal">
+        <div className={`EditUserModal${(clavierOpen?' with-clavier':'')}`}>
           <div className="Modal-container">
             <div className="header">
               <div className="title">{utilisateur==null ? strings.modules.parametres.submodules.utilisateurs.edition.ajouter : strings.modules.parametres.submodules.utilisateurs.edition.editer }</div>
@@ -268,6 +307,7 @@ class EditUtilisateurPopin extends React.Component {
                   placeholder='' 
                   type='text' 
                   readOnly={ false } 
+                  onClick={this.setFocus}
                   onChange={(val)=>{ this.updateValue({nom:val.value}) }}
                   label={ strings.modules.parametres.submodules.utilisateurs.liste.nom }
               />
@@ -280,10 +320,12 @@ class EditUtilisateurPopin extends React.Component {
                   type='text' 
                   maxLength={passphrase_length}
                   readOnly={ false } 
+                  onClick={this.setFocus}
                   onChange={(val)=>{ this.checkIdentifiant(val.value) }}
                   label={ strings.modules.parametres.submodules.utilisateurs.liste.passe }
               />
-              <SwitchCheckbox 
+              <div className="status-zone">
+                <SwitchCheckbox 
                     isChecked={ status!='disabled' } 
                     key="status"
                     name="status" 
@@ -291,7 +333,17 @@ class EditUtilisateurPopin extends React.Component {
                     small={ true }
                     onChange={ (name,checked) => { this.updateStatus(Object.fromEntries([[name, checked?'active':'disabled']])) }} 
                     label={ strings.modules.parametres.submodules.utilisateurs.edition.status } 
-                  />
+                    />
+              </div>
+              <SwitchCheckbox 
+                  isChecked={ livreur } 
+                  key="livreur"
+                  name="livreur" 
+                  className="livreur"
+                  small={ true }
+                  onChange={ (name,checked) => { this.updateValue({livreur: checked}) }} 
+                  label={ strings.modules.parametres.submodules.utilisateurs.edition.livreur } 
+                />
               <LabelledField 
                   id={ `taux_horaire` }
                   name={ `taux_horaire` }
@@ -299,6 +351,7 @@ class EditUtilisateurPopin extends React.Component {
                   value={ taux_horaire } 
                   type='number' 
                   readOnly={ false } 
+                  onClick={this.setFocus}
                   onChange={(val)=>{ this.updateValue({taux_horaire:val.value}) }}
                   label={ strings.modules.parametres.submodules.utilisateurs.edition.taux_horaire }
               />
@@ -342,6 +395,8 @@ class EditUtilisateurPopin extends React.Component {
           </Fab>
         </div>
       </Modal>
+      { (clavierOpen && editOpen) && <Clavier onChange={this.onKeyboardChange} className="ClavierFicheClient" variant="permanent" baseClass="KBFicheClient" inputName={focusInput} inputVal={inputs[focusInput]} open={editOpen && clavierOpen} /> }
+      </div>
     );
   }
 }
@@ -406,7 +461,7 @@ function TableUtilisateurs(props) {
       <TableBody>
         {liste.map((row, i) => (
           (row.status!=='deleted') && (<TableRow key={row.id} className={(i%2)?'odd':'even'}>
-            <TableCell key={`${i}-nom`} className={ `liste-nom${ (row.status && row.status=='disabled')?' user-disabled':''}` }><div onClick={ () => { openEdit(i) } }>{ row.nom }</div></TableCell>
+            <TableCell key={`${i}-nom`} className={ `liste-nom${ (row.status && row.status=='disabled')?' user-disabled':''}` }><div onClick={ () => { openEdit(i) } }>{ row.nom }{ row.livreur && <DeliveryIcon className="delivery" /> }</div></TableCell>
             <TableCell key={`${i}-passe`} className="liste-passe">{ row.identifiant }</TableCell>
             <TableCell key={`${i}-droits`} className="liste-droits"><DroitsPopper id={`drt${i}`} droits={row.droits}></DroitsPopper></TableCell>
           </TableRow>)
@@ -462,7 +517,7 @@ class Utilisateurs extends React.Component {
  render() {
 
   const { utilisateur, editOpen } = this.state;
-  const { users } = this.props;
+  const { users, clavier } = this.props;
 
   const identifiants = {};
   users.forEach(usr=>{
@@ -479,7 +534,7 @@ class Utilisateurs extends React.Component {
     <div className="table-wrapper">
       <TableUtilisateurs liste={users} id='usersliste' openEdit={this.openEdit} />
     </div>
-    <EditUtilisateurPopin utilisateur={utilisateur} editOpen={editOpen} identifiants={identifiants} closeHandler={this.closeEdit} saveUtilisateur={this.saveUser} />
+    <EditUtilisateurPopin utilisateur={utilisateur} editOpen={editOpen} clavierOpen={clavier} identifiants={identifiants} closeHandler={this.closeEdit} saveUtilisateur={this.saveUser} />
   </div>
   );
  }

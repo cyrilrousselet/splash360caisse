@@ -699,6 +699,7 @@ const data = {
                                 statistiques: "Accès Statistiques",
                                 parametres: "Accès Paramètres",
                                 menu: "Accès Menu",
+                                menu_prix: "Menu Modif Prix",
                                 cloture: "Accès Clôture",
                                 marketing: "Accès Marketing",
                                 depenses: "Accès Dépenses",
@@ -706,7 +707,8 @@ const data = {
                                 remise: "Remise",
                                 cartes: "Encaissement CB",
                                 listecommandes: "Accès Liste Commandes",
-                                encaissement: "Accès Encaissement"
+                                encaissement: "Accès Encaissement",
+
                             }
                         },
                         edition: {
@@ -714,6 +716,7 @@ const data = {
                             editer: 'Édition de l’utilisateur',
                             first: 'L’utilisateur doit changer de mot de passe à la prochaine connexion',
                             status: 'Actif',
+                            livreur: 'Livreur',
                             taux_horaire: 'Taux horaire',
                             droits: {
                                 clients: "Accès Clients",
@@ -721,6 +724,7 @@ const data = {
                                 statistiques: "Accès Statistiques",
                                 parametres: "Accès Paramètres",
                                 menu: "Accès Menu",
+                                menu_prix: "Menu Modif Prix",
                                 cloture: "Accès Clôture",
                                 marketing: "Accès Marketing",
                                 depenses: "Accès Dépenses",

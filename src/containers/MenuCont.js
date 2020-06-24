@@ -3,7 +3,12 @@ import { connect } from 'react-redux'
 import Menu from '../components/Menu';
 
 const mapStateToProps = (state) => {
-  return {}
+  return {
+    catalogue: state.catalogueReducer.catalogue,
+    categories: state.catalogueReducer.categories,
+    ingredients: state.catalogueReducer.ingredients,
+    ingredientTypes: state.catalogueReducer.ingredientTypes
+  }
 }
 
 const mapDispatchToProps = (dispatch) => {

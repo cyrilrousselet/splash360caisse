@@ -9,7 +9,8 @@ import { userActions } from './../services/user/userActions';
 
 const mapStateToProps = (state) => {
   return {
-    users: state.userReducer.users
+    users: state.userReducer.users,
+    clavier: state.parametresReducer.parametres.entreprise.clavier
   }
 }
 

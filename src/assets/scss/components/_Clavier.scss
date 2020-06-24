@@ -5,4 +5,7 @@
   }
   position: absolute;
   z-index: 1301;
+  font-family: $f_blk;
+  font-size: 18px;
+  @include font-smoothing(on);
 }

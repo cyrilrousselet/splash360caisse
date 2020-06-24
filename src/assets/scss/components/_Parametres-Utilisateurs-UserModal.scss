@@ -6,9 +6,14 @@
   top: 50%;
   transform: translate(-50%, -50%);
   outline: none;
+  &.with-clavier {
+    top: calc(50% - 145px);
+    height: calc(100% - 320px);
+  }
   .Modal-container {
       background-color: $blanc;
       width: 500px;
+      height: 100%;
       border-radius: 15px;
       padding: 0 20px;
   }
@@ -39,6 +44,8 @@
     flex-wrap: wrap;
     justify-content: space-between;
     padding-bottom: 30px;
+    height: calc(100% - 105px);
+    overflow-y: auto;
 
     .droits-wrapper {
       display: flex;
@@ -114,7 +121,18 @@
           }
         }
     }
+    .status-zone {
+      width: 100%;
+    }
     .status.switch-container {
+      justify-content: flex-start;
+      label+label {
+        margin-left: 15px;
+        font-family: $f_blk;
+        $font-size: 16px;
+      }
+    }
+    .livreur.switch-container {
       justify-content: flex-start;
       label+label {
         margin-left: 15px;
@@ -125,6 +143,11 @@
 
   }
   .footer{
+      background-color: $blanc;
+      background-image: linear-gradient($gris 0%, $gris 100%);
+      background-size: 100% 1px;
+      background-repeat: no-repeat;
+      background-position: center 3px;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
