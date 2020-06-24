@@ -1,13 +1,18 @@
 // @flow
 import { connect } from 'react-redux'
-import Clients from '../components/Clients';
+import Clients from '../components/Clients/index.js';
+import { clientsActions } from '../services/clients/clientsActions';
 
 const mapStateToProps = (state) => {
-  return {}
+  return {
+    clients: state.clientsReducer.clients
+  }
 }
 
 const mapDispatchToProps = (dispatch) => {
-  return {}
+  return {
+    getClients: clientsActions.getClientsList
+  }
 }
 
 const ClientsCont = connect(

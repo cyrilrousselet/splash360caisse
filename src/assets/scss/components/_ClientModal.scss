@@ -9,7 +9,8 @@
   outline: none;
   &.with-clavier {
     //   transform: translate(-50%, 0);
-    top: calc(50% - 125px);
+    top: calc(50% - 120px);
+    height: calc(100% - 260px);
     // &.mode-fiche {
     //   height: calc(100% - 250px);
     // }
@@ -17,6 +18,7 @@
   .Modal-container {
       background-color: $blanc;
       width: 900px;
+      height: 100%;
       border-radius: 15px;
       padding: 10px 0 0;
       &.recherche {
@@ -71,6 +73,8 @@
     padding: 0 20px 0 0;
     flex-wrap: wrap;
     justify-content: space-between;
+    height: calc(100% - 55px);
+    overflow-y: auto;
 
     .col {
       width: 50%;

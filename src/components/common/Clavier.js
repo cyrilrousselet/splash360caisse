@@ -85,6 +85,8 @@ class Clavier extends React.Component {
           baseClass={baseClass}
           layoutName={layoutName}
           inputName={inputName}
+          mergeDisplay={true}
+          display={display_c}
           disableCaretPositioning={true}
           onChange={(input) => { console.log(`[${inputVal}]`, input); onChange(input)}}
           onKeyPress={this.onKeyboardKeyPress}

@@ -18,6 +18,7 @@ export const commandeServices = {
   addComment,
   addModificateur,
   saveCommande,
+  persistCommande,
   deleteCommande,
   archiveCommands,
   addIngredient,
@@ -796,6 +797,10 @@ function saveCommande(commande, catalogueReducer) {
 
 
   return emit('dbCommandePersist', {commande:__c});
+}
+
+function persistCommande(commande) {
+  return emit('dbCommandePersist', {commande:commande});
 }
 
 function archiveCommands(commandesid, clotureId) {

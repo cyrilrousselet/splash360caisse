@@ -405,6 +405,10 @@ const data = {
                 impression: {
                     titre: "Impression Ticket",
                     tous: "tous"
+                },
+                livreurs: {
+                    titre: "Sélection d'un livreur",
+                    aucun: "aucun"
                 }
             },
             cloture: { 
@@ -595,7 +599,7 @@ const data = {
                     code: 'Id',
                     nom: 'Nom',
                     prenom: 'Prénom',
-                    tel1: 'Téléphone 1',
+                    tel1: 'Téléphone',
                     email: 'Email',
                     codepostal: 'Code postal',
                     ville: 'Ville',

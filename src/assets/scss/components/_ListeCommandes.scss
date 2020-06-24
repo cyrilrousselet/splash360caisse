@@ -118,8 +118,9 @@
 
     .liste-actions {
       display: flex;
-      width: 300px;
-      padding-right: 3px;
+      // width: 300px;
+      padding: 6px 0;
+      // padding-right: 3px;
     }
     .MuiTableCell-root {
       font-family: $f_med;
@@ -189,6 +190,7 @@
 
       .liste-actions { 
         text-align: right;
+        justify-content: center;
       }
     }
 
@@ -205,11 +207,11 @@
       font-family: $f_blk;
     }
     .StdButton-icon {
-      height: 17px;
-      width: 16px;
+      height: 20px;
+      width: 20px;
       svg {
-        width: 16px;
-        height: 17px;
+        width: 20px;
+        height: 20px;
       }
     }
 

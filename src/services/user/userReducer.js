@@ -57,3 +57,4 @@ export function userReducer(state = initialState, action) {
 
 export const hasUsers = state => state.userReducer.hasUsers;
 export const getUsers = state => state.userReducer.users;
+export const getLivreurs = state => state.userReducer.users.filter(u => u.hasOwnProperty('livreur') && u.livreur)

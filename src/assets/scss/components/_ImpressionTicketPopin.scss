@@ -1,4 +1,5 @@
-.ImpressionTicket {
+.ImpressionTicket, 
+.LivreursModal {
   display: inline-block;
   position: absolute;
   left: 50%;
@@ -49,4 +50,14 @@
         }
     }
   }
+}
+
+.LivreursModal {
+    .livreur {
+        width: 100%;
+        background-color: $gris;
+        &.livreur-none {
+            background-color: $rouge
+        }
+    }
 }

@@ -2,23 +2,23 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import LocalizedStrings from 'react-localization';
-import {data} from '../constants/translations';
+import {data} from '../../constants/translations';
 
-import TopZone from '../containers/TopZone';
-import LoadingSpinner from './common/LoadingSpinner';
+import TopZone from '../../containers/TopZone';
+import LoadingSpinner from './../common/LoadingSpinner';
 import { Table, TableHead, TableCell, TableBody, TableRow, Modal, Fab } from '@material-ui/core';
-import StdButton from './common/StdButton';
-import CrossIcon from './common/icon/CrossIcon';
-import HistoriqueIcon from './common/icon/HistoriqueIcon';
-import LabelledField from './common/LabelledField';
-import CloseIcon from './common/icon/CloseIcon';
-import SwitchCheckbox from './common/SwitchCheckbox';
+import StdButton from './../common/StdButton';
+import CrossIcon from './../common/icon/CrossIcon';
+import HistoriqueIcon from './../common/icon/HistoriqueIcon';
+import LabelledField from './../common/LabelledField';
+import CloseIcon from './../common/icon/CloseIcon';
+import SwitchCheckbox from './../common/SwitchCheckbox';
 
 import 'date-fns';
 import { format, startOfToday } from "date-fns";
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
-import MapIcon from './common/icon/MapIcon';
+import MapIcon from './../common/icon/MapIcon';
 
 let strings = new LocalizedStrings(data);
 
@@ -399,18 +399,16 @@ class Clients extends React.Component {
     this.closeHistorique = this.closeHistorique.bind(this);
     
   }
-      componentDidMount() {
-  // const { getAllActive } = this.props;
-  // getAllActive();
- }
+  componentDidMount() {
+    this.props.getClients();
+  }
 
 
-
- 
   openEdit(clientid=null) {
     console.log(clientid);
     if (clientid!==null) {
-      this.setState({client:clients_data[clientid], editOpen: true});
+      const {clients} = this.props;
+      this.setState({client:clients.filter(c=>c.client_id==clientid), editOpen: true});
     }
     else {
       this.setState({client:null, editOpen: true});
@@ -430,7 +428,7 @@ class Clients extends React.Component {
 
  render() {
 
-  //const { catalogue, error, loading } = this.props;
+  const { clients } = this.props;
 
   const { client, editOpen, historiqueOpen } = this.state;
 
@@ -451,7 +449,6 @@ class Clients extends React.Component {
         <Table stickyHeader size="small" aria-label="a dense table">
             <TableHead>
               <TableRow>
-                <TableCell key={`hd-code`} className="liste-code">{ strings.modules.clients.liste.code }</TableCell>
                 <TableCell key={`hd-nom`} className="liste-nom">{ strings.modules.clients.liste.nom }</TableCell>
                 <TableCell key={`hd-prenom`} className="liste-prenom">{ strings.modules.clients.liste.prenom }</TableCell>
                 <TableCell key={`hd-tel1`} className="liste-tel1">{ strings.modules.clients.liste.tel1 }</TableCell>
@@ -462,18 +459,17 @@ class Clients extends React.Component {
               </TableRow>
             </TableHead>
             <TableBody>
-              {clients_data.map((row, i) => (
+              {clients.map((row, i) => (
                 <TableRow key={row.clientid} className={(i%2)?'odd':'even'}>
-                  <TableCell key={`${i}-code`} className="liste-code">{ row.clientid }</TableCell>
                   <TableCell key={`${i}-nom`} className="liste-nom"><div onClick={ () => { this.openEdit(i) } }>{ row.nom }</div></TableCell>
                   <TableCell key={`${i}-prenom`} className="liste-prenom"><div onClick={ () => { this.openEdit(i) } }>{ row.prenom }</div></TableCell>
-                  <TableCell key={`${i}-tel1`} className="liste-tel1">{ row.tel1 }</TableCell>
+                  <TableCell key={`${i}-tel1`} className="liste-tel1">{ row.telephone }</TableCell>
                   <TableCell key={`${i}-email`} className="liste-email">{ row.email }</TableCell>
                   <TableCell key={`${i}-codepostal`} className="liste-codepostal">{ row.codepostal }</TableCell>
                   <TableCell key={`${i}-ville`} className="liste-ville">{ row.ville }</TableCell>
                   <TableCell key={`${i}-actions`} className="liste-actions">
                     <StdButton key={`${i}-supprimer`} identifier='supprimer' elementclass="action action-supprimer" icon={ <CrossIcon /> } noStroke={true} text='' onClick={() => { console.log('confirm suppr.') }} />
-                    <StdButton key={`${i}-historique`} identifier='historique' elementclass="action action-historique" icon={ <HistoriqueIcon /> } noStroke={true} text='' onClick={() => { this.openHistorique(i) }} />
+                    {/* <StdButton key={`${i}-historique`} identifier='historique' elementclass="action action-historique" icon={ <HistoriqueIcon /> } noStroke={true} text='' onClick={() => { this.openHistorique(i) }} /> */}
                   </TableCell>
                 </TableRow>
               ))}

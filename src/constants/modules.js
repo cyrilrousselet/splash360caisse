@@ -4,11 +4,11 @@ export const modulesList = [
   'employes',
   'listecommandes',
   'cloture',
-  'stocks',
-  'statistiques',
   'menu',
-//  'clients',
-  'parametres'
+//  'stocks',
+  'statistiques',
+  'parametres',
+  'clients',
 ];
 
 // modulesList[0] = 'marketing';

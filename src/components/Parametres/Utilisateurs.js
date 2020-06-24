@@ -306,7 +306,7 @@ class EditUtilisateurPopin extends React.Component {
                   value={ nom } 
                   placeholder='' 
                   type='text' 
-                  readOnly={ false } 
+                  readOnly={ clavierOpen } 
                   onClick={this.setFocus}
                   onChange={(val)=>{ this.updateValue({nom:val.value}) }}
                   label={ strings.modules.parametres.submodules.utilisateurs.liste.nom }
@@ -319,7 +319,7 @@ class EditUtilisateurPopin extends React.Component {
                   placeholder={ strings.modules.parametres.submodules.utilisateurs.liste.passe_placeholder } 
                   type='text' 
                   maxLength={passphrase_length}
-                  readOnly={ false } 
+                  readOnly={ clavierOpen } 
                   onClick={this.setFocus}
                   onChange={(val)=>{ this.checkIdentifiant(val.value) }}
                   label={ strings.modules.parametres.submodules.utilisateurs.liste.passe }
@@ -350,7 +350,7 @@ class EditUtilisateurPopin extends React.Component {
                   className={ `taux_horaire` }
                   value={ taux_horaire } 
                   type='number' 
-                  readOnly={ false } 
+                  readOnly={ clavierOpen } 
                   onClick={this.setFocus}
                   onChange={(val)=>{ this.updateValue({taux_horaire:val.value}) }}
                   label={ strings.modules.parametres.submodules.utilisateurs.edition.taux_horaire }

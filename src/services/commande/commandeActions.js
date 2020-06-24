@@ -376,6 +376,25 @@ function deleteCommande(payload) {
   }
 }
 
+function setLivreur(payload) {
+  return (dispatch, getState) => {
+
+    const {commandeId, livreur} = payload;
+
+    const { commandeslist } = getState().commandesListReducer;
+    const commande = Object.values(commandeslist).find(cmd => cmd.ticketId==commandeId);
+
+    commandeServices.persistCommande({...commande, livreur:livreur})
+    .then(
+      data => {
+        dispatch({ type: commandeActionTypes.UPDATE_COMMANDE, payload:{livreur:livreur} });
+        dispatch(getCommandesList())
+      },
+      error => dispatch({ type: commandeActionTypes.UPDATE_COMMANDE_ERROR, error: error})
+    );
+  }
+}
+
 function addReglement(payload) {
   return (dispatch, getState) => {
     const state = getState();
@@ -593,6 +612,7 @@ export const commandeActions = {
   uncheckItemSteps,
   updateCommande,
   deleteCommande,
+  setLivreur,
   addReglement,
   removeReglement,
   addRendu,

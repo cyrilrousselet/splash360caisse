@@ -8,6 +8,8 @@ import { catalogueActions } from '../services/catalogue/catalogueActions';
 import { getCommandesListError, getCommandesListLoading, getCommandesList } from '../services/commande/commandesListReducer';
 import { peripheralActions } from '../services/peripheral/peripheralActions';
 import { clientsActions } from '../services/clients/clientsActions';
+import { getLivreurs } from '../services/user/userReducer';
+import { userActions } from '../services/user/userActions';
 
 
 const getTicketsListe = (state) => {
@@ -24,6 +26,7 @@ const mapStateToProps = (state) => {
       error: getCommandesListError(state),
       commandeslist: getCommandesList(state),
       tickets: getTicketsListe(state),
+      livreurs: getLivreurs(state),
       thiscash: (state.parametresReducer.parametres.options && state.parametresReducer.parametres.options.caisse) || {}
   }
 }
@@ -35,7 +38,9 @@ const mapDispatchToProps = (dispatch) => {
       getCommande: commandeActions.getCommande,
       getClientsList: clientsActions.getClientsList,
       deleteCommande: commandeActions.deleteCommande,
-      printTicket: peripheralActions.printTicket
+      printTicket: peripheralActions.printTicket,
+      setLivreur: commandeActions.setLivreur,
+      getUsers: userActions.getAll
   }, dispatch);
   return {
     ...bound,

@@ -31,11 +31,15 @@ import Box from '@material-ui/core/Box';
 import StdButton from './common/StdButton';
 import PrinterIcon from './common/icon/PrinterIcon';
 import ReglementCont from '../containers/ReglementCont';
-import { Modal, Fab, Input, Badge } from '@material-ui/core';
+import { Modal, Fab, Input, Badge, ListItemAvatar } from '@material-ui/core';
 import CloseIcon from './common/icon/CloseIcon';
 import PillField from './common/PillField';
 import NumberKeyboard from './common/NumberKeyboard';
 import Swal from 'sweetalert2';
+import DeliveryIcon from './common/icon/DeliveryIcon';
+import PaymentIcon from './common/icon/PaymentIcon';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from './common/icon/EditIcon';
 
 let strings = new LocalizedStrings(data);
 
@@ -71,7 +75,7 @@ TabPanel.propTypes = {
 
 
 function TableCommandes(props) {
-  const { liste, id, openReglement, openReprise, deleteCommande, openPrint, thiscash, ...other } = props;
+  const { liste, id, openReglement, openReprise, deleteCommande, openPrint, openLivreurs, thiscash, ...other } = props;
 
   liste.sort((a,b) => {
     let da = new Date(a.commande.createdAt), db = new Date(b.commande.createdAt);
@@ -102,9 +106,10 @@ function TableCommandes(props) {
               <TableCell key={`${row.id}-client`} className="liste-client">{ row.commande.client }</TableCell>
               <TableCell key={`${row.id}-mode`} className="liste-mode">{ strings.modules.listecommandes.liste.modes[row.commande.mode] }</TableCell>
               <TableCell key={`${row.id}-actions`} className="liste-actions">
-                <StdButton key={`${row.id}-encaissement`} identifier='encaissement' elementclass="action action-encaissement" icon={ false } disabled={false} noStroke={true} text={ strings.modules.listecommandes.actions.encaissement } onClick={ () => { openReglement(row.id) } } />
-                <StdButton key={`${row.id}-annuler`} identifier='annuler' elementclass="action action-annuler" icon={ false } disabled={id==='confirmed'} noStroke={true} text={ strings.modules.listecommandes.actions.annuler } onClick={() => { deleteCommande(row.id) }} />
-                <StdButton key={`${row.id}-reprise`} identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={id==='confirmed' || row.commande.livreur!==null} noStroke={true} text={ strings.modules.listecommandes.actions.reprise } onClick={() => { openReprise(row.id) }} />
+                {row.commande.mode=='livraison' && <StdButton key={`${row.id}-livreur`} identifier='livreur' elementclass={ `action action-livreur${(row.commande.livreur?' lvr-active':'')}` } icon={ <DeliveryIcon htmlColor={(row.commande.livreur?'#FF2D55':'#666666')} /> } noStroke={true} text='' onClick={() => { openLivreurs(row.id) }} />}
+                <StdButton key={`${row.id}-encaissement`} identifier='encaissement' elementclass="action action-encaissement" icon={ <PaymentIcon htmlColor="#ffffff" /> } disabled={false} noStroke={true} text={ '' } onClick={ () => { openReglement(row.id) } } />
+                <StdButton key={`${row.id}-annuler`} identifier='annuler' elementclass="action action-annuler" icon={ <DeleteIcon htmlColor="#ffffff" /> } disabled={id==='confirmed'} noStroke={true} text={ '' } onClick={() => { deleteCommande(row.id) }} />
+                <StdButton key={`${row.id}-reprise`} identifier='reprise' elementclass="action action-reprise" icon={ <EditIcon htmlColor="#ffffff" /> } disabled={id==='confirmed' || row.commande.livreur!==null} noStroke={true} text={ '' } onClick={() => { openReprise(row.id) }} />
                 <StdButton key={`${row.id}-imprimer`} identifier='imprimer' elementclass="action action-imprimer" icon={ <PrinterIcon /> } disabled={id==='standby'} noStroke={true} text='' onClick={() => { openPrint(row.id) }} />
               </TableCell>
             </TableRow>
@@ -114,6 +119,33 @@ function TableCommandes(props) {
     </TableContainer>
   );
 } 
+
+function LivreurPopin(props) {
+  const { livreurs, livreurOpen, closeHandler, commandeId, setLivreur } = props;
+
+  return (
+    <Modal
+      open={ livreurOpen }
+      >
+      <div className="LivreursModal">
+        <div className="Modal-container">
+          <div className="header">
+            <div className="title">{ strings.modules.listecommandes.livreurs.titre }</div>
+          </div>
+          <div className="body">
+          { livreurs.map((lvr,i) =>
+            <StdButton identifier={ lvr.user_id } key={i} elementclass="livreur" icon={ false } noStroke={true} text={ lvr.nom } onClick={(value) => { setLivreur({commandeId:commandeId, livreur:{nom:lvr.nom, id:lvr.user_id}}); closeHandler(); }} />
+            )}
+            <StdButton identifier="none" key={livreurs.length} elementclass="livreur livreur-none" icon={ false } noStroke={true} text={ strings.modules.listecommandes.livreurs.aucun } onClick={(value) => { setLivreur({commandeId:commandeId, livreur:null}); closeHandler(); }} />
+          </div>
+        </div>
+        <Fab aria-label="close" size="small" className="close-button" onClick={ closeHandler }>
+          <CloseIcon />
+        </Fab>
+      </div>
+    </Modal>
+  );
+}
 
 
 function ImpressionTicketPopin(props) {
@@ -159,7 +191,8 @@ class ListeCommandes extends React.Component {
       printOpen: false,
       searchval:'',
       inputfocus: true,
-      keyboardOpen: false
+      keyboardOpen: false,
+      livreurOpen: false
     };
     this.setSelectedDate = this.setSelectedDate.bind(this);
     this.handleChangeTab = this.handleChangeTab.bind(this);
@@ -174,6 +207,8 @@ class ListeCommandes extends React.Component {
     this.keyboardButtonHandler = this.keyboardButtonHandler.bind(this);
     this.closeKeyboard = this.closeKeyboard.bind(this);
     this.deleteCommande = this.deleteCommande.bind(this);
+    this.openLivreurs = this.openLivreurs.bind(this);
+    this.closeLivreurs = this.closeLivreurs.bind(this);
   }
   
   lock = false;
@@ -184,6 +219,7 @@ class ListeCommandes extends React.Component {
     this.props.getCommandesList();
     this.props.getAllActive();
     this.props.getClientsList();
+    this.props.getUsers();
   }
 
   setSelectedDate(bound,date) {
@@ -327,11 +363,18 @@ class ListeCommandes extends React.Component {
     });
 
   }
+  openLivreurs(cmdid) {
+    this.props.getCommande(cmdid);
+    this.setState({commandeId:cmdid, livreurOpen:true});
+  }
+  closeLivreurs(cmdid) {
+    this.setState({livreurOpen:false});
+  }
 
   render() {
-    const { commandeslist, error, loading, tickets, printTicket, thiscash } = this.props;
+    const { commandeslist, error, loading, tickets, printTicket, thiscash, livreurs, setLivreur } = this.props;
 
-    const { startDate, endDate, openTab, commandeId, printOpen, searchval, inputfocus, keyboardOpen } = this.state;
+    const { startDate, endDate, openTab, commandeId, printOpen, searchval, inputfocus, keyboardOpen, livreurOpen } = this.state;
 
     const self = this;
 
@@ -358,7 +401,7 @@ class ListeCommandes extends React.Component {
         client: value.client ? value.client.nom+' '+value.client.prenom : 'Anonyme',
         mode: value.mode,
         caisse: value.caisse,
-        livreur: null,
+        livreur: value.livreur,
         centre: value.centre_revenu ? value.centre_revenu : 'restaurant'
       };
       let __start = compareAsc(new Date(value.createdAt), startDate);
@@ -443,16 +486,17 @@ class ListeCommandes extends React.Component {
             <TableCommandes className="standby" id="standby" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } liste={standbylist} />
           </TabPanel>
           <TabPanel key="a_encaisser-panel" className="panel" value={openTab} index={1}>
-            <TableCommandes className="a_encaisser" id="a_encaisser" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } liste={a_encaisserlist} />
+            <TableCommandes className="a_encaisser" id="a_encaisser" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } openLivreurs={ this.openLivreurs } liste={a_encaisserlist} />
           </TabPanel>
           <TabPanel key="confirmed-panel" className="panel" value={openTab} index={2}>
-            <TableCommandes className="confirmed" id="confirmed" thiscash={thiscash} openReglement={ this.encaissementHandle } openPrint={ this.openPrint } liste={confirmedlist} />
+            <TableCommandes className="confirmed" id="confirmed" thiscash={thiscash} openReglement={ this.encaissementHandle } openPrint={ this.openPrint } openLivreurs={ this.openLivreurs } liste={confirmedlist} />
           </TabPanel>
         </div>
 
         <ReglementCont open={ this.state.reglementOpen } contClass="ListeCommandeReglement" commandeId={ this.state.commandeId } closeReglement={ this.closeReglement } modif={openTab==2} />
         <NumberKeyboard open={keyboardOpen} numbersOnly={true} buttonHandler={this.keyboardButtonHandler} closeHandler={this.closeKeyboard} />
         <ImpressionTicketPopin tickets={tickets} printOpen={printOpen} closeHandler={this.closePrint} commandeId={ this.state.commandeId } launchTicket={printTicket} />
+        <LivreurPopin livreurs={livreurs} livreurOpen={livreurOpen} setLivreur={setLivreur} closeHandler={this.closeLivreurs} commandeId={ this.state.commandeId } launchTicket={printTicket} />
       </div>
     </div>
     );
