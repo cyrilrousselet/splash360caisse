@@ -157,7 +157,7 @@ function _doPrintTicket(imprimante, template, contenu) {
   log.debug('device opened');
 
   // // s'il y a un logo au début du ticket
-  if (template[0]==='logo') {
+  if (template[0]==='logo' && contenu.logo!==null) {
     log.debug('Image.load -> print');
 
     const imglogo = getLogoImg(contenu.logo);
