@@ -20,6 +20,7 @@ import PlusIcon from '../common/icon/PlusIcon';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import Clavier from '../common/Clavier';
+import SwitchCheckbox from '../common/SwitchCheckbox';
 
 let strings = new LocalizedStrings(data);
 
@@ -33,21 +34,22 @@ class FicheClient extends React.Component {
     super(props);
     this.state = {
       search: '',
-      focusInput: 'search',
+      focusInput: props.contexte=='encaissement'?'search':'nom',
       innermode: null,
       client_id: null,
-      nom: '', 
-      prenom: '',
-      email: '', 
-      telephone: '', 
-      telephone2: '',
-      adresse: '', 
-      adresse2: '',
-      batiment: '', 
-      etage: '',
-      codepostal: '', 
-      ville: '',
-      commentaire: '',
+      bloque: null,
+      nom: null, 
+      prenom: null,
+      email: null, 
+      telephone: null, 
+      telephone2: null,
+      adresse: null, 
+      adresse2: null,
+      batiment: null, 
+      etage: null,
+      codepostal: null, 
+      ville: null,
+      commentaire: null,
       inscription: new Date().getTime()
     };
     this.getValeurs = this.getValeurs.bind(this);
@@ -66,15 +68,16 @@ class FicheClient extends React.Component {
   }
 
   getValeurs() {
-    const { client_id, nom, prenom,
+    const { client_id, bloque, nom, prenom,
       email, telephone, telephone2,
       adresse, adresse2, batiment, etage, codepostal, ville,
-      commentaire, inscription } = this.props.client || { client_id: null, nom: '', prenom: '',
+      commentaire, inscription } = this.props.client || { client_id: null, bloque: false, nom: '', prenom: '',
                                                           email: '', telephone: '', telephone2: '',
                                                           adresse: '', adresse2: '', batiment: '', etage: '', codepostal: '', ville: '',
                                                           commentaire: '', inscription: new Date().getTime() };
 
     const sclient_id = this.state.client_id;
+    const sbloque = this.state.bloque;
     const snom = this.state.nom;
     const sprenom = this.state.prenom;
     const semail = this.state.email;
@@ -90,20 +93,21 @@ class FicheClient extends React.Component {
     const sinscription = this.state.inscription;
 
     return {
-      client_id: sclient_id || client_id,
-      nom: snom || nom,
-      prenom: sprenom || prenom,
-      email: semail || email,
-      telephone: stelephone || telephone,
-      telephone2: stelephone2 || telephone2,
-      adresse: sadresse || adresse,
-      adresse2: sadresse2 || adresse2,
-      batiment: sbatiment || batiment,
-      etage: setage || etage,
-      codepostal: scodepostal || codepostal,
-      ville: sville || ville,
-      commentaire: scommentaire || commentaire,
-      inscription: sinscription || inscription
+      client_id: sclient_id!==null ? sclient_id : client_id,
+      bloque: sbloque!==null ? sbloque : bloque,
+      nom: snom!==null ? snom : nom,
+      prenom: sprenom!==null ? sprenom : prenom,
+      email: semail!==null ? semail : email,
+      telephone: stelephone!==null ? stelephone : telephone,
+      telephone2: stelephone2!==null ? stelephone2 : telephone2,
+      adresse: sadresse!==null ? sadresse : adresse,
+      adresse2: sadresse2!==null ? sadresse2 : adresse2,
+      batiment: sbatiment!==null ? sbatiment : batiment,
+      etage: setage!==null ? setage : etage,
+      codepostal: scodepostal!==null ? scodepostal : codepostal,
+      ville: sville!==null ? sville : ville,
+      commentaire: scommentaire!==null ? scommentaire : commentaire,
+      inscription: sinscription!==null ? sinscription : inscription
     }
 
   }
@@ -128,23 +132,25 @@ class FicheClient extends React.Component {
     this.setState(value);
   }
   resetPopin() {
+    const {contexte} = this.props;
     const st = { 
       search: '',
-      focusInput: 'search',
+      focusInput: contexte==='encaissement'?'search':'nom',
       innermode: null,
       client_id: null,
-      nom: '', 
-      prenom: '',
-      email: '', 
-      telephone: '', 
-      telephone2: '',
-      adresse: '', 
-      adresse2: '',
-      batiment: '', 
-      etage: '',
-      codepostal: '', 
-      ville: '',
-      commentaire: '',
+      bloque: null,
+      nom: null, 
+      prenom: null,
+      email: null, 
+      telephone: null, 
+      telephone2: null,
+      adresse: null, 
+      adresse2: null,
+      batiment: null, 
+      etage: null,
+      codepostal: null, 
+      ville: null,
+      commentaire: null,
       inscription: new Date().getTime()
     };
     this.setState(st);
@@ -172,7 +178,7 @@ class FicheClient extends React.Component {
 
   handleSelect() {
 
-    const { selectClient, client, closeHandler, mode } = this.props;
+    const { selectClient, client, closeHandler, mode, contexte } = this.props;
 
     const client_id = this.state.client_id || (client && client.client_id || null);
     if (client_id==null) { 
@@ -208,9 +214,10 @@ class FicheClient extends React.Component {
 
   render() {
 
-    const {open, client, mode, clients, clavierOpen} = this.props;
+    const {open, client, mode, clients, clavierOpen, contexte} = this.props;
     const {
       client_id,
+      bloque,
       nom, prenom,
       email, telephone, telephone2,
       adresse, adresse2,
@@ -219,6 +226,8 @@ class FicheClient extends React.Component {
       commentaire,
       inscription
     } = this.getValeurs();
+
+    const liste = clients.filter(c=>(!c.bloque));
 
     const { focusInput, search } = this.state;
 
@@ -259,7 +268,7 @@ class FicheClient extends React.Component {
               <Autocomplete
                 className="recherche-input"
                 id="clt-recherche"
-                options={clients}
+                options={liste}
                 onChange={(event, newValue) => {
                   this.getRecherche(newValue);
                 }}
@@ -313,15 +322,15 @@ class FicheClient extends React.Component {
                       onChange={ console.log }
                       label={ strings.modules.clients.edition.inscription }
                   />
-                  {/* <SwitchCheckbox 
-                    isChecked={ (client!==null && client.bloque) } 
+                  <SwitchCheckbox 
+                    isChecked={ (bloque) } 
                     key={ `bloque` }
                     name={ 'bloque' } 
                     className="check-bloque"
                     small={ true }
-                    onChange={ console.log } 
+                    onChange={ (name,checked) => { this.updateValue({bloque: checked}) }} 
                     label={ strings.modules.clients.edition.bloquer } 
-                  /> */}
+                  />
                   {/* <div className="fid">
                     <LabelledField 
                         id={ `achats` }
@@ -504,14 +513,15 @@ class FicheClient extends React.Component {
               </div>
             </div>
             <div className="footer">
-              <StdButton 
+              {contexte==='encaissement' && <StdButton 
                 identifier="modal-select" 
                 elementclass={ `select${((client_id&&client)?' unselect':'')}` } 
                 icon={ false } 
                 disabled={ !readytovalidate }
                 text={ client_id ? client ? strings.modules.clients.edition.unselect : strings.general.dialog.select : strings.modules.clients.edition.save_select } 
                 onClick={this.handleSelect} 
-              />
+              />}
+              {contexte!=='encaissement' && <div></div>}
               <StdButton 
                 identifier="modal-save" 
                 elementclass="save" 

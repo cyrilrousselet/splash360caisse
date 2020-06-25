@@ -1,40 +1,30 @@
 import {emit} from 'eiphop';
+import { eachMonthOfInterval } from 'date-fns';
 
 export const catalogueServices = {
   getAllActive,
-  getAll
+  getAll,
+  updateProduit,
+  updateIngredient,
+  updateGroupe,
+  updateIngredientType
  };
 
-function getAll() {
-
-  return emit('dbCatalogueGetAll', {from: 'services/catalogueService'})
-    .then(res => { 
-      console.log(res);
-    })
-    .catch(err => console.log(err))
-  ;
-} 
-
 function getAllActive() {
-  // return emit('dbCatalogueGetAllActive', {from: 'services/catalogueService'})
-  //   .then(res => { 
-  //     console.log(res);
-  //   })
-  //   .catch(err => console.log(err))
-  // ;
-  return emit('dbCatalogueGetAllActive', {from: 'services/catalogueService'});
+  return getAll();
 }
-
-// async function getAllActive() {
-//   const cat = await db.categories.find({});
-//   return cat;
-
-//  }
-
-
-// async function getAll() {
-
-//   const cat = await db.categories.find({});
-//   return cat;
-
-// }
+function getAll() {
+  return emit('dbCatalogueGetAll', {from: 'services/catalogueService'});
+}
+function updateProduit(produit) {
+  return emit('dbCatalogueUpdateProduit', {produit:produit});
+}
+function updateIngredient(ingredient) {
+  return emit('dbCatalogueUpdateIngredient', {ingredient:ingredient});
+}
+function updateGroupe(groupe) {
+  return emit('dbCatalogueUpdateGroupe', {groupe:groupe});
+}
+function updateIngredientType(type) {
+  return emit('dbCatalogueUpdateIngredientType', {type:type});
+}

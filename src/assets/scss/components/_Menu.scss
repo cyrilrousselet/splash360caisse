@@ -1,0 +1,124 @@
+.Menu {
+
+  .listes {
+    height: calc(100% - 40px);
+  }
+
+  header {
+    box-shadow: none;
+    background-color: transparent;
+    flex-direction: row;
+    justify-content: space-between;
+    
+    .catalogue {
+      display: inline-flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+
+      .MuiFilledInput-root {
+        border-radius: 5px;
+        &.MuiFilledInput-underline:before {
+          display: none;
+        }
+      }
+      .MuiFilledInput-input {
+        padding: 10px 32px 10px 12px;
+        font-family: $f_hea;
+      }
+    }
+
+  .catalogue-label {
+    display: inline-block;
+    font-family: $f_hea;
+    color: $noir;
+    font-size: 17px;
+    padding-right: 10px;
+  }
+
+
+    .MuiButtonBase-root {
+      font-family: $f_hea;
+      font-size: 18px;
+      background-color: $gris-clair;
+      border-radius: 15px 15px 0 0;
+      color: $noir;
+      margin-right: 2px;
+      padding: 8px 25px;
+      &.Mui-selected {
+        background-color: $blanc;
+        color: $primary;
+        font-family: $f_blk;
+      }
+    }
+    .MuiTabs-fixed {
+      width: auto;
+    }
+    .MuiTabs-indicator {
+      background-color: transparent;
+    }
+    .MuiTabs-flexContainer {
+      display: inline-flex;
+    }
+  }
+
+  .MuiTypography-root {
+    height: 100%;
+    background-color: $blanc;
+    border-radius: 15px 0 15px 15px;
+  }
+  .liste-wrapper {
+    height: 100%;
+    overflow-y: auto;
+  }
+  .panel {
+    position: relative;
+    height: 100%;
+    .MuiBox-root {
+      height: 100%;
+    }
+  }
+  .cont-header .MuiExpansionPanelSummary-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .cont-title {
+    font-family: $f_hea;
+  }
+  .cont-print .MuiFormControlLabel-label {
+    font-size:13px;
+    font-family: $f_med;
+  }
+  .panel-liste {
+    width: 100%;
+    .MuiTypography-root {
+      font-family: $f_med;
+    }
+    .MuiListItemText-primary {
+      color: $noir;
+    }
+    .MuiListItemText-secondary {
+      color: $gris;
+    }
+  }
+
+
+  .couleur {
+    &.blanc       { fill: $prdcol_blanc; }
+    &.bleuclair   { fill: $prdcol_bleuclair; }
+    &.bleufonce   { fill: $prdcol_bleufonce; }
+    &.gris        { fill: $prdcol_gris; }
+    &.jaune       { fill: $prdcol_jaune; }
+    &.jauneorange { fill: $prdcol_jauneorange; }
+    &.marron      { fill: $prdcol_marron; }
+    &.noir        { fill: $prdcol_noir; }
+    &.orange      { fill: $prdcol_orange; }
+    &.rose        { fill: $prdcol_rose; }
+    &.rouge       { fill: $prdcol_rouge; }
+    &.vertclair   { fill: $prdcol_vertclair; }
+    &.vertfonce   { fill: $prdcol_vertfonce; }
+    &.violet      { fill: $prdcol_violet; }
+  }
+}

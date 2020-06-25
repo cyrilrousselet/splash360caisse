@@ -34,11 +34,14 @@
     border-radius: 5px;
     box-shadow: inset 0 0 0 3px $noir_010;
 
-
-    background: linear-gradient($blanc 0%, $blanc 100%), linear-gradient($blanc 0%, $blanc 100%), linear-gradient($blanc 0%, $blanc 100%), linear-gradient($blanc 0%, $blanc 100%);
-    background-repeat: no-repeat;
-    background-size: 70px 100%, 140px 100%, 110px 100%, 100px 100%;
-    background-position: 0 0, calc(100% - 560px) 0, calc(100% - 270px) 0, 100% 0;
+    background-color: $blanc;
+    // background: linear-gradient($blanc 0%, $blanc 100%), linear-gradient($blanc 0%, $blanc 100%);
+    // // , linear-gradient($blanc 0%, $blanc 100%), linear-gradient($blanc 0%, $blanc 100%);
+    // background-repeat: no-repeat;
+    // // background-size: 150px 100%, 150px 100%, 110px 100%, 100px 100%;
+    // background-size: 150px 100%, 150px 100%;
+    // // background-position: 0 0, calc(100% - 560px) 0, calc(100% - 270px) 0, 100% 0;
+    // background-position: 0 0, 300px 0;
 
 
     header {
@@ -78,23 +81,22 @@
         width: 70px;
         text-align: center;
     }
-    .liste-tel1 {
-        width: 140px;
-    }
-    .liste-email {
-        width: 190px;
-    }
-    .liste-codepostal {
-        width: 110px;
-        text-align: center;
-    }
-    .liste-ville {
-        width: 200px;
-    }
+    .liste-nom,
+    .liste-tel1,
+    .liste-codepostal,
     .liste-actions {
-        width: 100px;
+      background-color: $noir_005;
+    }
+    .liste-prenom,
+    .liste-ville,
+    .liste-email {
+      background-color: transparent;
+    }
+    .liste-codepostal,
+    .liste-actions {
         text-align: center;
     }
+     
     thead {
         background-color: $noir_010;
         .liste-codepostal {
@@ -137,6 +139,9 @@
         }
         .odd {
             background-color: $noir_005;
+        }
+        .bloque .MuiTableCell-root{
+          color: $rouge;
         }
     }
 

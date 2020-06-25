@@ -5,11 +5,7 @@ const log = require('electron-log');
 
 
 const actions = {
-  dbCatalogueGetAll: (req,res) => {
-    const {payload} = req;
-    res.send({msg: 'pong'});
-  },
-  dbCatalogueGetAllActive: async (req,res) => {
+  dbCatalogueGetAll: async (req,res) => {
     const {payload} = req;
 
     (await db.categories)._.mixin(lodashId);
@@ -22,19 +18,54 @@ const actions = {
 
     log.info("dbCatalogueGetAllActive() in API");
 
-    const proxies = await _getAllActive();
+    const proxies = await _getAll();
       
   //  log.info(proxies);
     res.send(proxies);
 
+  },
 
+  dbCatalogueUpdateProduit: async (req,res) => {
+    const {payload} = req;
+
+    (await db.produits)._.mixin(lodashId);
+    const proxies = await _persistProduit(payload.produit);
+
+    res.send(proxies);
+  },
+
+  dbCatalogueUpdateIngredient: async (req,res) => {
+    const {payload} = req;
+
+    (await db.ingredients)._.mixin(lodashId);
+    const proxies = await _persistIngredient(payload.ingredient);
+
+    res.send(proxies);
+  },
+
+  dbCatalogueUpdateGroupe: async (req,res) => {
+    const {payload} = req;
+
+    (await db.groupes)._.mixin(lodashId);
+    const proxies = await _persistGroupe(payload.groupe);
+
+    res.send(proxies);
+  },
+
+  dbCatalogueUpdateIngredientType: async (req,res) => {
+    const {payload} = req;
+
+    (await db.ingredienttypes)._.mixin(lodashId);
+    const proxies = await _persistIngredientType(payload.type);
+
+    res.send(proxies);
   }
 }
 
 
-async function _getAllActive() {
+async function _getAll() {
   
-  let __rawdata = await _findCatalogue({active: 1});
+  let __rawdata = await _findCatalogue();
   
   return _parseCatalogue(__rawdata);
 }
@@ -75,7 +106,8 @@ function _parseCatalogue(_rawdata) {
       supplement: i.supplement,
       type: i.type,
       weight: i.weight,
-      color: i.color
+      color: i.color,
+      active: i.hasOwnProperty('active') ? i.active : 1
     };
   });
 
@@ -115,7 +147,8 @@ function _parseCatalogue(_rawdata) {
       composition: p.composition,
       customizable: __steps.hasOwnProperty(p.produit_id),
       weight: p.weight,
-      color: p.color
+      color: p.color,
+      active: p.active
     });
   });
 
@@ -139,5 +172,116 @@ async function _findCatalogue(prd_criteriae={}) {
   const _stp = await (await db.steps).get('steps').sortBy('weight').value();
   return { _cat, _grp, _tva, _igt, _ing, _prd, _stp };
 }
+
+
+
+
+async function _persistProduit(payload) {
+
+  const __now = new Date().getTime();
+  let _prd = await (await db.produits).get('produits')
+                                      .find({produit_id: payload.id})
+                                      .value();
+  log.info(_prd);
+  if (_prd) {
+    log.info('prd existe, donc on update');
+    let __upd = {..._prd, ...payload, updatedAt: __now};
+    _prd = await (await db.produits).get('produits')
+                                    .find({produit_id: payload.id})
+                                    .assign(__upd)
+                                    .write();
+  }
+  else {
+    log.info('pas de prd donc on insert');
+    let __ins = {...payload, createdAt: __now, updatedAt: __now};
+    _prd = await (await db.produits).get('produits')
+                                    .insert(__ins)
+                                    .write();
+  }
+
+  return _prd;
+}
+
+
+async function _persistIngredient(payload) {
+
+  const __now = new Date().getTime();
+  let _ing = await (await db.ingredients).get('ingredients')
+                                         .find({ingredient_id: payload.id})
+                                         .value();
+  log.info(_ing);
+  if (_ing) {
+    log.info('_ing existe, donc on update');
+    let __upd = {..._ing, ...payload, updatedAt: __now};
+    _ing = await (await db.ingredients).get('ingredients')
+                                       .find({ingredient_id: payload.id})
+                                       .assign(__upd)
+                                       .write();
+  }
+  else {
+    log.info('pas de _ing donc on insert');
+    let __ins = {...payload, createdAt: __now, updatedAt: __now};
+    _ing = await (await db.ingredients).get('ingredients')
+                                       .insert(__ins)
+                                       .write();
+  }
+
+  return _ing;
+}
+
+
+async function _persistGroupe(payload) {
+
+  const __now = new Date().getTime();
+  let _grp = await (await db.groupes).get('groupes')
+                                     .find({groupe_id: payload.id})
+                                     .value();
+  log.info(_grp);
+  if (_grp) {
+    log.info('_grp existe, donc on update');
+    let __upd = {..._grp, ...payload, updatedAt: __now};
+    _grp = await (await db.groupes).get('groupes')
+                                   .find({groupe_id: payload.id})
+                                   .assign(__upd)
+                                   .write();
+  }
+  else {
+    log.info('pas de _grp donc on insert');
+    let __ins = {...payload, createdAt: __now, updatedAt: __now};
+    _grp = await (await db.groupes).get('groupes')
+                                   .insert(__ins)
+                                   .write();
+  }
+
+  return _grp;
+}
+
+
+async function _persistIngredientType(payload) {
+
+  const __now = new Date().getTime();
+  let _typ = await (await db.ingredienttypes).get('types')
+                                            .find({type_id: payload.id})
+                                            .value();
+  log.info(_typ);
+  if (_typ) {
+    log.info('_typ existe, donc on update');
+    let __upd = {..._typ, ...payload, updatedAt: __now};
+    _typ = await (await db.ingredienttypes).get('types')
+                                          .find({type_id: payload.id})
+                                          .assign(__upd)
+                                          .write();
+  }
+  else {
+    log.info('pas de _typ donc on insert');
+    let __ins = {...payload, createdAt: __now, updatedAt: __now};
+    _typ = await (await db.ingredienttypes).get('types')
+                                          .insert(__ins)
+                                          .write();
+  }
+
+  return _typ;
+}
+
 
 module.exports = actions;

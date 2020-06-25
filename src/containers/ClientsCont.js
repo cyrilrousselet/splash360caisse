@@ -5,7 +5,8 @@ import { clientsActions } from '../services/clients/clientsActions';
 
 const mapStateToProps = (state) => {
   return {
-    clients: state.clientsReducer.clients
+    clients: state.clientsReducer.clients,
+    clavier: state.parametresReducer.parametres.entreprise.clavier
   }
 }
 

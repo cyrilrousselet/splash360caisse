@@ -91,14 +91,14 @@ class Selecteur extends React.Component {
             { tcontents.map(cnt => 
             <TabContent for={ cnt.parent } key={cnt.parent}>
               { cnt.liste.map(prd => 
-                <ProduitBtn 
+                (prd.active==1 && <ProduitBtn 
                   key={ prd.id } 
                   id={ prd.id } 
                   nom={ prd.nom } 
                   prix={ prd.prix } 
                   color={ prd.color }
                   composition={prd.composition}
-                  onClick={ () => addProduit({produitid: prd.id, nom: prd.nom, prix: Number(prd.prix), composition: prd.composition, customizable: prd.customizable, tva_id:prd.tva_id }) } />
+                  onClick={ () => addProduit({produitid: prd.id, nom: prd.nom, prix: Number(prd.prix), composition: prd.composition, customizable: prd.customizable, tva_id:prd.tva_id }) } />)
               )}
             </TabContent>
             )}

@@ -592,7 +592,12 @@ const data = {
                     vendeur: "CA par Employé"
                 }
             },
-            menu: { nom: "Menu" },
+            menu: { 
+                nom: "Menu",
+                catalogue: "Catalogue",
+                produits: "Produits",
+                ingredients: "Ingrédients"
+            },
             clients: { 
                 nom: "Clients",
                 liste: {

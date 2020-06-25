@@ -19,6 +19,7 @@ import { format, startOfToday } from "date-fns";
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import MapIcon from './../common/icon/MapIcon';
+import FicheClientCont from '../../containers/FicheClientCont';
 
 let strings = new LocalizedStrings(data);
 
@@ -408,7 +409,9 @@ class Clients extends React.Component {
     console.log(clientid);
     if (clientid!==null) {
       const {clients} = this.props;
-      this.setState({client:clients.filter(c=>c.client_id==clientid), editOpen: true});
+      const client = clients.find(c=>c.client_id==clientid);
+      console.log(client);
+      this.setState({client: client, editOpen: true});
     }
     else {
       this.setState({client:null, editOpen: true});
@@ -428,7 +431,7 @@ class Clients extends React.Component {
 
  render() {
 
-  const { clients } = this.props;
+  const { clients, clavier } = this.props;
 
   const { client, editOpen, historiqueOpen } = this.state;
 
@@ -460,9 +463,9 @@ class Clients extends React.Component {
             </TableHead>
             <TableBody>
               {clients.map((row, i) => (
-                <TableRow key={row.clientid} className={(i%2)?'odd':'even'}>
-                  <TableCell key={`${i}-nom`} className="liste-nom"><div onClick={ () => { this.openEdit(i) } }>{ row.nom }</div></TableCell>
-                  <TableCell key={`${i}-prenom`} className="liste-prenom"><div onClick={ () => { this.openEdit(i) } }>{ row.prenom }</div></TableCell>
+                <TableRow key={row.client_id} className={`${(i%2?'odd':'even')}${((row.hasOwnProperty('bloque') && row.bloque) ? ' bloque' : '')}`}>
+                  <TableCell key={`${i}-nom`} className="liste-nom"><div onClick={ () => { this.openEdit(row.client_id) } }>{ row.nom }</div></TableCell>
+                  <TableCell key={`${i}-prenom`} className="liste-prenom"><div onClick={ () => { this.openEdit(row.client_id) } }>{ row.prenom }</div></TableCell>
                   <TableCell key={`${i}-tel1`} className="liste-tel1">{ row.telephone }</TableCell>
                   <TableCell key={`${i}-email`} className="liste-email">{ row.email }</TableCell>
                   <TableCell key={`${i}-codepostal`} className="liste-codepostal">{ row.codepostal }</TableCell>
@@ -477,7 +480,7 @@ class Clients extends React.Component {
           </Table>
         </div>
       </div>
-      <ClientModal client={client} editOpen={editOpen} closeHandler={this.closeEdit} />
+      <FicheClientCont open={editOpen} clavierOpen={ clavier } client={client} mode="fiche" contexte="liste" closeHandler={this.closeEdit} />
     </div>
     );
   }

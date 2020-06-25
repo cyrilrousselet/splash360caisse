@@ -95,15 +95,20 @@ function updateUser(payload) {
     const { users } = getState().userReducer;
     let user = users.find(usr=>usr.user_id==user_id);
 
+
+
     // on ne récupère que les propriétés qui ont été mises à jour
     let updated_data = {};
     Object.entries(data).map(([key,value]) => {
-      if (value) updated_data[key] = value;
+      console.log('updateUser: '+key,value);
+      if (value!==null) updated_data[key] = value;
       if (key==='status' && value==='deleted') updated_data['identifiant'] = '';
     });
 
+    
     user = {...user, ...updated_data};
-
+    console.log(user);
+    
      userServices.update(user)
       .then(
         data => dispatch({ type: userActionTypes.UPDATE_SUCCESS, ...data }),

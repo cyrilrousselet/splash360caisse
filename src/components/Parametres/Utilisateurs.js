@@ -28,11 +28,11 @@ class EditUtilisateurPopin extends React.Component {
     this.state = {
       focusInput: 'nom',
       user_id: null,
-      nom: '',
-      identifiant: '', 
+      nom: null,
+      identifiant: null, 
       taux_horaire: null,
       status: 'active',
-      livreur: false,
+      livreur: null,
       droits: '',
       error_nom: false,
       error_identifiant: false
@@ -155,7 +155,7 @@ class EditUtilisateurPopin extends React.Component {
 
   getValues() {
     
-    const { droits, nom, identifiant, status, livreur, taux_horaire } = this.props.utilisateur || {droits:{}, nom:null, identifiant:null, status:'active', livreur:false, taux_horaire:null};
+    const { droits, nom, identifiant, status, livreur, taux_horaire } = this.props.utilisateur || {droits:{}, nom:null, identifiant:null, status:'active', livreur:null, taux_horaire:null};
     console.log('getValues()', this.props.utilisateur);
     console.log('getValues() droits', droits);
     // si aucun droit n'est défini (cas d'un nouvel utilisateur)
@@ -191,12 +191,12 @@ class EditUtilisateurPopin extends React.Component {
 
     return {
       droits: vdroits,
-      nom: snom || nom,
-      identifiant: sidentifiant || identifiant,
+      nom: snom!==null ? snom : nom,
+      identifiant: sidentifiant!==null ? sidentifiant : identifiant,
       allchecked: all,
-      status: sstatus || status,
-      livreur: slivreur || livreur,
-      taux_horaire: staux_horaire || taux_horaire
+      status: sstatus!==null ? sstatus : status,
+      livreur: slivreur!==null ? slivreur : livreur,
+      taux_horaire: staux_horaire!==null ? staux_horaire : taux_horaire
     }
   }
 
@@ -205,11 +205,11 @@ class EditUtilisateurPopin extends React.Component {
     const st = {
       focusInput: 'nom',
       user_id: null,
-      nom: '',
-      identifiant: '', 
+      nom: null,
+      identifiant: null, 
       droits: droits,
       status: 'active',
-      livreur: false,
+      livreur: null,
       error_nom: false,
       error_identifiant: false,
       taux_horaire: null
@@ -230,6 +230,7 @@ class EditUtilisateurPopin extends React.Component {
       Object.keys(strings.modules.parametres.submodules.utilisateurs.edition.droits).map( drt => { droits[drt] = false; });
       state = {...state, droits:droits};
     }
+    console.log('saveUtilisateur', state);
 
     this.props.saveUtilisateur(user_id, state);
     this.resetPopin();
