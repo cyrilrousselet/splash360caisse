@@ -80,7 +80,8 @@ function _parseCatalogue(_rawdata) {
 
   const __tva = {};
   _rawdata._tva.forEach(t => {
-    __tva[t.tva_id] = {nom: t.nom, code: t.code, valeur: t.valeur};
+    // __tva[t.tva_id] = {nom: t.nom, code: t.code, valeur: t.valeur};
+    __tva[t.tva_id] = t;
   })
 
 
@@ -99,22 +100,24 @@ function _parseCatalogue(_rawdata) {
   const __ingredients = {};
 
   _rawdata._ing.forEach(i => {
-    __ingredients[i.ingredient_id] = {
-      id: i.ingredient_id,
-      nom: i.nom,
-      tva_id: i.tva,
-      supplement: i.supplement,
-      type: i.type,
-      weight: i.weight,
-      color: i.color,
-      active: i.hasOwnProperty('active') ? i.active : 1
-    };
+    // __ingredients[i.ingredient_id] = {
+    //   id: i.ingredient_id,
+    //   nom: i.nom,
+    //   tva_id: i.tva,
+    //   supplement: i.supplement,
+    //   type: i.type,
+    //   weight: i.weight,
+    //   color: i.color,
+    //   active: i.hasOwnProperty('active') ? i.active : 1
+    // };
+    __ingredients[i.ingredient_id] = {...i, id: i.ingredient_id, tva_id: i.tva, active:i.hasOwnProperty('active') ? i.active : 1}
   });
 
 
   const __ingredientTypes = {};
   _rawdata._igt.forEach(t => {
-    __ingredientTypes[t.type_id] = {nom: t.nom, ingredients: [], noprint: t.noprint, weight: t.weight};
+    // __ingredientTypes[t.type_id] = {nom: t.nom, ingredients: [], noprint: t.noprint, weight: t.weight};
+    __ingredientTypes[t.type_id] = {...t, ingredients: []};
   });
 
   _rawdata._ing.forEach(i => {
@@ -134,21 +137,28 @@ function _parseCatalogue(_rawdata) {
 
   const __catalogue = {};
   _rawdata._grp.forEach(g => {
-    __catalogue[g.groupe_id] = {nom: g.nom, categorie: g.categorie, produits: [], noprint: g.noprint, weight: g.weight};
+    // __catalogue[g.groupe_id] = {nom: g.nom, categorie: g.categorie, produits: [], noprint: g.noprint, weight: g.weight};
+    __catalogue[g.groupe_id] = {...g, produits: []};
   });
   
   _rawdata._prd.forEach(p => {
 
+    // __catalogue[p.groupe].produits.push({
+    //   id: p.produit_id,
+    //   nom: p.nom,
+    //   tva_id: p.tva,
+    //   prix: p.prix,
+    //   composition: p.composition,
+    //   customizable: __steps.hasOwnProperty(p.produit_id),
+    //   weight: p.weight,
+    //   color: p.color,
+    //   active: p.active
+    // });
     __catalogue[p.groupe].produits.push({
-      id: p.produit_id,
-      nom: p.nom,
-      tva_id: p.tva,
-      prix: p.prix,
-      composition: p.composition,
-      customizable: __steps.hasOwnProperty(p.produit_id),
-      weight: p.weight,
-      color: p.color,
-      active: p.active
+      ...p, 
+      customizable: __steps.hasOwnProperty(p.produit_id), 
+      tva_id: p.tva, 
+      id: p.produit_id
     });
   });
 
@@ -180,14 +190,14 @@ async function _persistProduit(payload) {
 
   const __now = new Date().getTime();
   let _prd = await (await db.produits).get('produits')
-                                      .find({produit_id: payload.id})
+                                      .find({produit_id: payload.produit_id})
                                       .value();
   log.info(_prd);
   if (_prd) {
     log.info('prd existe, donc on update');
     let __upd = {..._prd, ...payload, updatedAt: __now};
     _prd = await (await db.produits).get('produits')
-                                    .find({produit_id: payload.id})
+                                    .find({produit_id: payload.produit_id})
                                     .assign(__upd)
                                     .write();
   }
@@ -207,14 +217,14 @@ async function _persistIngredient(payload) {
 
   const __now = new Date().getTime();
   let _ing = await (await db.ingredients).get('ingredients')
-                                         .find({ingredient_id: payload.id})
+                                         .find({ingredient_id: payload.ingredient_id})
                                          .value();
   log.info(_ing);
   if (_ing) {
     log.info('_ing existe, donc on update');
     let __upd = {..._ing, ...payload, updatedAt: __now};
     _ing = await (await db.ingredients).get('ingredients')
-                                       .find({ingredient_id: payload.id})
+                                       .find({ingredient_id: payload.ingredient_id})
                                        .assign(__upd)
                                        .write();
   }
@@ -234,14 +244,14 @@ async function _persistGroupe(payload) {
 
   const __now = new Date().getTime();
   let _grp = await (await db.groupes).get('groupes')
-                                     .find({groupe_id: payload.id})
+                                     .find({groupe_id: payload.groupe_id})
                                      .value();
   log.info(_grp);
   if (_grp) {
     log.info('_grp existe, donc on update');
     let __upd = {..._grp, ...payload, updatedAt: __now};
     _grp = await (await db.groupes).get('groupes')
-                                   .find({groupe_id: payload.id})
+                                   .find({groupe_id: payload.groupe_id})
                                    .assign(__upd)
                                    .write();
   }
@@ -261,14 +271,14 @@ async function _persistIngredientType(payload) {
 
   const __now = new Date().getTime();
   let _typ = await (await db.ingredienttypes).get('types')
-                                            .find({type_id: payload.id})
+                                            .find({type_id: payload.type_id})
                                             .value();
   log.info(_typ);
   if (_typ) {
     log.info('_typ existe, donc on update');
     let __upd = {..._typ, ...payload, updatedAt: __now};
     _typ = await (await db.ingredienttypes).get('types')
-                                          .find({type_id: payload.id})
+                                          .find({type_id: payload.type_id})
                                           .assign(__upd)
                                           .write();
   }

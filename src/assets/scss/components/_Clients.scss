@@ -1,12 +1,12 @@
 .Clients {
   div {
-    box-sizing: content-box;
+    box-sizing: border-box;
   }
 
   .toolbar {
     display: flex;
     height: 80px;
-    width: calc(100% - 70px);
+    width: 100%;
 
     .adduser-btn {
       background-color:$vert;
@@ -28,7 +28,7 @@
     align-items: start;
     text-align: left;
     padding: 3px;
-    width: calc(100% - 70px);
+    width: 100%;
     height: calc(100% - 70px);
 
     border-radius: 5px;

@@ -5,13 +5,17 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../constants/translations';
 import TopZone from '../containers/TopZone';
 import LoadingSpinner from './common/LoadingSpinner';
-import { AppBar, Tabs, Tab, Typography, Box, Select, FormControl, InputLabel, MenuItem, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, ListItem, ListItemText, ListItemSecondaryAction, Switch, ListItemIcon, List, FormControlLabel, Checkbox } from '@material-ui/core';
+import { AppBar, Tabs, Tab, Typography, Box, Select, FormControl, InputLabel, MenuItem, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, ListItem, ListItemText, ListItemSecondaryAction, Switch, ListItemIcon, List, FormControlLabel, Checkbox, Modal, TextField, Fab } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LensIcon from '@material-ui/icons/Lens';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import {devise} from '../helpers/toolbox';
 import { withStyles } from '@material-ui/core/styles';
+import StdButton from './common/StdButton';
+import CloseIcon from './common/icon/CloseIcon';
+import Clavier from './common/Clavier';
+import LabelledField from './common/LabelledField';
 
 
 let strings = new LocalizedStrings(data);
@@ -39,13 +43,156 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired,
 };
 
+
+
+
+
+class MenuItemModal extends React.Component {
+
+    constructor(props) {
+      super(props);
+      this.state = {
+        valeur: null,
+        couleur: null
+      };
+      this.updateItem = this.updateItem.bind(this);
+      this.resetPopin = this.resetPopin.bind(this);
+      this.changeHandler = this.changeHandler.bind(this);
+      this.onKeyboardChange = this.onKeyboardChange.bind(this);
+      this.handleChangeCouleur = this.handleChangeCouleur.bind(this);
+    }
+  
+    updateItem() {
+      const { id, type, item, updateItem } = this.props;
+      const { valeur, couleur } = this.state;
+  
+      console.log('updateItem('+type+')',valeur, couleur);
+
+      let nvaleur = 0;
+      let ncouleur = couleur!==null ? couleur : item.color;
+      
+      if (type=='ingredient') {
+        nvaleur = valeur!==null ? valeur : item.supplement;
+        console.log('updateItem ingredient');
+        updateItem({ingredient_id:id, update:{supplement:nvaleur, color:ncouleur}})
+      }
+      else if (type=='produit') {
+        nvaleur = valeur!==null ? valeur : item.prix;
+        console.log('updateItem produit');
+        updateItem({produit_id:id, update:{prix:nvaleur, color:ncouleur}})
+      }
+
+      this.resetPopin();
+      this.props.closeHandler();
+  
+    }
+    resetPopin() {
+      this.setState({valeur:null, couleur:null});
+    }
+    changeHandler(params) {
+     // console.log('CommentModal.changeHandler()', event.target.value);
+      this.setState({valeur: params.value});
+    }
+    onKeyboardChange(input) {
+      console.log("Valeur Input changed", input);
+      this.setState({ valeur:input });
+    };
+    handleChangeCouleur(event) {
+      this.setState({couleur:event.target.value});
+    }
+  
+    render() {
+  
+      const { id, item, type, closeHandler, open, clavierOpen } = this.props;
+      const { valeur, couleur } = this.state;
+  
+      let vvaleur = '';
+      let vcouleur = '';
+      if (item) {
+        vvaleur = valeur==null ? (type=='ingredient') ? item.supplement : item.prix : valeur;
+        vcouleur = couleur==null ? item.color : couleur;
+      }
+  
+    //  const __mttl = (ingredient) ? 'titre_ing' : (item) ? 'titre_itm' : 'titre_cmd';
+  
+      if (item==null) return false;
+
+      const readytosave = true;
+  
+      return (
+        <div>
+        <Modal
+        open={open}
+        >
+        <div className={ `MenuItemModal`}>
+          <div className="Modal-container">
+            <div className="header">
+              <div className="title">{ strings.modules.menu.edit[type].titre }</div>
+            </div>
+            <div className="body">
+              <div className="item-nom">{ item.nom }</div>
+              <div className="form-group">
+                  <LabelledField
+                      label={ strings.modules.menu.edit[type].valeur}
+                      name="valeur"
+                      className="valeur-input"
+                      value={vvaleur}
+                      postvalue="€"
+                      onChange={this.changeHandler}
+                    />
+              </div>
+              <div className="form-group color">
+                <div className="label color-label">{ strings.modules.menu.edit[type].couleur }</div>
+                <FormControl variant="filled" className={"color-selector"}>
+                  <Select
+                    labelId="demo-simple-select-filled-label"
+                    id="demo-simple-select-filled"
+                    value={vcouleur}
+                    onChange={this.handleChangeCouleur}
+                    >{Object.entries(strings.modules.menu.edit.couleurs).map(([cle,val],i) => (
+                      <MenuItem key={`coul${i}`} value={cle}>{<LensIcon htmlColor={val} />}</MenuItem>
+                      ))}
+                  </Select>
+                </FormControl> 
+              </div>
+            </div>
+            <div className="footer">
+              <StdButton
+                identifier="modal-save" 
+                elementclass="save" 
+                icon={ false } 
+                disabled={ !readytosave }
+                text={ strings.general.dialog.save } 
+                onClick={this.updateItem} 
+              />
+            </div>
+          </div>
+          <Fab aria-label="close" size="small" className="close-button" onClick={ ()=>{this.resetPopin(); closeHandler()} }>
+            <CloseIcon />
+          </Fab>
+        </div>
+      </Modal>  
+      {(clavierOpen && open) && <Clavier onChange={this.onKeyboardChange} className="ClavierMenuItem" defaultLayout="numeric" baseClass="KBComment" inputName="valeur" inputVal={vvaleur} open={open && clavierOpen} />}
+      </div>
+      );
+    }
+  
+  }
+  
+
+
+
 class Menu extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
       openTab: 0,
-      catalogue: null
+      catalogue: null,
+      itemId: false,
+      editItem: null,
+      editOpen: false,
+      editType: null
     }
     this.handleChangeTab = this.handleChangeTab.bind(this);
     this.handleChangeCategorie = this.handleChangeCategorie.bind(this);
@@ -54,11 +201,18 @@ class Menu extends React.Component {
     this.changeDispoIngredient = this.changeDispoIngredient.bind(this);
     this.editIngredient = this.editIngredient.bind(this);
     this.getProduit = this.getProduit.bind(this);
+    this.changeNoPrintGroupe = this.changeNoPrintGroupe.bind(this);
+    this.changeNoPrintType = this.changeNoPrintType.bind(this);
+
+    this.openEdit = this.openEdit.bind(this);
+    this.closeEdit = this.closeEdit.bind(this);
+    this.updateMenuItem = this.updateMenuItem.bind(this);
 
   }
   componentDidMount() {
     this.props.getCatalogue();
     this.props.getAllTickets();
+    this.props.getParametres();
   }
 
   handleChangeTab(event, newValue) {
@@ -99,15 +253,67 @@ class Menu extends React.Component {
     });
     return produit;
   }
+  changeNoPrintGroupe(groupeId,ticketId) {
+    const {catalogue, updateGroupe} = this.props;
+    const groupe = catalogue[groupeId];
+    const noprint = groupe.noprint;
+
+    if (noprint.indexOf(ticketId)==-1) {
+      updateGroupe({groupe_id:groupeId, update:{noprint:[...noprint, ticketId]}});
+    } else {
+      updateGroupe({groupe_id:groupeId, update:{noprint:noprint.filter(t=>t!=ticketId)}});
+    }
+  }
+  changeNoPrintType(typeId,ticketId) {
+    const {ingredientTypes, updateIngredientType} = this.props;
+    const type = ingredientTypes[typeId];
+    const noprint = type.noprint;
+
+    if (noprint.indexOf(ticketId)==-1) {
+      updateIngredientType({type_id:typeId, update:{noprint:[...noprint, ticketId]}});
+    } else {
+      updateIngredientType({type_id:typeId, update:{noprint:noprint.filter(t=>t!=ticketId)}});
+    }
+  }
+
+  openEdit(type, itemId) {
+
+    const { ingredients } = this.props;
+    let item = {}
+    if (type=='ingredient') {
+      item = ingredients[itemId];
+    }
+    else if (type=='produit') {
+      item = this.getProduit(itemId);
+    }
+
+    this.setState({editType:type, itemId:itemId, editItem:item, editOpen:true});
+    
+  }
+
+  closeEdit() {
+    this.setState({editType:null, itemId:null, editItem:null, editOpen:false});
+  }
+
+  updateMenuItem(params) {
+    console.log('updateMenuItem()',params)
+    const {editType} = this.state;
+    if (editType=='ingredient') {
+      this.props.updateIngredient(params);
+    }
+    else if (editType=='produit') {
+      this.props.updateProduit(params);
+    }
+  }
 
  render() {
 
-  const { catalogue, categories, ingredients, ingredientTypes, tickets } = this.props;
-  const { openTab, categorie } = this.state;
+  const { catalogue, categories, ingredients, ingredientTypes, tickets, clavier } = this.props;
+  const { openTab, categorie, itemId, editItem, editOpen, editType } = this.state;
 
   const defCat = categorie || categories[0].categorie_id;
 
-  const tickList = Object.values(tickets).filter(tck=> (['commande','partiel','principal']).indexOf(tck.template)!==-1 && tck.imprimantes.length>0);
+  const tickList = Object.values(tickets).filter(tck=> (['partiel','principal']).indexOf(tck.template)!==-1 && tck.imprimantes.length>0);
 
   const inglist = Object.entries(ingredientTypes).map(([typid,type]) => {
     const ing = type.ingredients.map(ingid => ingredients[ingid]);
@@ -160,18 +366,20 @@ class Menu extends React.Component {
               </Tabs>
             </AppBar>
             <TabPanel key={ `panel-produits` } className="panel" value={openTab} index={0}>
-              <MenuListe key="liste-produits" data={prdlist} type="produits" openEdit={this.editProduit} tickets={tickList} changeDispo={this.changeDispoProduit} />
+              <MenuListe key="liste-produits" data={prdlist} type="produits" openEdit={this.editProduit} tickets={tickList} changeDispo={this.changeDispoProduit} changeNoPrint={this.changeNoPrintGroupe} editOpen={this.openEdit} />
             </TabPanel>
             <TabPanel key={ `panel-ingredients` } className="panel" value={openTab} index={1}>
-              <MenuListe  key="liste-ingredients" data={inglist} type="ingredients" openEdit={this.editIngredient} tickets={tickList} changeDispo={this.changeDispoIngredient} />
+              <MenuListe  key="liste-ingredients" data={inglist} type="ingredients" openEdit={this.editIngredient} tickets={tickList} changeDispo={this.changeDispoIngredient} changeNoPrint={this.changeNoPrintType} editOpen={this.openEdit} />
             </TabPanel>
           </div>
       </div>
+      <MenuItemModal id={itemId} type={editType} item={editItem} clavierOpen={clavier} open={editOpen} closeHandler={this.closeEdit} updateItem={this.updateMenuItem} />
     </div>
     );
   }
 }
 export default Menu;
+
 
 
 const IOSSwitch = withStyles((theme) => ({
@@ -231,7 +439,7 @@ const IOSSwitch = withStyles((theme) => ({
 
 function MenuListe(props) {
 
-  const {data, type, changeDispo, openEdit, tickets, ...other} = props;
+  const {data, type, changeDispo, openEdit, tickets, changeNoPrint, editOpen} = props;
 
   const mliste = data.map((cont,i) => (
     <ExpansionPanel key={`panel${i}`}>
@@ -251,8 +459,9 @@ function MenuListe(props) {
                 <Checkbox
                   icon={<CheckBoxOutlineBlankIcon htmlColor="#7FAD3B" fontSize="small" />}
                   checkedIcon={<CheckBoxIcon  htmlColor="#7FAD3B" fontSize="small" />}
-                  checked={true}
-                  onClick={(e)=>{ e.stopPropagation(); console.log('check')}}
+                  checked={cont.noprint.indexOf(tck.ticket_id)==-1}
+                  onClick={(e)=>{ e.stopPropagation();}}
+                  onChange={(e) => { changeNoPrint(type=='produits'?cont.groupe_id:cont.id, tck.ticket_id) }}
                   name="checkedB"
                   color="primary"
                 />
@@ -269,7 +478,7 @@ function MenuListe(props) {
               <ListItemIcon>
                 <LensIcon className={`couleur ${p.color}`} />
               </ListItemIcon>
-              <ListItemText id={p.id} primary={p.nom} secondary={ `${devise(Number(p.prix))} €`} />
+              <ListItemText id={p.id} onClick={ () => { editOpen('produit', p.id) } } primary={p.nom} secondary={ `${devise(Number(p.prix))} €`} />
               <ListItemSecondaryAction>
                 <IOSSwitch
                   edge="end"
@@ -284,7 +493,7 @@ function MenuListe(props) {
               <ListItemIcon>
                 <LensIcon className={`couleur ${n.color}`} />
               </ListItemIcon>
-              <ListItemText id={n.id} primary={n.nom} secondary={`${devise(Number(n.supplement))} €` } />
+              <ListItemText id={n.id} onClick={ () => { editOpen('ingredient', n.id) } } primary={n.nom} secondary={`${devise(Number(n.supplement))} €` } />
               <ListItemSecondaryAction>
                 <IOSSwitch
                   edge="end"

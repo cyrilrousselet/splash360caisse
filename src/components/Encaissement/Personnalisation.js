@@ -163,7 +163,7 @@ class Personnalisation extends React.Component {
                         color={ingredient.color}
                         supplement={ingredient.supplement} 
                         step={step}
-                        disabled={isTypesMax[id]}
+                        disabled={isTypesMax[id] || ingredient.active==0}
                         withbuttons={ (!RegExp('^(\\?|\\{1\\}|\\{0\\}|\\{0,1\\})').test(type.regle)) || this.getIngredientQuantity(ingredient.id)>0 }
                         qte={this.getIngredientQuantity(ingredient.id)}
                         addIng={()=>{ addIngredient({itemid: item, stepid: step, ingredientid: ingredient.id, quantite: 1}) }} 

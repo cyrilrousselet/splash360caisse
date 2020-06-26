@@ -34,6 +34,7 @@ class Clavier extends React.Component {
 
     this.onKeyboardKeyPress = this.onKeyboardKeyPress.bind(this);
     this.handleShift = this.handleShift.bind(this);
+    this.initHandler = this.initHandler.bind(this);
   }
 
   onKeyboardKeyPress(button) {
@@ -53,19 +54,13 @@ class Clavier extends React.Component {
   };
 
 
+  initHandler() {
+    console.log('Clavier KB init');
 
-  render() {
+    const { inputVal, inputName, inputObject } = this.props;
 
-    const { onChange, open, inputVal, inputName, defaultLayout, inputObject, variant, className, baseClass} = this.props;
-    const { layoutName } = this.state;
-
-    const _self = this;
-    const vvariant = variant || 'temporary';
 
     if (this.keyboard) console.log(this.keyboard.getInput(inputName));
-
-    const vlayout = (defaultLayout && 'numeric'===defaultLayout) ? NUMERIC_LAYOUT : layout;
-    const display_c = (defaultLayout && 'numeric'===defaultLayout) ? {'{bksp}': 'C'} : {};
 
     if (this.keyboard && inputObject) {
       this.keyboard.replaceInput(inputObject);
@@ -77,6 +72,24 @@ class Clavier extends React.Component {
     } else {
       console.log('keyboard inconnu');
     }
+
+
+  }
+
+
+  render() {
+
+    const { onChange, open, inputVal, inputName, defaultLayout, inputObject, variant, className, baseClass} = this.props;
+    const { layoutName } = this.state;
+
+    const _self = this;
+    const vvariant = variant || 'temporary';
+
+
+    const vlayout = (defaultLayout && 'numeric'===defaultLayout) ? NUMERIC_LAYOUT : layout;
+    const display_c = (defaultLayout && 'numeric'===defaultLayout) ? {'{bksp}': 'C'} : {};
+
+    
     
     return(
       <Drawer anchor="bottom" open={open} variant={vvariant} className={ `Clavier ${(className?className:'')}`}>
@@ -88,6 +101,7 @@ class Clavier extends React.Component {
           mergeDisplay={true}
           display={display_c}
           disableCaretPositioning={true}
+          onInit={this.initHandler}
           onChange={(input) => { console.log(`[${inputVal}]`, input); onChange(input)}}
           onKeyPress={this.onKeyboardKeyPress}
           keyboardRef={ r=>{ if (this.keyboard==null) this.setRef(r)} }

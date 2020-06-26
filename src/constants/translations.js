@@ -596,7 +596,37 @@ const data = {
                 nom: "Menu",
                 catalogue: "Catalogue",
                 produits: "Produits",
-                ingredients: "Ingrédients"
+                ingredients: "Ingrédients",
+                edit: {
+                    ingredient: {
+                        titre: 'Édition d’ingrédient',
+                        nom: 'Nom :',
+                        valeur: 'Supplement :',
+                        couleur: 'Couleur :'
+                    },
+                    produit: {
+                        titre: 'Édition de produit',
+                        nom: 'Nom :',
+                        valeur: 'Prix :',
+                        couleur: 'Couleur :'
+                    },
+                    couleurs: {
+                        blanc: '#ffffff',
+                        bleuclair: '#5AC8FA',
+                        bleufonce: '#0065E5',
+                        gris: '#8F8E94',
+                        jaune: '#FFE700',
+                        jauneorange: '#FDC54F',
+                        marron: '#7F592A',
+                        noir: '#4A4A4A',
+                        orange: '#FF9500',
+                        rose: '#FF9DFF',
+                        rouge: '#FF2D55',
+                        vertclair: '#9CD04E',
+                        vertfonce: '#628133',
+                        violet: '#9867B6'
+                    }
+                }
             },
             clients: { 
                 nom: "Clients",

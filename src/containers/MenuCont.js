@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import Menu from '../components/Menu';
 import { catalogueActions } from '../services/catalogue/catalogueActions';
 import { peripheralActions } from '../services/peripheral/peripheralActions';
+import { parametresActions } from '../services/parametres/parametresActions';
 
 const mapStateToProps = (state) => {
   return {
@@ -11,7 +12,8 @@ const mapStateToProps = (state) => {
     categories: state.catalogueReducer.categories,
     ingredients: state.catalogueReducer.ingredients,
     ingredientTypes: state.catalogueReducer.ingredientTypes,
-    tickets: state.peripheralReducer.tickets
+    tickets: state.peripheralReducer.tickets,
+    clavier: state.parametresReducer.parametres.entreprise.clavier
   }
 }
 
@@ -22,7 +24,8 @@ const mapDispatchToProps = (dispatch) => {
     updateProduit: catalogueActions.updateProduit,
     updateIngredient: catalogueActions.updateIngredient,
     updateGroupe: catalogueActions.updateGroupe,
-    updateIngredientType: catalogueActions.updateIngredientType
+    updateIngredientType: catalogueActions.updateIngredientType,
+    getParametres: parametresActions.getAll
   }, dispatch);
   return {
     ...bound

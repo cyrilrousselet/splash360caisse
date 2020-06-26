@@ -28,13 +28,13 @@
       }
     }
 
-  .catalogue-label {
-    display: inline-block;
-    font-family: $f_hea;
-    color: $noir;
-    font-size: 17px;
-    padding-right: 10px;
-  }
+    .catalogue-label {
+      display: inline-block;
+      font-family: $f_hea;
+      color: $noir;
+      font-size: 17px;
+      padding-right: 10px;
+    }
 
 
     .MuiButtonBase-root {
@@ -95,6 +95,7 @@
     width: 100%;
     .MuiTypography-root {
       font-family: $f_med;
+      cursor: pointer;
     }
     .MuiListItemText-primary {
       color: $noir;
@@ -122,3 +123,5 @@
     &.violet      { fill: $prdcol_violet; }
   }
 }
+
+@import './MenuEdit';

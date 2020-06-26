@@ -163,4 +163,10 @@
         &.bleufonce, &.marron, &.noir, &.vertfonce, &.violet, &.rouge {
             color: $blanc;
         }
+      
+        &.btn-disabled {
+          cursor: default;
+          color: $noir;
+          background-color: $gris;
+        }
     }

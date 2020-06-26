@@ -9,7 +9,7 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 let strings = new LocalizedStrings(data);
 
-const ProduitBtn = ({ id, nom, prix, composition, color, onClick }) => (
+const ProduitBtn = ({ id, nom, prix, composition, color, onClick, disabled }) => (
   // <Button
   //   className="ProduitBtn"
   //   id={id}
@@ -17,10 +17,10 @@ const ProduitBtn = ({ id, nom, prix, composition, color, onClick }) => (
   //   onClick={ () => onClick(id) }
   // ><div>{ nom }</div><div>{ Number(prix).toFixed(2).replace('.',',') }&nbsp;€</div></Button>
   <div
-    className={ `ProduitBtn ${color}` }
+    className={ `ProduitBtn${disabled ? ' btn-disabled' :''} ${color}` }
     id={id}
     composition={ composition }
-    onClick={ () => onClick(id) }
+    onClick={ () => {  if (!disabled) onClick(id)} }
   ><div className="btnlabel">
     <div className="nom">{ nom }</div>
     <div className="supplt">{ Number(prix).toFixed(2).replace('.',',') }&nbsp;€</div>
@@ -91,14 +91,15 @@ class Selecteur extends React.Component {
             { tcontents.map(cnt => 
             <TabContent for={ cnt.parent } key={cnt.parent}>
               { cnt.liste.map(prd => 
-                (prd.active==1 && <ProduitBtn 
+                <ProduitBtn 
                   key={ prd.id } 
                   id={ prd.id } 
                   nom={ prd.nom } 
                   prix={ prd.prix } 
                   color={ prd.color }
+                  disabled={ prd.active==0 }
                   composition={prd.composition}
-                  onClick={ () => addProduit({produitid: prd.id, nom: prd.nom, prix: Number(prd.prix), composition: prd.composition, customizable: prd.customizable, tva_id:prd.tva_id }) } />)
+                  onClick={ () => addProduit({produitid: prd.id, nom: prd.nom, prix: Number(prd.prix), composition: prd.composition, customizable: prd.customizable, tva_id:prd.tva_id }) } />
               )}
             </TabContent>
             )}

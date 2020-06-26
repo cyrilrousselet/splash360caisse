@@ -28,23 +28,32 @@ function getAll() {
 };
 
 function updateProduit(payload) {
-  return (dispatch, getState) => {
+  // return (dispatch, getState) => {
+  return dispatch => {
     dispatch({ type: catalogueActionTypes.UPDATE_PRODUIT_REQUEST});
 
     const {produit_id, update} = payload;
 
-    const catalogue = getState().catalogueReducer.catalogue;
-    let produit = {};
-    Object.values(catalogue).forEach(grp => {
-      const p = grp.produits.find(p=>p.id==produit_id);
-      if (p!==undefined) {
-        produit = p;
-        return;
+    // const catalogue = getState().catalogueReducer.catalogue;
+    // let produit = {};
+    // Object.values(catalogue).forEach(grp => {
+    //   const p = grp.produits.find(p=>p.id==produit_id);
+    //   if (p!==undefined) {
+    //     produit = p;
+    //     return;
+    //   }
+    // });
+
+    // filtrage des propriétés à mettre à jour
+    // (color, prix, active)
+    const filtered_update = {};
+    Object.entries(update).forEach(([cle,valeur])=>{
+      if ((['color','prix','active']).indexOf(cle)!=-1) {
+        filtered_update[cle] = valeur;
       }
     });
 
-
-    catalogueServices.updateProduit({...produit, ...update})
+    catalogueServices.updateProduit({produit_id, ...filtered_update})
     .then(
       data => {
         dispatch({ type: catalogueActionTypes.UPDATE_PRODUIT_SUCCESS});
@@ -57,15 +66,25 @@ function updateProduit(payload) {
 
 
 function updateIngredient(payload) {
-  return (dispatch, getState) => {
+  // return (dispatch, getState) => {
+  return dispatch => {
     dispatch({ type: catalogueActionTypes.UPDATE_INGREDIENT_REQUEST});
 
     const {ingredient_id, update} = payload;
 
-    const ingredients = getState().catalogueReducer.ingredients;
-    const ingredient = ingredients[ingredient_id];
+    // const ingredients = getState().catalogueReducer.ingredients;
+    // const ingredient = ingredients[ingredient_id];
 
-    catalogueServices.updateIngredient({...ingredient, ...update})
+    // filtrage des propriétés à mettre à jour
+    // (color, supplement, active)
+    const filtered_update = {};
+    Object.entries(update).forEach(([cle,valeur])=>{
+      if ((['color','supplement','active']).indexOf(cle)!=-1) {
+        filtered_update[cle] = valeur;
+      }
+    });
+
+    catalogueServices.updateIngredient({ingredient_id, ...filtered_update})
     .then(
       data => {
         dispatch({ type: catalogueActionTypes.UPDATE_INGREDIENT_SUCCESS});
@@ -78,15 +97,25 @@ function updateIngredient(payload) {
 
 
 function updateIngredientType(payload) {
-  return (dispatch, getState) => {
+  // return (dispatch, getState) => {
+  return dispatch => {
     dispatch({ type: catalogueActionTypes.UPDATE_TYPE_REQUEST});
 
     const {type_id, update} = payload;
 
-    const ingredientTypes = getState().catalogueReducer.ingredientTypes;
-    const type = ingredientTypes[type_id];
+    // const ingredientTypes = getState().catalogueReducer.ingredientTypes;
+    // const type = ingredientTypes[type_id];
 
-    catalogueServices.updateIngredientType({...type, ...update})
+    // filtrage des propriétés à mettre à jour
+    // (noprint)
+    const filtered_update = {};
+    Object.entries(update).forEach(([cle,valeur])=>{
+      if ((['noprint']).indexOf(cle)!=-1) {
+        filtered_update[cle] = valeur;
+      }
+    });
+
+    catalogueServices.updateIngredientType({type_id, ...filtered_update})
     .then(
       data => {
         dispatch({ type: catalogueActionTypes.UPDATE_TYPE_SUCCESS});
@@ -98,15 +127,25 @@ function updateIngredientType(payload) {
 }
 
 function updateGroupe(payload) {
-  return (dispatch, getState) => {
+  // return (dispatch, getState) => {
+  return dispatch => {
     dispatch({ type: catalogueActionTypes.UPDATE_GROUPE_REQUEST});
 
     const {groupe_id, update} = payload;
 
-    const catalogue = getState().catalogueReducer.catalogue;
-    const groupe = catalogue[groupe_id];
+    // const catalogue = getState().catalogueReducer.catalogue;
+    // const groupe = catalogue[groupe_id];
 
-    catalogueServices.updateGroupe({...groupe, ...update})
+    // filtrage des propriétés à mettre à jour
+    // (noprint)
+    const filtered_update = {};
+    Object.entries(update).forEach(([cle,valeur])=>{
+      if ((['noprint']).indexOf(cle)!=-1) {
+        filtered_update[cle] = valeur;
+      }
+    });
+
+    catalogueServices.updateGroupe({...filtered_update, groupe_id})
     .then(
       data => {
         dispatch({ type: catalogueActionTypes.UPDATE_GROUPE_SUCCESS});
