@@ -267,11 +267,14 @@ export function commandeReducer(state = initialState, action) {
       rndIndex = rendus.findIndex((obj => obj.renduId == action.renduId));
       
       if (-1 < rndIndex) { 
-        rendus.splice(rndIndex,1);
+      //  rendus.splice(rndIndex,1);
         
         return {
           ...state,
-          commande: {...commande, rendus}
+          commande: {
+            ...commande, 
+            rendus: rendus.filter(r=>r.renduId!=action.renduId)
+          }
         }
       }
 

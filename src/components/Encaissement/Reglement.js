@@ -43,6 +43,7 @@ class Reglement extends React.Component {
     this.beforeCloseReglement = this.beforeCloseReglement.bind(this);
     this.toAddReglement = this.toAddReglement.bind(this);
     this.toRemoveReglement = this.toRemoveReglement.bind(this);
+    this.toRemoveRendu = this.toRemoveRendu.bind(this);
 
     this.closeTiroir = this.closeTiroir.bind(this);
 
@@ -217,6 +218,19 @@ class Reglement extends React.Component {
     this.props.removeReglement({reglementId: id});
   }
 
+  toRemoveRendu(id) {
+
+   // const { rendus } = this.props.commande;
+
+    // const rnd = rendus.find(r=>r.renduId==id);
+    // if (rnd && rnd.moyen=='ticket') {
+    //   this.setState({trlist: trlist.filter(t => t!=rgt.info)});
+    // }
+
+    this.props.removeRendu({renduId: id});
+  }
+
+
   // --- DEV / TEMPORAIRE ---
   /*
   le tiroir s'ouvre dès qu'un réglement en espèce est ajouté 
@@ -275,7 +289,9 @@ class Reglement extends React.Component {
     const __now = new Date().getFullYear() - 2000;
 
     if (trlist.indexOf(__value)!==-1) error = 'yet';
-    if (__trValid<__now) error = 'deprecated';
+
+  // on supprime le test de validité (certains TR n'ont pas de date limite)
+  //  if (__trValid<__now) error = 'deprecated';
 
     if (error==='') {
       this.toAddReglement('ticket',__trValue, value);
@@ -418,7 +434,8 @@ class Reglement extends React.Component {
                             renduid={ rgl.renduId.toString() }
                             key={ i }
                             moyen={ rgl.moyen }
-                            valeur={ rgl.valeur } />
+                            valeur={ rgl.valeur }
+                            removeItem={ this.toRemoveRendu }  />
                     )}
                 </List>
               </div>
@@ -492,13 +509,16 @@ Reglement.propTypes = {
 };
 
 
-const RenduListeItem = ({id, renduid, moyen, valeur}) => (
+const RenduListeItem = ({id, renduid, moyen, valeur, removeItem}) => (
   <div className="RenduListeItem">
     <ListItem 
       disableGutters
       >
       <div className="rnditm moyen">{ strings.modules.encaissement.reglement.moyens[moyen] }</div> 
       <div className="rnditm valeur">{ `-${valeur.toFixed(2).replace('.',',')}` }</div>
+      <Fab aria-label="remove" size="small" className="rnditm removebtn" onClick={ () => { removeItem(renduid) } }>
+          <CloseIcon htmlColor="#FFFFFF" />
+      </Fab>
     </ListItem>
   </div>
 );

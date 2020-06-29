@@ -752,6 +752,8 @@ class Panier extends React.Component {
     
     // gestion du focus sur le champ de recherche (scan QR code)
     clearInterval(this.interval);
+
+    console.log('inputfocus',inputfocus);
     
     const self = this;
     if (inputfocus && (!items || items.length==0)) {      
@@ -850,11 +852,13 @@ class Panier extends React.Component {
     }
 
     const attenteHandler = (event) => {
-      this.props.setNewNumero();
+   //   this.props.setNewNumero();
+      this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1});
       standByCommande(this.props.commande);
     }
     const validationHandler = (event) => {
-      this.props.setNewNumero();
+   //   this.props.setNewNumero();
+      this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1});
       livraisonCommande(this.props.commande);
     }
 
@@ -868,14 +872,15 @@ class Panier extends React.Component {
 
     const openReglementHandler = () => {
       this.props.setNewNumero();
+      this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1});
       openReglement();
     }
  
     return (
       <div className={ `Panier ${open && 'reglement-ouvert'}` }>
         <div className="header">
-          {/* <div className="ticketId">{ (this.interval==0?'X':'√')+strings.modules.encaissement.panier.ticket_no+' '+ticketId }</div> */}
-          <div className="ticketId">{ strings.modules.encaissement.panier.ticket_no+' '+ticketId }</div>
+          <div className="ticketId">{ (this.interval==0?'X':'√')+strings.modules.encaissement.panier.ticket_no+' '+ticketId }</div>
+          {/* <div className="ticketId">{ strings.modules.encaissement.panier.ticket_no+' '+ticketId }</div> */}
           <div className="ticketComment"></div>
           <div className="ticketClient">
             <AccountBoxIcon className={`ico-client ${client?'client-set':'anonymous'}`} onClick={this.openFicheClient} />

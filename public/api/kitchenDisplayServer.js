@@ -122,7 +122,7 @@ async function setOrderV2(order) {
 
 function cleanFinishedOrders(zone, socket) {
   
-  log.info('cleanFinishedOrders', zone);
+  // log.info('cleanFinishedOrders', zone);
   const __now = new Date();
 
     let newFinished = {}

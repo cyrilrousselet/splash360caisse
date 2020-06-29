@@ -111,7 +111,7 @@ function getNewNumero(parametres, numero) {
     // si la dernière numérotation date d'un service précédent,
     // on repart de la valeur du début
     if (isBefore(parseISO(numero.updated), lastperiode_end)) {
-      newvalue = Number(numerotation_start);
+      newvalue = Number(numerotation_start-1);
     } 
     // sinon on continue la numérotation
     else {
@@ -121,13 +121,13 @@ function getNewNumero(parametres, numero) {
       }
       // sinon on repart de la valeur du début
       else {
-        newvalue = Number(numerotation_start);
+        newvalue = Number(numerotation_start-1);
       }
     }
   }
   // sinon on crée un numéro en partant de la valeur du début
   else {
-    newvalue = Number(numerotation_start);
+    newvalue = Number(numerotation_start-1);
   }
 
   const newnumero = {value: newvalue, hex: numerotation_hex, updated: new Date};

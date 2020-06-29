@@ -55,7 +55,9 @@ function setNewNumero(defaultValue=null) {
 
   return (dispatch, getState) => {
 
-    const numero = defaultValue ? {value: defaultValue} : getState().commandeReducer.numero; 
+    console.log('setNewNumero',defaultValue);
+
+    const numero = defaultValue!==null ? {value: defaultValue-1} : getState().commandeReducer.numero; 
 
     const newnumero = commandeServices.getNewNumero( getState().parametresReducer.parametres, numero);
     dispatch({ type: commandeActionTypes.SET_NEW_NUMERO, newnumero });
@@ -429,7 +431,7 @@ function removeRendu(payload) {
 
   //  commandeServices.removeReglement(reglementId);
 
-    dispatch({ type: commandeActionTypes.REMOVE_RENDU, reglementId: payload.renduId });
+    dispatch({ type: commandeActionTypes.REMOVE_RENDU, renduId: payload.renduId });
     
   }
 }

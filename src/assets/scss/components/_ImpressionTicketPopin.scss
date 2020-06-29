@@ -59,5 +59,18 @@
         &.livreur-none {
             background-color: $rouge
         }
+        &.activated {
+            background-color: $primary;
+            .StdButton-text:before {
+                content: '';
+                display: inline-block;
+                background-image: url('../../images/ico_check-blanc.svg');
+                background-repeat: no-repeat;
+                background-size: 18px 18px;
+                background-position: left center;
+                width: 25px;
+                height: 18px;
+            }
+        }
     }
 }

@@ -77,6 +77,7 @@ class Encaissement extends React.Component {
             openReglement={ this.openReglement } 
             openPersonnalisation={ this.openPersonnalisation } 
             closePersonnalisation={ this.closePersonnalisation } 
+            allowInput={ !this.state.reglementOpen }
          //   validatePersonnalisation={ this.validatePersonnalisation }
             open={ this.state.reglementOpen } 
             forcePersonnalisationItem={this.state.personnalisationReview}

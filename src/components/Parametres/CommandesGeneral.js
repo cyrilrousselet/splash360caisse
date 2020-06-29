@@ -193,7 +193,7 @@ class CommandesGeneral extends React.Component {
     this.setState({editOpen: false});
   }
   resetNumero() {
-    this.setState({currentNumero:1});
+    this.setState({currentNumero:0});
   }
   saveType(type) {
     console.log(type);
@@ -287,7 +287,7 @@ class CommandesGeneral extends React.Component {
               onChange={()=>{console.log('click')}}
               label={ strings.modules.parametres.submodules.commandes.general.numero.label.compteur }
               />
-            <div className="btn-reset" onClick={()=>{ setNewNumero(true) }}>{ strings.modules.parametres.submodules.commandes.general.numero.label.reset }</div>
+            <div className="btn-reset" onClick={()=>{ setNewNumero(data.numerotation_start-1) }}>{ strings.modules.parametres.submodules.commandes.general.numero.label.reset }</div>
           </div>
           <SwitchCheckbox
             isChecked={ data.numerotation_hex } 

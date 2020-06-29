@@ -103,7 +103,8 @@ class CountTRTool extends React.Component {
 
     const __now = new Date().getFullYear() - 2000;
     if (liste.find(tr=>tr.id==__value)) error = 'yet';
-    if (__trValid<__now) error = 'deprecated';
+ // on supprime le test de valididé (certains TR n'ont pas de date limite)
+ //   if (__trValid<__now) error = 'deprecated';
 
     if (error==='') {
       this.setState({ 
