@@ -61,11 +61,11 @@ async function setOrderV2(order) {
       status: 0,
       endTime: undefined,
       careTime: undefined,
-      items: [{productName: "salade", quantity: 2, zone: "tck2", status: 0, handledBy: null, subItems: [{subProductName:"tomates", quantity: 1}]}, {productName: "soupe", status: 0, handledBy: null, quantity: 1, zone: "tck2"}]      
+      items: [{productName: "salade", quantity: 2, zone: ["tck2","tck3"], status: 0, handledBy: null, subItems: [{subProductName:"tomates", quantity: 1}]}, {productName: "soupe", status: 0, handledBy: null, quantity: 1, zone: "tck2"}]      
     };
-  } else {
-    log.info('setOrderV2:', order);
   }
+  log.info('setOrderV2:', order);
+  
     
     const __now = new Date().getTime();
     order.timestamp = __now;
@@ -92,12 +92,20 @@ async function setOrderV2(order) {
 
     const items = order.items
     let zonesOrder = []
-    Object.keys(items).forEach((item) => {      
-      zonesOrder.push(items[item].zone)
+    Object.keys(items).forEach((item) => {  
+      if (Array.isArray(items[item].zone)) {
+        zonesOrder = [...zonesOrder, ...items[item].zone];
+      }  else {
+        zonesOrder.push(items[item].zone)
+      }   
     })
-    zonesOrder = [...new Set(zonesOrder)]
+
+
+
+    const zonesSet = new Set(zonesOrder);
+    zonesOrder = [...zonesSet];
     
-    // console.log("zonesorder", zonesOrder)
+    log.info("zonesorder", zonesOrder)
     zonesOrder.forEach((zoneOrder) => {      
       Object.keys(devicesPerZones).forEach((zoneDevice) => {        
         if (zoneOrder == zoneDevice) {          
@@ -114,7 +122,7 @@ async function setOrderV2(order) {
 
 function cleanFinishedOrders(zone, socket) {
   
-
+  log.info('cleanFinishedOrders', zone);
   const __now = new Date();
 
     let newFinished = {}
@@ -152,6 +160,7 @@ setInterval(() => {
 async function takeOrderV2(order, zone, ip) { 
 
 
+  log.info('takeOrderV2', order);
     const __now = new Date().getTime();
 
     const orderId = order.id
@@ -216,6 +225,7 @@ async function takeOrderV2(order, zone, ip) {
 async function endOrderV2(order, zone, ip, socket) { 
 
 
+  log.info('endOrderV2', order);
   const __now = new Date().getTime();
 
   const orderId = order.id
@@ -254,7 +264,7 @@ async function endOrderV2(order, zone, ip, socket) {
       // enlever des pending et des écrans des zones
       delete pendingOrders[orderId]
       finishedOrders[orderId] = truthOrder
-      console.log("finished", finishedOrders)
+      log.info("finished", finishedOrders)
       // db.push("/pendingOrders", pendingOrders)
 
 
@@ -271,7 +281,7 @@ async function endOrderV2(order, zone, ip, socket) {
                                                   .push(__order)
                                                   .write();
 
-      console.log(truthOrder)
+      log.info(truthOrder)
       devicesPerZones[zone].forEach((device)=> {            
         io.to(device).emit('action', {type:'REMOVE_ORDER', payload: truthOrder})          
       }) 
@@ -286,7 +296,15 @@ async function endOrderV2(order, zone, ip, socket) {
     } else {
       truthOrder.items = updatedItems
       pendingOrders[orderId] = truthOrder
-      db.push("/pendingOrders", pendingOrders)
+      // db.push("/pendingOrders", pendingOrders)
+
+
+      let __upd = {...truthOrder, updatedAt: __now};
+      const _ord = await (await db.pendingOrders).get('pendingOrders')
+                                          .find({id: truthOrder.id})
+                                          .assign(__upd)
+                                          .write();
+
       devicesPerZones[zone].forEach((device)=> {            
         io.to(device).emit('action', {type:'REMOVE_ORDER', payload: truthOrder})          
       }) 
@@ -350,7 +368,7 @@ async function recallOrder(order, socket) {
 
 
 function transmitOrderAlt(order) {
-  console.log("func", order)
+  log.info("func", order)
   const now = new Date().getTime()
   order.endTime = now
   if (devicesPerZones["salle"]) {

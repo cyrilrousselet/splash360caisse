@@ -250,13 +250,13 @@ function _getTicketsToPrint(filtre, tickets) {
 
   let liste;
   if (filtre=='all') {
-    liste = Object.values(tickets).filter((tck) => (tck.imprimantes.length>0 && (['commande','partiel','principal']).indexOf(tck.template)!=-1));
+    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['commande','partiel','principal']).indexOf(tck.template)!=-1));
   } else if (filtre=='all_uber') {
-    liste = Object.values(tickets).filter((tck) => (tck.imprimantes.length>0 && (['uber','partiel','principal']).indexOf(tck.template)!=-1));
+    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['uber','partiel','principal']).indexOf(tck.template)!=-1));
   } else if (filtre.hasOwnProperty('templates')) {
-    liste = Object.values(tickets).filter((tck) => (tck.imprimantes.length>0 && filtre.templates.indexOf(tck.template)!=-1));
+    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && filtre.templates.indexOf(tck.template)!=-1));
   } else if (filtre.hasOwnProperty('ids')) {
-    liste = Object.values(tickets).filter((tck) => (tck.imprimantes.length>0 && filtre.ids.indexOf(tck.ticket_id)!=-1));
+    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && filtre.ids.indexOf(tck.ticket_id)!=-1));
   }
 
   return liste;
@@ -272,6 +272,19 @@ function printTicket(payload) {
     const cmd = state.commandeReducer.commande;
     dispatch(printCommandeTicket(payload, cmd));
   }
+}
+
+
+function _getProduit(id, catalogue) {
+  let produit = {};
+  Object.values(catalogue).forEach(grp => {
+    const p = grp.produits.find(p=>p.id==id);
+    if (p!==undefined) {
+      produit = p;
+      return;
+    }
+  });
+  return produit;
 }
 
 
@@ -294,7 +307,7 @@ function printCommandeTicket(quelstickets, cmd) {
 
 
     console.log(cmd);
-    console.log(clients);
+    // console.log(clients);
 
     const caisse = cmd.caisse;
     const operateur = cmd.operator;
@@ -352,6 +365,8 @@ function printCommandeTicket(quelstickets, cmd) {
         items: []
       }
 
+      const ticketsProd = ticketsListe.filter(t => (['partiel', 'principal']).indexOf(t.template)!==-1);
+
       cmd.items.forEach(article => {
 
         let articleIngredients = [];
@@ -359,8 +374,8 @@ function printCommandeTicket(quelstickets, cmd) {
         article.ingredients.forEach(ing => {
 
           // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-          const zonei = ticketsListe.filter(t => types[ing.type].noprint.find(p=>p==t.ticket_id)!==undefined );
-          const zoneilist = zonei.map(z => z.ticket_id);
+          // const zonei = ticketsListe.filter(t => types[ing.type].noprint.find(p=>p==t.ticket_id)!==undefined );
+          // const zoneilist = zonei.map(z => z.ticket_id);
 
           // ordre du type d'ingrédient
           let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
@@ -369,25 +384,26 @@ function printCommandeTicket(quelstickets, cmd) {
         //  if (ing.fromStep!=null) {
             articleIngredients.push({
               quantity: ing.qte,
-              subProductName: ing.nom,
-              zone: zoneilist
+              subProductName: ing.nom
             });
         //  }
         });
 
 
+        const prd = _getProduit(article.produitid, catalogue);
+
         
         // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-        // const zone = ticketsListe.filter(t => catalogue[article.groupe].noprint.find(p=>p==t.ticket_id)!==undefined );
-        // const zonelist = '';//zonei.map(z => z.ticket_id);
+        const zone = ticketsProd.filter(t => (catalogue[prd.groupe].noprint.length==0 || catalogue[prd.groupe].noprint.find(p=>p==t.ticket_id)!==undefined) );
 
+        
         kdsCmd.items.push({
           quantity: article.quantite,
           productName: article.nom,
           subItems: articleIngredients,
           status: 0,
           handledBy: null,
-       //   zone: zonelist
+          zone: zone.length>0 ? zone[0].ticket_id : null
         });        
 
       });
@@ -398,7 +414,8 @@ function printCommandeTicket(quelstickets, cmd) {
 
 
     // pour chaque ticket à imprimer, on prépare les params et contenus
-    ticketsListe.forEach(ticket => {
+    const tckToPrint = ticketsListe.filter(t=>t.imprimantes.length>0);
+    tckToPrint.forEach(ticket => {
 
       impression_ordre = impression.find(it => it.ticket==ticket.ticket_id);
       target_imprimantes = Object.values(imprimantes).filter((imp)=>(ticket.imprimantes.indexOf(imp.printer_id)!=-1));
