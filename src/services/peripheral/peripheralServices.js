@@ -9,7 +9,8 @@ export const peripheralServices = {
   getAllImprimantes,
   updateTicket,
   deleteTicket,
-  getAllTickets
+  getAllTickets,
+  setCommandeToKDS
 };
 
 function printTest() {
@@ -49,4 +50,8 @@ function deleteTicket(ticket_id) {
 
 function getAllTickets() {
   return emit('dbParametresGetallTickets',{});
+}
+
+function setCommandeToKDS(commande) {
+  return emit('setOrderToKDS', {order:commande});
 }

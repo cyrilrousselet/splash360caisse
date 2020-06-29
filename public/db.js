@@ -64,7 +64,9 @@ const db = {
  timeadjusts: dbFactory('timeadjusts.json', {timeadjusts: timeadjusts}),
  avoirs: dbFactory('avoirs.json', {avoirs: avoirs}),
  reglescatalogue: dbFactory('reglescatalogue.json', {reglescatalogue: reglescatalogue}),
- reglespanier: dbFactory('reglespanier.json', {reglespanier: reglespanier})
+ reglespanier: dbFactory('reglespanier.json', {reglespanier: reglespanier}),
+ pendingOrders: dbFactory('pendingOrders.json',{pendingOrders:[]}),
+ finishedOrders: dbFactory('finishedOrders.json',{finishedOrders:[]}),
 };
 
 module.exports = db;

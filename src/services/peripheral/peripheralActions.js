@@ -285,6 +285,7 @@ function printCommandeTicket(quelstickets, cmd) {
    // const cmd = state.commandeReducer.commande;
     const types = state.catalogueReducer.ingredientTypes;
     const ingredients = state.catalogueReducer.ingredients;
+    const catalogue = state.catalogueReducer.catalogue;
     const tva = state.catalogueReducer.tva;
     const { imprimantes, tickets } = state.peripheralReducer;
     const { peripheriques, entreprise } = state.parametresReducer.parametres;
@@ -333,6 +334,68 @@ function printCommandeTicket(quelstickets, cmd) {
 
     // récup de la liste des tickets à imprimer
     const ticketsListe = _getTicketsToPrint(quelstickets, tickets);
+
+
+    // y a-t-il KDS d'activé pour un des ticket de la liste ?
+    const withKds = ticketsListe.find(i=>i.kds);
+    if (withKds) {
+
+      let kdsCmd = {
+        id: cmdnumero,
+        origine: caisse.nom,
+        name: operateur.nom,
+        mode: cmd.mode,
+        timestamp: 1,
+        status: 0,
+        endTime: undefined,
+        careTime: undefined,
+        items: []
+      }
+
+      cmd.items.forEach(article => {
+
+        let articleIngredients = [];
+
+        article.ingredients.forEach(ing => {
+
+          // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
+          const zonei = ticketsListe.filter(t => types[ing.type].noprint.find(p=>p==t.ticket_id)!==undefined );
+          const zoneilist = zonei.map(z => z.ticket_id);
+
+          // ordre du type d'ingrédient
+          let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
+          // ordre du type d'ingrédient (défini dans les paramètres)
+
+        //  if (ing.fromStep!=null) {
+            articleIngredients.push({
+              quantity: ing.qte,
+              subProductName: ing.nom,
+              zone: zoneilist
+            });
+        //  }
+        });
+
+
+        
+        // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
+        // const zone = ticketsListe.filter(t => catalogue[article.groupe].noprint.find(p=>p==t.ticket_id)!==undefined );
+        // const zonelist = '';//zonei.map(z => z.ticket_id);
+
+        kdsCmd.items.push({
+          quantity: article.quantite,
+          productName: article.nom,
+          subItems: articleIngredients,
+          status: 0,
+          handledBy: null,
+       //   zone: zonelist
+        });        
+
+      });
+
+      peripheralServices.setCommandeToKDS(kdsCmd);
+
+    }
+
 
     // pour chaque ticket à imprimer, on prépare les params et contenus
     ticketsListe.forEach(ticket => {

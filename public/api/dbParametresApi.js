@@ -105,7 +105,7 @@ function _parseImprimantes(_rawimp) {
 function _parseTickets(_rawtck) {
   const __tck = {};
   _rawtck.forEach(t => {
-    __tck[t.ticket_id] = {ticket_id: t.ticket_id, nom: t.nom, template: t.template, imprimantes: t.imprimantes, weight: t.weight};
+    __tck[t.ticket_id] = {ticket_id: t.ticket_id, nom: t.nom, template: t.template, imprimantes: t.imprimantes, weight: t.weight, kds: t.kds};
   });
   return __tck;
 }

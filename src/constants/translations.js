@@ -850,7 +850,8 @@ const data = {
                                 liste: {
                                     nom: 'Nom',
                                     type: 'Template',
-                                    parametre: 'Imprimé par'
+                                    parametre: 'Imprimé par',
+                                    kds: 'KitchenDisplay'
                                 },
                                 edition: {
                                     new: 'Nouveau ticket',
@@ -858,13 +859,15 @@ const data = {
                                     nom: 'Nom',
                                     template: 'Template',
                                     template_liste: {
-                                      //  commande: 'Commande',
+                                        //  commande: 'Commande',
                                         principal: 'Principal',
                                         partiel: 'Partiel'//,
-                                      //  cloture_x: 'X de caisse',
-                                      //  cloture_z: 'Ticket de clôture'
+                                        //  cloture_x: 'X de caisse',
+                                        //  cloture_z: 'Ticket de clôture'
                                     },
-                                    imprimantes: 'Imprimé par...'
+                                    imprimantes: 'Imprimé par...',
+                                    kds: 'KitchenDisplay',
+                                    kds_active: 'Activé'
                                 }
                             }
                         },

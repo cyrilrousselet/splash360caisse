@@ -8,6 +8,7 @@ import LabelledField from '../common/LabelledField';
 import CloseIcon from '../common/icon/CloseIcon';
 import SwitchCheckbox from '../common/SwitchCheckbox';
 import StdButton from '../common/StdButton';
+import CheckIcon from '@material-ui/icons/Check';
 
 
 let strings = new LocalizedStrings(data);
@@ -204,7 +205,8 @@ class EditTicketPopin extends React.Component {
       ticket_id: null,
       nom: '',
       template: null,
-      imprimantes: null
+      imprimantes: null,
+      kds: null
     }
 
     this.updateValue = this.updateValue.bind(this);
@@ -219,7 +221,8 @@ class EditTicketPopin extends React.Component {
       ticket_id: this.props.ticket && this.props.ticket.ticket_id,
       nom: this.props.ticket && this.props.ticket.nom,
       template: this.props.ticket && this.props.ticket.template,
-      imprimantes: this.props.ticket && this.props.ticket.imprimantes
+      imprimantes: this.props.ticket && this.props.ticket.imprimantes,
+      kds: this.props.ticket && this.props.ticket.kds
     }
     console.log('componentDidMount', st);
     this.setState(st);
@@ -243,18 +246,20 @@ class EditTicketPopin extends React.Component {
   }
 
   getValues() {
-    const { ticket_id, nom, template, imprimantes } = this.props.ticket || {ticket_id:null, nom:null, template:null, imprimantes:[]};
+    const { ticket_id, nom, template, imprimantes, kds } = this.props.ticket || {ticket_id:null, nom:null, template:null, imprimantes:[], kds:null};
     
     const sticket_id = this.state.ticket_id;
     const snom = this.state.nom;
     const stemplate = this.state.template;
     const simprimantes = this.state.imprimantes;
+    const skds = this.state.kds;
     
     return {
       ticket_id: sticket_id || ticket_id,
       nom: snom || nom,
       template: stemplate || template,
-      imprimantes: simprimantes || imprimantes
+      imprimantes: simprimantes || imprimantes,
+      kds: skds || kds
     };
   }
 
@@ -264,7 +269,8 @@ class EditTicketPopin extends React.Component {
       ticket_id: null,
       nom: '',
       template: null,
-      imprimantes: null
+      imprimantes: null,
+      kds: null
     }
     this.setState(st);
   }
@@ -283,7 +289,7 @@ class EditTicketPopin extends React.Component {
   render() {
 
     const { ticket, editOpen, closeHandler, allprinters } = this.props;
-    const { ticket_id, nom, template, imprimantes } = this.getValues();
+    const { ticket_id, nom, template, imprimantes, kds } = this.getValues();
 
     const incomplete = !nom || template==null;
 
@@ -335,6 +341,21 @@ class EditTicketPopin extends React.Component {
                     ))}
                 </div>
               </div>
+              <div className="kds">
+                <div className="liste-label">{ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.kds }</div>
+                <div className="liste-liste">
+                  <SwitchCheckbox 
+                    isChecked={ kds } 
+                    key={ `select-kds` }
+                    name={ `kds` } 
+                    className="kds-checkbox"
+                    small={ true }
+                    labelLeft={ false }
+                    onChange={ (name,checked) => { this.updateValue({[name]: checked}) }} 
+                    label={ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.kds_active } 
+                    />
+                </div>
+              </div>
             </div>
             <div className="footer">
               <StdButton 
@@ -370,6 +391,7 @@ function ListeImpression(props) {
           <TableCell key={`${id}-hd-nom`} className="liste-nom">{ strings.modules.parametres.submodules.peripheriques.impression[type].liste.nom }</TableCell>
           <TableCell key={`${id}-hd-type`} className="liste-type">{ strings.modules.parametres.submodules.peripheriques.impression[type].liste.type }</TableCell>
           <TableCell key={`${id}-hd-param`} className="liste-param">{ strings.modules.parametres.submodules.peripheriques.impression[type].liste.parametre }</TableCell>
+          {type=='tickets' && <TableCell key={`${id}-hd-kds`} className="liste-kds">{ strings.modules.parametres.submodules.peripheriques.impression.tickets.liste.kds }</TableCell>}
         </TableRow>
       </TableHead>
       <TableBody>
@@ -378,6 +400,7 @@ function ListeImpression(props) {
             <TableCell key={`${i}-imp-nom`} className={ `liste-nom` }><div onClick={ () => { openEdit(row.id) } }>{ row.nom }</div></TableCell>
             <TableCell key={`${i}-imp-connexion`} className="liste-type">{ row.type }</TableCell>
             <TableCell key={`${i}-param`} className="liste-param">{row.param}</TableCell>
+            {type=='tickets' && <TableCell key={`${i}-kds`} className="liste-kds">{row.kds && <CheckIcon htmlColor="#7FAD3B" />}</TableCell>}
           </TableRow>
         ))}
       </TableBody>
@@ -482,7 +505,8 @@ class PeripheriquesImpression extends React.Component {
           type: tck.template,
           param: printlist.join(', '),
           weight: tck.weight,
-          disabled: printlist.length==0
+          disabled: printlist.length==0,
+          kds: tck.kds
         };
     });
     tickets_liste = tickets_liste.sort((a,b)=>a.weight-b.weight);
