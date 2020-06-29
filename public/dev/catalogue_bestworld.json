@@ -1,2626 +1,2626 @@
 {
-  "categories": [
-      {
-          "categorie_id": "cat29",
-          "nom": "BEST WORLD MENU",
-          "description": null
-      }
-  ],
-  "groupes": [
-      {
-          "groupe_id": "grp77",
-          "categorie": "cat29",
-          "nom": "BRUCHETTA",
-          "noprint": [],
-          "weight": 1
-      },
-      {
-          "groupe_id": "grp78",
-          "categorie": "cat29",
-          "nom": "PIZZA",
-          "noprint": [],
-          "weight": 2
-      },
-      {
-          "groupe_id": "grp79",
-          "categorie": "cat29",
-          "nom": "BURGER",
-          "noprint": [],
-          "weight": 3
-      },
-      {
-          "groupe_id": "grp80",
-          "categorie": "cat29",
-          "nom": "GRILLADE",
-          "noprint": [],
-          "weight": 4
-      },
-      {
-          "groupe_id": "grp81",
-          "categorie": "cat29",
-          "nom": "MONDE",
-          "noprint": [],
-          "weight": 5
-      },
-      {
-          "groupe_id": "grp82",
-          "categorie": "cat29",
-          "nom": "ESCALOPE",
-          "noprint": [],
-          "weight": 6
-      },
-      {
-          "groupe_id": "grp83",
-          "categorie": "cat29",
-          "nom": "BROCHETTES",
-          "noprint": [],
-          "weight": 7
-      },
-      {
-          "groupe_id": "grp85",
-          "categorie": "cat29",
-          "nom": "PATES",
-          "noprint": [],
-          "weight": 9
-      },
-      {
-          "groupe_id": "grp84",
-          "categorie": "cat29",
-          "nom": "SALADES",
-          "noprint": [],
-          "weight": 8
-      },
-      {
-          "groupe_id": "grp86",
-          "categorie": "cat29",
-          "nom": "CREPES SALEES",
-          "noprint": [],
-          "weight": 10
-      },
-      {
-          "groupe_id": "grp88",
-          "categorie": "cat29",
-          "nom": "STARTERS",
-          "noprint": [],
-          "weight": 12
-      },
-      {
-          "groupe_id": "grp87",
-          "categorie": "cat29",
-          "nom": "CREPES SUCREES",
-          "noprint": [],
-          "weight": 11
-      },
-      {
-          "groupe_id": "grp89",
-          "categorie": "cat29",
-          "nom": "ENFANT",
-          "noprint": [],
-          "weight": 13
-      },
-      {
-          "groupe_id": "grp110",
-          "categorie": "cat29",
-          "nom": "DESSERTS",
-          "noprint": [],
-          "weight": 14
-      },
-      {
-          "groupe_id": "grp111",
-          "categorie": "cat29",
-          "nom": "BOISSONS",
-          "noprint": [],
-          "weight": 15
-      }
-  ],
-  "tva": [
-      {
-          "tva_id": "tva6",
-          "nom": "TVA 10 ALL MODE",
-          "code": "A",
-          "valeur": "0.1"
-      },
-      {
-          "tva_id": "tva8",
-          "nom": "TVA 5,5 ALL MODE",
-          "code": "B",
-          "valeur": "0.055"
-      }
-  ],
-  "types": [
-      {
-          "type_id": "typ94",
-          "nom": "BOISSONS BESTWORLD",
-          "noprint": [],
-          "weight": null
-      },
-      {
-          "type_id": "typ96",
-          "nom": "SUPPLÉMENTS STEAK 150G BESTWORLD",
-          "noprint": [],
-          "weight": null
-      },
-      {
-          "type_id": "typ93",
-          "nom": "ACCOMPAGEMENTS BESTWORLD",
-          "noprint": [],
-          "weight": null
-      },
-      {
-          "type_id": "typ95",
-          "nom": "SUPPLÉMENTS BESTWORLD",
-          "noprint": [],
-          "weight": null
-      },
-      {
-          "type_id": "typ106",
-          "nom": "SUPPLÉMENTS  MILKSHAKE BESTWORLD",
-          "noprint": [],
-          "weight": null
-      }
-  ],
-  "ingredients": [
-      {
-          "ingredient_id": "ing567",
-          "type": "typ94",
-          "nom": "EVIAN",
-          "supplement": "1.00",
-          "tva": "tva8",
-          "weight": 5,
-          "color": "blanc"
-      },
-      {
-          "ingredient_id": "ing568",
-          "type": "typ94",
-          "nom": "COCA",
-          "supplement": "1.00",
-          "tva": "tva8",
-          "weight": 6,
-          "color": "marron"
-      },
-      {
-          "ingredient_id": "ing569",
-          "type": "typ94",
-          "nom": "COCA CHERY",
-          "supplement": "1.00",
-          "tva": "tva8",
-          "weight": 7,
-          "color": "violet"
-      },
-      {
-          "ingredient_id": "ing570",
-          "type": "typ94",
-          "nom": "COCA ZERO",
-          "supplement": "1.00",
-          "tva": "tva8",
-          "weight": 8,
-          "color": "noir"
-      },
-      {
-          "ingredient_id": "ing571",
-          "type": "typ94",
-          "nom": "FUZE TEA PÈCHE",
-          "supplement": "1.00",
-          "tva": "tva8",
-          "weight": 9,
-          "color": "orange"
-      },
-      {
-          "ingredient_id": "ing572",
-          "type": "typ94",
-          "nom": "FUZE TEA MANGUE",
-          "supplement": "1.00",
-          "tva": "tva8",
-          "weight": 10,
-          "color": "vertclair"
-      },
-      {
-          "ingredient_id": "ing573",
-          "type": "typ94",
-          "nom": "OASIS POMME CASSIS",
-          "supplement": "1.00",
-          "tva": "tva8",
-          "weight": 11,
-          "color": "violet"
-      },
-      {
-          "ingredient_id": "ing574",
-          "type": "typ94",
-          "nom": "OASIS TROPICAL",
-          "supplement": "1.00",
-          "tva": "tva8",
-          "weight": 12,
-          "color": "orange"
-      },
-      {
-          "ingredient_id": "ing575",
-          "type": "typ94",
-          "nom": "SCHWEPPES AGRUMES",
-          "supplement": "1.00",
-          "tva": "tva8",
-          "weight": 13,
-          "color": "jaune"
-      },
-      {
-          "ingredient_id": "ing576",
-          "type": "typ94",
-          "nom": "SCHWEPPES LIMON",
-          "supplement": "1.00",
-          "tva": "tva8",
-          "weight": 14,
-          "color": "vertclair"
-      },
-      {
-          "ingredient_id": "ing577",
-          "type": "typ94",
-          "nom": "SCHWEPPES MOJITO",
-          "supplement": "1.00",
-          "tva": "tva8",
-          "weight": 15,
-          "color": "vertclair"
-      },
-      {
-          "ingredient_id": "ing578",
-          "type": "typ94",
-          "nom": "7UP",
-          "supplement": "1.00",
-          "tva": "tva8",
-          "weight": 15,
-          "color": "vertclair"
-      },
-      {
-          "ingredient_id": "ing579",
-          "type": "typ94",
-          "nom": "FANTA",
-          "supplement": "1.00",
-          "tva": "tva8",
-          "weight": 15,
-          "color": "jaune"
-      },
-      {
-          "ingredient_id": "ing580",
-          "type": "typ94",
-          "nom": "CRISTALINE FRAIS",
-          "supplement": "1.50",
-          "tva": "tva8",
-          "weight": 15,
-          "color": "blanc"
-      },
-      {
-          "ingredient_id": "ing581",
-          "type": "typ94",
-          "nom": "CRISTALINE PÈCHE",
-          "supplement": "1.50",
-          "tva": "tva8",
-          "weight": 15,
-          "color": "orange"
-      },
-      {
-          "ingredient_id": "ing582",
-          "type": "typ94",
-          "nom": "SAN PELLIGRINO",
-          "supplement": "1.50",
-          "tva": "tva8",
-          "weight": 15,
-          "color": "vertclair"
-      },
-      {
-          "ingredient_id": "ing583",
-          "type": "typ94",
-          "nom": "FREEZ MANGUE PÊCHE",
-          "supplement": "2.00",
-          "tva": "tva8",
-          "weight": 15,
-          "color": "orange"
-      },
-      {
-          "ingredient_id": "ing584",
-          "type": "typ94",
-          "nom": "FREEZ ANANAS COCO",
-          "supplement": "2.00",
-          "tva": "tva8",
-          "weight": 15,
-          "color": "jaune"
-      },
-      {
-          "ingredient_id": "ing585",
-          "type": "typ94",
-          "nom": "FREEZ BLU HAWAI",
-          "supplement": "2.00",
-          "tva": "tva8",
-          "weight": 15,
-          "color": "bleufonce"
-      },
-      {
-          "ingredient_id": "ing586",
-          "type": "typ94",
-          "nom": "FREEZ LITCHI",
-          "supplement": "2.00",
-          "tva": "tva8",
-          "weight": 15,
-          "color": "rouge"
-      },
-      {
-          "ingredient_id": "ing587",
-          "type": "typ94",
-          "nom": "FREEZ POMME RAISIN",
-          "supplement": "2.00",
-          "tva": "tva8",
-          "weight": 15,
-          "color": "vertclair"
-      },
-      {
-          "ingredient_id": "ing595",
-          "type": "typ96",
-          "nom": "STEAK 150G",
-          "supplement": "3.50",
-          "tva": "tva6",
-          "weight": 5,
-          "color": "marron"
-      },
-      {
-          "ingredient_id": "ing563",
-          "type": "typ93",
-          "nom": "RIZ PARFUME",
-          "supplement": "0.00",
-          "tva": "tva6",
-          "weight": 5,
-          "color": "blanc"
-      },
-      {
-          "ingredient_id": "ing564",
-          "type": "typ93",
-          "nom": "FRITE AUTHENTIQUES",
-          "supplement": "0.00",
-          "tva": "tva6",
-          "weight": 6,
-          "color": "jaune"
-      },
-      {
-          "ingredient_id": "ing565",
-          "type": "typ93",
-          "nom": "HARICOTS VERTS",
-          "supplement": "0.00",
-          "tva": "tva6",
-          "weight": 7,
-          "color": "vertclair"
-      },
-      {
-          "ingredient_id": "ing566",
-          "type": "typ93",
-          "nom": "SALADE VERTE",
-          "supplement": "0.00",
-          "tva": "tva6",
-          "weight": 8,
-          "color": "vertclair"
-      },
-      {
-          "ingredient_id": "ing588",
-          "type": "typ95",
-          "nom": "CARAMEL BEURRE SALE",
-          "supplement": "0.80",
-          "tva": "tva6",
-          "weight": 5,
-          "color": "orange"
-      },
-      {
-          "ingredient_id": "ing589",
-          "type": "typ95",
-          "nom": "CONFITURE DE FRAISE",
-          "supplement": "0.80",
-          "tva": "tva6",
-          "weight": 6,
-          "color": "rouge"
-      },
-      {
-          "ingredient_id": "ing590",
-          "type": "typ95",
-          "nom": "CREME DE SPECULOS",
-          "supplement": "0.80",
-          "tva": "tva6",
-          "weight": 7,
-          "color": "orange"
-      },
-      {
-          "ingredient_id": "ing591",
-          "type": "typ95",
-          "nom": "NUTELLA",
-          "supplement": "0.80",
-          "tva": "tva6",
-          "weight": 8,
-          "color": "marron"
-      },
-      {
-          "ingredient_id": "ing592",
-          "type": "typ95",
-          "nom": "MIEL",
-          "supplement": "0.80",
-          "tva": "tva6",
-          "weight": 9,
-          "color": "jauneorange"
-      },
-      {
-          "ingredient_id": "ing593",
-          "type": "typ95",
-          "nom": "BEURRE",
-          "supplement": "0.80",
-          "tva": "tva6",
-          "weight": 10,
-          "color": "jaune"
-      },
-      {
-          "ingredient_id": "ing594",
-          "type": "typ95",
-          "nom": "CREME DE MARRON",
-          "supplement": "0.80",
-          "tva": "tva6",
-          "weight": 11,
-          "color": "marron"
-      },
-      {
-          "ingredient_id": "ing659",
-          "type": "typ106",
-          "nom": "NUTELLA",
-          "supplement": "1.00",
-          "tva": "tva6",
-          "weight": 5,
-          "color": "marron"
-      },
-      {
-          "ingredient_id": "ing660",
-          "type": "typ106",
-          "nom": "KINDER BUENO",
-          "supplement": "1.00",
-          "tva": "tva6",
-          "weight": 6,
-          "color": "marron"
-      },
-      {
-          "ingredient_id": "ing661",
-          "type": "typ106",
-          "nom": "OREO",
-          "supplement": "1.00",
-          "tva": "tva6",
-          "weight": 7,
-          "color": "noir"
-      },
-      {
-          "ingredient_id": "ing662",
-          "type": "typ106",
-          "nom": "SPECULOS",
-          "supplement": "1.00",
-          "tva": "tva6",
-          "weight": 8,
-          "color": "jauneorange"
-      }
-  ],
-  "produits": [
-      {
-          "produit_id": "prd1420",
-          "groupe": "grp77",
-          "active": 1,
-          "nom": "REGINA",
-          "prix": "7.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 1,
-          "color": "rouge"
-      },
-      {
-          "produit_id": "prd1421",
-          "groupe": "grp77",
-          "active": 1,
-          "nom": "PECHEUR",
-          "prix": "7.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 2,
-          "color": "rouge"
-      },
-      {
-          "produit_id": "prd1422",
-          "groupe": "grp77",
-          "active": 1,
-          "nom": "CAMPIONE",
-          "prix": "9.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 3,
-          "color": "rouge"
-      },
-      {
-          "produit_id": "prd1423",
-          "groupe": "grp77",
-          "active": 1,
-          "nom": "PAYSANNE",
-          "prix": "7.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 4,
-          "color": "jaune"
-      },
-      {
-          "produit_id": "prd1424",
-          "groupe": "grp77",
-          "active": 1,
-          "nom": "INDIENNE",
-          "prix": "7.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 5,
-          "color": "jaune"
-      },
-      {
-          "produit_id": "prd1425",
-          "groupe": "grp77",
-          "active": 1,
-          "nom": "SAVOYARDE",
-          "prix": "8.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 6,
-          "color": "jaune"
-      },
-      {
-          "produit_id": "prd1426",
-          "groupe": "grp78",
-          "active": 1,
-          "nom": "MARGHERITA",
-          "prix": "8.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 1,
-          "color": "rouge"
-      },
-      {
-          "produit_id": "prd1427",
-          "groupe": "grp78",
-          "active": 1,
-          "nom": "VEGETARIENNE",
-          "prix": "9.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 2,
-          "color": "rouge"
-      },
-      {
-          "produit_id": "prd1428",
-          "groupe": "grp78",
-          "active": 1,
-          "nom": "BEST",
-          "prix": "10.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 3,
-          "color": "rouge"
-      },
-      {
-          "produit_id": "prd1429",
-          "groupe": "grp78",
-          "active": 1,
-          "nom": "ORIENTALE",
-          "prix": "11.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 4,
-          "color": "rouge"
-      },
-      {
-          "produit_id": "prd1430",
-          "groupe": "grp78",
-          "active": 1,
-          "nom": "NEPTUNE",
-          "prix": "10.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 5,
-          "color": "rouge"
-      },
-      {
-          "produit_id": "prd1431",
-          "groupe": "grp78",
-          "active": 1,
-          "nom": "PACIFIQUE",
-          "prix": "11.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 6,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd1432",
-          "groupe": "grp78",
-          "active": 1,
-          "nom": "CHEVRE MIEL",
-          "prix": "10.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 7,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd1433",
-          "groupe": "grp78",
-          "active": 1,
-          "nom": "RACLETTE",
-          "prix": "10.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 8,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd1434",
-          "groupe": "grp78",
-          "active": 1,
-          "nom": "CHIKEN TIKKA",
-          "prix": "10.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 9,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd1435",
-          "groupe": "grp78",
-          "active": 1,
-          "nom": "FERMIERE",
-          "prix": "10.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 10,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd1436",
-          "groupe": "grp79",
-          "active": 1,
-          "nom": "BEST CHEESE",
-          "prix": "10.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 1,
-          "color": "marron"
-      },
-      {
-          "produit_id": "prd1437",
-          "groupe": "grp79",
-          "active": 1,
-          "nom": "BEST BACON",
-          "prix": "12.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 2,
-          "color": "marron"
-      },
-      {
-          "produit_id": "prd1438",
-          "groupe": "grp79",
-          "active": 1,
-          "nom": "BOLLYWOOD",
-          "prix": "11.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 3,
-          "color": "marron"
-      },
-      {
-          "produit_id": "prd1439",
-          "groupe": "grp79",
-          "active": 1,
-          "nom": "ISTANBUL",
-          "prix": "13.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 4,
-          "color": "marron"
-      },
-      {
-          "produit_id": "prd1440",
-          "groupe": "grp79",
-          "active": 1,
-          "nom": "PARISIEN",
-          "prix": "13.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 5,
-          "color": "marron"
-      },
-      {
-          "produit_id": "prd1441",
-          "groupe": "grp79",
-          "active": 1,
-          "nom": "BIG TEST",
-          "prix": "15.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 6,
-          "color": "marron"
-      },
-      {
-          "produit_id": "prd1442",
-          "groupe": "grp80",
-          "active": 1,
-          "nom": "DOS DE CABILLAUD",
-          "prix": "13.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 1,
-          "color": "noir"
-      },
-      {
-          "produit_id": "prd1443",
-          "groupe": "grp80",
-          "active": 1,
-          "nom": "RUMSTECK BRAISE",
-          "prix": "14.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 2,
-          "color": "noir"
-      },
-      {
-          "produit_id": "prd1444",
-          "groupe": "grp80",
-          "active": 1,
-          "nom": "SAUMON TERYAKI",
-          "prix": "14.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 3,
-          "color": "noir"
-      },
-      {
-          "produit_id": "prd1445",
-          "groupe": "grp80",
-          "active": 1,
-          "nom": "NOIX DE VEAU",
-          "prix": "14.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 4,
-          "color": "noir"
-      },
-      {
-          "produit_id": "prd1446",
-          "groupe": "grp81",
-          "active": 1,
-          "nom": "HONG KONG",
-          "prix": "14.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 1,
-          "color": "bleuclair"
-      },
-      {
-          "produit_id": "prd1447",
-          "groupe": "grp81",
-          "active": 1,
-          "nom": "INDIAN",
-          "prix": "13.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 2,
-          "color": "bleuclair"
-      },
-      {
-          "produit_id": "prd1448",
-          "groupe": "grp81",
-          "active": 1,
-          "nom": "JAPAN",
-          "prix": "13.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 3,
-          "color": "bleuclair"
-      },
-      {
-          "produit_id": "prd1449",
-          "groupe": "grp81",
-          "active": 1,
-          "nom": "JAPAN",
-          "prix": "13.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 4,
-          "color": "bleuclair"
-      },
-      {
-          "produit_id": "prd1450",
-          "groupe": "grp82",
-          "active": 1,
-          "nom": "ESCALOPE NORMANDE",
-          "prix": "12.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 1,
-          "color": "marron"
-      },
-      {
-          "produit_id": "prd1451",
-          "groupe": "grp82",
-          "active": 1,
-          "nom": "ESCALOPE BOMBAY CRISPY",
-          "prix": "13.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 2,
-          "color": "marron"
-      },
-      {
-          "produit_id": "prd1452",
-          "groupe": "grp82",
-          "active": 1,
-          "nom": "ESCALOPE SALTIMBOCCA",
-          "prix": "14.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 3,
-          "color": "marron"
-      },
-      {
-          "produit_id": "prd1453",
-          "groupe": "grp83",
-          "active": 1,
-          "nom": "JA",
-          "prix": "13.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 1,
-          "color": "noir"
-      },
-      {
-          "produit_id": "prd1454",
-          "groupe": "grp83",
-          "active": 1,
-          "nom": "INDIAN",
-          "prix": "13.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 2,
-          "color": "noir"
-      },
-      {
-          "produit_id": "prd1455",
-          "groupe": "grp83",
-          "active": 1,
-          "nom": "THAILANDE",
-          "prix": "13.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 3,
-          "color": "noir"
-      },
-      {
-          "produit_id": "prd1456",
-          "groupe": "grp85",
-          "active": 1,
-          "nom": "FORESTIÈRE AU POULET",
-          "prix": "10.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 1,
-          "color": "rouge"
-      },
-      {
-          "produit_id": "prd1457",
-          "groupe": "grp85",
-          "active": 1,
-          "nom": "SCAMPI ET BASILIC",
-          "prix": "14.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 2,
-          "color": "vertclair"
-      },
-      {
-          "produit_id": "prd1458",
-          "groupe": "grp85",
-          "active": 1,
-          "nom": "BOLOGNAISE",
-          "prix": "10.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 3,
-          "color": "rouge"
-      },
-      {
-          "produit_id": "prd1459",
-          "groupe": "grp85",
-          "active": 1,
-          "nom": "CHIKEN COCO CURRY",
-          "prix": "12.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 4,
-          "color": "jaune"
-      },
-      {
-          "produit_id": "prd1460",
-          "groupe": "grp84",
-          "active": 1,
-          "nom": "SALADE CESARIO",
-          "prix": "8.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 1,
-          "color": "vertclair"
-      },
-      {
-          "produit_id": "prd1461",
-          "groupe": "grp84",
-          "active": 1,
-          "nom": "CHÈVRE CHAUD",
-          "prix": "10.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 2,
-          "color": "vertclair"
-      },
-      {
-          "produit_id": "prd1462",
-          "groupe": "grp84",
-          "active": 1,
-          "nom": "BOLLYWOOD",
-          "prix": "9.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 3,
-          "color": "vertclair"
-      },
-      {
-          "produit_id": "prd1463",
-          "groupe": "grp84",
-          "active": 1,
-          "nom": "SEA COCKTAIL",
-          "prix": "10.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 4,
-          "color": "vertclair"
-      },
-      {
-          "produit_id": "prd1464",
-          "groupe": "grp86",
-          "active": 1,
-          "nom": "BEST CLASSIC",
-          "prix": "7.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 1,
-          "color": "blanc"
-      },
-      {
-          "produit_id": "prd1465",
-          "groupe": "grp86",
-          "active": 1,
-          "nom": "SCANDINAVE",
-          "prix": "8.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 2,
-          "color": "blanc"
-      },
-      {
-          "produit_id": "prd1466",
-          "groupe": "grp86",
-          "active": 1,
-          "nom": "BOLLYWOOD",
-          "prix": "7.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 3,
-          "color": "blanc"
-      },
-      {
-          "produit_id": "prd1467",
-          "groupe": "grp86",
-          "active": 1,
-          "nom": "BOURSALINO",
-          "prix": "7.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 4,
-          "color": "blanc"
-      },
-      {
-          "produit_id": "prd1468",
-          "groupe": "grp86",
-          "active": 1,
-          "nom": "SUISSE",
-          "prix": "8.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 5,
-          "color": "blanc"
-      },
-      {
-          "produit_id": "prd1469",
-          "groupe": "grp86",
-          "active": 1,
-          "nom": "VEGETALE",
-          "prix": "7.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 6,
-          "color": "blanc"
-      },
-      {
-          "produit_id": "prd1470",
-          "groupe": "grp86",
-          "active": 1,
-          "nom": "ORIENTALE",
-          "prix": "8.50",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 7,
-          "color": "blanc"
-      },
-      {
-          "produit_id": "prd1471",
-          "groupe": "grp86",
-          "active": 1,
-          "nom": "BACON BEEF",
-          "prix": "7.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 8,
-          "color": "blanc"
-      },
-      {
-          "produit_id": "prd1472",
-          "groupe": "grp88",
-          "active": 1,
-          "nom": "JALAPENOS",
-          "prix": "3.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 1,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd1473",
-          "groupe": "grp88",
-          "active": 1,
-          "nom": "CHEESEBURGER",
-          "prix": "3.50",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 2,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd1474",
-          "groupe": "grp88",
-          "active": 1,
-          "nom": "NUGGETS",
-          "prix": "4.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 3,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd1475",
-          "groupe": "grp88",
-          "active": 1,
-          "nom": "BOUCHÉE DE CAMEMBERT",
-          "prix": "4.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 4,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd1476",
-          "groupe": "grp88",
-          "active": 1,
-          "nom": "MOZZA-STICKS",
-          "prix": "3.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 5,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd1477",
-          "groupe": "grp87",
-          "active": 1,
-          "nom": "NUTELLA BANANE COCO",
-          "prix": "4.20",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 1,
-          "color": "marron"
-      },
-      {
-          "produit_id": "prd1478",
-          "groupe": "grp87",
-          "active": 1,
-          "nom": "NUTELLA BROWNIE",
-          "prix": "4.10",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 2,
-          "color": "marron"
-      },
-      {
-          "produit_id": "prd1479",
-          "groupe": "grp87",
-          "active": 1,
-          "nom": "CREME DE SPECULOS FRAISES PALET BRETON",
-          "prix": "4.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 3,
-          "color": "marron"
-      },
-      {
-          "produit_id": "prd1480",
-          "groupe": "grp87",
-          "active": 1,
-          "nom": "KINDER MAXI PETIT BEURRE",
-          "prix": "4.50",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 4,
-          "color": "marron"
-      },
-      {
-          "produit_id": "prd1481",
-          "groupe": "grp89",
-          "active": 1,
-          "nom": "MENU ENFANT CHEESEBURGER",
-          "prix": "5.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 1,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd1482",
-          "groupe": "grp87",
-          "active": 1,
-          "nom": "COMPOSE TA CREPE",
-          "prix": "2.50",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 5,
-          "color": "jauneorange"
-      },
-      {
-          "produit_id": "prd1628",
-          "groupe": "grp110",
-          "active": 1,
-          "nom": "CHEESE CAKE NUTELLA",
-          "prix": "4.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 1,
-          "color": "marron"
-      },
-      {
-          "produit_id": "prd1629",
-          "groupe": "grp110",
-          "active": 1,
-          "nom": "CHEESE CAKE OREO",
-          "prix": "4.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 2,
-          "color": "noir"
-      },
-      {
-          "produit_id": "prd1630",
-          "groupe": "grp110",
-          "active": 1,
-          "nom": "CHEESE CAKE DAIN CARAMEL",
-          "prix": "4.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 3,
-          "color": "marron"
-      },
-      {
-          "produit_id": "prd1631",
-          "groupe": "grp110",
-          "active": 1,
-          "nom": "CHEESE CAKE NATURE CITRONNÉE",
-          "prix": "4.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 4,
-          "color": "jaune"
-      },
-      {
-          "produit_id": "prd1632",
-          "groupe": "grp110",
-          "active": 1,
-          "nom": "TARTE TATIN",
-          "prix": "3.50",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 5,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd1633",
-          "groupe": "grp110",
-          "active": 1,
-          "nom": "TARTE AUX POMMES",
-          "prix": "3.50",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 6,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd1634",
-          "groupe": "grp110",
-          "active": 1,
-          "nom": "TIRAMISU DAIN CARAMEL",
-          "prix": "3.50",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 7,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd1635",
-          "groupe": "grp110",
-          "active": 1,
-          "nom": "TIRAMISU NUTELLA SPECULOS",
-          "prix": "3.50",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 8,
-          "color": "marron"
-      },
-      {
-          "produit_id": "prd1636",
-          "groupe": "grp110",
-          "active": 1,
-          "nom": "FRAISIER",
-          "prix": "3.50",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 9,
-          "color": "rouge"
-      },
-      {
-          "produit_id": "prd1637",
-          "groupe": "grp110",
-          "active": 1,
-          "nom": "TIRAMISU KINDER",
-          "prix": "3.50",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 10,
-          "color": "marron"
-      },
-      {
-          "produit_id": "prd1638",
-          "groupe": "grp110",
-          "active": 1,
-          "nom": "MILK-SHAKE FRAISE",
-          "prix": "4.50",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 11,
-          "color": "rouge"
-      },
-      {
-          "produit_id": "prd1639",
-          "groupe": "grp110",
-          "active": 1,
-          "nom": "MILK-SHAKE VANILLE",
-          "prix": "4.50",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 12,
-          "color": "blanc"
-      },
-      {
-          "produit_id": "prd1640",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "EVIAN",
-          "prix": "1.50",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 1,
-          "color": "blanc"
-      },
-      {
-          "produit_id": "prd1641",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "COCA",
-          "prix": "1.50",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 2,
-          "color": "marron"
-      },
-      {
-          "produit_id": "prd1642",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "COCA CHERY",
-          "prix": "1.50",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 3,
-          "color": "violet"
-      },
-      {
-          "produit_id": "prd1643",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "COCA ZERO",
-          "prix": "1.50",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 4,
-          "color": "noir"
-      },
-      {
-          "produit_id": "prd1644",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "FUZE TEA PÈCHE",
-          "prix": "1.50",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 5,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd1645",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "FUZE TEA MANGUE",
-          "prix": "1.50",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 6,
-          "color": "vertclair"
-      },
-      {
-          "produit_id": "prd1646",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "OASIS POMME CASSIS",
-          "prix": "1.50",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 7,
-          "color": "rose"
-      },
-      {
-          "produit_id": "prd1647",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "OASIS TROPICAL",
-          "prix": "1.50",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 8,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd1648",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "SCHWEPPES AGRUMES",
-          "prix": "1.50",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 9,
-          "color": "jaune"
-      },
-      {
-          "produit_id": "prd1649",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "SCHWEPPES LIMON",
-          "prix": "1.50",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 10,
-          "color": "vertclair"
-      },
-      {
-          "produit_id": "prd1650",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "SCHWEPPES MOJITO",
-          "prix": "1.50",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 11,
-          "color": "vertfonce"
-      },
-      {
-          "produit_id": "prd1651",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "7 UP",
-          "prix": "1.50",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 12,
-          "color": "vertfonce"
-      },
-      {
-          "produit_id": "prd1652",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "FANTA",
-          "prix": "1.50",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 13,
-          "color": "jaune"
-      },
-      {
-          "produit_id": "prd1653",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "CRISTALINE FRAIS",
-          "prix": "2.00",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 14,
-          "color": "blanc"
-      },
-      {
-          "produit_id": "prd1654",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "CRISTALINE PÈCHE",
-          "prix": "2.00",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 15,
-          "color": "jauneorange"
-      },
-      {
-          "produit_id": "prd1655",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "SAN PELLIGRINO",
-          "prix": "2.00",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 16,
-          "color": "vertclair"
-      },
-      {
-          "produit_id": "prd1656",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "FREEZ MANGUE PÈCHE",
-          "prix": "2.50",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 17,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd1657",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "FREEZ ANANAS COCO",
-          "prix": "2.50",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 18,
-          "color": "jaune"
-      },
-      {
-          "produit_id": "prd1658",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "FREEZ BLUE HAWAI",
-          "prix": "2.50",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 19,
-          "color": "bleufonce"
-      },
-      {
-          "produit_id": "prd1659",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "FREEZ LITCHI",
-          "prix": "2.50",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 20,
-          "color": "rouge"
-      },
-      {
-          "produit_id": "prd1660",
-          "groupe": "grp111",
-          "active": 1,
-          "nom": "FREEZ POMME RAISIN",
-          "prix": "2.50",
-          "tva": "tva8",
-          "composition": [],
-          "weight": 21,
-          "color": "vertclair"
-      },
-      {
-          "produit_id": "prd1670",
-          "groupe": "grp89",
-          "active": 1,
-          "nom": "MENU ENFANT NUGGETS",
-          "prix": "5.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 2,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd1685",
-          "groupe": "grp84",
-          "active": 1,
-          "nom": "NIPONNE",
-          "prix": "11.90",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 5,
-          "color": "vertclair"
-      },
-      {
-          "produit_id": "prd1686",
-          "groupe": "grp88",
-          "active": 1,
-          "nom": "FRITES",
-          "prix": "2.50",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 6,
-          "color": "jaune"
-      },
-      {
-          "produit_id": "prd1687",
-          "groupe": "grp88",
-          "active": 1,
-          "nom": "CHEDDAR",
-          "prix": "3.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 7,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd1688",
-          "groupe": "grp88",
-          "active": 1,
-          "nom": "CHEDDAR & BACON",
-          "prix": "3.80",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 8,
-          "color": "rose"
-      }
-  ],
-  "steps": [
-      {
-          "step_id": "step732",
-          "produit": "prd1420",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step757",
-          "produit": "prd1421",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step758",
-          "produit": "prd1422",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step759",
-          "produit": "prd1423",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step760",
-          "produit": "prd1424",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step761",
-          "produit": "prd1425",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step756",
-          "produit": "prd1426",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step755",
-          "produit": "prd1427",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step754",
-          "produit": "prd1428",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step753",
-          "produit": "prd1429",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step752",
-          "produit": "prd1430",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step751",
-          "produit": "prd1431",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step750",
-          "produit": "prd1432",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step749",
-          "produit": "prd1433",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step748",
-          "produit": "prd1434",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step747",
-          "produit": "prd1435",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step762",
-          "produit": "prd1436",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step799",
-          "produit": "prd1436",
-          "titre": "SUPPLÉMENTS",
-          "regles": [
-              {
-                  "type": "typ96",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step763",
-          "produit": "prd1437",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step800",
-          "produit": "prd1437",
-          "titre": "SUPPLÉMENTS",
-          "regles": [
-              {
-                  "type": "typ96",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step764",
-          "produit": "prd1438",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step801",
-          "produit": "prd1438",
-          "titre": "SUPPLÉMENT",
-          "regles": [
-              {
-                  "type": "typ96",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step765",
-          "produit": "prd1439",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step802",
-          "produit": "prd1439",
-          "titre": "SUPPLÉMENT",
-          "regles": [
-              {
-                  "type": "typ96",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step766",
-          "produit": "prd1440",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step803",
-          "produit": "prd1440",
-          "titre": "SUPPLÉMENT",
-          "regles": [
-              {
-                  "type": "typ96",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step767",
-          "produit": "prd1441",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step804",
-          "produit": "prd1441",
-          "titre": "SUPPLÉMENT",
-          "regles": [
-              {
-                  "type": "typ96",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step728",
-          "produit": "prd1442",
-          "titre": "ACCOMPAGNEMENTS",
-          "regles": [
-              {
-                  "type": "typ93",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step792",
-          "produit": "prd1442",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step729",
-          "produit": "prd1443",
-          "titre": "ACCOMPAGNEMENTS",
-          "regles": [
-              {
-                  "type": "typ93",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step791",
-          "produit": "prd1443",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step730",
-          "produit": "prd1444",
-          "titre": "ACCOMPAGNEMENTS",
-          "regles": [
-              {
-                  "type": "typ93",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step790",
-          "produit": "prd1444",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step731",
-          "produit": "prd1445",
-          "titre": "ACCOMPAGNEMENTS",
-          "regles": [
-              {
-                  "type": "typ93",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step789",
-          "produit": "prd1445",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step795",
-          "produit": "prd1446",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step794",
-          "produit": "prd1447",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step796",
-          "produit": "prd1448",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step793",
-          "produit": "prd1449",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step722",
-          "produit": "prd1450",
-          "titre": "ACCOMPAGNEMENT",
-          "regles": [
-              {
-                  "type": "typ93",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step723",
-          "produit": "prd1450",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 1
-      },
-      {
-          "step_id": "step724",
-          "produit": "prd1451",
-          "titre": "ACCOMPAGNEMENTS",
-          "regles": [
-              {
-                  "type": "typ93",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step725",
-          "produit": "prd1451",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 1
-      },
-      {
-          "step_id": "step726",
-          "produit": "prd1452",
-          "titre": "ACCOMPAGNEMENTS",
-          "regles": [
-              {
-                  "type": "typ93",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step727",
-          "produit": "prd1452",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 1
-      },
-      {
-          "step_id": "step716",
-          "produit": "prd1453",
-          "titre": "ACCOMPAGNEMENT",
-          "regles": [
-              {
-                  "type": "typ93",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step717",
-          "produit": "prd1453",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 1
-      },
-      {
-          "step_id": "step718",
-          "produit": "prd1454",
-          "titre": "ACCOMPAGNEMENTS",
-          "regles": [
-              {
-                  "type": "typ93",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 1
-      },
-      {
-          "step_id": "step719",
-          "produit": "prd1454",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 2
-      },
-      {
-          "step_id": "step720",
-          "produit": "prd1455",
-          "titre": "ACCOMPAGNEMENTS",
-          "regles": [
-              {
-                  "type": "typ93",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 2
-      },
-      {
-          "step_id": "step721",
-          "produit": "prd1455",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 3
-      },
-      {
-          "step_id": "step772",
-          "produit": "prd1456",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step773",
-          "produit": "prd1457",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step774",
-          "produit": "prd1458",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step775",
-          "produit": "prd1459",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step768",
-          "produit": "prd1460",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step769",
-          "produit": "prd1461",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step770",
-          "produit": "prd1462",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step771",
-          "produit": "prd1463",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step776",
-          "produit": "prd1464",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step777",
-          "produit": "prd1465",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step778",
-          "produit": "prd1466",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step779",
-          "produit": "prd1467",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step780",
-          "produit": "prd1468",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step781",
-          "produit": "prd1469",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step782",
-          "produit": "prd1470",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step783",
-          "produit": "prd1471",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step784",
-          "produit": "prd1477",
-          "titre": "SUPPLEMENTS",
-          "regles": [
-              {
-                  "type": "typ95",
-                  "regle": "{0,7}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step785",
-          "produit": "prd1478",
-          "titre": "SUPPLÉMENTS",
-          "regles": [
-              {
-                  "type": "typ95",
-                  "regle": "{0,7}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step786",
-          "produit": "prd1479",
-          "titre": "SUPPLÉMENTS",
-          "regles": [
-              {
-                  "type": "typ95",
-                  "regle": "{0,7}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step787",
-          "produit": "prd1480",
-          "titre": "SUPPLÉMENTS",
-          "regles": [
-              {
-                  "type": "typ95",
-                  "regle": "{0,7}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step797",
-          "produit": "prd1481",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step788",
-          "produit": "prd1482",
-          "titre": "SUPPLÉMENTS",
-          "regles": [
-              {
-                  "type": "typ95",
-                  "regle": "{0,7}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step836",
-          "produit": "prd1638",
-          "titre": "SUPPLÉMENTS MILKSHAKE",
-          "regles": [
-              {
-                  "type": "typ106",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step837",
-          "produit": "prd1639",
-          "titre": "SUPPLÉMENTS MILKSHAKE",
-          "regles": [
-              {
-                  "type": "typ106",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step798",
-          "produit": "prd1670",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      },
-      {
-          "step_id": "step835",
-          "produit": "prd1685",
-          "titre": "BOISSONS",
-          "regles": [
-              {
-                  "type": "typ94",
-                  "regle": "{0,1}",
-                  "supplement": "0.00"
-              }
-          ],
-          "weight": 0
-      }
-  ]
+    "categories": [
+        {
+            "categorie_id": "cat29",
+            "nom": "BEST WORLD MENU",
+            "description": null
+        }
+    ],
+    "groupes": [
+        {
+            "groupe_id": "grp77",
+            "categorie": "cat29",
+            "nom": "BRUCHETTA",
+            "noprint": [],
+            "weight": 1
+        },
+        {
+            "groupe_id": "grp78",
+            "categorie": "cat29",
+            "nom": "PIZZA",
+            "noprint": [],
+            "weight": 2
+        },
+        {
+            "groupe_id": "grp79",
+            "categorie": "cat29",
+            "nom": "BURGER",
+            "noprint": [],
+            "weight": 3
+        },
+        {
+            "groupe_id": "grp80",
+            "categorie": "cat29",
+            "nom": "GRILLADE",
+            "noprint": [],
+            "weight": 4
+        },
+        {
+            "groupe_id": "grp81",
+            "categorie": "cat29",
+            "nom": "MONDE",
+            "noprint": [],
+            "weight": 5
+        },
+        {
+            "groupe_id": "grp82",
+            "categorie": "cat29",
+            "nom": "ESCALOPE",
+            "noprint": [],
+            "weight": 6
+        },
+        {
+            "groupe_id": "grp83",
+            "categorie": "cat29",
+            "nom": "BROCHETTES",
+            "noprint": [],
+            "weight": 7
+        },
+        {
+            "groupe_id": "grp85",
+            "categorie": "cat29",
+            "nom": "PATES",
+            "noprint": [],
+            "weight": 9
+        },
+        {
+            "groupe_id": "grp84",
+            "categorie": "cat29",
+            "nom": "SALADES",
+            "noprint": [],
+            "weight": 8
+        },
+        {
+            "groupe_id": "grp86",
+            "categorie": "cat29",
+            "nom": "CREPES SALEES",
+            "noprint": [],
+            "weight": 10
+        },
+        {
+            "groupe_id": "grp88",
+            "categorie": "cat29",
+            "nom": "STARTERS",
+            "noprint": [],
+            "weight": 12
+        },
+        {
+            "groupe_id": "grp87",
+            "categorie": "cat29",
+            "nom": "CREPES SUCREES",
+            "noprint": [],
+            "weight": 11
+        },
+        {
+            "groupe_id": "grp89",
+            "categorie": "cat29",
+            "nom": "ENFANT",
+            "noprint": [],
+            "weight": 13
+        },
+        {
+            "groupe_id": "grp110",
+            "categorie": "cat29",
+            "nom": "DESSERTS MAISON",
+            "noprint": [],
+            "weight": 14
+        },
+        {
+            "groupe_id": "grp111",
+            "categorie": "cat29",
+            "nom": "BOISSONS",
+            "noprint": [],
+            "weight": 15
+        }
+    ],
+    "tva": [
+        {
+            "tva_id": "tva6",
+            "nom": "TVA 10 ALL MODE",
+            "code": "A",
+            "valeur": "0.1"
+        },
+        {
+            "tva_id": "tva8",
+            "nom": "TVA 5,5 ALL MODE",
+            "code": "B",
+            "valeur": "0.055"
+        }
+    ],
+    "types": [
+        {
+            "type_id": "typ94",
+            "nom": "BOISSONS BESTWORLD",
+            "noprint": [],
+            "weight": null
+        },
+        {
+            "type_id": "typ96",
+            "nom": "SUPPLÉMENTS STEAK 150G BESTWORLD",
+            "noprint": [],
+            "weight": null
+        },
+        {
+            "type_id": "typ93",
+            "nom": "ACCOMPAGEMENTS BESTWORLD",
+            "noprint": [],
+            "weight": null
+        },
+        {
+            "type_id": "typ95",
+            "nom": "SUPPLÉMENTS BESTWORLD",
+            "noprint": [],
+            "weight": null
+        },
+        {
+            "type_id": "typ106",
+            "nom": "SUPPLÉMENTS  MILKSHAKE BESTWORLD",
+            "noprint": [],
+            "weight": null
+        }
+    ],
+    "ingredients": [
+        {
+            "ingredient_id": "ing567",
+            "type": "typ94",
+            "nom": "EVIAN",
+            "supplement": "1.00",
+            "tva": "tva8",
+            "weight": 5,
+            "color": "blanc"
+        },
+        {
+            "ingredient_id": "ing568",
+            "type": "typ94",
+            "nom": "COCA",
+            "supplement": "1.00",
+            "tva": "tva8",
+            "weight": 6,
+            "color": "marron"
+        },
+        {
+            "ingredient_id": "ing569",
+            "type": "typ94",
+            "nom": "COCA CHERY",
+            "supplement": "1.00",
+            "tva": "tva8",
+            "weight": 7,
+            "color": "violet"
+        },
+        {
+            "ingredient_id": "ing570",
+            "type": "typ94",
+            "nom": "COCA ZERO",
+            "supplement": "1.00",
+            "tva": "tva8",
+            "weight": 8,
+            "color": "noir"
+        },
+        {
+            "ingredient_id": "ing571",
+            "type": "typ94",
+            "nom": "FUZE TEA PÈCHE",
+            "supplement": "1.00",
+            "tva": "tva8",
+            "weight": 9,
+            "color": "orange"
+        },
+        {
+            "ingredient_id": "ing572",
+            "type": "typ94",
+            "nom": "FUZE TEA MANGUE",
+            "supplement": "1.00",
+            "tva": "tva8",
+            "weight": 10,
+            "color": "vertclair"
+        },
+        {
+            "ingredient_id": "ing573",
+            "type": "typ94",
+            "nom": "OASIS POMME CASSIS",
+            "supplement": "1.00",
+            "tva": "tva8",
+            "weight": 11,
+            "color": "violet"
+        },
+        {
+            "ingredient_id": "ing574",
+            "type": "typ94",
+            "nom": "OASIS TROPICAL",
+            "supplement": "1.00",
+            "tva": "tva8",
+            "weight": 12,
+            "color": "orange"
+        },
+        {
+            "ingredient_id": "ing575",
+            "type": "typ94",
+            "nom": "SCHWEPPES AGRUMES",
+            "supplement": "1.00",
+            "tva": "tva8",
+            "weight": 13,
+            "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing576",
+            "type": "typ94",
+            "nom": "SCHWEPPES LIMON",
+            "supplement": "1.00",
+            "tva": "tva8",
+            "weight": 14,
+            "color": "vertclair"
+        },
+        {
+            "ingredient_id": "ing577",
+            "type": "typ94",
+            "nom": "SCHWEPPES MOJITO",
+            "supplement": "1.00",
+            "tva": "tva8",
+            "weight": 15,
+            "color": "vertclair"
+        },
+        {
+            "ingredient_id": "ing578",
+            "type": "typ94",
+            "nom": "7UP",
+            "supplement": "1.00",
+            "tva": "tva8",
+            "weight": 15,
+            "color": "vertclair"
+        },
+        {
+            "ingredient_id": "ing579",
+            "type": "typ94",
+            "nom": "FANTA",
+            "supplement": "1.00",
+            "tva": "tva8",
+            "weight": 15,
+            "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing580",
+            "type": "typ94",
+            "nom": "CRISTALINE FRAIS",
+            "supplement": "1.50",
+            "tva": "tva8",
+            "weight": 15,
+            "color": "blanc"
+        },
+        {
+            "ingredient_id": "ing581",
+            "type": "typ94",
+            "nom": "CRISTALINE PÈCHE",
+            "supplement": "1.50",
+            "tva": "tva8",
+            "weight": 15,
+            "color": "orange"
+        },
+        {
+            "ingredient_id": "ing582",
+            "type": "typ94",
+            "nom": "SAN PELLIGRINO",
+            "supplement": "1.50",
+            "tva": "tva8",
+            "weight": 15,
+            "color": "vertclair"
+        },
+        {
+            "ingredient_id": "ing583",
+            "type": "typ94",
+            "nom": "FREEZ MANGUE PÊCHE",
+            "supplement": "2.00",
+            "tva": "tva8",
+            "weight": 15,
+            "color": "orange"
+        },
+        {
+            "ingredient_id": "ing584",
+            "type": "typ94",
+            "nom": "FREEZ ANANAS COCO",
+            "supplement": "2.00",
+            "tva": "tva8",
+            "weight": 15,
+            "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing585",
+            "type": "typ94",
+            "nom": "FREEZ BLU HAWAI",
+            "supplement": "2.00",
+            "tva": "tva8",
+            "weight": 15,
+            "color": "bleufonce"
+        },
+        {
+            "ingredient_id": "ing586",
+            "type": "typ94",
+            "nom": "FREEZ LITCHI",
+            "supplement": "2.00",
+            "tva": "tva8",
+            "weight": 15,
+            "color": "rouge"
+        },
+        {
+            "ingredient_id": "ing587",
+            "type": "typ94",
+            "nom": "FREEZ POMME RAISIN",
+            "supplement": "2.00",
+            "tva": "tva8",
+            "weight": 15,
+            "color": "vertclair"
+        },
+        {
+            "ingredient_id": "ing595",
+            "type": "typ96",
+            "nom": "STEAK 150G",
+            "supplement": "3.50",
+            "tva": "tva6",
+            "weight": 5,
+            "color": "marron"
+        },
+        {
+            "ingredient_id": "ing563",
+            "type": "typ93",
+            "nom": "RIZ PARFUME",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 5,
+            "color": "blanc"
+        },
+        {
+            "ingredient_id": "ing564",
+            "type": "typ93",
+            "nom": "FRITE AUTHENTIQUES",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 6,
+            "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing565",
+            "type": "typ93",
+            "nom": "HARICOTS VERTS",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 7,
+            "color": "vertclair"
+        },
+        {
+            "ingredient_id": "ing566",
+            "type": "typ93",
+            "nom": "SALADE VERTE",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 8,
+            "color": "vertclair"
+        },
+        {
+            "ingredient_id": "ing588",
+            "type": "typ95",
+            "nom": "CARAMEL BEURRE SALE",
+            "supplement": "0.80",
+            "tva": "tva6",
+            "weight": 5,
+            "color": "orange"
+        },
+        {
+            "ingredient_id": "ing589",
+            "type": "typ95",
+            "nom": "CONFITURE DE FRAISE",
+            "supplement": "0.80",
+            "tva": "tva6",
+            "weight": 6,
+            "color": "rouge"
+        },
+        {
+            "ingredient_id": "ing590",
+            "type": "typ95",
+            "nom": "CREME DE SPECULOS",
+            "supplement": "0.80",
+            "tva": "tva6",
+            "weight": 7,
+            "color": "orange"
+        },
+        {
+            "ingredient_id": "ing591",
+            "type": "typ95",
+            "nom": "NUTELLA",
+            "supplement": "0.80",
+            "tva": "tva6",
+            "weight": 8,
+            "color": "marron"
+        },
+        {
+            "ingredient_id": "ing592",
+            "type": "typ95",
+            "nom": "MIEL",
+            "supplement": "0.80",
+            "tva": "tva6",
+            "weight": 9,
+            "color": "jauneorange"
+        },
+        {
+            "ingredient_id": "ing593",
+            "type": "typ95",
+            "nom": "BEURRE",
+            "supplement": "0.80",
+            "tva": "tva6",
+            "weight": 10,
+            "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing594",
+            "type": "typ95",
+            "nom": "CREME DE MARRON",
+            "supplement": "0.80",
+            "tva": "tva6",
+            "weight": 11,
+            "color": "marron"
+        },
+        {
+            "ingredient_id": "ing659",
+            "type": "typ106",
+            "nom": "NUTELLA",
+            "supplement": "1.00",
+            "tva": "tva6",
+            "weight": 5,
+            "color": "marron"
+        },
+        {
+            "ingredient_id": "ing660",
+            "type": "typ106",
+            "nom": "KINDER BUENO",
+            "supplement": "1.00",
+            "tva": "tva6",
+            "weight": 6,
+            "color": "marron"
+        },
+        {
+            "ingredient_id": "ing661",
+            "type": "typ106",
+            "nom": "OREO",
+            "supplement": "1.00",
+            "tva": "tva6",
+            "weight": 7,
+            "color": "noir"
+        },
+        {
+            "ingredient_id": "ing662",
+            "type": "typ106",
+            "nom": "SPECULOS",
+            "supplement": "1.00",
+            "tva": "tva6",
+            "weight": 8,
+            "color": "jauneorange"
+        }
+    ],
+    "produits": [
+        {
+            "produit_id": "prd1420",
+            "groupe": "grp77",
+            "active": 1,
+            "nom": "REGINA",
+            "prix": "7.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 1,
+            "color": "rouge"
+        },
+        {
+            "produit_id": "prd1421",
+            "groupe": "grp77",
+            "active": 1,
+            "nom": "PECHEUR",
+            "prix": "7.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 2,
+            "color": "rouge"
+        },
+        {
+            "produit_id": "prd1422",
+            "groupe": "grp77",
+            "active": 1,
+            "nom": "CAMPIONE",
+            "prix": "9.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 3,
+            "color": "rouge"
+        },
+        {
+            "produit_id": "prd1423",
+            "groupe": "grp77",
+            "active": 1,
+            "nom": "PAYSANNE",
+            "prix": "7.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 4,
+            "color": "jaune"
+        },
+        {
+            "produit_id": "prd1424",
+            "groupe": "grp77",
+            "active": 1,
+            "nom": "INDIENNE",
+            "prix": "7.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 5,
+            "color": "jaune"
+        },
+        {
+            "produit_id": "prd1425",
+            "groupe": "grp77",
+            "active": 1,
+            "nom": "SAVOYARDE",
+            "prix": "8.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 6,
+            "color": "jaune"
+        },
+        {
+            "produit_id": "prd1426",
+            "groupe": "grp78",
+            "active": 1,
+            "nom": "MARGHERITA",
+            "prix": "8.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 1,
+            "color": "rouge"
+        },
+        {
+            "produit_id": "prd1427",
+            "groupe": "grp78",
+            "active": 1,
+            "nom": "VEGETARIENNE",
+            "prix": "9.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 2,
+            "color": "rouge"
+        },
+        {
+            "produit_id": "prd1428",
+            "groupe": "grp78",
+            "active": 1,
+            "nom": "BEST",
+            "prix": "10.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 3,
+            "color": "rouge"
+        },
+        {
+            "produit_id": "prd1429",
+            "groupe": "grp78",
+            "active": 1,
+            "nom": "ORIENTALE",
+            "prix": "11.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 4,
+            "color": "rouge"
+        },
+        {
+            "produit_id": "prd1430",
+            "groupe": "grp78",
+            "active": 1,
+            "nom": "NEPTUNE",
+            "prix": "10.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 5,
+            "color": "rouge"
+        },
+        {
+            "produit_id": "prd1431",
+            "groupe": "grp78",
+            "active": 1,
+            "nom": "PACIFIQUE",
+            "prix": "11.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 6,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd1432",
+            "groupe": "grp78",
+            "active": 1,
+            "nom": "CHEVRE MIEL",
+            "prix": "10.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 7,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd1433",
+            "groupe": "grp78",
+            "active": 1,
+            "nom": "RACLETTE",
+            "prix": "10.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 8,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd1434",
+            "groupe": "grp78",
+            "active": 1,
+            "nom": "CHIKEN TIKKA",
+            "prix": "10.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 9,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd1435",
+            "groupe": "grp78",
+            "active": 1,
+            "nom": "FERMIERE",
+            "prix": "10.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 10,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd1436",
+            "groupe": "grp79",
+            "active": 1,
+            "nom": "BEST CHEESE",
+            "prix": "10.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 1,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd1437",
+            "groupe": "grp79",
+            "active": 1,
+            "nom": "BEST BACON",
+            "prix": "12.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 2,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd1438",
+            "groupe": "grp79",
+            "active": 1,
+            "nom": "BOLLYWOOD",
+            "prix": "11.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 3,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd1439",
+            "groupe": "grp79",
+            "active": 1,
+            "nom": "ISTANBUL",
+            "prix": "13.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 4,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd1440",
+            "groupe": "grp79",
+            "active": 1,
+            "nom": "PARISIEN",
+            "prix": "13.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 5,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd1441",
+            "groupe": "grp79",
+            "active": 1,
+            "nom": "BIG TEST",
+            "prix": "15.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 6,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd1442",
+            "groupe": "grp80",
+            "active": 1,
+            "nom": "DOS DE CABILLAUD",
+            "prix": "13.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 1,
+            "color": "noir"
+        },
+        {
+            "produit_id": "prd1443",
+            "groupe": "grp80",
+            "active": 1,
+            "nom": "RUMSTECK BRAISE",
+            "prix": "14.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 2,
+            "color": "noir"
+        },
+        {
+            "produit_id": "prd1444",
+            "groupe": "grp80",
+            "active": 1,
+            "nom": "SAUMON TERYAKI",
+            "prix": "14.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 3,
+            "color": "noir"
+        },
+        {
+            "produit_id": "prd1445",
+            "groupe": "grp80",
+            "active": 1,
+            "nom": "NOIX DE VEAU",
+            "prix": "14.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 4,
+            "color": "noir"
+        },
+        {
+            "produit_id": "prd1446",
+            "groupe": "grp81",
+            "active": 1,
+            "nom": "HONG KONG",
+            "prix": "14.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 1,
+            "color": "bleuclair"
+        },
+        {
+            "produit_id": "prd1447",
+            "groupe": "grp81",
+            "active": 1,
+            "nom": "INDIAN",
+            "prix": "13.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 2,
+            "color": "bleuclair"
+        },
+        {
+            "produit_id": "prd1448",
+            "groupe": "grp81",
+            "active": 1,
+            "nom": "JAPAN",
+            "prix": "13.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 3,
+            "color": "bleuclair"
+        },
+        {
+            "produit_id": "prd1449",
+            "groupe": "grp81",
+            "active": 1,
+            "nom": "JAPAN",
+            "prix": "13.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 4,
+            "color": "bleuclair"
+        },
+        {
+            "produit_id": "prd1450",
+            "groupe": "grp82",
+            "active": 1,
+            "nom": "ESCALOPE NORMANDE",
+            "prix": "12.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 1,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd1451",
+            "groupe": "grp82",
+            "active": 1,
+            "nom": "ESCALOPE BOMBAY CRISPY",
+            "prix": "13.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 2,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd1452",
+            "groupe": "grp82",
+            "active": 1,
+            "nom": "ESCALOPE SALTIMBOCCA",
+            "prix": "14.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 3,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd1453",
+            "groupe": "grp83",
+            "active": 1,
+            "nom": "JA",
+            "prix": "13.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 1,
+            "color": "noir"
+        },
+        {
+            "produit_id": "prd1454",
+            "groupe": "grp83",
+            "active": 1,
+            "nom": "INDIAN",
+            "prix": "13.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 2,
+            "color": "noir"
+        },
+        {
+            "produit_id": "prd1455",
+            "groupe": "grp83",
+            "active": 1,
+            "nom": "THAILANDE",
+            "prix": "13.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 3,
+            "color": "noir"
+        },
+        {
+            "produit_id": "prd1456",
+            "groupe": "grp85",
+            "active": 1,
+            "nom": "FORESTIÈRE AU POULET",
+            "prix": "10.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 1,
+            "color": "rouge"
+        },
+        {
+            "produit_id": "prd1457",
+            "groupe": "grp85",
+            "active": 1,
+            "nom": "SCAMPI ET BASILIC",
+            "prix": "14.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 2,
+            "color": "vertclair"
+        },
+        {
+            "produit_id": "prd1458",
+            "groupe": "grp85",
+            "active": 1,
+            "nom": "BOLOGNAISE",
+            "prix": "10.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 3,
+            "color": "rouge"
+        },
+        {
+            "produit_id": "prd1459",
+            "groupe": "grp85",
+            "active": 1,
+            "nom": "CHIKEN COCO CURRY",
+            "prix": "12.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 4,
+            "color": "jaune"
+        },
+        {
+            "produit_id": "prd1460",
+            "groupe": "grp84",
+            "active": 1,
+            "nom": "SALADE CESARIO",
+            "prix": "8.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 1,
+            "color": "vertclair"
+        },
+        {
+            "produit_id": "prd1461",
+            "groupe": "grp84",
+            "active": 1,
+            "nom": "CHÈVRE CHAUD",
+            "prix": "10.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 2,
+            "color": "vertclair"
+        },
+        {
+            "produit_id": "prd1462",
+            "groupe": "grp84",
+            "active": 1,
+            "nom": "BOLLYWOOD",
+            "prix": "9.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 3,
+            "color": "vertclair"
+        },
+        {
+            "produit_id": "prd1463",
+            "groupe": "grp84",
+            "active": 1,
+            "nom": "SEA COCKTAIL",
+            "prix": "10.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 4,
+            "color": "vertclair"
+        },
+        {
+            "produit_id": "prd1464",
+            "groupe": "grp86",
+            "active": 1,
+            "nom": "BEST CLASSIC",
+            "prix": "7.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 1,
+            "color": "blanc"
+        },
+        {
+            "produit_id": "prd1465",
+            "groupe": "grp86",
+            "active": 1,
+            "nom": "SCANDINAVE",
+            "prix": "8.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 2,
+            "color": "blanc"
+        },
+        {
+            "produit_id": "prd1466",
+            "groupe": "grp86",
+            "active": 1,
+            "nom": "BOLLYWOOD",
+            "prix": "7.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 3,
+            "color": "blanc"
+        },
+        {
+            "produit_id": "prd1467",
+            "groupe": "grp86",
+            "active": 1,
+            "nom": "BOURSALINO",
+            "prix": "7.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 4,
+            "color": "blanc"
+        },
+        {
+            "produit_id": "prd1468",
+            "groupe": "grp86",
+            "active": 1,
+            "nom": "SUISSE",
+            "prix": "8.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 5,
+            "color": "blanc"
+        },
+        {
+            "produit_id": "prd1469",
+            "groupe": "grp86",
+            "active": 1,
+            "nom": "VEGETALE",
+            "prix": "7.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 6,
+            "color": "blanc"
+        },
+        {
+            "produit_id": "prd1470",
+            "groupe": "grp86",
+            "active": 1,
+            "nom": "ORIENTALE",
+            "prix": "8.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 7,
+            "color": "blanc"
+        },
+        {
+            "produit_id": "prd1471",
+            "groupe": "grp86",
+            "active": 1,
+            "nom": "BACON BEEF",
+            "prix": "7.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 8,
+            "color": "blanc"
+        },
+        {
+            "produit_id": "prd1472",
+            "groupe": "grp88",
+            "active": 1,
+            "nom": "JALAPENOS",
+            "prix": "3.00",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 1,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd1473",
+            "groupe": "grp88",
+            "active": 1,
+            "nom": "CHEESEBURGER",
+            "prix": "3.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 2,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd1474",
+            "groupe": "grp88",
+            "active": 1,
+            "nom": "NUGGETS",
+            "prix": "4.00",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 3,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd1475",
+            "groupe": "grp88",
+            "active": 1,
+            "nom": "BOUCHÉE DE CAMEMBERT",
+            "prix": "4.00",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 4,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd1476",
+            "groupe": "grp88",
+            "active": 1,
+            "nom": "MOZZA-STICKS",
+            "prix": "3.00",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 5,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd1477",
+            "groupe": "grp87",
+            "active": 1,
+            "nom": "NUTELLA BANANE COCO",
+            "prix": "4.20",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 1,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd1478",
+            "groupe": "grp87",
+            "active": 1,
+            "nom": "NUTELLA BROWNIE",
+            "prix": "4.10",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 2,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd1479",
+            "groupe": "grp87",
+            "active": 1,
+            "nom": "CREME DE SPECULOS FRAISES PALET BRETON",
+            "prix": "4.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 3,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd1480",
+            "groupe": "grp87",
+            "active": 1,
+            "nom": "KINDER MAXI PETIT BEURRE",
+            "prix": "4.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 4,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd1481",
+            "groupe": "grp89",
+            "active": 1,
+            "nom": "MENU ENFANT CHEESEBURGER",
+            "prix": "5.00",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 1,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd1482",
+            "groupe": "grp87",
+            "active": 1,
+            "nom": "COMPOSE TA CREPE",
+            "prix": "2.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 5,
+            "color": "jauneorange"
+        },
+        {
+            "produit_id": "prd1628",
+            "groupe": "grp110",
+            "active": 1,
+            "nom": "CHEESE CAKE NUTELLA",
+            "prix": "4.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 1,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd1629",
+            "groupe": "grp110",
+            "active": 1,
+            "nom": "CHEESE CAKE OREO",
+            "prix": "4.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 2,
+            "color": "noir"
+        },
+        {
+            "produit_id": "prd1630",
+            "groupe": "grp110",
+            "active": 1,
+            "nom": "CHEESE CAKE DAIN CARAMEL",
+            "prix": "4.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 3,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd1631",
+            "groupe": "grp110",
+            "active": 1,
+            "nom": "CHEESE CAKE NATURE CITRONNÉE",
+            "prix": "4.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 4,
+            "color": "jaune"
+        },
+        {
+            "produit_id": "prd1632",
+            "groupe": "grp110",
+            "active": 1,
+            "nom": "TARTE TATIN",
+            "prix": "3.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 5,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd1633",
+            "groupe": "grp110",
+            "active": 1,
+            "nom": "TARTE AUX POMMES",
+            "prix": "3.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 6,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd1634",
+            "groupe": "grp110",
+            "active": 1,
+            "nom": "TIRAMISU DAIN CARAMEL",
+            "prix": "3.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 7,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd1635",
+            "groupe": "grp110",
+            "active": 1,
+            "nom": "TIRAMISU NUTELLA SPECULOS",
+            "prix": "3.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 8,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd1636",
+            "groupe": "grp110",
+            "active": 1,
+            "nom": "FRAISIER",
+            "prix": "3.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 9,
+            "color": "rouge"
+        },
+        {
+            "produit_id": "prd1637",
+            "groupe": "grp110",
+            "active": 1,
+            "nom": "TIRAMISU KINDER",
+            "prix": "3.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 10,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd1638",
+            "groupe": "grp110",
+            "active": 1,
+            "nom": "MILK-SHAKE FRAISE",
+            "prix": "4.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 11,
+            "color": "rouge"
+        },
+        {
+            "produit_id": "prd1639",
+            "groupe": "grp110",
+            "active": 1,
+            "nom": "MILK-SHAKE VANILLE",
+            "prix": "4.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 12,
+            "color": "blanc"
+        },
+        {
+            "produit_id": "prd1640",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "EVIAN",
+            "prix": "1.50",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 1,
+            "color": "blanc"
+        },
+        {
+            "produit_id": "prd1641",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "COCA",
+            "prix": "1.50",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 2,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd1642",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "COCA CHERY",
+            "prix": "1.50",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 3,
+            "color": "violet"
+        },
+        {
+            "produit_id": "prd1643",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "COCA ZERO",
+            "prix": "1.50",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 4,
+            "color": "noir"
+        },
+        {
+            "produit_id": "prd1644",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "FUZE TEA PÈCHE",
+            "prix": "1.50",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 5,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd1645",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "FUZE TEA MANGUE",
+            "prix": "1.50",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 6,
+            "color": "vertclair"
+        },
+        {
+            "produit_id": "prd1646",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "OASIS POMME CASSIS",
+            "prix": "1.50",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 7,
+            "color": "rose"
+        },
+        {
+            "produit_id": "prd1647",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "OASIS TROPICAL",
+            "prix": "1.50",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 8,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd1648",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "SCHWEPPES AGRUMES",
+            "prix": "1.50",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 9,
+            "color": "jaune"
+        },
+        {
+            "produit_id": "prd1649",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "SCHWEPPES LIMON",
+            "prix": "1.50",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 10,
+            "color": "vertclair"
+        },
+        {
+            "produit_id": "prd1650",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "SCHWEPPES MOJITO",
+            "prix": "1.50",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 11,
+            "color": "vertfonce"
+        },
+        {
+            "produit_id": "prd1651",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "7 UP",
+            "prix": "1.50",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 12,
+            "color": "vertfonce"
+        },
+        {
+            "produit_id": "prd1652",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "FANTA",
+            "prix": "1.50",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 13,
+            "color": "jaune"
+        },
+        {
+            "produit_id": "prd1653",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "CRISTALINE FRAIS",
+            "prix": "2.00",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 14,
+            "color": "blanc"
+        },
+        {
+            "produit_id": "prd1654",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "CRISTALINE PÈCHE",
+            "prix": "2.00",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 15,
+            "color": "jauneorange"
+        },
+        {
+            "produit_id": "prd1655",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "SAN PELLIGRINO",
+            "prix": "2.00",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 16,
+            "color": "vertclair"
+        },
+        {
+            "produit_id": "prd1656",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "FREEZ MANGUE PÈCHE",
+            "prix": "2.50",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 17,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd1657",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "FREEZ ANANAS COCO",
+            "prix": "2.50",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 18,
+            "color": "jaune"
+        },
+        {
+            "produit_id": "prd1658",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "FREEZ BLUE HAWAI",
+            "prix": "2.50",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 19,
+            "color": "bleufonce"
+        },
+        {
+            "produit_id": "prd1659",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "FREEZ LITCHI",
+            "prix": "2.50",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 20,
+            "color": "rouge"
+        },
+        {
+            "produit_id": "prd1660",
+            "groupe": "grp111",
+            "active": 1,
+            "nom": "FREEZ POMME RAISIN",
+            "prix": "2.50",
+            "tva": "tva8",
+            "composition": [],
+            "weight": 21,
+            "color": "vertclair"
+        },
+        {
+            "produit_id": "prd1670",
+            "groupe": "grp89",
+            "active": 1,
+            "nom": "MENU ENFANT NUGGETS",
+            "prix": "5.00",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 2,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd1685",
+            "groupe": "grp84",
+            "active": 1,
+            "nom": "NIPONNE",
+            "prix": "11.90",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 5,
+            "color": "vertclair"
+        },
+        {
+            "produit_id": "prd1686",
+            "groupe": "grp88",
+            "active": 1,
+            "nom": "FRITES",
+            "prix": "2.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 6,
+            "color": "jaune"
+        },
+        {
+            "produit_id": "prd1687",
+            "groupe": "grp88",
+            "active": 1,
+            "nom": "CHEDDAR",
+            "prix": "3.00",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 7,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd1688",
+            "groupe": "grp88",
+            "active": 1,
+            "nom": "CHEDDAR & BACON",
+            "prix": "3.80",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 8,
+            "color": "rose"
+        }
+    ],
+    "steps": [
+        {
+            "step_id": "step732",
+            "produit": "prd1420",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step757",
+            "produit": "prd1421",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step758",
+            "produit": "prd1422",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step759",
+            "produit": "prd1423",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step760",
+            "produit": "prd1424",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step761",
+            "produit": "prd1425",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step756",
+            "produit": "prd1426",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step755",
+            "produit": "prd1427",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step754",
+            "produit": "prd1428",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step753",
+            "produit": "prd1429",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step752",
+            "produit": "prd1430",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step751",
+            "produit": "prd1431",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step750",
+            "produit": "prd1432",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step749",
+            "produit": "prd1433",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step748",
+            "produit": "prd1434",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step747",
+            "produit": "prd1435",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step762",
+            "produit": "prd1436",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step799",
+            "produit": "prd1436",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ96",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step763",
+            "produit": "prd1437",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step800",
+            "produit": "prd1437",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ96",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step764",
+            "produit": "prd1438",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step801",
+            "produit": "prd1438",
+            "titre": "SUPPLÉMENT",
+            "regles": [
+                {
+                    "type": "typ96",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step765",
+            "produit": "prd1439",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step802",
+            "produit": "prd1439",
+            "titre": "SUPPLÉMENT",
+            "regles": [
+                {
+                    "type": "typ96",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step766",
+            "produit": "prd1440",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step803",
+            "produit": "prd1440",
+            "titre": "SUPPLÉMENT",
+            "regles": [
+                {
+                    "type": "typ96",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step767",
+            "produit": "prd1441",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step804",
+            "produit": "prd1441",
+            "titre": "SUPPLÉMENT",
+            "regles": [
+                {
+                    "type": "typ96",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step728",
+            "produit": "prd1442",
+            "titre": "ACCOMPAGNEMENTS",
+            "regles": [
+                {
+                    "type": "typ93",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step792",
+            "produit": "prd1442",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step729",
+            "produit": "prd1443",
+            "titre": "ACCOMPAGNEMENTS",
+            "regles": [
+                {
+                    "type": "typ93",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step791",
+            "produit": "prd1443",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step730",
+            "produit": "prd1444",
+            "titre": "ACCOMPAGNEMENTS",
+            "regles": [
+                {
+                    "type": "typ93",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step790",
+            "produit": "prd1444",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step731",
+            "produit": "prd1445",
+            "titre": "ACCOMPAGNEMENTS",
+            "regles": [
+                {
+                    "type": "typ93",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step789",
+            "produit": "prd1445",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step795",
+            "produit": "prd1446",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step794",
+            "produit": "prd1447",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step796",
+            "produit": "prd1448",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step793",
+            "produit": "prd1449",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step722",
+            "produit": "prd1450",
+            "titre": "ACCOMPAGNEMENT",
+            "regles": [
+                {
+                    "type": "typ93",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step723",
+            "produit": "prd1450",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
+        },
+        {
+            "step_id": "step724",
+            "produit": "prd1451",
+            "titre": "ACCOMPAGNEMENTS",
+            "regles": [
+                {
+                    "type": "typ93",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step725",
+            "produit": "prd1451",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
+        },
+        {
+            "step_id": "step726",
+            "produit": "prd1452",
+            "titre": "ACCOMPAGNEMENTS",
+            "regles": [
+                {
+                    "type": "typ93",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step727",
+            "produit": "prd1452",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
+        },
+        {
+            "step_id": "step716",
+            "produit": "prd1453",
+            "titre": "ACCOMPAGNEMENT",
+            "regles": [
+                {
+                    "type": "typ93",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step717",
+            "produit": "prd1453",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
+        },
+        {
+            "step_id": "step718",
+            "produit": "prd1454",
+            "titre": "ACCOMPAGNEMENTS",
+            "regles": [
+                {
+                    "type": "typ93",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
+        },
+        {
+            "step_id": "step719",
+            "produit": "prd1454",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 2
+        },
+        {
+            "step_id": "step720",
+            "produit": "prd1455",
+            "titre": "ACCOMPAGNEMENTS",
+            "regles": [
+                {
+                    "type": "typ93",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 2
+        },
+        {
+            "step_id": "step721",
+            "produit": "prd1455",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 3
+        },
+        {
+            "step_id": "step772",
+            "produit": "prd1456",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step773",
+            "produit": "prd1457",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step774",
+            "produit": "prd1458",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step775",
+            "produit": "prd1459",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step768",
+            "produit": "prd1460",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step769",
+            "produit": "prd1461",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step770",
+            "produit": "prd1462",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step771",
+            "produit": "prd1463",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step776",
+            "produit": "prd1464",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step777",
+            "produit": "prd1465",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step778",
+            "produit": "prd1466",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step779",
+            "produit": "prd1467",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step780",
+            "produit": "prd1468",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step781",
+            "produit": "prd1469",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step782",
+            "produit": "prd1470",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step783",
+            "produit": "prd1471",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step784",
+            "produit": "prd1477",
+            "titre": "SUPPLEMENTS",
+            "regles": [
+                {
+                    "type": "typ95",
+                    "regle": "{0,7}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step785",
+            "produit": "prd1478",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ95",
+                    "regle": "{0,7}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step786",
+            "produit": "prd1479",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ95",
+                    "regle": "{0,7}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step787",
+            "produit": "prd1480",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ95",
+                    "regle": "{0,7}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step797",
+            "produit": "prd1481",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step788",
+            "produit": "prd1482",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ95",
+                    "regle": "{0,7}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step836",
+            "produit": "prd1638",
+            "titre": "SUPPLÉMENTS MILKSHAKE",
+            "regles": [
+                {
+                    "type": "typ106",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step837",
+            "produit": "prd1639",
+            "titre": "SUPPLÉMENTS MILKSHAKE",
+            "regles": [
+                {
+                    "type": "typ106",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step798",
+            "produit": "prd1670",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step835",
+            "produit": "prd1685",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ94",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        }
+    ]
 }
