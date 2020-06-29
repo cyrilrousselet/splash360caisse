@@ -1,0 +1,617 @@
+{
+  "categories": [
+      {
+          "categorie_id": "cat40",
+          "nom": "SMOKY",
+          "description": null
+      }
+  ],
+  "groupes": [
+      {
+          "groupe_id": "grp123",
+          "categorie": "cat40",
+          "nom": "PLAT",
+          "noprint": [],
+          "weight": 1
+      },
+      {
+          "groupe_id": "grp125",
+          "categorie": "cat40",
+          "nom": "BURGERS",
+          "noprint": [],
+          "weight": 2
+      },
+      {
+          "groupe_id": "grp126",
+          "categorie": "cat40",
+          "nom": "SALADES",
+          "noprint": [],
+          "weight": 3
+      },
+      {
+          "groupe_id": "grp127",
+          "categorie": "cat40",
+          "nom": "SOFTS",
+          "noprint": [],
+          "weight": 4
+      },
+      {
+          "groupe_id": "grp128",
+          "categorie": "cat40",
+          "nom": "COCKTAILS",
+          "noprint": [],
+          "weight": 5
+      },
+      {
+          "groupe_id": "grp129",
+          "categorie": "cat40",
+          "nom": "MILKSHAKES",
+          "noprint": [],
+          "weight": 6
+      },
+      {
+          "groupe_id": "grp130",
+          "categorie": "cat40",
+          "nom": "DESSERTS",
+          "noprint": [],
+          "weight": 7
+      }
+  ],
+  "tva": [
+      {
+          "tva_id": "tva6",
+          "nom": "TVA 10 ALL MODE",
+          "code": "A",
+          "valeur": "0.1"
+      },
+      {
+          "tva_id": "tva8",
+          "nom": "TVA 5,5 ALL MODE",
+          "code": "B",
+          "valeur": "0.055"
+      }
+  ],
+  "types": [
+      {
+          "type_id": "typ119",
+          "nom": "ACCOMPAGNEMENT PLAT SMOKY",
+          "noprint": [],
+          "weight": null
+      },
+      {
+          "type_id": "typ122",
+          "nom": "SAUCES PLAT SMOKY",
+          "noprint": [],
+          "weight": null
+      }
+  ],
+  "ingredients": [
+      {
+          "ingredient_id": "ing807",
+          "type": "typ119",
+          "nom": "FRITES",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "jaune"
+      },
+      {
+          "ingredient_id": "ing808",
+          "type": "typ119",
+          "nom": "HARICOT VERT",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "vertclair"
+      },
+      {
+          "ingredient_id": "ing809",
+          "type": "typ119",
+          "nom": "RIZ",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 7,
+          "color": "blanc"
+      },
+      {
+          "ingredient_id": "ing827",
+          "type": "typ122",
+          "nom": "SAUCE POIVRE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "noir"
+      },
+      {
+          "ingredient_id": "ing828",
+          "type": "typ122",
+          "nom": "SAUCE CHAMPIGNONS CRÈME",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "marron"
+      }
+  ],
+  "produits": [
+      {
+          "produit_id": "prd1721",
+          "groupe": "grp123",
+          "active": 1,
+          "nom": "Entrecôte",
+          "prix": "16.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "marron"
+      },
+      {
+          "produit_id": "prd1722",
+          "groupe": "grp123",
+          "active": 1,
+          "nom": "Suprême Poulet",
+          "prix": "14.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "jauneorange"
+      },
+      {
+          "produit_id": "prd1723",
+          "groupe": "grp123",
+          "active": 1,
+          "nom": "Brochette Poulet",
+          "prix": "14.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "marron"
+      },
+      {
+          "produit_id": "prd1724",
+          "groupe": "grp123",
+          "active": 1,
+          "nom": "Faux Filet",
+          "prix": "18.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "rose"
+      },
+      {
+          "produit_id": "prd1725",
+          "groupe": "grp125",
+          "active": 1,
+          "nom": "Raclette",
+          "prix": "12.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "jaune"
+      },
+      {
+          "produit_id": "prd1726",
+          "groupe": "grp125",
+          "active": 1,
+          "nom": "Chèvre Miel",
+          "prix": "12.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd1727",
+          "groupe": "grp125",
+          "active": 1,
+          "nom": "Chicken",
+          "prix": "12.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "jauneorange"
+      },
+      {
+          "produit_id": "prd1728",
+          "groupe": "grp125",
+          "active": 1,
+          "nom": "Smoky",
+          "prix": "12.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "noir"
+      },
+      {
+          "produit_id": "prd1729",
+          "groupe": "grp125",
+          "active": 1,
+          "nom": "Yankee",
+          "prix": "12.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 5,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1731",
+          "groupe": "grp125",
+          "active": 1,
+          "nom": "Frite Classique",
+          "prix": "5.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 6,
+          "color": "jaune"
+      },
+      {
+          "produit_id": "prd1732",
+          "groupe": "grp123",
+          "active": 1,
+          "nom": "Accompagnement Supplémentaire",
+          "prix": "3.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 5,
+          "color": "jaune"
+      },
+      {
+          "produit_id": "prd1735",
+          "groupe": "grp126",
+          "active": 1,
+          "nom": "César",
+          "prix": "8.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1736",
+          "groupe": "grp126",
+          "active": 1,
+          "nom": "Chèvre Miel",
+          "prix": "8.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd1737",
+          "groupe": "grp127",
+          "active": 1,
+          "nom": "Eau",
+          "prix": "5.00",
+          "tva": "tva8",
+          "composition": [],
+          "weight": 1,
+          "color": "bleuclair"
+      },
+      {
+          "produit_id": "prd1738",
+          "groupe": "grp127",
+          "active": 1,
+          "nom": "Perrier",
+          "prix": "5.00",
+          "tva": "tva8",
+          "composition": [],
+          "weight": 2,
+          "color": "vertfonce"
+      },
+      {
+          "produit_id": "prd1739",
+          "groupe": "grp127",
+          "active": 1,
+          "nom": "Coca",
+          "prix": "5.00",
+          "tva": "tva8",
+          "composition": [],
+          "weight": 3,
+          "color": "marron"
+      },
+      {
+          "produit_id": "prd1740",
+          "groupe": "grp127",
+          "active": 1,
+          "nom": "Coca Zero",
+          "prix": "5.00",
+          "tva": "tva8",
+          "composition": [],
+          "weight": 4,
+          "color": "noir"
+      },
+      {
+          "produit_id": "prd1741",
+          "groupe": "grp127",
+          "active": 1,
+          "nom": "Sprite",
+          "prix": "5.00",
+          "tva": "tva8",
+          "composition": [],
+          "weight": 5,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1742",
+          "groupe": "grp127",
+          "active": 1,
+          "nom": "Oasis",
+          "prix": "5.00",
+          "tva": "tva8",
+          "composition": [],
+          "weight": 6,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd1743",
+          "groupe": "grp127",
+          "active": 1,
+          "nom": "Ice Tea",
+          "prix": "5.00",
+          "tva": "tva8",
+          "composition": [],
+          "weight": 7,
+          "color": "jaune"
+      },
+      {
+          "produit_id": "prd1744",
+          "groupe": "grp127",
+          "active": 1,
+          "nom": "Fanta Citron",
+          "prix": "5.00",
+          "tva": "tva8",
+          "composition": [],
+          "weight": 8,
+          "color": "jaune"
+      },
+      {
+          "produit_id": "prd1745",
+          "groupe": "grp127",
+          "active": 1,
+          "nom": "Schweppes Agrummes Et Pommes",
+          "prix": "5.00",
+          "tva": "tva8",
+          "composition": [],
+          "weight": 9,
+          "color": "rouge"
+      },
+      {
+          "produit_id": "prd1746",
+          "groupe": "grp127",
+          "active": 1,
+          "nom": "Café",
+          "prix": "5.00",
+          "tva": "tva8",
+          "composition": [],
+          "weight": 10,
+          "color": "marron"
+      },
+      {
+          "produit_id": "prd1747",
+          "groupe": "grp127",
+          "active": 1,
+          "nom": "Sirop",
+          "prix": "5.00",
+          "tva": "tva8",
+          "composition": [],
+          "weight": 11,
+          "color": "bleufonce"
+      },
+      {
+          "produit_id": "prd1748",
+          "groupe": "grp127",
+          "active": 1,
+          "nom": "Magnum De Thé",
+          "prix": "5.00",
+          "tva": "tva8",
+          "composition": [],
+          "weight": 12,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd1749",
+          "groupe": "grp127",
+          "active": 1,
+          "nom": "Red Bull",
+          "prix": "7.00",
+          "tva": "tva8",
+          "composition": [],
+          "weight": 13,
+          "color": "bleufonce"
+      },
+      {
+          "produit_id": "prd1750",
+          "groupe": "grp128",
+          "active": 1,
+          "nom": "Virgin Mojito",
+          "prix": "10.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1751",
+          "groupe": "grp128",
+          "active": 1,
+          "nom": "Rio",
+          "prix": "10.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "violet"
+      },
+      {
+          "produit_id": "prd1752",
+          "groupe": "grp128",
+          "active": 1,
+          "nom": "Pina Coloda",
+          "prix": "10.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "rose"
+      },
+      {
+          "produit_id": "prd1753",
+          "groupe": "grp128",
+          "active": 1,
+          "nom": "Banana Kiss",
+          "prix": "10.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "jaune"
+      },
+      {
+          "produit_id": "prd1754",
+          "groupe": "grp129",
+          "active": 1,
+          "nom": "Milkshake",
+          "prix": "8.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "blanc"
+      },
+      {
+          "produit_id": "prd1755",
+          "groupe": "grp130",
+          "active": 1,
+          "nom": "Tiramisu",
+          "prix": "6.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "jauneorange"
+      },
+      {
+          "produit_id": "prd1756",
+          "groupe": "grp130",
+          "active": 1,
+          "nom": "Cheesecake",
+          "prix": "6.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "marron"
+      },
+      {
+          "produit_id": "prd1757",
+          "groupe": "grp130",
+          "active": 1,
+          "nom": "Corbeille De Fruits",
+          "prix": "10.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "orange"
+      }
+  ],
+  "steps": [
+      {
+          "step_id": "step874",
+          "produit": "prd1721",
+          "titre": "ACCOMPAGNEMENTS",
+          "regles": [
+              {
+                  "type": "typ119",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 1
+      },
+      {
+          "step_id": "step881",
+          "produit": "prd1721",
+          "titre": "SAUCES",
+          "regles": [
+              {
+                  "type": "typ122",
+                  "regle": "{0,2};",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step875",
+          "produit": "prd1722",
+          "titre": "ACCOMPAGNEMENTS",
+          "regles": [
+              {
+                  "type": "typ119",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 1
+      },
+      {
+          "step_id": "step882",
+          "produit": "prd1722",
+          "titre": "SAUCES",
+          "regles": [
+              {
+                  "type": "typ122",
+                  "regle": "{0,2};",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step876",
+          "produit": "prd1723",
+          "titre": "ACCOMPAGNEMENTS",
+          "regles": [
+              {
+                  "type": "typ119",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 2
+      },
+      {
+          "step_id": "step883",
+          "produit": "prd1723",
+          "titre": "SAUCES",
+          "regles": [
+              {
+                  "type": "typ122",
+                  "regle": "{0,2};",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step877",
+          "produit": "prd1724",
+          "titre": "ACCOMPAGNEMENTS",
+          "regles": [
+              {
+                  "type": "typ119",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 2
+      },
+      {
+          "step_id": "step884",
+          "produit": "prd1724",
+          "titre": "SAUCES",
+          "regles": [
+              {
+                  "type": "typ122",
+                  "regle": "{0,2};",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      }
+  ]
+}
