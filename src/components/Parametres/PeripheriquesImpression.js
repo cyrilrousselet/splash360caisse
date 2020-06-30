@@ -259,7 +259,7 @@ class EditTicketPopin extends React.Component {
       nom: snom || nom,
       template: stemplate || template,
       imprimantes: simprimantes || imprimantes,
-      kds: skds || kds
+      kds: skds==null ? kds : skds
     };
   }
 

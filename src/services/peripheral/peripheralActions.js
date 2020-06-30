@@ -191,7 +191,7 @@ function updateTicket(payload) {
     // on ne récupère que les propriétés qui ont été mises à jour
     let updated_data = {};
     Object.entries(data).map(([key,value]) => {
-      if (value) updated_data[key] = value;
+      if (value!==null) updated_data[key] = value;
     });
 
     ticket = {...ticket, ...updated_data};
@@ -355,6 +355,7 @@ function printCommandeTicket(quelstickets, cmd) {
 
       let kdsCmd = {
         id: cmdnumero,
+        ticket_id: cmd.ticketId,
         origine: caisse.nom,
         name: operateur.nom,
         mode: cmd.mode, // attention
