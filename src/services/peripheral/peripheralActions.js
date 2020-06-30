@@ -357,7 +357,7 @@ function printCommandeTicket(quelstickets, cmd) {
         id: cmdnumero,
         origine: caisse.nom,
         name: operateur.nom,
-        mode: cmd.mode,
+        mode: cmd.mode, // attention
         timestamp: 1,
         status: 0,
         endTime: undefined,
