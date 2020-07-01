@@ -71,25 +71,11 @@
             "weight": 8
         },
         {
-            "groupe_id": "grp86",
-            "categorie": "cat29",
-            "nom": "CREPES SALEES",
-            "noprint": [],
-            "weight": 10
-        },
-        {
             "groupe_id": "grp88",
             "categorie": "cat29",
             "nom": "STARTERS",
             "noprint": [],
             "weight": 12
-        },
-        {
-            "groupe_id": "grp87",
-            "categorie": "cat29",
-            "nom": "CREPES SUCREES",
-            "noprint": [],
-            "weight": 11
         },
         {
             "groupe_id": "grp89",
@@ -111,6 +97,27 @@
             "nom": "BOISSONS",
             "noprint": [],
             "weight": 15
+        },
+        {
+            "groupe_id": "grp161",
+            "categorie": "cat29",
+            "nom": "CAFE",
+            "noprint": [],
+            "weight": 16
+        },
+        {
+            "groupe_id": "grp163",
+            "categorie": "cat29",
+            "nom": "SMOOTHIE",
+            "noprint": [],
+            "weight": 17
+        },
+        {
+            "groupe_id": "grp164",
+            "categorie": "cat29",
+            "nom": "ACCOMPAGNEMENTS SUPPLÉMENTAIRES",
+            "noprint": [],
+            "weight": 18
         }
     ],
     "tva": [
@@ -135,26 +142,56 @@
             "weight": null
         },
         {
-            "type_id": "typ96",
-            "nom": "SUPPLÉMENTS STEAK 150G BESTWORLD",
+            "type_id": "typ152",
+            "nom": "PAIN BEST WOLRD",
             "noprint": [],
             "weight": null
         },
         {
-            "type_id": "typ93",
-            "nom": "ACCOMPAGEMENTS BESTWORLD",
+            "type_id": "typ146",
+            "nom": "PIZZA SUPPLÉMENTS BEST WORLD",
             "noprint": [],
             "weight": null
         },
         {
-            "type_id": "typ95",
-            "nom": "SUPPLÉMENTS BESTWORLD",
+            "type_id": "typ148",
+            "nom": "SUPPLÉMENTS BURGER BEST WORLD",
+            "noprint": [],
+            "weight": null
+        },
+        {
+            "type_id": "typ147",
+            "nom": "TYPE DE CUISSONS BURGER BEST WORLD",
+            "noprint": [],
+            "weight": null
+        },
+        {
+            "type_id": "typ149",
+            "nom": "ACCOMPAGNEMENTS MENU BEST WORLD",
+            "noprint": [],
+            "weight": null
+        },
+        {
+            "type_id": "typ151",
+            "nom": "SUPPLÉMENTS FROMAGE ESCALOPE BEST WORLD",
+            "noprint": [],
+            "weight": null
+        },
+        {
+            "type_id": "typ150",
+            "nom": "FORME DE PÂTES BEST WORLD",
             "noprint": [],
             "weight": null
         },
         {
             "type_id": "typ106",
-            "nom": "SUPPLÉMENTS  MILKSHAKE BESTWORLD",
+            "nom": "COULIS MILKSHAKE BESTWORLD",
+            "noprint": [],
+            "weight": null
+        },
+        {
+            "type_id": "typ145",
+            "nom": "GOÛTS SUPPLÉMENTAIRES SMOOTHIES BEST WORLD",
             "noprint": [],
             "weight": null
         }
@@ -350,112 +387,328 @@
             "color": "vertclair"
         },
         {
-            "ingredient_id": "ing595",
-            "type": "typ96",
-            "nom": "STEAK 150G",
-            "supplement": "3.50",
-            "tva": "tva6",
-            "weight": 5,
-            "color": "marron"
-        },
-        {
-            "ingredient_id": "ing563",
-            "type": "typ93",
-            "nom": "RIZ PARFUME",
+            "ingredient_id": "ing1057",
+            "type": "typ152",
+            "nom": "PAIN",
             "supplement": "0.00",
             "tva": "tva6",
             "weight": 5,
+            "color": "jauneorange"
+        },
+        {
+            "ingredient_id": "ing1020",
+            "type": "typ146",
+            "nom": "SUP Olive",
+            "supplement": "0.50",
+            "tva": "tva6",
+            "weight": 5,
+            "color": "vertfonce"
+        },
+        {
+            "ingredient_id": "ing1021",
+            "type": "typ146",
+            "nom": "SUP Oignon",
+            "supplement": "0.50",
+            "tva": "tva6",
+            "weight": 6,
             "color": "blanc"
         },
         {
-            "ingredient_id": "ing564",
-            "type": "typ93",
-            "nom": "FRITE AUTHENTIQUES",
-            "supplement": "0.00",
-            "tva": "tva6",
-            "weight": 6,
-            "color": "jaune"
-        },
-        {
-            "ingredient_id": "ing565",
-            "type": "typ93",
-            "nom": "HARICOTS VERTS",
-            "supplement": "0.00",
+            "ingredient_id": "ing1022",
+            "type": "typ146",
+            "nom": "SUP Poivron",
+            "supplement": "0.50",
             "tva": "tva6",
             "weight": 7,
-            "color": "vertclair"
+            "color": "vertfonce"
         },
         {
-            "ingredient_id": "ing566",
-            "type": "typ93",
-            "nom": "SALADE VERTE",
-            "supplement": "0.00",
+            "ingredient_id": "ing1023",
+            "type": "typ146",
+            "nom": "SUP Crème Fraîche",
+            "supplement": "0.50",
             "tva": "tva6",
             "weight": 8,
-            "color": "vertclair"
+            "color": "blanc"
         },
         {
-            "ingredient_id": "ing588",
-            "type": "typ95",
-            "nom": "CARAMEL BEURRE SALE",
-            "supplement": "0.80",
-            "tva": "tva6",
-            "weight": 5,
-            "color": "orange"
-        },
-        {
-            "ingredient_id": "ing589",
-            "type": "typ95",
-            "nom": "CONFITURE DE FRAISE",
-            "supplement": "0.80",
-            "tva": "tva6",
-            "weight": 6,
-            "color": "rouge"
-        },
-        {
-            "ingredient_id": "ing590",
-            "type": "typ95",
-            "nom": "CREME DE SPECULOS",
-            "supplement": "0.80",
-            "tva": "tva6",
-            "weight": 7,
-            "color": "orange"
-        },
-        {
-            "ingredient_id": "ing591",
-            "type": "typ95",
-            "nom": "NUTELLA",
-            "supplement": "0.80",
-            "tva": "tva6",
-            "weight": 8,
-            "color": "marron"
-        },
-        {
-            "ingredient_id": "ing592",
-            "type": "typ95",
-            "nom": "MIEL",
+            "ingredient_id": "ing1024",
+            "type": "typ146",
+            "nom": "SUP Raclette",
             "supplement": "0.80",
             "tva": "tva6",
             "weight": 9,
             "color": "jauneorange"
         },
         {
-            "ingredient_id": "ing593",
-            "type": "typ95",
-            "nom": "BEURRE",
-            "supplement": "0.80",
+            "ingredient_id": "ing1025",
+            "type": "typ146",
+            "nom": "SUP Oeuf",
+            "supplement": "0.50",
             "tva": "tva6",
             "weight": 10,
+            "color": "blanc"
+        },
+        {
+            "ingredient_id": "ing1026",
+            "type": "typ146",
+            "nom": "SUP Viande Hachée",
+            "supplement": "1.20",
+            "tva": "tva6",
+            "weight": 11,
+            "color": "rouge"
+        },
+        {
+            "ingredient_id": "ing1027",
+            "type": "typ146",
+            "nom": "SUP Bleu",
+            "supplement": "0.50",
+            "tva": "tva6",
+            "weight": 12,
+            "color": "bleuclair"
+        },
+        {
+            "ingredient_id": "ing1028",
+            "type": "typ146",
+            "nom": "SUP Merguez",
+            "supplement": "1.20",
+            "tva": "tva6",
+            "weight": 13,
+            "color": "rouge"
+        },
+        {
+            "ingredient_id": "ing1029",
+            "type": "typ146",
+            "nom": "SUP Tikka",
+            "supplement": "1.20",
+            "tva": "tva6",
+            "weight": 3,
             "color": "jaune"
         },
         {
-            "ingredient_id": "ing594",
-            "type": "typ95",
-            "nom": "CREME DE MARRON",
+            "ingredient_id": "ing1030",
+            "type": "typ146",
+            "nom": "SUP Tomate",
+            "supplement": "0.50",
+            "tva": "tva6",
+            "weight": 2,
+            "color": "rouge"
+        },
+        {
+            "ingredient_id": "ing1031",
+            "type": "typ146",
+            "nom": "SUP Chèvre",
+            "supplement": "0.80",
+            "tva": "tva6",
+            "weight": 1,
+            "color": "blanc"
+        },
+        {
+            "ingredient_id": "ing1032",
+            "type": "typ146",
+            "nom": "SUP Jambon",
+            "supplement": "1.20",
+            "tva": "tva6",
+            "weight": 4,
+            "color": "rose"
+        },
+        {
+            "ingredient_id": "ing1033",
+            "type": "typ146",
+            "nom": "SUP Herbe",
+            "supplement": "0.50",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "vertclair"
+        },
+        {
+            "ingredient_id": "ing1034",
+            "type": "typ146",
+            "nom": "SUP Reblochon",
             "supplement": "0.80",
             "tva": "tva6",
             "weight": 11,
+            "color": "jauneorange"
+        },
+        {
+            "ingredient_id": "ing1035",
+            "type": "typ146",
+            "nom": "SUP Miel",
+            "supplement": "0.50",
+            "tva": "tva6",
+            "weight": 11,
+            "color": "orange"
+        },
+        {
+            "ingredient_id": "ing1036",
+            "type": "typ146",
+            "nom": "SUP Mozzarella",
+            "supplement": "0.50",
+            "tva": "tva6",
+            "weight": 11,
+            "color": "blanc"
+        },
+        {
+            "ingredient_id": "ing1041",
+            "type": "typ148",
+            "nom": "Cheddar Sur Frites",
+            "supplement": "0.80",
+            "tva": "tva6",
+            "weight": 5,
+            "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing1042",
+            "type": "typ148",
+            "nom": "Cheddar Sur Frites Bacon",
+            "supplement": "1.50",
+            "tva": "tva6",
+            "weight": 6,
+            "color": "rose"
+        },
+        {
+            "ingredient_id": "ing1043",
+            "type": "typ148",
+            "nom": "Supplément Galette",
+            "supplement": "0.80",
+            "tva": "tva6",
+            "weight": 7,
+            "color": "jauneorange"
+        },
+        {
+            "ingredient_id": "ing1044",
+            "type": "typ148",
+            "nom": "Suppléments Cheddar Dans Burger",
+            "supplement": "0.80",
+            "tva": "tva6",
+            "weight": 8,
+            "color": "orange"
+        },
+        {
+            "ingredient_id": "ing1045",
+            "type": "typ148",
+            "nom": "Suppléments Steak",
+            "supplement": "3.00",
+            "tva": "tva6",
+            "weight": 9,
             "color": "marron"
+        },
+        {
+            "ingredient_id": "ing1046",
+            "type": "typ148",
+            "nom": "Suppléments Gruyère",
+            "supplement": "0.80",
+            "tva": "tva6",
+            "weight": 10,
+            "color": "jauneorange"
+        },
+        {
+            "ingredient_id": "ing1037",
+            "type": "typ147",
+            "nom": "A Point",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 5,
+            "color": "marron"
+        },
+        {
+            "ingredient_id": "ing1038",
+            "type": "typ147",
+            "nom": "Saignant",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 6,
+            "color": "rouge"
+        },
+        {
+            "ingredient_id": "ing1039",
+            "type": "typ147",
+            "nom": "Bien Cuit",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 7,
+            "color": "orange"
+        },
+        {
+            "ingredient_id": "ing1040",
+            "type": "typ147",
+            "nom": "Bleu",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 8,
+            "color": "bleufonce"
+        },
+        {
+            "ingredient_id": "ing1047",
+            "type": "typ149",
+            "nom": "Frites",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 5,
+            "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing1050",
+            "type": "typ149",
+            "nom": "Riz",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 8,
+            "color": "blanc"
+        },
+        {
+            "ingredient_id": "ing1051",
+            "type": "typ149",
+            "nom": "Salade",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 9,
+            "color": "vertclair"
+        },
+        {
+            "ingredient_id": "ing1052",
+            "type": "typ149",
+            "nom": "Haricot",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 10,
+            "color": "vertfonce"
+        },
+        {
+            "ingredient_id": "ing1055",
+            "type": "typ151",
+            "nom": "Gruyère",
+            "supplement": "0.80",
+            "tva": "tva6",
+            "weight": 5,
+            "color": "blanc"
+        },
+        {
+            "ingredient_id": "ing1056",
+            "type": "typ151",
+            "nom": "Parmesan",
+            "supplement": "0.80",
+            "tva": "tva6",
+            "weight": 6,
+            "color": "blanc"
+        },
+        {
+            "ingredient_id": "ing1053",
+            "type": "typ150",
+            "nom": "Penne",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 5,
+            "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing1054",
+            "type": "typ150",
+            "nom": "Tagliatelle",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 6,
+            "color": "jaune"
         },
         {
             "ingredient_id": "ing659",
@@ -492,6 +745,60 @@
             "tva": "tva6",
             "weight": 8,
             "color": "jauneorange"
+        },
+        {
+            "ingredient_id": "ing1011",
+            "type": "typ145",
+            "nom": "Fraise",
+            "supplement": "1.00",
+            "tva": "tva6",
+            "weight": 5,
+            "color": "rouge"
+        },
+        {
+            "ingredient_id": "ing1012",
+            "type": "typ145",
+            "nom": "Mangue",
+            "supplement": "1.00",
+            "tva": "tva6",
+            "weight": 6,
+            "color": "vertfonce"
+        },
+        {
+            "ingredient_id": "ing1013",
+            "type": "typ145",
+            "nom": "Noix De Coco",
+            "supplement": "1.00",
+            "tva": "tva6",
+            "weight": 7,
+            "color": "marron"
+        },
+        {
+            "ingredient_id": "ing1014",
+            "type": "typ145",
+            "nom": "Citron Jaune",
+            "supplement": "1.00",
+            "tva": "tva6",
+            "weight": 8,
+            "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing1015",
+            "type": "typ145",
+            "nom": "Ananas",
+            "supplement": "1.00",
+            "tva": "tva6",
+            "weight": 9,
+            "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing1016",
+            "type": "typ145",
+            "nom": "Fruits Rouge",
+            "supplement": "1.00",
+            "tva": "tva6",
+            "weight": 10,
+            "color": "rouge"
         }
     ],
     "produits": [
@@ -510,7 +817,7 @@
             "produit_id": "prd1421",
             "groupe": "grp77",
             "active": 1,
-            "nom": "PECHEUR",
+            "nom": "PÊCHEUR",
             "prix": "7.90",
             "tva": "tva6",
             "composition": [],
@@ -631,7 +938,7 @@
             "produit_id": "prd1432",
             "groupe": "grp78",
             "active": 1,
-            "nom": "CHEVRE MIEL",
+            "nom": "CHÈVRE MIEL",
             "prix": "10.90",
             "tva": "tva6",
             "composition": [],
@@ -653,7 +960,7 @@
             "produit_id": "prd1434",
             "groupe": "grp78",
             "active": 1,
-            "nom": "CHIKEN TIKKA",
+            "nom": "CHICKEN TIKKA",
             "prix": "10.90",
             "tva": "tva6",
             "composition": [],
@@ -664,7 +971,7 @@
             "produit_id": "prd1435",
             "groupe": "grp78",
             "active": 1,
-            "nom": "FERMIERE",
+            "nom": "FERMIÈRE",
             "prix": "10.90",
             "tva": "tva6",
             "composition": [],
@@ -818,7 +1125,7 @@
             "produit_id": "prd1449",
             "groupe": "grp81",
             "active": 1,
-            "nom": "JAPAN",
+            "nom": "JAPAN EBI KATSU",
             "prix": "13.90",
             "tva": "tva6",
             "composition": [],
@@ -980,94 +1287,6 @@
             "color": "vertclair"
         },
         {
-            "produit_id": "prd1464",
-            "groupe": "grp86",
-            "active": 1,
-            "nom": "BEST CLASSIC",
-            "prix": "7.90",
-            "tva": "tva6",
-            "composition": [],
-            "weight": 1,
-            "color": "blanc"
-        },
-        {
-            "produit_id": "prd1465",
-            "groupe": "grp86",
-            "active": 1,
-            "nom": "SCANDINAVE",
-            "prix": "8.90",
-            "tva": "tva6",
-            "composition": [],
-            "weight": 2,
-            "color": "blanc"
-        },
-        {
-            "produit_id": "prd1466",
-            "groupe": "grp86",
-            "active": 1,
-            "nom": "BOLLYWOOD",
-            "prix": "7.90",
-            "tva": "tva6",
-            "composition": [],
-            "weight": 3,
-            "color": "blanc"
-        },
-        {
-            "produit_id": "prd1467",
-            "groupe": "grp86",
-            "active": 1,
-            "nom": "BOURSALINO",
-            "prix": "7.90",
-            "tva": "tva6",
-            "composition": [],
-            "weight": 4,
-            "color": "blanc"
-        },
-        {
-            "produit_id": "prd1468",
-            "groupe": "grp86",
-            "active": 1,
-            "nom": "SUISSE",
-            "prix": "8.90",
-            "tva": "tva6",
-            "composition": [],
-            "weight": 5,
-            "color": "blanc"
-        },
-        {
-            "produit_id": "prd1469",
-            "groupe": "grp86",
-            "active": 1,
-            "nom": "VEGETALE",
-            "prix": "7.90",
-            "tva": "tva6",
-            "composition": [],
-            "weight": 6,
-            "color": "blanc"
-        },
-        {
-            "produit_id": "prd1470",
-            "groupe": "grp86",
-            "active": 1,
-            "nom": "ORIENTALE",
-            "prix": "8.50",
-            "tva": "tva6",
-            "composition": [],
-            "weight": 7,
-            "color": "blanc"
-        },
-        {
-            "produit_id": "prd1471",
-            "groupe": "grp86",
-            "active": 1,
-            "nom": "BACON BEEF",
-            "prix": "7.90",
-            "tva": "tva6",
-            "composition": [],
-            "weight": 8,
-            "color": "blanc"
-        },
-        {
             "produit_id": "prd1472",
             "groupe": "grp88",
             "active": 1,
@@ -1123,50 +1342,6 @@
             "color": "orange"
         },
         {
-            "produit_id": "prd1477",
-            "groupe": "grp87",
-            "active": 1,
-            "nom": "NUTELLA BANANE COCO",
-            "prix": "4.20",
-            "tva": "tva6",
-            "composition": [],
-            "weight": 1,
-            "color": "marron"
-        },
-        {
-            "produit_id": "prd1478",
-            "groupe": "grp87",
-            "active": 1,
-            "nom": "NUTELLA BROWNIE",
-            "prix": "4.10",
-            "tva": "tva6",
-            "composition": [],
-            "weight": 2,
-            "color": "marron"
-        },
-        {
-            "produit_id": "prd1479",
-            "groupe": "grp87",
-            "active": 1,
-            "nom": "CREME DE SPECULOS FRAISES PALET BRETON",
-            "prix": "4.90",
-            "tva": "tva6",
-            "composition": [],
-            "weight": 3,
-            "color": "marron"
-        },
-        {
-            "produit_id": "prd1480",
-            "groupe": "grp87",
-            "active": 1,
-            "nom": "KINDER MAXI PETIT BEURRE",
-            "prix": "4.50",
-            "tva": "tva6",
-            "composition": [],
-            "weight": 4,
-            "color": "marron"
-        },
-        {
             "produit_id": "prd1481",
             "groupe": "grp89",
             "active": 1,
@@ -1176,17 +1351,6 @@
             "composition": [],
             "weight": 1,
             "color": "orange"
-        },
-        {
-            "produit_id": "prd1482",
-            "groupe": "grp87",
-            "active": 1,
-            "nom": "COMPOSE TA CREPE",
-            "prix": "2.50",
-            "tva": "tva6",
-            "composition": [],
-            "weight": 5,
-            "color": "jauneorange"
         },
         {
             "produit_id": "prd1628",
@@ -1605,6 +1769,248 @@
             "composition": [],
             "weight": 8,
             "color": "rose"
+        },
+        {
+            "produit_id": "prd2119",
+            "groupe": "grp161",
+            "active": 1,
+            "nom": "Espresso Macchiato",
+            "prix": "2.00",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 1,
+            "color": "noir"
+        },
+        {
+            "produit_id": "prd2120",
+            "groupe": "grp161",
+            "active": 1,
+            "nom": "Café Au Lait",
+            "prix": "2.20",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 2,
+            "color": "jauneorange"
+        },
+        {
+            "produit_id": "prd2121",
+            "groupe": "grp161",
+            "active": 1,
+            "nom": "Cappucino",
+            "prix": "3.00",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 3,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd2122",
+            "groupe": "grp161",
+            "active": 1,
+            "nom": "Latte Machiatto",
+            "prix": "3.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 4,
+            "color": "gris"
+        },
+        {
+            "produit_id": "prd2123",
+            "groupe": "grp161",
+            "active": 1,
+            "nom": "Iced Macchiato",
+            "prix": "4.00",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 5,
+            "color": "orange"
+        },
+        {
+            "produit_id": "prd2124",
+            "groupe": "grp161",
+            "active": 1,
+            "nom": "Gourmandise De Speculoos",
+            "prix": "4.00",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 6,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd2125",
+            "groupe": "grp161",
+            "active": 1,
+            "nom": "Choco-Cookie Macchiato",
+            "prix": "4.00",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 7,
+            "color": "noir"
+        },
+        {
+            "produit_id": "prd2126",
+            "groupe": "grp161",
+            "active": 1,
+            "nom": "Double Crème Brûlée",
+            "prix": "4.00",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 8,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd2127",
+            "groupe": "grp161",
+            "active": 1,
+            "nom": "Latte Macaron",
+            "prix": "4.00",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 9,
+            "color": "jauneorange"
+        },
+        {
+            "produit_id": "prd2128",
+            "groupe": "grp161",
+            "active": 1,
+            "nom": "Chocolat Chaud",
+            "prix": "2.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 10,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd2129",
+            "groupe": "grp161",
+            "active": 1,
+            "nom": "Chocolat Viennois",
+            "prix": "2.80",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 11,
+            "color": null
+        },
+        {
+            "produit_id": "prd2130",
+            "groupe": "grp161",
+            "active": 1,
+            "nom": "Lait Chaud",
+            "prix": "1.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 12,
+            "color": "blanc"
+        },
+        {
+            "produit_id": "prd2131",
+            "groupe": "grp161",
+            "active": 1,
+            "nom": "Ristretto",
+            "prix": "1.60",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 13,
+            "color": "noir"
+        },
+        {
+            "produit_id": "prd2132",
+            "groupe": "grp161",
+            "active": 1,
+            "nom": "Espresso Forte",
+            "prix": "1.60",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 14,
+            "color": "noir"
+        },
+        {
+            "produit_id": "prd2133",
+            "groupe": "grp161",
+            "active": 1,
+            "nom": "Lungo Forte",
+            "prix": "2.00",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 15,
+            "color": "noir"
+        },
+        {
+            "produit_id": "prd2138",
+            "groupe": "grp163",
+            "active": 1,
+            "nom": "Smoothie",
+            "prix": "5.00",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 1,
+            "color": "rose"
+        },
+        {
+            "produit_id": "prd2151",
+            "groupe": "grp164",
+            "active": 1,
+            "nom": "FRITES",
+            "prix": "2.5",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 1,
+            "color": "jaune"
+        },
+        {
+            "produit_id": "prd2152",
+            "groupe": "grp164",
+            "active": 1,
+            "nom": "Frites Suppléments Cheddar",
+            "prix": "3.30",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 2,
+            "color": "rose"
+        },
+        {
+            "produit_id": "prd2153",
+            "groupe": "grp164",
+            "active": 1,
+            "nom": "Frites Suppléments Bacon",
+            "prix": "4.00",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 3,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd2154",
+            "groupe": "grp164",
+            "active": 1,
+            "nom": "Riz",
+            "prix": "2.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 4,
+            "color": "blanc"
+        },
+        {
+            "produit_id": "prd2155",
+            "groupe": "grp164",
+            "active": 1,
+            "nom": "Salade",
+            "prix": "2.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 5,
+            "color": "vertclair"
+        },
+        {
+            "produit_id": "prd2156",
+            "groupe": "grp164",
+            "active": 1,
+            "nom": "Haricot",
+            "prix": "2.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 6,
+            "color": "vertfonce"
         }
     ],
     "steps": [
@@ -1617,6 +2023,19 @@
                     "type": "typ94",
                     "regle": "{0,1}",
                     "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1040",
+            "produit": "prd1420",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{1,2}",
+                    "supplement": "0.50"
                 }
             ],
             "weight": 0
@@ -1635,6 +2054,19 @@
             "weight": 0
         },
         {
+            "step_id": "step1041",
+            "produit": "prd1421",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{1,2}",
+                    "supplement": "0.50"
+                }
+            ],
+            "weight": 0
+        },
+        {
             "step_id": "step758",
             "produit": "prd1422",
             "titre": "BOISSONS",
@@ -1643,6 +2075,19 @@
                     "type": "typ94",
                     "regle": "{0,1}",
                     "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1042",
+            "produit": "prd1422",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{1,2}",
+                    "supplement": "0.50"
                 }
             ],
             "weight": 0
@@ -1661,6 +2106,19 @@
             "weight": 0
         },
         {
+            "step_id": "step1043",
+            "produit": "prd1423",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{1,2}",
+                    "supplement": "0.50"
+                }
+            ],
+            "weight": 0
+        },
+        {
             "step_id": "step760",
             "produit": "prd1424",
             "titre": "BOISSONS",
@@ -1669,6 +2127,19 @@
                     "type": "typ94",
                     "regle": "{0,1}",
                     "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1044",
+            "produit": "prd1424",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{1,2}",
+                    "supplement": "0.50"
                 }
             ],
             "weight": 0
@@ -1687,6 +2158,19 @@
             "weight": 0
         },
         {
+            "step_id": "step1045",
+            "produit": "prd1425",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,3};s:{1,3}",
+                    "supplement": "0.50"
+                }
+            ],
+            "weight": 0
+        },
+        {
             "step_id": "step756",
             "produit": "prd1426",
             "titre": "BOISSONS",
@@ -1694,6 +2178,19 @@
                 {
                     "type": "typ94",
                     "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step980",
+            "produit": "prd1426",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ146",
+                    "regle": "{0,17}",
                     "supplement": "0.00"
                 }
             ],
@@ -1713,6 +2210,19 @@
             "weight": 0
         },
         {
+            "step_id": "step981",
+            "produit": "prd1427",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ146",
+                    "regle": "{0,17}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
             "step_id": "step754",
             "produit": "prd1428",
             "titre": "BOISSONS",
@@ -1720,6 +2230,19 @@
                 {
                     "type": "typ94",
                     "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step982",
+            "produit": "prd1428",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ146",
+                    "regle": "{0,17}",
                     "supplement": "0.00"
                 }
             ],
@@ -1739,6 +2262,19 @@
             "weight": 0
         },
         {
+            "step_id": "step983",
+            "produit": "prd1429",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ146",
+                    "regle": "{0,17}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
             "step_id": "step752",
             "produit": "prd1430",
             "titre": "BOISSONS",
@@ -1746,6 +2282,19 @@
                 {
                     "type": "typ94",
                     "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step984",
+            "produit": "prd1430",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ146",
+                    "regle": "{0,17}",
                     "supplement": "0.00"
                 }
             ],
@@ -1765,6 +2314,19 @@
             "weight": 0
         },
         {
+            "step_id": "step985",
+            "produit": "prd1431",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ146",
+                    "regle": "{0,17}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
             "step_id": "step750",
             "produit": "prd1432",
             "titre": "BOISSONS",
@@ -1772,6 +2334,19 @@
                 {
                     "type": "typ94",
                     "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step986",
+            "produit": "prd1432",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ146",
+                    "regle": "{0,17}",
                     "supplement": "0.00"
                 }
             ],
@@ -1791,6 +2366,19 @@
             "weight": 0
         },
         {
+            "step_id": "step987",
+            "produit": "prd1433",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ146",
+                    "regle": "{0,17}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
             "step_id": "step748",
             "produit": "prd1434",
             "titre": "BOISSONS",
@@ -1798,6 +2386,19 @@
                 {
                     "type": "typ94",
                     "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step988",
+            "produit": "prd1434",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ146",
+                    "regle": "{0,17}",
                     "supplement": "0.00"
                 }
             ],
@@ -1817,6 +2418,19 @@
             "weight": 0
         },
         {
+            "step_id": "step989",
+            "produit": "prd1435",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ146",
+                    "regle": "{0,17}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
             "step_id": "step762",
             "produit": "prd1436",
             "titre": "BOISSONS",
@@ -1830,12 +2444,25 @@
             "weight": 0
         },
         {
-            "step_id": "step799",
+            "step_id": "step990",
             "produit": "prd1436",
             "titre": "SUPPLÉMENTS",
             "regles": [
                 {
-                    "type": "typ96",
+                    "type": "typ148",
+                    "regle": "{0,6}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1004",
+            "produit": "prd1436",
+            "titre": "CUISSONS",
+            "regles": [
+                {
+                    "type": "typ147",
                     "regle": "{0,1}",
                     "supplement": "0.00"
                 }
@@ -1856,12 +2483,25 @@
             "weight": 0
         },
         {
-            "step_id": "step800",
+            "step_id": "step991",
             "produit": "prd1437",
             "titre": "SUPPLÉMENTS",
             "regles": [
                 {
-                    "type": "typ96",
+                    "type": "typ148",
+                    "regle": "{0,6}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1003",
+            "produit": "prd1437",
+            "titre": "CUISSONS",
+            "regles": [
+                {
+                    "type": "typ147",
                     "regle": "{0,1}",
                     "supplement": "0.00"
                 }
@@ -1882,12 +2522,25 @@
             "weight": 0
         },
         {
-            "step_id": "step801",
+            "step_id": "step992",
             "produit": "prd1438",
-            "titre": "SUPPLÉMENT",
+            "titre": "SUPPLÉMENTS",
             "regles": [
                 {
-                    "type": "typ96",
+                    "type": "typ148",
+                    "regle": "{0,6}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1002",
+            "produit": "prd1438",
+            "titre": "CUISSONS",
+            "regles": [
+                {
+                    "type": "typ147",
                     "regle": "{0,1}",
                     "supplement": "0.00"
                 }
@@ -1908,12 +2561,25 @@
             "weight": 0
         },
         {
-            "step_id": "step802",
+            "step_id": "step993",
             "produit": "prd1439",
-            "titre": "SUPPLÉMENT",
+            "titre": "SUPPLÉMENTS",
             "regles": [
                 {
-                    "type": "typ96",
+                    "type": "typ148",
+                    "regle": "{0,6}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1001",
+            "produit": "prd1439",
+            "titre": "CUISSONS",
+            "regles": [
+                {
+                    "type": "typ147",
                     "regle": "{0,1}",
                     "supplement": "0.00"
                 }
@@ -1934,12 +2600,25 @@
             "weight": 0
         },
         {
-            "step_id": "step803",
+            "step_id": "step994",
             "produit": "prd1440",
-            "titre": "SUPPLÉMENT",
+            "titre": "SUPPLÉMENTS",
             "regles": [
                 {
-                    "type": "typ96",
+                    "type": "typ148",
+                    "regle": "{0,6}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1000",
+            "produit": "prd1440",
+            "titre": "CUISSONS",
+            "regles": [
+                {
+                    "type": "typ147",
                     "regle": "{0,1}",
                     "supplement": "0.00"
                 }
@@ -1960,25 +2639,25 @@
             "weight": 0
         },
         {
-            "step_id": "step804",
+            "step_id": "step995",
             "produit": "prd1441",
-            "titre": "SUPPLÉMENT",
+            "titre": "SUPPLÉMENTS",
             "regles": [
                 {
-                    "type": "typ96",
-                    "regle": "{0,1}",
+                    "type": "typ148",
+                    "regle": "{0,6}",
                     "supplement": "0.00"
                 }
             ],
             "weight": 0
         },
         {
-            "step_id": "step728",
-            "produit": "prd1442",
-            "titre": "ACCOMPAGNEMENTS",
+            "step_id": "step999",
+            "produit": "prd1441",
+            "titre": "CUISSONS",
             "regles": [
                 {
-                    "type": "typ93",
+                    "type": "typ147",
                     "regle": "{0,1}",
                     "supplement": "0.00"
                 }
@@ -1999,14 +2678,27 @@
             "weight": 0
         },
         {
-            "step_id": "step729",
-            "produit": "prd1443",
+            "step_id": "step1005",
+            "produit": "prd1442",
             "titre": "ACCOMPAGNEMENTS",
             "regles": [
                 {
-                    "type": "typ93",
-                    "regle": "{0,1}",
+                    "type": "typ149",
+                    "regle": "{0,6}",
                     "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1046",
+            "produit": "prd1442",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{2,2}",
+                    "supplement": "0.50"
                 }
             ],
             "weight": 0
@@ -2025,14 +2717,27 @@
             "weight": 0
         },
         {
-            "step_id": "step730",
-            "produit": "prd1444",
+            "step_id": "step1006",
+            "produit": "prd1443",
             "titre": "ACCOMPAGNEMENTS",
             "regles": [
                 {
-                    "type": "typ93",
-                    "regle": "{0,1}",
+                    "type": "typ149",
+                    "regle": "{0,6}",
                     "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1047",
+            "produit": "prd1443",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{2,2}",
+                    "supplement": "0.50"
                 }
             ],
             "weight": 0
@@ -2051,14 +2756,27 @@
             "weight": 0
         },
         {
-            "step_id": "step731",
-            "produit": "prd1445",
+            "step_id": "step1007",
+            "produit": "prd1444",
             "titre": "ACCOMPAGNEMENTS",
             "regles": [
                 {
-                    "type": "typ93",
-                    "regle": "{0,1}",
+                    "type": "typ149",
+                    "regle": "{0,6}",
                     "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1048",
+            "produit": "prd1444",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{2,2}",
+                    "supplement": "0.50"
                 }
             ],
             "weight": 0
@@ -2077,6 +2795,32 @@
             "weight": 0
         },
         {
+            "step_id": "step1008",
+            "produit": "prd1445",
+            "titre": "ACCOMPAGNEMENTS",
+            "regles": [
+                {
+                    "type": "typ149",
+                    "regle": "{0,6}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1049",
+            "produit": "prd1445",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{2,2}",
+                    "supplement": "0.50"
+                }
+            ],
+            "weight": 0
+        },
+        {
             "step_id": "step795",
             "produit": "prd1446",
             "titre": "BOISSONS",
@@ -2085,6 +2829,32 @@
                     "type": "typ94",
                     "regle": "{0,1}",
                     "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1011",
+            "produit": "prd1446",
+            "titre": "ACCOMPAGNEMENTS",
+            "regles": [
+                {
+                    "type": "typ149",
+                    "regle": "{0,6}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1051",
+            "produit": "prd1446",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{1,2}",
+                    "supplement": "0.50"
                 }
             ],
             "weight": 0
@@ -2103,6 +2873,32 @@
             "weight": 0
         },
         {
+            "step_id": "step1012",
+            "produit": "prd1447",
+            "titre": "ACCOMPAGNEMENTS",
+            "regles": [
+                {
+                    "type": "typ149",
+                    "regle": "{0,6}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1052",
+            "produit": "prd1447",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{1,2}",
+                    "supplement": "0.50"
+                }
+            ],
+            "weight": 0
+        },
+        {
             "step_id": "step796",
             "produit": "prd1448",
             "titre": "BOISSONS",
@@ -2111,6 +2907,32 @@
                     "type": "typ94",
                     "regle": "{0,1}",
                     "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1013",
+            "produit": "prd1448",
+            "titre": "ACCOMPAGNEMENTS",
+            "regles": [
+                {
+                    "type": "typ149",
+                    "regle": "{0,6}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1053",
+            "produit": "prd1448",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{1,2}",
+                    "supplement": "0.50"
                 }
             ],
             "weight": 0
@@ -2129,14 +2951,27 @@
             "weight": 0
         },
         {
-            "step_id": "step722",
-            "produit": "prd1450",
-            "titre": "ACCOMPAGNEMENT",
+            "step_id": "step1014",
+            "produit": "prd1449",
+            "titre": "ACCOMPAGNEMENTS",
             "regles": [
                 {
-                    "type": "typ93",
-                    "regle": "{0,1}",
+                    "type": "typ149",
+                    "regle": "{0,6}",
                     "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1054",
+            "produit": "prd1449",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{1,2}",
+                    "supplement": "0.50"
                 }
             ],
             "weight": 0
@@ -2155,14 +2990,40 @@
             "weight": 1
         },
         {
-            "step_id": "step724",
-            "produit": "prd1451",
+            "step_id": "step1015",
+            "produit": "prd1450",
             "titre": "ACCOMPAGNEMENTS",
             "regles": [
                 {
-                    "type": "typ93",
-                    "regle": "{0,1}",
+                    "type": "typ149",
+                    "regle": "{0,6}",
                     "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1032",
+            "produit": "prd1450",
+            "titre": "FROMAGES",
+            "regles": [
+                {
+                    "type": "typ151",
+                    "regle": "{0,2};",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1055",
+            "produit": "prd1450",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{1,2}",
+                    "supplement": "0.50"
                 }
             ],
             "weight": 0
@@ -2181,14 +3042,40 @@
             "weight": 1
         },
         {
-            "step_id": "step726",
-            "produit": "prd1452",
+            "step_id": "step1016",
+            "produit": "prd1451",
             "titre": "ACCOMPAGNEMENTS",
             "regles": [
                 {
-                    "type": "typ93",
-                    "regle": "{0,1}",
+                    "type": "typ149",
+                    "regle": "{0,6}",
                     "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1033",
+            "produit": "prd1451",
+            "titre": "FROMAGES",
+            "regles": [
+                {
+                    "type": "typ151",
+                    "regle": "{0,2};",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1056",
+            "produit": "prd1451",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{1,2}",
+                    "supplement": "0.50"
                 }
             ],
             "weight": 0
@@ -2205,6 +3092,45 @@
                 }
             ],
             "weight": 1
+        },
+        {
+            "step_id": "step1017",
+            "produit": "prd1452",
+            "titre": "ACCOMPAGNEMENTS",
+            "regles": [
+                {
+                    "type": "typ149",
+                    "regle": "{0,6}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1034",
+            "produit": "prd1452",
+            "titre": "FROMAGES",
+            "regles": [
+                {
+                    "type": "typ151",
+                    "regle": "{0,2};",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1057",
+            "produit": "prd1452",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{1,2}",
+                    "supplement": "0.50"
+                }
+            ],
+            "weight": 0
         },
         {
             "step_id": "step716",
@@ -2233,6 +3159,19 @@
             "weight": 1
         },
         {
+            "step_id": "step1058",
+            "produit": "prd1453",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{2,2}",
+                    "supplement": "0.50"
+                }
+            ],
+            "weight": 0
+        },
+        {
             "step_id": "step718",
             "produit": "prd1454",
             "titre": "ACCOMPAGNEMENTS",
@@ -2257,6 +3196,19 @@
                 }
             ],
             "weight": 2
+        },
+        {
+            "step_id": "step1059",
+            "produit": "prd1454",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{2,2}",
+                    "supplement": "0.50"
+                }
+            ],
+            "weight": 0
         },
         {
             "step_id": "step720",
@@ -2285,6 +3237,19 @@
             "weight": 3
         },
         {
+            "step_id": "step1060",
+            "produit": "prd1455",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{2,2}",
+                    "supplement": "0.50"
+                }
+            ],
+            "weight": 0
+        },
+        {
             "step_id": "step772",
             "produit": "prd1456",
             "titre": "BOISSONS",
@@ -2293,6 +3258,45 @@
                     "type": "typ94",
                     "regle": "{0,1}",
                     "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1028",
+            "produit": "prd1456",
+            "titre": "FORME DE PÂTES",
+            "regles": [
+                {
+                    "type": "typ150",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1035",
+            "produit": "prd1456",
+            "titre": "FROMAGES",
+            "regles": [
+                {
+                    "type": "typ151",
+                    "regle": "{0,2};",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1061",
+            "produit": "prd1456",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{1,2}",
+                    "supplement": "0.50"
                 }
             ],
             "weight": 0
@@ -2311,6 +3315,45 @@
             "weight": 0
         },
         {
+            "step_id": "step1029",
+            "produit": "prd1457",
+            "titre": "FORMES DE PÂTES",
+            "regles": [
+                {
+                    "type": "typ150",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1036",
+            "produit": "prd1457",
+            "titre": "FROMAGES",
+            "regles": [
+                {
+                    "type": "typ151",
+                    "regle": "{0,2};",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1062",
+            "produit": "prd1457",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{1,2}",
+                    "supplement": "0.50"
+                }
+            ],
+            "weight": 0
+        },
+        {
             "step_id": "step774",
             "produit": "prd1458",
             "titre": "BOISSONS",
@@ -2324,6 +3367,45 @@
             "weight": 0
         },
         {
+            "step_id": "step1030",
+            "produit": "prd1458",
+            "titre": "FORMES DE PÂTES",
+            "regles": [
+                {
+                    "type": "typ150",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1038",
+            "produit": "prd1458",
+            "titre": "FROMAGES",
+            "regles": [
+                {
+                    "type": "typ151",
+                    "regle": "{0,2};",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1063",
+            "produit": "prd1458",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{1,2}",
+                    "supplement": "0.50"
+                }
+            ],
+            "weight": 0
+        },
+        {
             "step_id": "step775",
             "produit": "prd1459",
             "titre": "BOISSONS",
@@ -2332,6 +3414,45 @@
                     "type": "typ94",
                     "regle": "{0,1}",
                     "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1031",
+            "produit": "prd1459",
+            "titre": "FORME DE PÂTES",
+            "regles": [
+                {
+                    "type": "typ150",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1039",
+            "produit": "prd1459",
+            "titre": "FROMAGES",
+            "regles": [
+                {
+                    "type": "typ151",
+                    "regle": "{0,2};",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1064",
+            "produit": "prd1459",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,2};s:{1,2}",
+                    "supplement": "0.50"
                 }
             ],
             "weight": 0
@@ -2389,162 +3510,6 @@
             "weight": 0
         },
         {
-            "step_id": "step776",
-            "produit": "prd1464",
-            "titre": "BOISSONS",
-            "regles": [
-                {
-                    "type": "typ94",
-                    "regle": "{0,1}",
-                    "supplement": "0.00"
-                }
-            ],
-            "weight": 0
-        },
-        {
-            "step_id": "step777",
-            "produit": "prd1465",
-            "titre": "BOISSONS",
-            "regles": [
-                {
-                    "type": "typ94",
-                    "regle": "{0,1}",
-                    "supplement": "0.00"
-                }
-            ],
-            "weight": 0
-        },
-        {
-            "step_id": "step778",
-            "produit": "prd1466",
-            "titre": "BOISSONS",
-            "regles": [
-                {
-                    "type": "typ94",
-                    "regle": "{0,1}",
-                    "supplement": "0.00"
-                }
-            ],
-            "weight": 0
-        },
-        {
-            "step_id": "step779",
-            "produit": "prd1467",
-            "titre": "BOISSONS",
-            "regles": [
-                {
-                    "type": "typ94",
-                    "regle": "{0,1}",
-                    "supplement": "0.00"
-                }
-            ],
-            "weight": 0
-        },
-        {
-            "step_id": "step780",
-            "produit": "prd1468",
-            "titre": "BOISSONS",
-            "regles": [
-                {
-                    "type": "typ94",
-                    "regle": "{0,1}",
-                    "supplement": "0.00"
-                }
-            ],
-            "weight": 0
-        },
-        {
-            "step_id": "step781",
-            "produit": "prd1469",
-            "titre": "BOISSONS",
-            "regles": [
-                {
-                    "type": "typ94",
-                    "regle": "{0,1}",
-                    "supplement": "0.00"
-                }
-            ],
-            "weight": 0
-        },
-        {
-            "step_id": "step782",
-            "produit": "prd1470",
-            "titre": "BOISSONS",
-            "regles": [
-                {
-                    "type": "typ94",
-                    "regle": "{0,1}",
-                    "supplement": "0.00"
-                }
-            ],
-            "weight": 0
-        },
-        {
-            "step_id": "step783",
-            "produit": "prd1471",
-            "titre": "BOISSONS",
-            "regles": [
-                {
-                    "type": "typ94",
-                    "regle": "{0,1}",
-                    "supplement": "0.00"
-                }
-            ],
-            "weight": 0
-        },
-        {
-            "step_id": "step784",
-            "produit": "prd1477",
-            "titre": "SUPPLEMENTS",
-            "regles": [
-                {
-                    "type": "typ95",
-                    "regle": "{0,7}",
-                    "supplement": "0.00"
-                }
-            ],
-            "weight": 0
-        },
-        {
-            "step_id": "step785",
-            "produit": "prd1478",
-            "titre": "SUPPLÉMENTS",
-            "regles": [
-                {
-                    "type": "typ95",
-                    "regle": "{0,7}",
-                    "supplement": "0.00"
-                }
-            ],
-            "weight": 0
-        },
-        {
-            "step_id": "step786",
-            "produit": "prd1479",
-            "titre": "SUPPLÉMENTS",
-            "regles": [
-                {
-                    "type": "typ95",
-                    "regle": "{0,7}",
-                    "supplement": "0.00"
-                }
-            ],
-            "weight": 0
-        },
-        {
-            "step_id": "step787",
-            "produit": "prd1480",
-            "titre": "SUPPLÉMENTS",
-            "regles": [
-                {
-                    "type": "typ95",
-                    "regle": "{0,7}",
-                    "supplement": "0.00"
-                }
-            ],
-            "weight": 0
-        },
-        {
             "step_id": "step797",
             "produit": "prd1481",
             "titre": "BOISSONS",
@@ -2558,26 +3523,13 @@
             "weight": 0
         },
         {
-            "step_id": "step788",
-            "produit": "prd1482",
-            "titre": "SUPPLÉMENTS",
-            "regles": [
-                {
-                    "type": "typ95",
-                    "regle": "{0,7}",
-                    "supplement": "0.00"
-                }
-            ],
-            "weight": 0
-        },
-        {
             "step_id": "step836",
             "produit": "prd1638",
-            "titre": "SUPPLÉMENTS MILKSHAKE",
+            "titre": "COULIS MILKSHAKE",
             "regles": [
                 {
                     "type": "typ106",
-                    "regle": "{0,1}",
+                    "regle": "{0,4}",
                     "supplement": "0.00"
                 }
             ],
@@ -2586,11 +3538,11 @@
         {
             "step_id": "step837",
             "produit": "prd1639",
-            "titre": "SUPPLÉMENTS MILKSHAKE",
+            "titre": "COULIS MILKSHAKE",
             "regles": [
                 {
                     "type": "typ106",
-                    "regle": "{0,1}",
+                    "regle": "{0,4}",
                     "supplement": "0.00"
                 }
             ],
@@ -2617,6 +3569,19 @@
                 {
                     "type": "typ94",
                     "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step979",
+            "produit": "prd2138",
+            "titre": "GOÛTS SMOOTHIES",
+            "regles": [
+                {
+                    "type": "typ145",
+                    "regle": "{0,6}",
                     "supplement": "0.00"
                 }
             ],

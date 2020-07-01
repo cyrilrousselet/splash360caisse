@@ -241,7 +241,8 @@ class Reglement extends React.Component {
   closeTiroir() {
     this.props.closeDrawer();
     const { reste, rendable } = this.updateValeurs();
-    if (reste<0 && rendable) this.props.addRendu({moyen:'especes', valeur: -reste});
+    // if (reste<0 && rendable) this.props.addRendu({moyen:'especes', valeur: -reste});
+    if (reste<0) this.props.addRendu({moyen:'especes', valeur: -reste});
     this.beforeCloseReglement();
   }
 
@@ -478,7 +479,7 @@ class Reglement extends React.Component {
         </Fab>
         }
          { tiroirOuvert && 
-          <Fab aria-label="close" size="small" className="close-button" onClick={ () => this.closeTiroir() }>
+        <Fab aria-label="close" size="small" className="close-button" onClick={ () => this.closeTiroir() }>
           <CloseIcon />
         </Fab>
           // <Button variant="outlined" size="small" style={{alignSelf:'flex-end',position:"absolute"}} className="fermeture-tiroir" onClick={ () => this.closeTiroir() }>Fermeture tiroir</Button>

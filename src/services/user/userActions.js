@@ -111,7 +111,10 @@ function updateUser(payload) {
     
      userServices.update(user)
       .then(
-        data => dispatch({ type: userActionTypes.UPDATE_SUCCESS, ...data }),
+        data => {
+          dispatch({ type: userActionTypes.UPDATE_SUCCESS, ...data });
+          dispatch(getAll());
+        },
         error => dispatch({ type: userActionTypes.UPDATE_FAILURE, payload: error.toString() })
       )
   }
@@ -132,6 +135,7 @@ function createUser(payload) {
         data => {
           const { user, confirm } = data;
           dispatch({ type: userActionTypes.CREATE_SUCCESS, user: {...user, user_id:confirm.user_id } });
+          dispatch(getAll());
         },
         error => dispatch({ type: userActionTypes.CREATE_FAILURE, payload: error.toString() })
       )
