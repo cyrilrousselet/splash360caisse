@@ -908,7 +908,8 @@ class Panier extends React.Component {
                           produitid={ itm.produitid }
                           nom={ itm.nom }
                           quantite={ itm.quantite }
-                          prix={ itm.prix }
+                          // prix={ itm.prix }
+                          prix={ itm.pu*itm.quantite }
                           disabled={ open }
                           commentaire={ itm.commentaire!=='' }
                           selected={ selectedIndex===i }

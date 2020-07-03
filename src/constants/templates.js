@@ -15,11 +15,11 @@ export const templates = {
   ],
   partiel: [
     'info', 
-    'partiel_detail'
+    'detail'
   ],
   principal: [
     'info', 
-    'principal_detail',
+    'detail',
     'recap'
   ],
   avoir: [

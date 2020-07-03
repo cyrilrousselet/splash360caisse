@@ -1,10 +1,15 @@
 import { catalogueActionTypes } from './catalogueActionTypes';
 import { catalogueServices } from './catalogueServices';
 
+import logger from '../../helpers/Logger';
+
 
 function getAllActive() {
   return dispatch => {
       dispatch({ type: catalogueActionTypes.GETALL_ACTIVE_REQUEST });
+
+
+      logger.log('getAllActive()');
 
       catalogueServices.getAllActive()
           .then(

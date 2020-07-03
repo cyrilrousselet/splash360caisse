@@ -276,8 +276,9 @@ function addIngredient(payload) {
     const step = state.catalogueReducer.steps[item.produitid].find(step => step.step_id === stepid);
     const ingredient = state.catalogueReducer.ingredients[ingredientid];
     const produitSteps = state.catalogueReducer.steps[item.produitid];
+    const tva = state.catalogueReducer.tva[ingredient.tva_id];
 
-    const commandeItem = commandeServices.addIngredient(ingredient, quantite, step, item, produitSteps);
+    const commandeItem = commandeServices.addIngredient(ingredient, quantite, step, item, produitSteps, tva);
     dispatch({ type: commandeActionTypes.ADD_INGREDIENT, commandeItem });
   }
 }

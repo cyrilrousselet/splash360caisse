@@ -11,6 +11,8 @@ import createRootReducer from '../reducers';
 import * as generalActions from '../actions';
 import history from '../helpers/history';
 
+import Logger from '../helpers/Logger';
+
 
 const rootReducer = createRootReducer(history);
 
@@ -29,12 +31,13 @@ export function configureStore() {
     const enhancers = [];
 
     // Logging Middleware
-    const logger = createLogger({
+    const reduxlogger = createLogger({
         level: 'info',
-        collapsed: true
+        collapsed: true,
+        // logger: Logger
     });
 
-    middleware.push(logger);
+    middleware.push(reduxlogger);
 
     middleware.push(thunkMiddleware);
 

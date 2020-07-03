@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import LoadingSpinner from './common/LoadingSpinner';
 import { Fab } from '@material-ui/core';
 import ConnectIcon from './common/icon/ConnectIcon';
+import ErrorBoundary from './common/ErrorBoundary';
 
 let strings = new LocalizedStrings(data);
 
@@ -67,6 +68,7 @@ class Dashboard extends Component {
   //  console.log(ca);
 
     return (
+      <ErrorBoundary>
       <div className="Dashboard">
         <div className="topzone">
           <div className="cashName">{ cashname }</div>
@@ -88,6 +90,7 @@ class Dashboard extends Component {
         { modules.indexOf('statistiques')!==-1 && ( <div className="tickets">{ strings.dashboard.ticketsnum }<span>{ numtickets }</span></div> )}
         { modules.indexOf('statistiques')!==-1 && ( <div className="ca">{ strings.dashboard.ca }<span className={ ca_eval }>{ ca.toFixed(2).replace(/\./g,',') }{ devise }</span></div> )}
       </div>
+      </ErrorBoundary>
     );
   }
 };

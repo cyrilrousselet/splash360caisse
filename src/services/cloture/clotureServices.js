@@ -179,37 +179,113 @@ function getCurrentPeriode(commandes, catalogue, params) {
         }
       });
 
-      // ventilation par tva
+
+
+
+
+
+      // VENTILATION PAR TVA
+      const cmdTva = {};
+      let __modificateur = null;
+      let total = 0;
       cmd.items.forEach(itm => {
 
 
-        let __tId = __ventil.tva.findIndex(t => t.id===itm.tva.id);
+        total += itm.quantite * itm.prix;
+
+        itm.ingredients.forEach(ing => {
+          // ajout et calcul de la tva pour l'ingrédient
+          if (!cmdTva.hasOwnProperty(ing.tva.code)) {
+            Object.defineProperty(cmdTva, ing.tva.code, {
+              value: {taux: ing.tva.valeur, montant: 0, ht: 0, ttc: 0},
+              writable: true,
+              enumerable: true
+            });
+          }
+
+          let iht = (Number(ing.prix)*ing.qte) / (1 + Number(ing.tva.valeur));
+
+          cmdTva[ing.tva.code] = Object.assign(cmdTva[ing.tva.code], {
+            montant: cmdTva[ing.tva.code].montant + (iht * Number(ing.tva.valeur)),
+            ht: cmdTva[ing.tva.code].ht + iht,
+            ttc: cmdTva[ing.tva.code].ttc + Number(ing.prix)*ing.qte
+          });
+        });
+
+
+
+        // ajout et calcul de la tva pour l'article
+        if (!cmdTva.hasOwnProperty(itm.tva.code)) {
+          Object.defineProperty(cmdTva, itm.tva.code, {
+            value: {taux:itm.tva.valeur, montant: 0, ht: 0, ttc: 0},
+            writable: true,
+            enumerable: true
+          });
+        }
+
+        let ht = (Number(itm.pu)*itm.quantite) / (1 + Number(itm.tva.valeur));
+
+        cmdTva[itm.tva.code] = Object.assign(cmdTva[itm.tva.code], {
+          montant: cmdTva[itm.tva.code].montant + (ht * Number(itm.tva.valeur)),
+          ht: cmdTva[itm.tva.code].ht + ht,
+          ttc: cmdTva[itm.tva.code].ttc + Number(itm.pu)*itm.quantite
+        });
+
+      });
+
+       // modificateurs pour la commande
+       __modificateur = cmd.modificateurs.find(c => c.item==null && c.ingredient==null);
+       if (__modificateur) {
+      //   total += Number(__modificateur.valeur);
+
+         const ispc = String(cmd.modificateurs[0].valeur).substr(-1,1)==='%';
+         const val = Math.abs(Number(String(cmd.modificateurs[0].valeur).slice(0,-1)));
+
+         // conversion du modificateur en coefficient
+         const modtx = (ispc) ? (100 - val) / 100 : 1 - (val/total);
+
+         if (ispc) {
+           total *= (100 - val) / 100;
+         } else {
+           total -= val;
+         }
+
+
+         // application de la réduction aux taux de tva
+         Object.entries(cmdTva).forEach(([key, value])=> {
+           cmdTva[key].ht *= modtx; 
+           cmdTva[key].ttc *= modtx; 
+         });
+
+       } 
+
+      let __tId = -1;
+      Object.entries(cmdTva).forEach(([key,value]) => {
+        __tId = __ventil.tva.findIndex(t => t.id===key);
 
         // si la tva n'est pas enregistrée ds la liste
         if (__tId==-1) {
           // on ajoute un objet pour le moyen de paiement dans le tableau
           // et on récupère son index (length - 1)
           __tId = __ventil.tva.push({
-                        id: itm.tva.id,
-                        taux: Number(itm.tva.valeur),
-                        ht: 0,
+                        id: key,
+                        taux: value.taux,
                         montant: 0,
+                        ht: 0,
                         ttc: 0
                       }) - 1;
         }
         // on récupère l'objet pour le mettre à jour avec les valeurs de la commande
         const __tva = __ventil.tva[__tId];
-        const { ht, montant, ttc } = __ventil.tva[__tId];
-
-        let __ht = itm.prix / (1+Number(itm.tva.valeur));
+        const { ht, montant, ttc } = __tva;
 
         __ventil.tva[__tId] = {
             ...__tva, 
-            ht:(ht + __ht),
-            montant:(montant + (__ht * Number(itm.tva.valeur))),
-            ttc:(ttc + itm.prix)
+            ht:(ht + value.ht),
+            montant:(montant + value.montant),
+            ttc:(ttc + value.ttc)
           };
-      });
+      })
     });
 
     __ca = __vnt - (__remb + __dep);

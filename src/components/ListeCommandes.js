@@ -41,7 +41,11 @@ import PaymentIcon from './common/icon/PaymentIcon';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from './common/icon/EditIcon';
 
+import logger from '../helpers/Logger';
+
 let strings = new LocalizedStrings(data);
+
+
 
 class LocalizedUtils extends DateFnsUtils {
   getDatePickerHeaderText(date) {
@@ -215,7 +219,7 @@ class ListeCommandes extends React.Component {
   search_tmo = -1;
   
   componentDidMount() {
-    console.log('ListeCommandes.componentDidMount()');
+    logger.log('ListeCommandes.componentDidMount()');
     this.props.getCommandesList();
     this.props.getAllActive();
     this.props.getClientsList();
@@ -243,7 +247,7 @@ class ListeCommandes extends React.Component {
   }
 
   repriseHandle(value) {
-    console.log('repriseHandle('+value+')');
+    logger.log('repriseHandle('+value+')');
     this.props.getCommande(value);
     history.push(paths.ENCAISSEMENT);
   }
@@ -260,13 +264,13 @@ class ListeCommandes extends React.Component {
     this.setState({printOpen:false});
   }
   launchTicket(ticket, cmdid) {
-    console.log(`print ticket '${ticket}' pour #${cmdid}`);
+    logger.log(`print ticket '${ticket}' pour #${cmdid}`);
   }
 
 
   searchHandler(event) {
     if (event.keyCode==13) {
-      console.log(event.target.value);
+      logger.log(event.target.value);
       this.decodeQRCode(event.target.value);
       event.target.value = '';
     }    
@@ -414,7 +418,7 @@ class ListeCommandes extends React.Component {
         if (value.status=='confirmed') confirmedlist.push({id: key, commande: cmd});
       }
     }
-    console.log('searchval :',searchval!='');
+    logger.log('searchval :',searchval!='');
     
   
     if(loading) {

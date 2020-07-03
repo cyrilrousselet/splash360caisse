@@ -190,6 +190,7 @@ function addProduit(payload, tva, items, steps) {
         produitid: produitid,
         nom: nom,
         prix: prix,
+        pu: prix,
         tva: tva,
         composition: composition,
         ingredients: [...composition],
@@ -233,8 +234,9 @@ function updateProduit(payload, item) {
  * @param {*} step         : provenant du catalogue
  * @param {*} item         : item à modifier
  * @param {*} produitSteps : steps du produit
+ * @param {*} tva          : objet TVA lié à l'ingrédient
  */
-function addIngredient(ingredient, quantite, step, item, produitSteps) {
+function addIngredient(ingredient, quantite, step, item, produitSteps, tva) {
 
   const {ingredients, steps} = item;
 
@@ -263,7 +265,15 @@ function addIngredient(ingredient, quantite, step, item, produitSteps) {
   const ingInCmdId = ingredients.findIndex(ing=>ing.ingredient==ingredient.id);
   // si l'ingredient n'est pas encore dans la liste de l'item
   if (-1==ingInCmdId) {
-    item.ingredients.push({ingredient: ingredient.id, type: ingredient.type, qte: 1, prix: Number(ingredient.supplement), nom: ingredient.nom, fromStep:step.step_id});
+    item.ingredients.push({
+      ingredient: ingredient.id, 
+      type: ingredient.type, 
+      qte: 1, 
+      prix: Number(ingredient.supplement), 
+      nom: ingredient.nom, 
+      fromStep:step.step_id,
+      tva: tva
+    });
   } 
   // sinon on augmente d'1 la quantité de l'ingrédient
   else {
@@ -780,11 +790,28 @@ function saveCommande(commande, catalogueReducer) {
 
   // on ajoute les infos de tva à chaque item de la commande
   commande.items.forEach(itm => {
+
+    let ingrd = [];
+    // on ajoute les infos de tva à chaque ingrédient de chaque item de la commande
+    if (itm.ingredients.length>0) {
+      itm.ingredients.forEach(ing => {
+       const ingr = catalogueReducer.ingredients[ing.ingredient];
+       ingrd.push({
+         ...ing,
+         tva: {id: ingr.tva_id, code: catalogueReducer.tva[ingr.tva_id].code, valeur: catalogueReducer.tva[ingr.tva_id].valeur}
+        })
+      });
+      itm.ingredients = ingrd;
+    }
+
+
     const prd = produits.find(p => p.id==itm.produitid);
     items.push({
       ...itm,
       tva: {id: prd.tva_id, code: catalogueReducer.tva[prd.tva_id].code, valeur: catalogueReducer.tva[prd.tva_id].valeur}
     })
+
+
   });
 
   

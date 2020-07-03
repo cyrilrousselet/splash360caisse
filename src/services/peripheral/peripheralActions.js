@@ -287,6 +287,36 @@ function _getProduit(id, catalogue) {
   return produit;
 }
 
+function _getRecap(tickets, commande, catalogue, types) {
+  const recap = tickets.map(ticket => {
+
+    let tck = {nom: ticket.nom, num:0};
+
+    commande.items.forEach(article => {
+
+      let __ingnum = 0;
+      article.ingredients.forEach(ing => {
+        // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
+        let __noprint = types[ing.type].noprint.find(p=>p==ticket.ticket_id);
+        __ingnum += (ing.fromStep!=null && !__noprint) ? ing.qte : 0;
+      });
+
+      const prd = _getProduit(article.produitid, catalogue);
+      // si le groupe de produits ne doit pas s'imprimer sur ce ticket
+      let __anoprint = catalogue[prd.groupe].noprint.find(p=>p==ticket.ticket_id);
+      
+
+      if (!__anoprint || (__anoprint && __ingnum>0)) {
+        // tck.num += __ingnum>0 ? __ingnum : article.quantite;        
+        tck.num += article.quantite;        
+      }
+
+    });
+    return tck;
+  });
+  return recap;
+}
+
 
 function printCommandeTicket(quelstickets, cmd) {
   return (dispatch, getState) => {
@@ -347,6 +377,8 @@ function printCommandeTicket(quelstickets, cmd) {
 
     // récup de la liste des tickets à imprimer
     const ticketsListe = _getTicketsToPrint(quelstickets, tickets);
+    const ticketsProd = ticketsListe.filter(t => (['partiel', 'principal']).indexOf(t.template)!==-1);
+    const recapTickets = _getRecap(ticketsListe.filter(t => 'partiel' === t.template), cmd, catalogue, types);
 
 
     // y a-t-il KDS d'activé pour un des ticket de la liste ?
@@ -366,7 +398,7 @@ function printCommandeTicket(quelstickets, cmd) {
         items: []
       }
 
-      const ticketsProd = ticketsListe.filter(t => (['partiel', 'principal']).indexOf(t.template)!==-1);
+   
 
       cmd.items.forEach(article => {
 
@@ -458,17 +490,21 @@ function printCommandeTicket(quelstickets, cmd) {
             __comment = cmd.comments.find(c => c.item==article.itemid && c.ingredient==ing.ingredient)
 
 
-            // modificateurs pour l'ingrédient
-            __modificateur = cmd.modificateurs.find(m => m.item==article.itemid && m.ingredient==ing.ingredient);
+            // // modificateurs pour l'ingrédient
+            // __modificateur = cmd.modificateurs.find(m => m.item==article.itemid && m.ingredient==ing.ingredient);
 
-            if (__modificateur) {
-              total += Number(__modificateur.valeur);
-            }
+            // if (__modificateur) {
+            //   total += Number(__modificateur.valeur);
+            // }
+
+
+            // let artIngTva = tva[ingredients[ing.ingredient].tva_id];
+            let artIngTva = ing.tva;
 
             if (ing.fromStep!=null && !__noprint) {
               articleIngredients.push({
                 qte: ing.qte,
-                codetva: tva[ingredients[ing.ingredient].tva_id].code,
+                codetva: artIngTva.code,
                 nom: ing.nom,
                 pu: ing.prix==0 ? '' : Number(ing.prix).toFixed(2),
                 prix: ing.prix==0 ? '' : (Number(ing.prix)*ing.qte).toFixed(2),
@@ -477,6 +513,29 @@ function printCommandeTicket(quelstickets, cmd) {
                 modificateur: __modificateur ? __modificateur.valeur: 0
               });
             }
+
+
+            // ajout et calcul de la tva pour l'ingrédient
+            if (!cmdTva.hasOwnProperty(artIngTva.code)) {
+              Object.defineProperty(cmdTva, artIngTva.code, {
+                value: {taux:`${Number(artIngTva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
+                writable: true,
+                enumerable: true
+              });
+            }
+
+            let iht = (Number(ing.prix)*ing.qte) / (1 + Number(artIngTva.valeur));
+
+            cmdTva[artIngTva.code] = Object.assign(cmdTva[artIngTva.code], {
+              montant: cmdTva[artIngTva.code].montant + (iht * Number(artIngTva.valeur)),
+              ht: cmdTva[artIngTva.code].ht + iht,
+              ttc: cmdTva[artIngTva.code].ttc + Number(ing.prix)*ing.qte
+            });
+
+            // console.log('iht','(Number('+ing.prix+')*'+ing.qte+') / (1 + Number('+artIngTva.valeur+'))');
+            // console.log(JSON.stringify(cmdTva));
+            
+
           });
 
           articleIngredients.sort((a,b)=>a.weight-b.weight);
@@ -485,24 +544,27 @@ function printCommandeTicket(quelstickets, cmd) {
           // commentaire pour l'article
           __comment = cmd.comments.find(c => c.item==article.itemid && c.ingredient==null);
 
-          // modificateurs pour l'article
-          __modificateur = cmd.modificateurs.find(m => m.item==article.itemid && m.ingredient==null);
+        // 
+        //   // modificateurs pour l'article
+        //   __modificateur = cmd.modificateurs.find(m => m.item==article.itemid && m.ingredient==null);
 
-          if (__modificateur) {
-            total += Number(__modificateur.valeur);
-          }
-
+        //   if (__modificateur) {
+        //     total += Number(__modificateur.valeur);
+        //   }
+        // 
           articles.push({
             qte: article.quantite,
             codetva: article.tva.code,
             nom: article.nom,
-            pu: Number(article.prix).toFixed(2),
-            prix: (Number(article.prix)*article.quantite).toFixed(2),
+            pu: Number(article.pu).toFixed(2),
+            prix: (Number(article.pu)*article.quantite).toFixed(2),
             ingredients: articleIngredients,
             comment: __comment ? __comment.texte : '',
             modificateur: __modificateur ? __modificateur.valeur: 0
           });
 
+
+          // ajout et calcul de la tva pour l'article
           if (!cmdTva.hasOwnProperty(article.tva.code)) {
             Object.defineProperty(cmdTva, article.tva.code, {
               value: {taux:`${Number(article.tva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
@@ -511,15 +573,16 @@ function printCommandeTicket(quelstickets, cmd) {
             });
           }
 
-
-          let ht = (Number(article.prix)*article.quantite) / (1 + Number(article.tva.valeur));
+          let ht = (Number(article.pu)*article.quantite) / (1 + Number(article.tva.valeur));
 
           cmdTva[article.tva.code] = Object.assign(cmdTva[article.tva.code], {
             montant: cmdTva[article.tva.code].montant + (ht * Number(article.tva.valeur)),
             ht: cmdTva[article.tva.code].ht + ht,
-            ttc: cmdTva[article.tva.code].ttc + Number(article.prix)*article.quantite
+            ttc: cmdTva[article.tva.code].ttc + Number(article.pu)*article.quantite
           });
           
+          // console.log('iht','(Number('+article.pu+')*'+article.quantite+') / (1 + Number('+article.tva.valeur +'))');
+          // console.log(JSON.stringify(cmdTva));
 
         });
         
@@ -652,19 +715,29 @@ function printCommandeTicket(quelstickets, cmd) {
           // commentaire pour l'article :
           __comment = cmd.comments.find(c => c.item==article.itemid && c.ingredient==null);
 
-          articles.push({
-            qte: article.quantite,
-            nom: article.nom,
-            ingredients: articleIngredients,
-            comment: __comment ? __comment.texte : ''
-          });        
+
+          const prd = _getProduit(article.produitid, catalogue);
+          // si le groupe de produits ne doit pas s'imprimer sur ce ticket
+          let __anoprint = catalogue[prd.groupe].noprint.find(p=>p==ticket.ticket_id);
+          
+          // si le groupe doit s'imprimer sur ce ticket
+          // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
+          // on ajoute ce produit à la liste à imprimer
+          if (!__anoprint || (__anoprint && articleIngredients.length>0)) {
+            articles.push({
+              qte: article.quantite,
+              nom: article.nom,
+              ingredients: articleIngredients,
+              comment: __comment ? __comment.texte : ''
+            });        
+          }
 
         });
 
         // commentaire pour la commande :
         __comment = cmd.comments.find(c => c.item==null && c.ingredient==null);
 
-        const cmdcuisine = {
+        const cmdpartiel = {
           numero: cmdnumero,
           id: cmd.ticketId,
           mode: cmd.mode,
@@ -681,7 +754,7 @@ function printCommandeTicket(quelstickets, cmd) {
             heure: heure
           },
           nomticket: ticket.nom,
-          detail: cmdcuisine,
+          detail: cmdpartiel,
           strings: strings.tickets.cuisine
         }
 
@@ -730,12 +803,21 @@ function printCommandeTicket(quelstickets, cmd) {
           // commentaire pour l'article :
           __comment = cmd.comments.find(c => c.item==article.itemid && c.ingredient==null);
 
-          articles.push({
-            qte: article.quantite,
-            nom: article.nom,
-            ingredients: articleIngredients,
-            comment: __comment ? __comment.texte : ''
-          });        
+          const prd = _getProduit(article.produitid, catalogue);
+          // si le groupe de produits ne doit pas s'imprimer sur ce ticket
+          let __anoprint = catalogue[prd.groupe].noprint.find(p=>p==ticket.ticket_id);
+          
+          // si le groupe doit s'imprimer sur ce ticket
+          // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
+          // on ajoute ce produit à la liste à imprimer
+          if (!__anoprint || (__anoprint && articleIngredients.length>0)) {
+            articles.push({
+              qte: article.quantite,
+              nom: article.nom,
+              ingredients: articleIngredients,
+              comment: __comment ? __comment.texte : ''
+            });     
+          }   
 
         });
 
@@ -744,7 +826,7 @@ function printCommandeTicket(quelstickets, cmd) {
         __comment = cmd.comments.find(c => c.item==null && c.ingredient==null);
 
 
-        const cmdcuisine = {
+        const cmdprincipal = {
           numero: cmdnumero,
           id: cmd.ticketId,
           mode: cmd.mode,
@@ -763,8 +845,9 @@ function printCommandeTicket(quelstickets, cmd) {
             heure: heure
           },
           nomticket: ticket.nom,
-          detail: cmdcuisine,
-          strings: strings.tickets.sac
+          detail: cmdprincipal,
+          strings: strings.tickets.sac,
+          recap: recapTickets
         }
 
       }

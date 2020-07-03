@@ -244,11 +244,8 @@ function _launchPrint(template, printer, contenu) {
     else if ('info' === section) {
       _printInfo(printer, {info: contenu.info, nomticket: contenu.nomticket, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode, client:contenu.detail.client}}, contenu.strings);
     }
-    else if ('partiel_detail' ===  section) {
-      _printPartielDetail(printer, contenu.detail, contenu.strings);
-    }
-    else if ('principal_detail' ===  section) {
-      _printPrincipalDetail(printer, contenu.detail, contenu.strings);
+    else if ('detail' ===  section) {
+      _printDetail(printer, contenu.detail, contenu.strings);
     }
     else if ('avoir' ===  section) {
       _printAvoir(printer, contenu.detail, contenu.strings);
@@ -258,6 +255,8 @@ function _launchPrint(template, printer, contenu) {
     }
     else if ('uber' ===  section) {
       const pqr = await _printUber(printer, contenu.uber, contenu.strings.uber);
+    } else if ('recap' === section) {
+      _printRecap(printer, contenu.recap, contenu.strings);
     }
     // else if ('logo' === section) {
     //   if (contenu.logo!==null) {
@@ -280,7 +279,7 @@ function _launchPrint(template, printer, contenu) {
 
 
 
-// informations sur le ticket cuisine
+// informations commande sur le ticket
 function _printInfo(printer, data, strings) {
   printer
     .font('A')
@@ -320,7 +319,9 @@ function _printInfo(printer, data, strings) {
     .size(1,1);
 }
 
-function _printPartielDetail(printer, data, strings) {
+
+// détail commande sur le ticket
+function _printDetail(printer, data, strings) {
   printer
     .align('CT')
     .size(1,1)
@@ -333,148 +334,41 @@ function _printPartielDetail(printer, data, strings) {
       {text:'', cols:3}
     ]);
 
-    printer.drawLine();
+  printer.drawLine();
 
 
-    if (data.comment!=='') {
-      printer.style('B').tableCustom([
-        {text:'', cols:3},
-        {text: '* ', cols:2, align:'RIGHT'},
-        {text: data.comment, cols:32, align:'LEFT'},
-        {text: ' *', cols:2, align:'RIGHT'},
-        {text:'', cols:3}
-      ]);
-      printer.drawLine();
-    }
-
-    let numarticles = 0;
-    data.articles.forEach((article) => {
-      printer.style('B').tableCustom([
-        {text:'', cols:3},
-        {text: article.qte, cols:3, align:'RIGHT'},
-        {text:'', cols:3},
-        {text: article.nom, cols:30, align:'LEFT'},
-        {text:'', cols:3}
-      ]);
-      if (article.comment!=='') {
-        printer.style('B').tableCustom([
-          {text:'', cols:3},
-          {text: '* ', cols:2, align:'RIGHT'},
-          {text: article.comment, cols:32, align:'LEFT'},
-          {text: ' *', cols:2, align:'RIGHT'},
-          {text:'', cols:3}
-        ]);
-      }
-
-      numarticles++;
-
-    if (article.ingredients.length>0) {
-      article.ingredients.forEach((ingredient) => {
-        printer.style('NORMAL').tableCustom([
-          {text:'', cols:3},
-          {text: ingredient.qte, cols:3, align:'RIGHT'},
-          {text:'', cols:3},
-          {text: '  '+ingredient.nom, cols:30, align:'LEFT'},
-          {text:'', cols:3}
-        ]);
-
-        if (ingredient.comment!=='') {
-          printer.style('B').tableCustom([
-            {text:'', cols:3},
-            {text: '* ', cols:2, align:'RIGHT'},
-            {text: ingredient.comment, cols:32, align:'LEFT'},
-            {text: ' *', cols:2, align:'RIGHT'},
-            {text:'', cols:3}
-          ]);
-        }
-
-      });
-
-      printer.feed(1);
-    }
-  });
-  
-  printer
-    .drawLine()
-    .align('CT')
-    .size(1,2)
-    .text(`${strings.caption.num_articles}${numarticles}`);
-
-}
-
-// informations sur le ticket cuisine
-function _printSacInfo(printer, data, strings) {
-  printer
-    .font('A')
-    .align('CT')
-    .style('B')
-    .size(1,2)
-    .text(strings.titre)
-    .size(1,1)
-    .drawLine()
-    .style('B')
-    .size(2,2)
-    .text(`#${data.commande.numero}`)
-    .size(1,1)
-    .drawLine()
-    .style('NORMAL')
-    .text(`${strings.numero}${data.commande.id}`)
-    .text(`${strings.creation}${data.info.date} à ${data.info.heure}`)
-    .size(2,2)
-    .text(`*** ${strings.mode[data.commande.mode]} ***`)
-    .size(1,2)
-    .drawLine()
-    .size(1,1);
-}
-
-function _printPrincipalDetail(printer, data, strings) {
-  printer
-    .align('CT')
-    .size(1,1)
-    .style('B')
-    .tableCustom([
+  if (data.comment!=='') {
+    printer.style('B').tableCustom([
       {text:'', cols:3},
-      {text: strings.caption.quantite, cols:3},
-      {text:'', cols:3},
-      {text: strings.caption.articles, cols:30},
+      {text: '* ', cols:2, align:'RIGHT'},
+      {text: data.comment, cols:32, align:'LEFT'},
+      {text: ' *', cols:2, align:'RIGHT'},
       {text:'', cols:3}
     ]);
-
     printer.drawLine();
+  }
 
 
-    if (data.comment!=='') {
+  let numarticles = 0;
+  data.articles.forEach((article) => {
+    printer.style('B').tableCustom([
+      {text:'', cols:3},
+      {text: article.qte, cols:3, align:'RIGHT'},
+      {text:'', cols:3},
+      {text: article.nom, cols:30, align:'LEFT'},
+      {text:'', cols:3}
+    ]);
+    if (article.comment!=='') {
       printer.style('B').tableCustom([
         {text:'', cols:3},
         {text: '* ', cols:2, align:'RIGHT'},
-        {text: data.comment, cols:32, align:'LEFT'},
+        {text: article.comment, cols:32, align:'LEFT'},
         {text: ' *', cols:2, align:'RIGHT'},
         {text:'', cols:3}
       ]);
-      printer.drawLine();
     }
 
-
-    let numarticles = 0;
-    data.articles.forEach((article) => {
-      printer.style('B').tableCustom([
-        {text:'', cols:3},
-        {text: article.qte, cols:3, align:'RIGHT'},
-        {text:'', cols:3},
-        {text: article.nom, cols:30, align:'LEFT'},
-        {text:'', cols:3}
-      ]);
-      if (article.comment!=='') {
-        printer.style('B').tableCustom([
-          {text:'', cols:3},
-          {text: '* ', cols:2, align:'RIGHT'},
-          {text: article.comment, cols:32, align:'LEFT'},
-          {text: ' *', cols:2, align:'RIGHT'},
-          {text:'', cols:3}
-        ]);
-      }
-      numarticles++;
-
+    let numingredients = 0;
     if (article.ingredients.length>0) {
       article.ingredients.forEach((ingredient) => {
         printer.style('NORMAL').tableCustom([
@@ -484,6 +378,7 @@ function _printPrincipalDetail(printer, data, strings) {
           {text: '  '+ingredient.nom, cols:30, align:'LEFT'},
           {text:'', cols:3}
         ]);
+      //  numingredients += ingredient.qte;
 
         if (ingredient.comment!=='') {
           printer.style('B').tableCustom([
@@ -497,7 +392,9 @@ function _printPrincipalDetail(printer, data, strings) {
       });
 
       printer.feed(1);
+
     }
+    numarticles += numingredients>0 ? numingredients : article.qte;
   });
   
   printer
@@ -505,6 +402,22 @@ function _printPrincipalDetail(printer, data, strings) {
     .align('CT')
     .size(1,2)
     .text(`${strings.caption.num_articles}${numarticles}`);
+
+}
+
+// récap des autres tickets
+function _printRecap(printer, recap, strings) {
+
+  printer
+    .size(1,1)
+    .drawLine()
+    ;
+  recap.forEach(ticket => {
+    printer
+      .size(1,2)
+      .text(`- ${ticket.nom} : ${ticket.num} ${strings.caption.articles}`);
+  });
+
 
 }
 
@@ -735,6 +648,7 @@ function _printCommande(printer, data, strings) {
 
     if (article.ingredients.length>0) {
       article.ingredients.forEach((ingredient) => {
+        _subtotal += Number(ingredient.prix);
         printer.align('CT').style('NORMAL').tableCustom([
           {text: ingredient.qte, cols:3, align:'RIGHT'},
           {text:'', cols:1},
@@ -909,12 +823,9 @@ function _printPeriodeX(printer, data, strings) {
       .size(1,1)
       .drawLine()
       .align('CT')
-      .tableCustom(
-        [{text: strings.periode.titre, cols:42, align:'LEFT'}],
-        [{text: data.debut+' -> '+data.fin, cols:42, align:'CENTER'}],
-        // [{text: strings.editeur+data.editeur.nom+' ('+data.editeur.id+')', cols:42, align:'LEFT'}]
-        [{text: strings.editeur+data.editeur.nom, cols:42, align:'LEFT'}]
-      )
+      .tableCustom([{text: strings.periode.titre, cols:42, align:'LEFT'}])
+      .tableCustom([{text: data.debut+' -> '+data.fin, cols:42, align:'CENTER'}])
+      .tableCustom([{text: strings.editeur+data.editeur.nom, cols:42, align:'LEFT'}])
       .feed(1)
       ;
     // vendeur(s) :
@@ -1147,12 +1058,10 @@ function _printPeriodeZ(printer, data, strings) {
       .size(1,1)
       .drawLine()
       .align('CT')
-      .tableCustom(
-        [{text: strings.periode.titre, cols:42, align:'LEFT'}],
-        [{text: data.debut+' -> '+data.fin, cols:42, align:'CENTER'}],
+      .tableCustom([{text: strings.periode.titre, cols:42, align:'LEFT'}])
+      .tableCustom([{text: data.debut+' -> '+data.fin, cols:42, align:'CENTER'}])
         // [{text: strings.editeur+data.editeur.nom+' ('+data.editeur.id+')', cols:42, align:'LEFT'}]
-        [{text: strings.editeur+data.editeur.nom, cols:42, align:'LEFT'}]
-      )
+      .tableCustom([{text: strings.editeur+data.editeur.nom, cols:42, align:'LEFT'}])
       .feed(1)
       ;
     // vendeur(s) :
