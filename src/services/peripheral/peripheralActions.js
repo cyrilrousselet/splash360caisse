@@ -385,11 +385,14 @@ function printCommandeTicket(quelstickets, cmd) {
     const withKds = ticketsListe.find(i=>i.kds);
     if (withKds) {
 
+      const clt = cmd.client ? clients.find(c=>c.client_id==cmd.client.client_id) : null;
+
       let kdsCmd = {
         id: cmdnumero,
         ticket_id: cmd.ticketId,
         origine: caisse.nom,
-        name: operateur.nom,
+        origine_type: 'caisse', // rendre dynamique
+        name: clt ? `${clt.prenom} ${clt.nom}`: '',
         mode: cmd.mode, // attention
         timestamp: 1,
         status: 0,

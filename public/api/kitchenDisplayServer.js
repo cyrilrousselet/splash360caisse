@@ -348,6 +348,9 @@ async function recallOrder(order, socket) {
  // db.push("/pendingOrders", pendingOrders)
  // db.push("/finishedOrders", finishedOrders)
 
+  const __now = new Date().getTime();
+
+  log.info("recallOrder", order);
 
   const _ford = await (await db.finishedOrders).get('finishedOrders')
                                                .remove({ id: order.id })
