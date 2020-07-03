@@ -38,6 +38,6 @@ class Logger extends Console {
     }
 }
 
-export default (function() {
-    return new Logger(output, errorOutput); 
-}());
+// export default (function() {
+//     return new Logger(output, errorOutput); 
+// }());
