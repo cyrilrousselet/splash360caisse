@@ -41,8 +41,9 @@ import PaymentIcon from './common/icon/PaymentIcon';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from './common/icon/EditIcon';
 
-import * as createLogger from '../helpers/Logger';
-const logger  = createLogger();
+import Logger from '../helpers/Logger';
+
+const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 

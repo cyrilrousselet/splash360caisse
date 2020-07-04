@@ -1,7 +1,8 @@
 import { catalogueActionTypes } from './catalogueActionTypes';
 import { catalogueServices } from './catalogueServices';
-import * as createLogger from '../../helpers/Logger';
-const logger  = createLogger();
+import Logger from '../../helpers/Logger';
+
+const logger = new Logger();
 
 
 function getAllActive() {
