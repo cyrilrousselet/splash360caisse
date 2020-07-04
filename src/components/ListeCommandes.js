@@ -41,7 +41,8 @@ import PaymentIcon from './common/icon/PaymentIcon';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from './common/icon/EditIcon';
 
-// import logger from '../helpers/Logger';
+import * as createLogger from '../helpers/Logger';
+const logger  = createLogger();
 
 let strings = new LocalizedStrings(data);
 
@@ -219,7 +220,7 @@ class ListeCommandes extends React.Component {
   search_tmo = -1;
   
   componentDidMount() {
-    // logger.log('ListeCommandes.componentDidMount()');
+    logger.log('ListeCommandes.componentDidMount()');
     this.props.getCommandesList();
     this.props.getAllActive();
     this.props.getClientsList();
@@ -247,7 +248,7 @@ class ListeCommandes extends React.Component {
   }
 
   repriseHandle(value) {
-    // logger.log('repriseHandle('+value+')');
+    logger.log('repriseHandle('+value+')');
     this.props.getCommande(value);
     history.push(paths.ENCAISSEMENT);
   }
@@ -264,13 +265,13 @@ class ListeCommandes extends React.Component {
     this.setState({printOpen:false});
   }
   launchTicket(ticket, cmdid) {
-    // logger.log(`print ticket '${ticket}' pour #${cmdid}`);
+    logger.log(`print ticket '${ticket}' pour #${cmdid}`);
   }
 
 
   searchHandler(event) {
     if (event.keyCode==13) {
-      // logger.log(event.target.value);
+      logger.log(event.target.value);
       this.decodeQRCode(event.target.value);
       event.target.value = '';
     }    
@@ -418,7 +419,7 @@ class ListeCommandes extends React.Component {
         if (value.status=='confirmed') confirmedlist.push({id: key, commande: cmd});
       }
     }
-    // logger.log('searchval :',searchval!='');
+    logger.log('searchval :',searchval!='');
     
   
     if(loading) {

@@ -1,7 +1,7 @@
 import { catalogueActionTypes } from './catalogueActionTypes';
 import { catalogueServices } from './catalogueServices';
-
-// import logger from '../../helpers/Logger';
+import * as createLogger from '../../helpers/Logger';
+const logger  = createLogger();
 
 
 function getAllActive() {
@@ -9,7 +9,7 @@ function getAllActive() {
       dispatch({ type: catalogueActionTypes.GETALL_ACTIVE_REQUEST });
 
 
-      // logger.log('getAllActive()');
+      logger.log('getAllActive()');
 
       catalogueServices.getAllActive()
           .then(
