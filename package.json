@@ -123,6 +123,7 @@
         "@babel/cli": "^7.5.5",
         "@babel/core": "^7.5.5",
         "@babel/plugin-syntax-top-level-await": "^7.7.4",
+        "@babel/plugin-transform-classes": "^7.10.4",
         "@babel/preset-flow": "^7.0.0",
         "@rescripts/cli": "^0.0.11",
         "@rescripts/rescript-env": "^0.0.10",
@@ -142,12 +143,8 @@
     },
     "babel": {
         "plugins": [
-            [
-                "@babel/plugin-proposal-class-properties",
-                {
-                    "loose": true
-                }
-            ]
+            [ "@babel/plugin-proposal-class-properties", {"loose": true} ],
+            [ "@babel/plugin-transform-classes", {"loose": true} ]
         ]
     }
 }

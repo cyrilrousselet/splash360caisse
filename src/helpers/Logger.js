@@ -5,6 +5,7 @@ import mkdirp from 'mkdirp';
 import {formatISO9075, format} from 'date-fns';
 import util from 'util';
 
+const ExtensibleConsole = class extends Console {};
 const {app} = remote;
 
 const checkDirectorySync = (directory) => {  
@@ -22,7 +23,7 @@ const output = fs.createWriteStream(`${app.getPath('userData')}/logs/${format(ne
 const errorOutput = fs.createWriteStream(`${app.getPath('userData')}/logs/${format(new Date(),'yyDDD')}_stderr.log`, {flags : 'a'});
 
 
-class Logger extends Console {
+class Logger extends ExtensibleConsole {
     constructor(stdout, stderr, ...otherArgs) {
         super(stdout, stderr, ...otherArgs);
     }
