@@ -161,20 +161,19 @@ async function takeOrderV2(order, zone, ip) {
 
 
   log.info('takeOrderV2', order);
-    const __now = new Date().getTime();
 
+  const now = new Date().getTime()
     const orderId = order.id
     const notCared = (item) => item.status === 0
     if (pendingOrders[orderId].items.every(notCared)) {
       // émettre pris en charge en salle
-      const now = new Date().getTime()
       order.careTime = now
       order.status = 1
       pendingOrders[orderId] = order
       // db.push("/pendingOrders", pendingOrders)
 
 
-      let __upd = {...order, updatedAt: __now};
+      let __upd = {...order, updatedAt: now};
       const _ord = await (await db.pendingOrders).get('pendingOrders')
                                           .find({id: order.id})
                                           .assign(__upd)
@@ -207,7 +206,7 @@ async function takeOrderV2(order, zone, ip) {
       // db.push("/pendingOrders", pendingOrders)
 
 
-      let __upd = {...truthOrder, updatedAt: __now};
+      let __upd = {...truthOrder, updatedAt: now};
       const _ord = await (await db.pendingOrders).get('pendingOrders')
                                           .find({id: truthOrder.id})
                                           .assign(__upd)
