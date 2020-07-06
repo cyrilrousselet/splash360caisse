@@ -143,8 +143,18 @@
     },
     "babel": {
         "plugins": [
-            [ "@babel/plugin-proposal-class-properties", {"loose": true} ],
-            [ "@babel/plugin-transform-classes", {"loose": true} ]
+            [
+                "@babel/plugin-proposal-class-properties",
+                {
+                    "loose": true
+                }
+            ],
+            [
+                "@babel/plugin-transform-classes",
+                {
+                    "loose": true
+                }
+            ]
         ]
     }
 }
