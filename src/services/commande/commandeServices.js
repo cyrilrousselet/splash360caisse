@@ -560,6 +560,7 @@ function isStepOptionnal(step) {
 
 
 function _getSupplements(rule, ingredients) {
+  console.log('_getSupplements');
 
   const regle = rule.regle;
   let __supplement = 0;
@@ -570,6 +571,9 @@ function _getSupplements(rule, ingredients) {
 
     const __rulevaleurs = getRuleValues(__deuxregles[0]);
     const __supvaleurs = getRuleValues(__deuxregles[1]);
+
+    console.log('__supvaleurs',__supvaleurs);
+    console.log('_testIngredient',_testIngredient({regle: __deuxregles[1]}, ingredients));
     
     // si la liste des ingrédients entre dans les critères du supplément
     if (_testIngredient({regle: __deuxregles[1]}, ingredients)) {
@@ -577,10 +581,20 @@ function _getSupplements(rule, ingredients) {
       // tri des ingrédients par supplément croissant (les plus élevés à la fin)
       ingredients.sort((a,b) => a.prix - b.prix);
 
+
+      let __ingstack = [];
+
       // compte les suppléments à partir du minimum des critères
-      ingredients.forEach((ing,i) => {
-        if (i>=__supvaleurs.min) __supplement += ing.prix>0 ? (ing.prix * ing.qte) : (rule.supplement * ing.qte);
+      ingredients.forEach(ing => {
+
+        for(let j=0;j<ing.qte;j++) __ingstack.push(ing);
       });
+      __ingstack.forEach((ing,i) => {
+        // if (i>=__supvaleurs.min) __supplement += ing.prix>0 ? (ing.prix * ing.qte) : (rule.supplement * ing.qte);
+        if (i>=__supvaleurs.min-1) __supplement += ing.prix>0 ? Number(ing.prix) : Number(rule.supplement);
+      });
+
+      console.log('__supplement',__supplement);
 
     }
 
