@@ -76,63 +76,45 @@
             "type_id": "typ85",
             "nom": "Mamma Mia Ingrédients Senior",
             "noprint": [],
-            "weight": null
+            "weight": 85
         },
         {
             "type_id": "typ84",
             "nom": "Mamma Mia Livraison",
             "noprint": [],
-            "weight": null
+            "weight": 84
         },
         {
             "type_id": "typ86",
             "nom": "Mamma Mia Ingrédients Mega",
             "noprint": [],
-            "weight": null
+            "weight": 86
         },
         {
             "type_id": "typ87",
             "nom": "Mamma Mia Pizza",
             "noprint": [],
-            "weight": null
+            "weight": 87
         },
         {
             "type_id": "typ88",
             "nom": "Mamma Mia Boisson",
             "noprint": [],
-            "weight": null
+            "weight": 88
         },
         {
             "type_id": "typ89",
             "nom": "Mamma Mia Bouteille",
             "noprint": [],
-            "weight": null
+            "weight": 89
         }
     ],
     "ingredients": [
         {
             "ingredient_id": "ing492",
             "type": "typ85",
-            "nom": "Sup Oeuf",
+            "nom": "SUP Oeuf",
             "supplement": "0.50",
-            "tva": "tva6",
-            "weight": 5,
-            "color": "jauneorange"
-        },
-        {
-            "ingredient_id": "ing496",
-            "type": "typ85",
-            "nom": "Sup Poulet Roti",
-            "supplement": "1.50",
-            "tva": "tva6",
-            "weight": 5,
-            "color": "orange"
-        },
-        {
-            "ingredient_id": "ing498",
-            "type": "typ85",
-            "nom": "Sup Raclette",
-            "supplement": "1.50",
             "tva": "tva6",
             "weight": 5,
             "color": "jauneorange"
@@ -140,7 +122,7 @@
         {
             "ingredient_id": "ing500",
             "type": "typ85",
-            "nom": "Sup Burrata",
+            "nom": "SUP Burrata",
             "supplement": "2.00",
             "tva": "tva6",
             "weight": 5,
@@ -149,7 +131,7 @@
         {
             "ingredient_id": "ing717",
             "type": "typ85",
-            "nom": "Sup Anchois",
+            "nom": "SUP Anchois",
             "supplement": "1.50",
             "tva": "tva6",
             "weight": 6,
@@ -158,25 +140,25 @@
         {
             "ingredient_id": "ing718",
             "type": "typ85",
-            "nom": "Sup Artichauts",
+            "nom": "SUP Artichauts",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 7,
+            "weight": -34,
             "color": "vertclair"
         },
         {
             "ingredient_id": "ing719",
             "type": "typ85",
-            "nom": "Sup Aubergines Grillées",
+            "nom": "SUP Aubergines Grillées",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 7,
+            "weight": -35,
             "color": "vertfonce"
         },
         {
             "ingredient_id": "ing720",
             "type": "typ85",
-            "nom": "Sup Bacon",
+            "nom": "SUP Bacon",
             "supplement": "2.00",
             "tva": "tva6",
             "weight": 4,
@@ -185,7 +167,7 @@
         {
             "ingredient_id": "ing721",
             "type": "typ85",
-            "nom": "Sup Basilic",
+            "nom": "SUP Basilic",
             "supplement": "1.50",
             "tva": "tva6",
             "weight": 6,
@@ -194,7 +176,7 @@
         {
             "ingredient_id": "ing722",
             "type": "typ85",
-            "nom": "Sup Bœuf Fumé",
+            "nom": "SUP Bœuf Fumé",
             "supplement": "2.00",
             "tva": "tva6",
             "weight": 6,
@@ -203,7 +185,7 @@
         {
             "ingredient_id": "ing723",
             "type": "typ85",
-            "nom": "Sup Calamars",
+            "nom": "SUP Calamars",
             "supplement": "1.50",
             "tva": "tva6",
             "weight": 6,
@@ -212,115 +194,115 @@
         {
             "ingredient_id": "ing724",
             "type": "typ85",
-            "nom": "Sup Câpres",
+            "nom": "SUP Câpres",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": 2,
             "color": "orange"
         },
         {
             "ingredient_id": "ing725",
             "type": "typ85",
-            "nom": "Sup Champignons Frais",
+            "nom": "SUP Champignons Frais",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": 1,
             "color": null
         },
         {
             "ingredient_id": "ing726",
             "type": "typ85",
-            "nom": "Sup Cheddar",
+            "nom": "SUP Cheddar",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": 0,
             "color": "orange"
         },
         {
             "ingredient_id": "ing727",
             "type": "typ85",
-            "nom": "Sup Chèvre",
+            "nom": "SUP Chèvre",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -1,
             "color": "blanc"
         },
         {
             "ingredient_id": "ing728",
             "type": "typ85",
-            "nom": "Sup Chorizo",
+            "nom": "SUP Chorizo",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -2,
             "color": "violet"
         },
         {
             "ingredient_id": "ing729",
             "type": "typ85",
-            "nom": "Sup Crevettes",
+            "nom": "SUP Crevettes",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -3,
             "color": "rose"
         },
         {
             "ingredient_id": "ing730",
             "type": "typ85",
-            "nom": "Sup Filet De Boursin",
+            "nom": "SUP Filet De Boursin",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -4,
             "color": "blanc"
         },
         {
             "ingredient_id": "ing731",
             "type": "typ85",
-            "nom": "Sup Fromage a Raclette",
+            "nom": "SUP Fromage A Raclette",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -5,
             "color": "orange"
         },
         {
             "ingredient_id": "ing732",
             "type": "typ85",
-            "nom": "Sup Reblochon",
+            "nom": "SUP Reblochon",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -6,
             "color": "gris"
         },
         {
             "ingredient_id": "ing733",
             "type": "typ85",
-            "nom": "Sup Gorgonzola",
+            "nom": "SUP Gorgonzola",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -7,
             "color": "blanc"
         },
         {
             "ingredient_id": "ing734",
             "type": "typ85",
-            "nom": "Sup Jambon",
+            "nom": "SUP Jambon",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -8,
             "color": "rose"
         },
         {
             "ingredient_id": "ing735",
             "type": "typ85",
-            "nom": "Sup Lamelles De Saumon",
+            "nom": "SUP Lamelles De Saumon",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -9,
             "color": "rose"
         },
         {
             "ingredient_id": "ing736",
             "type": "typ85",
-            "nom": "Sup Lardons",
+            "nom": "SUP Lardons",
             "supplement": "2.00",
             "tva": "tva6",
             "weight": 3,
@@ -329,218 +311,236 @@
         {
             "ingredient_id": "ing737",
             "type": "typ85",
-            "nom": "Sup Merguez Du Bouché",
+            "nom": "SUP Merguez Du Bouché",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -10,
             "color": "rouge"
         },
         {
             "ingredient_id": "ing738",
             "type": "typ85",
-            "nom": "Sup Moules",
+            "nom": "SUP Moules",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -11,
             "color": "noir"
         },
         {
             "ingredient_id": "ing739",
             "type": "typ85",
-            "nom": "Sup Mozzarella",
+            "nom": "SUP Mozzarella",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -12,
             "color": "blanc"
         },
         {
             "ingredient_id": "ing740",
             "type": "typ85",
-            "nom": "Sup Mozzarella Di Buffala",
+            "nom": "SUP Mozzarella Di Buffala",
             "supplement": "2.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -13,
             "color": "blanc"
         },
         {
             "ingredient_id": "ing741",
             "type": "typ85",
-            "nom": "Sup Oignons",
+            "nom": "SUP Oignons",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -14,
             "color": "jaune"
         },
         {
             "ingredient_id": "ing742",
             "type": "typ85",
-            "nom": "Sup Olives Noires",
+            "nom": "SUP Olives Noires",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -15,
             "color": "noir"
         },
         {
             "ingredient_id": "ing743",
             "type": "typ85",
-            "nom": "Sup Parmesan",
+            "nom": "SUP Parmesan",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -16,
             "color": "blanc"
         },
         {
             "ingredient_id": "ing744",
             "type": "typ85",
-            "nom": "Sup Parmesan Copcaux",
+            "nom": "SUP Parmesan Copcaux",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -17,
             "color": "blanc"
         },
         {
             "ingredient_id": "ing745",
             "type": "typ85",
-            "nom": "Sup Pepperoni",
+            "nom": "SUP Pepperoni",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -18,
             "color": "jaune"
         },
         {
             "ingredient_id": "ing746",
             "type": "typ85",
-            "nom": "Sup Pesto",
+            "nom": "SUP Pesto",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -19,
             "color": "noir"
         },
         {
             "ingredient_id": "ing747",
             "type": "typ85",
-            "nom": "Sup Piment Fort",
+            "nom": "SUP Piment Fort",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -20,
             "color": "vertfonce"
         },
         {
             "ingredient_id": "ing748",
             "type": "typ85",
-            "nom": "Sup Poivrons",
+            "nom": "SUP Poivrons",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -21,
             "color": "vertfonce"
         },
         {
             "ingredient_id": "ing749",
             "type": "typ85",
-            "nom": "Sup Pomme De Terre",
+            "nom": "SUP Pomme De Terre",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -22,
             "color": "jaune"
         },
         {
             "ingredient_id": "ing750",
             "type": "typ85",
-            "nom": "Sup Poulet Fumé",
+            "nom": "SUP Poulet Fumé",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -23,
             "color": "marron"
         },
         {
             "ingredient_id": "ing751",
             "type": "typ85",
-            "nom": "Sup Poulet Roti",
+            "nom": "SUP Poulet Roti",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -24,
             "color": "orange"
         },
         {
             "ingredient_id": "ing752",
             "type": "typ85",
-            "nom": "Sup Roquette",
+            "nom": "SUP Roquette",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -25,
             "color": "gris"
         },
         {
             "ingredient_id": "ing753",
             "type": "typ85",
-            "nom": "Sup Sauce Barbecue",
+            "nom": "SUP Sauce Barbecue",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -26,
             "color": "violet"
         },
         {
             "ingredient_id": "ing754",
             "type": "typ85",
-            "nom": "Sup Chili Thai",
+            "nom": "SUP Chili Thai",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -27,
             "color": "jaune"
         },
         {
             "ingredient_id": "ing755",
             "type": "typ85",
-            "nom": "Sup Sauce Curry",
+            "nom": "SUP Sauce Curry",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -28,
             "color": "jaune"
         },
         {
             "ingredient_id": "ing756",
             "type": "typ85",
-            "nom": "Sup Saumon Fumé",
+            "nom": "SUP Saumon Fumé",
             "supplement": "2.00",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -29,
             "color": "rose"
         },
         {
             "ingredient_id": "ing757",
             "type": "typ85",
-            "nom": "Sup Thon",
+            "nom": "SUP Thon",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -30,
             "color": "rose"
         },
         {
             "ingredient_id": "ing758",
             "type": "typ85",
-            "nom": "Sup Tomates Cerises",
+            "nom": "SUP Tomates Cerises",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -31,
             "color": "rouge"
         },
         {
             "ingredient_id": "ing759",
             "type": "typ85",
-            "nom": "Sup Tomates Séchées",
+            "nom": "SUP Tomates Séchées",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -32,
             "color": "rouge"
         },
         {
             "ingredient_id": "ing760",
             "type": "typ85",
-            "nom": "Viande Hachée Du Boucher",
+            "nom": "SUP Viande Hachée Du Boucher",
             "supplement": "1.50",
             "tva": "tva6",
-            "weight": 6,
+            "weight": -33,
             "color": "violet"
+        },
+        {
+            "ingredient_id": "ing1070",
+            "type": "typ85",
+            "nom": "SUP Crème Fraîche",
+            "supplement": "1.50",
+            "tva": "tva6",
+            "weight": -25,
+            "color": "blanc"
+        },
+        {
+            "ingredient_id": "ing1071",
+            "type": "typ85",
+            "nom": "SUP Sauce Tomate",
+            "supplement": "1.50",
+            "tva": "tva6",
+            "weight": -25,
+            "color": "rouge"
         },
         {
             "ingredient_id": "ing491",
@@ -748,6 +748,240 @@
             "tva": "tva6",
             "weight": 15,
             "color": "rose"
+        },
+        {
+            "ingredient_id": "ing783",
+            "type": "typ86",
+            "nom": "SUP Merguez Du Bouché",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "rose"
+        },
+        {
+            "ingredient_id": "ing784",
+            "type": "typ86",
+            "nom": "SUP Moules",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "rose"
+        },
+        {
+            "ingredient_id": "ing785",
+            "type": "typ86",
+            "nom": "SUP Mozzarella",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "blanc"
+        },
+        {
+            "ingredient_id": "ing786",
+            "type": "typ86",
+            "nom": "SUP Mozzarella Di Buffala",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "blanc"
+        },
+        {
+            "ingredient_id": "ing787",
+            "type": "typ86",
+            "nom": "SUP Oignons",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing788",
+            "type": "typ86",
+            "nom": "SUP Olives Noires",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "noir"
+        },
+        {
+            "ingredient_id": "ing789",
+            "type": "typ86",
+            "nom": "SUP Parmesan",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "blanc"
+        },
+        {
+            "ingredient_id": "ing790",
+            "type": "typ86",
+            "nom": "SUP Parmesan En Copcaux",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "blanc"
+        },
+        {
+            "ingredient_id": "ing791",
+            "type": "typ86",
+            "nom": "SUP Pepperoni",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing792",
+            "type": "typ86",
+            "nom": "SUP Pesto",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "noir"
+        },
+        {
+            "ingredient_id": "ing793",
+            "type": "typ86",
+            "nom": "SUP Piment Fort",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "vertfonce"
+        },
+        {
+            "ingredient_id": "ing794",
+            "type": "typ86",
+            "nom": "SUP Poivrons",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "vertfonce"
+        },
+        {
+            "ingredient_id": "ing795",
+            "type": "typ86",
+            "nom": "SUP Pommes De Terres",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "jauneorange"
+        },
+        {
+            "ingredient_id": "ing796",
+            "type": "typ86",
+            "nom": "SUP Poulet Fumé",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "marron"
+        },
+        {
+            "ingredient_id": "ing797",
+            "type": "typ86",
+            "nom": "SUP Poulet Roti",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "marron"
+        },
+        {
+            "ingredient_id": "ing798",
+            "type": "typ86",
+            "nom": "SUP Roquette",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "gris"
+        },
+        {
+            "ingredient_id": "ing799",
+            "type": "typ86",
+            "nom": "SUP Sauce Barbecue",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "violet"
+        },
+        {
+            "ingredient_id": "ing800",
+            "type": "typ86",
+            "nom": "SUP Sauce Chili Thai",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing801",
+            "type": "typ86",
+            "nom": "SUP Sauce Curry",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 15,
+            "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing802",
+            "type": "typ86",
+            "nom": "SUP Saumon Fumé",
+            "supplement": "2.50",
+            "tva": "tva6",
+            "weight": 4,
+            "color": "rose"
+        },
+        {
+            "ingredient_id": "ing803",
+            "type": "typ86",
+            "nom": "SUP Thon",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 14,
+            "color": "rose"
+        },
+        {
+            "ingredient_id": "ing804",
+            "type": "typ86",
+            "nom": "SUP Tomates Cerises",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 14,
+            "color": "rouge"
+        },
+        {
+            "ingredient_id": "ing805",
+            "type": "typ86",
+            "nom": "SUP Tomates Séchées",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 14,
+            "color": "rouge"
+        },
+        {
+            "ingredient_id": "ing806",
+            "type": "typ86",
+            "nom": "SUP Viande Hachée Du Boucher",
+            "supplement": "2.00",
+            "tva": "tva6",
+            "weight": 14,
+            "color": "marron"
+        },
+        {
+            "ingredient_id": "ing1069",
+            "type": "typ86",
+            "nom": "SUP Crème Fraîche",
+            "supplement": "2.50",
+            "tva": "tva6",
+            "weight": 14,
+            "color": "blanc"
+        },
+        {
+            "ingredient_id": "ing1072",
+            "type": "typ86",
+            "nom": "SUP Sauce Tomate",
+            "supplement": "2.50",
+            "tva": "tva6",
+            "weight": 3,
+            "color": "rouge"
         },
         {
             "ingredient_id": "ing510",
@@ -1020,6 +1254,33 @@
             "color": "marron"
         },
         {
+            "ingredient_id": "ing1083",
+            "type": "typ87",
+            "nom": "Bresaola",
+            "supplement": "1.00",
+            "tva": "tva6",
+            "weight": 6,
+            "color": "blanc"
+        },
+        {
+            "ingredient_id": "ing1084",
+            "type": "typ87",
+            "nom": "Luigi",
+            "supplement": "1.00",
+            "tva": "tva6",
+            "weight": 6,
+            "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing1085",
+            "type": "typ87",
+            "nom": "Al Tartuffo",
+            "supplement": "1.00",
+            "tva": "tva6",
+            "weight": 6,
+            "color": "marron"
+        },
+        {
             "ingredient_id": "ing540",
             "type": "typ88",
             "nom": "Coca",
@@ -1121,8 +1382,8 @@
         {
             "ingredient_id": "ing551",
             "type": "typ89",
-            "nom": "Oasis Tropical 1,5L",
-            "supplement": "0.00",
+            "nom": "Oasis Tropical 2 L",
+            "supplement": "3.00",
             "tva": "tva8",
             "weight": 5,
             "color": "orange"
@@ -1846,7 +2107,7 @@
             "produit_id": "prd1389",
             "groupe": "grp71",
             "active": 1,
-            "nom": "Al Tartuffa",
+            "nom": "Al Tartuffo",
             "prix": "13.50",
             "tva": "tva6",
             "composition": [],
@@ -1857,7 +2118,7 @@
             "produit_id": "prd1390",
             "groupe": "grp71",
             "active": 1,
-            "nom": "Mega Al Tartuffa",
+            "nom": "Mega Al Tartuffo",
             "prix": "17.50",
             "tva": "tva6",
             "composition": [],
@@ -2055,8 +2316,8 @@
             "produit_id": "prd1408",
             "groupe": "grp73",
             "active": 1,
-            "nom": "oasis Topical 1,5L",
-            "prix": "2.50",
+            "nom": "oasis Topical 2L",
+            "prix": "3.00",
             "tva": "tva8",
             "composition": [],
             "weight": 4,
@@ -2127,6 +2388,28 @@
             "composition": [],
             "weight": 2,
             "color": "rouge"
+        },
+        {
+            "produit_id": "prd1416",
+            "groupe": "grp74",
+            "active": 1,
+            "nom": "Tiramisu Nutella Spéculos",
+            "prix": "2.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 2,
+            "color": "marron"
+        },
+        {
+            "produit_id": "prd1417",
+            "groupe": "grp74",
+            "active": 1,
+            "nom": "Tiramisu Caramel Spéculos",
+            "prix": "2.50",
+            "tva": "tva6",
+            "composition": [],
+            "weight": 2,
+            "color": "jauneorange"
         }
     ],
     "steps": [
@@ -4010,7 +4293,7 @@
                 {
                     "type": "typ87",
                     "regle": "{1,1}",
-                    "supplement": "0.00"
+                    "supplement": "0"
                 }
             ],
             "weight": 0
@@ -4031,11 +4314,11 @@
         {
             "step_id": "step693",
             "produit": "prd1413",
-            "titre": "Sélectionnez 3 Pizza",
+            "titre": "Sélectionnez 1 Pizza",
             "regles": [
                 {
                     "type": "typ87",
-                    "regle": "{3,3}",
+                    "regle": "{1,1}",
                     "supplement": "0.00"
                 }
             ],
@@ -4052,20 +4335,72 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 6
         },
         {
-            "step_id": "step695",
-            "produit": "prd1414",
+            "step_id": "step1191",
+            "produit": "prd1413",
+            "titre": "Sélectionnez 2 Pizza",
+            "regles": [
+                {
+                    "type": "typ87",
+                    "regle": "{1,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 2
+        },
+        {
+            "step_id": "step1192",
+            "produit": "prd1413",
             "titre": "Sélectionnez 3 Pizza",
             "regles": [
                 {
                     "type": "typ87",
-                    "regle": "{3,3}",
+                    "regle": "{1,1}",
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 4
+        },
+        {
+            "step_id": "step1229",
+            "produit": "prd1413",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ85",
+                    "regle": "{0,10}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
+        },
+        {
+            "step_id": "step1230",
+            "produit": "prd1413",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ85",
+                    "regle": "{0,10}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 3
+        },
+        {
+            "step_id": "step1231",
+            "produit": "prd1413",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ85",
+                    "regle": "{0,10}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 5
         },
         {
             "step_id": "step696",
@@ -4078,7 +4413,85 @@
                     "supplement": "0.00"
                 }
             ],
+            "weight": 4
+        },
+        {
+            "step_id": "step1232",
+            "produit": "prd1414",
+            "titre": "Sélectionnez 1 Pizza",
+            "regles": [
+                {
+                    "type": "typ87",
+                    "regle": "{1,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1233",
+            "produit": "prd1414",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ86",
+                    "regle": "{0,10}",
+                    "supplement": "0.00"
+                }
+            ],
             "weight": 1
+        },
+        {
+            "step_id": "step1234",
+            "produit": "prd1414",
+            "titre": "Sélectionnez 2 Pizza",
+            "regles": [
+                {
+                    "type": "typ87",
+                    "regle": "{1,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
+        },
+        {
+            "step_id": "step1235",
+            "produit": "prd1414",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ86",
+                    "regle": "{0,10}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 2
+        },
+        {
+            "step_id": "step1236",
+            "produit": "prd1414",
+            "titre": "Sélectionnez 3 Pizza",
+            "regles": [
+                {
+                    "type": "typ87",
+                    "regle": "{1,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 2
+        },
+        {
+            "step_id": "step1237",
+            "produit": "prd1414",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ86",
+                    "regle": "{0,10}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 3
         }
     ]
 }

@@ -160,10 +160,28 @@
             "weight": 149
         },
         {
+            "type_id": "typ148",
+            "nom": "SUPPLÉMENTS BURGER BEST WORLD",
+            "noprint": [],
+            "weight": 148
+        },
+        {
+            "type_id": "typ162",
+            "nom": "SUPPLÉMENTS FRITES BURGER BESTWORLD",
+            "noprint": [],
+            "weight": null
+        },
+        {
             "type_id": "typ152",
             "nom": "PAIN BEST WOLRD",
             "noprint": [],
             "weight": 152
+        },
+        {
+            "type_id": "typ160",
+            "nom": "ACCOMPAGNEMENT SUPPLÉMENTAIRE BEST WORLD",
+            "noprint": [],
+            "weight": null
         },
         {
             "type_id": "typ151",
@@ -194,6 +212,12 @@
             "nom": "GOÛTS SUPPLÉMENTAIRES SMOOTHIES BEST WORLD",
             "noprint": [],
             "weight": 145
+        },
+        {
+            "type_id": "typ161",
+            "nom": "GOUT SMOOTHIES BEST WORLD",
+            "noprint": [],
+            "weight": null
         }
     ],
     "ingredients": [
@@ -612,6 +636,69 @@
             "color": "vertfonce"
         },
         {
+            "ingredient_id": "ing1041",
+            "type": "typ148",
+            "nom": "Cheddar Sur Frites",
+            "supplement": "0.80",
+            "tva": "tva6",
+            "weight": 5,
+            "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing1042",
+            "type": "typ148",
+            "nom": "Cheddar Sur Frites Bacon",
+            "supplement": "1.50",
+            "tva": "tva6",
+            "weight": 6,
+            "color": "rose"
+        },
+        {
+            "ingredient_id": "ing1043",
+            "type": "typ148",
+            "nom": "Supplément Galette",
+            "supplement": "0.80",
+            "tva": "tva6",
+            "weight": 7,
+            "color": "jauneorange"
+        },
+        {
+            "ingredient_id": "ing1044",
+            "type": "typ148",
+            "nom": "Suppléments Cheddar Dans Burger",
+            "supplement": "0.80",
+            "tva": "tva6",
+            "weight": 8,
+            "color": "orange"
+        },
+        {
+            "ingredient_id": "ing1045",
+            "type": "typ148",
+            "nom": "Suppléments Steak",
+            "supplement": "3.00",
+            "tva": "tva6",
+            "weight": 9,
+            "color": "marron"
+        },
+        {
+            "ingredient_id": "ing1046",
+            "type": "typ148",
+            "nom": "Suppléments Gruyère",
+            "supplement": "0.80",
+            "tva": "tva6",
+            "weight": 10,
+            "color": "jauneorange"
+        },
+        {
+            "ingredient_id": "ing1100",
+            "type": "typ162",
+            "nom": "Frites",
+            "supplement": "2.50",
+            "tva": "tva6",
+            "weight": 5,
+            "color": "jaune"
+        },
+        {
             "ingredient_id": "ing1057",
             "type": "typ152",
             "nom": "PAIN",
@@ -619,6 +706,78 @@
             "tva": "tva6",
             "weight": 5,
             "color": "jauneorange"
+        },
+        {
+            "ingredient_id": "ing1086",
+            "type": "typ160",
+            "nom": "Frites",
+            "supplement": "2.50",
+            "tva": "tva6",
+            "weight": 5,
+            "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing1087",
+            "type": "typ160",
+            "nom": "Frites Suppléments Cheddar",
+            "supplement": "3.30",
+            "tva": "tva6",
+            "weight": 6,
+            "color": "orange"
+        },
+        {
+            "ingredient_id": "ing1088",
+            "type": "typ160",
+            "nom": "Frites Suppléments Bacon",
+            "supplement": "4.00",
+            "tva": "tva6",
+            "weight": 7,
+            "color": "violet"
+        },
+        {
+            "ingredient_id": "ing1089",
+            "type": "typ160",
+            "nom": "Riz",
+            "supplement": "2.50",
+            "tva": "tva6",
+            "weight": 8,
+            "color": "blanc"
+        },
+        {
+            "ingredient_id": "ing1090",
+            "type": "typ160",
+            "nom": "Salade",
+            "supplement": "2.50",
+            "tva": "tva6",
+            "weight": 9,
+            "color": "vertclair"
+        },
+        {
+            "ingredient_id": "ing1091",
+            "type": "typ160",
+            "nom": "Haricot",
+            "supplement": "2.50",
+            "tva": "tva6",
+            "weight": 10,
+            "color": "vertfonce"
+        },
+        {
+            "ingredient_id": "ing1092",
+            "type": "typ160",
+            "nom": "Cheddar",
+            "supplement": "3.00",
+            "tva": "tva6",
+            "weight": 11,
+            "color": "orange"
+        },
+        {
+            "ingredient_id": "ing1093",
+            "type": "typ160",
+            "nom": "Cheddar Bacon",
+            "supplement": "3.80",
+            "tva": "tva6",
+            "weight": 12,
+            "color": "rose"
         },
         {
             "ingredient_id": "ing1055",
@@ -636,6 +795,15 @@
             "supplement": "0.80",
             "tva": "tva6",
             "weight": 6,
+            "color": "blanc"
+        },
+        {
+            "ingredient_id": "ing1101",
+            "type": "typ151",
+            "nom": "Sans Fromage",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 7,
             "color": "blanc"
         },
         {
@@ -769,6 +937,60 @@
             "type": "typ145",
             "nom": "Fruits Rouge",
             "supplement": "1.00",
+            "tva": "tva6",
+            "weight": 10,
+            "color": "rouge"
+        },
+        {
+            "ingredient_id": "ing1094",
+            "type": "typ161",
+            "nom": "Fraise",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 5,
+            "color": "rouge"
+        },
+        {
+            "ingredient_id": "ing1095",
+            "type": "typ161",
+            "nom": "Mangue",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 6,
+            "color": "vertfonce"
+        },
+        {
+            "ingredient_id": "ing1096",
+            "type": "typ161",
+            "nom": "Noix De Coco",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 7,
+            "color": "marron"
+        },
+        {
+            "ingredient_id": "ing1097",
+            "type": "typ161",
+            "nom": "Citron Jaune",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 8,
+            "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing1098",
+            "type": "typ161",
+            "nom": "Ananas",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 9,
+            "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing1099",
+            "type": "typ161",
+            "nom": "Fruits Rouge",
+            "supplement": "0.00",
             "tva": "tva6",
             "weight": 10,
             "color": "rouge"
@@ -2446,7 +2668,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1004",
@@ -2459,7 +2681,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": -2
         },
         {
             "step_id": "step1121",
@@ -2475,6 +2697,32 @@
             "weight": -1
         },
         {
+            "step_id": "step1194",
+            "produit": "prd1436",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ148",
+                    "regle": "{0,6}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
+        },
+        {
+            "step_id": "step1222",
+            "produit": "prd1436",
+            "titre": "SUPPLÉMENTS FRITES",
+            "regles": [
+                {
+                    "type": "typ162",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 2
+        },
+        {
             "step_id": "step763",
             "produit": "prd1437",
             "titre": "BOISSONS",
@@ -2485,7 +2733,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1003",
@@ -2498,7 +2746,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": -2
         },
         {
             "step_id": "step1122",
@@ -2514,6 +2762,32 @@
             "weight": -1
         },
         {
+            "step_id": "step1193",
+            "produit": "prd1437",
+            "titre": "SUPPLEMENTS",
+            "regles": [
+                {
+                    "type": "typ148",
+                    "regle": "{0,6}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
+            "step_id": "step1223",
+            "produit": "prd1437",
+            "titre": "SUPPLÉMENTS FRITES",
+            "regles": [
+                {
+                    "type": "typ162",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
+        },
+        {
             "step_id": "step764",
             "produit": "prd1438",
             "titre": "BOISSONS",
@@ -2524,7 +2798,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1002",
@@ -2537,7 +2811,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": -2
         },
         {
             "step_id": "step1123",
@@ -2553,6 +2827,32 @@
             "weight": -1
         },
         {
+            "step_id": "step1195",
+            "produit": "prd1438",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ148",
+                    "regle": "{0,6}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
+        },
+        {
+            "step_id": "step1224",
+            "produit": "prd1438",
+            "titre": "SUPPLÉMENTS FRITES",
+            "regles": [
+                {
+                    "type": "typ162",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 2
+        },
+        {
             "step_id": "step765",
             "produit": "prd1439",
             "titre": "BOISSONS",
@@ -2563,7 +2863,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1001",
@@ -2576,7 +2876,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": -2
         },
         {
             "step_id": "step1124",
@@ -2592,6 +2892,32 @@
             "weight": -1
         },
         {
+            "step_id": "step1196",
+            "produit": "prd1439",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ148",
+                    "regle": "{0,6}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
+        },
+        {
+            "step_id": "step1225",
+            "produit": "prd1439",
+            "titre": "SUPPLÉMENTS FRITES",
+            "regles": [
+                {
+                    "type": "typ162",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 2
+        },
+        {
             "step_id": "step766",
             "produit": "prd1440",
             "titre": "BOISSONS",
@@ -2602,7 +2928,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1000",
@@ -2615,7 +2941,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": -2
         },
         {
             "step_id": "step1125",
@@ -2631,6 +2957,32 @@
             "weight": -1
         },
         {
+            "step_id": "step1197",
+            "produit": "prd1440",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ148",
+                    "regle": "{0,6}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
+        },
+        {
+            "step_id": "step1226",
+            "produit": "prd1440",
+            "titre": "SUPPLÉMENTS FRITES",
+            "regles": [
+                {
+                    "type": "typ162",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 2
+        },
+        {
             "step_id": "step767",
             "produit": "prd1441",
             "titre": "BOISSONS",
@@ -2641,7 +2993,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step999",
@@ -2654,7 +3006,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": -2
         },
         {
             "step_id": "step1126",
@@ -2670,6 +3022,32 @@
             "weight": -1
         },
         {
+            "step_id": "step1198",
+            "produit": "prd1441",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ148",
+                    "regle": "{0,6}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
+        },
+        {
+            "step_id": "step1227",
+            "produit": "prd1441",
+            "titre": "SUPPLÉMENTS FRITES",
+            "regles": [
+                {
+                    "type": "typ162",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 2
+        },
+        {
             "step_id": "step792",
             "produit": "prd1442",
             "titre": "BOISSONS",
@@ -2680,7 +3058,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 7
         },
         {
             "step_id": "step1005",
@@ -2693,7 +3071,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 3
         },
         {
             "step_id": "step1046",
@@ -2702,11 +3080,37 @@
             "regles": [
                 {
                     "type": "typ152",
-                    "regle": "{0,2};s:{2,2}",
+                    "regle": "{0,5};s:{2,5}",
                     "supplement": "0.50"
                 }
             ],
-            "weight": 0
+            "weight": 6
+        },
+        {
+            "step_id": "step1211",
+            "produit": "prd1442",
+            "titre": "ACCOMPAGNEMENTS SUPPLÉMENTAIRE",
+            "regles": [
+                {
+                    "type": "typ160",
+                    "regle": "{0,8}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 4
+        },
+        {
+            "step_id": "step1212",
+            "produit": "prd1442",
+            "titre": "TYPE DE CUISSONS",
+            "regles": [
+                {
+                    "type": "typ147",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 2
         },
         {
             "step_id": "step791",
@@ -2719,7 +3123,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 4
         },
         {
             "step_id": "step1006",
@@ -2741,11 +3145,37 @@
             "regles": [
                 {
                     "type": "typ152",
-                    "regle": "{0,2};s:{2,2}",
+                    "regle": "{0,5};s:{2,5}",
                     "supplement": "0.50"
                 }
             ],
-            "weight": 0
+            "weight": 3
+        },
+        {
+            "step_id": "step1213",
+            "produit": "prd1443",
+            "titre": "ACCOMPAGNEMENTS SUPPLÉMENTAIRE",
+            "regles": [
+                {
+                    "type": "typ160",
+                    "regle": "{0,8}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 2
+        },
+        {
+            "step_id": "step1214",
+            "produit": "prd1443",
+            "titre": "TYPE DE CUISSONS",
+            "regles": [
+                {
+                    "type": "typ147",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": -2
         },
         {
             "step_id": "step790",
@@ -2758,7 +3188,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 2
         },
         {
             "step_id": "step1007",
@@ -2780,11 +3210,37 @@
             "regles": [
                 {
                     "type": "typ152",
-                    "regle": "{0,2};s:{2,2}",
+                    "regle": "{0,5};s:{2,5}",
                     "supplement": "0.50"
                 }
             ],
+            "weight": 1
+        },
+        {
+            "step_id": "step1215",
+            "produit": "prd1444",
+            "titre": "ACCOMPAGNEMENTS SUPPLÉMENTAIRE",
+            "regles": [
+                {
+                    "type": "typ160",
+                    "regle": "{0,8}",
+                    "supplement": "0.00"
+                }
+            ],
             "weight": 0
+        },
+        {
+            "step_id": "step1216",
+            "produit": "prd1444",
+            "titre": "TYPE DE CUISSONS",
+            "regles": [
+                {
+                    "type": "typ147",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": -2
         },
         {
             "step_id": "step789",
@@ -2797,7 +3253,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 2
         },
         {
             "step_id": "step1008",
@@ -2819,8 +3275,34 @@
             "regles": [
                 {
                     "type": "typ152",
-                    "regle": "{0,2};s:{2,2}",
+                    "regle": "{0,5};s:{2,5}",
                     "supplement": "0.50"
+                }
+            ],
+            "weight": 1
+        },
+        {
+            "step_id": "step1217",
+            "produit": "prd1445",
+            "titre": "TYPE DE CUISSONS",
+            "regles": [
+                {
+                    "type": "typ147",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": -2
+        },
+        {
+            "step_id": "step1218",
+            "produit": "prd1445",
+            "titre": "ACCOMPAGNEMENTS SUPPLÉMENTAIRE",
+            "regles": [
+                {
+                    "type": "typ160",
+                    "regle": "{0,8}",
+                    "supplement": "0.00"
                 }
             ],
             "weight": 0
@@ -2836,7 +3318,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 2
         },
         {
             "step_id": "step1011",
@@ -2858,8 +3340,21 @@
             "regles": [
                 {
                     "type": "typ152",
-                    "regle": "{0,2};s:{2,2}",
+                    "regle": "{0,5};s:{2,5}",
                     "supplement": "0.50"
+                }
+            ],
+            "weight": 1
+        },
+        {
+            "step_id": "step1206",
+            "produit": "prd1446",
+            "titre": "ACCOMPAGNEMENTS SUPPLÉMENTAIRE",
+            "regles": [
+                {
+                    "type": "typ160",
+                    "regle": "{0,8}",
+                    "supplement": "0.00"
                 }
             ],
             "weight": 0
@@ -2875,7 +3370,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 3
         },
         {
             "step_id": "step1012",
@@ -2897,8 +3392,21 @@
             "regles": [
                 {
                     "type": "typ152",
-                    "regle": "{0,2};s:{2,2}",
+                    "regle": "{0,5};s:{2,5}",
                     "supplement": "0.50"
+                }
+            ],
+            "weight": 2
+        },
+        {
+            "step_id": "step1207",
+            "produit": "prd1447",
+            "titre": "ACCOMPAGNEMENTS SUPPLÉMENTAIRE",
+            "regles": [
+                {
+                    "type": "typ160",
+                    "regle": "{0,8}",
+                    "supplement": "0.00"
                 }
             ],
             "weight": 0
@@ -2914,7 +3422,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 3
         },
         {
             "step_id": "step1013",
@@ -2936,8 +3444,21 @@
             "regles": [
                 {
                     "type": "typ152",
-                    "regle": "{0,2};s:{2,2}",
+                    "regle": "{0,5};s:{2,5}",
                     "supplement": "0.50"
+                }
+            ],
+            "weight": 2
+        },
+        {
+            "step_id": "step1208",
+            "produit": "prd1448",
+            "titre": "ACCOMPAGNEMENTS SUPPLÉMENTAIRE",
+            "regles": [
+                {
+                    "type": "typ160",
+                    "regle": "{0,8}",
+                    "supplement": "0.00"
                 }
             ],
             "weight": 0
@@ -2953,7 +3474,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 3
         },
         {
             "step_id": "step1014",
@@ -2975,8 +3496,21 @@
             "regles": [
                 {
                     "type": "typ152",
-                    "regle": "{0,2};s:{2,2}",
+                    "regle": "{0,5};s:{2,5}",
                     "supplement": "0.50"
+                }
+            ],
+            "weight": 2
+        },
+        {
+            "step_id": "step1209",
+            "produit": "prd1449",
+            "titre": "ACCOMPAGNEMENTS SUPPLÉMENTAIRE",
+            "regles": [
+                {
+                    "type": "typ160",
+                    "regle": "{0,8}",
+                    "supplement": "0.00"
                 }
             ],
             "weight": 0
@@ -2992,7 +3526,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 3
         },
         {
             "step_id": "step1015",
@@ -3014,11 +3548,11 @@
             "regles": [
                 {
                     "type": "typ151",
-                    "regle": "{0,2};",
-                    "supplement": "0.00"
+                    "regle": "{0,5};s:{2,5}",
+                    "supplement": "0.80"
                 }
             ],
-            "weight": 0
+            "weight": 1
         },
         {
             "step_id": "step1055",
@@ -3027,8 +3561,21 @@
             "regles": [
                 {
                     "type": "typ152",
-                    "regle": "{0,2};s:{2,2}",
+                    "regle": "{0,5};s:{2,5}",
                     "supplement": "0.50"
+                }
+            ],
+            "weight": 1
+        },
+        {
+            "step_id": "step1203",
+            "produit": "prd1450",
+            "titre": "ACCOMPAGNEMENTS SUPPLÉMENTAIRE",
+            "regles": [
+                {
+                    "type": "typ160",
+                    "regle": "{0,8}",
+                    "supplement": "0.00"
                 }
             ],
             "weight": 0
@@ -3044,7 +3591,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 3
         },
         {
             "step_id": "step1016",
@@ -3066,11 +3613,11 @@
             "regles": [
                 {
                     "type": "typ151",
-                    "regle": "{0,2};",
-                    "supplement": "0.00"
+                    "regle": "{0,5};s:{2,5}",
+                    "supplement": "0.80"
                 }
             ],
-            "weight": 0
+            "weight": 3
         },
         {
             "step_id": "step1056",
@@ -3079,11 +3626,24 @@
             "regles": [
                 {
                     "type": "typ152",
-                    "regle": "{0,2};s:{2,2}",
+                    "regle": "{0,5};s:{2,5}",
                     "supplement": "0.50"
                 }
             ],
-            "weight": 0
+            "weight": 3
+        },
+        {
+            "step_id": "step1204",
+            "produit": "prd1451",
+            "titre": "ACCOMPAGNEMENTS SUPPLÉMENTAIRE",
+            "regles": [
+                {
+                    "type": "typ160",
+                    "regle": "{0,8}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 2
         },
         {
             "step_id": "step727",
@@ -3096,7 +3656,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 3
         },
         {
             "step_id": "step1017",
@@ -3118,11 +3678,11 @@
             "regles": [
                 {
                     "type": "typ151",
-                    "regle": "{0,2};",
-                    "supplement": "0.00"
+                    "regle": "{0,5};s:{2,5}",
+                    "supplement": "0.80"
                 }
             ],
-            "weight": 0
+            "weight": 3
         },
         {
             "step_id": "step1057",
@@ -3131,11 +3691,24 @@
             "regles": [
                 {
                     "type": "typ152",
-                    "regle": "{0,2};s:{2,2}",
+                    "regle": "{0,5};s:{2,5}",
                     "supplement": "0.50"
                 }
             ],
-            "weight": 0
+            "weight": 3
+        },
+        {
+            "step_id": "step1205",
+            "produit": "prd1452",
+            "titre": "ACCOMPAGNEMENTS SUPPLÉMENTAIRE",
+            "regles": [
+                {
+                    "type": "typ160",
+                    "regle": "{0,8}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 2
         },
         {
             "step_id": "step716",
@@ -3161,7 +3734,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 3
         },
         {
             "step_id": "step1058",
@@ -3170,11 +3743,24 @@
             "regles": [
                 {
                     "type": "typ152",
-                    "regle": "{0,2};s:{2,2}",
+                    "regle": "{0,5};s:{2,5}",
                     "supplement": "0.50"
                 }
             ],
-            "weight": 1
+            "weight": 3
+        },
+        {
+            "step_id": "step1200",
+            "produit": "prd1453",
+            "titre": "ACCOMPAGNEMENTS SUPPLÉMENTAIRES",
+            "regles": [
+                {
+                    "type": "typ160",
+                    "regle": "{0,8}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 2
         },
         {
             "step_id": "step718",
@@ -3200,7 +3786,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 4
         },
         {
             "step_id": "step1059",
@@ -3209,11 +3795,24 @@
             "regles": [
                 {
                     "type": "typ152",
-                    "regle": "{0,2};s:{2,2}",
+                    "regle": "{0,5};s:{2,5}",
                     "supplement": "0.50"
                 }
             ],
-            "weight": 2
+            "weight": 4
+        },
+        {
+            "step_id": "step1201",
+            "produit": "prd1454",
+            "titre": "ACCOMPAGNEMENTS SUPPLÉMENTAIRE",
+            "regles": [
+                {
+                    "type": "typ160",
+                    "regle": "{0,8}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 3
         },
         {
             "step_id": "step720",
@@ -3239,7 +3838,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 3
+            "weight": 5
         },
         {
             "step_id": "step1060",
@@ -3248,11 +3847,24 @@
             "regles": [
                 {
                     "type": "typ152",
-                    "regle": "{0,2};s:{2,2}",
+                    "regle": "{0,5};s:{2,5}",
                     "supplement": "0.50"
                 }
             ],
-            "weight": 3
+            "weight": 5
+        },
+        {
+            "step_id": "step1202",
+            "produit": "prd1455",
+            "titre": "ACCOMPAGNEMENTS SUPPLÉMENTAIRE",
+            "regles": [
+                {
+                    "type": "typ160",
+                    "regle": "{0,8}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 4
         },
         {
             "step_id": "step772",
@@ -3287,8 +3899,8 @@
             "regles": [
                 {
                     "type": "typ151",
-                    "regle": "{0,2};",
-                    "supplement": "0.00"
+                    "regle": "{0,5};s:{2,5}",
+                    "supplement": "0.80"
                 }
             ],
             "weight": 0
@@ -3300,7 +3912,7 @@
             "regles": [
                 {
                     "type": "typ152",
-                    "regle": "{0,2};s:{1,2}",
+                    "regle": "{0,5};s:{2,5}",
                     "supplement": "0.50"
                 }
             ],
@@ -3339,8 +3951,8 @@
             "regles": [
                 {
                     "type": "typ151",
-                    "regle": "{0,2};",
-                    "supplement": "0.00"
+                    "regle": "{0,5};s:{2,5}",
+                    "supplement": "0.80"
                 }
             ],
             "weight": 0
@@ -3352,7 +3964,7 @@
             "regles": [
                 {
                     "type": "typ152",
-                    "regle": "{0,2};s:{1,2}",
+                    "regle": "{0,5};s:{2,5}",
                     "supplement": "0.50"
                 }
             ],
@@ -3391,8 +4003,8 @@
             "regles": [
                 {
                     "type": "typ151",
-                    "regle": "{0,2};",
-                    "supplement": "0.00"
+                    "regle": "{0,5};s:{2,5}",
+                    "supplement": "0.80"
                 }
             ],
             "weight": -1
@@ -3443,8 +4055,8 @@
             "regles": [
                 {
                     "type": "typ151",
-                    "regle": "{0,2};",
-                    "supplement": "0.00"
+                    "regle": "{0,5};s:{2,5}",
+                    "supplement": "0.80"
                 }
             ],
             "weight": 0
@@ -3456,7 +4068,7 @@
             "regles": [
                 {
                     "type": "typ152",
-                    "regle": "{0,2};s:{2,2}",
+                    "regle": "{0,5};s:{2,5}",
                     "supplement": "0.50"
                 }
             ],
@@ -3616,7 +4228,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 3
         },
         {
             "step_id": "step998",
@@ -3629,7 +4241,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": -2
         },
         {
             "step_id": "step1127",
@@ -3643,6 +4255,32 @@
                 }
             ],
             "weight": -1
+        },
+        {
+            "step_id": "step1199",
+            "produit": "prd2136",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ148",
+                    "regle": "{0,6}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 2
+        },
+        {
+            "step_id": "step1228",
+            "produit": "prd2136",
+            "titre": "SUPPLÉMENTS FRITES",
+            "regles": [
+                {
+                    "type": "typ162",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 3
         },
         {
             "step_id": "step1009",
@@ -3668,7 +4306,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1050",
@@ -3677,8 +4315,34 @@
             "regles": [
                 {
                     "type": "typ152",
-                    "regle": "{0,2};s:{2,2}",
+                    "regle": "{0,5};s:{2,5}",
                     "supplement": "0.50"
+                }
+            ],
+            "weight": 1
+        },
+        {
+            "step_id": "step1219",
+            "produit": "prd2137",
+            "titre": "TYPE DE CUISSONS",
+            "regles": [
+                {
+                    "type": "typ147",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": -2
+        },
+        {
+            "step_id": "step1220",
+            "produit": "prd2137",
+            "titre": "ACCOMPAGNEMENTS SUPPLÉMENTAIRE",
+            "regles": [
+                {
+                    "type": "typ160",
+                    "regle": "{0,8}",
+                    "supplement": "0.00"
                 }
             ],
             "weight": 0
@@ -3686,7 +4350,7 @@
         {
             "step_id": "step979",
             "produit": "prd2138",
-            "titre": "GOÛTS SMOOTHIES",
+            "titre": "GOÛTS SUPPLÉMENTAIRE SMOOTHIES",
             "regles": [
                 {
                     "type": "typ145",
@@ -3694,7 +4358,20 @@
                     "supplement": "1"
                 }
             ],
-            "weight": 0
+            "weight": 2
+        },
+        {
+            "step_id": "step1221",
+            "produit": "prd2138",
+            "titre": "GOÛTS SMOOTHIES",
+            "regles": [
+                {
+                    "type": "typ161",
+                    "regle": "{1,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
         },
         {
             "step_id": "step1118",
@@ -3716,7 +4393,7 @@
             "regles": [
                 {
                     "type": "typ152",
-                    "regle": "{0,2};s:{2,2}",
+                    "regle": "{0,5};s:{2,5}",
                     "supplement": "0.50"
                 }
             ],
@@ -3734,6 +4411,19 @@
                 }
             ],
             "weight": 9
+        },
+        {
+            "step_id": "step1210",
+            "produit": "prd2159",
+            "titre": "ACCOMPAGNEMENTS SUPPLÉMENTAIRE",
+            "regles": [
+                {
+                    "type": "typ160",
+                    "regle": "{0,8}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 10
         }
     ]
 }
