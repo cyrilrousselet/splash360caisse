@@ -510,7 +510,8 @@ function printCommandeTicket(quelstickets, cmd) {
                 codetva: artIngTva.code,
                 nom: ing.nom,
                 pu: ing.prix==0 ? '' : Number(ing.prix).toFixed(2),
-                prix: ing.prix==0 ? '' : (Number(ing.prix)*ing.qte).toFixed(2),
+                // prix: ing.prix==0 ? '' : (Number(ing.prix)*ing.qte).toFixed(2),
+                prix: ing.supplement==0 ? '' : Number(ing.supplement).toFixed(2),
                 weight: __ingweight,
                 comment: __comment ? __comment.texte : '',
                 modificateur: __modificateur ? __modificateur.valeur: 0
@@ -527,12 +528,13 @@ function printCommandeTicket(quelstickets, cmd) {
               });
             }
 
-            let iht = (Number(ing.prix)*ing.qte) / (1 + Number(artIngTva.valeur));
+            // let iht = (Number(ing.prix)*ing.qte) / (1 + Number(artIngTva.valeur));
+            let iht = Number(ing.supplement) / (1 + Number(artIngTva.valeur));
 
             cmdTva[artIngTva.code] = Object.assign(cmdTva[artIngTva.code], {
               montant: cmdTva[artIngTva.code].montant + (iht * Number(artIngTva.valeur)),
               ht: cmdTva[artIngTva.code].ht + iht,
-              ttc: cmdTva[artIngTva.code].ttc + Number(ing.prix)*ing.qte
+              ttc: cmdTva[artIngTva.code].ttc + Number(ing.supplement)
             });
 
             // console.log('iht','(Number('+ing.prix+')*'+ing.qte+') / (1 + Number('+artIngTva.valeur+'))');

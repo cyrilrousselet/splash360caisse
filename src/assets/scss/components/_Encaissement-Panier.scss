@@ -211,11 +211,13 @@
             width: 40px;
             padding: 7px 6px;
             //  background-color: $noir_005;
-            &:after {
+            position: relative;
+            &:before {
                 content: '\00d7';
                 display: inline-block;
                 position: absolute;
-                padding-left: 3px;
+                padding-right: 3px;
+                left: 3px;
             }
         }
         .prix {

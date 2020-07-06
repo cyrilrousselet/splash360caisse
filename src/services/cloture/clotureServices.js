@@ -203,12 +203,14 @@ function getCurrentPeriode(commandes, catalogue, params) {
             });
           }
 
-          let iht = (Number(ing.prix)*ing.qte) / (1 + Number(ing.tva.valeur));
+          // let iht = (Number(ing.prix)*ing.qte) / (1 + Number(ing.tva.valeur));
+          let iht = Number(ing.supplement) / (1 + Number(ing.tva.valeur));
 
           cmdTva[ing.tva.code] = Object.assign(cmdTva[ing.tva.code], {
             montant: cmdTva[ing.tva.code].montant + (iht * Number(ing.tva.valeur)),
             ht: cmdTva[ing.tva.code].ht + iht,
-            ttc: cmdTva[ing.tva.code].ttc + Number(ing.prix)*ing.qte
+            // ttc: cmdTva[ing.tva.code].ttc + Number(ing.prix)*ing.qte
+            ttc: cmdTva[ing.tva.code].ttc + Number(ing.supplement)
           });
         });
 

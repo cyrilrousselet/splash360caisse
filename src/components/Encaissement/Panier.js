@@ -1141,7 +1141,7 @@ class PanierListeItem extends React.Component {
             <PanierListeSubItem 
               nom={ ing.nom }
               quantite={ ing.qte } 
-              prix={ ing.prix }
+              prix={ ing.supplement || 0 }
               ingredient={ ing.ingredient }
               produitIndex={ id }
               ingredientIndex={ i }
