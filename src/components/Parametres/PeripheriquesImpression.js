@@ -203,7 +203,7 @@ class EditTicketPopin extends React.Component {
     super(props);
     this.state = {
       ticket_id: null,
-      nom: '',
+      nom: null,
       template: null,
       imprimantes: null,
       kds: null
@@ -267,7 +267,7 @@ class EditTicketPopin extends React.Component {
   resetPopin() {
     const st = {
       ticket_id: null,
-      nom: '',
+      nom: null,
       template: null,
       imprimantes: null,
       kds: null
