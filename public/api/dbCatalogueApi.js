@@ -86,6 +86,7 @@ function _parseCatalogue(_rawdata) {
 
 
   const __steps = {};
+  _rawdata._stp.sort((a,b)=>a.weight-b.weight);
   _rawdata._stp.forEach(s => {
     if (!__steps.hasOwnProperty(s.produit)) {
       Object.defineProperty(__steps, s.produit, {

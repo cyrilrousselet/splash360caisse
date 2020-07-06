@@ -103,21 +103,21 @@
             "categorie": "cat29",
             "nom": "CAFE",
             "noprint": [],
-            "weight": 16
+            "weight": 15
         },
         {
             "groupe_id": "grp163",
             "categorie": "cat29",
             "nom": "SMOOTHIE",
             "noprint": [],
-            "weight": 17
+            "weight": 16
         },
         {
             "groupe_id": "grp164",
             "categorie": "cat29",
             "nom": "ACCOMPAGNEMENTS SUPPLÉMENTAIRES",
             "noprint": [],
-            "weight": 18
+            "weight": 17
         }
     ],
     "tva": [
@@ -783,7 +783,7 @@
             "ingredient_id": "ing1055",
             "type": "typ151",
             "nom": "Gruyère",
-            "supplement": "0.80",
+            "supplement": "0.00",
             "tva": "tva6",
             "weight": 5,
             "color": "blanc"
@@ -792,7 +792,7 @@
             "ingredient_id": "ing1056",
             "type": "typ151",
             "nom": "Parmesan",
-            "supplement": "0.80",
+            "supplement": "0.00",
             "tva": "tva6",
             "weight": 6,
             "color": "blanc"
@@ -2300,7 +2300,7 @@
             "groupe": "grp164",
             "active": 1,
             "nom": "Cheddar",
-            "prix": "3.00",
+            "prix": "0.8",
             "tva": "tva6",
             "composition": [],
             "weight": 7,
@@ -2311,7 +2311,7 @@
             "groupe": "grp164",
             "active": 1,
             "nom": "Cheddar Bacon",
-            "prix": "3.80",
+            "prix": "1.5",
             "tva": "tva6",
             "composition": [],
             "weight": 8,
@@ -4088,6 +4088,19 @@
             "weight": 0
         },
         {
+            "step_id": "step1238",
+            "produit": "prd1460",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,5};s:{2,5}",
+                    "supplement": "0.50"
+                }
+            ],
+            "weight": -1
+        },
+        {
             "step_id": "step769",
             "produit": "prd1461",
             "titre": "BOISSONS",
@@ -4099,6 +4112,19 @@
                 }
             ],
             "weight": 0
+        },
+        {
+            "step_id": "step1239",
+            "produit": "prd1461",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,5};s:{2,5}",
+                    "supplement": "0.50"
+                }
+            ],
+            "weight": -1
         },
         {
             "step_id": "step770",
@@ -4114,6 +4140,19 @@
             "weight": 0
         },
         {
+            "step_id": "step1240",
+            "produit": "prd1462",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,5};s:{2,5}",
+                    "supplement": "0.50"
+                }
+            ],
+            "weight": -1
+        },
+        {
             "step_id": "step771",
             "produit": "prd1463",
             "titre": "BOISSONS",
@@ -4125,6 +4164,19 @@
                 }
             ],
             "weight": 0
+        },
+        {
+            "step_id": "step1241",
+            "produit": "prd1463",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,5};s:{2,5}",
+                    "supplement": "0.50"
+                }
+            ],
+            "weight": -1
         },
         {
             "step_id": "step1136",
@@ -4192,6 +4244,19 @@
             "weight": 0
         },
         {
+            "step_id": "step1242",
+            "produit": "prd1685",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,5};s:{2,5}",
+                    "supplement": "0.50"
+                }
+            ],
+            "weight": -1
+        },
+        {
             "step_id": "step1116",
             "produit": "prd2134",
             "titre": "BOISSONS",
@@ -4205,6 +4270,19 @@
             "weight": 10
         },
         {
+            "step_id": "step1243",
+            "produit": "prd2134",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,5};s:{2,5}",
+                    "supplement": "0.50"
+                }
+            ],
+            "weight": 9
+        },
+        {
             "step_id": "step1117",
             "produit": "prd2135",
             "titre": "BOISSONS",
@@ -4216,6 +4294,19 @@
                 }
             ],
             "weight": 10
+        },
+        {
+            "step_id": "step1244",
+            "produit": "prd2135",
+            "titre": "PAIN",
+            "regles": [
+                {
+                    "type": "typ152",
+                    "regle": "{0,5};s:{2,5}",
+                    "supplement": "0.50"
+                }
+            ],
+            "weight": 9
         },
         {
             "step_id": "step997",

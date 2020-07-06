@@ -53,12 +53,15 @@ class Selecteur extends React.Component {
   
     let tlinks = [];
     let tcontents = [];
+
+    const groupes = Object.values(catalogue).sort((a,b)=>a.weight-b.weight);
     
-    for (let [key, value] of Object.entries(catalogue)) {
-      if (value.categorie==categories[0].categorie_id) tlinks.push({id: key, nom: value.nom});
-      value.produits.sort((a,b)=> a.weight - b.weight); 
-      tcontents.push({parent: key, liste: value.produits});
-    }
+//    for (let [key, value] of Object.entries(catalogue)) {
+    groupes.forEach(grp => {
+      if (grp.categorie==categories[0].categorie_id) tlinks.push({id: grp.groupe_id, nom: grp.nom});
+      grp.produits.sort((a,b)=> a.weight - b.weight); 
+      tcontents.push({parent: grp.groupe_id, liste: grp.produits});
+    });
 
 
     // organiser les prd par weight
