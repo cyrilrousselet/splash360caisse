@@ -22,6 +22,10 @@ import paths from './constants/routes';
 // import reducer from './reducers';
 import './index.scss';
 import registerServiceWorker from './registerServiceWorker';
+import { clientsActions } from './services/clients/clientsActions';
+import Logger from './helpers/Logger';
+
+const logger = new Logger();
 
 //const {store, persistor} = configureStore();
 const {store} = configureStore();
@@ -45,6 +49,11 @@ ipcRenderer.on('getNotification', (event, data) => {
   
   notificationActions.treatment(data)(store.dispatch, store.getState);
 
+});
+
+ipcRenderer.on('setClient', (event, client) => {
+  logger.log('renderer: setClient', client);
+  clientsActions.setClientFromAPI(client)(store.dispatch, store.getState);
 });
 
 // log.transports.file.level = 'info';
