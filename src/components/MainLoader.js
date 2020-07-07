@@ -25,7 +25,7 @@ class MainLoader extends React.Component {
   }
 
   render() {
-    const { paramLoaded, paramLoading, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, cloLoading, sseInit } = this.props;
+    const { paramLoaded, paramLoading, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, cloLoading, sseInit, params } = this.props;
 
     if (!paramLoaded) {
       this.props.getParametres();
@@ -33,6 +33,7 @@ class MainLoader extends React.Component {
     if (paramLoaded && !sseInit) {
       this.props.initSSE();
       this.props.setPOS();
+      this.props.initSync();
     }
     if (paramLoaded && sseInit && !catLoaded && !catLoading) {
       this.props.getCatalogue();

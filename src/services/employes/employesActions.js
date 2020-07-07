@@ -187,6 +187,12 @@ function setClockOut(payload) {
   }
 }
 
+function setPointageSync(pointage) {
+  return dispatch => {
+
+  }
+}
+
 export const employesActions = {
   getPointagesList,
   getShiftsList,
@@ -198,5 +204,6 @@ export const employesActions = {
   updateTimeadjust,
   deleteTimeadjust,
   setClockIn,
-  setClockOut
+  setClockOut,
+  setPointageSync
 };

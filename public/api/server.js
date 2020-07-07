@@ -5,8 +5,11 @@ const cors = require('cors');
 
 const http = require('http').Server(xpr);
 const io = require('socket.io')(http);
+const ioclient = require('socket.io-client');
 
 const connectedSlaves = [];
+
+let socket = null;
 
 
 const allowedOrigins = [
@@ -50,26 +53,44 @@ const server = {
       let __d = new Date();
       res.json({status:'success', commandeid: 'c'+__d.getTime().toString()});
     });
-    // ajout / mise à jour de commande depuis les caisses esclaves ou les bornes
+    // ajout de commande depuis les bornes
     xpr.post('/setcommande', (req,res) => {
       log.info('POST setcommande', req.body.data);
       
       const response_id = responses.push(res) - 1;
       webContents.send('setCommande', {data: req.body.data, response: response_id});
     });
-    // ajout / mise à jour de client depuis les caisses esclaves
-    xpr.post('/setclient', (req, res) => {
-      log.info('POST setclient', req.body.data);
+    
+
+    // SYNCHRO slaves -> master
+
+    // ajout / mise à jour de commande depuis les caisses esclaves
+    xpr.post('/synccommande', (req, res) => {
+      log.info('POST synccommande', req.body.data);
 
       const response_id = responses.push(res) - 1;
-      webContents.send('setClient', {data: req.body.data, response: response_id});
+      webContents.send('setCommandeSync', {data: req.body.data, response: response_id});
     });
-    // ajout / mise à jour d'avoirs depuis les caisses esclaves
-    xpr.post('/setavoir', (req, res) => {
-      log.info('POST setavoir', req.body.data);
+    // ajout / mise à jour de client depuis les caisses esclaves
+    xpr.post('/syncclient', (req, res) => {
+      log.info('POST syncclient', req.body.data);
 
       const response_id = responses.push(res) - 1;
-      webContents.send('setAvoir', {data: req.body.data, response: response_id});
+      webContents.send('setClientSync', {data: req.body.data, response: response_id});
+    });
+    // ajout / mise à jour de ticket restaurant depuis les caisses esclaves
+    xpr.post('/syncticketrestaurant', (req, res) => {
+      log.info('POST syncticketrestaurant', req.body.data);
+
+      const response_id = responses.push(res) - 1;
+      webContents.send('setTicketRestaurantSync', {data: req.body.data, response: response_id});
+    });
+    // ajout / mise à jour de pointages depuis les caisses esclaves
+    xpr.post('/syncpointage', (req, res) => {
+      log.info('POST syncpointage', req.body.data);
+
+      const response_id = responses.push(res) - 1;
+      webContents.send('setPointageSync', {data: req.body.data, response: response_id});
     });
     xpr.listen(3300, () => {
       log.info('server écoute le port 3300');
@@ -88,6 +109,31 @@ const actions = {
     log.info('ticketID : '+ticketId);
 
     res.send({msg: 'ticketID sent'});
+  },
+  syncConnectToMaster: (req, res) => {
+    const { url, caisse } = req.payload;
+
+    socket = ioclient(url, {
+      transports: ['websocket'],
+    });
+
+    ioclient.on('connect', function() {
+      res.send({msg:'connected to master'})
+    });
+
+    ioclient.on('sync', data => {
+      logger.log('on sync', data);
+    });
+  },
+  syncDisconnectFromMaster: (req, res) => {
+    if (socket) socket.disconnect();
+    res.send({msg:'disconnected from master'});
+  },
+  syncStartMaster: (req, res) => {
+    io.on('connection', (sock) => {
+      connectedSlaves.push(sock.id);
+    });
+    res.send({msg:'master wait for slaves'});
   }
 };
 

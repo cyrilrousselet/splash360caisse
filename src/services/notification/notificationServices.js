@@ -10,8 +10,13 @@ export const notificationServices = {
   acceptOrder,
   getOrder,
   setPOS,
-  initSSE
+  initSSE,
+  connectToMaster,
+  disconnectFromMaster,
+  startSyncMaster
  };
+
+
 
 
  async function getToken(provider, task) {
@@ -65,6 +70,18 @@ export const notificationServices = {
   });
 } 
 
+
+function connectToMaster(url, caisse) {
+  return emit('syncConnectToMaster', {url: url, caisse: caisse});
+}
+
+function disconnectFromMaster(url, caisse) {
+  return emit('syncDisconnectFromMaster', {});
+}
+
+function startSyncMaster() {
+  return emit('syncStartMaster',{});
+}
 
 async function denyOrder(provider, order) {
 

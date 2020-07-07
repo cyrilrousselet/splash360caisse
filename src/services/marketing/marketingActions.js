@@ -25,7 +25,9 @@ function createAvoir(payload) {
     
     const { user } = getState().authentication;
 
-    payload = {...payload, operator_id: user.user_id};
+    if (!payload.operator_id) {
+      payload = {...payload, operator_id: user.user_id};
+    }
 
     marketingServices.createAvoir(payload)
     .then(
@@ -55,6 +57,21 @@ function updateAvoir(payload) {
       },
       error => dispatch({ type: marketingActionTypes.UPDATE_AVOIR_FAILURE, error: error.toString() })
     );
+  }
+}
+
+function setAvoirFromSync(payload) {
+  return (dispatch, getState) => {
+
+    dispatch({ type: marketingActionTypes.SET_AVOIR_FROM_SYNC });
+
+    const { avoirs } = getState().marketingReducer;
+    const avoir = avoirs.find(av => av.avoir_id = payload.avoir_id);
+    if (avoir) {
+      dispatch(updateAvoir(payload));
+    } else {
+      dispatch(createAvoir(payload));
+    }
   }
 }
 
@@ -111,6 +128,7 @@ export const marketingActions = {
   getAvoirsList,
   createAvoir,
   updateAvoir,
+  setAvoirFromSync,
   deleteAvoir,
   getReglesPanierList,
   getReglesCatalogueList

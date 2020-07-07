@@ -30,7 +30,8 @@ const mapStateToProps = (state) => {
     cmdLoaded: Object.entries(state.commandesListReducer).length>0,
     cloLoading : state.clotureReducer.loading,
     cloLoaded: Object.entries(state.clotureReducer).length>0,
-    sseInit: state.notificationReducer.sseInit
+    sseInit: state.notificationReducer.sseInit,
+    params: state.parametresReducer.parametres.options
   }
 }
 
@@ -42,7 +43,8 @@ const mapDispatchToProps = (dispatch) => {
     getCloturesList: clotureActions.getCloturesList,
     getCurrentPeriode: clotureActions.getCurrentPeriode,
     initSSE: notificationActions.initSSE,
-    setPOS: notificationActions.setPOS
+    setPOS: notificationActions.setPOS,
+    initSync: notificationActions.initSync
   }, dispatch);
   return {
     ...bound,
