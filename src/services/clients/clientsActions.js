@@ -1,6 +1,9 @@
 import { clientsActionTypes } from './clientsActionTypes';
 import { clientsServices } from './clientsServices';
 import { commandeActions } from './../commande/commandeActions';
+import Logger from '../../helpers/Logger';
+
+const logger = new Logger();
 
 function getClientsList(params={}) {
 
@@ -60,8 +63,15 @@ function updateClient(payload) {
   }
 }
 
+function setClientFromAPI(payload) {
+  return (dispatch, getState) => {
+    logger.log('CltA.setClientFromAPI()');
+  }
+}
+
 export const clientsActions = {
   getClientsList,
   createClient,
-  updateClient
+  updateClient,
+  setClientFromAPI
 };

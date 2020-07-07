@@ -2333,6 +2333,19 @@
             "weight": 0
         },
         {
+            "step_id": "step1301",
+            "produit": "prd1420",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ146",
+                    "regle": "{0,17}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": -1
+        },
+        {
             "step_id": "step757",
             "produit": "prd1421",
             "titre": "BOISSONS",
@@ -2344,6 +2357,19 @@
                 }
             ],
             "weight": 0
+        },
+        {
+            "step_id": "step1302",
+            "produit": "prd1421",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ146",
+                    "regle": "{0,17}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": -1
         },
         {
             "step_id": "step758",
@@ -2359,6 +2385,19 @@
             "weight": 0
         },
         {
+            "step_id": "step1303",
+            "produit": "prd1422",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ146",
+                    "regle": "{0,17}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": -1
+        },
+        {
             "step_id": "step759",
             "produit": "prd1423",
             "titre": "BOISSONS",
@@ -2370,6 +2409,19 @@
                 }
             ],
             "weight": 0
+        },
+        {
+            "step_id": "step1304",
+            "produit": "prd1423",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ146",
+                    "regle": "{0,17}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": -1
         },
         {
             "step_id": "step760",
@@ -2385,6 +2437,19 @@
             "weight": 0
         },
         {
+            "step_id": "step1305",
+            "produit": "prd1424",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ146",
+                    "regle": "{0,17}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": -1
+        },
+        {
             "step_id": "step761",
             "produit": "prd1425",
             "titre": "BOISSONS",
@@ -2396,6 +2461,19 @@
                 }
             ],
             "weight": 0
+        },
+        {
+            "step_id": "step1306",
+            "produit": "prd1425",
+            "titre": "SUPPLÉMENTS",
+            "regles": [
+                {
+                    "type": "typ146",
+                    "regle": "{0,17}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": -1
         },
         {
             "step_id": "step756",

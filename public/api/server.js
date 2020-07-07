@@ -1,7 +1,12 @@
 const express = require('express');
+const xpr = express();
 const log = require('electron-log');
 const cors = require('cors');
 
+const http = require('http').Server(xpr);
+const io = require('socket.io')(http);
+
+const connectedSlaves = [];
 
 
 const allowedOrigins = [
@@ -15,7 +20,6 @@ let responses = [];
 
 const server = {
   init: (webContents) => {
-    const xpr = express();
 
     log.info('server.init()');
 
@@ -46,14 +50,26 @@ const server = {
       let __d = new Date();
       res.json({status:'success', commandeid: 'c'+__d.getTime().toString()});
     });
+    // ajout / mise à jour de commande depuis les caisses esclaves ou les bornes
     xpr.post('/setcommande', (req,res) => {
-      log.info('POST : '+req.body.data);
-      let __d = new Date();
-
+      log.info('POST setcommande', req.body.data);
+      
       const response_id = responses.push(res) - 1;
       webContents.send('setCommande', {data: req.body.data, response: response_id});
-      
-  //    res.json({status:'success', commandeid: 'c'+__d.getTime().toString()});
+    });
+    // ajout / mise à jour de client depuis les caisses esclaves
+    xpr.post('/setclient', (req, res) => {
+      log.info('POST setclient', req.body.data);
+
+      const response_id = responses.push(res) - 1;
+      webContents.send('setClient', {data: req.body.data, response: response_id});
+    });
+    // ajout / mise à jour d'avoirs depuis les caisses esclaves
+    xpr.post('/setavoir', (req, res) => {
+      log.info('POST setavoir', req.body.data);
+
+      const response_id = responses.push(res) - 1;
+      webContents.send('setAvoir', {data: req.body.data, response: response_id});
     });
     xpr.listen(3300, () => {
       log.info('server écoute le port 3300');
