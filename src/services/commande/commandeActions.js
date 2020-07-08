@@ -5,6 +5,7 @@ import { peripheralActions } from '../peripheral/peripheralActions';
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import logger from 'redux-logger';
+import { notificationActions } from '../notification/notificationActions';
 
 
 
@@ -130,6 +131,7 @@ function validateCommande(payload) {
       confirm => {
         const commande = commandeServices.getNewCommande({operator:{id: user.id, nom: user.nom}, caisse: caisse});
         dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
+        dispatch(notificationActions.syncDispatch('commande',commande));
       },
       error => {
         console.log(error);

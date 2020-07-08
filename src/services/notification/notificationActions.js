@@ -67,6 +67,18 @@ function initSync() {
   }
 }
 
+function syncDispatch(db,data) {
+  return (dispatch, getState) => {
+    const { options } = getState().parametresReducer.parametres;
+    if (options.role==='master') {
+      notificationServices.syncDispatch(db, data)
+      .then(result => {
+        logger.log('syncDispatch', result);
+      })
+    }
+  }
+}
+
 function treatment(data) {
 
   return (dispatch, getState) => {
@@ -156,5 +168,6 @@ export const notificationActions = {
   getToken,
   treatment,
   denyOrder,
-  initSync
+  initSync,
+  syncDispatch
 };

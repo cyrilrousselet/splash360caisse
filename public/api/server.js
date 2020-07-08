@@ -184,7 +184,19 @@ const actions = {
       res.send({msg:'master wait for slaves'});
     });
 
+  },
+
+  syncDispatchToSlaves: (req,res) => {
+    const { db, data } = req.payload;
+
+    connectedSlaves.forEach(sock => {
+      io.to(sock).emit('sync', {db:db, data:data);
+    });
+
+    log.info(`syncDispatchToSlaves() [${db}] to ${connectedSlaves.length} slaves`);
+    res.send({msg:`'sync to ${connectedSlaves.length} slaves`});
   }
+
 };
 
 
