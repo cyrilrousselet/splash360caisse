@@ -125,10 +125,8 @@ const actions = {
 
     log.info('syncConnectToMaster', req.payload);
 
-    socket = ioclient(url, {
-      transports: ['websocket'],
-    });
-
+    // socket = ioclient(url, {transports: ['websocket']});
+    socket = ioclient(url);
     
     socket.on('sync', data => {
       log.info('on sync', data);
@@ -150,7 +148,7 @@ const actions = {
 
     io.on('connection', (sock) => {
       connectedSlaves.push(sock.id);
-      log.info('socket connected', sock.id);
+      log.info(`${connectedSlaves.length} socket(s) connected. New id : `, sock.id);
       io.to(sock).emit('sync',{type:'syncinit'});
 
       sock.on('sync', (action)=>{
@@ -168,9 +166,13 @@ const actions = {
         // else the socket will automatically try to reconnect
         connectedSlaves.forEach((device, i) => {
           // console.log("device", device)
-          if (device == socket.id) {
-            // console.log("socket", socket.id)
-            connectedSlaves.splice(i, 1)
+          try {
+            if (device == sock.id) {
+              // console.log("socket", socket.id)
+              connectedSlaves.splice(i, 1)
+            }
+          } catch(error) {
+            log.info('sync disconnect error', error.message);
           }
         })
       });

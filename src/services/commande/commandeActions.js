@@ -131,7 +131,7 @@ function validateCommande(payload) {
       confirm => {
         const commande = commandeServices.getNewCommande({operator:{id: user.id, nom: user.nom}, caisse: caisse});
         dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
-        dispatch(notificationActions.syncDispatch('commande',commande));
+        dispatch(notificationActions.syncDispatch('commande',confirm));
       },
       error => {
         console.log(error);

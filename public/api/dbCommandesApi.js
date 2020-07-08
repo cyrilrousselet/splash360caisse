@@ -132,7 +132,7 @@ async function _persistCommande(payload) {
                                      .write();
   }
 
-  return _cmd != null;
+  return _cmd;
 }
 
 function _parseCommandes(_rawdata) {
