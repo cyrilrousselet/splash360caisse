@@ -3,6 +3,7 @@ const api_server = express();
 const sync_server = express();
 const log = require('electron-log');
 const cors = require('cors');
+const {net} = require('electron');
 
 const http = require('http').Server(sync_server);
 const io = require('socket.io')(http);
@@ -126,7 +127,7 @@ const actions = {
     log.info('syncConnectToMaster', req.payload);
 
     // socket = ioclient(url, {transports: ['websocket']});
-    socket = ioclient(url);
+    socket = ioclient(url+':'+SYNC_PORT);
     
     socket.on('sync', data => {
       log.info('on sync', data);
@@ -196,7 +197,47 @@ const actions = {
     });
 
     log.info(`syncDispatchToSlaves() [${db}] to ${connectedSlaves.length} slaves`);
-    res.send({msg:`'sync to ${connectedSlaves.length} slaves`});
+    res.send({msg:`sync to ${connectedSlaves.length} slaves`});
+  },
+
+  syncDispatchToMaster: (req,res) => {
+
+    const { db, data, url } = req.payload;
+
+    // connectedSlaves.forEach(sock => {
+    //   io.to(sock).emit('sync', {db:db, data:data});
+    // });
+
+
+    const __request = net.request({
+      url: url+':'+API_PORT,
+      method: 'post'
+    });
+    // __request.setHeader('Authorization','Bearer '+access_token)
+    // __request.setHeader('Access-Control-Allow-Origin', '*')
+    // __request.setHeader('Content-Type', 'application/json');
+
+    __request.write(JSON.stringify({db:db, data:data}));
+
+    __request.on('response', (response) => {
+
+      log.info(`syncDispatchToMaster() [${db}] to ${url}, status:`, response.statusCode);
+      res.send({msg:`sync ${db} to master`});
+    //   log.info(`acceptUberOrder STATUS: ${response.statusCode}`);
+    //   log.info(`acceptUberOrder HEADERS: ${JSON.stringify(response.headers)}`);
+      response.on('data', (chunk) => {
+    //     __confirmation.push(chunk);
+    //     log.info(`acceptUberOrder BODY: ${chunk}`)
+      });
+      response.on('end', () => {
+    //     log.info('acceptUberOrder: end');
+    //     // res.send({confirm: JSON.parse(__confirmation.join(''))});
+    //     res.send({confirm: true});
+      });
+    });
+
+    __request.end();
+
   }
 
 };

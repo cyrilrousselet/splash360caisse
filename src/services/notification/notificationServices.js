@@ -14,7 +14,8 @@ export const notificationServices = {
   connectToMaster,
   disconnectFromMaster,
   startSyncMaster,
-  syncDispatch
+  syncDispatch,
+  syncMaster
  };
 
 
@@ -86,6 +87,9 @@ function startSyncMaster() {
 
 function syncDispatch(db, data) {
   return emit('syncDispatchToSlaves', {db:db, data:data});
+}
+function syncMaster(db, data, url) {
+  return emit('syncDispatchToMaster', {db:db, data:data, url:url});
 }
 
 async function denyOrder(provider, order) {

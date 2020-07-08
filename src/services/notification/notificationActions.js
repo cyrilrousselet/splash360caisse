@@ -73,7 +73,13 @@ function syncDispatch(db,data) {
     if (options.role==='master') {
       notificationServices.syncDispatch(db, data)
       .then(result => {
-        logger.log('syncDispatch', result);
+        logger.log('syncDispatch (master)', result);
+      })
+    }
+    else if (options.role==='slave') {
+      notificationServices.syncMaster(db, data, options.master)
+      .then(result => {
+        logger.log('syncDispatch (slave)', result);
       })
     }
   }
