@@ -59,7 +59,7 @@ ipcRenderer.on('getNotification', (event, data) => {
 // listener sur la réception de commande via '/public/server.js'
 ipcRenderer.on('setCommandeSync', (event, commande) => {
   logger.log('renderer: setCommandeSync', commande);
- // commandeActions.setCommandeFromSync(commande)(store.dispatch, store.getState);
+  commandeActions.setCommandeFromSync(commande)(store.dispatch, store.getState);
 });
 
 ipcRenderer.on('setClientSync', (event, client) => {

@@ -168,6 +168,15 @@ function getToken(provider, task) {
 }
 
 
+function syncConfirm(response) {
+  return dispatch => {
+    notificationServices.syncConfirm(response)
+    .then(
+      confirm => { logger.log('notificationAction','synchro confirm sent')}
+    );
+  }
+}
+
 export const notificationActions = {
   initSSE,
   setPOS,
@@ -175,5 +184,6 @@ export const notificationActions = {
   treatment,
   denyOrder,
   initSync,
-  syncDispatch
+  syncDispatch,
+  syncConfirm
 };

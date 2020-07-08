@@ -607,10 +607,14 @@ function setCommandeFromAPI(payload) {
 
 function setCommandeFromSync(commande) {
   return dispatch => {
-    commandeServices.setCommandeFromSync(commande)
+
+    const {data} = commande;
+
+    commandeServices.setCommandeFromSync(data)
     .then(
       confirm => {
-        dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_SUCCESS, commande });
+        dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_SUCCESS, confirm });
+        dispatch(notificationActions.syncConfirm(commande.response));
         dispatch(getCommandesList());
       },
       error => {
