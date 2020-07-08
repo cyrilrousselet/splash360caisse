@@ -71,33 +71,42 @@ const server = {
     // SYNCHRO slaves -> master
 
     // ajout / mise à jour de commande depuis les caisses esclaves
-    api_server.post('/synccommande', (req, res) => {
-      log.info('POST synccommande', req.body.data);
+    api_server.post('/sync', (req, res) => {
+    
+      const {db, data} = req.body;
+      log.info('POST sync', req.body.data);
 
       const response_id = responses.push(res) - 1;
-      webContents.send('setCommandeSync', {data: req.body.data, response: response_id});
+      switch(db) {
+        case 'commande':
+          webContents.send('setCommandeSync', {data: req.body.data, response: response_id});
+          break;
+        case 'client':
+          webContents.send('setClientSync', {data: req.body.data, response: response_id});
+          break;
+        case 'ticketrestaurant':
+          webContents.send('setTicketRestaurantSync', {data: req.body.data, response: response_id});
+          break;
+        case 'pointage':
+          webContents.send('setPointageSync', {data: req.body.data, response: response_id});
+          break;
+        case 'avoir':
+          webContents.send('setAvoirSync', {data: req.body.data, response: response_id});
+          break;
+        case 'timeadjust':
+          webContents.send('setTimeadjustSync', {data: req.body.data, response: response_id});
+          break;
+        case 'cloture':
+          webContents.send('setClotureSync', {data: req.body.data, response: response_id});
+          break;
+        case 'user':
+          webContents.send('setUserSync', {data: req.body.data, response: response_id});
+          break;
+        default:
+          log.info(`POST sync db "${db}" inconnue`);
+      }
     });
-    // ajout / mise à jour de client depuis les caisses esclaves
-    api_server.post('/syncclient', (req, res) => {
-      log.info('POST syncclient', req.body.data);
 
-      const response_id = responses.push(res) - 1;
-      webContents.send('setClientSync', {data: req.body.data, response: response_id});
-    });
-    // ajout / mise à jour de ticket restaurant depuis les caisses esclaves
-    api_server.post('/syncticketrestaurant', (req, res) => {
-      log.info('POST syncticketrestaurant', req.body.data);
-
-      const response_id = responses.push(res) - 1;
-      webContents.send('setTicketRestaurantSync', {data: req.body.data, response: response_id});
-    });
-    // ajout / mise à jour de pointages depuis les caisses esclaves
-    api_server.post('/syncpointage', (req, res) => {
-      log.info('POST syncpointage', req.body.data);
-
-      const response_id = responses.push(res) - 1;
-      webContents.send('setPointageSync', {data: req.body.data, response: response_id});
-    });
 
 
     api_server.listen(API_PORT, () => {
@@ -127,7 +136,7 @@ const actions = {
     log.info('syncConnectToMaster', req.payload);
 
     // socket = ioclient(url, {transports: ['websocket']});
-    socket = ioclient(url+':'+SYNC_PORT);
+    socket = ioclient(url+':'+SYNC_PORT+'/sync');
     
     socket.on('sync', data => {
       log.info('on sync', data);
