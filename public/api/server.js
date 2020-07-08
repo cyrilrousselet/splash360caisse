@@ -118,6 +118,8 @@ const actions = {
 
     res.send({msg: 'ticketID sent'});
   },
+
+  // on lance la connexion au master (si la caisse est "slave")
   syncConnectToMaster: (req, res) => {
     const { url, caisse } = req.payload;
 
@@ -127,19 +129,20 @@ const actions = {
       transports: ['websocket'],
     });
 
-    socket.on('connect', function() {
-      log.info('on connect');
-    });
     
     socket.on('sync', data => {
       log.info('on sync', data);
     });
     res.send({msg:'connection sent to master'})
   },
+
+  // déconnexion du master
   syncDisconnectFromMaster: (req, res) => {
     if (socket) socket.disconnect();
     res.send({msg:'disconnected from master'});
   },
+
+  // lancement du webservice (si la caisse est "master")
   syncStartMaster: (req, res) => {
 
 
@@ -147,14 +150,38 @@ const actions = {
 
     io.on('connection', (sock) => {
       connectedSlaves.push(sock.id);
-      log.info('caisse connected', sock);
-      io.to(sock).emit('connect');
-    });
-    res.send({msg:'master wait for slaves'});
+      log.info('socket connected', sock.id);
+      io.to(sock).emit('sync',{type:'syncinit'});
 
+      sock.on('sync', (action)=>{
+        
+        log.info('sync', action);
+     //   io.to(sock).emit('connect');
+      })
+    
+
+      sock.on('disconnect', (reason) => {
+        if (reason === 'io server disconnect') {
+          // the disconnection was initiated by the server, you need to reconnect manually
+          sock.connect();
+        } 
+        // else the socket will automatically try to reconnect
+        connectedSlaves.forEach((device, i) => {
+          // console.log("device", device)
+          if (device == socket.id) {
+            // console.log("socket", socket.id)
+            connectedSlaves.splice(i, 1)
+          }
+        })
+      });
+
+
+
+    });
 
     http.listen(SYNC_PORT, function(){
       log.info( `sync_server listening on *:${SYNC_PORT}` );
+      res.send({msg:'master wait for slaves'});
     });
 
   }
