@@ -74,7 +74,7 @@ ipcRenderer.on('setAvoirSync', (event, avoir) => {
 
 ipcRenderer.on('setTicketRestaurantSync', (event, ticketrestaurant) => {
   logger.log('renderer: setTicketRestaurantSync', ticketrestaurant);
- // commandeActions.setTicketRestaurantFromSync(ticketrestaurant)(store.dispatch, store.getState);
+  commandeActions.setTicketRestaurantFromSync(ticketrestaurant)(store.dispatch, store.getState);
 });
 
 ipcRenderer.on('setPointageSync', (event, pointage) => {

@@ -300,6 +300,8 @@ function addIngredient(ingredient, quantite, step, item, produitSteps, tva) {
     // on passe le status de l'item de "pending" à "completed"
     if (-1==steps.findIndex(st => st.validated == false || st.checked == false )) {
       item.status = 'completed';
+      item.ingredients = _ventilationIngredientsSteps(item, produitSteps);
+
     }
   }
   
@@ -426,37 +428,43 @@ function uncheckItemSteps(item, stepid) {
 function completeStep(step, item, produitSteps) {
 
   logger.log('completeStep');
-
-  const {steps} = item;
-
-  const {validated, completed } = _checkStepRegles(step, item);
-  if (validated) {
-    const itemstepid = steps.findIndex(st => st.id == step.step_id);
-    steps[itemstepid].checked = true;
-    steps[itemstepid].completed = completed;
+  return new Promise((resolve,reject) => {
     
-    item.steps = [...steps];
+    const {steps} = item;
 
-    // si tous les steps sont "validated" (dans les règles) et "checked" (personnalisé)
-    // on passe le status de l'item de "pending" à "completed"
-    if (-1==steps.findIndex(st => st.validated == false || st.checked == false)) {
-      logger.log('item completed');
-      item.status = 'completed';
+    const {validated, completed } = _checkStepRegles(step, item);
+    if (validated) {
+      const itemstepid = steps.findIndex(st => st.id == step.step_id);
+      steps[itemstepid].checked = true;
+      steps[itemstepid].completed = completed;
+      
+      item.steps = [...steps];
 
-      item.ingredients = _ventilationIngredientsSteps(item, produitSteps);
+      // si tous les steps sont "validated" (dans les règles) et "checked" (personnalisé)
+      // on passe le status de l'item de "pending" à "completed"
+      const pasfiniIndex = steps.findIndex(st => st.validated == false || st.checked == false);
+      logger.log('pasfiniIndex',pasfiniIndex);
+      if (-1==pasfiniIndex) {
+        logger.log('item completed');
+        item.status = 'completed';
+
+        item.ingredients = _ventilationIngredientsSteps(item, produitSteps);
 
 
+      }
     }
-  }
-  item.prix = _getPrix(item, produitSteps);
+    item.prix = _getPrix(item, produitSteps);
 
-  return item;
+    resolve(item);
+  
+  });
 }
 
 
 // on passe en revue chaque step pour déterminer le supplément pour chaque ingrédient
 function _ventilationIngredientsSteps(item, produitSteps) {
 
+  logger.log('_ventilationIngredientsSteps()');
   let __supplement = 0;
   let __ing = null;
 
@@ -510,7 +518,7 @@ function _setSupplements(rule, ingredients) {
         ing.supplement = 0;
         for(let j=0;j<ing.qte;j++) {
           if (__stack>=__supvaleurs.min-1) {
-            ing.supplement += ing.prix>0 ? Number(ing.prix) : Number(rule.supplement);
+            ing.supplement += Number(ing.prix)>0 ? Number(ing.prix) : Number(rule.supplement);
           }
           __stack++;
         }
@@ -522,7 +530,7 @@ function _setSupplements(rule, ingredients) {
   } else {
     ingredients.forEach(ing => {
       ing.supplement = 0;
-      ing.supplement += ing.prix>0 ? (ing.prix * ing.qte) : (rule.supplement * ing.qte);
+      ing.supplement += Number(ing.prix)>0 ? (Number(ing.prix) * ing.qte) : (Number(rule.supplement) * ing.qte);
 
       __ingredients.push(ing);
     })

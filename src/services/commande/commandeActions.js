@@ -4,9 +4,10 @@ import { differenceInMilliseconds, sub, differenceInMinutes, isBefore, endOfYest
 import { peripheralActions } from '../peripheral/peripheralActions';
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
-import logger from 'redux-logger';
+import Logger from '../../helpers/Logger';
 import { notificationActions } from '../notification/notificationActions';
 
+const logger = new Logger();
 
 
 function getCommandesList(params={}) {
@@ -41,11 +42,12 @@ function persistTicketsRestaurants(liste) {
   return dispatch => {
     dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_REQUEST });
 
-    return commandeServices.persistTicketsRestaurants(liste)
+    commandeServices.persistTicketsRestaurants(liste)
     .then(
       data => {
         dispatch({type: commandeActionTypes.PERSIST_TICKETRESTAU_SUCCESS});
         dispatch( getAllTicketsRestaurant());
+        dispatch(notificationActions.syncDispatch('ticketrestaurant',liste));
       },
       error => dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_FAILURE, error: error })
     );
@@ -54,7 +56,19 @@ function persistTicketsRestaurants(liste) {
 
 function setTicketRestaurantFromSync(ticketrestaurant) {
   return dispatch => {
-    return commandeServices.persistTicketsRestaurants([])
+    dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_REQUEST }); 
+  
+    const {data} = ticketrestaurant;
+
+    commandeServices.persistTicketsRestaurants(data)
+    .then(
+      data => {
+        dispatch({type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_SUCCESS});
+        dispatch( getAllTicketsRestaurant());
+        dispatch(notificationActions.syncConfirm(ticketrestaurant.response));
+      },
+      error => dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_FAILURE, error: error })
+    );
   }
 }
 
@@ -179,6 +193,7 @@ function standByCommande(payload) {
 
         const commande = commandeServices.getNewCommande({operator:user, caisse:caisse});
         dispatch(getCommandesList());
+        dispatch(notificationActions.syncDispatch('commande',confirm));
         return dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
       },
       error => {
@@ -216,6 +231,7 @@ function livraisonCommande(payload) {
         const commande = commandeServices.getNewCommande({operator:user, caisse:caisse});
         dispatch(peripheralActions.printTicket('all'));
         dispatch(getCommandesList());
+        dispatch(notificationActions.syncDispatch('commande',confirm));
         return dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
       },
       error => {
@@ -328,14 +344,19 @@ function noIngredientForStep(payload) {
 
 function completeStep(payload) {
   return (dispatch, getState)  => {
+
+    logger.log('CmdA.completeStep()', payload);
+    
     const { itemid, stepid } = payload;
     const state = getState();
     const item = state.commandeReducer.commande.items.find(itm => itm.itemid === itemid);
     const step = state.catalogueReducer.steps[item.produitid].find(step => step.step_id === stepid);
     const produitSteps = state.catalogueReducer.steps[item.produitid];
 
-    const commandeItem = commandeServices.completeStep(step, item, produitSteps);
-    dispatch({ type: commandeActionTypes.STEP_COMPLETE, commandeItem });
+    commandeServices.completeStep(step, item, produitSteps)
+    .then(commandeItem => {
+      dispatch({ type: commandeActionTypes.STEP_COMPLETE, commandeItem });
+    })
   }
 }
 
@@ -400,6 +421,7 @@ function setLivreur(payload) {
     .then(
       data => {
         dispatch({ type: commandeActionTypes.UPDATE_COMMANDE, payload:{livreur:livreur} });
+        dispatch(notificationActions.syncDispatch('commande',{...commande, livreur:livreur}));
         dispatch(getCommandesList())
       },
       error => dispatch({ type: commandeActionTypes.UPDATE_COMMANDE_ERROR, error: error})
@@ -550,6 +572,7 @@ function setCommandeFromOrder(provider, payload) {
     .then(
       confirm => {
         dispatch(getCommandesList());
+        dispatch(notificationActions.syncDispatch('commande',confirm));
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
         const { numero } = commande;
         dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
@@ -591,6 +614,7 @@ function setCommandeFromAPI(payload) {
     .then(
       confirm => {
         dispatch(getCommandesList());
+        dispatch(notificationActions.syncDispatch('commande',confirm));
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
         const { numero } = commande;
         dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
@@ -658,6 +682,8 @@ export const commandeActions = {
   deleteDiscount,
   setCommandeFromOrder,
   setCommandeFromAPI,
+  setCommandeFromSync,
   getAllTicketsRestaurant,
-  persistTicketsRestaurants
+  persistTicketsRestaurants,
+  setTicketRestaurantFromSync
 };
