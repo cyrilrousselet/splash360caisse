@@ -33,7 +33,7 @@ class MainLoader extends React.Component {
     if (paramLoaded && !sseInit) {
       this.props.initSSE();
       this.props.setPOS();
-      this.props.initSync();
+    //  this.props.initSync();
     }
     if (paramLoaded && sseInit && !catLoaded && !catLoading) {
       this.props.getCatalogue();
