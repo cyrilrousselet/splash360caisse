@@ -12,6 +12,11 @@ const connectedSlaves = [];
 let socket = null;
 
 
+xpr.listen(3300, () => {
+  log.info('server écoute le port 3300');
+})
+
+
 const allowedOrigins = [
   'http://127.0.0.1',
   'http://localhost',
@@ -92,9 +97,6 @@ const server = {
       const response_id = responses.push(res) - 1;
       webContents.send('setPointageSync', {data: req.body.data, response: response_id});
     });
-    xpr.listen(3300, () => {
-      log.info('server écoute le port 3300');
-    })
   }
 }
 
@@ -120,12 +122,13 @@ const actions = {
     });
 
     socket.on('connect', function() {
-      res.send({msg:'connected to master'})
+      logger.log('on connect');
     });
-
+    
     socket.on('sync', data => {
       logger.log('on sync', data);
     });
+    res.send({msg:'connection sent to master'})
   },
   syncDisconnectFromMaster: (req, res) => {
     if (socket) socket.disconnect();
@@ -134,6 +137,7 @@ const actions = {
   syncStartMaster: (req, res) => {
     io.on('connection', (sock) => {
       connectedSlaves.push(sock.id);
+      log.info('caisse connected', sock);
       io.to(sock).emit('connect');
     });
     res.send({msg:'master wait for slaves'});
