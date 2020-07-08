@@ -113,6 +113,8 @@ const actions = {
   syncConnectToMaster: (req, res) => {
     const { url, caisse } = req.payload;
 
+    log.info('syncConnectToMaster', req.payload);
+
     socket = ioclient(url, {
       transports: ['websocket'],
     });
@@ -132,6 +134,7 @@ const actions = {
   syncStartMaster: (req, res) => {
     io.on('connection', (sock) => {
       connectedSlaves.push(sock.id);
+      io.to(sock).emit('connect');
     });
     res.send({msg:'master wait for slaves'});
   }
