@@ -146,6 +146,8 @@ const actions = {
 
     // socket = ioclient(url, {transports: ['websocket']});
     socket = ioclient(url+':'+SYNC_PORT);
+
+    log.info('socket', socket);
     
     socket.on('sync', data => {
       log.info('on sync', data);

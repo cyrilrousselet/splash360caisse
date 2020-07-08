@@ -77,7 +77,7 @@ function setNewNumero(defaultValue=null) {
 
   return (dispatch, getState) => {
 
-    console.log('setNewNumero',defaultValue);
+    logger.log('setNewNumero',defaultValue);
 
     const numero = defaultValue!==null ? {value: defaultValue-1} : getState().commandeReducer.numero; 
 
@@ -98,7 +98,7 @@ function getCommande(commandeId=null) {
 
     // sans id de commande, on crée une nouvelle commande
     if (null===commandeId) {
-      console.log('on demande une nouvelle commande');
+      logger.log('on demande une nouvelle commande');
       const state = getState();
       const { user } = state.authentication;
       const { caisse } = state.parametresReducer.parametres.options;
@@ -107,7 +107,7 @@ function getCommande(commandeId=null) {
     }
     // avec id de commande, on va chercher la commande en base
     else {
-      console.log('on va chercher la commande #'+commandeId);
+      logger.log('on va chercher la commande #'+commandeId);
       commandeServices.getCommandeById(commandeId)
       .then(
         response => {
@@ -148,7 +148,7 @@ function validateCommande(payload) {
         dispatch(notificationActions.syncDispatch('commande',confirm));
       },
       error => {
-        console.log(error);
+        logger.log(error);
         dispatch({ type:commandeActionTypes.VALIDATE_COMMANDE_FAILURE, error: error.toString() })
       }
     );
@@ -158,7 +158,7 @@ function validateCommande(payload) {
 
 function validateCommandeAndUpdateList(payload) {
 
-  console.log('commandeActions.validateCommandeAndUpdateList()');
+  logger.log('commandeActions.validateCommandeAndUpdateList()');
 
   return (dispatch) => {
     dispatch(validateCommande(payload)).then((dataFromValidate) => {
@@ -176,7 +176,7 @@ function standByCommande(payload) {
     payload.status = 'standby';
     payload.end = new Date();
     payload.chrono = Math.round(differenceInMilliseconds(payload.end, payload.start)/10)/100;
-    console.log(payload);
+    logger.log(payload);
     const state = getState();
 
     if (payload.numero==null) { 
@@ -197,7 +197,7 @@ function standByCommande(payload) {
         return dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
       },
       error => {
-        console.log(error);
+        logger.log(error);
         return dispatch({ type:commandeActionTypes.VALIDATE_COMMANDE_FAILURE, error: error.toString() })
       }
     );
@@ -214,7 +214,7 @@ function livraisonCommande(payload) {
     payload.status = 'a_encaisser';
     payload.end = new Date();
     payload.chrono = Math.round(differenceInMilliseconds(payload.end, payload.start)/10)/100;
-    console.log(payload);
+    logger.log(payload);
     const state = getState();
 
     if (payload.numero==null) { 
@@ -235,7 +235,7 @@ function livraisonCommande(payload) {
         return dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
       },
       error => {
-        console.log(error);
+        logger.log(error);
         return dispatch({ type:commandeActionTypes.VALIDATE_COMMANDE_FAILURE, error: error.toString() })
       }
     );
@@ -329,7 +329,7 @@ function noIngredientForStep(payload) {
   return (dispatch, getState) => {
 
 
-    console.log(payload);
+    logger.log(payload);
 
     const { itemid, stepid } = payload;
     const state = getState();
@@ -373,7 +373,7 @@ function uncheckItemSteps(payload) {
 
 function updateCommande(payload) {
   return (dispatch) => {
-    console.log(payload);
+    logger.log(payload);
     dispatch({ type: commandeActionTypes.UPDATE_COMMANDE, payload });
   }
 }
@@ -387,7 +387,7 @@ function deleteCommande(payload) {
 
     const {ticketId, motif} = payload;
 
-    console.log('commande à annuler', commande);
+    logger.log('commande à annuler', commande);
 
     let error = '';
     if (!commande) error = 'inconnue';
@@ -403,7 +403,7 @@ function deleteCommande(payload) {
         error => dispatch({ type: commandeActionTypes.DELETE_COMMANDE_FAILURE, error: error })
       );
     } else {
-      console.error('deleteCommande('+payload.ticketId+') error', 'Impossible de supprimer une commande qui n’est pas en attente.')
+      logger.error('deleteCommande('+payload.ticketId+') error', 'Impossible de supprimer une commande qui n’est pas en attente.')
     }
 
   }
@@ -479,7 +479,7 @@ function addComment(payload) {
 function updateComment(payload) {
   return (dispatch, getState) => {
     const {commentId, texte} = payload;
-    console.log('CommandeActions.updateComment', payload);
+    logger.log('CommandeActions.updateComment', payload);
     dispatch({ type: commandeActionTypes.UPDATE_COMMENT, payload: payload });
   }
 }
@@ -500,7 +500,7 @@ function addDiscount(payload) {
 function updateDiscount(payload) {
   return (dispatch, getState) => {
     const {discountId, valeur} = payload;
-    console.log('CommandeActions.updateDiscount', payload);
+    logger.log('CommandeActions.updateDiscount', payload);
     dispatch({ type: commandeActionTypes.UPDATE_DISCOUNT, payload: payload });
   }
 }
@@ -537,7 +537,7 @@ function setCommandeFromOrder(provider, payload) {
   return (dispatch, getState) => {
 
 
-    console.log('setCommmandeFromOrder()');
+    logger.log('setCommmandeFromOrder()');
 
     const state = getState();
 
@@ -552,7 +552,7 @@ function setCommandeFromOrder(provider, payload) {
     
 
 
-   // console.log(data);
+   // logger.log(data);
     const commande = commandeServices.setCommandeFromOrder(data, state.catalogueReducer, state.parametresReducer.parametres, state.commandeReducer.numero);
 
     const cmd = {
@@ -578,7 +578,7 @@ function setCommandeFromOrder(provider, payload) {
         dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
       },
       error => {
-        console.log(error);
+        logger.log(error);
         dispatch({ type:commandeActionTypes.VALIDATE_COMMANDE_FAILURE, error: error.toString() })
       }
     );
@@ -605,7 +605,7 @@ function setCommandeFromAPI(payload) {
     }
 
 
-    console.log(data);
+    logger.log(data);
     const commande = commandeServices.setCommandeFromAPI(data, state.catalogueReducer, state.parametresReducer.parametres, state.commandeReducer.numero);
 
     commandeServices.sendTicketId(commande.ticketId, payload.response);
@@ -620,7 +620,7 @@ function setCommandeFromAPI(payload) {
         dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
       },
       error => {
-        console.log(error);
+        logger.log(error);
         dispatch({ type:commandeActionTypes.VALIDATE_COMMANDE_FAILURE, error: error.toString() })
       }
     );
