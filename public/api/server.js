@@ -190,7 +190,7 @@ const actions = {
     const { db, data } = req.payload;
 
     connectedSlaves.forEach(sock => {
-      io.to(sock).emit('sync', {db:db, data:data);
+      io.to(sock).emit('sync', {db:db, data:data});
     });
 
     log.info(`syncDispatchToSlaves() [${db}] to ${connectedSlaves.length} slaves`);
