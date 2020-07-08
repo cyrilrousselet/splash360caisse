@@ -224,6 +224,7 @@ const actions = {
     //   io.to(sock).emit('sync', {db:db, data:data});
     // });
 
+    log.info('syncDispatchToMaster', req.payload);
 
     const __request = net.request({
       url: url+':'+API_PORT+'/synchro',
