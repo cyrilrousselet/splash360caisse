@@ -231,10 +231,15 @@ const actions = {
       method: 'post'
     });
     // __request.setHeader('Authorization','Bearer '+access_token)
-    // __request.setHeader('Access-Control-Allow-Origin', '*')
-    // __request.setHeader('Content-Type', 'application/json');
+    __request.setHeader('Access-Control-Allow-Origin', '*')
+    __request.setHeader('Content-Type', 'application/json');
 
-    __request.write(JSON.stringify({body:{db:db, data:data}}));
+    const __body = {body:{
+                      db:db, 
+                      data:data
+                  }};
+
+    __request.write(JSON.stringify(__body));
 
     __request.on('response', (response) => {
 
