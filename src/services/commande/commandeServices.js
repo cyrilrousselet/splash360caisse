@@ -30,6 +30,7 @@ export const commandeServices = {
   uncheckItemSteps,
   getRuleValues,
   setCommandeFromOrder,
+  setCommandeFromSync,
   setCommandeFromAPI,
   sendTicketId,
   getAllTicketsRestaurant,
@@ -1052,12 +1053,18 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
 }
 
 
+function setCommandeFromSync(commande) {
+  return emit('dbCommandePersist', {commande:commande});
+}
+
+
+
 function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
 
   const commande = getNewCommande(data);
   commande.status = data.status; // "standby" ou "confirmed"
   commande.mode = data.mode; // "emporter", "surplace" ou "livraison"
-  commande.numero = getNewNumero(parametres, numero);
+  commande.numero = data.numero || getNewNumero(parametres, numero);
 
   // on met tous les produits dans le même array
   let produits = [];

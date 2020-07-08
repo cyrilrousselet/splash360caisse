@@ -8,7 +8,9 @@ import Swal from 'sweetalert2';
 import { format } from 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
+import Logger from '../../helpers/Logger';
 const strings = new LocalizedStrings(data);
+const logger = new Logger();
 
 function initSSE() {
   return (dispatch, getState) => {
@@ -21,7 +23,7 @@ function initSSE() {
         error => dispatch({ type: notificationActionTypes.INIT_SSE_FAILURE, error:error.msg })
       );
     } else {
-      console.warn('restaurant_id unknown');
+      logger.log('restaurant_id unknown');
     }
   }
 }
@@ -37,9 +39,31 @@ function setPOS() {
                             error => console.log('POS integration error')
                           )
     } else {
-      console.warn('store_id unknown');
+      logger.log('store_id unknown');
     }
 
+  }
+}
+
+function initSync() {
+  return (dispatch, getState) => {
+    const { options } = getState().parametresReducer.parametres;
+
+    logger.log('initSync', options);
+
+    if (options.role==='slave') {
+      notificationServices.connectToMaster(options.masterUrl, options.caisse)
+      .then(result => {
+        logger.log('initSync slave', result);
+        dispatch({type: notificationActionTypes.CONNECT_TO_MASTER});
+      })
+    } else if (options.role==='master') {
+      notificationServices.startSyncMaster()
+      .then(result => {
+        logger.log('initSync master', result);
+        dispatch({type: notificationActionTypes.START_MASTER});
+      })
+    }
   }
 }
 
@@ -61,7 +85,7 @@ function treatment(data) {
           if (auto_accept_order) dispatch(acceptOrder('uber', reponse.order));
           else {
 
-            console.log('ORDER:', reponse.order);
+            logger.log('ORDER:', reponse.order);
             
             Swal.fire({
               title: strings.notification.accept.uber.titre,
@@ -85,14 +109,14 @@ function treatment(data) {
           }
           
         },
-        error => console.log('Token error', error)
+        error => logger.log('Token error', error)
       );
     }
   } 
 }
 
 function acceptOrder(provider, order) {
-  console.log('acceptOrder');
+  logger.log('acceptOrder');
   return dispatch => {
     dispatch({ type: notificationActionTypes.ACCEPT_ORDER, id: order.display_id });
     notificationServices.acceptOrder(provider, order)
@@ -119,7 +143,7 @@ function getToken(provider, task) {
     notificationServices.getToken(provider, task)
     .then(
       data => dispatch({ type: notificationActionTypes.GET_TOKEN_SUCCESS, data}),
-      error => console.log('ça va pas', error)
+      error => logger.log('ça va pas', error)
     )
 
   }
@@ -131,5 +155,6 @@ export const notificationActions = {
   setPOS,
   getToken,
   treatment,
-  denyOrder
+  denyOrder,
+  initSync
 };

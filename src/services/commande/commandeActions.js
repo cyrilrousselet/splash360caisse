@@ -4,6 +4,7 @@ import { differenceInMilliseconds, sub, differenceInMinutes, isBefore, endOfYest
 import { peripheralActions } from '../peripheral/peripheralActions';
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
+import logger from 'redux-logger';
 
 
 
@@ -47,6 +48,12 @@ function persistTicketsRestaurants(liste) {
       },
       error => dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_FAILURE, error: error })
     );
+  }
+}
+
+function setTicketRestaurantFromSync(ticketrestaurant) {
+  return dispatch => {
+    return commandeServices.persistTicketsRestaurants([])
   }
 }
 
@@ -568,7 +575,7 @@ function setCommandeFromAPI(payload) {
         ...data,
         operator_encaissement: data.operator, 
         caisse_encaissement: data.caisse,
-        reglements: [{moyen: 'carte', reglementId: new Date().getTime(), valeur: data.total}]
+        reglements: data.reglements || [{moyen: 'carte', reglementId: new Date().getTime(), valeur: data.total}]
       };
     }
 
@@ -595,6 +602,22 @@ function setCommandeFromAPI(payload) {
   }
 }
 
+
+function setCommandeFromSync(commande) {
+  return dispatch => {
+    commandeServices.setCommandeFromSync(commande)
+    .then(
+      confirm => {
+        dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_SUCCESS, commande });
+        dispatch(getCommandesList());
+      },
+      error => {
+        dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_FAILURE, error: error });
+        logger.log('sync cmd err', error);
+      }
+    )
+  }
+}
 
 
 export const commandeActions = {

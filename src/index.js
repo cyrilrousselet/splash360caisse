@@ -24,6 +24,7 @@ import './index.scss';
 import registerServiceWorker from './registerServiceWorker';
 import { clientsActions } from './services/clients/clientsActions';
 import Logger from './helpers/Logger';
+import { marketingActions } from './services/marketing/marketingActions';
 
 const logger = new Logger();
 
@@ -51,9 +52,30 @@ ipcRenderer.on('getNotification', (event, data) => {
 
 });
 
-ipcRenderer.on('setClient', (event, client) => {
-  logger.log('renderer: setClient', client);
-  clientsActions.setClientFromAPI(client)(store.dispatch, store.getState);
+// listener sur la réception de commande via '/public/server.js'
+ipcRenderer.on('setCommandeSync', (event, commande) => {
+  logger.log('renderer: setCommandeSync', commande);
+ // commandeActions.setCommandeFromSync(commande)(store.dispatch, store.getState);
+});
+
+ipcRenderer.on('setClientSync', (event, client) => {
+  logger.log('renderer: setClientSync', client);
+ // clientsActions.setClientFromSync(client)(store.dispatch, store.getState);
+});
+
+ipcRenderer.on('setAvoirSync', (event, avoir) => {
+  logger.log('renderer: setAvoirSync', avoir);
+ // marketingActions.setAvoirFromSync(avoir)(store.dispatch, store.getState);
+});
+
+ipcRenderer.on('setTicketRestaurantSync', (event, ticketrestaurant) => {
+  logger.log('renderer: setTicketRestaurantSync', ticketrestaurant);
+ // commandeActions.setTicketRestaurantFromSync(ticketrestaurant)(store.dispatch, store.getState);
+});
+
+ipcRenderer.on('setPointageSync', (event, pointage) => {
+  logger.log('renderer: setPointageSync', pointage);
+ // commandeActions.setTicketRestaurantFromSync(ticketrestaurant)(store.dispatch, store.getState);
 });
 
 // log.transports.file.level = 'info';
