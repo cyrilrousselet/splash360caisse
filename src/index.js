@@ -52,6 +52,10 @@ ipcRenderer.on('getNotification', (event, data) => {
 
 });
 
+
+
+
+
 // listener sur la réception de commande via '/public/server.js'
 ipcRenderer.on('setCommandeSync', (event, commande) => {
   logger.log('renderer: setCommandeSync', commande);
@@ -75,6 +79,21 @@ ipcRenderer.on('setTicketRestaurantSync', (event, ticketrestaurant) => {
 
 ipcRenderer.on('setPointageSync', (event, pointage) => {
   logger.log('renderer: setPointageSync', pointage);
+ // commandeActions.setTicketRestaurantFromSync(ticketrestaurant)(store.dispatch, store.getState);
+});
+
+ipcRenderer.on('setTimeadjustSync', (event, timeadjust) => {
+  logger.log('renderer: setTimeadjustSync', timeadjust);
+ // commandeActions.setTicketRestaurantFromSync(ticketrestaurant)(store.dispatch, store.getState);
+});
+
+ipcRenderer.on('setClotureSync', (event, cloture) => {
+  logger.log('renderer: setClotureSync', cloture);
+ // commandeActions.setTicketRestaurantFromSync(ticketrestaurant)(store.dispatch, store.getState);
+});
+
+ipcRenderer.on('setUserSync', (event, user) => {
+  logger.log('renderer: setUserSync', user);
  // commandeActions.setTicketRestaurantFromSync(ticketrestaurant)(store.dispatch, store.getState);
 });
 

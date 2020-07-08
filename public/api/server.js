@@ -71,10 +71,10 @@ const server = {
     // SYNCHRO slaves -> master
 
     // ajout / mise à jour de commande depuis les caisses esclaves
-    api_server.post('/sync', (req, res) => {
+    api_server.post('/synchro', (req, res) => {
     
       const {db, data} = req.body;
-      log.info('POST sync', req.body.data);
+      log.info('POST synchro', req.body);
 
       const response_id = responses.push(res) - 1;
       switch(db) {
@@ -103,7 +103,7 @@ const server = {
           webContents.send('setUserSync', {data: req.body.data, response: response_id});
           break;
         default:
-          log.info(`POST sync db "${db}" inconnue`);
+          log.info(`POST synchro db "${db}" inconnue`);
       }
     });
 
@@ -127,6 +127,13 @@ const actions = {
     log.info('ticketID : '+ticketId);
 
     res.send({msg: 'ticketID sent'});
+  },
+
+  // confirme la bonne réception des synchro s/m
+  syncConfirm: (req, res) => {
+    const { confirm, response } = req.payload;
+    responses[response].json({status:('ok'===confirm)?'success':'error'});
+    res.send({msg: 'sync confirm sent'});
   },
 
   // on lance la connexion au master (si la caisse est "slave")
@@ -219,19 +226,19 @@ const actions = {
 
 
     const __request = net.request({
-      url: url+':'+API_PORT+'/sync',
+      url: url+':'+API_PORT+'/synchro',
       method: 'post'
     });
     // __request.setHeader('Authorization','Bearer '+access_token)
     // __request.setHeader('Access-Control-Allow-Origin', '*')
     // __request.setHeader('Content-Type', 'application/json');
 
-    __request.write(JSON.stringify({db:db, data:data}));
+    __request.write(JSON.stringify({body:{db:db, data:data}}));
 
     __request.on('response', (response) => {
 
       log.info(`syncDispatchToMaster() [${db}] to ${url}, status:`, response.statusCode);
-      res.send({msg:`sync ${db} to master`});
+      res.send({msg:`synchro ${db} to master`});
     //   log.info(`acceptUberOrder STATUS: ${response.statusCode}`);
     //   log.info(`acceptUberOrder HEADERS: ${JSON.stringify(response.headers)}`);
       response.on('data', (chunk) => {
