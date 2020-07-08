@@ -136,7 +136,7 @@ const actions = {
     log.info('syncConnectToMaster', req.payload);
 
     // socket = ioclient(url, {transports: ['websocket']});
-    socket = ioclient(url+':'+SYNC_PORT+'/sync');
+    socket = ioclient(url+':'+SYNC_PORT);
     
     socket.on('sync', data => {
       log.info('on sync', data);
@@ -219,7 +219,7 @@ const actions = {
 
 
     const __request = net.request({
-      url: url+':'+API_PORT,
+      url: url+':'+API_PORT+'/sync',
       method: 'post'
     });
     // __request.setHeader('Authorization','Bearer '+access_token)
