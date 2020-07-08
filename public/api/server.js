@@ -1,9 +1,10 @@
 const express = require('express');
-const xpr = express();
+const api_server = express();
+const sync_server = express();
 const log = require('electron-log');
 const cors = require('cors');
 
-const http = require('http').Server(xpr);
+const http = require('http').Server(sync_server);
 const io = require('socket.io')(http);
 const ioclient = require('socket.io-client');
 
@@ -11,10 +12,9 @@ const connectedSlaves = [];
 
 let socket = null;
 
+const API_PORT = 3300;
+const SYNC_PORT = 3340;
 
-xpr.listen(3300, () => {
-  log.info('server écoute le port 3300');
-})
 
 
 const allowedOrigins = [
@@ -45,21 +45,21 @@ const server = {
     //     return callback(null, true);
     //   }
     // }));
-    xpr.use(cors({origin: "*"}));
+    api_server.use(cors({origin: "*"}));
 
-    xpr.use(express.urlencoded({extended: false})).use(express.json());
-    xpr.get('/', (req,res) => {
+    api_server.use(express.urlencoded({extended: false})).use(express.json());
+    api_server.get('/', (req,res) => {
       log.info('GET : '+req.query.fui);
       let __d = new Date();
       res.json({status:'success', commandeid: 'c'+__d.getTime().toString()});
     });
-    xpr.post('/', (req,res) => {
+    api_server.post('/', (req,res) => {
       log.info('POST : '+req.body.data);
       let __d = new Date();
       res.json({status:'success', commandeid: 'c'+__d.getTime().toString()});
     });
     // ajout de commande depuis les bornes
-    xpr.post('/setcommande', (req,res) => {
+    api_server.post('/setcommande', (req,res) => {
       log.info('POST setcommande', req.body.data);
       
       const response_id = responses.push(res) - 1;
@@ -70,33 +70,39 @@ const server = {
     // SYNCHRO slaves -> master
 
     // ajout / mise à jour de commande depuis les caisses esclaves
-    xpr.post('/synccommande', (req, res) => {
+    api_server.post('/synccommande', (req, res) => {
       log.info('POST synccommande', req.body.data);
 
       const response_id = responses.push(res) - 1;
       webContents.send('setCommandeSync', {data: req.body.data, response: response_id});
     });
     // ajout / mise à jour de client depuis les caisses esclaves
-    xpr.post('/syncclient', (req, res) => {
+    api_server.post('/syncclient', (req, res) => {
       log.info('POST syncclient', req.body.data);
 
       const response_id = responses.push(res) - 1;
       webContents.send('setClientSync', {data: req.body.data, response: response_id});
     });
     // ajout / mise à jour de ticket restaurant depuis les caisses esclaves
-    xpr.post('/syncticketrestaurant', (req, res) => {
+    api_server.post('/syncticketrestaurant', (req, res) => {
       log.info('POST syncticketrestaurant', req.body.data);
 
       const response_id = responses.push(res) - 1;
       webContents.send('setTicketRestaurantSync', {data: req.body.data, response: response_id});
     });
     // ajout / mise à jour de pointages depuis les caisses esclaves
-    xpr.post('/syncpointage', (req, res) => {
+    api_server.post('/syncpointage', (req, res) => {
       log.info('POST syncpointage', req.body.data);
 
       const response_id = responses.push(res) - 1;
       webContents.send('setPointageSync', {data: req.body.data, response: response_id});
     });
+
+
+    api_server.listen(API_PORT, () => {
+      log.info( `api_server listening on *:${API_PORT}` );
+    })
+
   }
 }
 
@@ -122,11 +128,11 @@ const actions = {
     });
 
     socket.on('connect', function() {
-      logger.log('on connect');
+      log.info('on connect');
     });
     
     socket.on('sync', data => {
-      logger.log('on sync', data);
+      log.info('on sync', data);
     });
     res.send({msg:'connection sent to master'})
   },
@@ -135,12 +141,22 @@ const actions = {
     res.send({msg:'disconnected from master'});
   },
   syncStartMaster: (req, res) => {
+
+
+    sync_server.use(cors({origin: "*"}));
+
     io.on('connection', (sock) => {
       connectedSlaves.push(sock.id);
       log.info('caisse connected', sock);
       io.to(sock).emit('connect');
     });
     res.send({msg:'master wait for slaves'});
+
+
+    http.listen(SYNC_PORT, function(){
+      log.info( `sync_server listening on *:${SYNC_PORT}` );
+    });
+
   }
 };
 

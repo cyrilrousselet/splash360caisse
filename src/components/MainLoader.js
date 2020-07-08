@@ -33,7 +33,7 @@ class MainLoader extends React.Component {
     if (paramLoaded && !sseInit) {
       this.props.initSSE();
       this.props.setPOS();
-    //  this.props.initSync();
+      this.props.initSync();
     }
     if (paramLoaded && sseInit && !catLoaded && !catLoading) {
       this.props.getCatalogue();
@@ -43,7 +43,7 @@ class MainLoader extends React.Component {
     }
     if (paramLoaded && sseInit && catLoaded && cmdLoaded && !cloLoaded && !cloLoading) {
       this.props.getCloturesList();
-//      this.props.getCurrentPeriode();
+      this.props.getCurrentPeriode();
     }
     if (paramLoaded && sseInit && catLoaded && cmdLoaded && cloLoaded) {
       this.props.loadingComplete();
