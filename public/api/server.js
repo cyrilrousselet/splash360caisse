@@ -75,32 +75,34 @@ const server = {
     
       const {db, data} = req.body;
       log.info('POST synchro', req.body);
+      log.info('POST keys', Object.keys(req.body));
+      log.info('POST db', req.body['db']);
 
       const response_id = responses.push(res) - 1;
       switch(db) {
         case 'commande':
-          webContents.send('setCommandeSync', {data: req.body.data, response: response_id});
+          webContents.send('setCommandeSync', {data: data, response: response_id});
           break;
         case 'client':
-          webContents.send('setClientSync', {data: req.body.data, response: response_id});
+          webContents.send('setClientSync', {data: data, response: response_id});
           break;
         case 'ticketrestaurant':
-          webContents.send('setTicketRestaurantSync', {data: req.body.data, response: response_id});
+          webContents.send('setTicketRestaurantSync', {data: data, response: response_id});
           break;
         case 'pointage':
-          webContents.send('setPointageSync', {data: req.body.data, response: response_id});
+          webContents.send('setPointageSync', {data: data, response: response_id});
           break;
         case 'avoir':
-          webContents.send('setAvoirSync', {data: req.body.data, response: response_id});
+          webContents.send('setAvoirSync', {data: data, response: response_id});
           break;
         case 'timeadjust':
-          webContents.send('setTimeadjustSync', {data: req.body.data, response: response_id});
+          webContents.send('setTimeadjustSync', {data: data, response: response_id});
           break;
         case 'cloture':
-          webContents.send('setClotureSync', {data: req.body.data, response: response_id});
+          webContents.send('setClotureSync', {data: data, response: response_id});
           break;
         case 'user':
-          webContents.send('setUserSync', {data: req.body.data, response: response_id});
+          webContents.send('setUserSync', {data: data, response: response_id});
           break;
         default:
           log.info(`POST synchro db "${db}" inconnue`);
@@ -234,12 +236,8 @@ const actions = {
     __request.setHeader('Access-Control-Allow-Origin', '*')
     __request.setHeader('Content-Type', 'application/json');
 
-    const __body = {body:{
-                      db:db, 
-                      data:data
-                  }};
-
-    __request.write(JSON.stringify(__body));
+    
+    __request.write(JSON.stringify({db:db, data:data}));
 
     __request.on('response', (response) => {
 
