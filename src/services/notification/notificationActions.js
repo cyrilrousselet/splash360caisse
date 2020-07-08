@@ -52,7 +52,7 @@ function initSync() {
     logger.log('initSync', options);
 
     if (options.role==='slave') {
-      notificationServices.connectToMaster(options.masterUrl, options.caisse)
+      notificationServices.connectToMaster(options.master, options.caisse)
       .then(result => {
         logger.log('initSync slave', result);
         dispatch({type: notificationActionTypes.CONNECT_TO_MASTER});
