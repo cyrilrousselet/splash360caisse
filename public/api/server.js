@@ -117,11 +117,11 @@ const actions = {
       transports: ['websocket'],
     });
 
-    ioclient.on('connect', function() {
+    socket.on('connect', function() {
       res.send({msg:'connected to master'})
     });
 
-    ioclient.on('sync', data => {
+    socket.on('sync', data => {
       logger.log('on sync', data);
     });
   },
