@@ -153,7 +153,7 @@ async function _deleteCommande(ticketId, motif) {
                                          .assign({status:'deleted', motif: motif})
                                          .write();
 
-  return _cmd.length>0;
+  return _cmd;
 }
 
 

@@ -54,24 +54,6 @@ function persistTicketsRestaurants(liste) {
   }
 }
 
-function setTicketRestaurantFromSync(ticketrestaurant) {
-  return dispatch => {
-    dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_REQUEST }); 
-  
-    const {data} = ticketrestaurant;
-
-    commandeServices.persistTicketsRestaurants(data)
-    .then(
-      data => {
-        dispatch({type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_SUCCESS});
-        dispatch( getAllTicketsRestaurant());
-        dispatch(notificationActions.syncConfirm(ticketrestaurant.response));
-      },
-      error => dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_FAILURE, error: error })
-    );
-  }
-}
-
 
 function setNewNumero(defaultValue=null) {
 
@@ -398,6 +380,7 @@ function deleteCommande(payload) {
       .then(
         data => {
           dispatch({ type: commandeActionTypes.DELETE_COMMANDE_SUCCESS, ...data });
+          dispatch(notificationActions.syncDispatch('commande', data));
           dispatch(getCommandesList());
         },
         error => dispatch({ type: commandeActionTypes.DELETE_COMMANDE_FAILURE, error: error })
@@ -522,6 +505,7 @@ function archiveCommands(payload) {
     .then(
       confirm => {
         dispatch({ type: commandeActionTypes.ARCHIVE_SUCCESS, ids:cmd });
+        dispatch(notificationActions.syncDispatch('archivecommandes', {cmd, clotureId}));
         dispatch(getCommandesList());
       },
       error => {
@@ -629,6 +613,9 @@ function setCommandeFromAPI(payload) {
 }
 
 
+/** 
+ * ajout / modif de commandes depuis la synchro
+ */
 function setCommandeFromSync(commande) {
   return dispatch => {
 
@@ -649,6 +636,54 @@ function setCommandeFromSync(commande) {
   }
 }
 
+/**
+ * archivage commandes depuis la synchro
+ * 
+ * @param {*} payload 
+ */
+function archiveCommandesFromSync(payload) {
+
+  return (dispatch) => {
+
+    dispatch({ type: commandeActionTypes.ARCHIVE_FROM_SYNC_REQUEST });
+
+    const {cmd, clotureId} = payload.data;
+
+    commandeServices.archiveCommands(cmd,clotureId)
+    .then(
+      confirm => {
+        dispatch({ type: commandeActionTypes.ARCHIVE_FROM_SYNC_SUCCESS, ids:cmd });
+        dispatch(notificationActions.syncConfirm(payload.response));
+        dispatch(getCommandesList());
+      },
+      error => {
+        dispatch({ type: commandeActionTypes.ARCHIVE_FROM_SYNC_FAILURE, error: error.toString() });
+      }
+    );
+  }
+
+}
+
+/**
+ * ajout de TR depuis la synchro
+ */
+function setTicketRestaurantFromSync(ticketrestaurant) {
+  return dispatch => {
+    dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_REQUEST }); 
+  
+    const {data} = ticketrestaurant;
+
+    commandeServices.persistTicketsRestaurants(data)
+    .then(
+      data => {
+        dispatch({type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_SUCCESS});
+        dispatch( getAllTicketsRestaurant());
+        dispatch(notificationActions.syncConfirm(ticketrestaurant.response));
+      },
+      error => dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_FAILURE, error: error })
+    );
+  }
+}
 
 export const commandeActions = {
   getCommandesList,
@@ -682,8 +717,9 @@ export const commandeActions = {
   deleteDiscount,
   setCommandeFromOrder,
   setCommandeFromAPI,
-  setCommandeFromSync,
   getAllTicketsRestaurant,
   persistTicketsRestaurants,
+  setCommandeFromSync,
+  archiveCommandesFromSync,
   setTicketRestaurantFromSync
 };
