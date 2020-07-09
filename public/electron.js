@@ -22,11 +22,19 @@ function createWindow() {
     mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
     if (isDev) {
        //  Open the DevTools.
-       if (process.platform === 'darwin') {
-         BrowserWindow.addDevToolsExtension(
-             path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions/lmhkpmbekcpmknklioeibfkpmmfibljd/2.17.0_0')
-         );
-       }
+      if (process.platform === 'darwin') {
+        BrowserWindow.addDevToolsExtension(
+            path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions/lmhkpmbekcpmknklioeibfkpmmfibljd/2.17.0_0')
+        );
+      } else if (process.platform === 'win32') {
+        try {
+          BrowserWindow.addDevToolsExtension(
+          path.join(os.homedir(), '\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\lmhkpmbekcpmknklioeibfkpmmfibljd\\2.17.0_0')
+          );
+        } catch(e) {
+          log.info('pbm devtool win', e.message);
+        }
+      }
         mainWindow.webContents.openDevTools();
     } else {
         // suppression du menu sur Windows et Linux en prod

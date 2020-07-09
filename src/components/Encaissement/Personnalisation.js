@@ -12,7 +12,9 @@ import MinusIcon from '../common/icon/MinusIcon';
 import PlusIcon from '../common/icon/PlusIcon';
 import StdButton from '../common/StdButton';
 import { getWeekYearWithOptions } from 'date-fns/fp';
+import Logger from '../../helpers/Logger';
 let strings = new LocalizedStrings(data);
+const logger = new Logger()
 
 
 

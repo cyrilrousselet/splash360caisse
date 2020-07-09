@@ -702,7 +702,7 @@
             "ingredient_id": "ing1057",
             "type": "typ152",
             "nom": "PAIN",
-            "supplement": "0.00",
+            "supplement": "0.50",
             "tva": "tva6",
             "weight": 5,
             "color": "jauneorange"
@@ -764,8 +764,8 @@
         {
             "ingredient_id": "ing1092",
             "type": "typ160",
-            "nom": "Cheddar",
-            "supplement": "3.00",
+            "nom": "SUPPLÉMENT CHEDDAR",
+            "supplement": "0.80",
             "tva": "tva6",
             "weight": 11,
             "color": "orange"
@@ -773,8 +773,8 @@
         {
             "ingredient_id": "ing1093",
             "type": "typ160",
-            "nom": "Cheddar Bacon",
-            "supplement": "3.80",
+            "nom": "SUPPLÉMENT CHEDDAR BACON",
+            "supplement": "1.50",
             "tva": "tva6",
             "weight": 12,
             "color": "rose"
@@ -2330,7 +2330,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1301",
@@ -2343,7 +2343,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 1
         },
         {
             "step_id": "step757",
@@ -2356,7 +2356,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1302",
@@ -2369,7 +2369,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 1
         },
         {
             "step_id": "step758",
@@ -2382,7 +2382,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1303",
@@ -2395,7 +2395,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 1
         },
         {
             "step_id": "step759",
@@ -2408,7 +2408,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1304",
@@ -2421,7 +2421,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 1
         },
         {
             "step_id": "step760",
@@ -2434,7 +2434,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1305",
@@ -2447,7 +2447,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 1
         },
         {
             "step_id": "step761",
@@ -2460,7 +2460,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1306",
@@ -2473,7 +2473,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 1
         },
         {
             "step_id": "step756",
@@ -2512,7 +2512,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step981",
@@ -2525,7 +2525,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 1
         },
         {
             "step_id": "step754",
@@ -2538,7 +2538,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step982",
@@ -2551,7 +2551,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 1
         },
         {
             "step_id": "step753",
@@ -2564,7 +2564,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step983",
@@ -2577,7 +2577,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 1
         },
         {
             "step_id": "step752",
@@ -2590,7 +2590,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step984",
@@ -2603,7 +2603,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 1
         },
         {
             "step_id": "step751",
@@ -2616,7 +2616,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step985",
@@ -2629,7 +2629,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 1
         },
         {
             "step_id": "step750",
@@ -2642,7 +2642,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step986",
@@ -2655,7 +2655,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 1
         },
         {
             "step_id": "step749",
@@ -2668,7 +2668,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step987",
@@ -2681,7 +2681,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 1
         },
         {
             "step_id": "step748",
@@ -2694,7 +2694,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step988",
@@ -2707,7 +2707,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 1
         },
         {
             "step_id": "step747",
@@ -2720,7 +2720,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step989",
@@ -2733,7 +2733,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 1
         },
         {
             "step_id": "step762",
@@ -2746,7 +2746,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 5
         },
         {
             "step_id": "step1004",
@@ -2759,7 +2759,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -2
+            "weight": 1
         },
         {
             "step_id": "step1121",
@@ -2772,7 +2772,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 2
         },
         {
             "step_id": "step1194",
@@ -2785,7 +2785,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 3
         },
         {
             "step_id": "step1222",
@@ -2798,7 +2798,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 4
         },
         {
             "step_id": "step763",
@@ -2811,7 +2811,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 5
         },
         {
             "step_id": "step1003",
@@ -2824,7 +2824,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -2
+            "weight": 1
         },
         {
             "step_id": "step1122",
@@ -2837,7 +2837,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 2
         },
         {
             "step_id": "step1193",
@@ -2850,7 +2850,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 3
         },
         {
             "step_id": "step1223",
@@ -2863,7 +2863,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 4
         },
         {
             "step_id": "step764",
@@ -2876,7 +2876,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 5
         },
         {
             "step_id": "step1002",
@@ -2889,7 +2889,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -2
+            "weight": 1
         },
         {
             "step_id": "step1123",
@@ -2902,7 +2902,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 2
         },
         {
             "step_id": "step1195",
@@ -2915,7 +2915,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 3
         },
         {
             "step_id": "step1224",
@@ -2928,7 +2928,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 4
         },
         {
             "step_id": "step765",
@@ -2941,7 +2941,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 5
         },
         {
             "step_id": "step1001",
@@ -2954,7 +2954,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -2
+            "weight": 1
         },
         {
             "step_id": "step1124",
@@ -2967,7 +2967,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 2
         },
         {
             "step_id": "step1196",
@@ -2980,7 +2980,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 3
         },
         {
             "step_id": "step1225",
@@ -2993,7 +2993,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 4
         },
         {
             "step_id": "step766",
@@ -3006,7 +3006,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 5
         },
         {
             "step_id": "step1000",
@@ -3019,7 +3019,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -2
+            "weight": 1
         },
         {
             "step_id": "step1125",
@@ -3032,7 +3032,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 2
         },
         {
             "step_id": "step1197",
@@ -3045,7 +3045,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 3
         },
         {
             "step_id": "step1226",
@@ -3058,7 +3058,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 4
         },
         {
             "step_id": "step767",
@@ -3071,7 +3071,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 5
         },
         {
             "step_id": "step999",
@@ -3084,7 +3084,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -2
+            "weight": 1
         },
         {
             "step_id": "step1126",
@@ -3097,7 +3097,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 2
         },
         {
             "step_id": "step1198",
@@ -3110,7 +3110,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 3
         },
         {
             "step_id": "step1227",
@@ -3123,7 +3123,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 4
         },
         {
             "step_id": "step792",
@@ -3136,7 +3136,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 7
+            "weight": 5
         },
         {
             "step_id": "step1005",
@@ -3149,7 +3149,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 3
+            "weight": 2
         },
         {
             "step_id": "step1046",
@@ -3162,7 +3162,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": 6
+            "weight": 4
         },
         {
             "step_id": "step1211",
@@ -3175,7 +3175,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 4
+            "weight": 3
         },
         {
             "step_id": "step1212",
@@ -3188,7 +3188,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 1
         },
         {
             "step_id": "step791",
@@ -3201,7 +3201,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 4
+            "weight": 5
         },
         {
             "step_id": "step1006",
@@ -3214,7 +3214,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 2
         },
         {
             "step_id": "step1047",
@@ -3227,7 +3227,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": 3
+            "weight": 4
         },
         {
             "step_id": "step1213",
@@ -3240,7 +3240,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 3
         },
         {
             "step_id": "step1214",
@@ -3253,7 +3253,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -2
+            "weight": 1
         },
         {
             "step_id": "step790",
@@ -3266,7 +3266,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 5
         },
         {
             "step_id": "step1007",
@@ -3279,7 +3279,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 2
         },
         {
             "step_id": "step1048",
@@ -3292,7 +3292,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": 1
+            "weight": 4
         },
         {
             "step_id": "step1215",
@@ -3305,7 +3305,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 3
         },
         {
             "step_id": "step1216",
@@ -3318,7 +3318,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -2
+            "weight": 1
         },
         {
             "step_id": "step789",
@@ -3331,7 +3331,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 5
         },
         {
             "step_id": "step1008",
@@ -3344,7 +3344,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 2
         },
         {
             "step_id": "step1049",
@@ -3357,7 +3357,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": 1
+            "weight": 4
         },
         {
             "step_id": "step1217",
@@ -3370,7 +3370,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -2
+            "weight": 1
         },
         {
             "step_id": "step1218",
@@ -3383,7 +3383,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 3
         },
         {
             "step_id": "step795",
@@ -3396,7 +3396,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 4
         },
         {
             "step_id": "step1011",
@@ -3409,7 +3409,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 1
         },
         {
             "step_id": "step1051",
@@ -3422,7 +3422,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": 1
+            "weight": 3
         },
         {
             "step_id": "step1206",
@@ -3435,7 +3435,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step794",
@@ -3448,7 +3448,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 3
+            "weight": 4
         },
         {
             "step_id": "step1012",
@@ -3461,7 +3461,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 1
         },
         {
             "step_id": "step1052",
@@ -3474,7 +3474,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": 2
+            "weight": 3
         },
         {
             "step_id": "step1207",
@@ -3487,7 +3487,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step796",
@@ -3500,7 +3500,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 3
+            "weight": 4
         },
         {
             "step_id": "step1013",
@@ -3513,7 +3513,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 1
         },
         {
             "step_id": "step1053",
@@ -3526,7 +3526,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": 2
+            "weight": 3
         },
         {
             "step_id": "step1208",
@@ -3539,7 +3539,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step793",
@@ -3552,7 +3552,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 3
+            "weight": 4
         },
         {
             "step_id": "step1014",
@@ -3565,7 +3565,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 1
         },
         {
             "step_id": "step1054",
@@ -3578,7 +3578,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": 2
+            "weight": 3
         },
         {
             "step_id": "step1209",
@@ -3591,7 +3591,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step723",
@@ -3604,7 +3604,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 3
+            "weight": 5
         },
         {
             "step_id": "step1015",
@@ -3617,7 +3617,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 1
         },
         {
             "step_id": "step1032",
@@ -3630,7 +3630,7 @@
                     "supplement": "0.80"
                 }
             ],
-            "weight": 1
+            "weight": 3
         },
         {
             "step_id": "step1055",
@@ -3643,7 +3643,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": 1
+            "weight": 4
         },
         {
             "step_id": "step1203",
@@ -3656,7 +3656,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step725",
@@ -3669,7 +3669,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 3
+            "weight": 5
         },
         {
             "step_id": "step1016",
@@ -3682,7 +3682,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 1
         },
         {
             "step_id": "step1033",
@@ -3695,7 +3695,7 @@
                     "supplement": "0.80"
                 }
             ],
-            "weight": 3
+            "weight": 4
         },
         {
             "step_id": "step1056",
@@ -3734,7 +3734,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 3
+            "weight": 5
         },
         {
             "step_id": "step1017",
@@ -3747,7 +3747,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 1
         },
         {
             "step_id": "step1034",
@@ -3760,7 +3760,7 @@
                     "supplement": "0.80"
                 }
             ],
-            "weight": 3
+            "weight": 4
         },
         {
             "step_id": "step1057",
@@ -3799,7 +3799,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 1
         },
         {
             "step_id": "step717",
@@ -3812,7 +3812,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 3
+            "weight": 4
         },
         {
             "step_id": "step1058",
@@ -3846,7 +3846,7 @@
             "titre": "ACCOMPAGNEMENTS",
             "regles": [
                 {
-                    "type": "typ93",
+                    "type": "typ149",
                     "regle": "{0,1}",
                     "supplement": "0.00"
                 }
@@ -3877,7 +3877,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": 4
+            "weight": 3
         },
         {
             "step_id": "step1201",
@@ -3890,7 +3890,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 3
+            "weight": 2
         },
         {
             "step_id": "step720",
@@ -3898,12 +3898,12 @@
             "titre": "ACCOMPAGNEMENTS",
             "regles": [
                 {
-                    "type": "typ93",
+                    "type": "typ149",
                     "regle": "{0,1}",
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 1
         },
         {
             "step_id": "step721",
@@ -3916,7 +3916,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 5
+            "weight": 4
         },
         {
             "step_id": "step1060",
@@ -3929,7 +3929,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": 5
+            "weight": 3
         },
         {
             "step_id": "step1202",
@@ -3942,7 +3942,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 4
+            "weight": 2
         },
         {
             "step_id": "step772",
@@ -3955,7 +3955,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 4
         },
         {
             "step_id": "step1028",
@@ -3968,7 +3968,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 1
         },
         {
             "step_id": "step1035",
@@ -3981,7 +3981,7 @@
                     "supplement": "0.80"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1061",
@@ -3994,7 +3994,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": 0
+            "weight": 3
         },
         {
             "step_id": "step773",
@@ -4007,7 +4007,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 4
         },
         {
             "step_id": "step1029",
@@ -4020,7 +4020,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 1
         },
         {
             "step_id": "step1036",
@@ -4033,7 +4033,7 @@
                     "supplement": "0.80"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1062",
@@ -4046,7 +4046,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": 0
+            "weight": 3
         },
         {
             "step_id": "step774",
@@ -4059,7 +4059,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 4
         },
         {
             "step_id": "step1030",
@@ -4072,7 +4072,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -2
+            "weight": 1
         },
         {
             "step_id": "step1038",
@@ -4085,7 +4085,7 @@
                     "supplement": "0.80"
                 }
             ],
-            "weight": -1
+            "weight": 2
         },
         {
             "step_id": "step1063",
@@ -4098,7 +4098,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": -1
+            "weight": 3
         },
         {
             "step_id": "step775",
@@ -4111,7 +4111,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 1
+            "weight": 4
         },
         {
             "step_id": "step1031",
@@ -4124,7 +4124,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 1
         },
         {
             "step_id": "step1039",
@@ -4137,7 +4137,7 @@
                     "supplement": "0.80"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1064",
@@ -4150,7 +4150,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": 0
+            "weight": 3
         },
         {
             "step_id": "step768",
@@ -4163,7 +4163,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1238",
@@ -4176,7 +4176,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": -1
+            "weight": 1
         },
         {
             "step_id": "step769",
@@ -4189,7 +4189,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1239",
@@ -4202,7 +4202,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": -1
+            "weight": 1
         },
         {
             "step_id": "step770",
@@ -4215,7 +4215,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1240",
@@ -4228,7 +4228,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": -1
+            "weight": 1
         },
         {
             "step_id": "step771",
@@ -4241,7 +4241,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1241",
@@ -4254,7 +4254,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": -1
+            "weight": 1
         },
         {
             "step_id": "step1136",
@@ -4267,7 +4267,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 10
+            "weight": 1
         },
         {
             "step_id": "step836",
@@ -4280,7 +4280,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 1
         },
         {
             "step_id": "step837",
@@ -4293,7 +4293,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 1
         },
         {
             "step_id": "step1137",
@@ -4306,7 +4306,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 10
+            "weight": 1
         },
         {
             "step_id": "step835",
@@ -4319,7 +4319,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 2
         },
         {
             "step_id": "step1242",
@@ -4332,7 +4332,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": -1
+            "weight": 1
         },
         {
             "step_id": "step1116",
@@ -4345,7 +4345,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 10
+            "weight": 2
         },
         {
             "step_id": "step1243",
@@ -4358,7 +4358,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": 9
+            "weight": 1
         },
         {
             "step_id": "step1117",
@@ -4371,7 +4371,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 10
+            "weight": 2
         },
         {
             "step_id": "step1244",
@@ -4384,7 +4384,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": 9
+            "weight": 1
         },
         {
             "step_id": "step997",
@@ -4397,7 +4397,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 3
+            "weight": 5
         },
         {
             "step_id": "step998",
@@ -4410,7 +4410,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -2
+            "weight": 1
         },
         {
             "step_id": "step1127",
@@ -4423,7 +4423,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 2
         },
         {
             "step_id": "step1199",
@@ -4436,7 +4436,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 3
         },
         {
             "step_id": "step1228",
@@ -4449,7 +4449,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 3
+            "weight": 4
         },
         {
             "step_id": "step1009",
@@ -4462,7 +4462,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -1
+            "weight": 2
         },
         {
             "step_id": "step1010",
@@ -4475,7 +4475,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 2
+            "weight": 5
         },
         {
             "step_id": "step1050",
@@ -4488,7 +4488,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": 1
+            "weight": 4
         },
         {
             "step_id": "step1219",
@@ -4501,7 +4501,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": -2
+            "weight": 1
         },
         {
             "step_id": "step1220",
@@ -4514,7 +4514,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 0
+            "weight": 3
         },
         {
             "step_id": "step979",
@@ -4553,7 +4553,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 12
+            "weight": 4
         },
         {
             "step_id": "step1119",
@@ -4566,7 +4566,7 @@
                     "supplement": "0.50"
                 }
             ],
-            "weight": 11
+            "weight": 3
         },
         {
             "step_id": "step1120",
@@ -4579,7 +4579,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 9
+            "weight": 1
         },
         {
             "step_id": "step1210",
@@ -4592,7 +4592,7 @@
                     "supplement": "0.00"
                 }
             ],
-            "weight": 10
+            "weight": 2
         }
     ]
 }

@@ -13,7 +13,10 @@ export const notificationServices = {
   initSSE,
   connectToMaster,
   disconnectFromMaster,
-  startSyncMaster
+  startSyncMaster,
+  syncDispatch,
+  syncMaster,
+  syncConfirm
  };
 
 
@@ -72,7 +75,7 @@ export const notificationServices = {
 
 
 function connectToMaster(url, caisse) {
-  return emit('syncConnectToMaster', {url: url, caisse: caisse});
+  return emit('syncConnectToMaster', { url, caisse});
 }
 
 function disconnectFromMaster(url, caisse) {
@@ -81,6 +84,16 @@ function disconnectFromMaster(url, caisse) {
 
 function startSyncMaster() {
   return emit('syncStartMaster',{});
+}
+
+function syncDispatch(db, data) {
+  return emit('syncDispatchToSlaves', {db, data});
+}
+function syncMaster(db, data, url) {
+  return emit('syncDispatchToMaster', {db, data, url});
+}
+function syncConfirm(response) {
+  return emit('syncConfirm', {response});
 }
 
 async function denyOrder(provider, order) {

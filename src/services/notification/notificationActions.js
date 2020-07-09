@@ -52,7 +52,7 @@ function initSync() {
     logger.log('initSync', options);
 
     if (options.role==='slave') {
-      notificationServices.connectToMaster(options.masterUrl, options.caisse)
+      notificationServices.connectToMaster(options.master, options.caisse)
       .then(result => {
         logger.log('initSync slave', result);
         dispatch({type: notificationActionTypes.CONNECT_TO_MASTER});
@@ -62,6 +62,24 @@ function initSync() {
       .then(result => {
         logger.log('initSync master', result);
         dispatch({type: notificationActionTypes.START_MASTER});
+      })
+    }
+  }
+}
+
+function syncDispatch(db,data) {
+  return (dispatch, getState) => {
+    const { options } = getState().parametresReducer.parametres;
+    if (options.role==='master') {
+      notificationServices.syncDispatch(db, data)
+      .then(result => {
+        logger.log('syncDispatch (master)', result);
+      })
+    }
+    else if (options.role==='slave') {
+      notificationServices.syncMaster(db, data, options.master)
+      .then(result => {
+        logger.log('syncDispatch (slave)', result);
       })
     }
   }
@@ -150,11 +168,22 @@ function getToken(provider, task) {
 }
 
 
+function syncConfirm(response) {
+  return dispatch => {
+    notificationServices.syncConfirm(response)
+    .then(
+      confirm => { logger.log('notificationAction','synchro confirm sent')}
+    );
+  }
+}
+
 export const notificationActions = {
   initSSE,
   setPOS,
   getToken,
   treatment,
   denyOrder,
-  initSync
+  initSync,
+  syncDispatch,
+  syncConfirm
 };
