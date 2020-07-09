@@ -34,8 +34,8 @@ class Logger {
     //  let logLineDetails = ((new Error().stack).split("at ")[3]).trim();
      let logLineDetails = '';
      //  let logLineDetails = this.log.caller;
-    //  console.log(logLineDetails, util.format(...args));
-     console.trace(util.format(...args));
+     console.log(util.format(...args));
+    //  console.trace(util.format(...args));
      this.cns.log(formatISO9075(new Date()), logLineDetails+' -', util.format(...args));
     }
     

@@ -2,7 +2,7 @@ const log = require('electron-log');
 const escpos = require('escpos');
 escpos.USB = require('escpos-usb');
 escpos.Network = require('escpos-network');
-escpos.Serial = require('escpos-serialport');
+escpos.SerialPort = require('escpos-serialport');
 const path = require('path');
 const fs = require('fs');
 
@@ -54,11 +54,24 @@ const actions = {
     // déclaration de l'imprimante
     let device;
     if (imprimante.connexion=='usb') {
-      device = new escpos.USB();
+      if (imprimante.param) {
+        vp = imprimante.param.split(';');
+        vid = parseInt(vp[0], 16);
+        pid = parseInt(vp[1], 16);
+        device = new escpos.USB(vid,pid);
+      } else {
+        device = new escpos.USB();
+      }
+
+      const alldevices = escpos.USB.findPrinter();
+      alldevices.forEach(el=>{
+        log.info('usb', el);
+      });
+
     } else if (imprimante.connexion=='network') {
       device = new escpos.Network(imprimante.param); 
     } else if (imprimante.connexion=='serial') {
-      device = new escpos.Serial(imprimante.param);
+      device = new escpos.SerialPort(imprimante.param);
     }
     const options = {encoding: imprimante.encoding, width:42};
     const printer = new escpos.Printer(device, options);
