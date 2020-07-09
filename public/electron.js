@@ -23,9 +23,13 @@ function createWindow() {
     if (isDev) {
        //  Open the DevTools.
       if (process.platform === 'darwin') {
-        BrowserWindow.addDevToolsExtension(
-            path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions/lmhkpmbekcpmknklioeibfkpmmfibljd/2.17.0_0')
-        );
+        try {
+          BrowserWindow.addDevToolsExtension(
+              path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions/lmhkpmbekcpmknklioeibfkpmmfibljd/2.17.0_0')
+          );
+        } catch(e) {
+          log.info('pbm devtool darwin', e.message);
+        }
       } else if (process.platform === 'win32') {
         try {
           BrowserWindow.addDevToolsExtension(

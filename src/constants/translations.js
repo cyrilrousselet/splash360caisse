@@ -838,7 +838,8 @@ const data = {
                                     parametre: 'Paramètre',
                                     encodage: 'Encodage',
                                     encodage_liste: {
-                                        Cp850: 'CP850'
+                                        Cp850: 'CP850',
+                                        'ISO-8859-1': 'ISO-8859-1'
                                     },
                                     default: 'Imprimante par défaut',
                                     fallback: 'Remplaçante',
