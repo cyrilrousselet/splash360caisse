@@ -6,7 +6,7 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import Swal from 'sweetalert2';
 import { format } from 'date-fns';
-import DateFnsUtils from '@date-io/date-fns';
+// import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import Logger from '../../helpers/Logger';
 const strings = new LocalizedStrings(data);
@@ -92,7 +92,7 @@ function treatment(data) {
 
     const {auto_accept_order} = getState().parametresReducer.parametres.commandes;
 
-    if (data.eventType=='orders.notification') {
+    if (data.eventType==='orders.notification') {
 
       dispatch({ type: notificationActionTypes.GET_NOTIFICATION, notif: data.eventType });
 
@@ -117,7 +117,7 @@ function treatment(data) {
               // cancelButtonText: strings.general.dialog.deny,
               buttonsStyling: false 
             }).then((result)=> {
-              if (result.value==true) {
+              if (result.value===true) {
                 dispatch(acceptOrder('uber', reponse.order));
               // } else {
               //   dispatch(denyOrder('uber', reponse.order));

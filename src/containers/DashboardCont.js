@@ -5,7 +5,7 @@ import { modulesList } from '../constants/modules';
 import { commandeActions } from '../services/commande/commandeActions';
 import { clotureActions } from '../services/cloture/clotureActions';
 import { getPeriode } from '../services/cloture/clotureReducer';
-import { getCommandesListError, getCommandesListLoading, getCommandesList } from '../services/commande/commandesListReducer';
+import { getCommandesList } from '../services/commande/commandesListReducer';
 import history from '../helpers/history';
 import paths from './../constants/routes.json';
 import Swal from 'sweetalert2';
@@ -22,7 +22,7 @@ const getModulesFromDroits = (droits) => {
   droits = {...droits, employes: true, encaissement: true, listecommandes: true};
   return modulesList.filter(function(value) {
     // return droits.indexOf(value) > -1;
-    return (droits.hasOwnProperty(value) && droits[value]==true);
+    return (droits.hasOwnProperty(value) && droits[value]===true);
   });
 }
 

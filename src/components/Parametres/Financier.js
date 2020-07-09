@@ -6,7 +6,7 @@ import LabelledField from '../common/LabelledField';
 import { Fab, List, ListItem } from '@material-ui/core';
 import AddIcon from '../common/icon/AddIcon';
 import SwitchCheckbox from '../common/SwitchCheckbox';
-import _ from 'lodash';
+// import _ from 'lodash';
 import LoadingSpinner from '../common/LoadingSpinner';
 
 let strings = new LocalizedStrings(data);
@@ -42,12 +42,12 @@ class Financier extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      moyen: null,
-      moyenEditOpen: true
-    }
+    // this.state = {
+      // moyen: null,
+      // moyenEditOpen: true
+    // }
     this.openMoyenEdit = this.openMoyenEdit.bind(this);
-    this.closeMoyenEdit = this.closeMoyenEdit.bind(this);
+    // this.closeMoyenEdit = this.closeMoyenEdit.bind(this);
   }
 
 
@@ -58,15 +58,16 @@ class Financier extends React.Component {
   openMoyenEdit(id:null) {
 
   }
-  closeMoyenEdit() {
-    this.setState({moyenEditOpen: false});
-  }
+  // closeMoyenEdit() {
+  //   this.setState({moyenEditOpen: false});
+  // }
 
 
  render() {
 
-  const { moyenEditOpen, moyen } = this.state;
-  const { data, updateValeur, getAll } = this.props;
+  // const { moyenEditOpen, moyen } = this.state;
+  // const { moyen } = this.state;
+  const { data, updateValeur } = this.props;
 
   if (undefined===data) return <LoadingSpinner />;
 

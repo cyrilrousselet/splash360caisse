@@ -93,7 +93,7 @@ function updateUser(payload) {
 
     const {user_id, data} = payload;
     const { users } = getState().userReducer;
-    let user = users.find(usr=>usr.user_id==user_id);
+    let user = users.find(usr=>usr.user_id===user_id);
 
 
 

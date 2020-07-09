@@ -6,7 +6,7 @@ class Promotions extends React.Component {
  render() {
   return (
    <div className="Promotions subcontent">
-    <img src={ contimage } className="contimage" />
+    <img src={ contimage } className="contimage" alt="" />
    </div>
   );
  }
