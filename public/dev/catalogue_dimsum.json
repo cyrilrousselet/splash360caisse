@@ -1,0 +1,2027 @@
+{
+  "categories": [
+      {
+          "categorie_id": "cat37",
+          "nom": "DIM SUM MENU",
+          "description": null
+      }
+  ],
+  "groupes": [
+      {
+          "groupe_id": "grp98",
+          "categorie": "cat37",
+          "nom": "SALADE ET ENTREE",
+          "noprint": [],
+          "weight": 1
+      },
+      {
+          "groupe_id": "grp99",
+          "categorie": "cat37",
+          "nom": "MENU CHIRACHI",
+          "noprint": [],
+          "weight": 2
+      },
+      {
+          "groupe_id": "grp100",
+          "categorie": "cat37",
+          "nom": "PLATEAU SUSHI MAKI SASHIMI",
+          "noprint": [],
+          "weight": 3
+      },
+      {
+          "groupe_id": "grp101",
+          "categorie": "cat37",
+          "nom": "PLATEAU MIXTE",
+          "noprint": [],
+          "weight": 4
+      },
+      {
+          "groupe_id": "grp102",
+          "categorie": "cat37",
+          "nom": "CRÉATION MAISON",
+          "noprint": [],
+          "weight": 5
+      },
+      {
+          "groupe_id": "grp103",
+          "categorie": "cat37",
+          "nom": "MAKI",
+          "noprint": [],
+          "weight": 6
+      },
+      {
+          "groupe_id": "grp104",
+          "categorie": "cat37",
+          "nom": "CALIFORNIA /CROUSTY ROLL'S /FLOCON",
+          "noprint": [],
+          "weight": 7
+      },
+      {
+          "groupe_id": "grp105",
+          "categorie": "cat37",
+          "nom": "PRINTEMPS",
+          "noprint": [],
+          "weight": 8
+      },
+      {
+          "groupe_id": "grp106",
+          "categorie": "cat37",
+          "nom": "SAUMON ROLL'S",
+          "noprint": [],
+          "weight": 9
+      },
+      {
+          "groupe_id": "grp107",
+          "categorie": "cat37",
+          "nom": "SUSHI",
+          "noprint": [],
+          "weight": 10
+      },
+      {
+          "groupe_id": "grp108",
+          "categorie": "cat37",
+          "nom": "SASHIMI",
+          "noprint": [],
+          "weight": 11
+      },
+      {
+          "groupe_id": "grp109",
+          "categorie": "cat37",
+          "nom": "BUBLLE TEA",
+          "noprint": [],
+          "weight": 12
+      },
+      {
+          "groupe_id": "grp112",
+          "categorie": "cat37",
+          "nom": "SPECIALITE DIM SUN",
+          "noprint": [],
+          "weight": 13
+      },
+      {
+          "groupe_id": "grp116",
+          "categorie": "cat37",
+          "nom": "MENU WOK",
+          "noprint": [],
+          "weight": 14
+      }
+  ],
+  "tva": [
+      {
+          "tva_id": "tva6",
+          "nom": "TVA 10 ALL MODE",
+          "code": "A",
+          "valeur": "0.1"
+      }
+  ],
+  "types": [
+      {
+          "type_id": "typ116",
+          "nom": "FORMULE DIM SUM",
+          "noprint": [],
+          "weight": 116
+      },
+      {
+          "type_id": "typ111",
+          "nom": "THE AU LAIT BUBBLE TEA",
+          "noprint": [],
+          "weight": 111
+      },
+      {
+          "type_id": "typ112",
+          "nom": "PARFUM THÉ AU LAIT BUBBLE TEA",
+          "noprint": [],
+          "weight": 112
+      },
+      {
+          "type_id": "typ113",
+          "nom": "FRUI'THE BUBBLE TEA",
+          "noprint": [],
+          "weight": 113
+      },
+      {
+          "type_id": "typ114",
+          "nom": "PARFUM FRUI'THE BUBBLE TEA",
+          "noprint": [],
+          "weight": 114
+      },
+      {
+          "type_id": "typ115",
+          "nom": "TOPPING BUBBLE TEA",
+          "noprint": [],
+          "weight": 115
+      },
+      {
+          "type_id": "typ108",
+          "nom": "ENTREE MENU WOK DIM SUM",
+          "noprint": [],
+          "weight": 108
+      },
+      {
+          "type_id": "typ109",
+          "nom": "PLAT MENU WOK DIM SUM",
+          "noprint": [],
+          "weight": 109
+      },
+      {
+          "type_id": "typ110",
+          "nom": "ACCOMPAGNEMENT MENU WOK DIM SUM",
+          "noprint": [],
+          "weight": 110
+      },
+      {
+          "type_id": "typ117",
+          "nom": "DESSERTS DIM SUN",
+          "noprint": [],
+          "weight": 117
+      }
+  ],
+  "ingredients": [
+      {
+          "ingredient_id": "ing708",
+          "type": "typ116",
+          "nom": "SALADE DE CHOUX",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "vertclair"
+      },
+      {
+          "ingredient_id": "ing709",
+          "type": "typ116",
+          "nom": "SOUPE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing673",
+          "type": "typ111",
+          "nom": "THÉ NOIR",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "noir"
+      },
+      {
+          "ingredient_id": "ing674",
+          "type": "typ111",
+          "nom": "THÉ VERT",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "vertclair"
+      },
+      {
+          "ingredient_id": "ing1105",
+          "type": "typ111",
+          "nom": "Pâtes",
+          "supplement": "2.50",
+          "tva": "tva6",
+          "weight": 8,
+          "color": "jauneorange"
+      },
+      {
+          "ingredient_id": "ing675",
+          "type": "typ112",
+          "nom": "NATURE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "blanc"
+      },
+      {
+          "ingredient_id": "ing676",
+          "type": "typ112",
+          "nom": "VANILLE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "blanc"
+      },
+      {
+          "ingredient_id": "ing677",
+          "type": "typ112",
+          "nom": "MELON",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 7,
+          "color": "jaune"
+      },
+      {
+          "ingredient_id": "ing678",
+          "type": "typ112",
+          "nom": "FRAISE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 8,
+          "color": "rouge"
+      },
+      {
+          "ingredient_id": "ing679",
+          "type": "typ112",
+          "nom": "COCO",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 9,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing680",
+          "type": "typ112",
+          "nom": "TARO",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 10,
+          "color": "violet"
+      },
+      {
+          "ingredient_id": "ing681",
+          "type": "typ112",
+          "nom": "MATCHA",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 11,
+          "color": "vertclair"
+      },
+      {
+          "ingredient_id": "ing682",
+          "type": "typ112",
+          "nom": "CHOCOLAT",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 12,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing683",
+          "type": "typ112",
+          "nom": "PAPAYE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 13,
+          "color": "orange"
+      },
+      {
+          "ingredient_id": "ing684",
+          "type": "typ112",
+          "nom": "AZUKI (HARICOT ROUGE)",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 14,
+          "color": "rouge"
+      },
+      {
+          "ingredient_id": "ing685",
+          "type": "typ112",
+          "nom": "MANGUE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 4,
+          "color": "jauneorange"
+      },
+      {
+          "ingredient_id": "ing686",
+          "type": "typ112",
+          "nom": "PECHE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 15,
+          "color": "orange"
+      },
+      {
+          "ingredient_id": "ing687",
+          "type": "typ113",
+          "nom": "THÉ NOIR",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "noir"
+      },
+      {
+          "ingredient_id": "ing688",
+          "type": "typ113",
+          "nom": "THE VERT",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "vertclair"
+      },
+      {
+          "ingredient_id": "ing689",
+          "type": "typ114",
+          "nom": "PASSION",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "jaune"
+      },
+      {
+          "ingredient_id": "ing690",
+          "type": "typ114",
+          "nom": "KIWI",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "vertclair"
+      },
+      {
+          "ingredient_id": "ing691",
+          "type": "typ114",
+          "nom": "GOYAVE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 7,
+          "color": "rose"
+      },
+      {
+          "ingredient_id": "ing692",
+          "type": "typ114",
+          "nom": "KUMQUAT",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 8,
+          "color": "orange"
+      },
+      {
+          "ingredient_id": "ing693",
+          "type": "typ114",
+          "nom": "CERISE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 9,
+          "color": "rouge"
+      },
+      {
+          "ingredient_id": "ing694",
+          "type": "typ114",
+          "nom": "HIBISCUS",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 10,
+          "color": "rouge"
+      },
+      {
+          "ingredient_id": "ing695",
+          "type": "typ114",
+          "nom": "PECHE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 11,
+          "color": "orange"
+      },
+      {
+          "ingredient_id": "ing696",
+          "type": "typ114",
+          "nom": "LYCHEE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 12,
+          "color": "rouge"
+      },
+      {
+          "ingredient_id": "ing697",
+          "type": "typ114",
+          "nom": "CITRON VERT",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 13,
+          "color": "vertclair"
+      },
+      {
+          "ingredient_id": "ing698",
+          "type": "typ114",
+          "nom": "MANGUE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 14,
+          "color": "jaune"
+      },
+      {
+          "ingredient_id": "ing699",
+          "type": "typ114",
+          "nom": "FRAMBOISE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 15,
+          "color": "rouge"
+      },
+      {
+          "ingredient_id": "ing700",
+          "type": "typ114",
+          "nom": "POMME VERTE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 15,
+          "color": "vertclair"
+      },
+      {
+          "ingredient_id": "ing701",
+          "type": "typ114",
+          "nom": "ANANAS",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 15,
+          "color": "jaune"
+      },
+      {
+          "ingredient_id": "ing702",
+          "type": "typ114",
+          "nom": "MYRTILLE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 15,
+          "color": "bleufonce"
+      },
+      {
+          "ingredient_id": "ing703",
+          "type": "typ114",
+          "nom": "MELON",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 15,
+          "color": "jauneorange"
+      },
+      {
+          "ingredient_id": "ing704",
+          "type": "typ115",
+          "nom": "ALOE VERA",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "vertclair"
+      },
+      {
+          "ingredient_id": "ing705",
+          "type": "typ115",
+          "nom": "PERLE DE TAPIOCA",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "noir"
+      },
+      {
+          "ingredient_id": "ing706",
+          "type": "typ115",
+          "nom": "GELÉE DE COCO",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 7,
+          "color": "blanc"
+      },
+      {
+          "ingredient_id": "ing707",
+          "type": "typ115",
+          "nom": "POPPING BOBA",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 8,
+          "color": "rouge"
+      },
+      {
+          "ingredient_id": "ing666",
+          "type": "typ108",
+          "nom": "3 NEMS",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "jauneorange"
+      },
+      {
+          "ingredient_id": "ing667",
+          "type": "typ108",
+          "nom": "3 VAPEURS",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "bleuclair"
+      },
+      {
+          "ingredient_id": "ing668",
+          "type": "typ108",
+          "nom": "SALADE MAISON AU CHOIX",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 7,
+          "color": "vertclair"
+      },
+      {
+          "ingredient_id": "ing669",
+          "type": "typ109",
+          "nom": "POULET",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "jauneorange"
+      },
+      {
+          "ingredient_id": "ing670",
+          "type": "typ109",
+          "nom": "BOEUF",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing671",
+          "type": "typ110",
+          "nom": "RIZ",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "blanc"
+      },
+      {
+          "ingredient_id": "ing672",
+          "type": "typ110",
+          "nom": "NOUILLE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "jauneorange"
+      },
+      {
+          "ingredient_id": "ing710",
+          "type": "typ117",
+          "nom": "NOUGAT",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "jauneorange"
+      },
+      {
+          "ingredient_id": "ing711",
+          "type": "typ117",
+          "nom": "LYCHEE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "rouge"
+      },
+      {
+          "ingredient_id": "ing712",
+          "type": "typ117",
+          "nom": "PERLE DE COCO",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 7,
+          "color": "blanc"
+      },
+      {
+          "ingredient_id": "ing713",
+          "type": "typ117",
+          "nom": "FROMAGE BLANC",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 8,
+          "color": "blanc"
+      }
+  ],
+  "produits": [
+      {
+          "produit_id": "prd1539",
+          "groupe": "grp98",
+          "active": 1,
+          "nom": "CREVETTES KATSU TEMPURA",
+          "prix": "1.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "rose"
+      },
+      {
+          "produit_id": "prd1540",
+          "groupe": "grp98",
+          "active": 1,
+          "nom": "RAVIOLI",
+          "prix": "0.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd1541",
+          "groupe": "grp98",
+          "active": 1,
+          "nom": "SALADE DE CHOUX",
+          "prix": "2.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1542",
+          "groupe": "grp98",
+          "active": 1,
+          "nom": "SALADE SAUMON AVOCAT",
+          "prix": "5.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "rose"
+      },
+      {
+          "produit_id": "prd1543",
+          "groupe": "grp98",
+          "active": 1,
+          "nom": "SOUPE MISO",
+          "prix": "2.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 5,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd1544",
+          "groupe": "grp99",
+          "active": 1,
+          "nom": "CH1 SAUMON",
+          "prix": "13.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "rose"
+      },
+      {
+          "produit_id": "prd1545",
+          "groupe": "grp99",
+          "active": 1,
+          "nom": "CH2 TARTARE SAUMON AVOCAT",
+          "prix": "14.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1546",
+          "groupe": "grp99",
+          "active": 1,
+          "nom": "CH3 ASSORTIMENT",
+          "prix": "15.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "rose"
+      },
+      {
+          "produit_id": "prd1547",
+          "groupe": "grp99",
+          "active": 1,
+          "nom": "CH4 THON",
+          "prix": "15.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "rose"
+      },
+      {
+          "produit_id": "prd1548",
+          "groupe": "grp99",
+          "active": 1,
+          "nom": "CH5 TARTARE THON AVOCAT",
+          "prix": "15.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 5,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1549",
+          "groupe": "grp99",
+          "active": 1,
+          "nom": "CH6 SAUMON MI CUIT",
+          "prix": "14.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 6,
+          "color": "rose"
+      },
+      {
+          "produit_id": "prd1550",
+          "groupe": "grp100",
+          "active": 1,
+          "nom": "P1",
+          "prix": "14.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "rouge"
+      },
+      {
+          "produit_id": "prd1551",
+          "groupe": "grp100",
+          "active": 1,
+          "nom": "P2",
+          "prix": "12.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "rouge"
+      },
+      {
+          "produit_id": "prd1552",
+          "groupe": "grp100",
+          "active": 1,
+          "nom": "P3",
+          "prix": "14.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "rouge"
+      },
+      {
+          "produit_id": "prd1553",
+          "groupe": "grp100",
+          "active": 1,
+          "nom": "P4",
+          "prix": "15.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "rouge"
+      },
+      {
+          "produit_id": "prd1554",
+          "groupe": "grp100",
+          "active": 1,
+          "nom": "P5",
+          "prix": "14.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 5,
+          "color": "rouge"
+      },
+      {
+          "produit_id": "prd1555",
+          "groupe": "grp100",
+          "active": 1,
+          "nom": "P6",
+          "prix": "16.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 6,
+          "color": "rouge"
+      },
+      {
+          "produit_id": "prd1556",
+          "groupe": "grp100",
+          "active": 1,
+          "nom": "P7",
+          "prix": "16.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 7,
+          "color": "rouge"
+      },
+      {
+          "produit_id": "prd1557",
+          "groupe": "grp100",
+          "active": 1,
+          "nom": "P8",
+          "prix": "16.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 8,
+          "color": "rouge"
+      },
+      {
+          "produit_id": "prd1558",
+          "groupe": "grp101",
+          "active": 1,
+          "nom": "P9",
+          "prix": "16.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1559",
+          "groupe": "grp101",
+          "active": 1,
+          "nom": "P10",
+          "prix": "16.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1560",
+          "groupe": "grp102",
+          "active": 1,
+          "nom": "TIGER",
+          "prix": "9.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "jaune"
+      },
+      {
+          "produit_id": "prd1561",
+          "groupe": "grp102",
+          "active": 1,
+          "nom": "DRAGON ROLL'S",
+          "prix": "8.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "jaune"
+      },
+      {
+          "produit_id": "prd1562",
+          "groupe": "grp102",
+          "active": 1,
+          "nom": "BURGER CHEESE",
+          "prix": "8.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "jaune"
+      },
+      {
+          "produit_id": "prd1563",
+          "groupe": "grp102",
+          "active": 1,
+          "nom": "FIRE DRAGON",
+          "prix": "9.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "jaune"
+      },
+      {
+          "produit_id": "prd1564",
+          "groupe": "grp103",
+          "active": 1,
+          "nom": "SAUMON",
+          "prix": "4.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "rose"
+      },
+      {
+          "produit_id": "prd1565",
+          "groupe": "grp103",
+          "active": 1,
+          "nom": "THON",
+          "prix": "4.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "rose"
+      },
+      {
+          "produit_id": "prd1566",
+          "groupe": "grp103",
+          "active": 1,
+          "nom": "SAUMON ÉPICE",
+          "prix": "4.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "violet"
+      },
+      {
+          "produit_id": "prd1567",
+          "groupe": "grp103",
+          "active": 1,
+          "nom": "CHEESE",
+          "prix": "4.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd1568",
+          "groupe": "grp103",
+          "active": 1,
+          "nom": "AVOCAT",
+          "prix": "4.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 5,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1569",
+          "groupe": "grp103",
+          "active": 1,
+          "nom": "AVOCAT CHEESE",
+          "prix": "4.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 6,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd1570",
+          "groupe": "grp103",
+          "active": 1,
+          "nom": "CONCOMBRE",
+          "prix": "4.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 7,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1571",
+          "groupe": "grp103",
+          "active": 1,
+          "nom": "CONCOMBRE CHEESE",
+          "prix": "4.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 8,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1572",
+          "groupe": "grp104",
+          "active": 1,
+          "nom": "SAUMON AVOCAT",
+          "prix": "5.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1573",
+          "groupe": "grp104",
+          "active": 1,
+          "nom": "THON AVOCAT",
+          "prix": "5.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "rose"
+      },
+      {
+          "produit_id": "prd1574",
+          "groupe": "grp104",
+          "active": 1,
+          "nom": "SURIMI AVOCAT",
+          "prix": "5.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd1575",
+          "groupe": "grp104",
+          "active": 1,
+          "nom": "TEMPURA CREVETTE AVOCAT",
+          "prix": "5.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1576",
+          "groupe": "grp104",
+          "active": 1,
+          "nom": "POULET AVOCAT MAYO AVOCAT / ÉPICE",
+          "prix": "5.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 5,
+          "color": "vertfonce"
+      },
+      {
+          "produit_id": "prd1577",
+          "groupe": "grp104",
+          "active": 1,
+          "nom": "CREVETTE AVOCAT",
+          "prix": "5.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 6,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1578",
+          "groupe": "grp104",
+          "active": 1,
+          "nom": "CONCOMBRE AVOCAT",
+          "prix": "5.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 7,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1579",
+          "groupe": "grp104",
+          "active": 1,
+          "nom": "THON CUIT AVOCAT",
+          "prix": "5.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 8,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1580",
+          "groupe": "grp104",
+          "active": 1,
+          "nom": "SAUMON FUME AVOCAT",
+          "prix": "5.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 9,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1581",
+          "groupe": "grp104",
+          "active": 1,
+          "nom": "SAUMON FUME CHEESE",
+          "prix": "5.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 10,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd1582",
+          "groupe": "grp104",
+          "active": 1,
+          "nom": "LAS VEGAS ROYAL",
+          "prix": "6.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 11,
+          "color": "jauneorange"
+      },
+      {
+          "produit_id": "prd1583",
+          "groupe": "grp98",
+          "active": 1,
+          "nom": "POULET KARAJEE",
+          "prix": "5.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 6,
+          "color": "rouge"
+      },
+      {
+          "produit_id": "prd1584",
+          "groupe": "grp98",
+          "active": 1,
+          "nom": "BROCHETTE BŒUF FROMAGE",
+          "prix": "1.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 7,
+          "color": "jauneorange"
+      },
+      {
+          "produit_id": "prd1585",
+          "groupe": "grp98",
+          "active": 1,
+          "nom": "SALADE CALAMAR",
+          "prix": "4.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 8,
+          "color": "jauneorange"
+      },
+      {
+          "produit_id": "prd1586",
+          "groupe": "grp98",
+          "active": 1,
+          "nom": "SALADE WAKAME",
+          "prix": "3.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 9,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1587",
+          "groupe": "grp98",
+          "active": 1,
+          "nom": "EDAMAME",
+          "prix": "2.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 10,
+          "color": "vertfonce"
+      },
+      {
+          "produit_id": "prd1588",
+          "groupe": "grp98",
+          "active": 1,
+          "nom": "TAKOYAKI",
+          "prix": "5.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 11,
+          "color": "marron"
+      },
+      {
+          "produit_id": "prd1589",
+          "groupe": "grp105",
+          "active": 1,
+          "nom": "SAUMON AVOCAT MENTHE",
+          "prix": "6.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "vertfonce"
+      },
+      {
+          "produit_id": "prd1590",
+          "groupe": "grp105",
+          "active": 1,
+          "nom": "THON AVOCAT MENTHE",
+          "prix": "6.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "vertfonce"
+      },
+      {
+          "produit_id": "prd1591",
+          "groupe": "grp105",
+          "active": 1,
+          "nom": "CREVETTE AVOCAT MENTHE",
+          "prix": "6.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "vertfonce"
+      },
+      {
+          "produit_id": "prd1592",
+          "groupe": "grp105",
+          "active": 1,
+          "nom": "SAUMON FUME CHEESE",
+          "prix": "6.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd1593",
+          "groupe": "grp105",
+          "active": 1,
+          "nom": "VÉGÉTARIEN",
+          "prix": "6.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 5,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1594",
+          "groupe": "grp105",
+          "active": 1,
+          "nom": "TEMPURA CREVETTE AVOCAT",
+          "prix": "6.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 6,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1595",
+          "groupe": "grp106",
+          "active": 1,
+          "nom": "SAUMON AVOCAT",
+          "prix": "7.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1596",
+          "groupe": "grp106",
+          "active": 1,
+          "nom": "SAUMON CHEESE",
+          "prix": "7.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd1597",
+          "groupe": "grp106",
+          "active": 1,
+          "nom": "AVOCAT CHEESE",
+          "prix": "7.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd1598",
+          "groupe": "grp106",
+          "active": 1,
+          "nom": "CHEESE",
+          "prix": "7.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd1599",
+          "groupe": "grp106",
+          "active": 1,
+          "nom": "AVOCAT",
+          "prix": "7.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 5,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1600",
+          "groupe": "grp107",
+          "active": 1,
+          "nom": "SAUMON CHEESE",
+          "prix": "4.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd1601",
+          "groupe": "grp107",
+          "active": 1,
+          "nom": "SAUMON",
+          "prix": "3.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "rose"
+      },
+      {
+          "produit_id": "prd1602",
+          "groupe": "grp107",
+          "active": 1,
+          "nom": "THON",
+          "prix": "4.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "rose"
+      },
+      {
+          "produit_id": "prd1603",
+          "groupe": "grp107",
+          "active": 1,
+          "nom": "DORADE",
+          "prix": "3.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "blanc"
+      },
+      {
+          "produit_id": "prd1604",
+          "groupe": "grp107",
+          "active": 1,
+          "nom": "CREVETTE",
+          "prix": "3.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 5,
+          "color": "rose"
+      },
+      {
+          "produit_id": "prd1605",
+          "groupe": "grp107",
+          "active": 1,
+          "nom": "SURIMI",
+          "prix": "3.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 6,
+          "color": "jauneorange"
+      },
+      {
+          "produit_id": "prd1606",
+          "groupe": "grp107",
+          "active": 1,
+          "nom": "AVOCAT",
+          "prix": "3.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 7,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1607",
+          "groupe": "grp107",
+          "active": 1,
+          "nom": "TARTARE THON",
+          "prix": "4.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 8,
+          "color": "rouge"
+      },
+      {
+          "produit_id": "prd1608",
+          "groupe": "grp107",
+          "active": 1,
+          "nom": "TARTARE SAUMON",
+          "prix": "4.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 9,
+          "color": "rose"
+      },
+      {
+          "produit_id": "prd1609",
+          "groupe": "grp107",
+          "active": 1,
+          "nom": "THON CUIT MAYONNAISE",
+          "prix": "4.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 10,
+          "color": "blanc"
+      },
+      {
+          "produit_id": "prd1610",
+          "groupe": "grp108",
+          "active": 1,
+          "nom": "SAUMON",
+          "prix": "5.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "rose"
+      },
+      {
+          "produit_id": "prd1611",
+          "groupe": "grp108",
+          "active": 1,
+          "nom": "THON",
+          "prix": "5.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "rose"
+      },
+      {
+          "produit_id": "prd1612",
+          "groupe": "grp108",
+          "active": 1,
+          "nom": "DORADE",
+          "prix": "5.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "blanc"
+      },
+      {
+          "produit_id": "prd1613",
+          "groupe": "grp108",
+          "active": 1,
+          "nom": "CREVETTE",
+          "prix": "5.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "rose"
+      },
+      {
+          "produit_id": "prd1614",
+          "groupe": "grp108",
+          "active": 1,
+          "nom": "ASSORTIMENT",
+          "prix": "5.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 5,
+          "color": "rouge"
+      },
+      {
+          "produit_id": "prd1661",
+          "groupe": "grp109",
+          "active": 1,
+          "nom": "PETIT",
+          "prix": "3.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1662",
+          "groupe": "grp109",
+          "active": 1,
+          "nom": "GRAND",
+          "prix": "4.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1663",
+          "groupe": "grp109",
+          "active": 1,
+          "nom": "EXTRA",
+          "prix": "5.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd1664",
+          "groupe": "grp112",
+          "active": 1,
+          "nom": "BO BUN",
+          "prix": "7.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd1665",
+          "groupe": "grp112",
+          "active": 1,
+          "nom": "KHAO PAD",
+          "prix": "8.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "jaune"
+      },
+      {
+          "produit_id": "prd1666",
+          "groupe": "grp112",
+          "active": 1,
+          "nom": "LOC LAC",
+          "prix": "9.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "marron"
+      },
+      {
+          "produit_id": "prd1667",
+          "groupe": "grp112",
+          "active": 1,
+          "nom": "PAD THAI",
+          "prix": "8.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "jaune"
+      },
+      {
+          "produit_id": "prd1668",
+          "groupe": "grp112",
+          "active": 1,
+          "nom": "NOUILLE DAN DAN",
+          "prix": "7.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 5,
+          "color": "marron"
+      },
+      {
+          "produit_id": "prd1669",
+          "groupe": "grp112",
+          "active": 1,
+          "nom": "SOUPE UDON TEMPURA",
+          "prix": "7.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 6,
+          "color": "jauneorange"
+      },
+      {
+          "produit_id": "prd1689",
+          "groupe": "grp116",
+          "active": 1,
+          "nom": "MENU WOK",
+          "prix": "9.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "vertclair"
+      }
+  ],
+  "steps": [
+      {
+          "step_id": "step857",
+          "produit": "prd1544",
+          "titre": "COMPLÉMENTS",
+          "regles": [
+              {
+                  "type": "typ116",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step858",
+          "produit": "prd1545",
+          "titre": "COMPLÉMENTS",
+          "regles": [
+              {
+                  "type": "typ116",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step859",
+          "produit": "prd1546",
+          "titre": "COMPLÉMENTS",
+          "regles": [
+              {
+                  "type": "typ116",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step860",
+          "produit": "prd1547",
+          "titre": "COMPLÉMENTS",
+          "regles": [
+              {
+                  "type": "typ116",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step861",
+          "produit": "prd1548",
+          "titre": "COMPLÉMENTS",
+          "regles": [
+              {
+                  "type": "typ116",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step862",
+          "produit": "prd1549",
+          "titre": "COMPLÉMENTS",
+          "regles": [
+              {
+                  "type": "typ116",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step863",
+          "produit": "prd1550",
+          "titre": "COMPLÉMENTS",
+          "regles": [
+              {
+                  "type": "typ116",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step864",
+          "produit": "prd1551",
+          "titre": "COMPLÉMENTS",
+          "regles": [
+              {
+                  "type": "typ116",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step865",
+          "produit": "prd1552",
+          "titre": "COMPLÉMENTS",
+          "regles": [
+              {
+                  "type": "typ116",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step866",
+          "produit": "prd1553",
+          "titre": "COMPLÉMENTS",
+          "regles": [
+              {
+                  "type": "typ116",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step867",
+          "produit": "prd1554",
+          "titre": "COMPLÉMENTS",
+          "regles": [
+              {
+                  "type": "typ116",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step868",
+          "produit": "prd1555",
+          "titre": "COMPLÉMENTS",
+          "regles": [
+              {
+                  "type": "typ116",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step869",
+          "produit": "prd1556",
+          "titre": "COMPLÉMENTS",
+          "regles": [
+              {
+                  "type": "typ116",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step870",
+          "produit": "prd1557",
+          "titre": "COMPLÉMENTS",
+          "regles": [
+              {
+                  "type": "typ116",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step871",
+          "produit": "prd1558",
+          "titre": "COMPLÉMENTS",
+          "regles": [
+              {
+                  "type": "typ116",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step872",
+          "produit": "prd1559",
+          "titre": "COMPLÉMENTS",
+          "regles": [
+              {
+                  "type": "typ116",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step842",
+          "produit": "prd1661",
+          "titre": "THE AU LAIT",
+          "regles": [
+              {
+                  "type": "typ111",
+                  "regle": "{0,2};",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step843",
+          "produit": "prd1661",
+          "titre": "PARFUM THE AU LAIT",
+          "regles": [
+              {
+                  "type": "typ112",
+                  "regle": "{0,2};",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step848",
+          "produit": "prd1661",
+          "titre": "FRUI'THE",
+          "regles": [
+              {
+                  "type": "typ113",
+                  "regle": "{0,2};",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step849",
+          "produit": "prd1661",
+          "titre": "PARFUM FRUI'THE",
+          "regles": [
+              {
+                  "type": "typ114",
+                  "regle": "{0,2};",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step854",
+          "produit": "prd1661",
+          "titre": "TOPPING",
+          "regles": [
+              {
+                  "type": "typ115",
+                  "regle": "{0,2};",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step844",
+          "produit": "prd1662",
+          "titre": "THE AU LAIT",
+          "regles": [
+              {
+                  "type": "typ111",
+                  "regle": "{0,2};",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step845",
+          "produit": "prd1662",
+          "titre": "PARFUM THE AU LAIT",
+          "regles": [
+              {
+                  "type": "typ112",
+                  "regle": "{0,2};",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step850",
+          "produit": "prd1662",
+          "titre": "FRU'ITHE",
+          "regles": [
+              {
+                  "type": "typ113",
+                  "regle": "{0,2};",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step851",
+          "produit": "prd1662",
+          "titre": "PARFUM FRUI'THE",
+          "regles": [
+              {
+                  "type": "typ114",
+                  "regle": "{0,2};",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step855",
+          "produit": "prd1662",
+          "titre": "TOPPING",
+          "regles": [
+              {
+                  "type": "typ115",
+                  "regle": "{0,2};",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step846",
+          "produit": "prd1663",
+          "titre": "THE AU LAIT",
+          "regles": [
+              {
+                  "type": "typ111",
+                  "regle": "{0,2};",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step847",
+          "produit": "prd1663",
+          "titre": "PARFUM THE AU LAIT",
+          "regles": [
+              {
+                  "type": "typ112",
+                  "regle": "{0,2};",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step852",
+          "produit": "prd1663",
+          "titre": "FRUI'THE",
+          "regles": [
+              {
+                  "type": "typ113",
+                  "regle": "{0,2};",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step853",
+          "produit": "prd1663",
+          "titre": "PARFUM FRUI'THE",
+          "regles": [
+              {
+                  "type": "typ114",
+                  "regle": "{0,2};",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step856",
+          "produit": "prd1663",
+          "titre": "TOPPING",
+          "regles": [
+              {
+                  "type": "typ115",
+                  "regle": "{0,2};",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step839",
+          "produit": "prd1689",
+          "titre": "ENTREE",
+          "regles": [
+              {
+                  "type": "typ108",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step840",
+          "produit": "prd1689",
+          "titre": "PLAT",
+          "regles": [
+              {
+                  "type": "typ109",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step841",
+          "produit": "prd1689",
+          "titre": "ACCOMPAGNEMENTS",
+          "regles": [
+              {
+                  "type": "typ110",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      },
+      {
+          "step_id": "step873",
+          "produit": "prd1689",
+          "titre": "DESSERTS",
+          "regles": [
+              {
+                  "type": "typ117",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 0
+      }
+  ]
+}
