@@ -54,7 +54,7 @@ const actions = {
     // déclaration de l'imprimante
     let device;
     if (imprimante.connexion=='usb') {
-      if (imprimante.param) {
+      if (imprimante.param!=='') {
         vp = imprimante.param.split(';');
         vid = parseInt(vp[0], 16);
         pid = parseInt(vp[1], 16);
@@ -63,10 +63,10 @@ const actions = {
         device = new escpos.USB();
       }
 
-      const alldevices = escpos.USB.findPrinter();
-      alldevices.forEach(el=>{
-        log.info('usb', el);
-      });
+      // const alldevices = escpos.USB.findPrinter();
+      // alldevices.forEach(el=>{
+      //   log.info('usb', el);
+      // });
 
     } else if (imprimante.connexion=='network') {
       device = new escpos.Network(imprimante.param); 
