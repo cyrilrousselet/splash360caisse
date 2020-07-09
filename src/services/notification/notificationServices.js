@@ -3,6 +3,9 @@ import externalParams from '../../constants/externalParams.json';
 import { isAfter, isBefore } from 'date-fns';
 import { create } from 'simple-oauth2';
 import devOrder from '../../constants/_devOrder.json';
+import Logger from '../../helpers/Logger';
+
+const logger = new Logger();
 
 export const notificationServices = {
   getToken,
@@ -75,14 +78,17 @@ export const notificationServices = {
 
 
 function connectToPrimary(url, caisse) {
+  logger.log('connectToPrimary()', url, caisse);
   return emit('syncConnectToPrimary', { url, caisse});
 }
 
 function disconnectFromPrimary(url, caisse) {
+  logger.log('disconnectFromPrimary()');
   return emit('syncDisconnectFromPrimary', {});
 }
 
 function startSyncPrimary() {
+  logger.log('startSyncPrimary()');
   return emit('syncStartPrimary',{});
 }
 
