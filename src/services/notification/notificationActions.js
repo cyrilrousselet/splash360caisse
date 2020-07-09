@@ -51,17 +51,17 @@ function initSync() {
 
     logger.log('initSync', options);
 
-    if (options.role==='slave') {
-      notificationServices.connectToMaster(options.master, options.caisse)
+    if (options.role==='secondary') {
+      notificationServices.connectToPrimary(options.primary, options.caisse)
       .then(result => {
-        logger.log('initSync slave', result);
-        dispatch({type: notificationActionTypes.CONNECT_TO_MASTER});
+        logger.log('initSync secondary', result);
+        dispatch({type: notificationActionTypes.CONNECT_TO_PRIMARY});
       })
-    } else if (options.role==='master') {
-      notificationServices.startSyncMaster()
+    } else if (options.role==='primary') {
+      notificationServices.startSyncPrimary()
       .then(result => {
-        logger.log('initSync master', result);
-        dispatch({type: notificationActionTypes.START_MASTER});
+        logger.log('initSync primary', result);
+        dispatch({type: notificationActionTypes.START_PRIMARY});
       })
     }
   }
@@ -70,16 +70,16 @@ function initSync() {
 function syncDispatch(db,data) {
   return (dispatch, getState) => {
     const { options } = getState().parametresReducer.parametres;
-    if (options.role==='master') {
+    if (options.role==='primary') {
       notificationServices.syncDispatch(db, data)
       .then(result => {
-        logger.log('syncDispatch (master)', result);
+        logger.log('syncDispatch (primary)', result);
       })
     }
-    else if (options.role==='slave') {
-      notificationServices.syncMaster(db, data, options.master)
+    else if (options.role==='secondary') {
+      notificationServices.syncPrimary(db, data, options.primary)
       .then(result => {
-        logger.log('syncDispatch (slave)', result);
+        logger.log('syncDispatch (secondary)', result);
       })
     }
   }

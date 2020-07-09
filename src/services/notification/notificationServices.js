@@ -11,11 +11,11 @@ export const notificationServices = {
   getOrder,
   setPOS,
   initSSE,
-  connectToMaster,
-  disconnectFromMaster,
-  startSyncMaster,
+  connectToPrimary,
+  disconnectFromPrimary,
+  startSyncPrimary,
   syncDispatch,
-  syncMaster,
+  syncPrimary,
   syncConfirm
  };
 
@@ -74,23 +74,23 @@ export const notificationServices = {
 } 
 
 
-function connectToMaster(url, caisse) {
-  return emit('syncConnectToMaster', { url, caisse});
+function connectToPrimary(url, caisse) {
+  return emit('syncConnectToPrimary', { url, caisse});
 }
 
-function disconnectFromMaster(url, caisse) {
-  return emit('syncDisconnectFromMaster', {});
+function disconnectFromPrimary(url, caisse) {
+  return emit('syncDisconnectFromPrimary', {});
 }
 
-function startSyncMaster() {
-  return emit('syncStartMaster',{});
+function startSyncPrimary() {
+  return emit('syncStartPrimary',{});
 }
 
 function syncDispatch(db, data) {
-  return emit('syncDispatchToSlaves', {db, data});
+  return emit('syncDispatchToSecondaries', {db, data});
 }
-function syncMaster(db, data, url) {
-  return emit('syncDispatchToMaster', {db, data, url});
+function syncPrimary(db, data, url) {
+  return emit('syncDispatchToPrimary', {db, data, url});
 }
 function syncConfirm(response) {
   return emit('syncConfirm', {response});

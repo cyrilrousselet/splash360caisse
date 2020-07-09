@@ -9,7 +9,7 @@ const http = require('http').Server(sync_server);
 const io = require('socket.io')(http);
 const ioclient = require('socket.io-client');
 
-const connectedSlaves = [];
+const connectedSecondaries = [];
 
 let socket = null;
 
@@ -68,9 +68,9 @@ const server = {
     });
     
 
-    // SYNCHRO slaves -> master
+    // SYNCHRO secondary -> primary
 
-    // ajout / mise à jour de commande depuis les caisses esclaves
+    // ajout / mise à jour de commande depuis les caisses secondary
     api_server.post('/synchro', (req, res) => {
     
       const {db, data} = req.body;
@@ -141,39 +141,46 @@ const actions = {
     res.send({msg: 'sync confirm sent'});
   },
 
-  // on lance la connexion au master (si la caisse est "slave")
-  syncConnectToMaster: (req, res) => {
+  // on lance la connexion au "primary" (si la caisse est "secondary")
+  syncConnectToPrimary: (req, res) => {
     const { url, caisse } = req.payload;
 
-    log.info('syncConnectToMaster', req.payload);
+    log.info('syncConnectToPrimary', req.payload);
 
     // socket = ioclient(url, {transports: ['websocket']});
     socket = ioclient(url+':'+SYNC_PORT);
+    socket.on('connect', () => {
+      socket.emit('register',caisse);
+    });
 
     log.info('socket', socket);
     
     socket.on('sync', data => {
       log.info('on sync', data);
     });
-    res.send({msg:'connection sent to master'})
+    res.send({msg:'connection sent to primary'})
   },
 
-  // déconnexion du master
-  syncDisconnectFromMaster: (req, res) => {
+  // déconnexion du primary
+  syncDisconnectFromPrimary: (req, res) => {
     if (socket) socket.disconnect();
-    res.send({msg:'disconnected from master'});
+    res.send({msg:'disconnected from primary'});
   },
 
-  // lancement du webservice (si la caisse est "master")
-  syncStartMaster: (req, res) => {
+  // lancement du webservice (si la caisse est "primary")
+  syncStartPrimary: (req, res) => {
 
 
     sync_server.use(cors({origin: "*"}));
 
     io.on('connection', (sock) => {
-      connectedSlaves.push(sock.id);
-      log.info(`${connectedSlaves.length} socket(s) connected. New id : `, sock.id);
+      connectedSecondaries.push(sock.id);
+      log.info(`${connectedSecondaries.length} socket(s) connected. New id : `, sock.id);
       io.to(sock).emit('sync',{type:'syncinit'});
+
+      sock.on('register', data => {
+        log.info('secondary register', data);
+      });
 
       sock.on('sync', (action)=>{
         
@@ -188,12 +195,12 @@ const actions = {
           sock.connect();
         } 
         // else the socket will automatically try to reconnect
-        connectedSlaves.forEach((device, i) => {
+        connectedSecondaries.forEach((device, i) => {
           // console.log("device", device)
           try {
             if (device == sock.id) {
               // console.log("socket", socket.id)
-              connectedSlaves.splice(i, 1)
+              connectedSecondaries.splice(i, 1)
             }
           } catch(error) {
             log.info('sync disconnect error', error.message);
@@ -207,31 +214,31 @@ const actions = {
 
     http.listen(SYNC_PORT, function(){
       log.info( `sync_server listening on *:${SYNC_PORT}` );
-      res.send({msg:'master wait for slaves'});
+      res.send({msg:'primary waits for secondaries'});
     });
 
   },
 
-  syncDispatchToSlaves: (req,res) => {
+  syncDispatchToSecondaries: (req,res) => {
     const { db, data } = req.payload;
 
-    connectedSlaves.forEach(sock => {
+    connectedSecondaries.forEach(sock => {
       io.to(sock).emit('sync', {db:db, data:data});
     });
 
-    log.info(`syncDispatchToSlaves() [${db}] to ${connectedSlaves.length} slaves`);
-    res.send({msg:`sync to ${connectedSlaves.length} slaves`});
+    log.info(`syncDispatchToSecondaries() [${db}] to ${connectedSecondaries.length} secondaries`);
+    res.send({msg:`sync to ${connectedSecondaries.length} secondaries`});
   },
 
-  syncDispatchToMaster: (req,res) => {
+  syncDispatchToPrimary: (req,res) => {
 
     const { db, data, url } = req.payload;
 
-    // connectedSlaves.forEach(sock => {
+    // connectedSecondaries.forEach(sock => {
     //   io.to(sock).emit('sync', {db:db, data:data});
     // });
 
-    log.info('syncDispatchToMaster', req.payload);
+    log.info('syncDispatchToPrimary', req.payload);
 
     const __request = net.request({
       url: url+':'+API_PORT+'/synchro',
@@ -246,8 +253,8 @@ const actions = {
 
     __request.on('response', (response) => {
 
-      log.info(`syncDispatchToMaster() [${db}] to ${url}, status:`, response.statusCode);
-      res.send({msg:`synchro ${db} to master`});
+      log.info(`syncDispatchToPrimary() [${db}] to ${url}, status:`, response.statusCode);
+      res.send({msg:`synchro ${db} to primary`});
     //   log.info(`acceptUberOrder STATUS: ${response.statusCode}`);
     //   log.info(`acceptUberOrder HEADERS: ${JSON.stringify(response.headers)}`);
       response.on('data', (chunk) => {
