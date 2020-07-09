@@ -50,6 +50,8 @@ function initSync() {
     const { options } = getState().parametresReducer.parametres;
 
     logger.log('initSync', options);
+    logger.log('role', options.role, (options.role==='secondary'));
+
 
     if (options.role==='secondary') {
       notificationServices.connectToPrimary(options.primary, options.caisse)
