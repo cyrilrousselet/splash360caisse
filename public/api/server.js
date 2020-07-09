@@ -83,6 +83,9 @@ const server = {
         case 'commande':
           webContents.send('setCommandeSync', {data: data, response: response_id});
           break;
+        case 'archivecommandes':
+          webContents.send('archiveCommandesSync', {data: data, response: response_id});
+          break;
         case 'client':
           webContents.send('setClientSync', {data: data, response: response_id});
           break;
