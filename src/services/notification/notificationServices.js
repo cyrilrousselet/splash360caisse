@@ -99,7 +99,9 @@ function syncPrimary(db, data, emitter, url) {
   return emit('syncDispatchToPrimary', {db, data, emitter, url});
 }
 function syncConfirm(response) {
-  return emit('syncConfirm', {response});
+  if (response!==null) {
+    return emit('syncConfirm', {response});
+  }
 }
 
 async function denyOrder(provider, order) {

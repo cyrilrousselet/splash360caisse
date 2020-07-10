@@ -625,8 +625,15 @@ function setCommandeFromSync(commande) {
     .then(
       confirm => {
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_SUCCESS, confirm });
-        dispatch(notificationActions.syncConfirm(commande.response));
-        dispatch(notificationActions.syncDispatch('commande',data, emitter));
+        
+        // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
+        // donc inutile de lui renvoyer la synchro
+        // -> si 'response' est null, la synchro ne provient pas de l'API,
+        // donc inutile de confirmer le traitement de la synchro
+        if (emitter!==null && response!==null) {
+          dispatch(notificationActions.syncConfirm(commande.response));
+          dispatch(notificationActions.syncDispatch('commande',data, emitter));
+        }
         dispatch(getCommandesList());
       },
       error => {

@@ -169,13 +169,23 @@ function getToken(provider, task) {
   }
 }
 
-
+/**
+ * Envoi de confirmation de synchronisation
+ * Si la caisse est 'primary', 
+ * elle confirme à la caisse 'secondary' qu'elle a reçu une synchro de commande via son API
+ * 
+ * @param {*} response  identifiant de l'objet response de la requête
+ */
 function syncConfirm(response) {
-  return dispatch => {
-    notificationServices.syncConfirm(response)
-    .then(
-      confirm => { logger.log('notificationAction','synchro confirm sent')}
-    );
+  return (dispatch, getState) => {
+
+    const { options } = getState().parametresReducer.parametres;
+    if (options.role==='primary') {      
+      notificationServices.syncConfirm(response)
+      .then(
+        confirm => { logger.log('notificationAction','synchro confirm sent')}
+      );
+    }
   }
 }
 

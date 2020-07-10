@@ -205,8 +205,10 @@ const actions = {
   // confirme la bonne réception des synchro s/m
   syncConfirm: (req, res) => {
     const { confirm, response } = req.payload;
-    responses[response].json({status:('ok'===confirm)?'success':'error'});
-    res.send({msg: 'sync confirm sent'});
+    if (response!==null) {
+      responses[response].json({status:('ok'===confirm)?'success':'error'});
+      res.send({msg: 'sync confirm sent'});
+    }
   },
 
   // on lance la connexion au "primary" (si la caisse est "secondary")
