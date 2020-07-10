@@ -18,7 +18,17 @@ let webContents = null;
 const API_PORT = 3300;
 const SYNC_PORT = 3340;
 
-
+const SYNCHRO_TREATMENT = {
+  'commande': 'setCommandeSync',
+  'archivecommandes': 'archiveCommandesSync',
+  'client': 'setClientSync',
+  'ticketrestaurant': 'setTicketRestaurantSync',
+  'pointage': 'setPointageSync',
+  'avoir': 'setAvoirSync',
+  'timeadjust': 'setTimeadjustSync',
+  'cloture': 'setClotureSync',
+  'user': 'setUserSync'
+}
 
 const allowedOrigins = [
   'http://127.0.0.1',
@@ -83,7 +93,7 @@ const server = {
 
       const response_id = responses.push(res) - 1;
 
-      synchroTreatment(db, data, emitter);
+      synchroTreatment(db, data, emitter, response_id);
 
       // switch(db) {
       //   case 'commande':
@@ -128,43 +138,49 @@ const server = {
 }
 
 
-const synchroTreatment = (db, data, emitter=null) => {
+const synchroTreatment = (db, data, emitter=null, response=null) => {
 
   log.info('synchroTreatment()', db, emitter);
 
   if (webContents!==null) {
 
-    switch(db) {
-      case 'commande':
-        webContents.send('setCommandeSync', {data, emitter, response: response_id});
-        break;
-      case 'archivecommandes':
-        webContents.send('archiveCommandesSync', {data, emitter, response: response_id});
-        break;
-      case 'client':
-        webContents.send('setClientSync', {data, emitter, response: response_id});
-        break;
-      case 'ticketrestaurant':
-        webContents.send('setTicketRestaurantSync', {data, emitter, response: response_id});
-        break;
-      case 'pointage':
-        webContents.send('setPointageSync', {data, emitter, response: response_id});
-        break;
-      case 'avoir':
-        webContents.send('setAvoirSync', {data, emitter, response: response_id});
-        break;
-      case 'timeadjust':
-        webContents.send('setTimeadjustSync', {data, emitter, response: response_id});
-        break;
-      case 'cloture':
-        webContents.send('setClotureSync', {data, emitter, response: response_id});
-        break;
-      case 'user':
-        webContents.send('setUserSync', {data, emitter, response: response_id});
-        break;
-      default:
-        log.error(`POST synchro db "${db}" inconnue`);
+    if (SYNCHRO_TREATMENT.hasOwnProperty(db)) {
+      webContents.send(SYNCHRO_TREATMENT[db], {data, emitter, response});
+    } else {
+      log.error('webContents null (server non initialisé)');
     }
+
+    // switch(db) {
+    //   case 'commande':
+    //     webContents.send('setCommandeSync', {data, emitter, response});
+    //     break;
+    //   case 'archivecommandes':
+    //     webContents.send('archiveCommandesSync', {data, emitter, response});
+    //     break;
+    //   case 'client':
+    //     webContents.send('setClientSync', {data, emitter, response});
+    //     break;
+    //   case 'ticketrestaurant':
+    //     webContents.send('setTicketRestaurantSync', {data, emitter, response});
+    //     break;
+    //   case 'pointage':
+    //     webContents.send('setPointageSync', {data, emitter, response});
+    //     break;
+    //   case 'avoir':
+    //     webContents.send('setAvoirSync', {data, emitter, response});
+    //     break;
+    //   case 'timeadjust':
+    //     webContents.send('setTimeadjustSync', {data, emitter, response});
+    //     break;
+    //   case 'cloture':
+    //     webContents.send('setClotureSync', {data, emitter, response});
+    //     break;
+    //   case 'user':
+    //     webContents.send('setUserSync', {data, emitter, response});
+    //     break;
+    //   default:
+    //     log.error(`POST synchro db "${db}" inconnue`);
+    // }
   }
   else {
     log.error('webContents null (server non initialisé)');
