@@ -382,6 +382,7 @@ const data = {
                     heure: "Heure",
                     numero: "Numéro",
                     montant: "Montant",
+                    caisse: "Caisse",
                     client: "Client",
                     actions: "Actions",
                     mode: "Mode",

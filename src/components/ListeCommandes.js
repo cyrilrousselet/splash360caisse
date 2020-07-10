@@ -97,6 +97,7 @@ function TableCommandes(props) {
             <TableCell key={`${id}-hd-heure`} className="liste-heure">{ strings.modules.listecommandes.liste.heure }</TableCell>
             <TableCell key={`${id}-hd-numero`} className="liste-numero">{ strings.modules.listecommandes.liste.numero }</TableCell>
             <TableCell key={`${id}-hd-montant`} className="liste-montant">{ strings.modules.listecommandes.liste.montant }</TableCell>
+            <TableCell key={`${id}-hd-caisse`} className="liste-caisse">{ strings.modules.listecommandes.liste.caisse }</TableCell>
             <TableCell key={`${id}-hd-client`} className="liste-client">{ strings.modules.listecommandes.liste.client }</TableCell>
             <TableCell key={`${id}-hd-mode`} className="liste-mode">{ strings.modules.listecommandes.liste.mode }</TableCell>
             <TableCell key={`${id}-hd-actions`} className="liste-actions">{ strings.modules.listecommandes.liste.actions }</TableCell>
@@ -109,6 +110,7 @@ function TableCommandes(props) {
               <TableCell key={`${row.id}-heure`} className="liste-heure">{ row.commande.heure }</TableCell>
               <TableCell key={`${row.id}-numero`} className="liste-numero">{ row.commande.numero }</TableCell>
               <TableCell key={`${row.id}-montant`} className="liste-montant">{ row.commande.montant }</TableCell>
+              <TableCell key={`${row.id}-caisse`} className="liste-caisse">{ row.commande.caisse.nom }</TableCell>
               <TableCell key={`${row.id}-client`} className="liste-client">{ row.commande.client }</TableCell>
               <TableCell key={`${row.id}-mode`} className="liste-mode">{ strings.modules.listecommandes.liste.modes[row.commande.mode] }</TableCell>
               <TableCell key={`${row.id}-actions`} className="liste-actions">

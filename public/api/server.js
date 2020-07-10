@@ -78,37 +78,40 @@ const server = {
       log.info('POST db', req.body['db'], `from ${emitter.nom}`);
 
       const response_id = responses.push(res) - 1;
-      switch(db) {
-        case 'commande':
-          webContents.send('setCommandeSync', {data, emitter, response: response_id});
-          break;
-        case 'archivecommandes':
-          webContents.send('archiveCommandesSync', {data, emitter, response: response_id});
-          break;
-        case 'client':
-          webContents.send('setClientSync', {data, emitter, response: response_id});
-          break;
-        case 'ticketrestaurant':
-          webContents.send('setTicketRestaurantSync', {data, emitter, response: response_id});
-          break;
-        case 'pointage':
-          webContents.send('setPointageSync', {data, emitter, response: response_id});
-          break;
-        case 'avoir':
-          webContents.send('setAvoirSync', {data, emitter, response: response_id});
-          break;
-        case 'timeadjust':
-          webContents.send('setTimeadjustSync', {data, emitter, response: response_id});
-          break;
-        case 'cloture':
-          webContents.send('setClotureSync', {data, emitter, response: response_id});
-          break;
-        case 'user':
-          webContents.send('setUserSync', {data, emitter, response: response_id});
-          break;
-        default:
-          log.info(`POST synchro db "${db}" inconnue`);
-      }
+
+      synchroTreatment(db, data, emitter);
+
+      // switch(db) {
+      //   case 'commande':
+      //     webContents.send('setCommandeSync', {data, emitter, response: response_id});
+      //     break;
+      //   case 'archivecommandes':
+      //     webContents.send('archiveCommandesSync', {data, emitter, response: response_id});
+      //     break;
+      //   case 'client':
+      //     webContents.send('setClientSync', {data, emitter, response: response_id});
+      //     break;
+      //   case 'ticketrestaurant':
+      //     webContents.send('setTicketRestaurantSync', {data, emitter, response: response_id});
+      //     break;
+      //   case 'pointage':
+      //     webContents.send('setPointageSync', {data, emitter, response: response_id});
+      //     break;
+      //   case 'avoir':
+      //     webContents.send('setAvoirSync', {data, emitter, response: response_id});
+      //     break;
+      //   case 'timeadjust':
+      //     webContents.send('setTimeadjustSync', {data, emitter, response: response_id});
+      //     break;
+      //   case 'cloture':
+      //     webContents.send('setClotureSync', {data, emitter, response: response_id});
+      //     break;
+      //   case 'user':
+      //     webContents.send('setUserSync', {data, emitter, response: response_id});
+      //     break;
+      //   default:
+      //     log.info(`POST synchro db "${db}" inconnue`);
+      // }
     });
 
 
@@ -119,6 +122,46 @@ const server = {
 
   }
 }
+
+
+const synchroTreatment = (db, data, emitter=null) => {
+
+  log.info('synchroTreatment()', db, emitter);
+
+  switch(db) {
+    case 'commande':
+      webContents.send('setCommandeSync', {data, emitter, response: response_id});
+      break;
+    case 'archivecommandes':
+      webContents.send('archiveCommandesSync', {data, emitter, response: response_id});
+      break;
+    case 'client':
+      webContents.send('setClientSync', {data, emitter, response: response_id});
+      break;
+    case 'ticketrestaurant':
+      webContents.send('setTicketRestaurantSync', {data, emitter, response: response_id});
+      break;
+    case 'pointage':
+      webContents.send('setPointageSync', {data, emitter, response: response_id});
+      break;
+    case 'avoir':
+      webContents.send('setAvoirSync', {data, emitter, response: response_id});
+      break;
+    case 'timeadjust':
+      webContents.send('setTimeadjustSync', {data, emitter, response: response_id});
+      break;
+    case 'cloture':
+      webContents.send('setClotureSync', {data, emitter, response: response_id});
+      break;
+    case 'user':
+      webContents.send('setUserSync', {data, emitter, response: response_id});
+      break;
+    default:
+      log.info(`POST synchro db "${db}" inconnue`);
+  }
+
+}
+
 
 const actions = {
   sendTicketId: (req, res) => {
@@ -158,7 +201,7 @@ const actions = {
     socket.on('sync', payload => {
       log.info('on sync', payload);
 
-
+      synchroTreatment(payload.db, payload.data);
 
     });
     res.send({msg:'connection sent to primary'})

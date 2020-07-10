@@ -135,7 +135,8 @@
     tbody {
       .liste-heure,
       .liste-montant,
-      .liste-mode {
+      .liste-client,
+      .liste-actions {
         background-color: $blanc-fonce;
       }
       .MuiTableCell-body {
@@ -145,21 +146,22 @@
         
         .liste-heure,
         .liste-montant,
-        .liste-mode {
+        .liste-client,
+        .liste-actions {
           background-color: $gris-pale;
         }
       }
       .liste-date,
       .liste-numero,
-      .liste-client,
-      .liste-actions {
+      .liste-caisse,
+      .liste-mode {
         background-color: $blanc;
       }
       .MuiTableRow-root.odd {
         .liste-date,
         .liste-numero,
-        .liste-client,
-        .liste-actions {
+        .liste-caisse,
+        .liste-mode {
           background-color: $blanc-fonce;
         }
       }
@@ -170,6 +172,7 @@
         .liste-actions,
         .liste-date,
         .liste-numero,
+        .liste-caisse,
         .liste-client,
         .liste-mode {
           background-image: linear-gradient(rgba(0, 174, 255, 0.5) 0%, rgba(0, 174, 255,0.5) 100%);
@@ -182,6 +185,7 @@
         .liste-actions,
         .liste-date,
         .liste-numero,
+        .liste-caisse,
         .liste-client,
         .liste-mode {
           background-image: linear-gradient(rgba(0, 255, 64, 0.5) 0%, rgba(0, 255, 64, 0.5) 100%);
