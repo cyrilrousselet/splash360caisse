@@ -3,6 +3,9 @@ import externalParams from '../../constants/externalParams.json';
 import { isAfter, isBefore } from 'date-fns';
 import { create } from 'simple-oauth2';
 import devOrder from '../../constants/_devOrder.json';
+import Logger from '../../helpers/Logger';
+
+const logger = new Logger();
 
 export const notificationServices = {
   getToken,
@@ -11,11 +14,11 @@ export const notificationServices = {
   getOrder,
   setPOS,
   initSSE,
-  connectToMaster,
-  disconnectFromMaster,
-  startSyncMaster,
+  connectToPrimary,
+  disconnectFromPrimary,
+  startSyncPrimary,
   syncDispatch,
-  syncMaster,
+  syncPrimary,
   syncConfirm
  };
 
@@ -74,23 +77,26 @@ export const notificationServices = {
 } 
 
 
-function connectToMaster(url, caisse) {
-  return emit('syncConnectToMaster', { url, caisse});
+function connectToPrimary(url, caisse) {
+  logger.log('connectToPrimary()', url, caisse);
+  return emit('syncConnectToPrimary', { url, caisse});
 }
 
-function disconnectFromMaster(url, caisse) {
-  return emit('syncDisconnectFromMaster', {});
+function disconnectFromPrimary(url, caisse) {
+  logger.log('disconnectFromPrimary()');
+  return emit('syncDisconnectFromPrimary', {});
 }
 
-function startSyncMaster() {
-  return emit('syncStartMaster',{});
+function startSyncPrimary() {
+  logger.log('startSyncPrimary()');
+  return emit('syncStartPrimary',{});
 }
 
-function syncDispatch(db, data) {
-  return emit('syncDispatchToSlaves', {db, data});
+function syncDispatch(db, data, emitter) {
+  return emit('syncDispatchToSecondaries', {db, data, emitter});
 }
-function syncMaster(db, data, url) {
-  return emit('syncDispatchToMaster', {db, data, url});
+function syncPrimary(db, data, emitter, url) {
+  return emit('syncDispatchToPrimary', {db, data, emitter, url});
 }
 function syncConfirm(response) {
   return emit('syncConfirm', {response});

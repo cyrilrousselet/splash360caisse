@@ -91,7 +91,7 @@ class EditImprimantePopin extends React.Component {
   
   saveImprimante() {
 
-    const printer_id = this.props.imprimante && this.props.imprimante.printer_id || null;
+    const printer_id = (this.props.imprimante && this.props.imprimante.printer_id) || null;
     let state = this.state;
 
     this.props.saveImprimante(printer_id, state);
@@ -171,7 +171,7 @@ class EditImprimantePopin extends React.Component {
                 <Select value={fallback} onChange={(event) => { this.updateValue({fallback: event.target.value}) }} className="selecteur selecteur-fallback">
                 <MenuItem key={ `cashitmnull`} value=''>{ strings.modules.parametres.submodules.peripheriques.impression.imprimantes.edition.no_fallback }</MenuItem>
                   {allprinters.map(prnt => (
-                    prnt.id!=printer_id  && <MenuItem key={ `cashitm${prnt.id}`} value={ prnt.id }>{ prnt.nom }</MenuItem>
+                    prnt.id!==printer_id  && <MenuItem key={ `cashitm${prnt.id}`} value={ prnt.id }>{ prnt.nom }</MenuItem>
                     ))}
                 </Select>
               </FormControl>
@@ -235,13 +235,13 @@ class EditTicketPopin extends React.Component {
 
   updateImprimantesSelection(value) {
     const { imprimantes } = this.getValues();
-    let idx = imprimantes.findIndex(prnt=>prnt==value);
+    let idx = imprimantes.findIndex(prnt=>prnt===value);
     console.log('updateImprimantesSelection', value);
     if (idx==-1) {
       this.setState({imprimantes:[...imprimantes, value]});
     } else {
      // const __upd = imprimantes.splice(idx,1);
-      this.setState({imprimantes: imprimantes.filter(imp=>imp!=value)});
+      this.setState({imprimantes: imprimantes.filter(imp=>imp!==value)});
     }
   }
 
@@ -277,7 +277,7 @@ class EditTicketPopin extends React.Component {
   
   saveTicket() {
 
-    const ticket_id = this.props.ticket && this.props.ticket.ticket_id || null;
+    const ticket_id = (this.props.ticket && this.props.ticket.ticket_id) || null;
     let state = this.state;
 
     this.props.saveTicket(ticket_id, state);
@@ -291,10 +291,10 @@ class EditTicketPopin extends React.Component {
     const { ticket, editOpen, closeHandler, allprinters } = this.props;
     const { ticket_id, nom, template, imprimantes, kds } = this.getValues();
 
-    const incomplete = !nom || template==null;
+    const incomplete = !nom || template===null;
 
     const isImprimanteEnabled = (id) => {
-      return imprimantes.indexOf(id)!=-1;
+      return imprimantes.indexOf(id)>-1;
     }
 
     return (
@@ -381,7 +381,7 @@ class EditTicketPopin extends React.Component {
 
 
 function ListeImpression(props) {
-  const { liste, type, id, openEdit, ...other } = props;
+  const { liste, type, id, openEdit } = props;
 
 
   return (
@@ -391,7 +391,7 @@ function ListeImpression(props) {
           <TableCell key={`${id}-hd-nom`} className="liste-nom">{ strings.modules.parametres.submodules.peripheriques.impression[type].liste.nom }</TableCell>
           <TableCell key={`${id}-hd-type`} className="liste-type">{ strings.modules.parametres.submodules.peripheriques.impression[type].liste.type }</TableCell>
           <TableCell key={`${id}-hd-param`} className="liste-param">{ strings.modules.parametres.submodules.peripheriques.impression[type].liste.parametre }</TableCell>
-          {type=='tickets' && <TableCell key={`${id}-hd-kds`} className="liste-kds">{ strings.modules.parametres.submodules.peripheriques.impression.tickets.liste.kds }</TableCell>}
+          {type==='tickets' && <TableCell key={`${id}-hd-kds`} className="liste-kds">{ strings.modules.parametres.submodules.peripheriques.impression.tickets.liste.kds }</TableCell>}
         </TableRow>
       </TableHead>
       <TableBody>
@@ -400,7 +400,7 @@ function ListeImpression(props) {
             <TableCell key={`${i}-imp-nom`} className={ `liste-nom` }><div onClick={ () => { openEdit(row.id) } }>{ row.nom }</div></TableCell>
             <TableCell key={`${i}-imp-connexion`} className="liste-type">{ row.type }</TableCell>
             <TableCell key={`${i}-param`} className="liste-param">{row.param}</TableCell>
-            {type=='tickets' && <TableCell key={`${i}-kds`} className="liste-kds">{row.kds && <CheckIcon htmlColor="#7FAD3B" />}</TableCell>}
+            {type==='tickets' && <TableCell key={`${i}-kds`} className="liste-kds">{row.kds && <CheckIcon htmlColor="#7FAD3B" />}</TableCell>}
           </TableRow>
         ))}
       </TableBody>
@@ -510,7 +510,7 @@ class PeripheriquesImpression extends React.Component {
         };
     });
     tickets_liste = tickets_liste.sort((a,b)=>a.weight-b.weight);
-    tickets_liste = tickets_liste.filter(tck=>(['commande','cloture_x','cloture_z','avoir']).indexOf(tck.type)==-1);
+    tickets_liste = tickets_liste.filter(tck=>(['commande','cloture_x','cloture_z','avoir']).indexOf(tck.type)>-1);
 
     return (
     <div className="PeripheriquesImpression sectioncontent">

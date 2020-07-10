@@ -81,7 +81,6 @@ class EditTypePopin extends React.Component {
 
   render() {
     const { commandtype, editOpen, closeHandler } = this.props;
-    const { nom, identifiant, frais, remise } = this.state;
 
     return (
       <Modal open={ editOpen } >

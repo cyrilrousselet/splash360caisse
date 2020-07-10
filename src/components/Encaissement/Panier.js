@@ -775,7 +775,7 @@ class Panier extends React.Component {
     }
     const onClickRemove = (event) => {
       let __i = selectedIndex;
-      if (items[selectedIndex].quantite===1) this.setSelectedIndex(null, -1);
+      if (items[selectedIndex].quantite===1) this.setSelectedIndex(-1, -1);
       updateProduit({itemid: items[__i].itemid, quantite: items[__i].quantite - 1});
     }
     const onClickDelete = (event) => {
@@ -788,7 +788,7 @@ class Panier extends React.Component {
         focusConfirm: false
       }).then((result)=> {
         if (result.value) {
-          this.setSelectedIndex(null, -1);
+          this.setSelectedIndex(-1, -1);
           this.setState({inputfocus: true});
           deleteCommande();
         }

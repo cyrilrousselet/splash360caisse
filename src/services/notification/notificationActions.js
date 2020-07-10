@@ -6,7 +6,7 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import Swal from 'sweetalert2';
 import { format } from 'date-fns';
-import DateFnsUtils from '@date-io/date-fns';
+// import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import Logger from '../../helpers/Logger';
 const strings = new LocalizedStrings(data);
@@ -50,36 +50,38 @@ function initSync() {
     const { options } = getState().parametresReducer.parametres;
 
     logger.log('initSync', options);
+    logger.log('role', options.role, (options.role==='secondary'));
 
-    if (options.role==='slave') {
-      notificationServices.connectToMaster(options.master, options.caisse)
+
+    if (options.role==='secondary') {
+      notificationServices.connectToPrimary(options.primary, options.caisse)
       .then(result => {
-        logger.log('initSync slave', result);
-        dispatch({type: notificationActionTypes.CONNECT_TO_MASTER});
+        logger.log('initSync secondary', result);
+        dispatch({type: notificationActionTypes.CONNECT_TO_PRIMARY});
       })
-    } else if (options.role==='master') {
-      notificationServices.startSyncMaster()
+    } else if (options.role==='primary') {
+      notificationServices.startSyncPrimary()
       .then(result => {
-        logger.log('initSync master', result);
-        dispatch({type: notificationActionTypes.START_MASTER});
+        logger.log('initSync primary', result);
+        dispatch({type: notificationActionTypes.START_PRIMARY});
       })
     }
   }
 }
 
-function syncDispatch(db,data) {
+function syncDispatch(db,data,emitter=null) {
   return (dispatch, getState) => {
     const { options } = getState().parametresReducer.parametres;
-    if (options.role==='master') {
-      notificationServices.syncDispatch(db, data)
+    if (options.role==='primary') {
+      notificationServices.syncDispatch(db, data, emitter)
       .then(result => {
-        logger.log('syncDispatch (master)', result);
+        logger.log('syncDispatch (primary)', result);
       })
     }
-    else if (options.role==='slave') {
-      notificationServices.syncMaster(db, data, options.master)
+    else if (options.role==='secondary') {
+      notificationServices.syncPrimary(db, data, options.caisse, options.primary)
       .then(result => {
-        logger.log('syncDispatch (slave)', result);
+        logger.log('syncDispatch (secondary)', result);
       })
     }
   }
@@ -92,7 +94,7 @@ function treatment(data) {
 
     const {auto_accept_order} = getState().parametresReducer.parametres.commandes;
 
-    if (data.eventType=='orders.notification') {
+    if (data.eventType==='orders.notification') {
 
       dispatch({ type: notificationActionTypes.GET_NOTIFICATION, notif: data.eventType });
 
@@ -117,7 +119,7 @@ function treatment(data) {
               // cancelButtonText: strings.general.dialog.deny,
               buttonsStyling: false 
             }).then((result)=> {
-              if (result.value==true) {
+              if (result.value===true) {
                 dispatch(acceptOrder('uber', reponse.order));
               // } else {
               //   dispatch(denyOrder('uber', reponse.order));

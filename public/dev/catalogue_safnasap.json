@@ -1,0 +1,1558 @@
+{
+  "categories": [
+      {
+          "categorie_id": "cat44",
+          "nom": "SAFNA SAP",
+          "description": null
+      }
+  ],
+  "groupes": [
+      {
+          "groupe_id": "grp168",
+          "categorie": "cat44",
+          "nom": "LES ENTRÉES",
+          "noprint": [],
+          "weight": 1
+      },
+      {
+          "groupe_id": "grp169",
+          "categorie": "cat44",
+          "nom": "LES POISSONS",
+          "noprint": [],
+          "weight": 2
+      },
+      {
+          "groupe_id": "grp170",
+          "categorie": "cat44",
+          "nom": "LES VIANDES ET VOLAILLES",
+          "noprint": [],
+          "weight": 3
+      },
+      {
+          "groupe_id": "grp171",
+          "categorie": "cat44",
+          "nom": "ACCOMPAGENEMENTS",
+          "noprint": [],
+          "weight": 4
+      },
+      {
+          "groupe_id": "grp172",
+          "categorie": "cat44",
+          "nom": "LES DESSERTS",
+          "noprint": [],
+          "weight": 5
+      },
+      {
+          "groupe_id": "grp173",
+          "categorie": "cat44",
+          "nom": "LES EAUX , BOISSONS FRAÎCHES ET BOISSONS CHAUDES",
+          "noprint": [],
+          "weight": 6
+      },
+      {
+          "groupe_id": "grp174",
+          "categorie": "cat44",
+          "nom": "LES COCKTAILS",
+          "noprint": [],
+          "weight": 7
+      },
+      {
+          "groupe_id": "grp175",
+          "categorie": "cat44",
+          "nom": "FORMULES MIDI",
+          "noprint": [],
+          "weight": 8
+      },
+      {
+          "groupe_id": "grp176",
+          "categorie": "cat44",
+          "nom": "FORMULE SOIR",
+          "noprint": [],
+          "weight": 9
+      }
+  ],
+  "tva": [
+      {
+          "tva_id": "tva6",
+          "nom": "TVA 10 ALL MODE",
+          "code": "A",
+          "valeur": "0.1"
+      },
+      {
+          "tva_id": "tva8",
+          "nom": "TVA 5,5 ALL MODE",
+          "code": "B",
+          "valeur": "0.055"
+      }
+  ],
+  "types": [
+      {
+          "type_id": "typ171",
+          "nom": "FORMULE MIDI ENTRÉE",
+          "noprint": [],
+          "weight": 0
+      },
+      {
+          "type_id": "typ172",
+          "nom": "FORMULE MIDI PLAT",
+          "noprint": [],
+          "weight": 1
+      },
+      {
+          "type_id": "typ173",
+          "nom": "FORMULE MIDI DESSERT",
+          "noprint": [],
+          "weight": 2
+      },
+      {
+          "type_id": "typ174",
+          "nom": "FORMULE SOIR PLAT ( 25.50 )",
+          "noprint": [],
+          "weight": 3
+      },
+      {
+          "type_id": "typ175",
+          "nom": "FORMULE SOIR DESSERT ( 25.50 )",
+          "noprint": [],
+          "weight": 4
+      },
+      {
+          "type_id": "typ176",
+          "nom": "FORMULE SOIR ENTRÉE ( 29.90 )",
+          "noprint": [],
+          "weight": 5
+      },
+      {
+          "type_id": "typ177",
+          "nom": "FORMULE SOIR PLAT ( 29.90 )",
+          "noprint": [],
+          "weight": 6
+      },
+      {
+          "type_id": "typ178",
+          "nom": "FORMULE SOIR DESSERT ( 29.90 )",
+          "noprint": [],
+          "weight": 7
+      },
+      {
+          "type_id": "typ179",
+          "nom": "FORMULE SOIR ENTRÉE ( 39.90 )",
+          "noprint": [],
+          "weight": 8
+      },
+      {
+          "type_id": "typ180",
+          "nom": "FORMULE SOIR PLAT ( 39.90 )",
+          "noprint": [],
+          "weight": 9
+      },
+      {
+          "type_id": "typ181",
+          "nom": "FORMULE SOIR DESSERT ( 39.90 )",
+          "noprint": [],
+          "weight": 10
+      },
+      {
+          "type_id": "typ182",
+          "nom": "BOISSONS SAFNA SAP",
+          "noprint": [],
+          "weight": 11
+      },
+      {
+          "type_id": "typ183",
+          "nom": "COCKTAILS SAFNA SAP",
+          "noprint": [],
+          "weight": 12
+      }
+  ],
+  "ingredients": [
+      {
+          "ingredient_id": "ing1158",
+          "type": "typ171",
+          "nom": "PASTELS DE THON",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "rose"
+      },
+      {
+          "ingredient_id": "ing1159",
+          "type": "typ171",
+          "nom": "SAMOUSSA",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing1160",
+          "type": "typ171",
+          "nom": "ACCRAS DE MORUE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 7,
+          "color": "violet"
+      },
+      {
+          "ingredient_id": "ing1161",
+          "type": "typ171",
+          "nom": "SALADE DU JOUR ARDOISE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 8,
+          "color": "vertclair"
+      },
+      {
+          "ingredient_id": "ing1162",
+          "type": "typ172",
+          "nom": "TIEBOUYABE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "jaune"
+      },
+      {
+          "ingredient_id": "ing1164",
+          "type": "typ172",
+          "nom": "THIEBOUGUINARD",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 7,
+          "color": "orange"
+      },
+      {
+          "ingredient_id": "ing1165",
+          "type": "typ172",
+          "nom": "YASSA FILET POISSON DU JOUR",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 8,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing1166",
+          "type": "typ172",
+          "nom": "PLAT DU JOUR ARDOISE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 9,
+          "color": "bleufonce"
+      },
+      {
+          "ingredient_id": "ing1167",
+          "type": "typ173",
+          "nom": "THIAKIRY",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "jaune"
+      },
+      {
+          "ingredient_id": "ing1168",
+          "type": "typ173",
+          "nom": "DELICIEUX SAFNA",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "rouge"
+      },
+      {
+          "ingredient_id": "ing1169",
+          "type": "typ173",
+          "nom": "ANANAS RÔTI / SORBET MAISON",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 7,
+          "color": "jaune"
+      },
+      {
+          "ingredient_id": "ing1170",
+          "type": "typ174",
+          "nom": "TIEBOUYABE TRADITIONNEL",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "orange"
+      },
+      {
+          "ingredient_id": "ing1171",
+          "type": "typ174",
+          "nom": "POISSON DU JOUR BRAISÉ",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "jauneorange"
+      },
+      {
+          "ingredient_id": "ing1172",
+          "type": "typ174",
+          "nom": "RISOTTO DE GAMBAS",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 7,
+          "color": "violet"
+      },
+      {
+          "ingredient_id": "ing1173",
+          "type": "typ174",
+          "nom": "THIEBOUGUINARD",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 8,
+          "color": "vertclair"
+      },
+      {
+          "ingredient_id": "ing1174",
+          "type": "typ174",
+          "nom": "YASSA POULET",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 9,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing1175",
+          "type": "typ174",
+          "nom": "MAFE GUERTE WOLLOF",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 10,
+          "color": "noir"
+      },
+      {
+          "ingredient_id": "ing1176",
+          "type": "typ174",
+          "nom": "PLAT DU JOUR ARDOISE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 11,
+          "color": "bleufonce"
+      },
+      {
+          "ingredient_id": "ing1177",
+          "type": "typ174",
+          "nom": "TIEBOUDIENNE TRADITIONNEL",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 8,
+          "color": "jaune"
+      },
+      {
+          "ingredient_id": "ing1178",
+          "type": "typ175",
+          "nom": "REUNION EXOTIQUE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "bleuclair"
+      },
+      {
+          "ingredient_id": "ing1179",
+          "type": "typ175",
+          "nom": "TIRAMISU MAISON",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing1180",
+          "type": "typ175",
+          "nom": "DESSERT DU JOUR",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 7,
+          "color": "orange"
+      },
+      {
+          "ingredient_id": "ing1181",
+          "type": "typ175",
+          "nom": "THIAKIRY",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 8,
+          "color": "jaune"
+      },
+      {
+          "ingredient_id": "ing1182",
+          "type": "typ176",
+          "nom": "PASTELS DE THON",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "rose"
+      },
+      {
+          "ingredient_id": "ing1183",
+          "type": "typ176",
+          "nom": "ACCRAS DE MORUE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "violet"
+      },
+      {
+          "ingredient_id": "ing1184",
+          "type": "typ176",
+          "nom": "SAMOUSSA DE BŒUF",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 7,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing1185",
+          "type": "typ176",
+          "nom": "TARTARE D'AVOCAT",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 8,
+          "color": "vertclair"
+      },
+      {
+          "ingredient_id": "ing1186",
+          "type": "typ176",
+          "nom": "ENTRÉE DU JOUR",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 9,
+          "color": "bleufonce"
+      },
+      {
+          "ingredient_id": "ing1187",
+          "type": "typ177",
+          "nom": "TIEBOUDIENNE TRADITIONNEL",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "jauneorange"
+      },
+      {
+          "ingredient_id": "ing1188",
+          "type": "typ177",
+          "nom": "POISSON DU JOUR BRAISÉ",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "orange"
+      },
+      {
+          "ingredient_id": "ing1189",
+          "type": "typ177",
+          "nom": "RISOTTO DE GAMBAS",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 7,
+          "color": "violet"
+      },
+      {
+          "ingredient_id": "ing1190",
+          "type": "typ177",
+          "nom": "THIEBOUGUINARD",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 8,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing1191",
+          "type": "typ177",
+          "nom": "TIEBOUYABE TRADITIONNEL",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 9,
+          "color": "jaune"
+      },
+      {
+          "ingredient_id": "ing1192",
+          "type": "typ177",
+          "nom": "YASSA POULET",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 10,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing1193",
+          "type": "typ177",
+          "nom": "MAFE GUERTE WOLLOF",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 11,
+          "color": "rouge"
+      },
+      {
+          "ingredient_id": "ing1194",
+          "type": "typ177",
+          "nom": "PLAT DU JOUR ARDOISE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 12,
+          "color": "bleufonce"
+      },
+      {
+          "ingredient_id": "ing1195",
+          "type": "typ178",
+          "nom": "LE PARIS DAKAR",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "jaune"
+      },
+      {
+          "ingredient_id": "ing1196",
+          "type": "typ178",
+          "nom": "REUNION EXOTIQUE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "rouge"
+      },
+      {
+          "ingredient_id": "ing1197",
+          "type": "typ178",
+          "nom": "TIRAMISU MAISON",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 7,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing1198",
+          "type": "typ178",
+          "nom": "DESSERT DU JOUR",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 8,
+          "color": "bleufonce"
+      },
+      {
+          "ingredient_id": "ing1199",
+          "type": "typ178",
+          "nom": "THIAKIRY",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 9,
+          "color": "orange"
+      },
+      {
+          "ingredient_id": "ing1213",
+          "type": "typ179",
+          "nom": "PASTELS DE THON",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "rose"
+      },
+      {
+          "ingredient_id": "ing1214",
+          "type": "typ179",
+          "nom": "ACCRAS DE MORUE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "violet"
+      },
+      {
+          "ingredient_id": "ing1215",
+          "type": "typ179",
+          "nom": "SAMOUSSA DE BŒUF",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 7,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing1216",
+          "type": "typ179",
+          "nom": "TARTARE D'AVOCAT",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 8,
+          "color": "vertclair"
+      },
+      {
+          "ingredient_id": "ing1217",
+          "type": "typ179",
+          "nom": "ENTRÉE DU JOUR",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 9,
+          "color": "bleufonce"
+      },
+      {
+          "ingredient_id": "ing1218",
+          "type": "typ180",
+          "nom": "TIEBOUDIENNE TRADITIONNEL",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "orange"
+      },
+      {
+          "ingredient_id": "ing1219",
+          "type": "typ180",
+          "nom": "POISSON DU JOUR BRAISÉ",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "jauneorange"
+      },
+      {
+          "ingredient_id": "ing1220",
+          "type": "typ180",
+          "nom": "RISOTTO DE GAMBAS",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 7,
+          "color": "rose"
+      },
+      {
+          "ingredient_id": "ing1221",
+          "type": "typ180",
+          "nom": "TIEBOU GUINAR",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 8,
+          "color": "rouge"
+      },
+      {
+          "ingredient_id": "ing1222",
+          "type": "typ180",
+          "nom": "TIEBOUYABE TRADITIONNEL",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 9,
+          "color": "gris"
+      },
+      {
+          "ingredient_id": "ing1223",
+          "type": "typ180",
+          "nom": "YASSA POULET",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 10,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing1224",
+          "type": "typ180",
+          "nom": "MAFE GUERTE WOLLOF",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 11,
+          "color": "jauneorange"
+      },
+      {
+          "ingredient_id": "ing1225",
+          "type": "typ180",
+          "nom": "BROCHETTE D'AGNEAU GRILLÉES",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 12,
+          "color": "noir"
+      },
+      {
+          "ingredient_id": "ing1226",
+          "type": "typ180",
+          "nom": "PLAT DU JOUR",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 13,
+          "color": "bleufonce"
+      },
+      {
+          "ingredient_id": "ing1227",
+          "type": "typ181",
+          "nom": "SAFNA AFRICA",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "jaune"
+      },
+      {
+          "ingredient_id": "ing1228",
+          "type": "typ181",
+          "nom": "LE PARIS DAKAR",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "rouge"
+      },
+      {
+          "ingredient_id": "ing1229",
+          "type": "typ181",
+          "nom": "REUNION EXOTIQUE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 7,
+          "color": "orange"
+      },
+      {
+          "ingredient_id": "ing1230",
+          "type": "typ181",
+          "nom": "TIRAMISU MAISON",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 8,
+          "color": "violet"
+      },
+      {
+          "ingredient_id": "ing1231",
+          "type": "typ181",
+          "nom": "THIAKIRY",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 9,
+          "color": "jaune"
+      },
+      {
+          "ingredient_id": "ing1232",
+          "type": "typ181",
+          "nom": "DESSERT DU JOUR",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 10,
+          "color": "gris"
+      },
+      {
+          "ingredient_id": "ing1200",
+          "type": "typ182",
+          "nom": "EAU PLATE 1L",
+          "supplement": "0.00",
+          "tva": "tva8",
+          "weight": 5,
+          "color": "bleuclair"
+      },
+      {
+          "ingredient_id": "ing1201",
+          "type": "typ182",
+          "nom": "EAU GAZEUSE 1L",
+          "supplement": "0.00",
+          "tva": "tva8",
+          "weight": 6,
+          "color": "bleufonce"
+      },
+      {
+          "ingredient_id": "ing1202",
+          "type": "typ182",
+          "nom": "SODA GAZEUX",
+          "supplement": "0.00",
+          "tva": "tva8",
+          "weight": 7,
+          "color": "rouge"
+      },
+      {
+          "ingredient_id": "ing1203",
+          "type": "typ182",
+          "nom": "ROYAL GINGER",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 8,
+          "color": "rouge"
+      },
+      {
+          "ingredient_id": "ing1204",
+          "type": "typ182",
+          "nom": "ROYAL BISSAP",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 9,
+          "color": "jaune"
+      },
+      {
+          "ingredient_id": "ing1205",
+          "type": "typ182",
+          "nom": "CAFE EXPRESSO",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 10,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing1206",
+          "type": "typ182",
+          "nom": "CAFE LONG",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 11,
+          "color": "noir"
+      },
+      {
+          "ingredient_id": "ing1207",
+          "type": "typ182",
+          "nom": "ATTAYA",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 12,
+          "color": "violet"
+      },
+      {
+          "ingredient_id": "ing1208",
+          "type": "typ183",
+          "nom": "A - LINE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "gris"
+      },
+      {
+          "ingredient_id": "ing1209",
+          "type": "typ183",
+          "nom": "BAKEL",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "orange"
+      },
+      {
+          "ingredient_id": "ing1210",
+          "type": "typ183",
+          "nom": "TOULEL",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 7,
+          "color": "jaune"
+      },
+      {
+          "ingredient_id": "ing1211",
+          "type": "typ183",
+          "nom": "DEMBANCANE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 8,
+          "color": "orange"
+      },
+      {
+          "ingredient_id": "ing1212",
+          "type": "typ183",
+          "nom": "MOUDERY",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 9,
+          "color": "vertclair"
+      }
+  ],
+  "produits": [
+      {
+          "produit_id": "prd2181",
+          "groupe": "grp168",
+          "active": 1,
+          "nom": "PASTELS DE THON",
+          "prix": "7.20",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "rose"
+      },
+      {
+          "produit_id": "prd2182",
+          "groupe": "grp168",
+          "active": 1,
+          "nom": "ACCRAS DE MORUE , CONFIT DE CITRON",
+          "prix": "7.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "violet"
+      },
+      {
+          "produit_id": "prd2183",
+          "groupe": "grp168",
+          "active": 1,
+          "nom": "SAMOUSSA DE BŒUF TRADITIONNELS , CHUTNEY D'OIGNONS ROUGES ET BISSAP",
+          "prix": "7.20",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "rouge"
+      },
+      {
+          "produit_id": "prd2184",
+          "groupe": "grp168",
+          "active": 1,
+          "nom": "TARTARE D'AVOCAT , GAMBAS ET SÉSAME DORÉ",
+          "prix": "12.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd2185",
+          "groupe": "grp169",
+          "active": 1,
+          "nom": "TIEBOUDIENNE TRADITIONNEL THIOFF",
+          "prix": "18.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd2186",
+          "groupe": "grp169",
+          "active": 1,
+          "nom": "POISSON DU JOUR BRAISÉ , SAUCE VIERGE DU GUIDIMAKHA",
+          "prix": "16.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "marron"
+      },
+      {
+          "produit_id": "prd2187",
+          "groupe": "grp169",
+          "active": 1,
+          "nom": "RISOTTO DE GAMBAS , GOMBOS FRIT CHIPS DE PLANTAIN",
+          "prix": "22.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": null
+      },
+      {
+          "produit_id": "prd2188",
+          "groupe": "grp170",
+          "active": 1,
+          "nom": "TIEBOUYAPE TRADITIONNEL , PETITE BRUNOISE MARINÉE",
+          "prix": "16.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "noir"
+      },
+      {
+          "produit_id": "prd2189",
+          "groupe": "grp170",
+          "active": 1,
+          "nom": "YASSA POULET LEBOU",
+          "prix": "14.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "jauneorange"
+      },
+      {
+          "produit_id": "prd2190",
+          "groupe": "grp170",
+          "active": 1,
+          "nom": "MAFE GUERTE WOLLOF",
+          "prix": "14.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd2191",
+          "groupe": "grp170",
+          "active": 1,
+          "nom": "BROCHETTE D'AGNEAU GRILLÉES DIBI",
+          "prix": "19.40",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "marron"
+      },
+      {
+          "produit_id": "prd2192",
+          "groupe": "grp168",
+          "active": 1,
+          "nom": "ENTRÉE DU JOUR",
+          "prix": "6.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 5,
+          "color": "bleufonce"
+      },
+      {
+          "produit_id": "prd2193",
+          "groupe": "grp170",
+          "active": 1,
+          "nom": "PLAT DU JOUR",
+          "prix": "12.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 5,
+          "color": "bleufonce"
+      },
+      {
+          "produit_id": "prd2194",
+          "groupe": "grp171",
+          "active": 1,
+          "nom": "RIZ BLANC NATURE",
+          "prix": "2.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "blanc"
+      },
+      {
+          "produit_id": "prd2195",
+          "groupe": "grp171",
+          "active": 1,
+          "nom": "FRITE DE PATATE DOUCE",
+          "prix": "3.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "jaune"
+      },
+      {
+          "produit_id": "prd2196",
+          "groupe": "grp171",
+          "active": 1,
+          "nom": "GRATIN MANIOC",
+          "prix": "5.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "marron"
+      },
+      {
+          "produit_id": "prd2197",
+          "groupe": "grp171",
+          "active": 1,
+          "nom": "CROMESQUIS",
+          "prix": "4.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "jauneorange"
+      },
+      {
+          "produit_id": "prd2198",
+          "groupe": "grp171",
+          "active": 1,
+          "nom": "BANANE PLANTAIN",
+          "prix": "3.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 5,
+          "color": null
+      },
+      {
+          "produit_id": "prd2199",
+          "groupe": "grp172",
+          "active": 1,
+          "nom": "SAFNA AFRICA",
+          "prix": "10.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "marron"
+      },
+      {
+          "produit_id": "prd2200",
+          "groupe": "grp172",
+          "active": 1,
+          "nom": "LE PARIS - DAKAR",
+          "prix": "9.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "gris"
+      },
+      {
+          "produit_id": "prd2201",
+          "groupe": "grp172",
+          "active": 1,
+          "nom": "RÉUNION EXOTIQUE FRAÎCHEUR",
+          "prix": "10.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "rouge"
+      },
+      {
+          "produit_id": "prd2202",
+          "groupe": "grp172",
+          "active": 1,
+          "nom": "TIRAMISU MAISON",
+          "prix": "4.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "marron"
+      },
+      {
+          "produit_id": "prd2203",
+          "groupe": "grp172",
+          "active": 1,
+          "nom": "DESSERT DU JOUR",
+          "prix": "6.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 5,
+          "color": "bleufonce"
+      },
+      {
+          "produit_id": "prd2204",
+          "groupe": "grp173",
+          "active": 1,
+          "nom": "EAU PLATE 1L",
+          "prix": "3.40",
+          "tva": "tva8",
+          "composition": [],
+          "weight": 1,
+          "color": "bleuclair"
+      },
+      {
+          "produit_id": "prd2205",
+          "groupe": "grp173",
+          "active": 1,
+          "nom": "EAU GAZEUSE 1L",
+          "prix": "3.90",
+          "tva": "tva8",
+          "composition": [],
+          "weight": 2,
+          "color": "bleufonce"
+      },
+      {
+          "produit_id": "prd2206",
+          "groupe": "grp173",
+          "active": 1,
+          "nom": "SODAS GAZEUX",
+          "prix": "3.20",
+          "tva": "tva8",
+          "composition": [],
+          "weight": 3,
+          "color": "rouge"
+      },
+      {
+          "produit_id": "prd2207",
+          "groupe": "grp173",
+          "active": 1,
+          "nom": "ROYAL GINGER",
+          "prix": "3.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "gris"
+      },
+      {
+          "produit_id": "prd2208",
+          "groupe": "grp173",
+          "active": 1,
+          "nom": "ROYAL BISSAP",
+          "prix": "3.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 5,
+          "color": "rouge"
+      },
+      {
+          "produit_id": "prd2209",
+          "groupe": "grp173",
+          "active": 1,
+          "nom": "CAFE EXPRESSO",
+          "prix": "1.80",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 6,
+          "color": "marron"
+      },
+      {
+          "produit_id": "prd2210",
+          "groupe": "grp173",
+          "active": 1,
+          "nom": "CAFÉ LONG",
+          "prix": "1.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 7,
+          "color": "noir"
+      },
+      {
+          "produit_id": "prd2211",
+          "groupe": "grp173",
+          "active": 1,
+          "nom": "ATTAYA",
+          "prix": "2.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 8,
+          "color": "noir"
+      },
+      {
+          "produit_id": "prd2212",
+          "groupe": "grp174",
+          "active": 1,
+          "nom": "A-LINE",
+          "prix": "6.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "jaune"
+      },
+      {
+          "produit_id": "prd2213",
+          "groupe": "grp174",
+          "active": 1,
+          "nom": "BAKEL",
+          "prix": "6.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "jauneorange"
+      },
+      {
+          "produit_id": "prd2214",
+          "groupe": "grp174",
+          "active": 1,
+          "nom": "TOULEL",
+          "prix": "6.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "marron"
+      },
+      {
+          "produit_id": "prd2215",
+          "groupe": "grp174",
+          "active": 1,
+          "nom": "DEMBANCANE",
+          "prix": "6.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 4,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd2216",
+          "groupe": "grp174",
+          "active": 1,
+          "nom": "MOUDERY",
+          "prix": "6.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 5,
+          "color": "vertclair"
+      },
+      {
+          "produit_id": "prd2217",
+          "groupe": "grp175",
+          "active": 1,
+          "nom": "ENTREE + PLAT",
+          "prix": "12.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "violet"
+      },
+      {
+          "produit_id": "prd2218",
+          "groupe": "grp175",
+          "active": 1,
+          "nom": "PLAT + DESSERTS",
+          "prix": "12.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "vertfonce"
+      },
+      {
+          "produit_id": "prd2219",
+          "groupe": "grp175",
+          "active": 1,
+          "nom": "ENTREE + PLAT + DESSERTS",
+          "prix": "15.00",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "rouge"
+      },
+      {
+          "produit_id": "prd2220",
+          "groupe": "grp170",
+          "active": 1,
+          "nom": "THIEBOUGUINARD",
+          "prix": "14.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 6,
+          "color": "orange"
+      },
+      {
+          "produit_id": "prd2221",
+          "groupe": "grp172",
+          "active": 1,
+          "nom": "THIAKIRY",
+          "prix": "3.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 6,
+          "color": "rouge"
+      },
+      {
+          "produit_id": "prd2222",
+          "groupe": "grp176",
+          "active": 1,
+          "nom": "PLAT + DESSERTS",
+          "prix": "25.50",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 1,
+          "color": "vertfonce"
+      },
+      {
+          "produit_id": "prd2223",
+          "groupe": "grp176",
+          "active": 1,
+          "nom": "ENTREE + PLAT + DESSERTS",
+          "prix": "29.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 2,
+          "color": "rouge"
+      },
+      {
+          "produit_id": "prd2224",
+          "groupe": "grp176",
+          "active": 1,
+          "nom": "ENTRÉE + PLAT + DESSERTS + CAFÉ OU THÉ + COCKTAILS OU BOISSONS",
+          "prix": "39.90",
+          "tva": "tva6",
+          "composition": [],
+          "weight": 3,
+          "color": "noir"
+      }
+  ],
+  "steps": [
+      {
+          "step_id": "step1317",
+          "produit": "prd2217",
+          "titre": "ENTRÉE AU CHOIX",
+          "regles": [
+              {
+                  "type": "typ171",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1318",
+          "produit": "prd2217",
+          "titre": "PLAT AU CHOIX",
+          "regles": [
+              {
+                  "type": "typ172",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 11
+      },
+      {
+          "step_id": "step1319",
+          "produit": "prd2218",
+          "titre": "CHOIX DU DU PLAT",
+          "regles": [
+              {
+                  "type": "typ172",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1320",
+          "produit": "prd2218",
+          "titre": "CHOIX DU DESSERT",
+          "regles": [
+              {
+                  "type": "typ173",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 11
+      },
+      {
+          "step_id": "step1321",
+          "produit": "prd2219",
+          "titre": "CHOIX DE L'ENTRÉE",
+          "regles": [
+              {
+                  "type": "typ171",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1322",
+          "produit": "prd2219",
+          "titre": "CHOIX DU PLAT",
+          "regles": [
+              {
+                  "type": "typ172",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 11
+      },
+      {
+          "step_id": "step1323",
+          "produit": "prd2219",
+          "titre": "CHOIX DU DESSERT",
+          "regles": [
+              {
+                  "type": "typ173",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 12
+      },
+      {
+          "step_id": "step1324",
+          "produit": "prd2222",
+          "titre": "CHOIX DU PLAT",
+          "regles": [
+              {
+                  "type": "typ174",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1325",
+          "produit": "prd2222",
+          "titre": "CHOIX DU DESSERT",
+          "regles": [
+              {
+                  "type": "typ175",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 11
+      },
+      {
+          "step_id": "step1326",
+          "produit": "prd2223",
+          "titre": "CHOIX DE L’ENTRÉE",
+          "regles": [
+              {
+                  "type": "typ176",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1327",
+          "produit": "prd2223",
+          "titre": "CHOIX DU PLAT",
+          "regles": [
+              {
+                  "type": "typ177",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 11
+      },
+      {
+          "step_id": "step1328",
+          "produit": "prd2223",
+          "titre": "CHOIX DU DESSERT",
+          "regles": [
+              {
+                  "type": "typ178",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 12
+      },
+      {
+          "step_id": "step1329",
+          "produit": "prd2224",
+          "titre": "CHOIX DE L’ENTRÉE",
+          "regles": [
+              {
+                  "type": "typ179",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1330",
+          "produit": "prd2224",
+          "titre": "CHOIX DU PLAT",
+          "regles": [
+              {
+                  "type": "typ180",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 11
+      },
+      {
+          "step_id": "step1331",
+          "produit": "prd2224",
+          "titre": "CHOIX DU DESSERT",
+          "regles": [
+              {
+                  "type": "typ181",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 12
+      },
+      {
+          "step_id": "step1332",
+          "produit": "prd2224",
+          "titre": "CHOIX THÉ OU CAFÉ",
+          "regles": [
+              {
+                  "type": "typ182",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 13
+      },
+      {
+          "step_id": "step1333",
+          "produit": "prd2224",
+          "titre": "CHOIX BOISSON",
+          "regles": [
+              {
+                  "type": "typ182",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 14
+      },
+      {
+          "step_id": "step1334",
+          "produit": "prd2224",
+          "titre": "CHOIX COCKTAIL",
+          "regles": [
+              {
+                  "type": "typ183",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 15
+      }
+  ]
+}

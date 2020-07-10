@@ -2,8 +2,7 @@ import { peripheralActionTypes } from './peripheralActionTypes';
 import { peripheralServices } from './peripheralServices';
 
 import 'date-fns';
-import { format, compareAsc, startOfToday, endOfToday, startOfDay, endOfDay, parseJSON } from "date-fns";
-import DateFnsUtils from '@date-io/date-fns';
+import { format, parseJSON } from "date-fns";
 import frLocale from "date-fns/locale/fr";
 
 import { devise } from "../../helpers/toolbox";
@@ -38,7 +37,7 @@ function printAvoir(payload) {
 
     // récup des préf. du ticket et de l'imprimante correspondante
     let ticket = Object.values(tickets).find(tck=>tck.template=='avoir');
-    let imprimante = Object.values(imprimantes).find(imp=>imp.printer_id==ticket.imprimantes[0]);
+    let imprimante = Object.values(imprimantes).find(imp=>imp.printer_id===ticket.imprimantes[0]);
 
     const limite = format(new Date(payload.limite), "d MMM yyyy", { locale: frLocale });
 
@@ -249,14 +248,14 @@ function _getTicketsToPrint(filtre, tickets) {
   console.log('_getTicketsToPrint',filtre);
 
   let liste;
-  if (filtre=='all') {
-    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['commande','partiel','principal']).indexOf(tck.template)!=-1));
-  } else if (filtre=='all_uber') {
-    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['uber','partiel','principal']).indexOf(tck.template)!=-1));
+  if (filtre==='all') {
+    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['commande','partiel','principal']).indexOf(tck.template)>-1));
+  } else if (filtre==='all_uber') {
+    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['uber','partiel','principal']).indexOf(tck.template)>-1));
   } else if (filtre.hasOwnProperty('templates')) {
-    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && filtre.templates.indexOf(tck.template)!=-1));
+    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && filtre.templates.indexOf(tck.template)>-1));
   } else if (filtre.hasOwnProperty('ids')) {
-    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && filtre.ids.indexOf(tck.ticket_id)!=-1));
+    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && filtre.ids.indexOf(tck.ticket_id)>-1));
   }
 
   return liste;
@@ -278,7 +277,7 @@ function printTicket(payload) {
 function _getProduit(id, catalogue) {
   let produit = {};
   Object.values(catalogue).forEach(grp => {
-    const p = grp.produits.find(p=>p.id==id);
+    const p = grp.produits.find(p=>p.id===id);
     if (p!==undefined) {
       produit = p;
       return;
@@ -297,13 +296,13 @@ function _getRecap(tickets, commande, catalogue, types) {
       let __ingnum = 0;
       article.ingredients.forEach(ing => {
         // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-        let __noprint = types[ing.type].noprint.find(p=>p==ticket.ticket_id);
-        __ingnum += (ing.fromStep!=null && !__noprint) ? ing.qte : 0;
+        let __noprint = types[ing.type].noprint.find(p=>p===ticket.ticket_id);
+        __ingnum += (ing.fromStep!==null && !__noprint) ? ing.qte : 0;
       });
 
       const prd = _getProduit(article.produitid, catalogue);
       // si le groupe de produits ne doit pas s'imprimer sur ce ticket
-      let __anoprint = catalogue[prd.groupe].noprint.find(p=>p==ticket.ticket_id);
+      let __anoprint = catalogue[prd.groupe].noprint.find(p=>p===ticket.ticket_id);
       
 
       if (!__anoprint || (__anoprint && __ingnum>0)) {
@@ -345,7 +344,7 @@ function printCommandeTicket(quelstickets, cmd) {
     const logo = entreprise.ticket_logo || null;
 
     let __createdAt = new Date();
-    if (undefined!=cmd.createdAt) {
+    if (undefined!==cmd.createdAt) {
       __createdAt = parseJSON(cmd.createdAt);
     }
     const date = format(__createdAt, "d MMM yyyy", { locale: frLocale });
@@ -366,7 +365,7 @@ function printCommandeTicket(quelstickets, cmd) {
     let cmdnumero = cmd.ticketId;
     if (cmd.numero) {
       // si le numéro doit être affiché en hexadécimal
-      if (cmd.numero.hex==true) {
+      if (cmd.numero.hex===true) {
         cmdnumero = cmd.numero.value.toString(16);
       }
       else {
@@ -377,7 +376,7 @@ function printCommandeTicket(quelstickets, cmd) {
 
     // récup de la liste des tickets à imprimer
     const ticketsListe = _getTicketsToPrint(quelstickets, tickets);
-    const ticketsProd = ticketsListe.filter(t => (['partiel', 'principal']).indexOf(t.template)!==-1);
+    const ticketsProd = ticketsListe.filter(t => (['partiel', 'principal']).indexOf(t.template)>-1);
     const recapTickets = _getRecap(ticketsListe.filter(t => 'partiel' === t.template), cmd, catalogue, types);
 
 
@@ -385,7 +384,7 @@ function printCommandeTicket(quelstickets, cmd) {
     const withKds = ticketsListe.find(i=>i.kds);
     if (withKds) {
 
-      const clt = cmd.client ? clients.find(c=>c.client_id==cmd.client.client_id) : null;
+      const clt = cmd.client ? clients.find(c=>c.client_id===cmd.client.client_id) : null;
 
       let kdsCmd = {
         id: cmdnumero,
@@ -430,7 +429,7 @@ function printCommandeTicket(quelstickets, cmd) {
 
         
         // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-        const zone = ticketsProd.filter(t => (catalogue[prd.groupe].noprint.length==0 || catalogue[prd.groupe].noprint.find(p=>p==t.ticket_id)!==undefined) );
+        const zone = ticketsProd.filter(t => (catalogue[prd.groupe].noprint.length===0 || catalogue[prd.groupe].noprint.find(p=>p===t.ticket_id)!==undefined) );
 
         
         kdsCmd.items.push({
@@ -453,14 +452,14 @@ function printCommandeTicket(quelstickets, cmd) {
     const tckToPrint = ticketsListe.filter(t=>t.imprimantes.length>0);
     tckToPrint.forEach(ticket => {
 
-      impression_ordre = impression.find(it => it.ticket==ticket.ticket_id);
-      target_imprimantes = Object.values(imprimantes).filter((imp)=>(ticket.imprimantes.indexOf(imp.printer_id)!=-1));
+      impression_ordre = impression.find(it => it.ticket===ticket.ticket_id);
+      target_imprimantes = Object.values(imprimantes).filter((imp)=>(ticket.imprimantes.indexOf(imp.printer_id)>-1));
       imprimante = target_imprimantes[0];
 
       // en fonction du type de ticket demandé
 
       // ticket commande et ticket UberEats
-      if (['commande','uber'].indexOf(ticket.template)!=-1) {
+      if (['commande','uber'].indexOf(ticket.template)>-1) {
      
         // -> template ticket
         template = (ticket.template==='uber') ? templates.uber : templates.commande;
@@ -479,18 +478,18 @@ function printCommandeTicket(quelstickets, cmd) {
           article.ingredients.forEach(ing => {
 
             // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-            let __noprint = types[ing.type].noprint.find(p=>p==ticket.ticket_id);
+            let __noprint = types[ing.type].noprint.find(p=>p===ticket.ticket_id);
 
             // ordre du type d'ingrédient
             let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
             // ordre du type d'ingrédient (défini dans les paramètres)
             if (impression_ordre) {
-              let __typeweight = impression_ordre.types.findIndex(t=>t==ing.type);
+              let __typeweight = impression_ordre.types.findIndex(t=>t===ing.type);
               if (__typeweight!=-1) __ingweight = __typeweight;
             }
 
             // commentaire pour l'ingrédient
-            __comment = cmd.comments.find(c => c.item==article.itemid && c.ingredient==ing.ingredient)
+            __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient)
 
 
             // // modificateurs pour l'ingrédient
@@ -504,7 +503,7 @@ function printCommandeTicket(quelstickets, cmd) {
             // let artIngTva = tva[ingredients[ing.ingredient].tva_id];
             let artIngTva = ing.tva;
 
-            if (ing.fromStep!=null && !__noprint) {
+            if (ing.fromStep!==null && !__noprint) {
               articleIngredients.push({
                 qte: ing.qte,
                 codetva: artIngTva.code,
@@ -547,7 +546,7 @@ function printCommandeTicket(quelstickets, cmd) {
 
 
           // commentaire pour l'article
-          __comment = cmd.comments.find(c => c.item==article.itemid && c.ingredient==null);
+          __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
 
         // 
         //   // modificateurs pour l'article
@@ -593,10 +592,10 @@ function printCommandeTicket(quelstickets, cmd) {
         
         
         // commentaire pour la commande
-        __comment = cmd.comments.find(c => c.item==null && c.ingredient==null);
+        __comment = cmd.comments.find(c => c.item===null && c.ingredient===null);
 
         // modificateurs pour la commande
-        __modificateur = cmd.modificateurs.find(c => c.item==null && c.ingredient==null);
+        __modificateur = cmd.modificateurs.find(c => c.item===null && c.ingredient===null);
         if (__modificateur) {
        //   total += Number(__modificateur.valeur);
 
@@ -635,7 +634,7 @@ function printCommandeTicket(quelstickets, cmd) {
           rendus: cmd.rendus,
           comment: __comment ? __comment.texte : '',
           modificateur: __modificateur ? __modificateur.valeur: 0,
-          client: cmd.client && clients.find(c=>c.client_id==cmd.client.client_id)
+          client: cmd.client && clients.find(c=>c.client_id===cmd.client.client_id)
         };
 
 
@@ -691,21 +690,21 @@ function printCommandeTicket(quelstickets, cmd) {
           article.ingredients.forEach(ing => {
 
             // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-            let __noprint = types[ing.type].noprint.find(p=>p==ticket.ticket_id);
+            let __noprint = types[ing.type].noprint.find(p=>p===ticket.ticket_id);
 
             // ordre du type d'ingrédient
             let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
             // ordre du type d'ingrédient (défini dans les paramètres)
             if (impression_ordre) {
-              let __typeweight = impression_ordre.types.findIndex(t=>t==ing.type);
+              let __typeweight = impression_ordre.types.findIndex(t=>t===ing.type);
               if (__typeweight!=-1) __ingweight = __typeweight;
             }
 
             // commentaire pour l'ingrédient :
-            __comment = cmd.comments.find(c => c.item==article.itemid && c.ingredient==ing.ingredient);
+            __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient);
 
 
-            if (ing.fromStep!=null && !__noprint) {
+            if (ing.fromStep!==null && !__noprint) {
               articleIngredients.push({
                 qte: ing.qte,
                 nom: ing.nom,
@@ -718,12 +717,12 @@ function printCommandeTicket(quelstickets, cmd) {
           articleIngredients.sort((a,b)=>a.weight-b.weight);
 
           // commentaire pour l'article :
-          __comment = cmd.comments.find(c => c.item==article.itemid && c.ingredient==null);
+          __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
 
 
           const prd = _getProduit(article.produitid, catalogue);
           // si le groupe de produits ne doit pas s'imprimer sur ce ticket
-          let __anoprint = catalogue[prd.groupe].noprint.find(p=>p==ticket.ticket_id);
+          let __anoprint = catalogue[prd.groupe].noprint.find(p=>p===ticket.ticket_id);
           
           // si le groupe doit s'imprimer sur ce ticket
           // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
@@ -740,7 +739,7 @@ function printCommandeTicket(quelstickets, cmd) {
         });
 
         // commentaire pour la commande :
-        __comment = cmd.comments.find(c => c.item==null && c.ingredient==null);
+        __comment = cmd.comments.find(c => c.item===null && c.ingredient===null);
 
         const cmdpartiel = {
           numero: cmdnumero,
@@ -749,7 +748,7 @@ function printCommandeTicket(quelstickets, cmd) {
           date: `${date} à ${heure}`,
           articles: articles,
           comment: __comment ? __comment.texte : '',
-          client: cmd.client && clients.find(c=>c.client_id==cmd.client.client_id)
+          client: cmd.client && clients.find(c=>c.client_id===cmd.client.client_id)
         };
 
 
@@ -780,20 +779,20 @@ function printCommandeTicket(quelstickets, cmd) {
 
 
             // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-            let __noprint = types[ing.type].noprint.find(p=>p==ticket.ticket_id);
+            let __noprint = types[ing.type].noprint.find(p=>p===ticket.ticket_id);
 
             // ordre du type d'ingrédient
             let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
             // ordre du type d'ingrédient (défini dans les paramètres)
             if (impression_ordre) {
-              let __typeweight = impression_ordre.types.findIndex(t=>t==ing.type);
+              let __typeweight = impression_ordre.types.findIndex(t=>t===ing.type);
               if (__typeweight!=-1) __ingweight = __typeweight;
             }
 
             // commentaire pour l'ingrédient :
-            __comment = cmd.comments.find(c => c.item==article.itemid && c.ingredient==ing.ingredient);
+            __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient);
 
-            if (ing.fromStep!=null && !__noprint) {
+            if (ing.fromStep!==null && !__noprint) {
               articleIngredients.push({
                 qte: ing.qte,
                 nom: ing.nom,
@@ -806,11 +805,11 @@ function printCommandeTicket(quelstickets, cmd) {
           articleIngredients.sort((a,b)=>a.weight-b.weight);
 
           // commentaire pour l'article :
-          __comment = cmd.comments.find(c => c.item==article.itemid && c.ingredient==null);
+          __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
 
           const prd = _getProduit(article.produitid, catalogue);
           // si le groupe de produits ne doit pas s'imprimer sur ce ticket
-          let __anoprint = catalogue[prd.groupe].noprint.find(p=>p==ticket.ticket_id);
+          let __anoprint = catalogue[prd.groupe].noprint.find(p=>p===ticket.ticket_id);
           
           // si le groupe doit s'imprimer sur ce ticket
           // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
@@ -828,7 +827,7 @@ function printCommandeTicket(quelstickets, cmd) {
 
 
         // commentaire pour la commande :
-        __comment = cmd.comments.find(c => c.item==null && c.ingredient==null);
+        __comment = cmd.comments.find(c => c.item===null && c.ingredient===null);
 
 
         const cmdprincipal = {
@@ -838,7 +837,7 @@ function printCommandeTicket(quelstickets, cmd) {
           date: `${date} à ${heure}`,
           articles: articles,
           comment: __comment ? __comment.texte : '',
-          client: cmd.client && clients.find(c=>c.client_id==cmd.client.client_id)
+          client: cmd.client && clients.find(c=>c.client_id===cmd.client.client_id)
         };
 
 
@@ -864,7 +863,7 @@ function printCommandeTicket(quelstickets, cmd) {
         }
       )
       dispatch({ type: peripheralActionTypes.PRINT_TICKET });
-      if (ticket.template=='commande') {
+      if (ticket.template==='commande') {
         dispatch(commandeActions.updateCommande({...cmd, printnum: Number(cmd.printnum)+1}));
       }
 
@@ -892,8 +891,8 @@ function printPeriodeX(payload={}) {
       const { entreprise } = getState().parametresReducer.parametres;
 
       // récup des préf. du ticket et de l'imprimante correspondante
-      let ticket = Object.values(tickets).find(tck=>tck.template=='cloture_x');
-      let imprimante = Object.values(imprimantes).find(imp=>imp.printer_id==ticket.imprimantes[0]);
+      let ticket = Object.values(tickets).find(tck=>tck.template==='cloture_x');
+      let imprimante = Object.values(imprimantes).find(imp=>imp.printer_id===ticket.imprimantes[0]);
 
       const { debut, fin } = periode;
       const __debut = format(debut, "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
@@ -938,7 +937,7 @@ function printCloture(payload={}) {
 
     let periode = {};
     let prelevement = -1;
-    if (Object.values(payload).length==0) {
+    if (Object.values(payload).length===0) {
       periode = getState().clotureReducer.periode;
     } else {
       periode = payload.periode;
@@ -954,8 +953,8 @@ function printCloture(payload={}) {
     const { entreprise } = getState().parametresReducer.parametres;
 
     // récup des préf. du ticket et de l'imprimante correspondante
-    let ticket = Object.values(tickets).find(tck=>tck.template=='cloture_z');
-    let imprimante = Object.values(imprimantes).find(imp=>imp.printer_id==ticket.imprimantes[0]);
+    let ticket = Object.values(tickets).find(tck=>tck.template==='cloture_z');
+    let imprimante = Object.values(imprimantes).find(imp=>imp.printer_id===ticket.imprimantes[0]);
 
     const { debut, fin } = periode;
     const __debut = format(new Date(debut), "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });

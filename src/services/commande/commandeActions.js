@@ -619,13 +619,14 @@ function setCommandeFromAPI(payload) {
 function setCommandeFromSync(commande) {
   return dispatch => {
 
-    const {data} = commande;
+    const {data, emitter} = commande;
 
     commandeServices.setCommandeFromSync(data)
     .then(
       confirm => {
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_SUCCESS, confirm });
         dispatch(notificationActions.syncConfirm(commande.response));
+        dispatch(notificationActions.syncDispatch('commande',data, emitter));
         dispatch(getCommandesList());
       },
       error => {
@@ -647,13 +648,14 @@ function archiveCommandesFromSync(payload) {
 
     dispatch({ type: commandeActionTypes.ARCHIVE_FROM_SYNC_REQUEST });
 
-    const {cmd, clotureId} = payload.data;
+    const {cmd, clotureId, emitter} = payload.data;
 
     commandeServices.archiveCommands(cmd,clotureId)
     .then(
       confirm => {
         dispatch({ type: commandeActionTypes.ARCHIVE_FROM_SYNC_SUCCESS, ids:cmd });
         dispatch(notificationActions.syncConfirm(payload.response));
+        dispatch(notificationActions.syncDispatch('archivecommandes',{cmd, clotureId}, emitter));
         dispatch(getCommandesList());
       },
       error => {
@@ -671,14 +673,15 @@ function setTicketRestaurantFromSync(ticketrestaurant) {
   return dispatch => {
     dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_REQUEST }); 
   
-    const {data} = ticketrestaurant;
+    const {data, emitter} = ticketrestaurant;
 
     commandeServices.persistTicketsRestaurants(data)
     .then(
-      data => {
+      result => {
         dispatch({type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_SUCCESS});
         dispatch( getAllTicketsRestaurant());
         dispatch(notificationActions.syncConfirm(ticketrestaurant.response));
+        dispatch(notificationActions.syncDispatch('ticketrestaurant',data, emitter));
       },
       error => dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_FAILURE, error: error })
     );

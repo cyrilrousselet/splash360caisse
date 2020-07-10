@@ -2,7 +2,7 @@ const log = require('electron-log');
 const escpos = require('escpos');
 escpos.USB = require('escpos-usb');
 escpos.Network = require('escpos-network');
-escpos.Serial = require('escpos-serialport');
+escpos.SerialPort = require('escpos-serialport');
 const path = require('path');
 const fs = require('fs');
 
@@ -54,11 +54,24 @@ const actions = {
     // déclaration de l'imprimante
     let device;
     if (imprimante.connexion=='usb') {
-      device = new escpos.USB();
+      if (imprimante.param!=='') {
+        vp = imprimante.param.split(';');
+        vid = parseInt(vp[0], 16);
+        pid = parseInt(vp[1], 16);
+        device = new escpos.USB(vid,pid);
+      } else {
+        device = new escpos.USB();
+      }
+
+      // const alldevices = escpos.USB.findPrinter();
+      // alldevices.forEach(el=>{
+      //   log.info('usb', el);
+      // });
+
     } else if (imprimante.connexion=='network') {
       device = new escpos.Network(imprimante.param); 
     } else if (imprimante.connexion=='serial') {
-      device = new escpos.Serial(imprimante.param);
+      device = new escpos.SerialPort(imprimante.param);
     }
     const options = {encoding: imprimante.encoding, width:42};
     const printer = new escpos.Printer(device, options);
@@ -146,6 +159,7 @@ function _doPrintTicket(imprimante, template, contenu) {
     device = new escpos.Serial(imprimante.param);
   }
   const options = {encoding: imprimante.encoding, width:42};
+  // const options = {encoding: imprimante.encoding};
   const printer = new escpos.Printer(device, options);
   printerOpen = true;
 
@@ -184,6 +198,8 @@ function _doPrintTicket(imprimante, template, contenu) {
 
   } else {
 
+    log.info('launchPrint sans logo');
+
     // on ouvre la connexion à l'imprimante
     // et on lance l'impression des sections du tickets
     device.open(function() {
@@ -215,6 +231,8 @@ function _launchPrint(template, printer, contenu) {
       printerOpen = false;
     });
   }
+
+  
 
   template.forEach(async (section,i,arr) => {
 
@@ -285,20 +303,25 @@ function _printInfo(printer, data, strings) {
     .font('A')
     .align('CT')
     .style('B')
-    .size(1,2)
+    // .size(1,2)
+    .size(0,1)
     .text(data.nomticket)
-    .size(1,1)
+    // .size(1,1)
+    .size(0,0)
     .drawLine()
     .style('B')
-    .size(2,2)
+    // .size(2,2)
+    .size(1,1)
     .text(`#${data.commande.numero}`)
-    .size(1,1);
+    // .size(1,1);
+    .size(0,0);
 
   if (data.commande.client!==null) {
 
     printer
       .font('A')
-      .size(1,1)
+      // .size(1,1)
+      .size(0,0)
       .feed(1)
       .style('NORMAL')
       .tableCustom([
@@ -312,11 +335,14 @@ function _printInfo(printer, data, strings) {
     .style('NORMAL')
     .text(`${strings.numero}${data.commande.id}`)
     .text(`${strings.creation}${data.info.date} à ${data.info.heure}`)
-    .size(2,2)
+    // .size(2,2)
+    .size(1,1)
     .text(`*** ${strings.mode[data.commande.mode]} ***`)
-    .size(1,2)
+    // .size(1,2)
+    .size(0,1)
     .drawLine()
-    .size(1,1);
+    // .size(1,1);
+    .size(0,0);
 }
 
 
@@ -324,7 +350,8 @@ function _printInfo(printer, data, strings) {
 function _printDetail(printer, data, strings) {
   printer
     .align('CT')
-    .size(1,1)
+    // .size(1,1)
+    .size(0,0)
     .style('B')
     .tableCustom([
       {text:'', cols:3},
@@ -400,7 +427,8 @@ function _printDetail(printer, data, strings) {
   printer
     .drawLine()
     .align('CT')
-    .size(1,2)
+    // .size(1,2)
+    .size(0,1)
     .text(`${strings.caption.num_articles}${numarticles}`);
 
 }
@@ -409,12 +437,14 @@ function _printDetail(printer, data, strings) {
 function _printRecap(printer, recap, strings) {
 
   printer
-    .size(1,1)
+    // .size(1,1)
+    .size(0,0)
     .drawLine()
     ;
   recap.forEach(ticket => {
     printer
-      .size(1,2)
+      // .size(1,2)
+      .size(0,1)
       .text(`- ${ticket.nom} : ${ticket.num} ${strings.caption.articles}`);
   });
 
@@ -425,7 +455,8 @@ function _printRecap(printer, recap, strings) {
 function _printEntreprise(printer, data, strings) {
     printer
       .font('A')
-      .size(1,1)
+      // .size(1,1)
+      .size(0,0)
       .feed(1)
       .align('CT')
     ;
@@ -445,26 +476,31 @@ function _printEntreprise(printer, data, strings) {
 function _printAvoir(printer, data, strings) {
 
   printer
-    .size(1,1)
+    // .size(1,1)
+    .size(0,0)
     .drawLine()
     .font('A')
     .align('CT')
     .style('B')
-    .size(1,2)
+    // .size(1,2)
+    .size(0,1)
     .text(strings.nom)
-    .size(1,1)
+    // .size(1,1)
+    .size(0,0)
     .drawLine()
   ;
 
   printer
     .style('NORMAL')
-    .size(1,2)
+    // .size(1,2)
+    .size(0,1)
     .tableCustom([
       {text: strings.montant, cols:25, align:'LEFT'},
       {text:'', cols:2},
       {text: '  '+data.valeur, cols:15, align:'RIGHT'}
     ])
-    .size(1,1)
+    // .size(1,1)
+    .size(0,0)
     .tableCustom([
       {text: strings.validite, cols:15, align:'LEFT'},
       {text:'', cols:2},
@@ -502,11 +538,12 @@ async function _printQRCode(printer, code) {
   const qrimg = await QRCode.toDataURL(code, {width:300});
   const pixels = await getPixelsAsync(qrimg);
   const image = new escpos.Image(pixels);
-  log.info(image);
+//  log.info(image);
   const printQRimage = await _printImage(printer, image);
 
   printer
-    .size(1,1)
+    // .size(1,1)
+    .size(0,0)
     .font('A')
     .align('CT')
     .text(code)
@@ -525,7 +562,7 @@ async function _printLogo(printer, imageUrl) {
 
   const pixels = await getPixelsAsync(getLogoImg(imageUrl));
   const image = new escpos.Image(pixels);
-  log.info(image);
+//  log.info(image);
   const printImage = await _printImage(printer, image);
 
 }
@@ -537,10 +574,12 @@ function _printCommande(printer, data, strings) {
     .align('CT')
     .drawLine()
     .style('B')
-    .size(2,2)
+    // .size(2,2)
+    .size(1,1)
     .text(`#${data.numero}`)
     .font('A')
-    .size(1,1)
+    // .size(1,1)
+    .size(0,0)
     .style('NORMAL')
     .text(data.id)
     .text(data.date)
@@ -550,10 +589,12 @@ function _printCommande(printer, data, strings) {
     .align('CT')
     .feed(1)
     .style('B')
-    .size(2,2)
+    // .size(2,2)
+    .size(1,1)
     .text(`*** ${strings.mode[data.mode]} ***`)
     .font('A')
-    .size(1,1)
+    // .size(1,1)
+    .size(0,0)
     .style('NORMAL')
     .drawLine()
     ;
@@ -568,7 +609,8 @@ function _printCommande(printer, data, strings) {
       {text:'', cols:3}
     ]);
     printer.font('A')
-          .size(1,1)
+          // .size(1,1)
+          .size(0,0)
           .style('NORMAL')
           .drawLine();
   }
@@ -576,7 +618,8 @@ function _printCommande(printer, data, strings) {
   if (data.client!==null) {
 
     printer.font('A')
-          .size(1,1)
+          // .size(1,1)
+          .size(0,0)
           .style('NORMAL')
           .tableCustom([
             {text: `${strings.client.titre} ${data.client.prenom} ${data.client.nom}`, cols:42, align:'LEFT'}
@@ -682,11 +725,13 @@ function _printCommande(printer, data, strings) {
   printer
     .drawLine()
     .align('CT')
-    .size(1,1)
+    // .size(1,1)
+    .size(0,0)
     .tableCustom([
       {text: `${strings.detail.sous_total}   ${_subtotal.toFixed(2).toString().replace('.',',')}`, cols:42, align:'right'}
     ])
-    .size(1,1)
+    // .size(1,1)
+    .size(0,0)
     .drawLine();
 
     const ispc = String(data.modificateur).substr(-1,1)==='%';
@@ -699,7 +744,8 @@ function _printCommande(printer, data, strings) {
 
   printer
     .align('CT')
-    .size(1,1)
+    // .size(1,1)
+    .size(0,0)
     .tableCustom([
       {text: strings.modificateur.discount, cols:32, align:'LEFT'},
       {text: modval, cols:10, align:'RIGHT'}
@@ -711,11 +757,13 @@ function _printCommande(printer, data, strings) {
   printer
     .drawLine()
     .align('CT')
-    .size(1,2)
+    // .size(1,2)
+    .size(0,1)
     .tableCustom([
       {text: `${strings.detail.total_ttc}   ${data.total.total.replace('.',',')}`, cols:42, align:'RIGHT'}
     ])
-    .size(1,1)
+    // .size(1,1)
+    .size(0,0)
     .drawLine();
 
   printer
@@ -785,11 +833,13 @@ function _printCommande(printer, data, strings) {
     printer
       .align('CT')
       .drawLine()
-      .size(1,2)
+      // .size(1,2)
+      .size(0,1)
       .tableCustom([
         {text: `${strings.reglements.a_regler}   ${data.total.total.replace('.',',')}`, cols:42, align:'CENTER'}
       ])
-      .size(1,1);
+      // .size(1,1);
+      .size(0,0);
   }
 
   // rendu monnaie
@@ -820,7 +870,8 @@ function _printPeriodeX(printer, data, strings) {
 
   // EN-TÊTE:
     printer
-      .size(1,1)
+      // .size(1,1)
+      .size(0,0)
       .drawLine()
       .align('CT')
       .tableCustom([{text: strings.periode.titre, cols:42, align:'LEFT'}])
@@ -1041,7 +1092,8 @@ function _printPeriodeX(printer, data, strings) {
 
 function _printPrelevement(printer, data, strings) {
   printer
-      .size(1,1)
+      // .size(1,1)
+      .size(0,0)
       .drawLine()
       .align('CT')
       .tableCustom([
@@ -1055,7 +1107,8 @@ function _printPeriodeZ(printer, data, strings) {
 
   // EN-TÊTE:
     printer
-      .size(1,1)
+      // .size(1,1)
+      .size(0,0)
       .drawLine()
       .align('CT')
       .tableCustom([{text: strings.periode.titre, cols:42, align:'LEFT'}])
@@ -1277,23 +1330,29 @@ function _printPeriodeZ(printer, data, strings) {
 
 function _printUber(printer, data, strings) {
   printer
-    .size(1,1)
+    // .size(1,1)
+    .size(0,0)
     .drawLine()
     .align('CT')
     .style('B')
-    .size(2,2)
+    // .size(2,2)
+    .size(1,1)
     .text(strings.titre)
     .text('#'+data.display_id)
     .font('A')
-    .size(1,1)
+    // .size(1,1)
+    .size(0,0)
     .style('NORMAL')
     .feed(1)
     .text(`${strings.client} ${data.eater.first_name} ${data.eater.last_name}` )
-    .size(1,1)
+    // .size(1,1)
+    .size(0,0)
     .drawLine()
-    .size(2,2)
+    // .size(2,2)
+    .size(1,1)
     .text(strings.texte + data.heure)
-    .size(1,1);
+    // .size(1,1);
+    .size(0,0);
 }
 
 // message
