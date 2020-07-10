@@ -9,7 +9,7 @@ const http = require('http').Server(sync_server);
 const io = require('socket.io')(http);
 const ioclient = require('socket.io-client');
 
-const connectedSecondaries = [];
+const connectedSecondaries = {};
 
 let socket = null;
 
@@ -73,39 +73,38 @@ const server = {
     // ajout / mise à jour de commande depuis les caisses secondary
     api_server.post('/synchro', (req, res) => {
     
-      const {db, data} = req.body;
+      const {db, data, emitter} = req.body;
       log.info('POST synchro', req.body);
-      log.info('POST keys', Object.keys(req.body));
-      log.info('POST db', req.body['db']);
+      log.info('POST db', req.body['db'], `from ${emitter.nom}`);
 
       const response_id = responses.push(res) - 1;
       switch(db) {
         case 'commande':
-          webContents.send('setCommandeSync', {data: data, response: response_id});
+          webContents.send('setCommandeSync', {data, emitter, response: response_id});
           break;
         case 'archivecommandes':
-          webContents.send('archiveCommandesSync', {data: data, response: response_id});
+          webContents.send('archiveCommandesSync', {data, emitter, response: response_id});
           break;
         case 'client':
-          webContents.send('setClientSync', {data: data, response: response_id});
+          webContents.send('setClientSync', {data, emitter, response: response_id});
           break;
         case 'ticketrestaurant':
-          webContents.send('setTicketRestaurantSync', {data: data, response: response_id});
+          webContents.send('setTicketRestaurantSync', {data, emitter, response: response_id});
           break;
         case 'pointage':
-          webContents.send('setPointageSync', {data: data, response: response_id});
+          webContents.send('setPointageSync', {data, emitter, response: response_id});
           break;
         case 'avoir':
-          webContents.send('setAvoirSync', {data: data, response: response_id});
+          webContents.send('setAvoirSync', {data, emitter, response: response_id});
           break;
         case 'timeadjust':
-          webContents.send('setTimeadjustSync', {data: data, response: response_id});
+          webContents.send('setTimeadjustSync', {data, emitter, response: response_id});
           break;
         case 'cloture':
-          webContents.send('setClotureSync', {data: data, response: response_id});
+          webContents.send('setClotureSync', {data, emitter, response: response_id});
           break;
         case 'user':
-          webContents.send('setUserSync', {data: data, response: response_id});
+          webContents.send('setUserSync', {data, emitter, response: response_id});
           break;
         default:
           log.info(`POST synchro db "${db}" inconnue`);
@@ -155,8 +154,12 @@ const actions = {
 
     log.info('socket', socket);
     
-    socket.on('sync', data => {
-      log.info('on sync', data);
+    // écouteur de synchro de la part du primary
+    socket.on('sync', payload => {
+      log.info('on sync', payload);
+
+
+
     });
     res.send({msg:'connection sent to primary'})
   },
@@ -174,12 +177,22 @@ const actions = {
     sync_server.use(cors({origin: "*"}));
 
     io.on('connection', (sock) => {
-      connectedSecondaries.push(sock.id);
-      log.info(`${connectedSecondaries.length} socket(s) connected. New id : `, sock.id);
+      
+      log.info(`${Object.keys(connectedSecondaries).length} socket(s) connected. New id : `, sock.id);
+      // on signale l'initialisation de la communication descendante (entre le primary et le secondary)
       io.to(sock).emit('sync',{type:'syncinit'});
 
+      // écouteur d'événement 'register' :
+      // le secondary envoie son identité afin que le primary le stocke dans un objet
       sock.on('register', data => {
         log.info('secondary register', data);
+
+        Object.defineProperty(connectedSecondaries, sock.id, {
+          value: data,
+          writable: false,
+          enumerable: true,
+          configurable: true
+        });
       });
 
       sock.on('sync', (action)=>{
@@ -189,18 +202,19 @@ const actions = {
       })
     
 
+      // à la déconnexion du secondary, on le supprime de l'objet de référence
       sock.on('disconnect', (reason) => {
         if (reason === 'io server disconnect') {
           // the disconnection was initiated by the server, you need to reconnect manually
           sock.connect();
         } 
         // else the socket will automatically try to reconnect
-        connectedSecondaries.forEach((device, i) => {
+        Object.entries(connectedSecondaries).forEach(([sockid, device]) => {
           // console.log("device", device)
           try {
-            if (device == sock.id) {
+            if (sockid == sock.id) {
               // console.log("socket", socket.id)
-              connectedSecondaries.splice(i, 1)
+              delete connectedSecondaries[sockid];
             }
           } catch(error) {
             log.info('sync disconnect error', error.message);
@@ -219,24 +233,23 @@ const actions = {
 
   },
 
+  // émission de la synchro du primary en direction des secondaries
   syncDispatchToSecondaries: (req,res) => {
-    const { db, data } = req.payload;
+    const { db, data, emitter } = req.payload;
 
-    connectedSecondaries.forEach(sock => {
-      io.to(sock).emit('sync', {db:db, data:data});
+    // on envoie la synchro à tous les secondaries, 
+    // sauf celui qui est à l'origine de la synchro
+    Object.entries(connectedSecondaries).forEach(([sockid, secondary]) => {
+      if (emitter!==secondary.id) io.to(sockid).emit('sync', req.payload);
     });
 
-    log.info(`syncDispatchToSecondaries() [${db}] to ${connectedSecondaries.length} secondaries`);
-    res.send({msg:`sync to ${connectedSecondaries.length} secondaries`});
+    log.info(`syncDispatchToSecondaries() [${db}] to ${Object.keys(connectedSecondaries).length} secondaries`);
+    res.send({msg:`sync to ${Object.keys(connectedSecondaries).length} secondaries`});
   },
 
   syncDispatchToPrimary: (req,res) => {
 
-    const { db, data, url } = req.payload;
-
-    // connectedSecondaries.forEach(sock => {
-    //   io.to(sock).emit('sync', {db:db, data:data});
-    // });
+    const { db, data, emitter, url } = req.payload;
 
     log.info('syncDispatchToPrimary', req.payload);
 
@@ -249,7 +262,7 @@ const actions = {
     __request.setHeader('Content-Type', 'application/json');
 
     
-    __request.write(JSON.stringify({db:db, data:data}));
+    __request.write(JSON.stringify({db, data, emitter}));
 
     __request.on('response', (response) => {
 

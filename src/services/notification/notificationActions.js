@@ -69,17 +69,17 @@ function initSync() {
   }
 }
 
-function syncDispatch(db,data) {
+function syncDispatch(db,data,emitter=null) {
   return (dispatch, getState) => {
     const { options } = getState().parametresReducer.parametres;
     if (options.role==='primary') {
-      notificationServices.syncDispatch(db, data)
+      notificationServices.syncDispatch(db, data, emitter)
       .then(result => {
         logger.log('syncDispatch (primary)', result);
       })
     }
     else if (options.role==='secondary') {
-      notificationServices.syncPrimary(db, data, options.primary)
+      notificationServices.syncPrimary(db, data, options.caisse, options.primary)
       .then(result => {
         logger.log('syncDispatch (secondary)', result);
       })

@@ -92,11 +92,11 @@ function startSyncPrimary() {
   return emit('syncStartPrimary',{});
 }
 
-function syncDispatch(db, data) {
-  return emit('syncDispatchToSecondaries', {db, data});
+function syncDispatch(db, data, emitter) {
+  return emit('syncDispatchToSecondaries', {db, data, emitter});
 }
-function syncPrimary(db, data, url) {
-  return emit('syncDispatchToPrimary', {db, data, url});
+function syncPrimary(db, data, emitter, url) {
+  return emit('syncDispatchToPrimary', {db, data, emitter, url});
 }
 function syncConfirm(response) {
   return emit('syncConfirm', {response});
