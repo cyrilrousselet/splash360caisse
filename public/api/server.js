@@ -13,6 +13,8 @@ const connectedSecondaries = {};
 
 let socket = null;
 
+let webContents = null;
+
 const API_PORT = 3300;
 const SYNC_PORT = 3340;
 
@@ -28,9 +30,11 @@ const allowedOrigins = [
 let responses = [];
 
 const server = {
-  init: (webContents) => {
+  init: (wcont) => {
 
     log.info('server.init()');
+
+    webContents = wcont;
 
 
     // xpr.use(cors({
@@ -64,7 +68,7 @@ const server = {
       log.info('POST setcommande', req.body.data);
       
       const response_id = responses.push(res) - 1;
-      webContents.send('setCommande', {data: req.body.data, response: response_id});
+      wcont.send('setCommande', {data: req.body.data, response: response_id});
     });
     
 
@@ -79,7 +83,7 @@ const server = {
 
       const response_id = responses.push(res) - 1;
 
-      synchroTreatment(webContents, db, data, emitter);
+      synchroTreatment(db, data, emitter);
 
       // switch(db) {
       //   case 'commande':
@@ -124,40 +128,46 @@ const server = {
 }
 
 
-const synchroTreatment = (wcnt, db, data, emitter=null) => {
+const synchroTreatment = (db, data, emitter=null) => {
 
   log.info('synchroTreatment()', db, emitter);
 
-  switch(db) {
-    case 'commande':
-      wcnt.send('setCommandeSync', {data, emitter, response: response_id});
-      break;
-    case 'archivecommandes':
-      wcnt.send('archiveCommandesSync', {data, emitter, response: response_id});
-      break;
-    case 'client':
-      wcnt.send('setClientSync', {data, emitter, response: response_id});
-      break;
-    case 'ticketrestaurant':
-      wcnt.send('setTicketRestaurantSync', {data, emitter, response: response_id});
-      break;
-    case 'pointage':
-      wcnt.send('setPointageSync', {data, emitter, response: response_id});
-      break;
-    case 'avoir':
-      wcnt.send('setAvoirSync', {data, emitter, response: response_id});
-      break;
-    case 'timeadjust':
-      wcnt.send('setTimeadjustSync', {data, emitter, response: response_id});
-      break;
-    case 'cloture':
-      wcnt.send('setClotureSync', {data, emitter, response: response_id});
-      break;
-    case 'user':
-      wcnt.send('setUserSync', {data, emitter, response: response_id});
-      break;
-    default:
-      log.info(`POST synchro db "${db}" inconnue`);
+  if (webContents!==null) {
+
+    switch(db) {
+      case 'commande':
+        webContents.send('setCommandeSync', {data, emitter, response: response_id});
+        break;
+      case 'archivecommandes':
+        webContents.send('archiveCommandesSync', {data, emitter, response: response_id});
+        break;
+      case 'client':
+        webContents.send('setClientSync', {data, emitter, response: response_id});
+        break;
+      case 'ticketrestaurant':
+        webContents.send('setTicketRestaurantSync', {data, emitter, response: response_id});
+        break;
+      case 'pointage':
+        webContents.send('setPointageSync', {data, emitter, response: response_id});
+        break;
+      case 'avoir':
+        webContents.send('setAvoirSync', {data, emitter, response: response_id});
+        break;
+      case 'timeadjust':
+        webContents.send('setTimeadjustSync', {data, emitter, response: response_id});
+        break;
+      case 'cloture':
+        webContents.send('setClotureSync', {data, emitter, response: response_id});
+        break;
+      case 'user':
+        webContents.send('setUserSync', {data, emitter, response: response_id});
+        break;
+      default:
+        log.error(`POST synchro db "${db}" inconnue`);
+    }
+  }
+  else {
+    log.error('webContents null (server non initialisé)');
   }
 
 }
