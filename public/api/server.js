@@ -79,7 +79,7 @@ const server = {
 
       const response_id = responses.push(res) - 1;
 
-      synchroTreatment(db, data, emitter);
+      synchroTreatment(webContents, db, data, emitter);
 
       // switch(db) {
       //   case 'commande':
@@ -124,37 +124,37 @@ const server = {
 }
 
 
-const synchroTreatment = (db, data, emitter=null) => {
+const synchroTreatment = (wcnt, db, data, emitter=null) => {
 
   log.info('synchroTreatment()', db, emitter);
 
   switch(db) {
     case 'commande':
-      webContents.send('setCommandeSync', {data, emitter, response: response_id});
+      wcnt.send('setCommandeSync', {data, emitter, response: response_id});
       break;
     case 'archivecommandes':
-      webContents.send('archiveCommandesSync', {data, emitter, response: response_id});
+      wcnt.send('archiveCommandesSync', {data, emitter, response: response_id});
       break;
     case 'client':
-      webContents.send('setClientSync', {data, emitter, response: response_id});
+      wcnt.send('setClientSync', {data, emitter, response: response_id});
       break;
     case 'ticketrestaurant':
-      webContents.send('setTicketRestaurantSync', {data, emitter, response: response_id});
+      wcnt.send('setTicketRestaurantSync', {data, emitter, response: response_id});
       break;
     case 'pointage':
-      webContents.send('setPointageSync', {data, emitter, response: response_id});
+      wcnt.send('setPointageSync', {data, emitter, response: response_id});
       break;
     case 'avoir':
-      webContents.send('setAvoirSync', {data, emitter, response: response_id});
+      wcnt.send('setAvoirSync', {data, emitter, response: response_id});
       break;
     case 'timeadjust':
-      webContents.send('setTimeadjustSync', {data, emitter, response: response_id});
+      wcnt.send('setTimeadjustSync', {data, emitter, response: response_id});
       break;
     case 'cloture':
-      webContents.send('setClotureSync', {data, emitter, response: response_id});
+      wcnt.send('setClotureSync', {data, emitter, response: response_id});
       break;
     case 'user':
-      webContents.send('setUserSync', {data, emitter, response: response_id});
+      wcnt.send('setUserSync', {data, emitter, response: response_id});
       break;
     default:
       log.info(`POST synchro db "${db}" inconnue`);
