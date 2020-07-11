@@ -163,7 +163,7 @@ const actions = {
     const { url } = req.payload;
 
     let __confirmation = [];
-    
+
     log.info('askNumero', req.payload);
 
     const __request = net.request({
@@ -188,7 +188,8 @@ const actions = {
       });
       response.on('end', () => {
         log.info('askNumero: end');
-        res.send({numero: JSON.parse(__confirmation.join(''))});
+        const result = JSON.parse(__confirmation.join(''));
+        res.send({numero: result.numero});
       });
     });
 

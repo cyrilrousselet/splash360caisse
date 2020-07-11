@@ -111,7 +111,7 @@ function askNumero(url) {
 }
 
 function sendNumero(numero, response) {
-  return emit('sendNumeroCommande', {numero, response});
+  return emit('sendNumeroCommande', {numero, ...response});
 }
 
 async function denyOrder(provider, order) {
