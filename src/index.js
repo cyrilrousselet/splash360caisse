@@ -25,6 +25,7 @@ import registerServiceWorker from './registerServiceWorker';
 import { clientsActions } from './services/clients/clientsActions';
 import Logger from './helpers/Logger';
 import { marketingActions } from './services/marketing/marketingActions';
+import { userActions } from './services/user/userActions';
 
 const logger = new Logger();
 
@@ -73,7 +74,7 @@ ipcRenderer.on('archiveCommandesSync', (event, commandes) => {
 
 ipcRenderer.on('setClientSync', (event, client) => {
   logger.log('renderer: setClientSync', client);
- // clientsActions.setClientFromSync(client)(store.dispatch, store.getState);
+  clientsActions.setClientFromSync(client)(store.dispatch, store.getState);
 });
 
 ipcRenderer.on('setAvoirSync', (event, avoir) => {
@@ -103,7 +104,7 @@ ipcRenderer.on('setClotureSync', (event, cloture) => {
 
 ipcRenderer.on('setUserSync', (event, user) => {
   logger.log('renderer: setUserSync', user);
- // commandeActions.setTicketRestaurantFromSync(ticketrestaurant)(store.dispatch, store.getState);
+  userActions.setUserFromSync(user)(store.dispatch, store.getState);
 });
 
 // log.transports.file.level = 'info';
