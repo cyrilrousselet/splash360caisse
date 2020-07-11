@@ -61,16 +61,15 @@ function getNumero() {
     
 
     const {options} = getState().parametresReducer.parametres;
-    if (options.role==='primary') {
+    if (options.role==='secondary') {
+      dispatch(notificationActions.getNewNumero());
+    } else {
       
       const numero = getState().commandeReducer.numero || commandeServices.getNewNumero( getState().parametresReducer.parametres, numero);
       logger.log('getNumero()', numero);
       
       dispatch({type: commandeActionTypes.GET_NUMERO, numero});
       dispatch(setNewNumero());
-    } 
-    else if (options.role==='secondary') {
-      dispatch(notificationActions.getNewNumero());
     }
 
   }
