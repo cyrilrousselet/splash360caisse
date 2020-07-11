@@ -180,16 +180,15 @@ function _delete(id) {
 /** 
  * ajout / modif de user depuis la synchro
  */
-function setUserFromSync(user) {
+function setUserFromSync(payload) {
   return dispatch => {
 
-    const {data, emitter, response} = user;
+    const {data, emitter, response} = payload;
 
     userServices.update(data)
     .then(
-      result => {
+      user => {
 
-        const { user, confirm } = result;
         dispatch({ type: userActionTypes.SET_FROM_API, user });
 
         // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
@@ -198,7 +197,7 @@ function setUserFromSync(user) {
         // donc inutile de confirmer le traitement de la synchro
         if (emitter!==null && response!==null) {
           dispatch(notificationActions.syncConfirm(response));
-          dispatch(notificationActions.syncDispatch('user', user, emitter));
+          dispatch(notificationActions.syncDispatch('user', data, emitter));
         }
         dispatch(getAll());
       }
