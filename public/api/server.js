@@ -26,6 +26,7 @@ const SYNCHRO_TREATMENT = {
   'ticketrestaurant': 'setTicketRestaurantSync',
   'pointage': 'setPointageSync',
   'avoir': 'setAvoirSync',
+  'deleteavoir': 'deleteAvoirSync',
   'timeadjust': 'setTimeadjustSync',
   'cloture': 'setClotureSync',
   'user': 'setUserSync'

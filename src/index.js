@@ -79,7 +79,12 @@ ipcRenderer.on('setClientSync', (event, client) => {
 
 ipcRenderer.on('setAvoirSync', (event, avoir) => {
   logger.log('renderer: setAvoirSync', avoir);
- // marketingActions.setAvoirFromSync(avoir)(store.dispatch, store.getState);
+  marketingActions.setAvoirFromSync(avoir)(store.dispatch, store.getState);
+});
+
+ipcRenderer.on('deleteAvoirSync', (event, avoir) => {
+  logger.log('renderer: deleteAvoirSync', avoir);
+  marketingActions.deleteAvoirFromSync(avoir)(store.dispatch, store.getState);
 });
 
 ipcRenderer.on('setTicketRestaurantSync', (event, ticketrestaurant) => {
