@@ -207,7 +207,7 @@ function getNewNumero() {
     notificationServices.askNumero(options.primary)
     .then(conf => {
       console.log('NAct.getNewNumero()', conf.numero);
-      dispatch({type: commandeActionTypes.GET_NUMERO, conf.numero});
+      dispatch({type: commandeActionTypes.GET_NUMERO, numero: conf.numero});
       dispatch(commandeActions.setNewNumero(conf.numero.value));
     })
 
