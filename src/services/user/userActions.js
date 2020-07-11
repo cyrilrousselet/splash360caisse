@@ -112,9 +112,11 @@ function updateUser(payload) {
     
      userServices.update(user)
       .then(
-        data => {
-          const { user, confirm } = data;
-          dispatch({ type: userActionTypes.UPDATE_SUCCESS, ...data });
+        // data => {
+        //   const { user, confirm } = data;
+        //   dispatch({ type: userActionTypes.UPDATE_SUCCESS, ...data });
+        user => {
+          dispatch({ type: userActionTypes.UPDATE_SUCCESS, user });
           dispatch(notificationActions.syncDispatch('user', user));
           dispatch(getAll());
         },
@@ -135,9 +137,11 @@ function createUser(payload) {
 
      userServices.update(newuser)
       .then(
-        data => {
-          const { user, confirm } = data;
-          dispatch({ type: userActionTypes.CREATE_SUCCESS, user: {...user, user_id:confirm.user_id } });
+        // data => {
+        //   const { user, confirm } = data;
+        //   dispatch({ type: userActionTypes.CREATE_SUCCESS, user: {...user, user_id:confirm.user_id } });
+        user => {
+          dispatch({ type: userActionTypes.CREATE_SUCCESS, user });
           dispatch(notificationActions.syncDispatch('user', user));
           dispatch(getAll());
         },
