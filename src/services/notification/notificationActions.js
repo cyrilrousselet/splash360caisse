@@ -201,7 +201,7 @@ function sendNumero(payload) {
 }
 
 function getNewNumero() {
-  return dispatch => {
+  return (dispatch, getState) => {
 
     const { options } = getState().parametresReducer.parametres;
     notificationServices.askNumero(options.primary)
