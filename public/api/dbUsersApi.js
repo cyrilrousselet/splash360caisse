@@ -114,7 +114,7 @@ async function _insertUser(payload) {
 
   log.info('_insertUser()')
 
-  const user_id = 'usr'+uniqid();
+  const user_id = payload.user_id || 'usr'+uniqid();
   const __now = new Date().getTime();
   let __upd = {...payload, user_id: user_id, createdAt: __now, updatedAt: __now};
 
