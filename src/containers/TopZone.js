@@ -26,7 +26,7 @@ const userLogout = () => {
 
 const mapStateToProps = (state) => {
   return {
-    cashname: 'Caisse n°1',
+    cashname: state.parametresReducer.parametres.options.caisse.nom,
     username: state.authentication.user.nom,
     userid: state.authentication.user.id,
     homename: strings.dashboard.nom

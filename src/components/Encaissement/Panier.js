@@ -361,8 +361,8 @@ class Panier extends React.Component {
   search_tmo = -1;
 
   componentDidMount() {
-    const { getCommande, getParametres, getListeCommandes, getClientsList } = this.props;
-    getCommande();
+    const { getCommande, getParametres, getListeCommandes, getClientsList, commande } = this.props;
+    if (!commande.hasOwnProperty('ticketId')) getCommande();
     getListeCommandes();
     getParametres();    
     getClientsList();
@@ -871,7 +871,7 @@ class Panier extends React.Component {
     }
 
     const openReglementHandler = () => {
-      this.props.setNewNumero();
+     // this.props.getNumero();
       this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1});
       openReglement();
     }

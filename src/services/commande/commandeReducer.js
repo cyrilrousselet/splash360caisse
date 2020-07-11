@@ -300,10 +300,15 @@ export function commandeReducer(state = initialState, action) {
           commande: action.commande
         };
     
+    case commandeActionTypes.GET_NUMERO:
+        return {
+          ...state,
+          commande: {...commande, numero: action.numero},
+        }
+    
     case commandeActionTypes.SET_NEW_NUMERO:
         return {
           ...state,
-          commande: {...commande, numero: action.newnumero},
           numero: action.newnumero
         }
 

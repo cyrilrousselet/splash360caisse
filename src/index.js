@@ -25,6 +25,8 @@ import registerServiceWorker from './registerServiceWorker';
 import { clientsActions } from './services/clients/clientsActions';
 import Logger from './helpers/Logger';
 import { marketingActions } from './services/marketing/marketingActions';
+import { userActions } from './services/user/userActions';
+import { employesActions } from './services/employes/employesActions';
 
 const logger = new Logger();
 
@@ -52,8 +54,11 @@ ipcRenderer.on('getNotification', (event, data) => {
 
 });
 
-
-
+// listener sur la demande de numero de commande (via '/public/server.js')
+ipcRenderer.on('getNumero', (event, data) => {
+  logger.log('getNumero()', event, data);
+  commandeActions.getNumeroAPI(data)(store.dispatch, store.getState);
+})
 
 
 // listener sur la réception de commande via '/public/server.js'
@@ -70,12 +75,17 @@ ipcRenderer.on('archiveCommandesSync', (event, commandes) => {
 
 ipcRenderer.on('setClientSync', (event, client) => {
   logger.log('renderer: setClientSync', client);
- // clientsActions.setClientFromSync(client)(store.dispatch, store.getState);
+  clientsActions.setClientFromSync(client)(store.dispatch, store.getState);
 });
 
 ipcRenderer.on('setAvoirSync', (event, avoir) => {
   logger.log('renderer: setAvoirSync', avoir);
- // marketingActions.setAvoirFromSync(avoir)(store.dispatch, store.getState);
+  marketingActions.setAvoirFromSync(avoir)(store.dispatch, store.getState);
+});
+
+ipcRenderer.on('deleteAvoirSync', (event, avoir) => {
+  logger.log('renderer: deleteAvoirSync', avoir);
+  marketingActions.deleteAvoirFromSync(avoir)(store.dispatch, store.getState);
 });
 
 ipcRenderer.on('setTicketRestaurantSync', (event, ticketrestaurant) => {
@@ -85,7 +95,7 @@ ipcRenderer.on('setTicketRestaurantSync', (event, ticketrestaurant) => {
 
 ipcRenderer.on('setPointageSync', (event, pointage) => {
   logger.log('renderer: setPointageSync', pointage);
- // commandeActions.setTicketRestaurantFromSync(ticketrestaurant)(store.dispatch, store.getState);
+  employesActions.setPointageFromSync(pointage)(store.dispatch, store.getState);
 });
 
 ipcRenderer.on('setTimeadjustSync', (event, timeadjust) => {
@@ -100,7 +110,7 @@ ipcRenderer.on('setClotureSync', (event, cloture) => {
 
 ipcRenderer.on('setUserSync', (event, user) => {
   logger.log('renderer: setUserSync', user);
- // commandeActions.setTicketRestaurantFromSync(ticketrestaurant)(store.dispatch, store.getState);
+  userActions.setUserFromSync(user)(store.dispatch, store.getState);
 });
 
 // log.transports.file.level = 'info';

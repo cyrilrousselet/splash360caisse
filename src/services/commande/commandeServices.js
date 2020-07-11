@@ -114,7 +114,7 @@ function getNewNumero(parametres, numero) {
     // si la dernière numérotation date d'un service précédent,
     // on repart de la valeur du début
     if (isBefore(parseISO(numero.updated), lastperiode_end)) {
-      newvalue = Number(numerotation_start-1);
+      newvalue = Number(numerotation_start);
     } 
     // sinon on continue la numérotation
     else {
@@ -124,13 +124,13 @@ function getNewNumero(parametres, numero) {
       }
       // sinon on repart de la valeur du début
       else {
-        newvalue = Number(numerotation_start-1);
+        newvalue = Number(numerotation_start);
       }
     }
   }
   // sinon on crée un numéro en partant de la valeur du début
   else {
-    newvalue = Number(numerotation_start-1);
+    newvalue = Number(numerotation_start);
   }
 
   const newnumero = {value: newvalue, hex: numerotation_hex, updated: new Date};
@@ -517,11 +517,23 @@ function _setSupplements(rule, ingredients) {
       ingredients.forEach(ing => {
         ing.supplement = 0;
         for(let j=0;j<ing.qte;j++) {
+          ing.supplement += Number(ing.prix)
           if (__stack>=__supvaleurs.min-1) {
-            ing.supplement += Number(ing.prix)>0 ? Number(ing.prix) : Number(rule.supplement);
+            // ing.supplement += Number(ing.prix)>0 ? Number(ing.prix) : Number(rule.supplement);
+            ing.supplement += Number(rule.supplement);
           }
           __stack++;
         }
+        __ingredients.push(ing);
+      });
+
+    } else {
+
+      let __stack = 0;
+      // on compte uniquement le prix des ingrédients
+      ingredients.forEach(ing => {
+        ing.supplement = 0;
+        ing.supplement += Number(ing.prix) * ing.qte;
         __ingredients.push(ing);
       });
 
@@ -530,8 +542,7 @@ function _setSupplements(rule, ingredients) {
   } else {
     ingredients.forEach(ing => {
       ing.supplement = 0;
-      ing.supplement += Number(ing.prix)>0 ? (Number(ing.prix) * ing.qte) : (Number(rule.supplement) * ing.qte);
-
+      ing.supplement += (Number(ing.prix) + Number(rule.supplement)) * ing.qte;
       __ingredients.push(ing);
     })
   }
@@ -681,18 +692,24 @@ function _getSupplements(rule, ingredients) {
 
       // compte les suppléments à partir du minimum des critères
       ingredients.forEach(ing => {
-
         for(let j=0;j<ing.qte;j++) __ingstack.push(ing);
       });
+
       __ingstack.forEach((ing,i) => {
-        if (i>=__supvaleurs.min-1) __supplement += ing.prix>0 ? Number(ing.prix) : Number(rule.supplement);
+        // if (i>=__supvaleurs.min-1) __supplement += ing.prix>0 ? Number(ing.prix) : Number(rule.supplement);
+        __supplement += Number(ing.prix);
+        if (i>=__supvaleurs.min-1) __supplement += Number(rule.supplement);
       });
 
+    } else {
+      ingredients.forEach(ing => {
+        __supplement += Number(ing.prix);
+      });
     }
 
   } else {
     ingredients.forEach(ing => {
-      __supplement += ing.prix>0 ? (ing.prix * ing.qte) : (rule.supplement * ing.qte);
+      __supplement += (Number(ing.prix) + Number(rule.supplement)) * ing.qte;
     })
   }
 
@@ -947,7 +964,7 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
   commande.centre_revenu = 'uber';
   commande.status = 'confirmed'; // "standby" ou "confirmed"
   commande.mode = 'livraison'; // "emporter", "surplace" ou "livraison"
-  commande.numero = getNewNumero(parametres, numero);
+  commande.numero = numero; //getNewNumero(parametres, numero);
 
   // on met tous les produits dans le même array
   let produits = [];
@@ -1147,9 +1164,9 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
 }
 
 
-function sendTicketId(ticketId, response) {
-  logger.log('commandeServices.sendTicketId('+ticketId+')')
-  return emit('sendTicketId', {ticketId, response});
+function sendTicketId(ticketId, numero, response) {
+  logger.log(`commandeServices.sendTicketId(${ticketId}, ${numero})`);
+  return emit('sendTicketId', {ticketId, numero, response});
 }
 
 

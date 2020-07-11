@@ -27,9 +27,9 @@ const actions = {
       log.info("dbPointagesPersist() in API");
 
       (await db.pointages)._.mixin(lodashId);
-      const confirm = await _persistPointage(payload.pointage);
+      const __pnt = await _persistPointage(payload.pointage);
 
-      res.send(confirm);
+      res.send(__pnt);
   },
   dbShiftsGetAll: async (req,res) => {
     const {payload} = req;
@@ -139,7 +139,7 @@ async function _persistPointage(payload) {
                                     .write();
   }
 
-  return _pnt != null;
+  return _pnt;
 }
 
 function _parsePointage(_rawdata) {

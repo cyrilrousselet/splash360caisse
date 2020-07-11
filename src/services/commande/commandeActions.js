@@ -6,6 +6,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import Logger from '../../helpers/Logger';
 import { notificationActions } from '../notification/notificationActions';
+import { notificationServices } from '../notification/notificationServices';
 
 const logger = new Logger();
 
@@ -55,13 +56,45 @@ function persistTicketsRestaurants(liste) {
 }
 
 
+function getNumero() {
+  return (dispatch, getState) => {
+    
+
+    const {options} = getState().parametresReducer.parametres;
+    if (options.role==='secondary') {
+      dispatch(notificationActions.getNewNumero());
+    } else {
+      
+      const numero = getState().commandeReducer.numero || commandeServices.getNewNumero( getState().parametresReducer.parametres, numero);
+      logger.log('getNumero()', numero);
+      
+      dispatch({type: commandeActionTypes.GET_NUMERO, numero});
+      dispatch(setNewNumero());
+    }
+
+  }
+}
+
+
+function resetNumero(val) {
+  return (dispatch, getState) => {
+    const {commande} = getState().commandeReducer;
+    const { numerotation_start } = getState().parametresReducer.parametres.commandes;
+    dispatch(setNewNumero(numerotation_start));
+    if (commande.hasOwnProperty('ticketId')) {
+      dispatch(getNumero());
+    }
+  }
+}
+
+
 function setNewNumero(defaultValue=null) {
 
   return (dispatch, getState) => {
 
     logger.log('setNewNumero',defaultValue);
 
-    const numero = defaultValue!==null ? {value: defaultValue-1} : getState().commandeReducer.numero; 
+    const numero = defaultValue!==null ? {value: defaultValue-1, updated: new Date} : getState().commandeReducer.numero; 
 
     const newnumero = commandeServices.getNewNumero( getState().parametresReducer.parametres, numero);
     dispatch({ type: commandeActionTypes.SET_NEW_NUMERO, newnumero });
@@ -77,7 +110,8 @@ function setNewNumero(defaultValue=null) {
 function getCommande(commandeId=null) {
   return (dispatch, getState) => {
     dispatch({ type: commandeActionTypes.GET_COMMANDE_REQUEST, id:commandeId });
-
+console.trace('getCommande()');
+    logger.log('CmdA.getCommande()', commandeId);
     // sans id de commande, on crée une nouvelle commande
     if (null===commandeId) {
       logger.log('on demande une nouvelle commande');
@@ -86,6 +120,7 @@ function getCommande(commandeId=null) {
       const { caisse } = state.parametresReducer.parametres.options;
       const commande = commandeServices.getNewCommande({operator:user, caisse:caisse});
       dispatch({ type: commandeActionTypes.GET_COMMANDE_SUCCESS, commande });
+      dispatch(getNumero());
     }
     // avec id de commande, on va chercher la commande en base
     else {
@@ -113,11 +148,15 @@ function validateCommande(payload) {
     const { caisse } = getState().parametresReducer.parametres.options;
     const { user } = getState().authentication;
 
+    // if (payload.numero==null) { 
+      //   const numero = commandeServices.getNewNumero(getState().parametresReducer.parametres, getState().commandeReducer.numero);
+      //   payload.numero = numero;
+      //   dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
+      // }
     if (payload.numero==null) { 
-      const numero = commandeServices.getNewNumero(getState().parametresReducer.parametres, getState().commandeReducer.numero);
-      payload.numero = numero;
-      dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
+      payload.numero = getState().commandeReducer.numero;
     }
+    
 
     payload.operator_encaissement = {id: user.id, nom: user.nom};
     payload.caisse_encaissement = caisse;
@@ -125,9 +164,11 @@ function validateCommande(payload) {
     return commandeServices.saveCommande(payload, catalogueReducer)
     .then(
       confirm => {
-        const commande = commandeServices.getNewCommande({operator:{id: user.id, nom: user.nom}, caisse: caisse});
-        dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
+      //  const commande = commandeServices.getNewCommande({operator:{id: user.id, nom: user.nom}, caisse: caisse});
+        dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande:{}});
         dispatch(notificationActions.syncDispatch('commande',confirm));
+        // dispatch(setNewNumero());
+        dispatch(getCommande());
       },
       error => {
         logger.log(error);
@@ -549,6 +590,7 @@ function setCommandeFromOrder(provider, payload) {
       }
     };
 
+    dispatch(getNumero());
 
     dispatch(peripheralActions.printCommandeTicket('all_uber', cmd));
 
@@ -592,7 +634,9 @@ function setCommandeFromAPI(payload) {
     logger.log(data);
     const commande = commandeServices.setCommandeFromAPI(data, state.catalogueReducer, state.parametresReducer.parametres, state.commandeReducer.numero);
 
-    commandeServices.sendTicketId(commande.ticketId, payload.response);
+    commandeServices.sendTicketId(commande.ticketId, commande.numero, payload.response);
+
+    dispatch(getNumero());
 
     commandeServices.saveCommande(commande, state.catalogueReducer)
     .then(
@@ -613,20 +657,50 @@ function setCommandeFromAPI(payload) {
 }
 
 
+function getNumeroAPI(response) {
+
+  return (dispatch, getState) => {
+
+    logger.log('getNumeroAPI()');
+
+    const numero = getState().commandeReducer.numero;
+    const {commande} = getState().commandeReducer;
+
+    dispatch(notificationActions.sendNumero({numero, response}));
+
+    if (commande.hasOwnProperty('ticketId')) {
+      dispatch(getNumero());
+    } else {
+      dispatch(setNewNumero());
+    }
+
+
+
+  }
+}
+
+
 /** 
  * ajout / modif de commandes depuis la synchro
  */
 function setCommandeFromSync(commande) {
   return dispatch => {
 
-    const {data, emitter} = commande;
+    const {data, emitter, response} = commande;
 
     commandeServices.setCommandeFromSync(data)
     .then(
       confirm => {
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_SUCCESS, confirm });
-        dispatch(notificationActions.syncConfirm(commande.response));
-        dispatch(notificationActions.syncDispatch('commande',data, emitter));
+
+        // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
+        // donc inutile de lui renvoyer la synchro
+        // -> si 'response' est null, la synchro ne provient pas de l'API,
+        // donc inutile de confirmer le traitement de la synchro
+        if (emitter!==null && response!==null) {
+          dispatch(notificationActions.syncConfirm(response));
+          dispatch(notificationActions.syncDispatch('commande',data, emitter));
+        }
         dispatch(getCommandesList());
       },
       error => {
@@ -648,14 +722,21 @@ function archiveCommandesFromSync(payload) {
 
     dispatch({ type: commandeActionTypes.ARCHIVE_FROM_SYNC_REQUEST });
 
-    const {cmd, clotureId, emitter} = payload.data;
+    const {cmd, clotureId, emitter, response} = payload.data;
 
     commandeServices.archiveCommands(cmd,clotureId)
     .then(
       confirm => {
         dispatch({ type: commandeActionTypes.ARCHIVE_FROM_SYNC_SUCCESS, ids:cmd });
-        dispatch(notificationActions.syncConfirm(payload.response));
-        dispatch(notificationActions.syncDispatch('archivecommandes',{cmd, clotureId}, emitter));
+
+        // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
+        // donc inutile de lui renvoyer la synchro
+        // -> si 'response' est null, la synchro ne provient pas de l'API,
+        // donc inutile de confirmer le traitement de la synchro
+        if (emitter!==null && response!==null) {
+          dispatch(notificationActions.syncConfirm(response));
+          dispatch(notificationActions.syncDispatch('archivecommandes',{cmd, clotureId}, emitter));
+        }
         dispatch(getCommandesList());
       },
       error => {
@@ -673,15 +754,22 @@ function setTicketRestaurantFromSync(ticketrestaurant) {
   return dispatch => {
     dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_REQUEST }); 
   
-    const {data, emitter} = ticketrestaurant;
+    const {data, emitter, response} = ticketrestaurant;
 
     commandeServices.persistTicketsRestaurants(data)
     .then(
       result => {
         dispatch({type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_SUCCESS});
         dispatch( getAllTicketsRestaurant());
-        dispatch(notificationActions.syncConfirm(ticketrestaurant.response));
-        dispatch(notificationActions.syncDispatch('ticketrestaurant',data, emitter));
+
+        // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
+        // donc inutile de lui renvoyer la synchro
+        // -> si 'response' est null, la synchro ne provient pas de l'API,
+        // donc inutile de confirmer le traitement de la synchro
+        if (emitter!==null && response!==null) {
+          dispatch(notificationActions.syncConfirm(response));
+          dispatch(notificationActions.syncDispatch('ticketrestaurant',data, emitter));
+        }
       },
       error => dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_FAILURE, error: error })
     );
@@ -691,6 +779,7 @@ function setTicketRestaurantFromSync(ticketrestaurant) {
 export const commandeActions = {
   getCommandesList,
   setNewNumero,
+  resetNumero,
   getCommande,
   validateCommande,
   validateCommandeAndUpdateList,
@@ -724,5 +813,7 @@ export const commandeActions = {
   persistTicketsRestaurants,
   setCommandeFromSync,
   archiveCommandesFromSync,
-  setTicketRestaurantFromSync
+  setTicketRestaurantFromSync,
+  getNumeroAPI,
+  getNumero
 };

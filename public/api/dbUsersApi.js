@@ -25,9 +25,9 @@ const actions = {
     const {payload} = req;
 
     (await db.users)._.mixin(lodashId);
-    const user = await _findUser((u => (u.identifiant==payload.identifiant && u.status!='disabled')));
+    const __usr = await _findUser((u => (u.identifiant==payload.identifiant && u.status!='disabled')));
     
-    res.send(user);
+    res.send(__usr);
   },
   dbAddUser: async (req,res) => {
     const {payload} = req;
@@ -44,9 +44,9 @@ const actions = {
     log.info("dbUpdateUser() in API");
 
     (await db.users)._.mixin(lodashId);
-    const confirm = await _persistUser(payload.user);
+    const __usr = await _persistUser(payload.user);
 
-    res.send({confirm: confirm, ...payload});
+    res.send(__usr);
   }
 }
 
@@ -98,14 +98,15 @@ async function _persistUser(payload) {
                                   .assign(__upd)
                                   .write();
   } else {
-    _insertUser(payload);
+    _user = _insertUser(payload);
     //  user_id = 'usr'+uniqid();
     // _user = await (await db.users).get('users')
     //                               .push({...payload, user_id: user_id})
     //                               .write();
   }
 
-  return {confirm:(_user != null), user_id:user_id};
+  //return {confirm:(_user != null), user_id:user_id};
+  return _user;
 }
 
 
@@ -113,7 +114,7 @@ async function _insertUser(payload) {
 
   log.info('_insertUser()')
 
-  const user_id = 'usr'+uniqid();
+  const user_id = payload.user_id || 'usr'+uniqid();
   const __now = new Date().getTime();
   let __upd = {...payload, user_id: user_id, createdAt: __now, updatedAt: __now};
 

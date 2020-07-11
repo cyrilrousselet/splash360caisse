@@ -1,6 +1,7 @@
 import { marketingActionTypes } from "./marketingActionTypes";
 import { marketingServices } from "./marketingServices";
 import { peripheralActions } from "../peripheral/peripheralActions";
+import { notificationActions } from "../notification/notificationActions";
 
 
 
@@ -34,6 +35,7 @@ function createAvoir(payload) {
       data => {
         dispatch({ type: marketingActionTypes.CREATE_AVOIR_SUCCESS, ...data });
         dispatch(peripheralActions.printAvoir(data));
+        dispatch(notificationActions.syncDispatch('avoir', data));
         dispatch(getAvoirsList());
       },
       error => dispatch({ type: marketingActionTypes.CREATE_AVOIR_FAILURE, error: error.toString() })
@@ -53,25 +55,11 @@ function updateAvoir(payload) {
     .then(
       data => {
         dispatch({ type: marketingActionTypes.UPDATE_AVOIR_SUCCESS, ...data });
+        dispatch(notificationActions.syncDispatch('avoir', data));
         dispatch(getAvoirsList());
       },
       error => dispatch({ type: marketingActionTypes.UPDATE_AVOIR_FAILURE, error: error.toString() })
     );
-  }
-}
-
-function setAvoirFromSync(payload) {
-  return (dispatch, getState) => {
-
-    dispatch({ type: marketingActionTypes.SET_AVOIR_FROM_SYNC });
-
-    const { avoirs } = getState().marketingReducer;
-    const avoir = avoirs.find(av => av.avoir_id = payload.avoir_id);
-    if (avoir) {
-      dispatch(updateAvoir(payload));
-    } else {
-      dispatch(createAvoir(payload));
-    }
   }
 }
 
@@ -83,6 +71,7 @@ function deleteAvoir(payload) {
     .then(
       data => {
         dispatch({ type: marketingActionTypes.DELETE_AVOIR_SUCCESS, ...data });
+        dispatch(notificationActions.syncDispatch('deleteavoir', payload));
         dispatch(getAvoirsList());
       },
       error => dispatch({ type: marketingActionTypes.DELETE_AVOIR_FAILURE, error: error.toString() })
@@ -123,13 +112,69 @@ function getReglesCatalogueList(params={}) {
   }
 }
 
+/** 
+ * ajout / modif d'avoir depuis la synchro
+ */
+function setAvoirFromSync(payload) {
+  return dispatch => {
+
+    const {data, emitter, response} = payload;
+
+    marketingServices.updateAvoir(data)
+    .then(
+      avoir => {
+
+        dispatch({ type: marketingActionTypes.SET_AVOIR_FROM_SYNC, ...avoir });
+
+        // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
+        // donc inutile de lui renvoyer la synchro
+        // -> si 'response' est null, la synchro ne provient pas de l'API,
+        // donc inutile de confirmer le traitement de la synchro
+        if (emitter!==null && response!==null) {
+          dispatch(notificationActions.syncConfirm(response));
+          dispatch(notificationActions.syncDispatch('avoir', data, emitter));
+        }
+        dispatch(getAvoirsList());
+      }
+    )
+  }
+}
+/** 
+ * suppression d'avoir depuis la synchro
+ */
+function deleteAvoirFromSync(payload) {
+  return dispatch => {
+
+    const {data, emitter, response} = payload;
+
+    marketingServices.deleteAvoir(data)
+    .then(
+      avoir => {
+
+        dispatch({ type: marketingActionTypes.DELETE_AVOIR_FROM_SYNC, ...avoir });
+
+        // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
+        // donc inutile de lui renvoyer la synchro
+        // -> si 'response' est null, la synchro ne provient pas de l'API,
+        // donc inutile de confirmer le traitement de la synchro
+        if (emitter!==null && response!==null) {
+          dispatch(notificationActions.syncConfirm(response));
+          dispatch(notificationActions.syncDispatch('deleteavoir', data, emitter));
+        }
+        dispatch(getAvoirsList());
+      }
+    )
+  }
+}
+
 
 export const marketingActions = {
   getAvoirsList,
   createAvoir,
   updateAvoir,
-  setAvoirFromSync,
   deleteAvoir,
   getReglesPanierList,
-  getReglesCatalogueList
+  getReglesCatalogueList,
+  setAvoirFromSync,
+  deleteAvoirFromSync
 };

@@ -8,15 +8,29 @@ const {net} = require('electron');
 const http = require('http').Server(sync_server);
 const io = require('socket.io')(http);
 const ioclient = require('socket.io-client');
+const { lowerFirst } = require('lodash');
 
 const connectedSecondaries = {};
 
 let socket = null;
 
+let webContents = null;
+
 const API_PORT = 3300;
 const SYNC_PORT = 3340;
 
-
+const SYNCHRO_TREATMENT = {
+  'commande': 'setCommandeSync',
+  'archivecommandes': 'archiveCommandesSync',
+  'client': 'setClientSync',
+  'ticketrestaurant': 'setTicketRestaurantSync',
+  'pointage': 'setPointageSync',
+  'avoir': 'setAvoirSync',
+  'deleteavoir': 'deleteAvoirSync',
+  'timeadjust': 'setTimeadjustSync',
+  'cloture': 'setClotureSync',
+  'user': 'setUserSync'
+}
 
 const allowedOrigins = [
   'http://127.0.0.1',
@@ -28,9 +42,11 @@ const allowedOrigins = [
 let responses = [];
 
 const server = {
-  init: (webContents) => {
+  init: (wcont) => {
 
     log.info('server.init()');
+
+    webContents = wcont;
 
 
     // xpr.use(cors({
@@ -64,13 +80,17 @@ const server = {
       log.info('POST setcommande', req.body.data);
       
       const response_id = responses.push(res) - 1;
-      webContents.send('setCommande', {data: req.body.data, response: response_id});
+      wcont.send('setCommande', {data: req.body.data, response: response_id});
+    });
+
+    api_server.post('/getnumero', (req,res) => {
+      log.info('POST getnumero');
+      const response_id = responses.push(res) - 1;
+      wcont.send('getNumero', {response: response_id});
     });
     
 
     // SYNCHRO secondary -> primary
-
-    // ajout / mise à jour de commande depuis les caisses secondary
     api_server.post('/synchro', (req, res) => {
     
       const {db, data, emitter} = req.body;
@@ -78,37 +98,9 @@ const server = {
       log.info('POST db', req.body['db'], `from ${emitter.nom}`);
 
       const response_id = responses.push(res) - 1;
-      switch(db) {
-        case 'commande':
-          webContents.send('setCommandeSync', {data, emitter, response: response_id});
-          break;
-        case 'archivecommandes':
-          webContents.send('archiveCommandesSync', {data, emitter, response: response_id});
-          break;
-        case 'client':
-          webContents.send('setClientSync', {data, emitter, response: response_id});
-          break;
-        case 'ticketrestaurant':
-          webContents.send('setTicketRestaurantSync', {data, emitter, response: response_id});
-          break;
-        case 'pointage':
-          webContents.send('setPointageSync', {data, emitter, response: response_id});
-          break;
-        case 'avoir':
-          webContents.send('setAvoirSync', {data, emitter, response: response_id});
-          break;
-        case 'timeadjust':
-          webContents.send('setTimeadjustSync', {data, emitter, response: response_id});
-          break;
-        case 'cloture':
-          webContents.send('setClotureSync', {data, emitter, response: response_id});
-          break;
-        case 'user':
-          webContents.send('setUserSync', {data, emitter, response: response_id});
-          break;
-        default:
-          log.info(`POST synchro db "${db}" inconnue`);
-      }
+
+      synchroTreatment(db, data, emitter, response_id);
+
     });
 
 
@@ -120,24 +112,100 @@ const server = {
   }
 }
 
+
+const synchroTreatment = (db, data, emitter=null, response=null) => {
+
+  log.info('synchroTreatment()', db, emitter);
+
+  if (webContents!==null) {
+
+    if (SYNCHRO_TREATMENT.hasOwnProperty(db)) {
+      webContents.send(SYNCHRO_TREATMENT[db], {data, emitter, response});
+    } else {
+      log.error('webContents null (server non initialisé)');
+    }
+  }
+  else {
+    log.error('webContents null (server non initialisé)');
+  }
+
+}
+
+
 const actions = {
+
+  // renvoie le ticketId et le numero de la commande synchronisée par une borne
   sendTicketId: (req, res) => {
 
-    
-    const { ticketId, response } = req.payload;
+    const { ticketId, numero, response } = req.payload;
    // log.info(response);
-    responses[response].json({status:'success', commandeid: ticketId});
+    responses[response].json({status:'success', commandeid: ticketId, numero: numero});
     
-    log.info('ticketID : '+ticketId);
+    log.info('ticketID : '+ticketId+' numero: '+numero);
 
     res.send({msg: 'ticketID sent'});
+  },
+
+  // renvoie le numero de commande demandé par une caisse 'secondary'
+  sendNumeroCommande: (req, res) => {
+
+    const { numero, response } = req.payload;
+
+    responses[response].json({status:'success', numero: numero});
+    
+    log.info('numero: ', numero);
+
+    res.send({msg: 'numero sent'});
+  },
+
+  // demande un numero de commande à la caisse 'primary'
+  askNumero: (req, res) => {
+
+    const { url } = req.payload;
+
+    let __confirmation = [];
+
+    log.info('askNumero', req.payload);
+
+    const __request = net.request({
+      url: url+':'+API_PORT+'/getnumero',
+      method: 'post'
+    });
+    // __request.setHeader('Authorization','Bearer '+access_token)
+    __request.setHeader('Access-Control-Allow-Origin', '*')
+    __request.setHeader('Content-Type', 'application/json');
+
+    
+    // __request.write(JSON.stringify({db, data, emitter}));
+    
+    __request.on('response', (response) => {
+      
+      log.info(`askNumero() to ${url}, status:`, response.statusCode);
+      //   log.info(`acceptUberOrder STATUS: ${response.statusCode}`);
+      //   log.info(`acceptUberOrder HEADERS: ${JSON.stringify(response.headers)}`);
+      response.on('data', (chunk) => {
+        __confirmation.push(chunk);
+        log.info(`askNumero BODY: ${chunk}`)
+      });
+      response.on('end', () => {
+        log.info('askNumero: end');
+        const result = JSON.parse(__confirmation.join(''));
+        res.send({numero: result.numero});
+      });
+    });
+
+    __request.end();
+
+
   },
 
   // confirme la bonne réception des synchro s/m
   syncConfirm: (req, res) => {
     const { confirm, response } = req.payload;
-    responses[response].json({status:('ok'===confirm)?'success':'error'});
-    res.send({msg: 'sync confirm sent'});
+    if (response!==null) {
+      responses[response].json({status:('ok'===confirm)?'success':'error'});
+      res.send({msg: 'sync confirm sent'});
+    }
   },
 
   // on lance la connexion au "primary" (si la caisse est "secondary")
@@ -158,7 +226,7 @@ const actions = {
     socket.on('sync', payload => {
       log.info('on sync', payload);
 
-
+      synchroTreatment(payload.db, payload.data);
 
     });
     res.send({msg:'connection sent to primary'})

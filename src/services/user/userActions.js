@@ -5,6 +5,7 @@ import history from './../../helpers/history';
 import paths from './../../constants/routes.json';
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
+import { notificationActions } from '../notification/notificationActions';
 let strings = new LocalizedStrings(data);
 
 function resetError() {
@@ -111,8 +112,12 @@ function updateUser(payload) {
     
      userServices.update(user)
       .then(
-        data => {
-          dispatch({ type: userActionTypes.UPDATE_SUCCESS, ...data });
+        // data => {
+        //   const { user, confirm } = data;
+        //   dispatch({ type: userActionTypes.UPDATE_SUCCESS, ...data });
+        user => {
+          dispatch({ type: userActionTypes.UPDATE_SUCCESS, user });
+          dispatch(notificationActions.syncDispatch('user', user));
           dispatch(getAll());
         },
         error => dispatch({ type: userActionTypes.UPDATE_FAILURE, payload: error.toString() })
@@ -132,9 +137,12 @@ function createUser(payload) {
 
      userServices.update(newuser)
       .then(
-        data => {
-          const { user, confirm } = data;
-          dispatch({ type: userActionTypes.CREATE_SUCCESS, user: {...user, user_id:confirm.user_id } });
+        // data => {
+        //   const { user, confirm } = data;
+        //   dispatch({ type: userActionTypes.CREATE_SUCCESS, user: {...user, user_id:confirm.user_id } });
+        user => {
+          dispatch({ type: userActionTypes.CREATE_SUCCESS, user });
+          dispatch(notificationActions.syncDispatch('user', user));
           dispatch(getAll());
         },
         error => dispatch({ type: userActionTypes.CREATE_FAILURE, payload: error.toString() })
@@ -169,6 +177,35 @@ function _delete(id) {
 
 
 
+/** 
+ * ajout / modif de user depuis la synchro
+ */
+function setUserFromSync(payload) {
+  return dispatch => {
+
+    const {data, emitter, response} = payload;
+
+    userServices.update(data)
+    .then(
+      user => {
+
+        dispatch({ type: userActionTypes.SET_FROM_API, user });
+
+        // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
+        // donc inutile de lui renvoyer la synchro
+        // -> si 'response' est null, la synchro ne provient pas de l'API,
+        // donc inutile de confirmer le traitement de la synchro
+        if (emitter!==null && response!==null) {
+          dispatch(notificationActions.syncConfirm(response));
+          dispatch(notificationActions.syncDispatch('user', data, emitter));
+        }
+        dispatch(getAll());
+      }
+    )
+  }
+}
+
+
 
 export const userActions = {
   login,
@@ -179,5 +216,6 @@ export const userActions = {
   updateUser,
   createUser,
   getAll,
-  delete: _delete
+  delete: _delete,
+  setUserFromSync
 }

@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 // import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import Logger from '../../helpers/Logger';
+import { commandeActionTypes } from '../commande/commandeActionTypes';
 const strings = new LocalizedStrings(data);
 const logger = new Logger();
 
@@ -169,13 +170,47 @@ function getToken(provider, task) {
   }
 }
 
-
+/**
+ * Envoi de confirmation de synchronisation
+ * Si la caisse est 'primary', 
+ * elle confirme à la caisse 'secondary' qu'elle a reçu une synchro de commande via son API
+ * 
+ * @param {*} response  identifiant de l'objet response de la requête
+ */
 function syncConfirm(response) {
+  return (dispatch, getState) => {
+
+    const { options } = getState().parametresReducer.parametres;
+    if (options.role==='primary') {      
+      notificationServices.syncConfirm(response)
+      .then(
+        confirm => { logger.log('notificationAction','synchro confirm sent')}
+      );
+    }
+  }
+}
+
+function sendNumero(payload) {
   return dispatch => {
-    notificationServices.syncConfirm(response)
+    const {numero, response} = payload;
+    notificationServices.sendNumero(numero, response)
     .then(
-      confirm => { logger.log('notificationAction','synchro confirm sent')}
-    );
+      confirm => { logger.log('sendNumero','numero sent') }
+    )
+  }
+}
+
+function getNewNumero() {
+  return (dispatch, getState) => {
+
+    const { options } = getState().parametresReducer.parametres;
+    notificationServices.askNumero(options.primary)
+    .then(conf => {
+      console.log('NAct.getNewNumero()', conf.numero);
+      dispatch({type: commandeActionTypes.GET_NUMERO, numero: conf.numero});
+      dispatch(commandeActions.setNewNumero(conf.numero.value));
+    })
+
   }
 }
 
@@ -187,5 +222,7 @@ export const notificationActions = {
   denyOrder,
   initSync,
   syncDispatch,
-  syncConfirm
+  syncConfirm,
+  sendNumero,
+  getNewNumero
 };
