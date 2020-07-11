@@ -32,6 +32,7 @@ function createClient(payload) {
     .then(
       data => {
         dispatch({ type: clientsActionTypes.CREATE_SUCCESS, ...data });
+        dispatch(notificationActions.syncDispatch('client', data));
         dispatch(getClientsList());
         if (payload.autoselect) {
           dispatch(commandeActions.updateCommande({client:{nom:data.nom, prenom:data.prenom, client_id:data.client_id}}));
@@ -54,6 +55,7 @@ function updateClient(payload) {
     .then(
       data => {
         dispatch({ type: clientsActionTypes.UPDATE_SUCCESS, ...data });
+        dispatch(notificationActions.syncDispatch('client', data));
         dispatch(getClientsList());
         if (payload.autoselect) {
           dispatch(commandeActions.updateCommande({client:{nom:data.nom, prenom:data.prenom, client_id:data.client_id}}));
