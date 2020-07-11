@@ -1,6 +1,7 @@
 import { employesActionTypes } from "./employesActionTypes";
 import { employesServices } from "./employesServices";
 import { getTimeadjusts } from "./employesReducer";
+import { notificationActions } from "../notification/notificationActions";
 
 function getPointagesList(params={}) {
 
@@ -158,6 +159,7 @@ function setClockIn(payload) {
     .then(
       data => {
         dispatch({type: employesActionTypes.CLOCKIN_SUCCESS, ...data});
+        dispatch(notificationActions.syncDispatch('pointage', data));
         dispatch(getPointagesList());
       },
       error => dispatch({type:employesActionTypes.CLOCKIN_FAILURE, error: error.toString()})
@@ -179,6 +181,7 @@ function setClockOut(payload) {
     .then(
       data => {
         dispatch({type: employesActionTypes.CLOCKOUT_SUCCESS, ...data});
+        dispatch(notificationActions.syncDispatch('pointage', data));
         dispatch(getPointagesList());
       },
       error => dispatch({type:employesActionTypes.CLOCKOUT_FAILURE, error: error.toString()})
@@ -187,9 +190,28 @@ function setClockOut(payload) {
   }
 }
 
-function setPointageSync(pointage) {
+function setPointageFromSync(payload) {
   return dispatch => {
 
+    const {data, emitter, response} = payload;
+
+    employesServices.updatePointage(data)
+    .then(
+      pointage => {
+
+        dispatch({ type: employesActionTypes.SET_POINTAGE_FROM_SYNC, pointage });
+
+        // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
+        // donc inutile de lui renvoyer la synchro
+        // -> si 'response' est null, la synchro ne provient pas de l'API,
+        // donc inutile de confirmer le traitement de la synchro
+        if (emitter!==null && response!==null) {
+          dispatch(notificationActions.syncConfirm(response));
+          dispatch(notificationActions.syncDispatch('pointage', data, emitter));
+        }
+        dispatch(getPointagesList());
+      }
+    )
   }
 }
 
@@ -205,5 +227,5 @@ export const employesActions = {
   deleteTimeadjust,
   setClockIn,
   setClockOut,
-  setPointageSync
+  setPointageFromSync
 };

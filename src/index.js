@@ -26,6 +26,7 @@ import { clientsActions } from './services/clients/clientsActions';
 import Logger from './helpers/Logger';
 import { marketingActions } from './services/marketing/marketingActions';
 import { userActions } from './services/user/userActions';
+import { employesActions } from './services/employes/employesActions';
 
 const logger = new Logger();
 
@@ -94,7 +95,7 @@ ipcRenderer.on('setTicketRestaurantSync', (event, ticketrestaurant) => {
 
 ipcRenderer.on('setPointageSync', (event, pointage) => {
   logger.log('renderer: setPointageSync', pointage);
- // commandeActions.setTicketRestaurantFromSync(ticketrestaurant)(store.dispatch, store.getState);
+  employesActions.setPointageFromSync(pointage)(store.dispatch, store.getState);
 });
 
 ipcRenderer.on('setTimeadjustSync', (event, timeadjust) => {
