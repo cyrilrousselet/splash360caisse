@@ -25,9 +25,9 @@ const actions = {
     const {payload} = req;
 
     (await db.users)._.mixin(lodashId);
-    const user = await _findUser((u => (u.identifiant==payload.identifiant && u.status!='disabled')));
+    const __usr = await _findUser((u => (u.identifiant==payload.identifiant && u.status!='disabled')));
     
-    res.send(user);
+    res.send(__usr);
   },
   dbAddUser: async (req,res) => {
     const {payload} = req;
@@ -44,9 +44,9 @@ const actions = {
     log.info("dbUpdateUser() in API");
 
     (await db.users)._.mixin(lodashId);
-    const confirm = await _persistUser(payload.user);
+    const __usr = await _persistUser(payload.user);
 
-    res.send({confirm: confirm, ...payload});
+    res.send(__usr);
   }
 }
 
