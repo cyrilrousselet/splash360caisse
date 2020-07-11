@@ -19,7 +19,9 @@ export const notificationServices = {
   startSyncPrimary,
   syncDispatch,
   syncPrimary,
-  syncConfirm
+  syncConfirm,
+  sendNumero,
+  askNumero
  };
 
 
@@ -102,6 +104,14 @@ function syncConfirm(response) {
   if (response!==null) {
     return emit('syncConfirm', {response});
   }
+}
+
+function askNumero(url) {
+  return emit('askNumero',{url});
+}
+
+function sendNumero(numero, response) {
+  return emit('sendNumeroCommande', {numero, response});
 }
 
 async function denyOrder(provider, order) {

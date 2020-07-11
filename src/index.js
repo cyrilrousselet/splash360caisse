@@ -52,8 +52,11 @@ ipcRenderer.on('getNotification', (event, data) => {
 
 });
 
-
-
+// listener sur la demande de numero de commande (via '/public/server.js')
+ipcRenderer.on('getNumero', (event, data) => {
+  logger.log('getNumero()', event, data);
+  commandeActions.getNumeroAPI(data)(store.dispatch, store.getState);
+})
 
 
 // listener sur la réception de commande via '/public/server.js'

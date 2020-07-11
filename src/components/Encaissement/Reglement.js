@@ -59,7 +59,8 @@ class Reglement extends React.Component {
 
   componentDidMount() {
     const { getCommande, commandeId } = this.props;
-    getCommande(commandeId);
+    console.log('commandeId', commandeId);
+    if (commandeId) getCommande(commandeId);
   }
 
   addValeur(value) {

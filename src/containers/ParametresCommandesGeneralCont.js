@@ -11,7 +11,8 @@ import { commandeActions } from '../services/commande/commandeActions';
 const mapStateToProps = (state) => {
   return {
     data: state.parametresReducer.parametres.commandes,
-    lastnumero: state.commandeReducer.numero
+    lastnumero: state.commandeReducer.numero,
+    options: state.parametresReducer.parametres.options
   }
 }
 
@@ -19,7 +20,8 @@ const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({
     getAll: parametresActions.getAll,
     updateValeur: parametresActions.update,
-    setNewNumero: commandeActions.setNewNumero
+  //  setNewNumero: commandeActions.setNewNumero,
+    resetNumero: commandeActions.resetNumero
   },dispatch);
 }
 

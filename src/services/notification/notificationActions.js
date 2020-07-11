@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 // import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import Logger from '../../helpers/Logger';
+import { commandeActionTypes } from '../commande/commandeActionTypes';
 const strings = new LocalizedStrings(data);
 const logger = new Logger();
 
@@ -189,6 +190,30 @@ function syncConfirm(response) {
   }
 }
 
+function sendNumero(payload) {
+  return dispatch => {
+    const {numero, response} = payload;
+    notificationServices.sendNumero(numero, response)
+    .then(
+      confirm => { logger.log('sendNumero','numero sent') }
+    )
+  }
+}
+
+function getNewNumero() {
+  return dispatch => {
+
+    const { options } = getState().parametresReducer.parametres;
+    notificationServices.askNumero(options.primary)
+    .then(numero => {
+      console.log('NAct.getNewNumero()', numero);
+      dispatch({type: commandeActionTypes.GET_NUMERO, numero});
+      dispatch(commandeActions.setNewNumero(numero.value));
+    })
+
+  }
+}
+
 export const notificationActions = {
   initSSE,
   setPOS,
@@ -197,5 +222,7 @@ export const notificationActions = {
   denyOrder,
   initSync,
   syncDispatch,
-  syncConfirm
+  syncConfirm,
+  sendNumero,
+  getNewNumero
 };

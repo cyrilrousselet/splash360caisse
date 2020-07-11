@@ -171,7 +171,6 @@ class CommandesGeneral extends React.Component {
 
     this.openEdit = this.openEdit.bind(this);
     this.closeEdit = this.closeEdit.bind(this);
-    this.resetNumero = this.resetNumero.bind(this);
     this.saveType = this.saveType.bind(this);
     this.numerotationHexaUpdate = this.numerotationHexaUpdate.bind(this);
   }
@@ -191,15 +190,12 @@ class CommandesGeneral extends React.Component {
   closeEdit() {
     this.setState({editOpen: false});
   }
-  resetNumero() {
-    this.setState({currentNumero:0});
-  }
   saveType(type) {
     console.log(type);
   //  this.setState({editOpen: false});
   }
   numerotationHexaUpdate(isChecked) {
-    const { updateValeur, data, setNewNumero } = this.props;
+    const { updateValeur, data } = this.props;
     const { numerotation_start, numerotation_max } = data;
     let nummax = isChecked ? parseInt(numerotation_max) + 1000 : parseInt(numerotation_max) - 1000;
     console.log(numerotation_max, nummax);
@@ -225,7 +221,11 @@ class CommandesGeneral extends React.Component {
   render() {
 
     const { commandtype, editOpen, currentNumero } = this.state;
-    const { data, lastnumero, updateValeur, getAll, setNewNumero } = this.props;
+    const { data, lastnumero, updateValeur, getAll, resetNumero, options } = this.props;
+
+    const num_not_editable = options.role==='secondary';
+
+    const currnum = lastnumero ? lastnumero.value : data.numerotation_start;
    
     return (
       <div className="CommandesGeneral sectioncontent">
@@ -245,7 +245,7 @@ class CommandesGeneral extends React.Component {
               value={ data.numerotation_start } 
               placeholder='1' 
               type='text' 
-              readOnly={ false } 
+              readOnly={ num_not_editable } 
               onChange={(value,option)=>void(0)}
               onSubmit={(name,value) => {
                 updateValeur({
@@ -263,7 +263,7 @@ class CommandesGeneral extends React.Component {
                 value={ data.numerotation_max } 
                 placeholder='1' 
                 type='text' 
-                readOnly={ false } 
+                readOnly={ num_not_editable } 
                 onChange={(value,option)=>void(0)}
                 onSubmit={(name,value) => {
                   updateValeur({
@@ -279,14 +279,14 @@ class CommandesGeneral extends React.Component {
               id={ `compteur` }
               name={ `compteur` }
               className="fieldcompteur"
-              value={ lastnumero && lastnumero.value } 
+              value={ currnum } 
               placeholder='0' 
               type='text' 
               readOnly={ true } 
               onChange={()=>{console.log('click')}}
               label={ strings.modules.parametres.submodules.commandes.general.numero.label.compteur }
               />
-            <div className="btn-reset" onClick={()=>{ setNewNumero(data.numerotation_start-1) }}>{ strings.modules.parametres.submodules.commandes.general.numero.label.reset }</div>
+            {!num_not_editable && <div className="btn-reset" onClick={()=>{ resetNumero() }}>{ strings.modules.parametres.submodules.commandes.general.numero.label.reset }</div>}
           </div>
           <SwitchCheckbox
             isChecked={ data.numerotation_hex } 
