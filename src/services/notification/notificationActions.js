@@ -205,10 +205,10 @@ function getNewNumero() {
 
     const { options } = getState().parametresReducer.parametres;
     notificationServices.askNumero(options.primary)
-    .then(numero => {
-      console.log('NAct.getNewNumero()', numero);
-      dispatch({type: commandeActionTypes.GET_NUMERO, numero});
-      dispatch(commandeActions.setNewNumero(numero.value));
+    .then(conf => {
+      console.log('NAct.getNewNumero()', conf.numero);
+      dispatch({type: commandeActionTypes.GET_NUMERO, conf.numero});
+      dispatch(commandeActions.setNewNumero(conf.numero.value));
     })
 
   }
