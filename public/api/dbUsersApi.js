@@ -98,14 +98,15 @@ async function _persistUser(payload) {
                                   .assign(__upd)
                                   .write();
   } else {
-    _insertUser(payload);
+    _user = _insertUser(payload);
     //  user_id = 'usr'+uniqid();
     // _user = await (await db.users).get('users')
     //                               .push({...payload, user_id: user_id})
     //                               .write();
   }
 
-  return {confirm:(_user != null), user_id:user_id};
+  //return {confirm:(_user != null), user_id:user_id};
+  return _user;
 }
 
 
