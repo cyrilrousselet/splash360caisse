@@ -260,10 +260,10 @@ const actions = {
   //  log.info('socket', socket);
 
 
-    socket.on('welcome', primarySum => {
+    socket.on('welcome', async (primarySum) => {
       log.info('on welcome', primarySum);
 
-      const secondarySum = welcomeTreatment();
+      const secondarySum = await welcomeTreatment();
       log.info('secondarySum', secondarySum);
 
       const prmkeys = Object.keys(primarySum);
