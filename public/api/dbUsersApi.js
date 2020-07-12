@@ -47,6 +47,22 @@ const actions = {
     const __usr = await _persistUser(payload.user);
 
     res.send(__usr);
+  },
+
+  dbUsersSummary: async () => {
+
+    (await db.users)._.mixin(lodashId);
+
+    const _usr = await (await db.users).get('users').value();
+    const _usrSummary = _usr.map(u => (
+      {
+        user_id: u.user_id,
+        updatedAt: u.updatedAt
+      }
+    ));
+    return {
+      users: _usrSummary
+    };
   }
 }
 

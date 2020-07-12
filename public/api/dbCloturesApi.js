@@ -30,6 +30,22 @@ const actions = {
       const confirm = await _persistCloture(payload.cloture);
 
       res.send(confirm);
+  },
+
+  dbCloturesSummary: async () => {
+
+    (await db.clotures)._.mixin(lodashId);
+
+    const _clo = await (await db.clotures).get('clotures').value();
+    const _cloSummary = _clo.map(c => (
+      {
+        clotureId: c.clotureId,
+        updatedAt: c.updatedAt
+      }
+    ));
+    return {
+      clotures: _cloSummary
+    };
   }
 
 }

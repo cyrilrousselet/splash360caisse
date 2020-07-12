@@ -68,7 +68,7 @@ const actions = {
     const confirm = await _persistTicket(payload.ticket);
 
     res.send({confirm: confirm, ...payload});
-  },
+  }
 }
 
 async function _getAll() {

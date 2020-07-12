@@ -59,6 +59,76 @@ const actions = {
     const typ = await _persistIngredientType(payload.type);
 
     res.send(typ);
+  },
+
+  dbCatalogueSummary: async () => {
+
+    (await db.categories)._.mixin(lodashId);
+    (await db.groupes)._.mixin(lodashId);
+    (await db.tva)._.mixin(lodashId);
+    (await db.ingredienttypes)._.mixin(lodashId);
+    (await db.ingredients)._.mixin(lodashId);
+    (await db.produits)._.mixin(lodashId);
+    (await db.steps)._.mixin(lodashId);
+
+    const _cat = await (await db.categories).get('categories').value();
+    const _catSummary = _cat.map(c => (
+      {
+        categorie_id: c.categorie_id,
+        updatedAt: c.updatedAt
+      }
+    ));
+    const _grp = await (await db.groupes).get('groupes').value();
+    const _grpSummary = _grp.map(g => (
+      {
+        groupe_id: g.groupe_id,
+        updatedAt: g.updatedAt
+      }
+    ));
+    const _tva = await (await db.tva).get('tva').value();
+    const _tvaSummary = _tva.map(t => (
+      {
+        tva_id: t.tva_id,
+        updatedAt: t.updatedAt
+      }
+    ));
+    const _typ = await (await db.ingredienttypes).get('types').value();
+    const _typSummary = _typ.map(t => (
+      {
+        type_id: t.type_id,
+        updatedAt: t.updatedAt
+      }
+    ));
+    const _ing = await (await db.ingredients).get('ingredients').value();
+    const _ingSummary = _ing.map(i => (
+      {
+        ingredient_id: i.ingredient_id,
+        updatedAt: i.updatedAt
+      }
+    ));
+    const _prd = await (await db.produits).get('produits').value();
+    const _prdSummary = _prd.map(p => (
+      {
+        produit_id: p.produit_id,
+        updatedAt: p.updatedAt
+      }
+    ));
+    const _stp = await (await db.steps).get('steps').value();
+    const _stpSummary = _stp.map(s => (
+      {
+        step_id: s.step_id,
+        updatedAt: s.updatedAt
+      }
+    ));
+    return {
+      categories: _catSummary,
+      groupes: _grpSummary,
+      tva: _tvaSummary,
+      types: _typSummary,
+      ingredients: _ingSummary,
+      produits: _prdSummary,
+      steps: _stpSummary
+    };
   }
 }
 

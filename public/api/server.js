@@ -10,6 +10,17 @@ const io = require('socket.io')(http);
 const ioclient = require('socket.io-client');
 const { lowerFirst } = require('lodash');
 
+
+const dbCatalogueApi = require('./dbCatalogueApi.js');
+const dbClientsApi = require('./dbClientsApi.js');
+const dbCloturesApi = require('./dbCloturesApi.js');
+const dbCommandesApi = require('./dbCommandesApi.js');
+const dbEmployesApi = require('./dbEmployesApi.js');
+const dbMarketingApi = require('./dbMarketingApi.js');
+const dbUsersApi = require('./dbUsersApi.js');
+
+
+
 const connectedSecondaries = {};
 
 let socket = null;
@@ -136,6 +147,28 @@ const synchroTreatment = (db, data, emitter=null, response=null) => {
 }
 
 
+const welcomeTreatment = async () => {
+
+  const catalogue_sum = await dbCatalogueApi.dbCatalogueSummary();
+  const clients_sum = await dbClientsApi.dbClientsSummary();
+  const clotures_sum = await dbCloturesApi.dbCloturesSummary();
+  const commandes_sum = await dbCommandesApi.dbCommandesSummary();
+  const employes_sum = await dbEmployesApi.dbEmployesSummary();
+  const marketing_sum = await dbMarketingApi.dbMarketingSummary();
+  const users_sum = await dbUsersApi.dbUsersSummary();
+
+  return {
+    ...catalogue_sum, 
+    ...clients_sum,
+    ...clotures_sum,
+    ...commandes_sum,
+    ...employes_sum,
+    ...marketing_sum,
+    ...users_sum
+  };
+
+}
+
 const actions = {
 
   // renvoie le ticketId et le numero de la commande synchronisée par une borne
@@ -225,6 +258,12 @@ const actions = {
     });
 
     log.info('socket', socket);
+
+
+    socket.on('welcome', payload => {
+      log.info('on welcome', payload);
+    }
+
     
     // écouteur de synchro de la part du primary
     socket.on('sync', payload => {
@@ -256,7 +295,7 @@ const actions = {
 
       // écouteur d'événement 'register' :
       // le secondary envoie son identité afin que le primary le stocke dans un objet
-      sock.on('register', data => {
+      sock.on('register', async (data) => {
         log.info('secondary register', data);
 
         Object.defineProperty(connectedSecondaries, sock.id, {
@@ -265,6 +304,10 @@ const actions = {
           enumerable: true,
           configurable: true
         });
+
+        const summary = await welcomeTreatment();
+        io.to(sock).emit('welcome', summary);
+        
       });
 
       sock.on('sync', (action)=>{
