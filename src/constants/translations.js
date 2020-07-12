@@ -757,6 +757,7 @@ const data = {
                             first: 'L’utilisateur doit changer de mot de passe à la prochaine connexion',
                             status: 'Actif',
                             livreur: 'Livreur',
+                            coordonnees: 'Coordonnées',
                             taux_horaire: 'Taux horaire',
                             droits: {
                                 clients: "Accès Clients",

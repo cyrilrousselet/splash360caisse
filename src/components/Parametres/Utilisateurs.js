@@ -33,6 +33,7 @@ class EditUtilisateurPopin extends React.Component {
       taux_horaire: null,
       status: 'active',
       livreur: null,
+      coordonnees: null,
       droits: '',
       error_nom: false,
       error_identifiant: false
@@ -57,6 +58,7 @@ class EditUtilisateurPopin extends React.Component {
       first: this.props.utilisateur && this.props.utilisateur.first,
       droits: this.props.utilisateur && this.props.utilisateur.droits,
       livreur: this.props.utilisateur && this.props.utilisateur.livreur,
+      coordonnees: this.props.utilisateur && this.props.utilisateur.coordonnees,
       taux_horaire: this.props.utilisateur && this.props.utilisateur.taux_horaire
     }
     console.log('componentDidMount', st);
@@ -155,7 +157,7 @@ class EditUtilisateurPopin extends React.Component {
 
   getValues() {
     
-    const { droits, nom, identifiant, status, livreur, taux_horaire } = this.props.utilisateur || {droits:{}, nom:null, identifiant:null, status:'active', livreur:null, taux_horaire:null};
+    const { droits, nom, identifiant, status, livreur, coordonnees, taux_horaire } = this.props.utilisateur || {droits:{}, nom:null, identifiant:null, status:'active', livreur:null, coordonnees:null, taux_horaire:null};
     console.log('getValues()', this.props.utilisateur);
     console.log('getValues() droits', droits);
     // si aucun droit n'est défini (cas d'un nouvel utilisateur)
@@ -187,6 +189,7 @@ class EditUtilisateurPopin extends React.Component {
     const sidentifiant = this.state.identifiant;
     const sstatus = this.state.status;
     const slivreur = this.state.livreur;
+    const scoordonnees = this.state.coordonnees;
     const staux_horaire = this.state.taux_horaire;
 
     return {
@@ -196,6 +199,7 @@ class EditUtilisateurPopin extends React.Component {
       allchecked: all,
       status: sstatus!==null ? sstatus : status,
       livreur: slivreur!==null ? slivreur : livreur,
+      coordonnees: scoordonnees!==null ? scoordonnees : coordonnees,
       taux_horaire: staux_horaire!==null ? staux_horaire : taux_horaire
     }
   }
@@ -210,6 +214,7 @@ class EditUtilisateurPopin extends React.Component {
       droits: droits,
       status: 'active',
       livreur: null,
+      coordonnees: null,
       error_nom: false,
       error_identifiant: false,
       taux_horaire: null
@@ -271,7 +276,7 @@ class EditUtilisateurPopin extends React.Component {
 
   render() {
     const { utilisateur, editOpen, closeHandler, clavierOpen } = this.props;
-    const { nom, identifiant, droits, allchecked, status, livreur, taux_horaire } = this.getValues();
+    const { nom, identifiant, droits, allchecked, status, livreur, coordonnees, taux_horaire } = this.getValues();
     console.log("utilisateur: ", utilisateur);
     console.log('status',status);
     const {focusInput} = this.state;
@@ -288,6 +293,7 @@ class EditUtilisateurPopin extends React.Component {
     const inputs = {
       'nom': nom,
       'identifiant': identifiant,
+      'coordonnees': coordonnees,
       'taux_horaire': taux_horaire
     };
 
@@ -336,6 +342,18 @@ class EditUtilisateurPopin extends React.Component {
                     label={ strings.modules.parametres.submodules.utilisateurs.edition.status } 
                     />
               </div>
+              <LabelledField 
+                  id={ `coordonnees` }
+                  name={ `coordonnees` }
+                  className="fieldcoordonnees"
+                  value={ coordonnees } 
+                  placeholder='' 
+                  type='text' 
+                  readOnly={ clavierOpen } 
+                  onClick={this.setFocus}
+                  onChange={(val)=>{ this.updateValue({coordonnees:val.value}) }}
+                  label={ strings.modules.parametres.submodules.utilisateurs.edition.coordonnees }
+              />
               <SwitchCheckbox 
                   isChecked={ livreur } 
                   key="livreur"
@@ -462,7 +480,7 @@ function TableUtilisateurs(props) {
       <TableBody>
         {liste.map((row, i) => (
           (row.status!=='deleted') && (<TableRow key={row.id} className={(i%2)?'odd':'even'}>
-            <TableCell key={`${i}-nom`} className={ `liste-nom${ (row.status && row.status=='disabled')?' user-disabled':''}` }><div onClick={ () => { openEdit(i) } }>{ row.nom }{ row.livreur && <DeliveryIcon className="delivery" /> }</div></TableCell>
+            <TableCell key={`${i}-nom`} className={ `liste-nom${ (row.status && row.status=='disabled')?' user-disabled':''}` }><div onClick={ () => { openEdit(i) } }>{ row.nom }{ row.livreur && <DeliveryIcon className="delivery" /> }{ (row.livreur && row.coordonnees) && `(${row.coordonnees})` }</div></TableCell>
             <TableCell key={`${i}-passe`} className="liste-passe">{ row.identifiant }</TableCell>
             <TableCell key={`${i}-droits`} className="liste-droits"><DroitsPopper id={`drt${i}`} droits={row.droits}></DroitsPopper></TableCell>
           </TableRow>)

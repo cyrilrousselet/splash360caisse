@@ -3,6 +3,10 @@ const escpos = require('escpos');
 escpos.USB = require('escpos-usb');
 escpos.Network = require('escpos-network');
 escpos.SerialPort = require('escpos-serialport');
+const statuses = require('escpos/statuses');
+
+const {PrinterStatus,OfflineCauseStatus,ErrorCauseStatus,RollPaperSensorStatus} = statuses;
+const _ = require('escpos/commands');
 const path = require('path');
 const fs = require('fs');
 
@@ -54,8 +58,8 @@ const actions = {
     // déclaration de l'imprimante
     let device;
     if (imprimante.connexion=='usb') {
-      if (imprimante.param!=='') {
-        vp = imprimante.param.split(';');
+      if (imprimante.param && (typeof imprimante.param==="string") ) {
+      vp = imprimante.param.split(';');
         vid = parseInt(vp[0], 16);
         pid = parseInt(vp[1], 16);
         device = new escpos.USB(vid,pid);
@@ -75,14 +79,86 @@ const actions = {
     }
     const options = {encoding: imprimante.encoding, width:42};
     const printer = new escpos.Printer(device, options);
-
     device.open(function() {
 
       log.debug('device open -> cashdraw()');
-      printer.cashdraw().cashdraw().close();
+      // printer
+      //   .cashdraw()
+      //   .cashdraw();
+
+        // device.write('\x1b\x70\x00\x19\xfa', data => {
+        //   log.info("data", data);
+        // })
+
+
+      device.on('data', function (data) {
+          // log.debug(data);
+          if (typeof data === "string") {
+            log.debug(' --> ',  data.charCodeAt(0).toString(2).padStart(8, '0'));
+          }
+        //   const st = new PrinterStatus(data);
+        //   const stjson = st.toJSON();
+        //   log.debug(stjson['byte'].toString(16));
+        // try{
+        //   const binaire = (parseInt(stjson.byte, 16).toString(2)).padStart(7, '0');
+        //   log.debug(hexa, binaire);
+        // } catch(e) {
+        //   log.debug('pas un nombre');
+        // }
+          
+
+          // log.debug(st.toJSON());
+          
+      });
+  
+      log.info('demande de status');
+      device.write(_.DLE+_.EOT+String.fromCharCode(1));
+      // device.write('\x1d\x72\x02');
+      log.info('ouverture');
+      device.write('\x1b\x70\x00\x19\xfa');
+      
+      log.info('demande de status');
+      device.write(_.DLE+_.EOT+String.fromCharCode(1));
+
+      // device.write(_.DLE);
+      // device.write(_.EOT);
+      // device.write(String.fromCharCode(1));
+
+
+      setTimeout(() => {
+          printer.close();
+      }, 1000);
+
+
+
+
+
+/*
+
+      if (imprimante.connexion==='usb') {
+        log.info('send "GS r 2" to printer');
+
+        device.write('\x1d\x72\x02', (error,data) => {
+          log.info('get data',data);
+        });
+
+
+        device.write('\x1b\x70\x00\x19\xfa', (error,data) => {
+          log.info("open drawer data", data);
+        });
+
+
+      } else {
+        printer.cashdraw();
+        printer.getStatus(statuses.PrinterStatus.getClassName(), status => {
+          log.info(status.toJSON());
+        });
+      }
+      printer.close();
       // setTimeout(() => {
       //   printer.close();
       // }, 200);
+    */  
           
     });
 
@@ -147,16 +223,29 @@ const actions = {
   }
 }
 
+
+
+
+
+
+
 function _doPrintTicket(imprimante, template, contenu) {
 
   // déclaration de l'imprimante
   let device;
   if (imprimante.connexion=='usb') {
-    device = new escpos.USB();
+    if (imprimante.param && (typeof imprimante.param==="string") ) {
+      vp = imprimante.param.split(';');
+        vid = parseInt(vp[0], 16);
+        pid = parseInt(vp[1], 16);
+        device = new escpos.USB(vid,pid);
+      } else {
+        device = new escpos.USB();
+      }
   } else if (imprimante.connexion=='network') {
     device = new escpos.Network(imprimante.param); 
   } else if (imprimante.connexion=='serial') {
-    device = new escpos.Serial(imprimante.param);
+    device = new escpos.SerialPort(imprimante.param);
   }
   const options = {encoding: imprimante.encoding, width:42};
   // const options = {encoding: imprimante.encoding};

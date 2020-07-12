@@ -12,6 +12,8 @@ import { templates } from '../../constants/templates';
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import { commandeActions } from '../commande/commandeActions';
+import { remove } from 'diacritics';
+const removeDiacritics = remove;
 const strings = new LocalizedStrings(data);
 
 function printTest(payload) {
@@ -507,12 +509,12 @@ function printCommandeTicket(quelstickets, cmd) {
               articleIngredients.push({
                 qte: ing.qte,
                 codetva: artIngTva.code,
-                nom: ing.nom,
+                nom: removeDiacritics(ing.nom),
                 pu: ing.prix==0 ? '' : Number(ing.prix).toFixed(2),
                 // prix: ing.prix==0 ? '' : (Number(ing.prix)*ing.qte).toFixed(2),
                 prix: ing.supplement==0 ? '' : Number(ing.supplement).toFixed(2),
                 weight: __ingweight,
-                comment: __comment ? __comment.texte : '',
+                comment: __comment ? removeDiacritics(__comment.texte) : '',
                 modificateur: __modificateur ? __modificateur.valeur: 0
               });
             }
@@ -559,11 +561,11 @@ function printCommandeTicket(quelstickets, cmd) {
           articles.push({
             qte: article.quantite,
             codetva: article.tva.code,
-            nom: article.nom,
+            nom: removeDiacritics(article.nom),
             pu: Number(article.pu).toFixed(2),
             prix: (Number(article.pu)*article.quantite).toFixed(2),
             ingredients: articleIngredients,
-            comment: __comment ? __comment.texte : '',
+            comment: __comment ? removeDiacritics(__comment.texte) : '',
             modificateur: __modificateur ? __modificateur.valeur: 0
           });
 
@@ -646,8 +648,8 @@ function printCommandeTicket(quelstickets, cmd) {
           logo: logo,
           // -> entreprise
           entreprise: {
-            nom: String(entreprise.denomination).toUpperCase(),
-            coordonnees: [ entreprise.adresse, `${entreprise.code_postal} ${String(entreprise.ville).toUpperCase()}`, entreprise.site_web ],
+            nom: removeDiacritics(String(entreprise.denomination).toUpperCase()),
+            coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, entreprise.site_web ],
             fiscal: [ `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` ]
           },
           // -> commande (id, date, articles, remises, totaux, tva, réglements)
@@ -658,7 +660,7 @@ function printCommandeTicket(quelstickets, cmd) {
           // et infos ticket : numéro ticket, date
           legal: {
             type: 'VENTE',
-            vendeur: operateur.nom+' - '+operateur.id,
+            vendeur: removeDiacritics(operateur.nom)+' - '+operateur.id,
             caisse: caisse.id,
             centre: 'Rest.01',
             version: '0.1.0',
@@ -707,9 +709,9 @@ function printCommandeTicket(quelstickets, cmd) {
             if (ing.fromStep!==null && !__noprint) {
               articleIngredients.push({
                 qte: ing.qte,
-                nom: ing.nom,
+                nom: removeDiacritics(ing.nom),
                 weight: __ingweight,
-                comment: __comment ? __comment.texte : ''
+                comment: __comment ? removeDiacritics(__comment.texte) : ''
               });
             }
           });
@@ -730,9 +732,9 @@ function printCommandeTicket(quelstickets, cmd) {
           if (!__anoprint || (__anoprint && articleIngredients.length>0)) {
             articles.push({
               qte: article.quantite,
-              nom: article.nom,
+              nom: removeDiacritics(article.nom),
               ingredients: articleIngredients,
-              comment: __comment ? __comment.texte : ''
+              comment: __comment ? removeDiacritics(__comment.texte) : ''
             });        
           }
 
@@ -747,7 +749,7 @@ function printCommandeTicket(quelstickets, cmd) {
           mode: cmd.mode,
           date: `${date} à ${heure}`,
           articles: articles,
-          comment: __comment ? __comment.texte : '',
+          comment: __comment ? removeDiacritics(__comment.texte) : '',
           client: cmd.client && clients.find(c=>c.client_id===cmd.client.client_id)
         };
 
@@ -795,9 +797,9 @@ function printCommandeTicket(quelstickets, cmd) {
             if (ing.fromStep!==null && !__noprint) {
               articleIngredients.push({
                 qte: ing.qte,
-                nom: ing.nom,
+                nom: removeDiacritics(ing.nom),
                 weight: __ingweight,
-                comment: __comment ? __comment.texte : ''
+                comment: __comment ? removeDiacritics(__comment.texte) : ''
               });
             }
           });
@@ -817,9 +819,9 @@ function printCommandeTicket(quelstickets, cmd) {
           if (!__anoprint || (__anoprint && articleIngredients.length>0)) {
             articles.push({
               qte: article.quantite,
-              nom: article.nom,
+              nom: removeDiacritics(article.nom),
               ingredients: articleIngredients,
-              comment: __comment ? __comment.texte : ''
+              comment: __comment ? removeDiacritics(__comment.texte) : ''
             });     
           }   
 
@@ -836,7 +838,7 @@ function printCommandeTicket(quelstickets, cmd) {
           mode: cmd.mode,
           date: `${date} à ${heure}`,
           articles: articles,
-          comment: __comment ? __comment.texte : '',
+          comment: __comment ? removeDiacritics(__comment.texte) : '',
           client: cmd.client && clients.find(c=>c.client_id===cmd.client.client_id)
         };
 
@@ -907,8 +909,8 @@ function printPeriodeX(payload={}) {
       const contenu = {
         // -> entreprise
         entreprise: {
-          nom: String(entreprise.denomination).toUpperCase(),
-          coordonnees: [ entreprise.adresse, `${entreprise.code_postal} ${String(entreprise.ville).toUpperCase()}`, entreprise.site_web ],
+          nom: removeDiacritics(String(entreprise.denomination).toUpperCase()),
+          coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, entreprise.site_web ],
           fiscal: [ `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` ]
         },
         periode: __periode,
@@ -969,8 +971,8 @@ function printCloture(payload={}) {
     const contenu = {
       // -> entreprise
       entreprise: {
-        nom: String(entreprise.denomination).toUpperCase(),
-        coordonnees: [ entreprise.adresse, `${entreprise.code_postal} ${String(entreprise.ville).toUpperCase()}`, entreprise.site_web ],
+        nom: removeDiacritics(String(entreprise.denomination).toUpperCase()),
+        coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, entreprise.site_web ],
         fiscal: [ `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` ]
       },
       periode: __periode,

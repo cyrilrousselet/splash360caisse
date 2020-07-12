@@ -17,6 +17,13 @@ const NUMERIC_LAYOUT = {
   ]
 };
 
+const DEFAULT_DISPLAY = {
+  '{bksp}': 'efface',
+  '{enter}': '&lt; entrer',
+  '{shift}': 'maj.',
+  '{lock}': 'verr. maj.'
+};
+
 class Clavier extends React.Component {
 
 
@@ -87,7 +94,7 @@ class Clavier extends React.Component {
 
 
     const vlayout = (defaultLayout && 'numeric'===defaultLayout) ? NUMERIC_LAYOUT : layout;
-    const display_c = (defaultLayout && 'numeric'===defaultLayout) ? {'{bksp}': 'C'} : {};
+    const display_c = (defaultLayout && 'numeric'===defaultLayout) ? {'{bksp}': 'C'} : DEFAULT_DISPLAY;
 
     
     
