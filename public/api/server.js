@@ -264,6 +264,7 @@ const actions = {
       log.info('on welcome', primarySum);
 
       const secondarySum = welcomeTreatment();
+      log.info('secondarySum', secondarySum);
 
       const prmkeys = Object.keys(primarySum);
       const seckeys = Object.keys(secondarySum);
