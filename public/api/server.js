@@ -262,7 +262,7 @@ const actions = {
 
     socket.on('welcome', payload => {
       log.info('on welcome', payload);
-    }
+    });
 
     
     // écouteur de synchro de la part du primary
