@@ -8,7 +8,7 @@ const {net} = require('electron');
 const http = require('http').Server(sync_server);
 const io = require('socket.io')(http);
 const ioclient = require('socket.io-client');
-const { lowerFirst } = require('lodash');
+const { lowerFirst, difference, differenceBy, intersection } = require('lodash');
 
 
 const dbCatalogueApi = require('./dbCatalogueApi.js');
@@ -257,11 +257,132 @@ const actions = {
       socket.emit('register',caisse);
     });
 
-    log.info('socket', socket);
+  //  log.info('socket', socket);
 
 
-    socket.on('welcome', payload => {
-      log.info('on welcome', payload);
+    socket.on('welcome', primarySum => {
+      log.info('on welcome', primarySum);
+
+      const secondarySum = welcomeTreatment();
+
+      const prmkeys = Object.keys(primarySum);
+      const seckeys = Object.keys(secondarySum);
+
+      // récup des clés (noms des tables) pour chaque summary
+      const indbkeys = difference(prmkeys,seckeys);
+      const outdbkeys = difference(seckeys, prmkeys);
+      const comdbkeys = intersection(seckeys, prmkeys);
+    
+      // liste des tables à importer
+      let in_db = {};
+      // ajout des tables inexistantes à importer
+      indbkeys.forEach(k => {
+        Object.defineProperty(in_db, k, {
+          value: primarySum[k],
+          enumerable: true,
+          writable: false,
+          configurable: false
+        })
+      })
+      
+
+      // liste des tables à exporter
+      let out_db = {};
+      // ajout des tables inexistantes à exporter
+      outdbkeys.forEach(k => {
+        Object.defineProperty(out_db, k, {
+          value: secondarySum[k],
+          enumerable: true,
+          writable: false,
+          configurable: false
+        })
+      });
+
+      // ajout des tables existantes aux deux listes ('à importer' et 'à exporter')
+      comdbkeys.forEach(k => {
+
+        const incom = [];
+        const outcom = []; 
+
+        // pour chaque table en commun, on récupère les différences
+
+        // dans la liste de la caisse 'primary'
+        primarySum[k].forEach(nty => {
+          const found = secondarySum[k].find(snty => snty.id == nty.id);
+          // si un item a été trouvé
+          if (found) {
+            // si l'item a été mis à jour
+            if (nty.updatedAt) {
+              // si l'item correspondant a été mis à jour
+              if (found.updatedAt) {
+                // si l'item est plus récent il doit être importé
+                if (nty.updatedAt>found.updatedAt) {
+                  incom.push(nty);
+                } 
+                // si l'item correspondant est plus récent il doit être exporté
+                else {
+                  outcom.push(found);
+                }
+              }
+              // si l'item correspondant n'a pas été mis à jour
+              // l'item doit être importé
+              else {
+                incom.push(nty);
+              }
+            }
+            // si l'item n'a pas été mis à jour
+            else {
+              // si l'item correspondant a été mis à jour
+              // il doit être exporté
+              if (found.updatedAt) {
+                outcom.push(found);
+              }
+            }
+          } 
+          // s'il n'a pas été trouvé il doit être importé
+          else {
+            incom.push(nty);
+          }
+
+        });
+
+
+        // dans la liste de la caisse 'secondary'
+        secondarySum[k].forEach(nty => {
+          const found = primarySum[k].find(pnty => pnty.id == nty.id);
+          // si aucun item ne correspond, il doit être exporté
+          if (!found) {
+            outcom.push(nty);
+          }
+        });
+
+        // s'il y a des items à importer, on ajoute la table
+        if (incom.length>0) {
+          Object.defineProperty(in_db, k, {
+            value:incom,
+            enumerable: true,
+            writable: true,
+            configurable: false
+          });
+        }
+
+
+        // s'il y a des items à exporter, on ajoute la table
+        if (outcom.length>0) {
+          Object.defineProperty(out_db, k, {
+            value:outcom,
+            enumerable: true,
+            writable: true,
+            configurable: false
+          });
+        }
+
+      }); 
+
+
+      log.info('import:', in_db);
+      log.info('export:', out_db);
+
     });
 
     
@@ -291,7 +412,7 @@ const actions = {
       
       log.info(`${Object.keys(connectedSecondaries).length} socket(s) connected. New id : `, sock.id);
       // on signale l'initialisation de la communication descendante (entre le primary et le secondary)
-      io.to(sock).emit('sync',{type:'syncinit'});
+      io.to(sock.id).emit('sync',{type:'syncinit'});
 
       // écouteur d'événement 'register' :
       // le secondary envoie son identité afin que le primary le stocke dans un objet
@@ -306,7 +427,7 @@ const actions = {
         });
 
         const summary = await welcomeTreatment();
-        io.to(sock).emit('welcome', summary);
+        io.to(sock.id).emit('welcome', summary);
         
       });
 
