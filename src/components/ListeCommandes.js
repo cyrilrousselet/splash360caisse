@@ -142,7 +142,7 @@ function LivreurPopin(props) {
           </div>
           <div className="body">
           { livreurs.map((lvr,i) =>
-            <StdButton identifier={ lvr.user_id } key={i} elementclass={ `livreur${((commandeLivreur && commandeLivreur.id==lvr.user_id)?' activated':'')}`} icon={ false } noStroke={true} text={ lvr.nom } onClick={(value) => { setLivreur({commandeId:commandeId, livreur:{nom:lvr.nom, id:lvr.user_id}}); closeHandler(); }} />
+            <StdButton identifier={ lvr.user_id } key={i} elementclass={ `livreur${((commandeLivreur && commandeLivreur.id==lvr.user_id)?' activated':'')}`} icon={ false } noStroke={true} text={ `${lvr.nom}${(lvr.coordonnees && ` (${lvr.coordonnees})`)}` } onClick={(value) => { setLivreur({commandeId:commandeId, livreur:{nom:lvr.nom, id:lvr.user_id}}); closeHandler(); }} />
             )}
             <StdButton identifier="none" key={livreurs.length} elementclass="livreur livreur-none" icon={ false } noStroke={true} text={ strings.modules.listecommandes.livreurs.aucun } onClick={(value) => { setLivreur({commandeId:commandeId, livreur:null}); closeHandler(); }} />
           </div>
