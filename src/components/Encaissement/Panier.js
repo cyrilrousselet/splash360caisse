@@ -852,12 +852,12 @@ class Panier extends React.Component {
     }
 
     const attenteHandler = (event) => {
-   //   this.props.setNewNumero();
+      if (!this.props.commande.numero) this.props.getNumero();
       this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1});
       standByCommande(this.props.commande);
     }
     const validationHandler = (event) => {
-   //   this.props.setNewNumero();
+      if (!this.props.commande.numero) this.props.getNumero();
       this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1});
       livraisonCommande(this.props.commande);
     }
@@ -871,7 +871,7 @@ class Panier extends React.Component {
     }
 
     const openReglementHandler = () => {
-     // this.props.getNumero();
+      if (!this.props.commande.numero) this.props.getNumero();
       this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1});
       openReglement();
     }

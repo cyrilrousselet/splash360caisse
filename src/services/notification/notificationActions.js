@@ -73,6 +73,7 @@ function initSync() {
 function syncDispatch(db,data,emitter=null) {
   return (dispatch, getState) => {
     const { options } = getState().parametresReducer.parametres;
+    console.log('NAct.syncDispatch()');
     if (options.role==='primary') {
       notificationServices.syncDispatch(db, data, emitter)
       .then(result => {

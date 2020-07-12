@@ -64,11 +64,11 @@ function getNumero() {
     if (options.role==='secondary') {
       dispatch(notificationActions.getNewNumero());
     } else {
+      const {numero} = getState().commandeReducer;
+      const nnumero = numero ? numero : commandeServices.getNewNumero( getState().parametresReducer.parametres, null);
+      logger.log('getNumero()', nnumero);
       
-      const numero = getState().commandeReducer.numero || commandeServices.getNewNumero( getState().parametresReducer.parametres, numero);
-      logger.log('getNumero()', numero);
-      
-      dispatch({type: commandeActionTypes.GET_NUMERO, numero});
+      dispatch({type: commandeActionTypes.GET_NUMERO, numero: nnumero});
       dispatch(setNewNumero());
     }
 
@@ -161,7 +161,7 @@ function validateCommande(payload) {
     payload.operator_encaissement = {id: user.id, nom: user.nom};
     payload.caisse_encaissement = caisse;
     
-    return commandeServices.saveCommande(payload, catalogueReducer)
+    commandeServices.saveCommande(payload, catalogueReducer)
     .then(
       confirm => {
       //  const commande = commandeServices.getNewCommande({operator:{id: user.id, nom: user.nom}, caisse: caisse});
@@ -169,6 +169,7 @@ function validateCommande(payload) {
         dispatch(notificationActions.syncDispatch('commande',confirm));
         // dispatch(setNewNumero());
         dispatch(getCommande());
+        dispatch(getCommandesList());
       },
       error => {
         logger.log(error);
@@ -184,9 +185,10 @@ function validateCommandeAndUpdateList(payload) {
   logger.log('commandeActions.validateCommandeAndUpdateList()');
 
   return (dispatch) => {
-    dispatch(validateCommande(payload)).then((dataFromValidate) => {
-      dispatch(getCommandesList())
-    })
+    // dispatch(validateCommande(payload)).then((dataFromValidate) => {
+    //   dispatch(getCommandesList())
+    // })
+    dispatch(validateCommande(payload));
   }
 }
 
@@ -202,26 +204,30 @@ function standByCommande(payload) {
     logger.log(payload);
     const state = getState();
 
+    // if (payload.numero==null) { 
+    //   const numero = commandeServices.getNewNumero(state.parametresReducer.parametres, state.commandeReducer.numero);
+    //   payload.numero = numero;
+    //   dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
+    // }
     if (payload.numero==null) { 
-      const numero = commandeServices.getNewNumero(state.parametresReducer.parametres, state.commandeReducer.numero);
-      payload.numero = numero;
-      dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
+      payload.numero = getState().commandeReducer.numero;
     }
     
     commandeServices.saveCommande(payload, state.catalogueReducer)
     .then(
       confirm => {
-        const { user } = state.authentication;
-        const { caisse } = state.parametresReducer.parametres.options;
+        // const { user } = state.authentication;
+        // const { caisse } = state.parametresReducer.parametres.options;
 
-        const commande = commandeServices.getNewCommande({operator:user, caisse:caisse});
-        dispatch(getCommandesList());
+        // const commande = commandeServices.getNewCommande({operator:user, caisse:caisse});
+        dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande:{}});
         dispatch(notificationActions.syncDispatch('commande',confirm));
-        return dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
+        dispatch(getCommande());
+        // dispatch(getCommandesList());
       },
       error => {
         logger.log(error);
-        return dispatch({ type:commandeActionTypes.VALIDATE_COMMANDE_FAILURE, error: error.toString() })
+        dispatch({ type:commandeActionTypes.VALIDATE_COMMANDE_FAILURE, error: error.toString() })
       }
     );
     
@@ -240,26 +246,30 @@ function livraisonCommande(payload) {
     logger.log(payload);
     const state = getState();
 
+    // if (payload.numero==null) { 
+    //   const numero = commandeServices.getNewNumero(state.parametresReducer.parametres, state.commandeReducer.numero);
+    //   payload.numero = numero
+    //   dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
+    // }
     if (payload.numero==null) { 
-      const numero = commandeServices.getNewNumero(state.parametresReducer.parametres, state.commandeReducer.numero);
-      payload.numero = numero
-      dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
+      payload.numero = getState().commandeReducer.numero;
     }
     
     commandeServices.saveCommande(payload, state.catalogueReducer)
     .then(
       confirm => {
-        const { user } = state.authentication;
-        const { caisse } = state.parametresReducer.parametres.options;
-        const commande = commandeServices.getNewCommande({operator:user, caisse:caisse});
+        // const { user } = state.authentication;
+        // const { caisse } = state.parametresReducer.parametres.options;
+        // const commande = commandeServices.getNewCommande({operator:user, caisse:caisse});
         dispatch(peripheralActions.printTicket('all'));
-        dispatch(getCommandesList());
+      //  dispatch(getCommandesList());
+        dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande:{}});
         dispatch(notificationActions.syncDispatch('commande',confirm));
-        return dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande});
+        dispatch(getCommande());
       },
       error => {
         logger.log(error);
-        return dispatch({ type:commandeActionTypes.VALIDATE_COMMANDE_FAILURE, error: error.toString() })
+        dispatch({ type:commandeActionTypes.VALIDATE_COMMANDE_FAILURE, error: error.toString() })
       }
     );
     
