@@ -29,7 +29,11 @@ const SYNCHRO_TREATMENT = {
   'deleteavoir': 'deleteAvoirSync',
   'timeadjust': 'setTimeadjustSync',
   'cloture': 'setClotureSync',
-  'user': 'setUserSync'
+  'user': 'setUserSync',
+  'produit': 'setProduitSync',
+  'groupe': 'setGroupeSync',
+  'ingredient': 'setIngredientSync',
+  'type': 'setIngredientTypeSync'
 }
 
 const allowedOrigins = [
