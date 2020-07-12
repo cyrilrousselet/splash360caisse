@@ -143,6 +143,7 @@ class Reglement extends React.Component {
         this.props.commande.chrono = Math.round(differenceInMilliseconds(this.props.commande.end, this.props.commande.start)/10)/100;
       }
 
+      
       // si on encaisse une commande déjà produite, 
       // on ne réimprime pas les tickets de production (ms seulmt 'commande')
       if (this.props.commande.status=='a_encaisser') {
@@ -154,10 +155,10 @@ class Reglement extends React.Component {
         if (!modif) this.props.printTicket('all');
       }
 
-
       // enregistrement des TR en base (pour contrôle ultérieur)
       if (trlist.length>0) this.props.persistTicketsRestaurants(trlist);
       this.props.validateCommande(this.props.commande);
+
 
     }
     this.setState({input: false});

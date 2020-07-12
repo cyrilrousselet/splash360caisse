@@ -233,24 +233,33 @@ function _doPrintTicket(imprimante, template, contenu) {
 
   // déclaration de l'imprimante
   let device;
-  if (imprimante.connexion=='usb') {
-    if (imprimante.param && (typeof imprimante.param==="string") ) {
-      vp = imprimante.param.split(';');
-        vid = parseInt(vp[0], 16);
-        pid = parseInt(vp[1], 16);
-        device = new escpos.USB(vid,pid);
-      } else {
-        device = new escpos.USB();
-      }
-  } else if (imprimante.connexion=='network') {
-    device = new escpos.Network(imprimante.param); 
-  } else if (imprimante.connexion=='serial') {
-    device = new escpos.SerialPort(imprimante.param);
-  }
   const options = {encoding: imprimante.encoding, width:42};
-  // const options = {encoding: imprimante.encoding};
-  const printer = new escpos.Printer(device, options);
-  printerOpen = true;
+  let printer;
+  try {
+    
+
+    if (imprimante.connexion=='usb') {
+      if (imprimante.param && (typeof imprimante.param==="string") ) {
+        vp = imprimante.param.split(';');
+          vid = parseInt(vp[0], 16);
+          pid = parseInt(vp[1], 16);
+          device = new escpos.USB(vid,pid);
+        } else {
+          device = new escpos.USB();
+        }
+    } else if (imprimante.connexion=='network') {
+      device = new escpos.Network(imprimante.param); 
+    } else if (imprimante.connexion=='serial') {
+      device = new escpos.SerialPort(imprimante.param);
+    }
+    
+    // const options = {encoding: imprimante.encoding};
+    printer = new escpos.Printer(device, options);
+    printerOpen = true;
+    
+  } catch(e) {
+    log.error(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`, e.message);
+  }
 
   log.debug('printTicket start');
 
@@ -269,19 +278,24 @@ function _doPrintTicket(imprimante, template, contenu) {
     escpos.Image.load(imglogo, function(image){
 
       // on ouvre la connexion à l'imprimante
-      device.open(async function() {
-        log.debug('print logo');
-        // center logo
-        printer.align('CT');
-        // impression logo
-        let printimage = await _printImage(printer, image);
+      if (device) {
+        
+        device.open(async function() {
+          log.debug('print logo');
+          // center logo
+          printer.align('CT');
+          // impression logo
+          let printimage = await _printImage(printer, image);
 
-        // une fois le logo chargé on lance l'impression des sections du tickets
-        if (printimage) {
-        _launchPrint(template, printer, contenu);
-        }
+          // une fois le logo chargé on lance l'impression des sections du tickets
+          if (printimage) {
+          _launchPrint(template, printer, contenu);
+          }
 
-      });
+        });
+      } else {
+        log.error('impression impossible');
+      }
 
     });
 
@@ -291,9 +305,13 @@ function _doPrintTicket(imprimante, template, contenu) {
 
     // on ouvre la connexion à l'imprimante
     // et on lance l'impression des sections du tickets
-    device.open(function() {
-      _launchPrint(template, printer, contenu);
-    });
+    if (device) {
+      device.open(function() {
+        _launchPrint(template, printer, contenu);
+      });
+    } else {
+      log.error('impression impossible');
+    }
   }
     
 
