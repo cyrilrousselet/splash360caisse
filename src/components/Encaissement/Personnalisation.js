@@ -58,9 +58,9 @@ class Personnalisation extends React.Component {
    * 
    * @param {*} ingredientid id de l'ingrédient
    */
-  getIngredientQuantity(ingredientid) {
+  getIngredientQuantity(ingredientid, stepid) {
     const { itemIngredients } = this.props;
-    const ingredient = itemIngredients.find(ing=>ing.ingredient==ingredientid);
+    const ingredient = itemIngredients.find(ing=>(ing.ingredient===ingredientid && ing.fromStep===stepid));
     if (null==ingredient) return 0; 
     return ingredient.qte;
   }
@@ -72,13 +72,13 @@ class Personnalisation extends React.Component {
    * @param {*} itming    liste des ingredients de l'item de commande
    * @returns un objet ayant comme propriétés l'id de chaque type et comme valeur un booléen (true = nombre max atteint)
    */
-  isIngredientTypeMaxnum(steptypes, itming) {
+  isIngredientTypeMaxnum(steptypes, itming, stepid) {
 
     let intypes = {}, typeMax = {};
     let max, num, typeing;
     for (let [key, value] of Object.entries(steptypes)) {
       max = commandeServices.getRuleValues(value.regle).max;
-      typeing = itming.filter(ing=>ing.type==key);
+      typeing = itming.filter(ing=>(ing.type==key && ing.fromStep==stepid));
       num = 0;
       typeing.forEach(ing=> { num += ing.qte });
       intypes[key] = {max, num};
@@ -131,7 +131,7 @@ class Personnalisation extends React.Component {
 
     if (null==ingredientTypes || Object.entries(ingredientTypes).length==0) return <Modal open={open}><LoadingSpinner /></Modal>;
 
-    const isTypesMax = this.isIngredientTypeMaxnum(ingredientTypes, itemIngredients);
+    const isTypesMax = this.isIngredientTypeMaxnum(ingredientTypes, itemIngredients, step);
 
     const onClickDelete = () => {
       if (itemstatus=='pending') updateProduit({itemid: item, quantite: 0});
@@ -166,8 +166,9 @@ class Personnalisation extends React.Component {
                         supplement={ingredient.supplement} 
                         step={step}
                         disabled={isTypesMax[id] || ingredient.active==0}
-                        withbuttons={ (!RegExp('^(\\?|\\{1\\}|\\{0\\}|\\{0,1\\})').test(type.regle)) || this.getIngredientQuantity(ingredient.id)>0 }
-                        qte={this.getIngredientQuantity(ingredient.id)}
+                        // withbuttons={ (!RegExp('^(\\?|\\{1\\}|\\{0\\}|\\{0,1\\})').test(type.regle)) || this.getIngredientQuantity(ingredient.id)>0 }
+                        withbuttons={ (!RegExp('^(\\?|\\{1\\}|\\{0\\})').test(type.regle)) || this.getIngredientQuantity(ingredient.id)>0 }
+                        qte={this.getIngredientQuantity(ingredient.id, step)}
                         addIng={()=>{ addIngredient({itemid: item, stepid: step, ingredientid: ingredient.id, quantite: 1}) }} 
                         removeIng={()=>{ removeBtnHandler({itemid: item, stepid: step, ingredientid: ingredient.id, quantite: 1}) }} 
                         key={ingredient.id}

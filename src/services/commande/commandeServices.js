@@ -586,14 +586,14 @@ function _mustBeUnique(step, ingredient) {
   // OU
   // s'il y a plusieurs types d'ingrédients dans le step
   // et que la règle vaut pour tous les types
-  if (step.regles.length == 1 || (step.regles.length>1 && step.regles[0].regle.toLowerCase().indexOf('g') != -1)) {
+  if (step.regles.length === 1 || (step.regles.length>1 && step.regles[0].regle.toLowerCase().indexOf('g') > -1)) {
     // si la règle impose un max. d'1 ingrédient:
     if (RegExp('^(\\?|\\{1,1\\}|\\{0,1\\}|\\{1\\})').test(step.regles[0].regle)) __unique = true;
     
   }
   // s'il y a plusieurs types d'ingrédients
   else if (step.regles.length>1) {
-    const __regle = step.regles.find(st=>st.type==ingredient.type);
+    const __regle = step.regles.find(st=>st.type===ingredient.type);
 
     // si la règle impose un max. d'1 ingrédient
     // on récupère le type correspondant à l'ingrédient
@@ -625,16 +625,16 @@ function _checkStepRegles(step, item) {
   // OU
   // s'il y a plusieurs types d'ingrédients dans le step
   // et que la règle vaut pour tous les types
-  if (step.regles.length == 1 || (step.regles.length>1 && step.regles[0].regle.toLowerCase().indexOf('g') != -1)) {
+  if (step.regles.length === 1 || (step.regles.length>1 && step.regles[0].regle.toLowerCase().indexOf('g') > -1)) {
     // on exécute le même test sur tous les types
     logger.log('on applique le test sur tous les types d’ingredients à la fois');
-    __ing = item.ingredients.filter(ing => __types.indexOf(ing.type)!=-1);
+    __ing = item.ingredients.filter(ing => (__types.indexOf(ing.type)>-1 && ing.fromStep===step.step_id));
     if (!_testIngredient(step.regles[0], __ing)) __validated = false;
     if (!_testIngredient(step.regles[0], __ing, true)) __completed = false;
   }
   else {
     step.regles.forEach( regle => {
-      __ing = item.ingredients.filter(ing => regle.type == ing.type);
+      __ing = item.ingredients.filter(ing => (regle.type === ing.type && ing.fromStep===step.step_id));
       if (!_testIngredient(regle, __ing)) __validated = false;
       if (!_testIngredient(regle, __ing, true)) __completed = false;
     })
@@ -651,8 +651,8 @@ function isStepOptionnal(step) {
   // OU
   // s'il y a plusieurs types d'ingrédients dans le step
   // et que la règle vaut pour tous les types
-  if (step.regles.length == 1 || (step.regles.length>1 && step.regles[0].regle.toLowerCase().indexOf('g') != -1)) {
-    if (getRuleValues(step.regles[0].regle).min==0) __isOptionnal = true;
+  if (step.regles.length === 1 || (step.regles.length>1 && step.regles[0].regle.toLowerCase().indexOf('g') > -1)) {
+    if (getRuleValues(step.regles[0].regle).min===0) __isOptionnal = true;
   } 
   // sinon (plusieurs types avec règles différentes), on additionne les valeurs minimales (si 0, c'est optionnel)
   else {
@@ -660,7 +660,7 @@ function isStepOptionnal(step) {
     step.regles.forEach( rgl => {
       values += getRuleValues(rgl.regle).min;
     });
-    if (values==0) __isOptionnal = true;
+    if (values===0) __isOptionnal = true;
   }
 
   return __isOptionnal;
@@ -675,7 +675,7 @@ function _getSupplements(rule, ingredients) {
   let __supplement = 0;
 
   // s'il y a une indication de supplément dans la règle :
-  if (regle.indexOf('s')!=-1) {
+  if (regle.indexOf('s')>-1) {
     const __deuxregles = regle.split(';s:');
 
     const __rulevaleurs = getRuleValues(__deuxregles[0]);
