@@ -109,21 +109,21 @@ const actions = {
     const _avr = await (await db.avoirs).get('avoirs').value();
     const _avrSummary = _avr.map(a => (
       {
-        avoir_id: a.avoir_id,
+        id: a.avoir_id,
         updatedAt: a.updatedAt
       }
     ));
     const _rpn = await (await db.reglespanier).get('reglespanier').value();
     const _rpnSummary = _rpn.map(r => (
       {
-        reglepanier_id: r.reglepanier_id,
+        id: r.reglepanier_id,
         updatedAt: r.updatedAt
       }
     ));
     const _rct = await (await db.reglescatalogue).get('reglescatalogue').value();
     const _rctSummary = _rct.map(r => (
       {
-        reglecatalogue_id: r.reglecatalogue_id,
+        id: r.reglecatalogue_id,
         updatedAt: r.updatedAt
       }
     ));

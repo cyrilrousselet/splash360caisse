@@ -56,7 +56,7 @@ const actions = {
     const _usr = await (await db.users).get('users').value();
     const _usrSummary = _usr.map(u => (
       {
-        user_id: u.user_id,
+        id: u.user_id,
         updatedAt: u.updatedAt
       }
     ));

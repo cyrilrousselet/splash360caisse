@@ -47,7 +47,7 @@ const actions = {
     const _clt = await (await db.clients).get('clients').value();
     const _cltSummary = _clt.map(c => (
       {
-        client_id: c.client_id,
+        id: c.client_id,
         updatedAt: c.updatedAt
       }
     ));

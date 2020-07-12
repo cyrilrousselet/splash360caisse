@@ -87,7 +87,7 @@ const actions = {
     const _cmd = await (await db.commandes).get('commandes').value();
     const _cmdSummary = _cmd.map(c => (
       {
-        ticketId: c.ticketId,
+        id: c.ticketId,
         updatedAt: c.updatedAt
       }
     ));

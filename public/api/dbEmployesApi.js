@@ -97,21 +97,21 @@ const actions = {
     const _pnt = await (await db.pointages).get('pointages').value();
     const _pntSummary = _pnt.map(p => (
       {
-        pointage_id: p.pointage_id,
+        id: p.pointage_id,
         updatedAt: p.updatedAt
       }
     ));
     const _adj = await (await db.timeadjusts).get('timeadjusts').value();
     const _adjSummary = _adj.map(a => (
       {
-        adjust_id: a.adjust_id,
+        id: a.adjust_id,
         updatedAt: a.updatedAt
       }
     ));
     const _shf = await (await db.shifts).get('shifts').value();
     const _shfSummary = _shf.map(s => (
       {
-        shift_id: s.shift_id,
+        id: s.shift_id,
         updatedAt: s.updatedAt
       }
     ));

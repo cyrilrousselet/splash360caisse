@@ -39,7 +39,7 @@ const actions = {
     const _clo = await (await db.clotures).get('clotures').value();
     const _cloSummary = _clo.map(c => (
       {
-        clotureId: c.clotureId,
+        id: c.clotureId,
         updatedAt: c.updatedAt
       }
     ));
