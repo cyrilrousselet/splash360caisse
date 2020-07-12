@@ -123,13 +123,13 @@
     "tva": [
         {
             "tva_id": "tva6",
-            "nom": "TVA 10 ALL MODE",
+            "nom": "TVA 10%",
             "code": "A",
             "valeur": "0.1"
         },
         {
             "tva_id": "tva8",
-            "nom": "TVA 5,5 ALL MODE",
+            "nom": "TVA 5,5%",
             "code": "B",
             "valeur": "0.055"
         }
@@ -702,7 +702,7 @@
             "ingredient_id": "ing1057",
             "type": "typ152",
             "nom": "PAIN",
-            "supplement": "0.50",
+            "supplement": "0.00",
             "tva": "tva6",
             "weight": 5,
             "color": "jauneorange"
