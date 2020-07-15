@@ -877,6 +877,8 @@ function addModificateur(payload, comments) {
 
 
 function saveCommande(commande, catalogueReducer) {
+
+  console.log('CmdSrv.saveCommande()', commande);
 /*
   let __cmd = {
     commande_id: payload.ticketId,

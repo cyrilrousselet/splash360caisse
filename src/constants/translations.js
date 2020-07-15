@@ -980,7 +980,8 @@ const data = {
                 },
                 modificateur: {
                     charge: 'CHARGE',
-                    discount: 'REDUCTION',
+                    discount_panier: 'REDUCTION PANIER',
+                    discount_item: 'Réduction article',
                     monnaie: 'EUR'
                 },
                 tva: {

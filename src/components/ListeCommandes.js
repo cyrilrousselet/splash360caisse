@@ -242,7 +242,7 @@ class ListeCommandes extends React.Component {
 
   
   closeReglement() {
-    this.setState({reglementOpen: false});
+    this.setState({reglementOpen: false, commandeId: null});
   }
 
   encaissementHandle(value) {
@@ -265,7 +265,7 @@ class ListeCommandes extends React.Component {
     this.setState({commandeId:cmdid, printOpen:true});
   }
   closePrint() {
-    this.setState({printOpen:false});
+    this.setState({printOpen:false, commandeId: null});
   }
   launchTicket(ticket, cmdid) {
     logger.log(`print ticket '${ticket}' pour #${cmdid}`);
@@ -376,7 +376,7 @@ class ListeCommandes extends React.Component {
     this.setState({commandeId:cmdid, livreurOpen:true});
   }
   closeLivreurs(cmdid) {
-    this.setState({livreurOpen:false});
+    this.setState({livreurOpen:false, commandeId: null});
   }
 
   render() {

@@ -120,7 +120,7 @@ console.trace('getCommande()');
       const { caisse } = state.parametresReducer.parametres.options;
       const commande = commandeServices.getNewCommande({operator:user, caisse:caisse});
       dispatch({ type: commandeActionTypes.GET_COMMANDE_SUCCESS, commande });
-      dispatch(getNumero());
+  //    dispatch(getNumero());
     }
     // avec id de commande, on va chercher la commande en base
     else {
@@ -154,7 +154,7 @@ function validateCommande(payload) {
       //   dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
       // }
     if (payload.numero==null) { 
-      payload.numero = getState().commandeReducer.numero;
+      payload.numero = getState().commandeReducer.commande.numero;
     }
     
 
@@ -210,7 +210,7 @@ function standByCommande(payload) {
     //   dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
     // }
     if (payload.numero==null) { 
-      payload.numero = getState().commandeReducer.numero;
+      payload.numero = getState().commandeReducer.commande.numero;
     }
     
     commandeServices.saveCommande(payload, state.catalogueReducer)
@@ -252,7 +252,7 @@ function livraisonCommande(payload) {
     //   dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
     // }
     if (payload.numero==null) { 
-      payload.numero = getState().commandeReducer.numero;
+      payload.numero = getState().commandeReducer.commande.numero;
     }
     
     commandeServices.saveCommande(payload, state.catalogueReducer)
@@ -611,7 +611,7 @@ function setCommandeFromOrder(provider, payload) {
         dispatch(notificationActions.syncDispatch('commande',confirm));
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
         const { numero } = commande;
-        dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
+      //  dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
       },
       error => {
         logger.log(error);
@@ -655,7 +655,7 @@ function setCommandeFromAPI(payload) {
         dispatch(notificationActions.syncDispatch('commande',confirm));
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
         const { numero } = commande;
-        dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
+      //  dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
       },
       error => {
         logger.log(error);

@@ -169,6 +169,134 @@ const welcomeTreatment = async () => {
 
 }
 
+/**
+ * Compare les listes des entités 
+ * et définit une liste d'items à importer et une liste d'items à exporter
+ * 
+ * @param {*} primarySum liste des tables et des entités {id, updatedAt} de la caisse principale
+ * @param {*} secondarySum liste des tables et des entités {id, updatedAt} de la caisse secondaire
+ */
+const getImportExport = (primarySum, secondarySum) => {
+
+
+  const prmkeys = Object.keys(primarySum);
+  const seckeys = Object.keys(secondarySum);
+
+  // récup des clés (noms des tables) pour chaque summary
+  const indbkeys = difference(prmkeys,seckeys);
+  const outdbkeys = difference(seckeys, prmkeys);
+  const comdbkeys = intersection(seckeys, prmkeys);
+
+  // liste des tables à importer
+  let in_db = {};
+  // ajout des tables inexistantes à importer
+  indbkeys.forEach(k => {
+    Object.defineProperty(in_db, k, {
+      value: primarySum[k],
+      enumerable: true,
+      writable: false,
+      configurable: false
+    })
+  })
+  
+
+  // liste des tables à exporter
+  let out_db = {};
+  // ajout des tables inexistantes à exporter
+  outdbkeys.forEach(k => {
+    Object.defineProperty(out_db, k, {
+      value: secondarySum[k],
+      enumerable: true,
+      writable: false,
+      configurable: false
+    })
+  });
+
+  // ajout des tables existantes aux deux listes ('à importer' et 'à exporter')
+  comdbkeys.forEach(k => {
+
+    const incom = [];
+    const outcom = []; 
+
+    // pour chaque table en commun, on récupère les différences
+
+    // dans la liste de la caisse 'primary'
+    primarySum[k].forEach(nty => {
+      const found = secondarySum[k].find(snty => snty.id == nty.id);
+      // si un item a été trouvé
+      if (found) {
+        // si l'item a été mis à jour
+        if (nty.updatedAt) {
+          // si l'item correspondant a été mis à jour
+          if (found.updatedAt) {
+            // si l'item est plus récent il doit être importé
+            if (nty.updatedAt>found.updatedAt) {
+              incom.push(nty);
+            } 
+            // si l'item correspondant est plus récent il doit être exporté
+            else {
+              outcom.push(found);
+            }
+          }
+          // si l'item correspondant n'a pas été mis à jour
+          // l'item doit être importé
+          else {
+            incom.push(nty);
+          }
+        }
+        // si l'item n'a pas été mis à jour
+        else {
+          // si l'item correspondant a été mis à jour
+          // il doit être exporté
+          if (found.updatedAt) {
+            outcom.push(found);
+          }
+        }
+      } 
+      // s'il n'a pas été trouvé il doit être importé
+      else {
+        incom.push(nty);
+      }
+
+    });
+
+
+    // dans la liste de la caisse 'secondary'
+    secondarySum[k].forEach(nty => {
+      const found = primarySum[k].find(pnty => pnty.id == nty.id);
+      // si aucun item ne correspond, il doit être exporté
+      if (!found) {
+        outcom.push(nty);
+      }
+    });
+
+    // s'il y a des items à importer, on ajoute la table
+    if (incom.length>0) {
+      Object.defineProperty(in_db, k, {
+        value:incom,
+        enumerable: true,
+        writable: true,
+        configurable: false
+      });
+    }
+
+
+    // s'il y a des items à exporter, on ajoute la table
+    if (outcom.length>0) {
+      Object.defineProperty(out_db, k, {
+        value:outcom,
+        enumerable: true,
+        writable: true,
+        configurable: false
+      });
+    }
+
+  }); 
+
+  return { importation: in_db, exportation: out_db };
+
+}
+
 const actions = {
 
   // renvoie le ticketId et le numero de la commande synchronisée par une borne
@@ -261,128 +389,129 @@ const actions = {
 
 
     socket.on('welcome', async (primarySum) => {
-      log.info('on welcome', primarySum);
+      log.info('on welcome');
 
       const secondarySum = await welcomeTreatment();
-      log.info('secondarySum', secondarySum);
 
-      const prmkeys = Object.keys(primarySum);
-      const seckeys = Object.keys(secondarySum);
+      const { importation, exportation } = getImportExport(primarySum, secondarySum);
 
-      // récup des clés (noms des tables) pour chaque summary
-      const indbkeys = difference(prmkeys,seckeys);
-      const outdbkeys = difference(seckeys, prmkeys);
-      const comdbkeys = intersection(seckeys, prmkeys);
+      // const prmkeys = Object.keys(primarySum);
+      // const seckeys = Object.keys(secondarySum);
+
+      // // récup des clés (noms des tables) pour chaque summary
+      // const indbkeys = difference(prmkeys,seckeys);
+      // const outdbkeys = difference(seckeys, prmkeys);
+      // const comdbkeys = intersection(seckeys, prmkeys);
     
-      // liste des tables à importer
-      let in_db = {};
-      // ajout des tables inexistantes à importer
-      indbkeys.forEach(k => {
-        Object.defineProperty(in_db, k, {
-          value: primarySum[k],
-          enumerable: true,
-          writable: false,
-          configurable: false
-        })
-      })
+      // // liste des tables à importer
+      // let in_db = {};
+      // // ajout des tables inexistantes à importer
+      // indbkeys.forEach(k => {
+      //   Object.defineProperty(in_db, k, {
+      //     value: primarySum[k],
+      //     enumerable: true,
+      //     writable: false,
+      //     configurable: false
+      //   })
+      // })
       
 
-      // liste des tables à exporter
-      let out_db = {};
-      // ajout des tables inexistantes à exporter
-      outdbkeys.forEach(k => {
-        Object.defineProperty(out_db, k, {
-          value: secondarySum[k],
-          enumerable: true,
-          writable: false,
-          configurable: false
-        })
-      });
+      // // liste des tables à exporter
+      // let out_db = {};
+      // // ajout des tables inexistantes à exporter
+      // outdbkeys.forEach(k => {
+      //   Object.defineProperty(out_db, k, {
+      //     value: secondarySum[k],
+      //     enumerable: true,
+      //     writable: false,
+      //     configurable: false
+      //   })
+      // });
 
-      // ajout des tables existantes aux deux listes ('à importer' et 'à exporter')
-      comdbkeys.forEach(k => {
+      // // ajout des tables existantes aux deux listes ('à importer' et 'à exporter')
+      // comdbkeys.forEach(k => {
 
-        const incom = [];
-        const outcom = []; 
+      //   const incom = [];
+      //   const outcom = []; 
 
-        // pour chaque table en commun, on récupère les différences
+      //   // pour chaque table en commun, on récupère les différences
 
-        // dans la liste de la caisse 'primary'
-        primarySum[k].forEach(nty => {
-          const found = secondarySum[k].find(snty => snty.id == nty.id);
-          // si un item a été trouvé
-          if (found) {
-            // si l'item a été mis à jour
-            if (nty.updatedAt) {
-              // si l'item correspondant a été mis à jour
-              if (found.updatedAt) {
-                // si l'item est plus récent il doit être importé
-                if (nty.updatedAt>found.updatedAt) {
-                  incom.push(nty);
-                } 
-                // si l'item correspondant est plus récent il doit être exporté
-                else {
-                  outcom.push(found);
-                }
-              }
-              // si l'item correspondant n'a pas été mis à jour
-              // l'item doit être importé
-              else {
-                incom.push(nty);
-              }
-            }
-            // si l'item n'a pas été mis à jour
-            else {
-              // si l'item correspondant a été mis à jour
-              // il doit être exporté
-              if (found.updatedAt) {
-                outcom.push(found);
-              }
-            }
-          } 
-          // s'il n'a pas été trouvé il doit être importé
-          else {
-            incom.push(nty);
-          }
+      //   // dans la liste de la caisse 'primary'
+      //   primarySum[k].forEach(nty => {
+      //     const found = secondarySum[k].find(snty => snty.id == nty.id);
+      //     // si un item a été trouvé
+      //     if (found) {
+      //       // si l'item a été mis à jour
+      //       if (nty.updatedAt) {
+      //         // si l'item correspondant a été mis à jour
+      //         if (found.updatedAt) {
+      //           // si l'item est plus récent il doit être importé
+      //           if (nty.updatedAt>found.updatedAt) {
+      //             incom.push(nty);
+      //           } 
+      //           // si l'item correspondant est plus récent il doit être exporté
+      //           else {
+      //             outcom.push(found);
+      //           }
+      //         }
+      //         // si l'item correspondant n'a pas été mis à jour
+      //         // l'item doit être importé
+      //         else {
+      //           incom.push(nty);
+      //         }
+      //       }
+      //       // si l'item n'a pas été mis à jour
+      //       else {
+      //         // si l'item correspondant a été mis à jour
+      //         // il doit être exporté
+      //         if (found.updatedAt) {
+      //           outcom.push(found);
+      //         }
+      //       }
+      //     } 
+      //     // s'il n'a pas été trouvé il doit être importé
+      //     else {
+      //       incom.push(nty);
+      //     }
 
-        });
-
-
-        // dans la liste de la caisse 'secondary'
-        secondarySum[k].forEach(nty => {
-          const found = primarySum[k].find(pnty => pnty.id == nty.id);
-          // si aucun item ne correspond, il doit être exporté
-          if (!found) {
-            outcom.push(nty);
-          }
-        });
-
-        // s'il y a des items à importer, on ajoute la table
-        if (incom.length>0) {
-          Object.defineProperty(in_db, k, {
-            value:incom,
-            enumerable: true,
-            writable: true,
-            configurable: false
-          });
-        }
+      //   });
 
 
-        // s'il y a des items à exporter, on ajoute la table
-        if (outcom.length>0) {
-          Object.defineProperty(out_db, k, {
-            value:outcom,
-            enumerable: true,
-            writable: true,
-            configurable: false
-          });
-        }
+      //   // dans la liste de la caisse 'secondary'
+      //   secondarySum[k].forEach(nty => {
+      //     const found = primarySum[k].find(pnty => pnty.id == nty.id);
+      //     // si aucun item ne correspond, il doit être exporté
+      //     if (!found) {
+      //       outcom.push(nty);
+      //     }
+      //   });
 
-      }); 
+      //   // s'il y a des items à importer, on ajoute la table
+      //   if (incom.length>0) {
+      //     Object.defineProperty(in_db, k, {
+      //       value:incom,
+      //       enumerable: true,
+      //       writable: true,
+      //       configurable: false
+      //     });
+      //   }
 
 
-      log.info('import:', in_db);
-      log.info('export:', out_db);
+      //   // s'il y a des items à exporter, on ajoute la table
+      //   if (outcom.length>0) {
+      //     Object.defineProperty(out_db, k, {
+      //       value:outcom,
+      //       enumerable: true,
+      //       writable: true,
+      //       configurable: false
+      //     });
+      //   }
+
+      // }); 
+
+
+      log.info('import:', importation);
+      log.info('export:', exportation);
 
     });
 

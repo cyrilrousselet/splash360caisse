@@ -18,6 +18,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import FicheClientCont from '../../containers/FicheClientCont';
 import Clavier from '../common/Clavier';
+import {devise} from '../../helpers/toolbox';
 
 let strings = new LocalizedStrings(data);
 
@@ -428,20 +429,39 @@ class Panier extends React.Component {
     let __total = 0;
     if (undefined!==items) {
       items.forEach(itm => {
-        __total += itm.quantite * itm.prix;
+
+        let __itemtotal = itm.quantite * itm.prix;
+        
+        // modificateur sur l'item
+        const __moditem = (modificateurs && modificateurs.length) ? modificateurs.find(m => m.item===itm.itemid && m.ingredient===null) : null;
+        if (__moditem) {
+          const ispc = String(__moditem.valeur).substr(-1,1)==='%';
+          const val = Math.abs(Number(String(__moditem.valeur).slice(0,-1)));
+          if (ispc) {
+            __itemtotal *= (100 - val) / 100;
+          } else {
+            __itemtotal -= val;
+          }
+        }
+        __total += __itemtotal;
       });
     }
 
-    // en attendant d'avoir un discount sur chaque item / ingredient
-    if (modificateurs && modificateurs.length) {
-      const ispc = String(modificateurs[0].valeur).substr(-1,1)==='%';
-      const val = Math.abs(Number(String(modificateurs[0].valeur).slice(0,-1)));
+
+
+
+    // modificateur sur le panier entier
+    const modpanier = (modificateurs && modificateurs.length) ? modificateurs.find(m => m.item===null && m.ingredient===null) : null;
+    if (modpanier) {
+      const ispc = String(modpanier.valeur).substr(-1,1)==='%';
+      const val = Math.abs(Number(String(modpanier.valeur).slice(0,-1)));
       if (ispc) {
         __total *= (100 - val) / 100;
       } else {
         __total -= val;
       }
     }
+    
 
     return __total;
   }
@@ -528,12 +548,13 @@ class Panier extends React.Component {
     const {selectedIndex, selectedIngredient} = this.state;
 
     // récup des id d'item et d'ingrédients en fonction de la sélection du panier
-  //  const itemid = (selectedIndex!==-1) ? items[selectedIndex].itemid : null;
-  //  const ingredientid = (selectedIngredient!==-1) ? items[selectedIndex].ingredients[selectedIngredient].ingredient : null;
+    const itemid = (selectedIndex!==-1) ? items[selectedIndex].itemid : null;
+   // const ingredientid = (selectedIngredient!==-1) ? items[selectedIndex].ingredients[selectedIngredient].ingredient : null;
+    const ingredientid = null;
 
     // DEV : pour l'instant on n'utilise que le discount sur le panier entier
-    const itemid = null;
-    const ingredientid = null;
+    // const itemid = null;
+    // const ingredientid = null;
 
     // si l'id de l'item est défini : 
     // - soit un comment d'item
@@ -725,7 +746,7 @@ class Panier extends React.Component {
     console.log('searchval', searchval);
 
     const total = this.calculateTotal(items, modificateurs);
-    const devise = '€';
+    const devisemonnaie = '€';
     const { selectedIndex, selectedIngredient } = this.state;
 
 
@@ -875,6 +896,64 @@ class Panier extends React.Component {
       this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1});
       openReglement();
     }
+
+
+    const getDiscount = (item) => {
+
+      if (null===modificateurs || (modificateurs && modificateurs.length<1)) return null;
+
+      let __itemtotal = item.quantite * item.prix;
+      let __montant;
+      const __moditem = modificateurs.find(m=>m.item===item.itemid && m.ingredient===null);
+      if (__moditem) {
+
+        const ispc = String(__moditem.valeur).substr(-1,1)==='%';
+        const val = Math.abs(Number(String(__moditem.valeur).slice(0,-1)));
+        __montant = ispc ? __itemtotal*(val/100) : val
+        
+        console.log('geDiscount', item.itemid)
+      }
+      return __moditem ? {...__moditem, montant: devise(__montant)} : null;
+    }
+
+
+    const getPanierDiscount = () => {
+
+      if (null===modificateurs || (modificateurs && modificateurs.length<1)) return null;
+      let __total = 0;
+
+      if (undefined!==items) {
+        items.forEach(itm => {
+  
+          let __itemtotal = itm.quantite * itm.prix;
+          
+          // modificateur sur l'item
+          const __moditem = (modificateurs && modificateurs.length) ? modificateurs.find(m => m.item===itm.itemid && m.ingredient===null) : null;
+          if (__moditem) {
+            const ispc = String(__moditem.valeur).substr(-1,1)==='%';
+            const val = Math.abs(Number(String(__moditem.valeur).slice(0,-1)));
+            if (ispc) {
+              __itemtotal *= (100 - val) / 100;
+            } else {
+              __itemtotal -= val;
+            }
+          }
+          __total += __itemtotal;
+        });
+      }
+
+      let __montant;
+      const __modpanier = (modificateurs && modificateurs.length) ? modificateurs.find(m=>m.item===null && m.ingredient===null) : null;
+      if (__modpanier) {
+
+        const ispc = String(__modpanier.valeur).substr(-1,1)==='%';
+        const val = Math.abs(Number(String(__modpanier.valeur).slice(0,-1)));
+        __montant = ispc ? __total*(val/100) : val;
+      }
+      return __modpanier ? {...__modpanier, montant: devise(__montant)} : null;
+    }
+
+    const modif_panier = getPanierDiscount();
  
     return (
       <div className={ `Panier ${open && 'reglement-ouvert'}` }>
@@ -917,6 +996,9 @@ class Panier extends React.Component {
                           composition={ itm.composition }
                           ingredients={ itm.ingredients }
                           steps={ itm.steps }
+                          discount={ getDiscount(itm) }
+                          deleteDiscountHandler={deleteDiscount}
+                          openDiscountHandler={this.openDiscount}
                           _onClick={ this.setSelectedIndex }
                           _onDoubleClick={ (id) => {
                             let __prevstepid = -1;
@@ -935,15 +1017,16 @@ class Panier extends React.Component {
                             this.props.openPersonnalisation(itm.itemid.toString(), stepid, __previd, __nextid, __step.validated, itm.status, 'item');
                           }} />
                   )}
-                  {modificateurs && <div className="separateur"></div>}
-                  {modificateurs && modificateurs.map(dis => (
-                    <DiscountListItem
-                      valeur={dis.valeur}
-                      id={dis.modificateur_id}
+                  {modif_panier && <div className="separateur"></div>}
+                  {modif_panier && <DiscountListItem
+                      className="panier-discount"
+                      valeur={modif_panier.valeur}
+                      id={modif_panier.modificateur_id}
+                      montant={modif_panier.montant}
                       onClick={this.openDiscount}
                       deleteHandler={deleteDiscount}
-                      />
-                  ))}
+                    />
+                  }
                   </List>
               </div> {/* /.wrapper */}
               <div className="tools">
@@ -966,7 +1049,7 @@ class Panier extends React.Component {
             </div> {/* /.Liste */}
             <div className="total">
                 <div className="intitule">{ strings.modules.encaissement.panier.liste.total }</div>
-                <div className="montant">{ `${total.toFixed(2).replace('.',',')} ${devise}` }</div>
+                <div className="montant">{ `${total.toFixed(2).replace('.',',')} ${devisemonnaie}` }</div>
             </div>
           </div> {/* /.PanierListe */}
 
@@ -1035,35 +1118,38 @@ Panier.propTypes = {
 
 
 function DiscountListItem (props) {
-  const {valeur, id, onClick, deleteHandler} = props;
+  const {valeur, montant, id, onClick, className, deleteHandler} = props;
 
   const deleteDiscount = () => {
+    console.log('deleteDiscount',id);
 
-      Swal.fire({
-        title: strings.modules.encaissement.discount.suppression.titre,
-        text: strings.modules.encaissement.discount.suppression.titre,
-        focusConfirm: true,
-        showCancelButton: true,
-        customClass: 'deleteconfirm',
-        confirmButtonText: strings.general.dialog.delete,
-        cancelButtonText: strings.general.dialog.cancel,
-        buttonsStyling: false 
-      })
-      .then((result) => {
-        if (result.value) {
-          deleteHandler({discountId:id});
-        }
-      });
-    }
+    Swal.fire({
+      title: strings.modules.encaissement.discount.suppression.titre,
+      text: strings.modules.encaissement.discount.suppression.titre,
+      focusConfirm: true,
+      showCancelButton: true,
+      customClass: 'deleteconfirm',
+      confirmButtonText: strings.general.dialog.delete,
+      cancelButtonText: strings.general.dialog.cancel,
+      buttonsStyling: false 
+    })
+    .then((result) => {
+      if (result.value) {
+        deleteHandler({discountId:id});
+      }
+    });
+  }
 
+  console.log('discount id', id);
 
   return (
-    <ListItem className="discount">
+    <ListItem className={ `discount ${className||''}` }>
       <ListItemText primary={valeur} onClick={onClick} />
       <ListItemSecondaryAction>
         <ListItemIcon onClick={deleteDiscount}>
           <DeleteIcon />
         </ListItemIcon>
+        <ListItemText primary={`-${montant}`} />
       </ListItemSecondaryAction>
     </ListItem>
   );
@@ -1074,7 +1160,10 @@ class PanierListeItem extends React.Component {
 
  
   render() {
-    const {id, itemid, nom, quantite, prix, commentaire, selected, selectedIng, disabled, ingredients, steps, _onClick, _onDoubleClick, _onSubClick, _onSubDoubleClick} = this.props;
+    const {id, itemid, nom, quantite, prix, commentaire, selected, discount, deleteDiscountHandler, openDiscountHandler, selectedIng, disabled, ingredients, steps, _onClick, _onDoubleClick, _onSubClick, _onSubDoubleClick} = this.props;
+
+
+    console.log('item discount', discount);
 
     let timer = 0;
     let prevent = false;
@@ -1155,6 +1244,14 @@ class PanierListeItem extends React.Component {
           ))}
         </div>
       )}
+      {discount && <DiscountListItem 
+        className="item-discount"
+        valeur={ discount.valeur }
+        montant={ discount.montant }
+        id={ discount.modificateur_id }
+        onClick={ openDiscountHandler }
+        deleteHandler={ deleteDiscountHandler }
+      />}
       </div>
     );
   }

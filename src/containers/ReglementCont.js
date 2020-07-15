@@ -11,27 +11,70 @@ import { marketingActions } from '../services/marketing/marketingActions';
 
 const getCommandeTotal = (items, modificateurs) => {
   // montant à payer (somme des items)
-  let __total = 0;
-  if (undefined!==items) {
-    items.forEach(itm => {
-      __total += itm.quantite * itm.prix;      
-    });
-  }
+  // let __total = 0;
+  // if (undefined!==items) {
+  //   items.forEach(itm => {
+  //     __total += itm.quantite * itm.prix;      
+  //   });
+  // }
 
-    // en attendant d'avoir un discount sur chaque item / ingredient
-    if (modificateurs && modificateurs.length) {
-      const ispc = String(modificateurs[0].valeur).substr(-1,1)==='%';
-      const val = Math.abs(Number(String(modificateurs[0].valeur).slice(0,-1)));
+  //   // en attendant d'avoir un discount sur chaque item / ingredient
+  //   if (modificateurs && modificateurs.length) {
+  //     const ispc = String(modificateurs[0].valeur).substr(-1,1)==='%';
+  //     const val = Math.abs(Number(String(modificateurs[0].valeur).slice(0,-1)));
+  //     if (ispc) {
+  //       __total *= (100 - val) / 100;
+  //     } else {
+  //       __total -= val;
+  //     }
+  //   }
+
+
+  // console.log('getCommandeTotal : '+__total);
+  // return __total;
+
+
+    let __total = 0;
+    if (undefined!==items) {
+      items.forEach(itm => {
+
+        let __itemtotal = itm.quantite * itm.prix;
+        
+        // modificateur sur l'item
+        const __moditem = (modificateurs && modificateurs.length) ? modificateurs.find(m => m.item===itm.itemid && m.ingredient===null) : null;
+        if (__moditem) {
+          const ispc = String(__moditem.valeur).substr(-1,1)==='%';
+          const val = Math.abs(Number(String(__moditem.valeur).slice(0,-1)));
+          if (ispc) {
+            __itemtotal *= (100 - val) / 100;
+          } else {
+            __itemtotal -= val;
+          }
+        }
+        __total += __itemtotal;
+      });
+    }
+
+
+
+
+    // modificateur sur le panier entier
+    const modpanier = (modificateurs && modificateurs.length) ? modificateurs.find(m => m.item===null && m.ingredient===null) : null;
+    if (modpanier) {
+      const ispc = String(modpanier.valeur).substr(-1,1)==='%';
+      const val = Math.abs(Number(String(modpanier.valeur).slice(0,-1)));
       if (ispc) {
         __total *= (100 - val) / 100;
       } else {
         __total -= val;
       }
     }
+    
+
+    return __total;
+  
 
 
-  console.log('getCommandeTotal : '+__total);
-  return __total;
 }
 
 
