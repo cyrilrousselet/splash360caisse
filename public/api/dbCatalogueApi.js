@@ -29,36 +29,106 @@ const actions = {
     const {payload} = req;
 
     (await db.produits)._.mixin(lodashId);
-    const proxies = await _persistProduit(payload.produit);
+    const prd = await _persistProduit(payload.produit);
 
-    res.send(proxies);
+    res.send(prd);
   },
 
   dbCatalogueUpdateIngredient: async (req,res) => {
     const {payload} = req;
 
     (await db.ingredients)._.mixin(lodashId);
-    const proxies = await _persistIngredient(payload.ingredient);
+    const ing = await _persistIngredient(payload.ingredient);
 
-    res.send(proxies);
+    res.send(ing);
   },
 
   dbCatalogueUpdateGroupe: async (req,res) => {
     const {payload} = req;
 
     (await db.groupes)._.mixin(lodashId);
-    const proxies = await _persistGroupe(payload.groupe);
+    const grp = await _persistGroupe(payload.groupe);
 
-    res.send(proxies);
+    res.send(grp);
   },
 
   dbCatalogueUpdateIngredientType: async (req,res) => {
     const {payload} = req;
 
     (await db.ingredienttypes)._.mixin(lodashId);
-    const proxies = await _persistIngredientType(payload.type);
+    const typ = await _persistIngredientType(payload.type);
 
-    res.send(proxies);
+    res.send(typ);
+  },
+
+  dbCatalogueSummary: async () => {
+
+    (await db.categories)._.mixin(lodashId);
+    (await db.groupes)._.mixin(lodashId);
+    (await db.tva)._.mixin(lodashId);
+    (await db.ingredienttypes)._.mixin(lodashId);
+    (await db.ingredients)._.mixin(lodashId);
+    (await db.produits)._.mixin(lodashId);
+    (await db.steps)._.mixin(lodashId);
+
+    const _cat = await (await db.categories).get('categories').value();
+    const _catSummary = _cat.map(c => (
+      {
+        id: c.categorie_id,
+        updatedAt: c.updatedAt
+      }
+    ));
+    const _grp = await (await db.groupes).get('groupes').value();
+    const _grpSummary = _grp.map(g => (
+      {
+        id: g.groupe_id,
+        updatedAt: g.updatedAt
+      }
+    ));
+    const _tva = await (await db.tva).get('tva').value();
+    const _tvaSummary = _tva.map(t => (
+      {
+        id: t.tva_id,
+        updatedAt: t.updatedAt
+      }
+    ));
+    const _typ = await (await db.ingredienttypes).get('types').value();
+    const _typSummary = _typ.map(t => (
+      {
+        id: t.type_id,
+        updatedAt: t.updatedAt
+      }
+    ));
+    const _ing = await (await db.ingredients).get('ingredients').value();
+    const _ingSummary = _ing.map(i => (
+      {
+        id: i.ingredient_id,
+        updatedAt: i.updatedAt
+      }
+    ));
+    const _prd = await (await db.produits).get('produits').value();
+    const _prdSummary = _prd.map(p => (
+      {
+        id: p.produit_id,
+        updatedAt: p.updatedAt
+      }
+    ));
+    const _stp = await (await db.steps).get('steps').value();
+    const _stpSummary = _stp.map(s => (
+      {
+        id: s.step_id,
+        updatedAt: s.updatedAt
+      }
+    ));
+    return {
+      categories: _catSummary,
+      groupes: _grpSummary,
+      tva: _tvaSummary,
+      types: _typSummary,
+      ingredients: _ingSummary,
+      produits: _prdSummary,
+      steps: _stpSummary
+    };
   }
 }
 

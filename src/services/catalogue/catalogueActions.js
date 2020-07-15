@@ -1,6 +1,7 @@
 import { catalogueActionTypes } from './catalogueActionTypes';
 import { catalogueServices } from './catalogueServices';
 import Logger from '../../helpers/Logger';
+import { notificationActions } from '../notification/notificationActions';
 
 const logger = new Logger();
 
@@ -63,6 +64,8 @@ function updateProduit(payload) {
     .then(
       data => {
         dispatch({ type: catalogueActionTypes.UPDATE_PRODUIT_SUCCESS});
+        dispatch(notificationActions.syncDispatch('produit', data));
+
         dispatch(getAll());
       },
       error => dispatch({type: catalogueActionTypes.UPDATE_PRODUIT_FAILURE, error})
@@ -94,6 +97,7 @@ function updateIngredient(payload) {
     .then(
       data => {
         dispatch({ type: catalogueActionTypes.UPDATE_INGREDIENT_SUCCESS});
+        dispatch(notificationActions.syncDispatch('ingredient', data));
         dispatch(getAll());
       },
       error => dispatch({type: catalogueActionTypes.UPDATE_INGREDIENT_FAILURE, error})
@@ -125,6 +129,7 @@ function updateIngredientType(payload) {
     .then(
       data => {
         dispatch({ type: catalogueActionTypes.UPDATE_TYPE_SUCCESS});
+        dispatch(notificationActions.syncDispatch('type', data));
         dispatch(getAll());
       },
       error => dispatch({type: catalogueActionTypes.UPDATE_TYPE_FAILURE, error})
@@ -155,6 +160,7 @@ function updateGroupe(payload) {
     .then(
       data => {
         dispatch({ type: catalogueActionTypes.UPDATE_GROUPE_SUCCESS});
+        dispatch(notificationActions.syncDispatch('groupe', data));
         dispatch(getAll());
       },
       error => dispatch({type: catalogueActionTypes.UPDATE_GROUPE_FAILURE, error})
@@ -162,11 +168,125 @@ function updateGroupe(payload) {
   }
 }
 
+
+
+
+/** 
+ * ajout / modif de produit depuis la synchro
+ */
+function setProduitFromSync(payload) {
+  return dispatch => {
+
+    const {data, emitter, response} = payload;
+
+    catalogueServices.updateProduit(data)
+    .then(
+      result => {
+        dispatch({ type: catalogueActionTypes.UPDATE_PRODUIT_FROM_SYNC, result });
+
+        // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
+        // donc inutile de lui renvoyer la synchro
+        // -> si 'response' est null, la synchro ne provient pas de l'API,
+        // donc inutile de confirmer le traitement de la synchro
+        if (emitter!==null && response!==null) {
+          dispatch(notificationActions.syncConfirm(response));
+          dispatch(notificationActions.syncDispatch('produit',data, emitter));
+        }
+        dispatch(getAll());
+      }
+    )
+  }
+}
+/** 
+ * ajout / modif de groupe depuis la synchro
+ */
+function setGroupeFromSync(payload) {
+  return dispatch => {
+
+    const {data, emitter, response} = payload;
+
+    catalogueServices.updateGroupe(data)
+    .then(
+      result => {
+        dispatch({ type: catalogueActionTypes.UPDATE_GROUPE_FROM_SYNC, result });
+
+        // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
+        // donc inutile de lui renvoyer la synchro
+        // -> si 'response' est null, la synchro ne provient pas de l'API,
+        // donc inutile de confirmer le traitement de la synchro
+        if (emitter!==null && response!==null) {
+          dispatch(notificationActions.syncConfirm(response));
+          dispatch(notificationActions.syncDispatch('groupe',data, emitter));
+        }
+        dispatch(getAll());
+      }
+    )
+  }
+}
+/** 
+ * ajout / modif d'ingrédient depuis la synchro
+ */
+function setIngredientFromSync(payload) {
+  return dispatch => {
+
+    const {data, emitter, response} = payload;
+
+    catalogueServices.updateIngredient(data)
+    .then(
+      result => {
+        dispatch({ type: catalogueActionTypes.UPDATE_INGREDIENT_FROM_SYNC, result });
+
+        // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
+        // donc inutile de lui renvoyer la synchro
+        // -> si 'response' est null, la synchro ne provient pas de l'API,
+        // donc inutile de confirmer le traitement de la synchro
+        if (emitter!==null && response!==null) {
+          dispatch(notificationActions.syncConfirm(response));
+          dispatch(notificationActions.syncDispatch('ingredient',data, emitter));
+        }
+        dispatch(getAll());
+      }
+    )
+  }
+}
+/** 
+ * ajout / modif de type d'ingrédient depuis la synchro
+ */
+function setIngredientTypeFromSync(payload) {
+  return dispatch => {
+
+    const {data, emitter, response} = payload;
+
+    catalogueServices.updateIngredientType(data)
+    .then(
+      result => {
+        dispatch({ type: catalogueActionTypes.UPDATE_TYPE_FROM_SYNC, result });
+
+        // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
+        // donc inutile de lui renvoyer la synchro
+        // -> si 'response' est null, la synchro ne provient pas de l'API,
+        // donc inutile de confirmer le traitement de la synchro
+        if (emitter!==null && response!==null) {
+          dispatch(notificationActions.syncConfirm(response));
+          dispatch(notificationActions.syncDispatch('type',data, emitter));
+        }
+        dispatch(getAll());
+      }
+    )
+  }
+}
+
+
+
 export const catalogueActions = {
   getAllActive,
   getAll,
   updateProduit,
   updateIngredient,
   updateGroupe,
-  updateIngredientType
+  updateIngredientType,
+  setProduitFromSync,
+  setGroupeFromSync,
+  setIngredientFromSync,
+  setIngredientTypeFromSync
 };

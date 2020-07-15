@@ -236,8 +236,38 @@
         height: 10px;
     }
     .discount {
-        border-radius: 20px;
+        border-radius: 18px;
         background-color: $prairie;
-        padding: 5px 20px;
+        padding: 3px 20px;
+        .MuiTypography-body1 {
+            font-size: 16px;
+            font-family: $f_hea;
+        }
+        & + .MuiListItemSecondaryAction-root {
+            display: inline-flex;
+            flex-direction: row;
+            padding-right: 5px;
+            .MuiTypography-body1 {
+                font-size: 16px;
+                font-family: $f_hea;
+            }
+        }
+        &.item-discount {
+            background-color: $bleu;
+            margin-left: 15px;
+            width: calc(100% - 15px);
+
+            .MuiTypography-body1 {
+                font-size: 14px;
+                font-family: $f_boo;
+            }
+
+            & + .MuiListItemSecondaryAction-root {
+                .MuiTypography-body1 {
+                    font-size: 14px;
+                    font-family: $f_boo;
+                }
+            }
+        }
     }
 }

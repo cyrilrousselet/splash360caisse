@@ -97,6 +97,41 @@ const actions = {
     const confirm = await _deleteRegleCatalogue(payload.reglecatalogue_id);
 
     res.send(confirm);
+  },
+
+
+  dbMarketingSummary: async () => {
+
+    (await db.avoirs)._.mixin(lodashId);
+    (await db.reglespanier)._.mixin(lodashId);
+    (await db.reglescatalogue)._.mixin(lodashId);
+
+    const _avr = await (await db.avoirs).get('avoirs').value();
+    const _avrSummary = _avr.map(a => (
+      {
+        id: a.avoir_id,
+        updatedAt: a.updatedAt
+      }
+    ));
+    const _rpn = await (await db.reglespanier).get('reglespanier').value();
+    const _rpnSummary = _rpn.map(r => (
+      {
+        id: r.reglepanier_id,
+        updatedAt: r.updatedAt
+      }
+    ));
+    const _rct = await (await db.reglescatalogue).get('reglescatalogue').value();
+    const _rctSummary = _rct.map(r => (
+      {
+        id: r.reglecatalogue_id,
+        updatedAt: r.updatedAt
+      }
+    ));
+    return {
+      avoirs: _avrSummary,
+      reglespanier: _rpnSummary,
+      reglescatalogue: _rctSummary
+    };
   }
 
 }

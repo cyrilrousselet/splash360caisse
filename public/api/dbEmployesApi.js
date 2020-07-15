@@ -88,6 +88,40 @@ const actions = {
     res.send(confirm);
   },
 
+  dbEmployesSummary: async () => {
+
+    (await db.pointages)._.mixin(lodashId);
+    (await db.timeadjusts)._.mixin(lodashId);
+    (await db.shifts)._.mixin(lodashId);
+
+    const _pnt = await (await db.pointages).get('pointages').value();
+    const _pntSummary = _pnt.map(p => (
+      {
+        id: p.pointage_id,
+        updatedAt: p.updatedAt
+      }
+    ));
+    const _adj = await (await db.timeadjusts).get('timeadjusts').value();
+    const _adjSummary = _adj.map(a => (
+      {
+        id: a.adjust_id,
+        updatedAt: a.updatedAt
+      }
+    ));
+    const _shf = await (await db.shifts).get('shifts').value();
+    const _shfSummary = _shf.map(s => (
+      {
+        id: s.shift_id,
+        updatedAt: s.updatedAt
+      }
+    ));
+    return {
+      pointages: _pntSummary,
+      timeadjusts: _adjSummary,
+      shifts: _shfSummary
+    };
+  }
+
 }
 
 

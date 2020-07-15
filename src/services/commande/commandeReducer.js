@@ -103,12 +103,17 @@ export function commandeReducer(state = initialState, action) {
 
     case commandeActionTypes.DELETE_CURRENT_COMMANDE:
 
-      items = commande.items;
-      items = [];
        
       return {
         ...state,
-        commande: {...commande, items:[]}
+        commande: {
+          ...commande, 
+          items:[], 
+          modificateurs: [],
+          comments: [],
+          reglements: [],
+          rendus: []
+        }
       }
 
     case commandeActionTypes.ADD_INGREDIENT:
@@ -311,12 +316,6 @@ export function commandeReducer(state = initialState, action) {
           ...state,
           numero: action.newnumero
         }
-
-    case commandeActionTypes.NEW_NUMERO:
-        return {
-          ...state,
-          numero: action.numero
-        };
 
     default:
       return state;

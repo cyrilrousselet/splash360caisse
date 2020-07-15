@@ -8,7 +8,18 @@ const {net} = require('electron');
 const http = require('http').Server(sync_server);
 const io = require('socket.io')(http);
 const ioclient = require('socket.io-client');
-const { lowerFirst } = require('lodash');
+const { lowerFirst, difference, differenceBy, intersection } = require('lodash');
+
+
+const dbCatalogueApi = require('./dbCatalogueApi.js');
+const dbClientsApi = require('./dbClientsApi.js');
+const dbCloturesApi = require('./dbCloturesApi.js');
+const dbCommandesApi = require('./dbCommandesApi.js');
+const dbEmployesApi = require('./dbEmployesApi.js');
+const dbMarketingApi = require('./dbMarketingApi.js');
+const dbUsersApi = require('./dbUsersApi.js');
+
+
 
 const connectedSecondaries = {};
 
@@ -29,7 +40,11 @@ const SYNCHRO_TREATMENT = {
   'deleteavoir': 'deleteAvoirSync',
   'timeadjust': 'setTimeadjustSync',
   'cloture': 'setClotureSync',
-  'user': 'setUserSync'
+  'user': 'setUserSync',
+  'produit': 'setProduitSync',
+  'groupe': 'setGroupeSync',
+  'ingredient': 'setIngredientSync',
+  'type': 'setIngredientTypeSync'
 }
 
 const allowedOrigins = [
@@ -132,6 +147,156 @@ const synchroTreatment = (db, data, emitter=null, response=null) => {
 }
 
 
+const welcomeTreatment = async () => {
+
+  const catalogue_sum = await dbCatalogueApi.dbCatalogueSummary();
+  const clients_sum = await dbClientsApi.dbClientsSummary();
+  const clotures_sum = await dbCloturesApi.dbCloturesSummary();
+  const commandes_sum = await dbCommandesApi.dbCommandesSummary();
+  const employes_sum = await dbEmployesApi.dbEmployesSummary();
+  const marketing_sum = await dbMarketingApi.dbMarketingSummary();
+  const users_sum = await dbUsersApi.dbUsersSummary();
+
+  return {
+    ...catalogue_sum, 
+    ...clients_sum,
+    ...clotures_sum,
+    ...commandes_sum,
+    ...employes_sum,
+    ...marketing_sum,
+    ...users_sum
+  };
+
+}
+
+/**
+ * Compare les listes des entités 
+ * et définit une liste d'items à importer et une liste d'items à exporter
+ * 
+ * @param {*} primarySum liste des tables et des entités {id, updatedAt} de la caisse principale
+ * @param {*} secondarySum liste des tables et des entités {id, updatedAt} de la caisse secondaire
+ */
+const getImportExport = (primarySum, secondarySum) => {
+
+
+  const prmkeys = Object.keys(primarySum);
+  const seckeys = Object.keys(secondarySum);
+
+  // récup des clés (noms des tables) pour chaque summary
+  const indbkeys = difference(prmkeys,seckeys);
+  const outdbkeys = difference(seckeys, prmkeys);
+  const comdbkeys = intersection(seckeys, prmkeys);
+
+  // liste des tables à importer
+  let in_db = {};
+  // ajout des tables inexistantes à importer
+  indbkeys.forEach(k => {
+    Object.defineProperty(in_db, k, {
+      value: primarySum[k],
+      enumerable: true,
+      writable: false,
+      configurable: false
+    })
+  })
+  
+
+  // liste des tables à exporter
+  let out_db = {};
+  // ajout des tables inexistantes à exporter
+  outdbkeys.forEach(k => {
+    Object.defineProperty(out_db, k, {
+      value: secondarySum[k],
+      enumerable: true,
+      writable: false,
+      configurable: false
+    })
+  });
+
+  // ajout des tables existantes aux deux listes ('à importer' et 'à exporter')
+  comdbkeys.forEach(k => {
+
+    const incom = [];
+    const outcom = []; 
+
+    // pour chaque table en commun, on récupère les différences
+
+    // dans la liste de la caisse 'primary'
+    primarySum[k].forEach(nty => {
+      const found = secondarySum[k].find(snty => snty.id == nty.id);
+      // si un item a été trouvé
+      if (found) {
+        // si l'item a été mis à jour
+        if (nty.updatedAt) {
+          // si l'item correspondant a été mis à jour
+          if (found.updatedAt) {
+            // si l'item est plus récent il doit être importé
+            if (nty.updatedAt>found.updatedAt) {
+              incom.push(nty);
+            } 
+            // si l'item correspondant est plus récent il doit être exporté
+            else {
+              outcom.push(found);
+            }
+          }
+          // si l'item correspondant n'a pas été mis à jour
+          // l'item doit être importé
+          else {
+            incom.push(nty);
+          }
+        }
+        // si l'item n'a pas été mis à jour
+        else {
+          // si l'item correspondant a été mis à jour
+          // il doit être exporté
+          if (found.updatedAt) {
+            outcom.push(found);
+          }
+        }
+      } 
+      // s'il n'a pas été trouvé il doit être importé
+      else {
+        incom.push(nty);
+      }
+
+    });
+
+
+    // dans la liste de la caisse 'secondary'
+    secondarySum[k].forEach(nty => {
+      const found = primarySum[k].find(pnty => pnty.id == nty.id);
+      // si aucun item ne correspond, il doit être exporté
+      if (!found) {
+        outcom.push(nty);
+      }
+    });
+
+    // s'il y a des items à importer, on ajoute la table
+    if (incom.length>0) {
+      Object.defineProperty(in_db, k, {
+        value:incom,
+        enumerable: true,
+        writable: true,
+        configurable: false
+      });
+    }
+
+
+    // s'il y a des items à exporter, on ajoute la table
+    if (outcom.length>0) {
+      Object.defineProperty(out_db, k, {
+        value:outcom,
+        enumerable: true,
+        writable: true,
+        configurable: false
+      });
+    }
+
+  }); 
+
+  return { importation: in_db, exportation: out_db };
+
+}
+
 const actions = {
 
   // renvoie le ticketId et le numero de la commande synchronisée par une borne
@@ -220,7 +385,136 @@ const actions = {
       socket.emit('register',caisse);
     });
 
-    log.info('socket', socket);
+  //  log.info('socket', socket);
+
+
+    socket.on('welcome', async (primarySum) => {
+      log.info('on welcome');
+
+      const secondarySum = await welcomeTreatment();
+
+      const { importation, exportation } = getImportExport(primarySum, secondarySum);
+
+      // const prmkeys = Object.keys(primarySum);
+      // const seckeys = Object.keys(secondarySum);
+
+      // // récup des clés (noms des tables) pour chaque summary
+      // const indbkeys = difference(prmkeys,seckeys);
+      // const outdbkeys = difference(seckeys, prmkeys);
+      // const comdbkeys = intersection(seckeys, prmkeys);
+    
+      // // liste des tables à importer
+      // let in_db = {};
+      // // ajout des tables inexistantes à importer
+      // indbkeys.forEach(k => {
+      //   Object.defineProperty(in_db, k, {
+      //     value: primarySum[k],
+      //     enumerable: true,
+      //     writable: false,
+      //     configurable: false
+      //   })
+      // })
+      
+
+      // // liste des tables à exporter
+      // let out_db = {};
+      // // ajout des tables inexistantes à exporter
+      // outdbkeys.forEach(k => {
+      //   Object.defineProperty(out_db, k, {
+      //     value: secondarySum[k],
+      //     enumerable: true,
+      //     writable: false,
+      //     configurable: false
+      //   })
+      // });
+
+      // // ajout des tables existantes aux deux listes ('à importer' et 'à exporter')
+      // comdbkeys.forEach(k => {
+
+      //   const incom = [];
+      //   const outcom = []; 
+
+      //   // pour chaque table en commun, on récupère les différences
+
+      //   // dans la liste de la caisse 'primary'
+      //   primarySum[k].forEach(nty => {
+      //     const found = secondarySum[k].find(snty => snty.id == nty.id);
+      //     // si un item a été trouvé
+      //     if (found) {
+      //       // si l'item a été mis à jour
+      //       if (nty.updatedAt) {
+      //         // si l'item correspondant a été mis à jour
+      //         if (found.updatedAt) {
+      //           // si l'item est plus récent il doit être importé
+      //           if (nty.updatedAt>found.updatedAt) {
+      //             incom.push(nty);
+      //           } 
+      //           // si l'item correspondant est plus récent il doit être exporté
+      //           else {
+      //             outcom.push(found);
+      //           }
+      //         }
+      //         // si l'item correspondant n'a pas été mis à jour
+      //         // l'item doit être importé
+      //         else {
+      //           incom.push(nty);
+      //         }
+      //       }
+      //       // si l'item n'a pas été mis à jour
+      //       else {
+      //         // si l'item correspondant a été mis à jour
+      //         // il doit être exporté
+      //         if (found.updatedAt) {
+      //           outcom.push(found);
+      //         }
+      //       }
+      //     } 
+      //     // s'il n'a pas été trouvé il doit être importé
+      //     else {
+      //       incom.push(nty);
+      //     }
+
+      //   });
+
+
+      //   // dans la liste de la caisse 'secondary'
+      //   secondarySum[k].forEach(nty => {
+      //     const found = primarySum[k].find(pnty => pnty.id == nty.id);
+      //     // si aucun item ne correspond, il doit être exporté
+      //     if (!found) {
+      //       outcom.push(nty);
+      //     }
+      //   });
+
+      //   // s'il y a des items à importer, on ajoute la table
+      //   if (incom.length>0) {
+      //     Object.defineProperty(in_db, k, {
+      //       value:incom,
+      //       enumerable: true,
+      //       writable: true,
+      //       configurable: false
+      //     });
+      //   }
+
+
+      //   // s'il y a des items à exporter, on ajoute la table
+      //   if (outcom.length>0) {
+      //     Object.defineProperty(out_db, k, {
+      //       value:outcom,
+      //       enumerable: true,
+      //       writable: true,
+      //       configurable: false
+      //     });
+      //   }
+
+      // }); 
+
+
+      log.info('import:', importation);
+      log.info('export:', exportation);
+
+    });
+
     
     // écouteur de synchro de la part du primary
     socket.on('sync', payload => {
@@ -248,11 +542,11 @@ const actions = {
       
       log.info(`${Object.keys(connectedSecondaries).length} socket(s) connected. New id : `, sock.id);
       // on signale l'initialisation de la communication descendante (entre le primary et le secondary)
-      io.to(sock).emit('sync',{type:'syncinit'});
+      io.to(sock.id).emit('sync',{type:'syncinit'});
 
       // écouteur d'événement 'register' :
       // le secondary envoie son identité afin que le primary le stocke dans un objet
-      sock.on('register', data => {
+      sock.on('register', async (data) => {
         log.info('secondary register', data);
 
         Object.defineProperty(connectedSecondaries, sock.id, {
@@ -261,6 +555,10 @@ const actions = {
           enumerable: true,
           configurable: true
         });
+
+        const summary = await welcomeTreatment();
+        io.to(sock.id).emit('welcome', summary);
+        
       });
 
       sock.on('sync', (action)=>{

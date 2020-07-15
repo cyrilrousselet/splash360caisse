@@ -27,6 +27,7 @@ import Logger from './helpers/Logger';
 import { marketingActions } from './services/marketing/marketingActions';
 import { userActions } from './services/user/userActions';
 import { employesActions } from './services/employes/employesActions';
+import { catalogueActions } from './services/catalogue/catalogueActions';
 
 const logger = new Logger();
 
@@ -97,6 +98,26 @@ ipcRenderer.on('setPointageSync', (event, pointage) => {
   logger.log('renderer: setPointageSync', pointage);
   employesActions.setPointageFromSync(pointage)(store.dispatch, store.getState);
 });
+
+
+
+ipcRenderer.on('setProduitSync', (event, produit) => {
+  logger.log('renderer: setProduitSync', produit);
+  catalogueActions.setProduitFromSync(produit)(store.dispatch, store.getState);
+});
+ipcRenderer.on('setGroupeSync', (event, groupe) => {
+  logger.log('renderer: setGroupeSync', groupe);
+  catalogueActions.setGroupeFromSync(groupe)(store.dispatch, store.getState);
+});
+ipcRenderer.on('setIngredientSync', (event, ingredient) => {
+  logger.log('renderer: setIngredientSync', ingredient);
+  catalogueActions.setIngredientFromSync(ingredient)(store.dispatch, store.getState);
+});
+ipcRenderer.on('setIngredientTypeSync', (event, ingredienttype) => {
+  logger.log('renderer: setIngredientTypeSync', ingredienttype);
+  catalogueActions.setIngredientTypeFromSync(ingredienttype)(store.dispatch, store.getState);
+});
+
 
 ipcRenderer.on('setTimeadjustSync', (event, timeadjust) => {
   logger.log('renderer: setTimeadjustSync', timeadjust);

@@ -780,7 +780,7 @@ function _printCommande(printer, data, strings) {
         {text:'', cols:1},
         {text: article.pu, cols:6, align:'RIGHT'},
         {text:'', cols:1},
-        {text: article.prix, cols:6, align:'RIGHT'},
+        {text: (Number(article.qte)*Number(article.pu)).toFixed(2), cols:6, align:'RIGHT'},
         {text:'', cols:1},
         {text: article.codetva, cols:1}
       ]);
@@ -798,7 +798,6 @@ function _printCommande(printer, data, strings) {
 
     if (article.ingredients.length>0) {
       article.ingredients.forEach((ingredient) => {
-        _subtotal += Number(ingredient.prix);
         printer.align('CT').style('NORMAL').tableCustom([
           {text: ingredient.qte, cols:3, align:'RIGHT'},
           {text:'', cols:1},
@@ -823,41 +822,72 @@ function _printCommande(printer, data, strings) {
         _linecount++;
       });
     }
+    if (article.modificateur) {
+      printer.align('CT').style('B').tableCustom([
+        {text: '', cols:4},
+        {text: strings.modificateur.discount_item, cols:22, align:'LEFT'},
+        {text:'', cols:1},
+        {text: article.modificateur.montant ? '-'+article.modificateur.valeur : '', cols:6, align:'RIGHT'},
+        {text:'', cols:1},
+        {text: article.modificateur.montant ? '-'+article.modificateur.montant.toFixed(2) : '-'+article.modificateur.valeur, cols:6, align:'RIGHT'},
+        {text:'', cols:2}
+      ]);
+      _linecount++;
+    }
   });
 
   // modificateurs (charge ou discount) au niveau de la commande
   if (data.modificateur) {
 
-  // sous-total
-  printer
-    .drawLine()
-    .align('CT')
-    // .size(1,1)
-    .size(0,0)
-    .tableCustom([
-      {text: `${strings.detail.sous_total}   ${_subtotal.toFixed(2).toString().replace('.',',')}`, cols:42, align:'right'}
-    ])
-    // .size(1,1)
-    .size(0,0)
-    .drawLine();
+    // sous-total
+    printer
+      .drawLine()
+      .align('CT')
+      // .size(1,1)
+      .size(0,0)
+      .tableCustom([
+        {text: `${strings.detail.sous_total}   ${_subtotal.toFixed(2).toString().replace('.',',')}`, cols:42, align:'right'}
+      ])
+      // .size(1,1)
+      .size(0,0)
+      .drawLine();
 
-    const ispc = String(data.modificateur).substr(-1,1)==='%';
-    let modval = Math.abs(Number(String(data.modificateur).slice(0,-1)));
-    if (!ispc) {
-      modval = modval.toFixed(2).toString().replace('.',',') + ' EUR';
-    } else {
-      modval += ' %';
-    }
+      const ispc = String(data.modificateur.valeur).substr(-1,1)==='%';
+      let modval = Math.abs(Number(String(data.modificateur.valeur).slice(0,-1)));
+      let montant = null;
+      if (!ispc) {
+        modval = modval.toFixed(2).toString().replace('.',',') + ' EUR';
+      } else {
+        modval += ' %';
+        montant = data.modificateur.montant.toFixed(2).toString().replace('.',',') + ' EUR';
+      }
 
-  printer
-    .align('CT')
-    // .size(1,1)
-    .size(0,0)
-    .tableCustom([
-      {text: strings.modificateur.discount, cols:32, align:'LEFT'},
-      {text: modval, cols:10, align:'RIGHT'}
-    ])
-    .size(1,1)
+    if (montant) {
+        
+      printer
+        .align('CT')
+        // .size(1,1)
+        .size(0,0)
+        .tableCustom([
+          {text: strings.modificateur.discount_panier, cols:22, align:'LEFT'},
+          {text: '-'+modval, cols:10, align:'RIGHT'},
+          {text: '-'+montant, cols:10, align:'RIGHT'}
+        ])
+        .size(0,0)
+      }
+      else {
+
+      printer
+      .align('CT')
+      // .size(1,1)
+      .size(0,0)
+      .tableCustom([
+        {text: strings.modificateur.discount_panier, cols:22, align:'LEFT'},
+        {text: '', cols:10, align:'RIGHT'},
+        {text: '-'+modval, cols:10, align:'RIGHT'}
+      ])
+      .size(0,0)
+      }
   }
 
   // total

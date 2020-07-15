@@ -469,12 +469,14 @@ function printCommandeTicket(quelstickets, cmd) {
         const cmdTva = {};
         let articles = [];
         let total = 0;
+        let articletotal = 0;
         let __comment = null;
         let __modificateur = null;
         cmd.items.forEach(article => {
 
           let articleIngredients = [];
-          total += article.quantite * article.prix;
+          articletotal = article.quantite * article.prix;
+          // articletotal = Number(article.pu)*article.quantite;
 
 
           article.ingredients.forEach(ing => {
@@ -495,7 +497,7 @@ function printCommandeTicket(quelstickets, cmd) {
 
 
             // // modificateurs pour l'ingrédient
-            // __modificateur = cmd.modificateurs.find(m => m.item==article.itemid && m.ingredient==ing.ingredient);
+            // __modificateur = cmd.modificateurs.find(m => m.item==article.itemid && m.ingredient==null);
 
             // if (__modificateur) {
             //   total += Number(__modificateur.valeur);
@@ -518,6 +520,8 @@ function printCommandeTicket(quelstickets, cmd) {
                 modificateur: __modificateur ? __modificateur.valeur: 0
               });
             }
+
+         //   articletotal += Number(ing.supplement);
 
 
             // ajout et calcul de la tva pour l'ingrédient
@@ -551,22 +555,37 @@ function printCommandeTicket(quelstickets, cmd) {
           __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
 
         // 
-        //   // modificateurs pour l'article
-        //   __modificateur = cmd.modificateurs.find(m => m.item==article.itemid && m.ingredient==null);
+          // modificateurs pour l'article
+          __modificateur = cmd.modificateurs.find(m => m.item==article.itemid && m.ingredient==null);
+          let amodtx = 1;
+          let __montant = 0;
+          if (__modificateur) {
+           // total += Number(__modificateur.valeur);
 
-        //   if (__modificateur) {
-        //     total += Number(__modificateur.valeur);
-        //   }
-        // 
+            const ispc = String(__modificateur.valeur).substr(-1,1)==='%';
+            const val = Math.abs(Number(String(__modificateur.valeur).slice(0,-1)));
+            __montant = ispc ? articletotal*(val/100) : val;
+
+            // conversion du modificateur en coefficient
+            amodtx = (ispc) ? (100 - val) / 100 : 1 - (val/articletotal);
+
+            if (ispc) {
+              articletotal *= (100 - val) / 100;
+            } else {
+              articletotal -= val;
+            }
+        
+          }
+        
           articles.push({
             qte: article.quantite,
             codetva: article.tva.code,
             nom: removeDiacritics(article.nom),
             pu: Number(article.pu).toFixed(2),
-            prix: (Number(article.pu)*article.quantite).toFixed(2),
+            prix: articletotal.toFixed(2),
             ingredients: articleIngredients,
             comment: __comment ? removeDiacritics(__comment.texte) : '',
-            modificateur: __modificateur ? __modificateur.valeur: 0
+            modificateur: __modificateur ? {valeur: __modificateur.valeur, montant: __montant} : null
           });
 
 
@@ -579,17 +598,23 @@ function printCommandeTicket(quelstickets, cmd) {
             });
           }
 
+//          let ht = (Number(article.pu)*article.quantite) / (1 + Number(article.tva.valeur));
           let ht = (Number(article.pu)*article.quantite) / (1 + Number(article.tva.valeur));
+
 
           cmdTva[article.tva.code] = Object.assign(cmdTva[article.tva.code], {
             montant: cmdTva[article.tva.code].montant + (ht * Number(article.tva.valeur)),
             ht: cmdTva[article.tva.code].ht + ht,
             ttc: cmdTva[article.tva.code].ttc + Number(article.pu)*article.quantite
           });
-          
+
+          if (__modificateur) {
+            cmdTva[article.tva.code].ht *= amodtx;
+            cmdTva[article.tva.code].ttc *= amodtx;
+          }         
           // console.log('iht','(Number('+article.pu+')*'+article.quantite+') / (1 + Number('+article.tva.valeur +'))');
           // console.log(JSON.stringify(cmdTva));
-
+          total += articletotal;
         });
         
         
@@ -601,8 +626,11 @@ function printCommandeTicket(quelstickets, cmd) {
         if (__modificateur) {
        //   total += Number(__modificateur.valeur);
 
-          const ispc = String(cmd.modificateurs[0].valeur).substr(-1,1)==='%';
-          const val = Math.abs(Number(String(cmd.modificateurs[0].valeur).slice(0,-1)));
+          const ispc = String(__modificateur.valeur).substr(-1,1)==='%';
+          const val = Math.abs(Number(String(__modificateur.valeur).slice(0,-1)));
+          const montant = ispc ? total*(val/100) : val;
+
+          __modificateur = {...__modificateur, montant: montant};
 
           // conversion du modificateur en coefficient
           const modtx = (ispc) ? (100 - val) / 100 : 1 - (val/total);
@@ -635,7 +663,7 @@ function printCommandeTicket(quelstickets, cmd) {
           reglements: cmd.reglements,
           rendus: cmd.rendus,
           comment: __comment ? __comment.texte : '',
-          modificateur: __modificateur ? __modificateur.valeur: 0,
+          modificateur: __modificateur ? {valeur: __modificateur.valeur, montant: __modificateur.montant} : null,
           client: cmd.client && clients.find(c=>c.client_id===cmd.client.client_id)
         };
 
