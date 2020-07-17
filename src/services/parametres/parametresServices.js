@@ -2,7 +2,8 @@ import {emit} from 'eiphop';
 
 export const parametresServices = {
   update,
-  getAll
+  getAll,
+  replaceDatabase
  };
 
 function getAll() {
@@ -12,4 +13,8 @@ function getAll() {
 
 function update(payload) {
   return emit('dbParametresUpdate', {payload: payload});
+}
+function replaceDatabase(parametres) {
+  console.log('replaceDatabase', parametres);
+  return emit('dbParametresCompleteDB', {data:parametres});
 }

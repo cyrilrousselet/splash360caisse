@@ -25,6 +25,22 @@ const actions = {
 
   },
 
+  dbCatalogueReplaceDatabase: async (req,res) => {
+    const {data} = req.payload;
+
+    (await db.categories)._.mixin(lodashId);
+    (await db.groupes)._.mixin(lodashId);
+    (await db.tva)._.mixin(lodashId);
+    (await db.ingredienttypes)._.mixin(lodashId);
+    (await db.ingredients)._.mixin(lodashId);
+    (await db.produits)._.mixin(lodashId);
+    (await db.steps)._.mixin(lodashId);
+
+    const confirm = await _replaceAll(data.database);
+
+    res.send(confirm);
+  },
+
   dbCatalogueUpdateProduit: async (req,res) => {
     const {payload} = req;
 
@@ -255,7 +271,46 @@ async function _findCatalogue(prd_criteriae={}) {
   return { _cat, _grp, _tva, _igt, _ing, _prd, _stp };
 }
 
+async function _replaceAll(data) {
 
+  let _cat = await (await db.categories).get('categories').remove().write();
+  data.categories.forEach(async (cat) => {
+    _cat = await (await db.categories).get('categories').insert(cat).write();
+  });
+
+  let _grp = await (await db.groupes).get('groupes').remove().write();
+  data.groupes.forEach(async (grp) => {
+    _grp = await (await db.groupes).get('groupes').insert(grp).write();
+  });
+
+  let _tva = await (await db.tva).get('tva').remove().write();
+  data.tva.forEach(async (tva) => {
+    _tva = await (await db.tva).get('tva').insert(tva).write();
+  });
+
+  let _igt = await (await db.ingredienttypes).get('types').remove().write();
+  data.types.forEach(async (igt) => {
+    _igt = await (await db.ingredienttypes).get('types').insert(igt).write();
+  });
+
+  let _ing = await (await db.ingredients).get('ingredients').remove().write();
+  data.ingredients.forEach(async (ing) => {
+    _ing = await (await db.ingredients).get('ingredients').insert(ing).write();
+  });
+
+  let _prd = await (await db.produits).get('produits').remove().write();
+  data.produits.forEach(async (prd) => {
+    _prd = await (await db.produits).get('produits').insert(prd).write();
+  });
+
+  let _stp = await (await db.steps).get('steps').remove().write();
+  data.steps.forEach(async (stp) => {
+    _stp = await (await db.steps).get('steps').insert(stp).write();
+  });
+
+  return true;
+
+}
 
 
 async function _persistProduit(payload) {

@@ -197,8 +197,73 @@ const actions = {
 
     __request.end();
 
+  },
+
+  getSplashToken: (req,res) => {
+
+    const {params} = req.payload;
+
+    let __confirmation = [];
+
+    const __request = net.request({
+      url: params,
+      method: 'get'
+    });
+  //  __request.setHeader('Authorization','Bearer '+access_token)
+    __request.setHeader('Access-Control-Allow-Origin', '*')
+    __request.setHeader('Content-Type', 'application/json');
+
+    __request.on('response', (response) => {
+      log.info(`getSplashToken STATUS: ${response.statusCode}`);
+      log.info(`getSplashToken HEADERS: ${JSON.stringify(response.headers)}`);
+      response.on('data', (chunk) => {
+        __confirmation.push(chunk);
+        log.info(`getSplashToken BODY: ${chunk}`)
+      });
+      response.on('end', () => {
+        log.info('getSplashToken: end');
+        res.send({splash_token: JSON.parse(__confirmation.join(''))});
+        // res.send({confirm: true});
+      });
+    });
+
+    __request.end();
+
+  },
+
+  getDatabase: (req,res) => {
+
+    const {url, access_token} = req.payload;
+
+    let __database = [];
+
+    const __request = net.request({
+      url: url,
+      method: 'get'
+    });
+    __request.setHeader('Authorization','Bearer '+access_token)
+    __request.setHeader('Access-Control-Allow-Origin', '*')
+    __request.setHeader('Content-Type', 'application/json');
+
+    __request.on('response', (response) => {
+      log.info(`getDatabase STATUS: ${response.statusCode}`);
+      log.info(`getDatabase HEADERS: ${JSON.stringify(response.headers)}`);
+      response.on('data', (chunk) => {
+        __database.push(chunk);
+        log.info(`getDatabase BODY: ${chunk}`)
+      });
+      response.on('end', () => {
+        log.info('getDatabase: end');
+        res.send({database: JSON.parse(__database.join(''))});
+        // res.send({confirm: true});
+      });
+    });
+
+    __request.end();
+
   }
 }
+
 
 
 module.exports = {

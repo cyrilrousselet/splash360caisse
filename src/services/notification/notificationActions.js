@@ -10,6 +10,11 @@ import { format } from 'date-fns';
 import frLocale from "date-fns/locale/fr";
 import Logger from '../../helpers/Logger';
 import { commandeActionTypes } from '../commande/commandeActionTypes';
+import { catalogueActionTypes } from '../catalogue/catalogueActionTypes';
+import { catalogueActions } from '../catalogue/catalogueActions';
+import { parametresActions } from '../parametres/parametresActions';
+import { parametresActionTypes } from '../parametres/parametresActionTypes';
+import { peripheralActions } from '../peripheral/peripheralActions';
 const strings = new LocalizedStrings(data);
 const logger = new Logger();
 
@@ -223,13 +228,40 @@ function getDatabase() {
 
     dispatch({type: notificationActionTypes.GET_DATABASE_REQUEST});
     const { entreprise } = getState().parametresReducer.parametres; 
-    notificationServices.getDatabase({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret})
-    .then(conf => {
-      dispatch({type: notificationActionTypes.GET_DATABASE_SUCCESS});
-    },
-    error => {
-      dispatch({type: notificationActionTypes.GET_DATABASE_FAILURE, error: error});
-    })
+
+    if (entreprise.restaurant_id=='' || entreprise.restaurant_secret=='') {
+      Swal.fire({
+        type: 'warning',
+        title: 'Configuration incomplète',
+        text: 'Vous devez renseigner les identifiants de restaurant pour pouvoir initialiser la caisse',
+        showCancelButton: false,
+        focusConfirm: true,
+        allowEscapeKey: false,
+        allowOutsideClick: false
+      }).then((result)=> {
+        if (result.value) {
+          dispatch(peripheralActions.quitApp());
+        }
+      });
+    } else {
+
+
+      notificationServices.getDatabase({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret})
+      .then(database => {
+        dispatch({type: notificationActionTypes.GET_DATABASE_SUCCESS});
+        dispatch({type: parametresActionTypes.INSTALL_DATABASE, value:[]});
+        dispatch(parametresActions.update({
+          domaine: "options",
+          cle: "first_start",
+          valeur: false
+        }));
+        dispatch(catalogueActions.replaceDatabase(database));
+        dispatch(parametresActions.replaceDatabase(database));
+      },
+      error => {
+        dispatch({type: notificationActionTypes.GET_DATABASE_FAILURE, error: error});
+      });
+    }
   }
 }
 

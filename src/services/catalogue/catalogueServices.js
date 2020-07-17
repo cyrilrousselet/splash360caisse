@@ -7,7 +7,8 @@ export const catalogueServices = {
   updateProduit,
   updateIngredient,
   updateGroupe,
-  updateIngredientType
+  updateIngredientType,
+  replaceDatabase
  };
 
 function getAllActive() {
@@ -27,4 +28,7 @@ function updateGroupe(groupe) {
 }
 function updateIngredientType(type) {
   return emit('dbCatalogueUpdateIngredientType', {type:type});
+}
+function replaceDatabase(database) {
+  return emit('dbCatalogueReplaceDatabase', {data:database});
 }

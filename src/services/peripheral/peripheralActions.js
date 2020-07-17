@@ -1044,6 +1044,13 @@ function printCloture(payload={}) {
   }
 }
 
+function quitApp() {
+  return dispatch => {
+    dispatch({type: peripheralActionTypes.QUIT_APP});
+    peripheralServices.quitApp();
+  }
+}
+
 export const peripheralActions = {
   printTest,
   printAvoir,
@@ -1061,4 +1068,5 @@ export const peripheralActions = {
   printTicket,
   printPeriodeX,
   printCloture,
+  quitApp
 };

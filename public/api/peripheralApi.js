@@ -1,4 +1,6 @@
 const log = require('electron-log');
+const electron = require('electron');
+const { app } = electron;
 const escpos = require('escpos');
 escpos.USB = require('escpos-usb');
 escpos.Network = require('escpos-network');
@@ -18,6 +20,11 @@ let printerOpen = false;
 
 
 const actions = {
+
+  quitApp: (req,res) => {
+    log.info('QUIT APP');
+    app.quit();
+  },
 
 
   printTicket: (req, res) => {

@@ -10,11 +10,12 @@ import { notificationActions } from '../services/notification/notificationAction
 import history from '../helpers/history';
 import paths from './../constants/routes.json';
 import MainLoader from '../components/MainLoader';
+import { peripheralActions } from '../services/peripheral/peripheralActions';
 
 
 
 const gotoDashboard = () => {
-
+  console.log('gotoDashboard()');
   history.push(paths.DASHBOARD);
 
 }
@@ -31,7 +32,8 @@ const mapStateToProps = (state) => {
     cloLoading : state.clotureReducer.loading,
     cloLoaded: Object.entries(state.clotureReducer).length>0,
     sseInit: state.notificationReducer.sseInit,
-    params: state.parametresReducer.parametres.options
+    params: state.parametresReducer.parametres.options,
+    dbupdated: state.parametresReducer.dbupdated
   }
 }
 
@@ -45,7 +47,8 @@ const mapDispatchToProps = (dispatch) => {
     initSSE: notificationActions.initSSE,
     setPOS: notificationActions.setPOS,
     initSync: notificationActions.initSync,
-    getDatabase: notificationActions.getDatabase
+    getDatabase: notificationActions.getDatabase,
+    quitApp: peripheralActions.quitApp
   }, dispatch);
   return {
     ...bound,

@@ -47,8 +47,8 @@ const hydration = {
 
   parametres: [
     { domaine: 'options', cle: 'first_start', valeur: true },
-    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '12_1lxom7abye8084g44skko4s0s404kww0cos08woggs0cg8g4c0' },
-    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '23rmjt26nim804gsoggw4488oocos8owwocwk0g4gkwg8o884c' },
+    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '' },
+    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '' },
     { domaine: 'entreprise', cle: 'heure_fin', valeur: '00:00' },
     { domaine: 'entreprise', cle: 'avoirs', valeur: true },
     { domaine: 'financier', cle: 'fidelite_activation', valeur: false},
