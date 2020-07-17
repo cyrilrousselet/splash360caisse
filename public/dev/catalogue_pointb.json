@@ -41,13 +41,6 @@
           "nom": "NOS DESSERTS",
           "noprint": [],
           "weight": 5
-      },
-      {
-          "groupe_id": "grp211",
-          "categorie": "cat47",
-          "nom": "NOS PIZZAS",
-          "noprint": [],
-          "weight": 6
       }
   ],
   "tva": [
@@ -56,10 +49,246 @@
           "nom": "TVA 10%",
           "code": "A",
           "valeur": "0.1"
+      },
+      {
+          "tva_id": "tva8",
+          "nom": "TVA 5,5%",
+          "code": "B",
+          "valeur": "0.055"
       }
   ],
-  "types": [],
-  "ingredients": [],
+  "types": [
+      {
+          "type_id": "typ246",
+          "nom": "COMPOSITION",
+          "noprint": [],
+          "weight": 0
+      },
+      {
+          "type_id": "typ247",
+          "nom": "BOISSONS MENU",
+          "noprint": [],
+          "weight": 1
+      }
+  ],
+  "ingredients": [
+      {
+          "ingredient_id": "ing1688",
+          "type": "typ246",
+          "nom": "CHEESE BURGER",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 5,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing1689",
+          "type": "typ246",
+          "nom": "DOUBLE CHEESE BACON",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 6,
+          "color": "rouge"
+      },
+      {
+          "ingredient_id": "ing1690",
+          "type": "typ246",
+          "nom": "BIG BURGER",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 7,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing1691",
+          "type": "typ246",
+          "nom": "BIG MAX BURGER",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 8,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing1692",
+          "type": "typ246",
+          "nom": "GIANT BURGER",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 9,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing1693",
+          "type": "typ246",
+          "nom": "CHICKEN BURGER",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 10,
+          "color": "orange"
+      },
+      {
+          "ingredient_id": "ing1694",
+          "type": "typ246",
+          "nom": "TOWER BURGER",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 11,
+          "color": "jauneorange"
+      },
+      {
+          "ingredient_id": "ing1695",
+          "type": "typ246",
+          "nom": "5 TENDERS",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 12,
+          "color": "orange"
+      },
+      {
+          "ingredient_id": "ing1696",
+          "type": "typ246",
+          "nom": "LONG BACON",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 13,
+          "color": "rouge"
+      },
+      {
+          "ingredient_id": "ing1697",
+          "type": "typ246",
+          "nom": "ROYAL CHEESE BURGER",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 14,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing1698",
+          "type": "typ246",
+          "nom": "DOUBLE WHOOPER BURGER",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 15,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing1700",
+          "type": "typ246",
+          "nom": "280 BURGER",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 15,
+          "color": "marron"
+      },
+      {
+          "ingredient_id": "ing1701",
+          "type": "typ246",
+          "nom": "FISH BURGER",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 15,
+          "color": "jaune"
+      },
+      {
+          "ingredient_id": "ing1702",
+          "type": "typ246",
+          "nom": "3 FISH TENDERS",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 15,
+          "color": "jauneorange"
+      },
+      {
+          "ingredient_id": "ing1699",
+          "type": "typ246",
+          "nom": "TASTY BURGER",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 15,
+          "color": "jaune"
+      },
+      {
+          "ingredient_id": "ing1703",
+          "type": "typ246",
+          "nom": "CHEESE",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 15,
+          "color": "orange"
+      },
+      {
+          "ingredient_id": "ing1704",
+          "type": "typ246",
+          "nom": "CROQ",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 15,
+          "color": "orange"
+      },
+      {
+          "ingredient_id": "ing1705",
+          "type": "typ246",
+          "nom": "NUGGETS",
+          "supplement": "0.00",
+          "tva": "tva6",
+          "weight": 15,
+          "color": "orange"
+      },
+      {
+          "ingredient_id": "ing1706",
+          "type": "typ247",
+          "nom": "COCA COLA",
+          "supplement": "0.00",
+          "tva": "tva8",
+          "weight": 5,
+          "color": "rouge"
+      },
+      {
+          "ingredient_id": "ing1707",
+          "type": "typ247",
+          "nom": "COCA COLA ZERO",
+          "supplement": "0.00",
+          "tva": "tva8",
+          "weight": 6,
+          "color": "noir"
+      },
+      {
+          "ingredient_id": "ing1708",
+          "type": "typ247",
+          "nom": "COCA COLA CHERRY",
+          "supplement": "0.00",
+          "tva": "tva8",
+          "weight": 7,
+          "color": "violet"
+      },
+      {
+          "ingredient_id": "ing1709",
+          "type": "typ247",
+          "nom": "ICE TEA",
+          "supplement": "0.00",
+          "tva": "tva8",
+          "weight": 8,
+          "color": "orange"
+      },
+      {
+          "ingredient_id": "ing1710",
+          "type": "typ247",
+          "nom": "7UP",
+          "supplement": "0.00",
+          "tva": "tva8",
+          "weight": 9,
+          "color": "vertfonce"
+      },
+      {
+          "ingredient_id": "ing1711",
+          "type": "typ247",
+          "nom": "7UP MOJITO",
+          "supplement": "0.00",
+          "tva": "tva8",
+          "weight": 10,
+          "color": "noir"
+      }
+  ],
   "produits": [
       {
           "produit_id": "prd2319",
@@ -68,7 +297,9 @@
           "nom": "MENU B1",
           "prix": "7.00",
           "tva": "tva6",
-          "composition": [],
+          "composition": {
+              "ing1688": 2
+          },
           "weight": 1,
           "color": "bleufonce"
       },
@@ -79,7 +310,10 @@
           "nom": "MENU B2",
           "prix": "8.00",
           "tva": "tva6",
-          "composition": [],
+          "composition": {
+              "ing1689": 1,
+              "ing1688": 1
+          },
           "weight": 2,
           "color": "bleufonce"
       },
@@ -90,7 +324,10 @@
           "nom": "MENU B3",
           "prix": "8.00",
           "tva": "tva6",
-          "composition": [],
+          "composition": {
+              "ing1690": 1,
+              "ing1688": 1
+          },
           "weight": 3,
           "color": "bleufonce"
       },
@@ -101,7 +338,10 @@
           "nom": "MENU B4",
           "prix": "9.00",
           "tva": "tva6",
-          "composition": [],
+          "composition": {
+              "ing1691": 1,
+              "ing1688": 1
+          },
           "weight": 4,
           "color": "bleufonce"
       },
@@ -112,7 +352,10 @@
           "nom": "MENU B5",
           "prix": "8.00",
           "tva": "tva6",
-          "composition": [],
+          "composition": {
+              "ing1692": 1,
+              "ing1688": 1
+          },
           "weight": 5,
           "color": "bleufonce"
       },
@@ -123,7 +366,10 @@
           "nom": "MENU B6",
           "prix": "10.00",
           "tva": "tva6",
-          "composition": [],
+          "composition": {
+              "ing1690": 1,
+              "ing1693": 1
+          },
           "weight": 6,
           "color": "bleufonce"
       },
@@ -134,7 +380,9 @@
           "nom": "MENU B7",
           "prix": "10.00",
           "tva": "tva6",
-          "composition": [],
+          "composition": {
+              "ing1692": 2
+          },
           "weight": 7,
           "color": "bleufonce"
       },
@@ -145,7 +393,10 @@
           "nom": "MENU B9",
           "prix": "10.00",
           "tva": "tva6",
-          "composition": [],
+          "composition": {
+              "ing1690": 1,
+              "ing1692": 1
+          },
           "weight": 8,
           "color": "bleufonce"
       },
@@ -156,7 +407,10 @@
           "nom": "MENU B10",
           "prix": "10.00",
           "tva": "tva6",
-          "composition": [],
+          "composition": {
+              "ing1694": 1,
+              "ing1695": 1
+          },
           "weight": 9,
           "color": "bleufonce"
       },
@@ -167,7 +421,9 @@
           "nom": "MENU B12",
           "prix": "11.00",
           "tva": "tva6",
-          "composition": [],
+          "composition": {
+              "ing1696": 2
+          },
           "weight": 10,
           "color": "bleufonce"
       },
@@ -178,7 +434,9 @@
           "nom": "MENU L1",
           "prix": "7.00",
           "tva": "tva6",
-          "composition": [],
+          "composition": {
+              "ing1697": 1
+          },
           "weight": 14,
           "color": "rouge"
       },
@@ -189,7 +447,9 @@
           "nom": "MENU L2",
           "prix": "8.00",
           "tva": "tva6",
-          "composition": [],
+          "composition": {
+              "ing1698": 1
+          },
           "weight": 14,
           "color": "rouge"
       },
@@ -200,7 +460,10 @@
           "nom": "MENU B14",
           "prix": "10.00",
           "tva": "tva6",
-          "composition": [],
+          "composition": {
+              "ing1700": 1,
+              "ing1688": 1
+          },
           "weight": 11,
           "color": "bleufonce"
       },
@@ -211,7 +474,10 @@
           "nom": "MENU B15",
           "prix": "8.00",
           "tva": "tva6",
-          "composition": [],
+          "composition": {
+              "ing1701": 1,
+              "ing1702": 1
+          },
           "weight": 13,
           "color": "bleufonce"
       },
@@ -222,7 +488,9 @@
           "nom": "MENU L5",
           "prix": "8.00",
           "tva": "tva6",
-          "composition": [],
+          "composition": {
+              "ing1699": 1
+          },
           "weight": 15,
           "color": "rouge"
       },
@@ -230,7 +498,7 @@
           "produit_id": "prd2336",
           "groupe": "grp190",
           "active": 1,
-          "nom": "MENU CHEESE",
+          "nom": "MENU KIDS CHEESE",
           "prix": "6.00",
           "tva": "tva6",
           "composition": [],
@@ -241,7 +509,7 @@
           "produit_id": "prd2337",
           "groupe": "grp190",
           "active": 1,
-          "nom": "MENU CROQ",
+          "nom": "MENU KIDS CROQ",
           "prix": "6.00",
           "tva": "tva6",
           "composition": [],
@@ -252,7 +520,7 @@
           "produit_id": "prd2338",
           "groupe": "grp190",
           "active": 1,
-          "nom": "MENU NUGGETS",
+          "nom": "MENU KIDS NUGGETS",
           "prix": "6.00",
           "tva": "tva6",
           "composition": [],
@@ -632,161 +900,203 @@
           "composition": [],
           "weight": 2,
           "color": "vertclair"
-      },
-      {
-          "produit_id": "prd2527",
-          "groupe": "grp211",
-          "active": 1,
-          "nom": "CALZONE",
-          "prix": "11.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 1,
-          "color": "bleuclair"
-      },
-      {
-          "produit_id": "prd2528",
-          "groupe": "grp211",
-          "active": 1,
-          "nom": "VEGETARIANA",
-          "prix": "11.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 2,
-          "color": "vertclair"
-      },
-      {
-          "produit_id": "prd2529",
-          "groupe": "grp211",
-          "active": 1,
-          "nom": "BURRATINA",
-          "prix": "14.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 3,
-          "color": "gris"
-      },
-      {
-          "produit_id": "prd2530",
-          "groupe": "grp211",
-          "active": 1,
-          "nom": "TONNO",
-          "prix": "11.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 4,
-          "color": "jaune"
-      },
-      {
-          "produit_id": "prd2531",
-          "groupe": "grp211",
-          "active": 1,
-          "nom": "TARTUFFO",
-          "prix": "12.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 5,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd2532",
-          "groupe": "grp211",
-          "active": 1,
-          "nom": "ORIENTALE",
-          "prix": "11.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 6,
-          "color": "rouge"
-      },
-      {
-          "produit_id": "prd2533",
-          "groupe": "grp211",
-          "active": 1,
-          "nom": "SAVOYARDE",
-          "prix": "11.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 7,
-          "color": "violet"
-      },
-      {
-          "produit_id": "prd2534",
-          "groupe": "grp211",
-          "active": 1,
-          "nom": "SALMONE",
-          "prix": "14.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 8,
-          "color": "marron"
-      },
-      {
-          "produit_id": "prd2535",
-          "groupe": "grp211",
-          "active": 1,
-          "nom": "4 FORMAGGI",
-          "prix": "11.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 9,
-          "color": "jaune"
-      },
-      {
-          "produit_id": "prd2536",
-          "groupe": "grp211",
-          "active": 1,
-          "nom": "CARBONARA",
-          "prix": "11.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 10,
-          "color": "rouge"
-      },
-      {
-          "produit_id": "prd2537",
-          "groupe": "grp211",
-          "active": 1,
-          "nom": "PIZZA FRITA",
-          "prix": "13.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 11,
-          "color": "jauneorange"
-      },
-      {
-          "produit_id": "prd2538",
-          "groupe": "grp211",
-          "active": 1,
-          "nom": "CHÈVRE MIEL",
-          "prix": "11.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 12,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd2539",
-          "groupe": "grp211",
-          "active": 1,
-          "nom": "MARGARITA",
-          "prix": "11.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 13,
-          "color": "orange"
-      },
-      {
-          "produit_id": "prd2540",
-          "groupe": "grp211",
-          "active": 1,
-          "nom": "MOUSSAKA",
-          "prix": "11.00",
-          "tva": "tva6",
-          "composition": [],
-          "weight": 14,
-          "color": "marron"
       }
   ],
-  "steps": []
+  "steps": [
+      {
+          "step_id": "step1640",
+          "produit": "prd2319",
+          "titre": "CHOISISSEZ VOTRE BOISSON",
+          "regles": [
+              {
+                  "type": "typ247",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1641",
+          "produit": "prd2320",
+          "titre": "CHOISSISEZ VOTRE BOISSON",
+          "regles": [
+              {
+                  "type": "typ247",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1642",
+          "produit": "prd2321",
+          "titre": "CHOISISSEZ VOTRE BOISSON",
+          "regles": [
+              {
+                  "type": "typ247",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1643",
+          "produit": "prd2322",
+          "titre": "CHOISISSEZ VOTRE BOISSON",
+          "regles": [
+              {
+                  "type": "typ247",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1644",
+          "produit": "prd2323",
+          "titre": "CHOISISSEZ VOTRE BOISSON",
+          "regles": [
+              {
+                  "type": "typ247",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1645",
+          "produit": "prd2324",
+          "titre": "CHOISISSEZ VOTRE BOISSON",
+          "regles": [
+              {
+                  "type": "typ247",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1646",
+          "produit": "prd2325",
+          "titre": "CHOISISSEZ VOTRE BOISSON",
+          "regles": [
+              {
+                  "type": "typ247",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1647",
+          "produit": "prd2326",
+          "titre": "CHOISISSEZ VOTRE BOISSON",
+          "regles": [
+              {
+                  "type": "typ247",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1648",
+          "produit": "prd2327",
+          "titre": "CHOISISSEZ VOTRE BOISSON",
+          "regles": [
+              {
+                  "type": "typ247",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1649",
+          "produit": "prd2330",
+          "titre": "CHOISISSEZ VOTRE BOISSON",
+          "regles": [
+              {
+                  "type": "typ247",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1652",
+          "produit": "prd2331",
+          "titre": "CHOISISSEZ VOTRE BOISSON",
+          "regles": [
+              {
+                  "type": "typ247",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1653",
+          "produit": "prd2332",
+          "titre": "CHOISISSEZ VOTRE BOISSON",
+          "regles": [
+              {
+                  "type": "typ247",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1650",
+          "produit": "prd2333",
+          "titre": "CHOISISSEZ VOTRE BOISSON",
+          "regles": [
+              {
+                  "type": "typ247",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1651",
+          "produit": "prd2334",
+          "titre": "CHOISISSEZ VOTRE BOISSON",
+          "regles": [
+              {
+                  "type": "typ247",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      },
+      {
+          "step_id": "step1654",
+          "produit": "prd2335",
+          "titre": "CHOISISSEZ VOTRE BOISSON",
+          "regles": [
+              {
+                  "type": "typ247",
+                  "regle": "{0,1}",
+                  "supplement": "0.00"
+              }
+          ],
+          "weight": 10
+      }
+  ]
 }

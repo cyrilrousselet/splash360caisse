@@ -44,7 +44,8 @@ const mapDispatchToProps = (dispatch) => {
     getCurrentPeriode: clotureActions.getCurrentPeriode,
     initSSE: notificationActions.initSSE,
     setPOS: notificationActions.setPOS,
-    initSync: notificationActions.initSync
+    initSync: notificationActions.initSync,
+    getDatabase: notificationActions.getDatabase
   }, dispatch);
   return {
     ...bound,

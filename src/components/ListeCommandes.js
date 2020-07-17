@@ -242,6 +242,7 @@ class ListeCommandes extends React.Component {
 
   
   closeReglement() {
+    this.props.deleteCurrentCommande();
     this.setState({reglementOpen: false, commandeId: null});
   }
 
