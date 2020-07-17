@@ -20,5 +20,9 @@
       "url": "https://api.uber.com/v1/eats/stores/{store_id}/pos_data",
       "scope": "eats.store"
     }
+  },
+  "synchro": {
+    "oAuth": "http://api.splash360.local/oauth/v2/token?client_id=%ID%&client_secret=%PWD%&grant_type=client_credentials",
+    "getdb": "http://api.splash360.local/api/export/database"
   }
 }

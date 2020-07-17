@@ -112,7 +112,8 @@ export function commandeReducer(state = initialState, action) {
           modificateurs: [],
           comments: [],
           reglements: [],
-          rendus: []
+          rendus: [],
+          numero: null
         }
       }
 

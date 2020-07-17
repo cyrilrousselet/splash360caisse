@@ -2,7 +2,7 @@
     "name": "splash360",
     "productName": "Splash360",
     "description": "Cash application",
-    "version": "0.1.201980140",
+    "version": "0.1.201982359",
     "private": true,
     "author": {
         "name": "Splash360",
@@ -41,6 +41,7 @@
         "@material-ui/lab": "^4.0.0-alpha.56",
         "@material-ui/pickers": "^3.2.10",
         "@pelevesque/canonicalize-string": "0.0.6",
+        "axios": "^0.19.2",
         "babel-eslint": "^10.1.0",
         "chart.js": "^2.9.3",
         "connected-react-router": "^6.5.2",

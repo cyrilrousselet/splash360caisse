@@ -215,6 +215,24 @@ function getNewNumero() {
   }
 }
 
+function getDatabase() {
+  return (dispatch, getState) => {
+
+
+    logger.log('getDatabase()');
+
+    dispatch({type: notificationActionTypes.GET_DATABASE_REQUEST});
+    const { entreprise } = getState().parametresReducer.parametres; 
+    notificationServices.getDatabase({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret})
+    .then(conf => {
+      dispatch({type: notificationActionTypes.GET_DATABASE_SUCCESS});
+    },
+    error => {
+      dispatch({type: notificationActionTypes.GET_DATABASE_FAILURE, error: error});
+    })
+  }
+}
+
 export const notificationActions = {
   initSSE,
   setPOS,
@@ -225,5 +243,6 @@ export const notificationActions = {
   syncDispatch,
   syncConfirm,
   sendNumero,
-  getNewNumero
+  getNewNumero,
+  getDatabase
 };

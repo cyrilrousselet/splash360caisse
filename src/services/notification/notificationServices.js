@@ -4,6 +4,7 @@ import { isAfter, isBefore } from 'date-fns';
 import { create } from 'simple-oauth2';
 import devOrder from '../../constants/_devOrder.json';
 import Logger from '../../helpers/Logger';
+import axios from 'axios';
 
 const logger = new Logger();
 
@@ -21,10 +22,75 @@ export const notificationServices = {
   syncPrimary,
   syncConfirm,
   sendNumero,
-  askNumero
+  askNumero,
+  getDatabase
  };
 
 
+async function getDatabase(params) {
+
+  const __splashToken = await getSplashToken(params);
+
+
+  if (__splashToken.access_token) {
+    var __url = externalParams.synchro.getdb;
+    return emit('getDatabase', {url: __url, access_token: __splashToken.access_token});
+  }
+}
+
+
+async function getSplashToken(params) {
+
+
+  return new Promise(async (resolve,reject)=> {
+    
+    const credentials = {
+      client: {
+        id: params.id,
+        secret: params.secret
+      },
+      auth: {
+        tokenHost: externalParams.synchro.oAuth
+      }
+    };
+
+    const url = externalParams.synchro.oAuth.replace('%ID%', params.id).replace('%PWD%', params.secret)
+
+    // console.log('credentials', credentials);
+    
+    // const tokenConfig = {
+    // //   scope: externalParams.uber[task].scope
+    // };
+
+    // console.log('tokenConfig', tokenConfig);
+
+    // const splashOAuth2 = create(credentials);
+
+    try {
+    //   const result = await splashOAuth2.clientCredentials.getToken(tokenConfig);
+    //   const accessToken = splashOAuth2.accessToken.create(result);
+      
+    // //   localStorage.setItem('uber_token', JSON.stringify(accessToken.token));
+    axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+    //   console.log('token',accessToken);
+      axios.get(url, { headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+        })
+           .then(res => {
+            
+           //   res.data.access_token: "NzJhNzhlYTI3YTI2OGRjN2JmNWY3MWJjOGFmNjBlMzlmNGYwYWNmYTVjOWNlNmMxY2ZmNjE0NzAxMjkzZGVmMw",
+              resolve(res.data.access_token);
+           });
+          
+    } catch (error) {
+      console.log('Access splashOAuth2 token error', error.message);
+      reject(error.message);
+    }
+    
+
+  });
+} 
 
 
  async function getToken(provider, task) {

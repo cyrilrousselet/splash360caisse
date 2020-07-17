@@ -186,6 +186,7 @@ function _parseCatalogue(_rawdata) {
 
 
   const __ingredientTypes = {};
+  // on ajoute la propriété 'ingredients' aux ingredientTypes
   _rawdata._igt.forEach(t => {
     // __ingredientTypes[t.type_id] = {nom: t.nom, ingredients: [], noprint: t.noprint, weight: t.weight};
     __ingredientTypes[t.type_id] = {...t, ingredients: []};

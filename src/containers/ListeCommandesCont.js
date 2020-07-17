@@ -40,7 +40,8 @@ const mapDispatchToProps = (dispatch) => {
       deleteCommande: commandeActions.deleteCommande,
       printTicket: peripheralActions.printTicket,
       setLivreur: commandeActions.setLivreur,
-      getUsers: userActions.getAll
+      getUsers: userActions.getAll,
+      deleteCurrentCommande: commandeActions.deleteCurrentCommande
   }, dispatch);
   return {
     ...bound,

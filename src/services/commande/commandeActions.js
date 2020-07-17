@@ -291,13 +291,29 @@ function addProduit(payload) {
     const items = state.commandeReducer.commande.items;
     const tva = state.catalogueReducer.tva[payload.tva_id];
     const steps = state.catalogueReducer.steps[payload.produitid];
-    const composition = payload.composition.map(cmp => (
-        {...cmp, 
-         type: state.catalogueReducer.ingredients[cmp.ingredient].type, 
-         tva: state.catalogueReducer.ingredients[cmp.ingredient].tva_id,
-         prix: Number(state.catalogueReducer.ingredients[cmp.ingredient].supplement),
-         fromStep: null 
+    
+    const composition = Object.entries(payload.composition).map(([ingid,qte]) => (
+        {
+          ingredient: ingid,
+          qte: qte, 
+          type: state.catalogueReducer.ingredients[ingid].type, 
+          tva: state.catalogueReducer.tva[state.catalogueReducer.ingredients[ingid].tva_id],
+          prix: Number(state.catalogueReducer.ingredients[ingid].supplement),
+          nom: state.catalogueReducer.ingredients[ingid].nom,
+          fromStep: null 
         }
+
+
+        /*
+
+      ingredient: ingredient.id, 
+      type: ingredient.type, 
+      qte: 1, 
+      prix: Number(ingredient.supplement), 
+      nom: ingredient.nom, 
+      fromStep:step.step_id,
+      tva: tva
+        */
     ));
     payload = {...payload, composition};
 

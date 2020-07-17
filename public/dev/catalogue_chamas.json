@@ -206,6 +206,18 @@
       "nom": "EXTRA",
       "noprint": [],
       "weight": 15
+    },
+    {
+      "type_id": "icat27",
+      "nom": "BOISSONS",
+      "noprint": [],
+      "weight": 16
+    },
+    {
+      "type_id": "icat28",
+      "nom": "FRITES",
+      "noprint": [],
+      "weight": 17
     }
   ],
   "ingredients": [
@@ -1270,6 +1282,366 @@
       "tva": "tva1",
       "weight": 1,
       "color": "blanc"
+    },
+    {
+      "ingredient_id": "ing120",
+      "type": "icat27",
+      "nom": "COCA COLA CHERRY",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 1,
+      "color": "rose"
+    },
+    {
+      "ingredient_id": "ing121",
+      "type": "icat27",
+      "nom": "COCA COLA",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 2,
+      "color": "rouge"
+    },
+    {
+      "ingredient_id": "ing122",
+      "type": "icat27",
+      "nom": "COCA COLA ZERO",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 3,
+      "color": "noir"
+    },
+    {
+      "ingredient_id": "ing123",
+      "type": "icat27",
+      "nom": "FANTA CITRON",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 4,
+      "color": "jaune"
+    },
+    {
+      "ingredient_id": "ing124",
+      "type": "icat27",
+      "nom": "FANTA FRUIT DU DRAGON",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 5,
+      "color": "violet"
+    },
+    {
+      "ingredient_id": "ing125",
+      "type": "icat27",
+      "nom": "FANTA AGRUMES",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 6,
+      "color": "rose"
+    },
+    {
+      "ingredient_id": "ing126",
+      "type": "icat27",
+      "nom": "FANTA ORANGE",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 7,
+      "color": "orange"
+    },
+    {
+      "ingredient_id": "ing127",
+      "type": "icat27",
+      "nom": "FANTA EXOTIQUE",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 8,
+      "color": "rose"
+    },
+    {
+      "ingredient_id": "ing128",
+      "type": "icat27",
+      "nom": "FUZETEA CAMOMILLE",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 9,
+      "color": "vertclair"
+    },
+    {
+      "ingredient_id": "ing129",
+      "type": "icat27",
+      "nom": "FUZTEA HIBISCUS",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 10,
+      "color": "rose"
+    },
+    {
+      "ingredient_id": "ing130",
+      "type": "icat27",
+      "nom": "TROPICO",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 11,
+      "color": "bleuclair"
+    },
+    {
+      "ingredient_id": "ing131",
+      "type": "icat27",
+      "nom": "TROPICO TROPICAL",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 12,
+      "color": "orange"
+    },
+    {
+      "ingredient_id": "ing132",
+      "type": "icat27",
+      "nom": "TROPICO POMME FRUITS ROUGE",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 13,
+      "color": "rouge"
+    },
+    {
+      "ingredient_id": "ing133",
+      "type": "icat27",
+      "nom": "MINUTE MAID ORANGE",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 14,
+      "color": "orange"
+    },
+    {
+      "ingredient_id": "ing134",
+      "type": "icat27",
+      "nom": "MINUTE MAID POMME",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 15,
+      "color": "vertclair"
+    },
+    {
+      "ingredient_id": "ing135",
+      "type": "icat27",
+      "nom": "MINUTE MAID TROPICAL",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 16,
+      "color": "violet"
+    },
+    {
+      "ingredient_id": "ing136",
+      "type": "icat27",
+      "nom": "SPRITE",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 17,
+      "color": "vertclair"
+    },
+    {
+      "ingredient_id": "ing137",
+      "type": "icat27",
+      "nom": "7UP MOJITO",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 18,
+      "color": "vertfonce"
+    },
+    {
+      "ingredient_id": "ing138",
+      "type": "icat27",
+      "nom": "POM’S",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 19,
+      "color": "vertclair"
+    },
+    {
+      "ingredient_id": "ing139",
+      "type": "icat27",
+      "nom": "HAWAI",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 20,
+      "color": "jaune"
+    },
+    {
+      "ingredient_id": "ing140",
+      "type": "icat27",
+      "nom": "PERRIER",
+      "supplement": "1.50",
+      "tva": "tva2",
+      "weight": 21,
+      "color": "vertfonce"
+    },
+    {
+      "ingredient_id": "ing141",
+      "type": "icat27",
+      "nom": "CRISTALINE",
+      "supplement": "1.00",
+      "tva": "tva2",
+      "weight": 22,
+      "color": "bleuclair"
+    },
+    {
+      "ingredient_id": "ing142",
+      "type": "icat27",
+      "nom": "CRISTALINE FRAISE",
+      "supplement": "2.00",
+      "tva": "tva2",
+      "weight": 23,
+      "color": "rouge"
+    },
+    {
+      "ingredient_id": "ing143",
+      "type": "icat27",
+      "nom": "CRISTALINE PECHE",
+      "supplement": "2.00",
+      "tva": "tva2",
+      "weight": 24,
+      "color": "jaune"
+    },
+    {
+      "ingredient_id": "ing144",
+      "type": "icat27",
+      "nom": "CAPRI-SUN",
+      "supplement": "1.00",
+      "tva": "tva2",
+      "weight": 25,
+      "color": "bleufonce"
+    },
+    {
+      "ingredient_id": "ing145",
+      "type": "icat27",
+      "nom": "COCA COLA CHERRY 50CL",
+      "supplement": "2.50",
+      "tva": "tva2",
+      "weight": 26,
+      "color": "rose"
+    },
+    {
+      "ingredient_id": "ing146",
+      "type": "icat27",
+      "nom": "COCA COLA 50CL",
+      "supplement": "2.50",
+      "tva": "tva2",
+      "weight": 27,
+      "color": "rouge"
+    },
+    {
+      "ingredient_id": "ing147",
+      "type": "icat27",
+      "nom": "COCA COLA ZERO 50CL",
+      "supplement": "2.50",
+      "tva": "tva2",
+      "weight": 28,
+      "color": "noir"
+    },
+    {
+      "ingredient_id": "ing148",
+      "type": "icat27",
+      "nom": "FANTA ORANGE 50CL",
+      "supplement": "2.50",
+      "tva": "tva2",
+      "weight": 29,
+      "color": "orange"
+    },
+    {
+      "ingredient_id": "ing149",
+      "type": "icat27",
+      "nom": "FANTA CITRON 50CL",
+      "supplement": "2.50",
+      "tva": "tva2",
+      "weight": 30,
+      "color": "jaune"
+    },
+    {
+      "ingredient_id": "ing150",
+      "type": "icat27",
+      "nom": "FUZTEA CAMOMILLE 50CL",
+      "supplement": "2.50",
+      "tva": "tva2",
+      "weight": 31,
+      "color": "vertclair"
+    },
+    {
+      "ingredient_id": "ing151",
+      "type": "icat27",
+      "nom": "FUZTEA HIBISCUS 50CL",
+      "supplement": "2.50",
+      "tva": "tva2",
+      "weight": 32,
+      "color": "rose"
+    },
+    {
+      "ingredient_id": "ing152",
+      "type": "icat27",
+      "nom": "TROPICO 50CL",
+      "supplement": "2.50",
+      "tva": "tva2",
+      "weight": 33,
+      "color": "bleuclair"
+    },
+    {
+      "ingredient_id": "ing153",
+      "type": "icat27",
+      "nom": "TROPICO TROPICAL 50CL",
+      "supplement": "2.50",
+      "tva": "tva2",
+      "weight": 34,
+      "color": "orange"
+    },
+    {
+      "ingredient_id": "ing154",
+      "type": "icat27",
+      "nom": "FREEZ",
+      "supplement": "2.50",
+      "tva": "tva2",
+      "weight": 35,
+      "color": "vert"
+    },
+    {
+      "ingredient_id": "ing155",
+      "type": "icat28",
+      "nom": "PETITE FRITES",
+      "supplement": "1.00",
+      "tva": "tva1",
+      "weight": 1,
+      "color": "jaune"
+    },
+    {
+      "ingredient_id": "ing156",
+      "type": "icat28",
+      "nom": "MAXI FRITES",
+      "supplement": "2.00",
+      "tva": "tva1",
+      "weight": 2,
+      "color": "jauneorange"
+    },
+    {
+      "ingredient_id": "ing157",
+      "type": "icat28",
+      "nom": "FRITES CHEESE",
+      "supplement": "2.50",
+      "tva": "tva1",
+      "weight": 3,
+      "color": "orange"
+    },
+    {
+      "ingredient_id": "ing158",
+      "type": "icat28",
+      "nom": "FRITES CHEESE & BACON",
+      "supplement": "3.50",
+      "tva": "tva1",
+      "weight": 4,
+      "color": "rose"
+    },
+    {
+      "ingredient_id": "ing159",
+      "type": "icat28",
+      "nom": "FRITES CHEESE & JALAPENOS",
+      "supplement": "3.50",
+      "tva": "tva1",
+      "weight": 5,
+      "color": "marron"
     }
   ],
   "produits": [
@@ -1795,7 +2167,7 @@
       "groupe": "cat10",
       "active": 1,
       "nom": "TIRAMISU DAIM",
-      "prix": "2.90",
+      "prix": "3.00",
       "tva": "tva1",
       "composition": [],
       "weight": 1,
@@ -1806,7 +2178,7 @@
       "groupe": "cat10",
       "active": 1,
       "nom": "TIRAMISU MALTESERS",
-      "prix": "2.90",
+      "prix": "3.00",
       "tva": "tva1",
       "composition": [],
       "weight": 2,
@@ -1817,7 +2189,7 @@
       "groupe": "cat10",
       "active": 1,
       "nom": "TIRAMISU NOISETTE",
-      "prix": "2.90",
+      "prix": "3.00",
       "tva": "tva1",
       "composition": [],
       "weight": 3,
@@ -1828,7 +2200,7 @@
       "groupe": "cat10",
       "active": 1,
       "nom": "TIRAMISU OREO",
-      "prix": "2.90",
+      "prix": "3.00",
       "tva": "tva1",
       "composition": [],
       "weight": 4,
@@ -1839,7 +2211,7 @@
       "groupe": "cat10",
       "active": 1,
       "nom": "TIRAMISU SNICKERS",
-      "prix": "2.90",
+      "prix": "3.00",
       "tva": "tva1",
       "composition": [],
       "weight": 5,
@@ -2224,12 +2596,81 @@
       "groupe": "cat11",
       "active": 1,
       "nom": "FREEZ",
-      "prix": "3.00",
+      "prix": "2.50",
       "tva": "tva2",
       "composition": [],
       "weight": 35,
       "color": "vert"
+    },
+
+    {
+      "produit_id": "pdt87",
+      "groupe": "cat3",
+      "active": 1,
+      "nom": "BOURSIN SIMPLE",
+      "prix": "7.50",
+      "tva": "tva1",
+      "composition": [],
+      "weight": 13,
+      "color": "violet"
+    },
+    {
+      "produit_id": "pdt88",
+      "groupe": "cat3",
+      "active": 1,
+      "nom": "BOURSIN DOUBLE",
+      "prix": "8.50",
+      "tva": "tva1",
+      "composition": [],
+      "weight": 14,
+      "color": "violet"
+    },
+    {
+      "produit_id": "pdt89",
+      "groupe": "cat3",
+      "active": 1,
+      "nom": "BOURSIN MAXI",
+      "prix": "11.50",
+      "tva": "tva1",
+      "composition": [],
+      "weight": 15,
+      "color": "violet"
+    },
+    {
+      "produit_id": "pdt90",
+      "groupe": "cat3",
+      "active": 1,
+      "nom": "CHAROGNARD SIMPLE",
+      "prix": "7.50",
+      "tva": "tva1",
+      "composition": [],
+      "weight": 16,
+      "color": "bleufonce"
+    },
+    {
+      "produit_id": "pdt91",
+      "groupe": "cat3",
+      "active": 1,
+      "nom": "CHAROGNARD DOUBLE",
+      "prix": "8.50",
+      "tva": "tva1",
+      "composition": [],
+      "weight": 17,
+      "color": "bleufonce"
+    },
+    {
+      "produit_id": "pdt92",
+      "groupe": "cat3",
+      "active": 1,
+      "nom": "CHAROGNARD MAXI",
+      "prix": "11.50",
+      "tva": "tva1",
+      "composition": [],
+      "weight": 18,
+      "color": "bleufonce"
     }
+
+
   ],
   "steps": [
     {
@@ -2681,7 +3122,7 @@
       "regles": [
         {
           "type": "icat21",
-          "regle": "{1}",
+          "regle": "{2}",
           "supplement": 0
         }
       ],
@@ -2720,7 +3161,7 @@
       "regles": [
         {
           "type": "icat21",
-          "regle": "{1}",
+          "regle": "{3}",
           "supplement": 0
         }
       ],
@@ -2798,7 +3239,7 @@
       "regles": [
         {
           "type": "icat21",
-          "regle": "{1}",
+          "regle": "{2}",
           "supplement": 0
         }
       ],
@@ -2837,7 +3278,7 @@
       "regles": [
         {
           "type": "icat21",
-          "regle": "{1}",
+          "regle": "{3}",
           "supplement": 0
         }
       ],
@@ -3124,6 +3565,743 @@
         {
           "type": "icat18",
           "regle": "{0,4}",
+          "supplement": 0
+        }
+      ],
+      "weight": 3
+    },
+    {
+      "step_id": "step70",
+      "produit": "pdt1",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 4
+    },
+    {
+      "step_id": "step71",
+      "produit": "pdt1",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 5
+    },
+    {
+      "step_id": "step72",
+      "produit": "pdt2",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 4
+    },
+    {
+      "step_id": "step73",
+      "produit": "pdt2",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 5
+    },
+    {
+      "step_id": "step74",
+      "produit": "pdt3",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 4
+    },
+    {
+      "step_id": "step75",
+      "produit": "pdt3",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 5
+    },
+    {
+      "step_id": "step76",
+      "produit": "pdt4",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 4
+    },
+    {
+      "step_id": "step77",
+      "produit": "pdt4",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 5
+    },
+    {
+      "step_id": "step78",
+      "produit": "pdt5",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 4
+    },
+    {
+      "step_id": "step79",
+      "produit": "pdt5",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 5
+    },
+    {
+      "step_id": "step80",
+      "produit": "pdt6",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 4
+    },
+    {
+      "step_id": "step81",
+      "produit": "pdt6",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 5
+    },
+    {
+      "step_id": "step82",
+      "produit": "pdt7",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 4
+    },
+    {
+      "step_id": "step83",
+      "produit": "pdt7",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 5
+    }
+
+
+    ,
+    {
+      "step_id": "step84",
+      "produit": "pdt8",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 2
+    },
+    {
+      "step_id": "step85",
+      "produit": "pdt8",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 3
+    },
+    {
+      "step_id": "step86",
+      "produit": "pdt9",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 2
+    },
+    {
+      "step_id": "step87",
+      "produit": "pdt9",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 3
+    },
+    {
+      "step_id": "step88",
+      "produit": "pdt10",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 2
+    },
+    {
+      "step_id": "step89",
+      "produit": "pdt10",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 3
+    },
+    {
+      "step_id": "step90",
+      "produit": "pdt11",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 2
+    },
+    {
+      "step_id": "step91",
+      "produit": "pdt11",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 3
+    },
+    {
+      "step_id": "step92",
+      "produit": "pdt12",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 2
+    },
+    {
+      "step_id": "step93",
+      "produit": "pdt12",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 3
+    },
+    {
+      "step_id": "step94",
+      "produit": "pdt13",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 2
+    },
+    {
+      "step_id": "step95",
+      "produit": "pdt13",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 3
+    },
+    {
+      "step_id": "step96",
+      "produit": "pdt14",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 4
+    },
+    {
+      "step_id": "step97",
+      "produit": "pdt14",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 5
+    },
+    {
+      "step_id": "step98",
+      "produit": "pdt15",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 4
+    },
+    {
+      "step_id": "step99",
+      "produit": "pdt15",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 5
+    },
+    {
+      "step_id": "step100",
+      "produit": "pdt16",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 4
+    },
+    {
+      "step_id": "step101",
+      "produit": "pdt16",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 5
+    },
+    {
+      "step_id": "step102",
+      "produit": "pdt17",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 4
+    },
+    {
+      "step_id": "step103",
+      "produit": "pdt17",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 5
+    },
+    {
+      "step_id": "step104",
+      "produit": "pdt18",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 4
+    },
+    {
+      "step_id": "step105",
+      "produit": "pdt18",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 5
+    },
+    {
+      "step_id": "step106",
+      "produit": "pdt19",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 4
+    },
+    {
+      "step_id": "step106",
+      "produit": "pdt19",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 5
+    },
+
+    {
+      "step_id": "step107",
+      "produit": "pdt87",
+      "titre": "Garnitures et suppléments",
+      "regles": [
+        {
+          "type": "icat14",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 1
+    },
+    {
+      "step_id": "step108",
+      "produit": "pdt87",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 2
+    },
+    {
+      "step_id": "step109",
+      "produit": "pdt87",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 3
+    },
+
+    {
+      "step_id": "step110",
+      "produit": "pdt88",
+      "titre": "Garnitures et suppléments",
+      "regles": [
+        {
+          "type": "icat14",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 1
+    },
+    {
+      "step_id": "step111",
+      "produit": "pdt88",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 2
+    },
+    {
+      "step_id": "step112",
+      "produit": "pdt88",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 3
+    },
+
+    {
+      "step_id": "step113",
+      "produit": "pdt89",
+      "titre": "Garnitures et suppléments",
+      "regles": [
+        {
+          "type": "icat14",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 1
+    },
+    {
+      "step_id": "step114",
+      "produit": "pdt89",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 2
+    },
+    {
+      "step_id": "step115",
+      "produit": "pdt89",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 3
+    },
+
+    {
+      "step_id": "step116",
+      "produit": "pdt90",
+      "titre": "Garnitures et suppléments",
+      "regles": [
+        {
+          "type": "icat14",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 1
+    },
+    {
+      "step_id": "step117",
+      "produit": "pdt90",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 2
+    },
+    {
+      "step_id": "step118",
+      "produit": "pdt90",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 3
+    },
+
+    {
+      "step_id": "step119",
+      "produit": "pdt91",
+      "titre": "Garnitures et suppléments",
+      "regles": [
+        {
+          "type": "icat14",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 1
+    },
+    {
+      "step_id": "step120",
+      "produit": "pdt91",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 2
+    },
+    {
+      "step_id": "step121",
+      "produit": "pdt91",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 3
+    },
+
+    {
+      "step_id": "step122",
+      "produit": "pdt92",
+      "titre": "Garnitures et suppléments",
+      "regles": [
+        {
+          "type": "icat14",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 1
+    },
+    {
+      "step_id": "step123",
+      "produit": "pdt92",
+      "titre": "Frites",
+      "regles": [
+        {
+          "type": "icat28",
+          "regle": "{0,10}",
+          "supplement": 0
+        }
+      ],
+      "weight": 2
+    },
+    {
+      "step_id": "step124",
+      "produit": "pdt92",
+      "titre": "Boissons",
+      "regles": [
+        {
+          "type": "icat27",
+          "regle": "{0,10}",
           "supplement": 0
         }
       ],

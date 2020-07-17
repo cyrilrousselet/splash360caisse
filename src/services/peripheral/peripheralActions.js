@@ -408,6 +408,24 @@ function printCommandeTicket(quelstickets, cmd) {
 
         let articleIngredients = [];
 
+        article.composition.forEach(ing => {
+
+          // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
+          // const zonei = ticketsListe.filter(t => types[ing.type].noprint.find(p=>p==t.ticket_id)!==undefined );
+          // const zoneilist = zonei.map(z => z.ticket_id);
+
+          // ordre du type d'ingrédient
+          let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
+          // ordre du type d'ingrédient (défini dans les paramètres)
+
+        //  if (ing.fromStep!=null) {
+            articleIngredients.push({
+              quantity: ing.qte,
+              subProductName: ing.nom
+            });
+        //  }
+        });
+
         article.ingredients.forEach(ing => {
 
           // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
@@ -487,7 +505,7 @@ function printCommandeTicket(quelstickets, cmd) {
             // ordre du type d'ingrédient
             let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
             // ordre du type d'ingrédient (défini dans les paramètres)
-            if (impression_ordre) {
+            if (impression_ordre && impression_ordre.types) {
               let __typeweight = impression_ordre.types.findIndex(t=>t===ing.type);
               if (__typeweight!=-1) __ingweight = __typeweight;
             }
@@ -717,7 +735,11 @@ function printCommandeTicket(quelstickets, cmd) {
 
           let articleIngredients = [];
 
-          article.ingredients.forEach(ing => {
+
+          const inglist = [...article.composition, ...article.ingredients];
+
+
+          inglist.forEach(ing => {
 
             // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
             let __noprint = types[ing.type].noprint.find(p=>p===ticket.ticket_id);
@@ -725,7 +747,7 @@ function printCommandeTicket(quelstickets, cmd) {
             // ordre du type d'ingrédient
             let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
             // ordre du type d'ingrédient (défini dans les paramètres)
-            if (impression_ordre) {
+            if (impression_ordre && impression_ordre.types) {
               let __typeweight = impression_ordre.types.findIndex(t=>t===ing.type);
               if (__typeweight!=-1) __ingweight = __typeweight;
             }
@@ -734,7 +756,7 @@ function printCommandeTicket(quelstickets, cmd) {
             __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient);
 
 
-            if (ing.fromStep!==null && !__noprint) {
+            if (!__noprint) {
               articleIngredients.push({
                 qte: ing.qte,
                 nom: removeDiacritics(ing.nom),
@@ -805,7 +827,11 @@ function printCommandeTicket(quelstickets, cmd) {
 
           let articleIngredients = [];
 
-          article.ingredients.forEach(ing => {
+       //   article.ingredients.forEach(ing => {
+          const inglist = [...article.composition, ...article.ingredients];
+
+
+          inglist.forEach(ing => {
 
 
             // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
@@ -814,7 +840,7 @@ function printCommandeTicket(quelstickets, cmd) {
             // ordre du type d'ingrédient
             let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
             // ordre du type d'ingrédient (défini dans les paramètres)
-            if (impression_ordre) {
+            if (impression_ordre && impression_ordre.types) {
               let __typeweight = impression_ordre.types.findIndex(t=>t===ing.type);
               if (__typeweight!=-1) __ingweight = __typeweight;
             }
@@ -822,7 +848,7 @@ function printCommandeTicket(quelstickets, cmd) {
             // commentaire pour l'ingrédient :
             __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient);
 
-            if (ing.fromStep!==null && !__noprint) {
+            if (!__noprint) {
               articleIngredients.push({
                 qte: ing.qte,
                 nom: removeDiacritics(ing.nom),
