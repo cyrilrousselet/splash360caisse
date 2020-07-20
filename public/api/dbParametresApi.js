@@ -1,7 +1,6 @@
 const db = require('../db.js');
 const lodashId = require('lodash-id');
 const log = require('electron-log');
-const { default: logger } = require('redux-logger');
 
 
 const actions = {
