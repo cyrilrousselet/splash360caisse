@@ -41,6 +41,11 @@ const hydration = {
   reglescatalogue: [],
 
   parametres: [
+    { domaine: 'options', cle: 'first_start', valeur: false },
+    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '12_1lxom7abye8084g44skko4s0s404kww0cos08woggs0cg8g4c0' },
+    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '23rmjt26nim804gsoggw4488oocos8owwocwk0g4gkwg8o884c' },
+    { domaine: 'options', cle: 'role', valeur: null},
+    { domaine: 'options', cle: 'primary', valeur: null},
     { domaine: 'entreprise', cle: 'denomination', valeur: 'FOR LIFE'},
     { domaine: 'entreprise', cle: 'enseigne', valeur: 'FOR LIFE'},
     { domaine: 'entreprise', cle: 'adresse', valeur: '55-59 Avenue du Général Leclerc'},
@@ -53,8 +58,6 @@ const hydration = {
     { domaine: 'entreprise', cle: 'tva', valeur: ''},
     { domaine: 'entreprise', cle: 'site_web', valeur: ''},
     { domaine: 'entreprise', cle: 'heure_fin', valeur: '00:00' },
-    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '12_1lxom7abye8084g44skko4s0s404kww0cos08woggs0cg8g4c0' },
-    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '23rmjt26nim804gsoggw4488oocos8owwocwk0g4gkwg8o884c' },
     { domaine: 'entreprise', cle: 'avoirs', valeur: true },
     { domaine: 'financier', cle: 'fidelite_activation', valeur: false},
     { domaine: 'peripheriques', cle: 'impression', valeur: [{ticket:'tck1',groupes:['grp118','grp120','grp121','grp122','grp154','grp155','grp156','grp157','grp158','grp119','grp159','grp160'],types:['typ143','typ136','typ159','typ163','typ123','typ124','typ125','typ153','typ141','typ164','typ137','typ138','typ139','typ140','typ142','typ120','typ121']},{ticket:'tck2',groupes:['grp118','grp120','grp121','grp122','grp154','grp155','grp156','grp157','grp158','grp119','grp159','grp160'],types:['typ143','typ136','typ159','typ163','typ123','typ124','typ125','typ153','typ141','typ164','typ137','typ138','typ139','typ140','typ142','typ120','typ121']},{ticket:'tck3',groupes:['grp118','grp120','grp121','grp122','grp154','grp155','grp156','grp157','grp158','grp119','grp159','grp160'],types:['typ143','typ136','typ159','typ163','typ123','typ124','typ125','typ153','typ141','typ164','typ137','typ138','typ139','typ140','typ142','typ120','typ121']}]},

@@ -41,6 +41,11 @@ const hydration = {
   reglescatalogue: [],
 
   parametres: [
+    { domaine: 'options', cle: 'first_start', valeur: false },
+    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '10_29n364npqpes0848wg48og0gkgkowwc80044g8cg48g8okks04' },
+    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '1bv7gjk7r6hwswk0kcgwssg4ww4gcwcs8o40ssw8s4ccs0ogsk' },
+    { domaine: 'options', cle: 'role', valeur: null},
+    { domaine: 'options', cle: 'primary', valeur: null},
     { domaine: 'entreprise', cle: 'denomination', valeur: 'DIM SUM'},
     { domaine: 'entreprise', cle: 'enseigne', valeur: 'DIM SUM'},
     { domaine: 'entreprise', cle: 'adresse', valeur: 'RN 4 CENTRE COMMERCIAL CARREFOUR'},
@@ -53,8 +58,6 @@ const hydration = {
     { domaine: 'entreprise', cle: 'tva', valeur: ''},
     { domaine: 'entreprise', cle: 'site_web', valeur: ''},
     { domaine: 'entreprise', cle: 'heure_fin', valeur: '00:00' },
-    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '10_29n364npqpes0848wg48og0gkgkowwc80044g8cg48g8okks04' },
-    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '1bv7gjk7r6hwswk0kcgwssg4ww4gcwcs8o40ssw8s4ccs0ogsk' },
     { domaine: 'entreprise', cle: 'avoirs', valeur: true },
     { domaine: 'financier', cle: 'fidelite_activation', valeur: false},
     { domaine: 'peripheriques', cle: 'impression', valeur: [{ticket:'tck1',groupes:['grp98','grp99','grp100','grp101', 'grp102', 'grp103', 'grp104','grp105','grp106','grp107','grp108', 'grp109', 'grp112','grp116'], types:['typ116','typ111', 'typ112', 'typ113','typ114', 'typ115','typ108','typ109','typ110','typ117']},{ticket:'tck2',groupes:['grp98','grp99','grp100','grp101', 'grp102', 'grp103', 'grp104','grp105','grp106','grp107','grp108', 'grp109', 'grp112','grp116'], types:['typ116','typ111', 'typ112', 'typ113','typ114', 'typ115','typ108','typ109','typ110','typ117']},{ticket:'tck3',groupes:['grp98','grp99','grp100','grp101', 'grp102', 'grp103', 'grp104','grp105','grp106','grp107','grp108', 'grp109', 'grp112','grp116'], types:['typ116','typ111', 'typ112', 'typ113','typ114', 'typ115','typ108','typ109','typ110','typ117']}]},

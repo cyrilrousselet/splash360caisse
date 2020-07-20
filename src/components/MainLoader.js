@@ -40,7 +40,7 @@ class MainLoader extends React.Component {
       this.props.getParametres();
     }
     if (paramLoaded && !sseInit) {
-     first_start = params.first_start;
+      first_start = params.first_start;
       this.props.initSSE();
       this.props.setPOS();
       this.props.initSync();

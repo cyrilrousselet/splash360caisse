@@ -41,6 +41,11 @@ const hydration = {
   reglescatalogue: [],
 
   parametres: [
+    { domaine: 'options', cle: 'first_start', valeur: false },
+    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '13_1z2koaivmsro0g0c0044g4w084cgcwggk4k4wkg04ww0c4s8wc' },
+    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '5ljwgwxuss8w00sgosw44cww080oc0cs8kwc84k0co08wwsokc' },
+    { domaine: 'options', cle: 'role', valeur: null},
+    { domaine: 'options', cle: 'primary', valeur: null},
     { domaine: 'entreprise', cle: 'denomination', valeur: 'SMOKY LOUNGE BAR'},
     { domaine: 'entreprise', cle: 'enseigne', valeur: 'SMOKY LOUNGE BAR'},
     { domaine: 'entreprise', cle: 'adresse', valeur: '54 Rue de la Marne'},
@@ -53,8 +58,6 @@ const hydration = {
     { domaine: 'entreprise', cle: 'tva', valeur: ''},
     { domaine: 'entreprise', cle: 'site_web', valeur: ''},
     { domaine: 'entreprise', cle: 'heure_fin', valeur: '00:00' },
-    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '13_1z2koaivmsro0g0c0044g4w084cgcwggk4k4wkg04ww0c4s8wc' },
-    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '5ljwgwxuss8w00sgosw44cww080oc0cs8kwc84k0co08wwsokc' },
     { domaine: 'entreprise', cle: 'avoirs', valeur: true },
     { domaine: 'financier', cle: 'fidelite_activation', valeur: false},
     { domaine: 'peripheriques', cle: 'impression', valeur: [{ticket:'tck1',groupes:['grp123','grp125','grp126','grp127','grp128','grp129','grp130'], types:['typ119','typ122']},{ticket:'tck2',groupes:['grp123','grp125','grp126','grp127','grp128','grp129','grp130'], types:['typ119','typ122']},{ticket:'tck3',groupes:['grp123','grp125','grp126','grp127','grp128','grp129','grp130'], types:['typ119','typ122']}]},
