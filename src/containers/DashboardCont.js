@@ -110,7 +110,8 @@ const mapDispatchToProps = (dispatch) => {
     getParametres: parametresActions.getAll,
     getCurrentPeriode: clotureActions.getCurrentPeriode,
     getAvoirsList: marketingActions.getAvoirsList,
-    deleteCurrentCommande: commandeActions.deleteCurrentCommande
+    deleteCurrentCommande: commandeActions.deleteCurrentCommande,
+    getCommande: commandeActions.getCommande
   }, dispatch);
   return {
     ...binded,

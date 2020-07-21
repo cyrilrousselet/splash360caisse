@@ -834,7 +834,7 @@ function _printCommande(printer, data, strings) {
         {text: '', cols:4},
         {text: strings.modificateur.discount_item, cols:22, align:'LEFT'},
         {text:'', cols:1},
-        {text: article.modificateur.montant ? '-'+article.modificateur.valeur : '', cols:6, align:'RIGHT'},
+        {text: article.modificateur.montant ? '' : '-'+article.modificateur.valeur, cols:6, align:'RIGHT'},
         {text:'', cols:1},
         {text: article.modificateur.montant ? '-'+article.modificateur.montant.toFixed(2) : '-'+article.modificateur.valeur, cols:6, align:'RIGHT'},
         {text:'', cols:2}

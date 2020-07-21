@@ -28,7 +28,8 @@ class Dashboard extends Component {
     this.props.getParametres();
     this.props.getCurrentPeriode();
     this.props.getAvoirsList();
-    this.props.deleteCurrentCommande();
+    // this.props.deleteCurrentCommande();
+    this.props.getCommande();
   }
 
 

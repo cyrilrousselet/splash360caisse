@@ -188,50 +188,107 @@ function getCurrentPeriode(commandes, catalogue, params) {
       const cmdTva = {};
       let __modificateur = null;
       let total = 0;
+      let articletotal = 0;
       cmd.items.forEach(itm => {
 
 
-        total += itm.quantite * itm.prix;
+        const artTva = {};
+        let articleIngredients = [];
+        articletotal = itm.quantite * itm.prix;
 
         itm.ingredients.forEach(ing => {
+          let artIngTva = ing.tva;
           // ajout et calcul de la tva pour l'ingrédient
-          if (!cmdTva.hasOwnProperty(ing.tva.code)) {
-            Object.defineProperty(cmdTva, ing.tva.code, {
-              value: {taux: ing.tva.valeur, montant: 0, ht: 0, ttc: 0},
+          if (!artTva.hasOwnProperty(artIngTva.code)) {
+            Object.defineProperty(artTva, artIngTva.code, {
+              value: {taux:`${Number(artIngTva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
               writable: true,
               enumerable: true
             });
           }
 
           // let iht = (Number(ing.prix)*ing.qte) / (1 + Number(ing.tva.valeur));
-          let iht = Number(ing.supplement) / (1 + Number(ing.tva.valeur));
+          let iht = Number(ing.supplement) / (1 + Number(artIngTva.valeur));
 
-          cmdTva[ing.tva.code] = Object.assign(cmdTva[ing.tva.code], {
-            montant: cmdTva[ing.tva.code].montant + (iht * Number(ing.tva.valeur)),
-            ht: cmdTva[ing.tva.code].ht + iht,
-            // ttc: cmdTva[ing.tva.code].ttc + Number(ing.prix)*ing.qte
-            ttc: cmdTva[ing.tva.code].ttc + Number(ing.supplement)
+          artTva[artIngTva.code] = Object.assign(artTva[artIngTva.code], {
+            montant: artTva[artIngTva.code].montant + (iht * Number(artIngTva.valeur)),
+            ht: artTva[artIngTva.code].ht + iht,
+            ttc: artTva[artIngTva.code].ttc + Number(ing.supplement)
           });
         });
 
+
+        __modificateur = cmd.modificateurs.find(m => m.item==itm.itemid && m.ingredient==null);
+        let amodtx = 1;
+        if (__modificateur) {
+         // total += Number(__modificateur.valeur);
+
+          const ispc = String(__modificateur.valeur).substr(-1,1)==='%';
+          const val = Math.abs(Number(String(__modificateur.valeur).slice(0,-1)));
+
+          // conversion du modificateur en coefficient
+          amodtx = (ispc) ? (100 - val) / 100 : 1 - (val/articletotal);
+
+          if (ispc) {
+            articletotal *= (100 - val) / 100;
+          } else {
+            articletotal -= val;
+          }
+      
+        }
+
+        // modificateur au niveau de la tva pour les ingrédients de l'article
+        if (__modificateur) {
+          Object.keys(artTva).forEach(k => {
+            artTva[k].ht *= amodtx;
+            artTva[k].ttc *= amodtx;
+          });
+        } 
 
 
         // ajout et calcul de la tva pour l'article
         if (!cmdTva.hasOwnProperty(itm.tva.code)) {
           Object.defineProperty(cmdTva, itm.tva.code, {
-            value: {taux:itm.tva.valeur, montant: 0, ht: 0, ttc: 0},
+            value: {taux:`${Number(itm.tva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
             writable: true,
             enumerable: true
           });
         }
 
-        let ht = (Number(itm.pu)*itm.quantite) / (1 + Number(itm.tva.valeur));
+        // let ht = (Number(article.pu)*article.quantite) / (1 + Number(article.tva.valeur));
+        let ht = (Number(itm.pu)*itm.quantite)*amodtx / (1 + Number(itm.tva.valeur));
 
         cmdTva[itm.tva.code] = Object.assign(cmdTva[itm.tva.code], {
           montant: cmdTva[itm.tva.code].montant + (ht * Number(itm.tva.valeur)),
           ht: cmdTva[itm.tva.code].ht + ht,
-          ttc: cmdTva[itm.tva.code].ttc + Number(itm.pu)*itm.quantite
+          ttc: cmdTva[itm.tva.code].ttc + ((Number(itm.pu)*itm.quantite)*amodtx)
         });
+
+        // ajout des tva des ingrédients de l'article
+        Object.entries(artTva).forEach(([k,v]) => {
+                    
+          // si le taux n'est pas listé dans les TVA
+          // on l'ajoute et on lui assigne les valeurs enregistrées pour les ingrédients
+          if (!cmdTva.hasOwnProperty(k)) {
+            Object.defineProperty(cmdTva, k, {
+              value: {taux:v.taux, montant: v.montant, ht: v.ht, ttc: v.ttc},
+              writable: true,
+              enumerable: true
+            });
+
+          } 
+          // si le taux est déjà listé,
+          // on additionne avec les valeurs enregistrées pour les ingrédients
+          else {
+            cmdTva[k] = Object.assign(cmdTva[k], {
+              montant: cmdTva[k].montant + v.montant,
+              ht: cmdTva[k].ht + v.ht,
+              ttc: cmdTva[k].ttc + v.ttc
+            });
+          }
+        });
+
+        total += articletotal;
 
       });
 
