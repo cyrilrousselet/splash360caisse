@@ -1,188 +1,57 @@
 {
-    "parametres": [
-        {
-            "domaine": "entreprise",
-            "cle": "denomination",
-            "valeur": "MAMMA MIA"
-        },
-        {
-            "domaine": "entreprise",
-            "cle": "enseigne",
-            "valeur": "MAMMA MIA"
-        },
-        {
-            "domaine": "entreprise",
-            "cle": "adresse",
-            "valeur": "250 AVENUE PIERRE BROSSOLETTE"
-        },
-        {
-            "domaine": "entreprise",
-            "cle": "code_postal",
-            "valeur": "94170"
-        },
-        {
-            "domaine": "entreprise",
-            "cle": "ville",
-            "valeur": "LE PERREUX SUR MARNE"
-        },
-        {
-            "domaine": "entreprise",
-            "cle": "telephone",
-            "valeur": "01 81 80 90 50"
-        },
-        {
-            "domaine": "entreprise",
-            "cle": "siret",
-            "valeur": null
-        },
-        {
-            "domaine": "entreprise",
-            "cle": "rcs",
-            "valeur": null
-        },
-        {
-            "domaine": "entreprise",
-            "cle": "ape",
-            "valeur": null
-        },
-        {
-            "domaine": "entreprise",
-            "cle": "tva",
-            "valeur": null
-        },
-        {
-            "domaine": "entreprise",
-            "cle": "site_web",
-            "valeur": null
-        },
-        {
-            "domaine": "options",
-            "cle": "caisse",
-            "valeur": {
-                "id": 9,
-                "nom": "caisse 1"
-            }
-        },
-        {
-            "domaine": "peripheriques",
-            "cle": "impression",
-            "valeur": [
-                {
-                    "ticket": "tck1",
-                    "groupes": [
-                        "cat17-grp69",
-                        "cat17-grp70",
-                        "cat17-grp71",
-                        "cat17-grp72",
-                        "cat17-grp73",
-                        "cat17-grp74",
-                        "cat17-grp75"
-                    ],
-                    "types": [
-                        "typ84",
-                        "typ85",
-                        "typ86",
-                        "typ87",
-                        "typ88",
-                        "typ89"
-                    ]
-                },
-                {
-                    "ticket": "tck2",
-                    "groupes": [
-                        "cat17-grp69",
-                        "cat17-grp70",
-                        "cat17-grp71",
-                        "cat17-grp72",
-                        "cat17-grp73",
-                        "cat17-grp74",
-                        "cat17-grp75"
-                    ],
-                    "types": [
-                        "typ84",
-                        "typ85",
-                        "typ86",
-                        "typ87",
-                        "typ88",
-                        "typ89"
-                    ]
-                },
-                {
-                    "ticket": "tck3",
-                    "groupes": [
-                        "cat17-grp69",
-                        "cat17-grp70",
-                        "cat17-grp71",
-                        "cat17-grp72",
-                        "cat17-grp73",
-                        "cat17-grp74",
-                        "cat17-grp75"
-                    ],
-                    "types": [
-                        "typ84",
-                        "typ85",
-                        "typ86",
-                        "typ87",
-                        "typ88",
-                        "typ89"
-                    ]
-                }
-            ]
-        }
-    ],
     "categories": [
         {
-            "categorie_id": "cat17",
+            "categorie_id": "cat28",
             "nom": "MAMMA MIA",
-            "description": ""
+            "description": null
         }
     ],
     "groupes": [
         {
-            "groupe_id": "cat17-grp69",
-            "categorie": "cat17",
+            "groupe_id": "grp69",
+            "categorie": "cat28",
             "nom": "PIZZA BASE TOMATE",
             "noprint": [],
             "weight": 1
         },
         {
-            "groupe_id": "cat17-grp70",
-            "categorie": "cat17",
+            "groupe_id": "grp70",
+            "categorie": "cat28",
             "nom": "PIZZA BASE CREME FRAICHE",
             "noprint": [],
             "weight": 2
         },
         {
-            "groupe_id": "cat17-grp71",
-            "categorie": "cat17",
+            "groupe_id": "grp71",
+            "categorie": "cat28",
             "nom": "PIZZA SIGNATURES",
             "noprint": [],
             "weight": 3
         },
         {
-            "groupe_id": "cat17-grp72",
-            "categorie": "cat17",
+            "groupe_id": "grp72",
+            "categorie": "cat28",
             "nom": "LES CALZONES",
             "noprint": [],
             "weight": 4
         },
         {
-            "groupe_id": "cat17-grp73",
-            "categorie": "cat17",
+            "groupe_id": "grp73",
+            "categorie": "cat28",
             "nom": "BOISSONS",
             "noprint": [],
             "weight": 5
         },
         {
-            "groupe_id": "cat17-grp74",
-            "categorie": "cat17",
+            "groupe_id": "grp74",
+            "categorie": "cat28",
             "nom": "DESSERT",
             "noprint": [],
             "weight": 6
         },
         {
-            "groupe_id": "cat17-grp75",
-            "categorie": "cat17",
+            "groupe_id": "grp75",
+            "categorie": "cat28",
             "nom": "MENU",
             "noprint": [],
             "weight": 7
@@ -243,7 +112,6 @@
     "ingredients": [
         {
             "ingredient_id": "ing492",
-            "custom_id": "ing492",
             "type": "typ85",
             "nom": "SUP Oeuf",
             "supplement": "0.50",
@@ -253,7 +121,6 @@
         },
         {
             "ingredient_id": "ing500",
-            "custom_id": "ing500",
             "type": "typ85",
             "nom": "SUP Burrata",
             "supplement": "2.00",
@@ -263,7 +130,6 @@
         },
         {
             "ingredient_id": "ing717",
-            "custom_id": "ing717",
             "type": "typ85",
             "nom": "SUP Anchois",
             "supplement": "1.50",
@@ -273,7 +139,6 @@
         },
         {
             "ingredient_id": "ing718",
-            "custom_id": "ing718",
             "type": "typ85",
             "nom": "SUP Artichauts",
             "supplement": "1.50",
@@ -283,7 +148,6 @@
         },
         {
             "ingredient_id": "ing719",
-            "custom_id": "ing719",
             "type": "typ85",
             "nom": "SUP Aubergines Grillées",
             "supplement": "1.50",
@@ -293,7 +157,6 @@
         },
         {
             "ingredient_id": "ing720",
-            "custom_id": "ing720",
             "type": "typ85",
             "nom": "SUP Bacon",
             "supplement": "2.00",
@@ -303,7 +166,6 @@
         },
         {
             "ingredient_id": "ing721",
-            "custom_id": "ing721",
             "type": "typ85",
             "nom": "SUP Basilic",
             "supplement": "1.50",
@@ -313,7 +175,6 @@
         },
         {
             "ingredient_id": "ing722",
-            "custom_id": "ing722",
             "type": "typ85",
             "nom": "SUP Bœuf Fumé",
             "supplement": "2.00",
@@ -323,7 +184,6 @@
         },
         {
             "ingredient_id": "ing723",
-            "custom_id": "ing723",
             "type": "typ85",
             "nom": "SUP Calamars",
             "supplement": "1.50",
@@ -333,7 +193,6 @@
         },
         {
             "ingredient_id": "ing724",
-            "custom_id": "ing724",
             "type": "typ85",
             "nom": "SUP Câpres",
             "supplement": "1.50",
@@ -343,7 +202,6 @@
         },
         {
             "ingredient_id": "ing725",
-            "custom_id": "ing725",
             "type": "typ85",
             "nom": "SUP Champignons Frais",
             "supplement": "1.50",
@@ -353,7 +211,6 @@
         },
         {
             "ingredient_id": "ing726",
-            "custom_id": "ing726",
             "type": "typ85",
             "nom": "SUP Cheddar",
             "supplement": "1.50",
@@ -363,7 +220,6 @@
         },
         {
             "ingredient_id": "ing727",
-            "custom_id": "ing727",
             "type": "typ85",
             "nom": "SUP Chèvre",
             "supplement": "1.50",
@@ -373,7 +229,6 @@
         },
         {
             "ingredient_id": "ing728",
-            "custom_id": "ing728",
             "type": "typ85",
             "nom": "SUP Chorizo",
             "supplement": "1.50",
@@ -383,7 +238,6 @@
         },
         {
             "ingredient_id": "ing729",
-            "custom_id": "ing729",
             "type": "typ85",
             "nom": "SUP Crevettes",
             "supplement": "1.50",
@@ -393,7 +247,6 @@
         },
         {
             "ingredient_id": "ing730",
-            "custom_id": "ing730",
             "type": "typ85",
             "nom": "SUP Filet De Boursin",
             "supplement": "1.50",
@@ -403,7 +256,6 @@
         },
         {
             "ingredient_id": "ing731",
-            "custom_id": "ing731",
             "type": "typ85",
             "nom": "SUP Fromage A Raclette",
             "supplement": "1.50",
@@ -413,7 +265,6 @@
         },
         {
             "ingredient_id": "ing732",
-            "custom_id": "ing732",
             "type": "typ85",
             "nom": "SUP Reblochon",
             "supplement": "1.50",
@@ -423,7 +274,6 @@
         },
         {
             "ingredient_id": "ing733",
-            "custom_id": "ing733",
             "type": "typ85",
             "nom": "SUP Gorgonzola",
             "supplement": "1.50",
@@ -433,7 +283,6 @@
         },
         {
             "ingredient_id": "ing734",
-            "custom_id": "ing734",
             "type": "typ85",
             "nom": "SUP Jambon",
             "supplement": "1.50",
@@ -443,7 +292,6 @@
         },
         {
             "ingredient_id": "ing735",
-            "custom_id": "ing735",
             "type": "typ85",
             "nom": "SUP Lamelles De Saumon",
             "supplement": "1.50",
@@ -453,7 +301,6 @@
         },
         {
             "ingredient_id": "ing736",
-            "custom_id": "ing736",
             "type": "typ85",
             "nom": "SUP Lardons",
             "supplement": "2.00",
@@ -463,7 +310,6 @@
         },
         {
             "ingredient_id": "ing737",
-            "custom_id": "ing737",
             "type": "typ85",
             "nom": "SUP Merguez Du Bouché",
             "supplement": "1.50",
@@ -473,7 +319,6 @@
         },
         {
             "ingredient_id": "ing738",
-            "custom_id": "ing738",
             "type": "typ85",
             "nom": "SUP Moules",
             "supplement": "1.50",
@@ -483,7 +328,6 @@
         },
         {
             "ingredient_id": "ing739",
-            "custom_id": "ing739",
             "type": "typ85",
             "nom": "SUP Mozzarella",
             "supplement": "1.50",
@@ -493,7 +337,6 @@
         },
         {
             "ingredient_id": "ing740",
-            "custom_id": "ing740",
             "type": "typ85",
             "nom": "SUP Mozzarella Di Buffala",
             "supplement": "2.50",
@@ -503,7 +346,6 @@
         },
         {
             "ingredient_id": "ing741",
-            "custom_id": "ing741",
             "type": "typ85",
             "nom": "SUP Oignons",
             "supplement": "1.50",
@@ -513,7 +355,6 @@
         },
         {
             "ingredient_id": "ing742",
-            "custom_id": "ing742",
             "type": "typ85",
             "nom": "SUP Olives Noires",
             "supplement": "1.50",
@@ -523,7 +364,6 @@
         },
         {
             "ingredient_id": "ing743",
-            "custom_id": "ing743",
             "type": "typ85",
             "nom": "SUP Parmesan",
             "supplement": "1.50",
@@ -533,7 +373,6 @@
         },
         {
             "ingredient_id": "ing744",
-            "custom_id": "ing744",
             "type": "typ85",
             "nom": "SUP Parmesan Copcaux",
             "supplement": "1.50",
@@ -543,7 +382,6 @@
         },
         {
             "ingredient_id": "ing745",
-            "custom_id": "ing745",
             "type": "typ85",
             "nom": "SUP Pepperoni",
             "supplement": "1.50",
@@ -553,7 +391,6 @@
         },
         {
             "ingredient_id": "ing746",
-            "custom_id": "ing746",
             "type": "typ85",
             "nom": "SUP Pesto",
             "supplement": "1.50",
@@ -563,7 +400,6 @@
         },
         {
             "ingredient_id": "ing747",
-            "custom_id": "ing747",
             "type": "typ85",
             "nom": "SUP Piment Fort",
             "supplement": "1.50",
@@ -573,7 +409,6 @@
         },
         {
             "ingredient_id": "ing748",
-            "custom_id": "ing748",
             "type": "typ85",
             "nom": "SUP Poivrons",
             "supplement": "1.50",
@@ -583,7 +418,6 @@
         },
         {
             "ingredient_id": "ing749",
-            "custom_id": "ing749",
             "type": "typ85",
             "nom": "SUP Pomme De Terre",
             "supplement": "1.50",
@@ -593,7 +427,6 @@
         },
         {
             "ingredient_id": "ing750",
-            "custom_id": "ing750",
             "type": "typ85",
             "nom": "SUP Poulet Fumé",
             "supplement": "1.50",
@@ -603,7 +436,6 @@
         },
         {
             "ingredient_id": "ing751",
-            "custom_id": "ing751",
             "type": "typ85",
             "nom": "SUP Poulet Roti",
             "supplement": "1.50",
@@ -613,7 +445,6 @@
         },
         {
             "ingredient_id": "ing752",
-            "custom_id": "ing752",
             "type": "typ85",
             "nom": "SUP Roquette",
             "supplement": "1.50",
@@ -623,7 +454,6 @@
         },
         {
             "ingredient_id": "ing753",
-            "custom_id": "ing753",
             "type": "typ85",
             "nom": "SUP Sauce Barbecue",
             "supplement": "1.50",
@@ -633,7 +463,6 @@
         },
         {
             "ingredient_id": "ing754",
-            "custom_id": "ing754",
             "type": "typ85",
             "nom": "SUP Chili Thai",
             "supplement": "1.50",
@@ -643,7 +472,6 @@
         },
         {
             "ingredient_id": "ing755",
-            "custom_id": "ing755",
             "type": "typ85",
             "nom": "SUP Sauce Curry",
             "supplement": "1.50",
@@ -653,7 +481,6 @@
         },
         {
             "ingredient_id": "ing756",
-            "custom_id": "ing756",
             "type": "typ85",
             "nom": "SUP Saumon Fumé",
             "supplement": "2.00",
@@ -663,7 +490,6 @@
         },
         {
             "ingredient_id": "ing757",
-            "custom_id": "ing757",
             "type": "typ85",
             "nom": "SUP Thon",
             "supplement": "1.50",
@@ -673,7 +499,6 @@
         },
         {
             "ingredient_id": "ing758",
-            "custom_id": "ing758",
             "type": "typ85",
             "nom": "SUP Tomates Cerises",
             "supplement": "1.50",
@@ -683,7 +508,6 @@
         },
         {
             "ingredient_id": "ing759",
-            "custom_id": "ing759",
             "type": "typ85",
             "nom": "SUP Tomates Séchées",
             "supplement": "1.50",
@@ -693,7 +517,6 @@
         },
         {
             "ingredient_id": "ing760",
-            "custom_id": "ing760",
             "type": "typ85",
             "nom": "SUP Viande Hachée Du Boucher",
             "supplement": "1.50",
@@ -703,7 +526,6 @@
         },
         {
             "ingredient_id": "ing1070",
-            "custom_id": "ing1070",
             "type": "typ85",
             "nom": "SUP Crème Fraîche",
             "supplement": "1.50",
@@ -713,7 +535,6 @@
         },
         {
             "ingredient_id": "ing1071",
-            "custom_id": "ing1071",
             "type": "typ85",
             "nom": "SUP Sauce Tomate",
             "supplement": "1.50",
@@ -723,7 +544,6 @@
         },
         {
             "ingredient_id": "ing491",
-            "custom_id": "ing491",
             "type": "typ84",
             "nom": "En Livraison",
             "supplement": "4.00",
@@ -733,7 +553,6 @@
         },
         {
             "ingredient_id": "ing761",
-            "custom_id": "ing761",
             "type": "typ86",
             "nom": "Oeuf",
             "supplement": "0.50",
@@ -743,7 +562,6 @@
         },
         {
             "ingredient_id": "ing762",
-            "custom_id": "ing762",
             "type": "typ86",
             "nom": "Anchois",
             "supplement": "2.00",
@@ -753,7 +571,6 @@
         },
         {
             "ingredient_id": "ing763",
-            "custom_id": "ing763",
             "type": "typ86",
             "nom": "Artichauts",
             "supplement": "2.00",
@@ -763,7 +580,6 @@
         },
         {
             "ingredient_id": "ing764",
-            "custom_id": "ing764",
             "type": "typ86",
             "nom": "Sup Aubergines Grillées",
             "supplement": "2.00",
@@ -773,7 +589,6 @@
         },
         {
             "ingredient_id": "ing765",
-            "custom_id": "ing765",
             "type": "typ86",
             "nom": "Sup Bacon",
             "supplement": "2.50",
@@ -783,7 +598,6 @@
         },
         {
             "ingredient_id": "ing766",
-            "custom_id": "ing766",
             "type": "typ86",
             "nom": "Sup Basilic",
             "supplement": "2.00",
@@ -793,7 +607,6 @@
         },
         {
             "ingredient_id": "ing767",
-            "custom_id": "ing767",
             "type": "typ86",
             "nom": "Sup Bœuf Fumé",
             "supplement": "2.50",
@@ -803,7 +616,6 @@
         },
         {
             "ingredient_id": "ing768",
-            "custom_id": "ing768",
             "type": "typ86",
             "nom": "SUP Buratta",
             "supplement": "2.50",
@@ -813,7 +625,6 @@
         },
         {
             "ingredient_id": "ing769",
-            "custom_id": "ing769",
             "type": "typ86",
             "nom": "SUP Calamars",
             "supplement": "2.00",
@@ -823,7 +634,6 @@
         },
         {
             "ingredient_id": "ing770",
-            "custom_id": "ing770",
             "type": "typ86",
             "nom": "SUP Câpres",
             "supplement": "2.00",
@@ -833,7 +643,6 @@
         },
         {
             "ingredient_id": "ing771",
-            "custom_id": "ing771",
             "type": "typ86",
             "nom": "SUP Champignons Frais",
             "supplement": "2.00",
@@ -843,7 +652,6 @@
         },
         {
             "ingredient_id": "ing772",
-            "custom_id": "ing772",
             "type": "typ86",
             "nom": "SUP Cheddar",
             "supplement": "2.00",
@@ -853,7 +661,6 @@
         },
         {
             "ingredient_id": "ing773",
-            "custom_id": "ing773",
             "type": "typ86",
             "nom": "SUP Chèvre",
             "supplement": "2.00",
@@ -863,7 +670,6 @@
         },
         {
             "ingredient_id": "ing774",
-            "custom_id": "ing774",
             "type": "typ86",
             "nom": "SUP Chorizo",
             "supplement": "2.00",
@@ -873,7 +679,6 @@
         },
         {
             "ingredient_id": "ing775",
-            "custom_id": "ing775",
             "type": "typ86",
             "nom": "SUP Crevettes",
             "supplement": "2.00",
@@ -883,7 +688,6 @@
         },
         {
             "ingredient_id": "ing776",
-            "custom_id": "ing776",
             "type": "typ86",
             "nom": "SUP Filet De Boursin",
             "supplement": "2.00",
@@ -893,7 +697,6 @@
         },
         {
             "ingredient_id": "ing777",
-            "custom_id": "ing777",
             "type": "typ86",
             "nom": "SUP Fromage A Raclette",
             "supplement": "2.00",
@@ -903,7 +706,6 @@
         },
         {
             "ingredient_id": "ing778",
-            "custom_id": "ing778",
             "type": "typ86",
             "nom": "SUP Fromage Reblochon",
             "supplement": "2.00",
@@ -913,7 +715,6 @@
         },
         {
             "ingredient_id": "ing779",
-            "custom_id": "ing779",
             "type": "typ86",
             "nom": "SUP Gorgonzola",
             "supplement": "2.00",
@@ -923,7 +724,6 @@
         },
         {
             "ingredient_id": "ing780",
-            "custom_id": "ing780",
             "type": "typ86",
             "nom": "SUP Jambon",
             "supplement": "2.00",
@@ -933,7 +733,6 @@
         },
         {
             "ingredient_id": "ing781",
-            "custom_id": "ing781",
             "type": "typ86",
             "nom": "SUP Lamelles De Saumon",
             "supplement": "2.00",
@@ -943,7 +742,6 @@
         },
         {
             "ingredient_id": "ing782",
-            "custom_id": "ing782",
             "type": "typ86",
             "nom": "SUP Lardons",
             "supplement": "2.00",
@@ -953,7 +751,6 @@
         },
         {
             "ingredient_id": "ing783",
-            "custom_id": "ing783",
             "type": "typ86",
             "nom": "SUP Merguez Du Bouché",
             "supplement": "2.00",
@@ -963,7 +760,6 @@
         },
         {
             "ingredient_id": "ing784",
-            "custom_id": "ing784",
             "type": "typ86",
             "nom": "SUP Moules",
             "supplement": "2.00",
@@ -973,7 +769,6 @@
         },
         {
             "ingredient_id": "ing785",
-            "custom_id": "ing785",
             "type": "typ86",
             "nom": "SUP Mozzarella",
             "supplement": "2.00",
@@ -983,7 +778,6 @@
         },
         {
             "ingredient_id": "ing786",
-            "custom_id": "ing786",
             "type": "typ86",
             "nom": "SUP Mozzarella Di Buffala",
             "supplement": "2.00",
@@ -993,7 +787,6 @@
         },
         {
             "ingredient_id": "ing787",
-            "custom_id": "ing787",
             "type": "typ86",
             "nom": "SUP Oignons",
             "supplement": "2.00",
@@ -1003,7 +796,6 @@
         },
         {
             "ingredient_id": "ing788",
-            "custom_id": "ing788",
             "type": "typ86",
             "nom": "SUP Olives Noires",
             "supplement": "2.00",
@@ -1013,7 +805,6 @@
         },
         {
             "ingredient_id": "ing789",
-            "custom_id": "ing789",
             "type": "typ86",
             "nom": "SUP Parmesan",
             "supplement": "2.00",
@@ -1023,7 +814,6 @@
         },
         {
             "ingredient_id": "ing790",
-            "custom_id": "ing790",
             "type": "typ86",
             "nom": "SUP Parmesan En Copcaux",
             "supplement": "2.00",
@@ -1033,7 +823,6 @@
         },
         {
             "ingredient_id": "ing791",
-            "custom_id": "ing791",
             "type": "typ86",
             "nom": "SUP Pepperoni",
             "supplement": "2.00",
@@ -1043,7 +832,6 @@
         },
         {
             "ingredient_id": "ing792",
-            "custom_id": "ing792",
             "type": "typ86",
             "nom": "SUP Pesto",
             "supplement": "2.00",
@@ -1053,7 +841,6 @@
         },
         {
             "ingredient_id": "ing793",
-            "custom_id": "ing793",
             "type": "typ86",
             "nom": "SUP Piment Fort",
             "supplement": "2.00",
@@ -1063,7 +850,6 @@
         },
         {
             "ingredient_id": "ing794",
-            "custom_id": "ing794",
             "type": "typ86",
             "nom": "SUP Poivrons",
             "supplement": "2.00",
@@ -1073,7 +859,6 @@
         },
         {
             "ingredient_id": "ing795",
-            "custom_id": "ing795",
             "type": "typ86",
             "nom": "SUP Pommes De Terres",
             "supplement": "2.00",
@@ -1083,7 +868,6 @@
         },
         {
             "ingredient_id": "ing796",
-            "custom_id": "ing796",
             "type": "typ86",
             "nom": "SUP Poulet Fumé",
             "supplement": "2.00",
@@ -1093,7 +877,6 @@
         },
         {
             "ingredient_id": "ing797",
-            "custom_id": "ing797",
             "type": "typ86",
             "nom": "SUP Poulet Roti",
             "supplement": "2.00",
@@ -1103,7 +886,6 @@
         },
         {
             "ingredient_id": "ing798",
-            "custom_id": "ing798",
             "type": "typ86",
             "nom": "SUP Roquette",
             "supplement": "2.00",
@@ -1113,7 +895,6 @@
         },
         {
             "ingredient_id": "ing799",
-            "custom_id": "ing799",
             "type": "typ86",
             "nom": "SUP Sauce Barbecue",
             "supplement": "2.00",
@@ -1123,7 +904,6 @@
         },
         {
             "ingredient_id": "ing800",
-            "custom_id": "ing800",
             "type": "typ86",
             "nom": "SUP Sauce Chili Thai",
             "supplement": "2.00",
@@ -1133,7 +913,6 @@
         },
         {
             "ingredient_id": "ing801",
-            "custom_id": "ing801",
             "type": "typ86",
             "nom": "SUP Sauce Curry",
             "supplement": "2.00",
@@ -1143,7 +922,6 @@
         },
         {
             "ingredient_id": "ing802",
-            "custom_id": "ing802",
             "type": "typ86",
             "nom": "SUP Saumon Fumé",
             "supplement": "2.50",
@@ -1153,7 +931,6 @@
         },
         {
             "ingredient_id": "ing803",
-            "custom_id": "ing803",
             "type": "typ86",
             "nom": "SUP Thon",
             "supplement": "2.00",
@@ -1163,7 +940,6 @@
         },
         {
             "ingredient_id": "ing804",
-            "custom_id": "ing804",
             "type": "typ86",
             "nom": "SUP Tomates Cerises",
             "supplement": "2.00",
@@ -1173,7 +949,6 @@
         },
         {
             "ingredient_id": "ing805",
-            "custom_id": "ing805",
             "type": "typ86",
             "nom": "SUP Tomates Séchées",
             "supplement": "2.00",
@@ -1183,7 +958,6 @@
         },
         {
             "ingredient_id": "ing806",
-            "custom_id": "ing806",
             "type": "typ86",
             "nom": "SUP Viande Hachée Du Boucher",
             "supplement": "2.00",
@@ -1193,7 +967,6 @@
         },
         {
             "ingredient_id": "ing1069",
-            "custom_id": "ing1069",
             "type": "typ86",
             "nom": "SUP Crème Fraîche",
             "supplement": "2.50",
@@ -1203,7 +976,6 @@
         },
         {
             "ingredient_id": "ing1072",
-            "custom_id": "ing1072",
             "type": "typ86",
             "nom": "SUP Sauce Tomate",
             "supplement": "2.50",
@@ -1213,7 +985,6 @@
         },
         {
             "ingredient_id": "ing510",
-            "custom_id": "ing510",
             "type": "typ87",
             "nom": "Margherita",
             "supplement": "0.00",
@@ -1223,7 +994,6 @@
         },
         {
             "ingredient_id": "ing511",
-            "custom_id": "ing511",
             "type": "typ87",
             "nom": "Regina",
             "supplement": "0.00",
@@ -1233,7 +1003,6 @@
         },
         {
             "ingredient_id": "ing512",
-            "custom_id": "ing512",
             "type": "typ87",
             "nom": "Napolitaine",
             "supplement": "0.00",
@@ -1243,7 +1012,6 @@
         },
         {
             "ingredient_id": "ing513",
-            "custom_id": "ing513",
             "type": "typ87",
             "nom": "Vegetarienne",
             "supplement": "0.00",
@@ -1253,7 +1021,6 @@
         },
         {
             "ingredient_id": "ing514",
-            "custom_id": "ing514",
             "type": "typ87",
             "nom": "Pecheur",
             "supplement": "0.00",
@@ -1263,7 +1030,6 @@
         },
         {
             "ingredient_id": "ing515",
-            "custom_id": "ing515",
             "type": "typ87",
             "nom": "Barbecue",
             "supplement": "0.00",
@@ -1273,7 +1039,6 @@
         },
         {
             "ingredient_id": "ing516",
-            "custom_id": "ing516",
             "type": "typ87",
             "nom": "Piccante",
             "supplement": "0.00",
@@ -1283,7 +1048,6 @@
         },
         {
             "ingredient_id": "ing517",
-            "custom_id": "ing517",
             "type": "typ87",
             "nom": "Quattro Fromaggi",
             "supplement": "0.00",
@@ -1293,7 +1057,6 @@
         },
         {
             "ingredient_id": "ing518",
-            "custom_id": "ing518",
             "type": "typ87",
             "nom": "Moussaka",
             "supplement": "0.00",
@@ -1303,7 +1066,6 @@
         },
         {
             "ingredient_id": "ing519",
-            "custom_id": "ing519",
             "type": "typ87",
             "nom": "Pescatore",
             "supplement": "0.00",
@@ -1313,7 +1075,6 @@
         },
         {
             "ingredient_id": "ing520",
-            "custom_id": "ing520",
             "type": "typ87",
             "nom": "Quattro Stragioni",
             "supplement": "0.00",
@@ -1323,7 +1084,6 @@
         },
         {
             "ingredient_id": "ing521",
-            "custom_id": "ing521",
             "type": "typ87",
             "nom": "Orientale",
             "supplement": "0.00",
@@ -1333,7 +1093,6 @@
         },
         {
             "ingredient_id": "ing522",
-            "custom_id": "ing522",
             "type": "typ87",
             "nom": "Pepperoni",
             "supplement": "0.00",
@@ -1343,7 +1102,6 @@
         },
         {
             "ingredient_id": "ing523",
-            "custom_id": "ing523",
             "type": "typ87",
             "nom": "Campione",
             "supplement": "0.00",
@@ -1353,7 +1111,6 @@
         },
         {
             "ingredient_id": "ing524",
-            "custom_id": "ing524",
             "type": "typ87",
             "nom": "Chorizo",
             "supplement": "0.00",
@@ -1363,7 +1120,6 @@
         },
         {
             "ingredient_id": "ing525",
-            "custom_id": "ing525",
             "type": "typ87",
             "nom": "Mamma Mia",
             "supplement": "0.00",
@@ -1373,7 +1129,6 @@
         },
         {
             "ingredient_id": "ing526",
-            "custom_id": "ing526",
             "type": "typ87",
             "nom": "Burrata",
             "supplement": "0.00",
@@ -1383,7 +1138,6 @@
         },
         {
             "ingredient_id": "ing527",
-            "custom_id": "ing527",
             "type": "typ87",
             "nom": "Parisienne",
             "supplement": "0.00",
@@ -1393,7 +1147,6 @@
         },
         {
             "ingredient_id": "ing528",
-            "custom_id": "ing528",
             "type": "typ87",
             "nom": "Buffala",
             "supplement": "0.00",
@@ -1403,7 +1156,6 @@
         },
         {
             "ingredient_id": "ing529",
-            "custom_id": "ing529",
             "type": "typ87",
             "nom": "Paysanne",
             "supplement": "0.00",
@@ -1413,7 +1165,6 @@
         },
         {
             "ingredient_id": "ing530",
-            "custom_id": "ing530",
             "type": "typ87",
             "nom": "Fermiere",
             "supplement": "0.00",
@@ -1423,7 +1174,6 @@
         },
         {
             "ingredient_id": "ing531",
-            "custom_id": "ing531",
             "type": "typ87",
             "nom": "Raclette",
             "supplement": "0.00",
@@ -1433,7 +1183,6 @@
         },
         {
             "ingredient_id": "ing532",
-            "custom_id": "ing532",
             "type": "typ87",
             "nom": "Gorgonzola",
             "supplement": "0.00",
@@ -1443,7 +1192,6 @@
         },
         {
             "ingredient_id": "ing533",
-            "custom_id": "ing533",
             "type": "typ87",
             "nom": "Boursicotte",
             "supplement": "0.00",
@@ -1453,7 +1201,6 @@
         },
         {
             "ingredient_id": "ing534",
-            "custom_id": "ing534",
             "type": "typ87",
             "nom": "Savoyarde",
             "supplement": "0.00",
@@ -1463,7 +1210,6 @@
         },
         {
             "ingredient_id": "ing535",
-            "custom_id": "ing535",
             "type": "typ87",
             "nom": "Saumon",
             "supplement": "0.00",
@@ -1473,7 +1219,6 @@
         },
         {
             "ingredient_id": "ing536",
-            "custom_id": "ing536",
             "type": "typ87",
             "nom": "Al Capone",
             "supplement": "0.00",
@@ -1483,7 +1228,6 @@
         },
         {
             "ingredient_id": "ing537",
-            "custom_id": "ing537",
             "type": "typ87",
             "nom": "Indian Curry",
             "supplement": "0.00",
@@ -1493,7 +1237,6 @@
         },
         {
             "ingredient_id": "ing538",
-            "custom_id": "ing538",
             "type": "typ87",
             "nom": "Tartiflette",
             "supplement": "0.00",
@@ -1503,7 +1246,6 @@
         },
         {
             "ingredient_id": "ing539",
-            "custom_id": "ing539",
             "type": "typ87",
             "nom": "Chevre Miel",
             "supplement": "0.00",
@@ -1513,7 +1255,6 @@
         },
         {
             "ingredient_id": "ing1083",
-            "custom_id": "ing1083",
             "type": "typ87",
             "nom": "Bresaola",
             "supplement": "1.00",
@@ -1523,7 +1264,6 @@
         },
         {
             "ingredient_id": "ing1084",
-            "custom_id": "ing1084",
             "type": "typ87",
             "nom": "Luigi",
             "supplement": "1.00",
@@ -1533,7 +1273,6 @@
         },
         {
             "ingredient_id": "ing1085",
-            "custom_id": "ing1085",
             "type": "typ87",
             "nom": "Al Tartuffo",
             "supplement": "1.00",
@@ -1543,7 +1282,6 @@
         },
         {
             "ingredient_id": "ing540",
-            "custom_id": "ing540",
             "type": "typ88",
             "nom": "Coca",
             "supplement": "0.00",
@@ -1553,7 +1291,6 @@
         },
         {
             "ingredient_id": "ing541",
-            "custom_id": "ing541",
             "type": "typ88",
             "nom": "Coca Zero",
             "supplement": "0.00",
@@ -1563,7 +1300,6 @@
         },
         {
             "ingredient_id": "ing542",
-            "custom_id": "ing542",
             "type": "typ88",
             "nom": "Orangina",
             "supplement": "0.00",
@@ -1573,7 +1309,6 @@
         },
         {
             "ingredient_id": "ing543",
-            "custom_id": "ing543",
             "type": "typ88",
             "nom": "7up Mojito",
             "supplement": "0.00",
@@ -1583,7 +1318,6 @@
         },
         {
             "ingredient_id": "ing544",
-            "custom_id": "ing544",
             "type": "typ88",
             "nom": "Ice Tea",
             "supplement": "0.00",
@@ -1593,7 +1327,6 @@
         },
         {
             "ingredient_id": "ing545",
-            "custom_id": "ing545",
             "type": "typ88",
             "nom": "Schweppes Agrum",
             "supplement": "0.00",
@@ -1603,7 +1336,6 @@
         },
         {
             "ingredient_id": "ing546",
-            "custom_id": "ing546",
             "type": "typ88",
             "nom": "Oasis Tropical",
             "supplement": "0.00",
@@ -1613,7 +1345,6 @@
         },
         {
             "ingredient_id": "ing547",
-            "custom_id": "ing547",
             "type": "typ88",
             "nom": "Perrier",
             "supplement": "0.00",
@@ -1623,7 +1354,6 @@
         },
         {
             "ingredient_id": "ing548",
-            "custom_id": "ing548",
             "type": "typ88",
             "nom": "Evian",
             "supplement": "0.00",
@@ -1633,7 +1363,6 @@
         },
         {
             "ingredient_id": "ing549",
-            "custom_id": "ing549",
             "type": "typ89",
             "nom": "Coca 1,5L",
             "supplement": "0.00",
@@ -1643,7 +1372,6 @@
         },
         {
             "ingredient_id": "ing550",
-            "custom_id": "ing550",
             "type": "typ89",
             "nom": "Orangina 1,5L",
             "supplement": "0.00",
@@ -1653,7 +1381,6 @@
         },
         {
             "ingredient_id": "ing551",
-            "custom_id": "ing551",
             "type": "typ89",
             "nom": "Oasis Tropical 2 L",
             "supplement": "3.00",
@@ -1663,7 +1390,6 @@
         },
         {
             "ingredient_id": "ing552",
-            "custom_id": "ing552",
             "type": "typ89",
             "nom": "7up Mojito 1,5L",
             "supplement": "0.00",
@@ -1675,8 +1401,7 @@
     "produits": [
         {
             "produit_id": "prd1318",
-            "custom_id": "prd1318",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Margherita",
             "prix": "8.50",
@@ -1687,8 +1412,7 @@
         },
         {
             "produit_id": "prd1319",
-            "custom_id": "prd1319",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mega Margherita",
             "prix": "12.50",
@@ -1699,8 +1423,7 @@
         },
         {
             "produit_id": "prd1320",
-            "custom_id": "prd1320",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Regina",
             "prix": "9.50",
@@ -1711,8 +1434,7 @@
         },
         {
             "produit_id": "prd1321",
-            "custom_id": "prd1321",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mega Regina",
             "prix": "13.50",
@@ -1723,8 +1445,7 @@
         },
         {
             "produit_id": "prd1322",
-            "custom_id": "prd1322",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Napolitaine",
             "prix": "9.50",
@@ -1735,8 +1456,7 @@
         },
         {
             "produit_id": "prd1323",
-            "custom_id": "prd1323",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mega Napolitaine",
             "prix": "13.50",
@@ -1747,8 +1467,7 @@
         },
         {
             "produit_id": "prd1324",
-            "custom_id": "prd1324",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Végétariennne",
             "prix": "9.5",
@@ -1759,8 +1478,7 @@
         },
         {
             "produit_id": "prd1325",
-            "custom_id": "prd1325",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mega Vegetarienne",
             "prix": "13.5",
@@ -1771,8 +1489,7 @@
         },
         {
             "produit_id": "prd1326",
-            "custom_id": "prd1326",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Pecheur",
             "prix": "9.5",
@@ -1783,8 +1500,7 @@
         },
         {
             "produit_id": "prd1327",
-            "custom_id": "prd1327",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mega Pecheur",
             "prix": "13.5",
@@ -1795,8 +1511,7 @@
         },
         {
             "produit_id": "prd1328",
-            "custom_id": "prd1328",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Barbecue",
             "prix": "10",
@@ -1807,8 +1522,7 @@
         },
         {
             "produit_id": "prd1329",
-            "custom_id": "prd1329",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mega Barbecue",
             "prix": "14",
@@ -1819,8 +1533,7 @@
         },
         {
             "produit_id": "prd1330",
-            "custom_id": "prd1330",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Piccante",
             "prix": "10",
@@ -1831,8 +1544,7 @@
         },
         {
             "produit_id": "prd1331",
-            "custom_id": "prd1331",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mega Piccante",
             "prix": "14",
@@ -1843,8 +1555,7 @@
         },
         {
             "produit_id": "prd1332",
-            "custom_id": "prd1332",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Quattro Fromagi",
             "prix": "10",
@@ -1855,8 +1566,7 @@
         },
         {
             "produit_id": "prd1333",
-            "custom_id": "prd1333",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mega Quattro Fromagi",
             "prix": "14",
@@ -1867,8 +1577,7 @@
         },
         {
             "produit_id": "prd1334",
-            "custom_id": "prd1334",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Moussaka",
             "prix": "10",
@@ -1879,8 +1588,7 @@
         },
         {
             "produit_id": "prd1335",
-            "custom_id": "prd1335",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mega Moussaka",
             "prix": "14",
@@ -1891,8 +1599,7 @@
         },
         {
             "produit_id": "prd1336",
-            "custom_id": "prd1336",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Pescatore",
             "prix": "10",
@@ -1903,8 +1610,7 @@
         },
         {
             "produit_id": "prd1337",
-            "custom_id": "prd1337",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mega Pescatore",
             "prix": "14",
@@ -1915,8 +1621,7 @@
         },
         {
             "produit_id": "prd1338",
-            "custom_id": "prd1338",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Quattro Stragioni",
             "prix": "10",
@@ -1927,8 +1632,7 @@
         },
         {
             "produit_id": "prd1339",
-            "custom_id": "prd1339",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mega Quattro Stragioni",
             "prix": "14",
@@ -1939,8 +1643,7 @@
         },
         {
             "produit_id": "prd1340",
-            "custom_id": "prd1340",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Orientale",
             "prix": "10",
@@ -1951,8 +1654,7 @@
         },
         {
             "produit_id": "prd1341",
-            "custom_id": "prd1341",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mega Orientale",
             "prix": "14",
@@ -1963,8 +1665,7 @@
         },
         {
             "produit_id": "prd1342",
-            "custom_id": "prd1342",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Peperoni",
             "prix": "10",
@@ -1975,8 +1676,7 @@
         },
         {
             "produit_id": "prd1343",
-            "custom_id": "prd1343",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mega Pepperoni",
             "prix": "14",
@@ -1987,8 +1687,7 @@
         },
         {
             "produit_id": "prd1344",
-            "custom_id": "prd1344",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Campione",
             "prix": "10",
@@ -1999,8 +1698,7 @@
         },
         {
             "produit_id": "prd1345",
-            "custom_id": "prd1345",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mega Campione",
             "prix": "14",
@@ -2011,8 +1709,7 @@
         },
         {
             "produit_id": "prd1346",
-            "custom_id": "prd1346",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Chorizo",
             "prix": "10",
@@ -2023,8 +1720,7 @@
         },
         {
             "produit_id": "prd1347",
-            "custom_id": "prd1347",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mega Chorizo",
             "prix": "14",
@@ -2035,8 +1731,7 @@
         },
         {
             "produit_id": "prd1348",
-            "custom_id": "prd1348",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mamma Mia",
             "prix": "11",
@@ -2047,8 +1742,7 @@
         },
         {
             "produit_id": "prd1349",
-            "custom_id": "prd1349",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mega Mamma Mia",
             "prix": "15",
@@ -2059,8 +1753,7 @@
         },
         {
             "produit_id": "prd1350",
-            "custom_id": "prd1350",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Burrata",
             "prix": "11",
@@ -2071,8 +1764,7 @@
         },
         {
             "produit_id": "prd1351",
-            "custom_id": "prd1351",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mega Burrata",
             "prix": "15",
@@ -2083,8 +1775,7 @@
         },
         {
             "produit_id": "prd1352",
-            "custom_id": "prd1352",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Parisienne",
             "prix": "11",
@@ -2095,8 +1786,7 @@
         },
         {
             "produit_id": "prd1353",
-            "custom_id": "prd1353",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mega Parisienne",
             "prix": "15",
@@ -2107,8 +1797,7 @@
         },
         {
             "produit_id": "prd1354",
-            "custom_id": "prd1354",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Buffala",
             "prix": "11",
@@ -2119,8 +1808,7 @@
         },
         {
             "produit_id": "prd1355",
-            "custom_id": "prd1355",
-            "groupe": "cat17-grp69",
+            "groupe": "grp69",
             "active": 1,
             "nom": "Mega Buffala",
             "prix": "15",
@@ -2131,8 +1819,7 @@
         },
         {
             "produit_id": "prd1363",
-            "custom_id": "prd1363",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Paysanne",
             "prix": "10.00",
@@ -2143,8 +1830,7 @@
         },
         {
             "produit_id": "prd1364",
-            "custom_id": "prd1364",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Mega Paysanne",
             "prix": "14.00",
@@ -2155,8 +1841,7 @@
         },
         {
             "produit_id": "prd1365",
-            "custom_id": "prd1365",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Fermiere",
             "prix": "10.00",
@@ -2167,8 +1852,7 @@
         },
         {
             "produit_id": "prd1366",
-            "custom_id": "prd1366",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Mega Fermiere",
             "prix": "14.00",
@@ -2179,8 +1863,7 @@
         },
         {
             "produit_id": "prd1367",
-            "custom_id": "prd1367",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Raclette",
             "prix": "10.00",
@@ -2191,8 +1874,7 @@
         },
         {
             "produit_id": "prd1368",
-            "custom_id": "prd1368",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Mega Raclette",
             "prix": "14.00",
@@ -2203,8 +1885,7 @@
         },
         {
             "produit_id": "prd1369",
-            "custom_id": "prd1369",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Gorgonzola",
             "prix": "10.00",
@@ -2215,8 +1896,7 @@
         },
         {
             "produit_id": "prd1370",
-            "custom_id": "prd1370",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Mega Gorgonzola",
             "prix": "14.00",
@@ -2227,8 +1907,7 @@
         },
         {
             "produit_id": "prd1371",
-            "custom_id": "prd1371",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Boursicotte",
             "prix": "10.00",
@@ -2239,8 +1918,7 @@
         },
         {
             "produit_id": "prd1372",
-            "custom_id": "prd1372",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Mega Boursicotte",
             "prix": "14.00",
@@ -2251,8 +1929,7 @@
         },
         {
             "produit_id": "prd1373",
-            "custom_id": "prd1373",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Savoyarde",
             "prix": "10.00",
@@ -2263,8 +1940,7 @@
         },
         {
             "produit_id": "prd1374",
-            "custom_id": "prd1374",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Mega Savoyarde",
             "prix": "14.00",
@@ -2275,8 +1951,7 @@
         },
         {
             "produit_id": "prd1375",
-            "custom_id": "prd1375",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Saumon",
             "prix": "10.00",
@@ -2287,8 +1962,7 @@
         },
         {
             "produit_id": "prd1376",
-            "custom_id": "prd1376",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Mega Saumon",
             "prix": "14.00",
@@ -2299,8 +1973,7 @@
         },
         {
             "produit_id": "prd1377",
-            "custom_id": "prd1377",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Al Capone",
             "prix": "10.00",
@@ -2311,8 +1984,7 @@
         },
         {
             "produit_id": "prd1378",
-            "custom_id": "prd1378",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Mega Al Capone",
             "prix": "14.00",
@@ -2323,8 +1995,7 @@
         },
         {
             "produit_id": "prd1379",
-            "custom_id": "prd1379",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Indian Curry",
             "prix": "10.00",
@@ -2335,8 +2006,7 @@
         },
         {
             "produit_id": "prd1380",
-            "custom_id": "prd1380",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Mega Indian Curry",
             "prix": "14.00",
@@ -2347,8 +2017,7 @@
         },
         {
             "produit_id": "prd1381",
-            "custom_id": "prd1381",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Tartiflette",
             "prix": "10.00",
@@ -2359,8 +2028,7 @@
         },
         {
             "produit_id": "prd1382",
-            "custom_id": "prd1382",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Mega Tartiflette",
             "prix": "14.00",
@@ -2371,8 +2039,7 @@
         },
         {
             "produit_id": "prd1383",
-            "custom_id": "prd1383",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Chevre Miel",
             "prix": "11.00",
@@ -2383,8 +2050,7 @@
         },
         {
             "produit_id": "prd1384",
-            "custom_id": "prd1384",
-            "groupe": "cat17-grp70",
+            "groupe": "grp70",
             "active": 1,
             "nom": "Mega Chevre Miel",
             "prix": "15.00",
@@ -2395,8 +2061,7 @@
         },
         {
             "produit_id": "prd1385",
-            "custom_id": "prd1385",
-            "groupe": "cat17-grp71",
+            "groupe": "grp71",
             "active": 1,
             "nom": "Bresaola",
             "prix": "12.00",
@@ -2407,8 +2072,7 @@
         },
         {
             "produit_id": "prd1386",
-            "custom_id": "prd1386",
-            "groupe": "cat17-grp71",
+            "groupe": "grp71",
             "active": 1,
             "nom": "Mega Bresaola",
             "prix": "16.00",
@@ -2419,8 +2083,7 @@
         },
         {
             "produit_id": "prd1387",
-            "custom_id": "prd1387",
-            "groupe": "cat17-grp71",
+            "groupe": "grp71",
             "active": 1,
             "nom": "Luigi",
             "prix": "12.00",
@@ -2431,8 +2094,7 @@
         },
         {
             "produit_id": "prd1388",
-            "custom_id": "prd1388",
-            "groupe": "cat17-grp71",
+            "groupe": "grp71",
             "active": 1,
             "nom": "Mega Luigi",
             "prix": "16.00",
@@ -2443,8 +2105,7 @@
         },
         {
             "produit_id": "prd1389",
-            "custom_id": "prd1389",
-            "groupe": "cat17-grp71",
+            "groupe": "grp71",
             "active": 1,
             "nom": "Al Tartuffo",
             "prix": "13.50",
@@ -2455,8 +2116,7 @@
         },
         {
             "produit_id": "prd1390",
-            "custom_id": "prd1390",
-            "groupe": "cat17-grp71",
+            "groupe": "grp71",
             "active": 1,
             "nom": "Mega Al Tartuffo",
             "prix": "17.50",
@@ -2467,8 +2127,7 @@
         },
         {
             "produit_id": "prd1391",
-            "custom_id": "prd1391",
-            "groupe": "cat17-grp72",
+            "groupe": "grp72",
             "active": 1,
             "nom": "Classique",
             "prix": "8.50",
@@ -2479,8 +2138,7 @@
         },
         {
             "produit_id": "prd1392",
-            "custom_id": "prd1392",
-            "groupe": "cat17-grp72",
+            "groupe": "grp72",
             "active": 1,
             "nom": "Mega Classique",
             "prix": "12.50",
@@ -2491,8 +2149,7 @@
         },
         {
             "produit_id": "prd1393",
-            "custom_id": "prd1393",
-            "groupe": "cat17-grp72",
+            "groupe": "grp72",
             "active": 1,
             "nom": "Bouchere",
             "prix": "9.50",
@@ -2503,8 +2160,7 @@
         },
         {
             "produit_id": "prd1394",
-            "custom_id": "prd1394",
-            "groupe": "cat17-grp72",
+            "groupe": "grp72",
             "active": 1,
             "nom": "Mega Bouchere",
             "prix": "13.50",
@@ -2515,8 +2171,7 @@
         },
         {
             "produit_id": "prd1395",
-            "custom_id": "prd1395",
-            "groupe": "cat17-grp72",
+            "groupe": "grp72",
             "active": 1,
             "nom": "Oceane",
             "prix": "9.50",
@@ -2527,8 +2182,7 @@
         },
         {
             "produit_id": "prd1396",
-            "custom_id": "prd1396",
-            "groupe": "cat17-grp72",
+            "groupe": "grp72",
             "active": 1,
             "nom": "Mega Oceane",
             "prix": "13.50",
@@ -2539,8 +2193,7 @@
         },
         {
             "produit_id": "prd1397",
-            "custom_id": "prd1397",
-            "groupe": "cat17-grp73",
+            "groupe": "grp73",
             "active": 1,
             "nom": "Coca",
             "prix": "1.00",
@@ -2551,8 +2204,7 @@
         },
         {
             "produit_id": "prd1398",
-            "custom_id": "prd1398",
-            "groupe": "cat17-grp73",
+            "groupe": "grp73",
             "active": 1,
             "nom": "Coca Zero",
             "prix": "1.00",
@@ -2563,8 +2215,7 @@
         },
         {
             "produit_id": "prd1399",
-            "custom_id": "prd1399",
-            "groupe": "cat17-grp73",
+            "groupe": "grp73",
             "active": 1,
             "nom": "Orangina",
             "prix": "1.00",
@@ -2575,8 +2226,7 @@
         },
         {
             "produit_id": "prd1400",
-            "custom_id": "prd1400",
-            "groupe": "cat17-grp73",
+            "groupe": "grp73",
             "active": 1,
             "nom": "7up Mojito",
             "prix": "1.00",
@@ -2587,8 +2237,7 @@
         },
         {
             "produit_id": "prd1401",
-            "custom_id": "prd1401",
-            "groupe": "cat17-grp73",
+            "groupe": "grp73",
             "active": 1,
             "nom": "Ice Tea",
             "prix": "1.00",
@@ -2599,8 +2248,7 @@
         },
         {
             "produit_id": "prd1402",
-            "custom_id": "prd1402",
-            "groupe": "cat17-grp73",
+            "groupe": "grp73",
             "active": 1,
             "nom": "Schweppes Agrum",
             "prix": "1.00",
@@ -2611,8 +2259,7 @@
         },
         {
             "produit_id": "prd1403",
-            "custom_id": "prd1403",
-            "groupe": "cat17-grp73",
+            "groupe": "grp73",
             "active": 1,
             "nom": "Oasis Tropical",
             "prix": "1.00",
@@ -2623,8 +2270,7 @@
         },
         {
             "produit_id": "prd1404",
-            "custom_id": "prd1404",
-            "groupe": "cat17-grp73",
+            "groupe": "grp73",
             "active": 1,
             "nom": "Perrier",
             "prix": "1.00",
@@ -2635,8 +2281,7 @@
         },
         {
             "produit_id": "prd1405",
-            "custom_id": "prd1405",
-            "groupe": "cat17-grp73",
+            "groupe": "grp73",
             "active": 1,
             "nom": "Evian",
             "prix": "1.00",
@@ -2647,8 +2292,7 @@
         },
         {
             "produit_id": "prd1406",
-            "custom_id": "prd1406",
-            "groupe": "cat17-grp73",
+            "groupe": "grp73",
             "active": 1,
             "nom": "Coca 1,5L",
             "prix": "2.50",
@@ -2659,8 +2303,7 @@
         },
         {
             "produit_id": "prd1407",
-            "custom_id": "prd1407",
-            "groupe": "cat17-grp73",
+            "groupe": "grp73",
             "active": 1,
             "nom": "Orangina 1,5L",
             "prix": "2.50",
@@ -2671,8 +2314,7 @@
         },
         {
             "produit_id": "prd1408",
-            "custom_id": "prd1408",
-            "groupe": "cat17-grp73",
+            "groupe": "grp73",
             "active": 1,
             "nom": "oasis Topical 2L",
             "prix": "3.00",
@@ -2683,8 +2325,7 @@
         },
         {
             "produit_id": "prd1409",
-            "custom_id": "prd1409",
-            "groupe": "cat17-grp73",
+            "groupe": "grp73",
             "active": 1,
             "nom": "7up Mojito 1,5L",
             "prix": "2.50",
@@ -2695,8 +2336,7 @@
         },
         {
             "produit_id": "prd1410",
-            "custom_id": "prd1410",
-            "groupe": "cat17-grp74",
+            "groupe": "grp74",
             "active": 1,
             "nom": "Tiramisu Oreo",
             "prix": "2.50",
@@ -2707,8 +2347,7 @@
         },
         {
             "produit_id": "prd1411",
-            "custom_id": "prd1411",
-            "groupe": "cat17-grp75",
+            "groupe": "grp75",
             "active": 1,
             "nom": "Menu Midi",
             "prix": "10.50",
@@ -2719,8 +2358,7 @@
         },
         {
             "produit_id": "prd1412",
-            "custom_id": "prd1412",
-            "groupe": "cat17-grp75",
+            "groupe": "grp75",
             "active": 1,
             "nom": "Menu Bambino",
             "prix": "6.90",
@@ -2731,8 +2369,7 @@
         },
         {
             "produit_id": "prd1413",
-            "custom_id": "prd1413",
-            "groupe": "cat17-grp75",
+            "groupe": "grp75",
             "active": 1,
             "nom": "Menu Gourmand Senior",
             "prix": "29.90",
@@ -2743,8 +2380,7 @@
         },
         {
             "produit_id": "prd1414",
-            "custom_id": "prd1414",
-            "groupe": "cat17-grp75",
+            "groupe": "grp75",
             "active": 1,
             "nom": "Menu Gourmand Mega",
             "prix": "39.90",
@@ -2755,8 +2391,7 @@
         },
         {
             "produit_id": "prd1416",
-            "custom_id": "prd1416",
-            "groupe": "cat17-grp74",
+            "groupe": "grp74",
             "active": 1,
             "nom": "Tiramisu Nutella Spéculos",
             "prix": "2.50",
@@ -2767,8 +2402,7 @@
         },
         {
             "produit_id": "prd1417",
-            "custom_id": "prd1417",
-            "groupe": "cat17-grp74",
+            "groupe": "grp74",
             "active": 1,
             "nom": "Tiramisu Caramel Spéculos",
             "prix": "2.50",
