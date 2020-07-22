@@ -733,6 +733,8 @@ function printCommandeTicket(quelstickets, cmd) {
 
         const siret = entreprise.siret;
 
+        const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
+
         // contenu :
         contenu = {
           // -> logo
@@ -741,7 +743,7 @@ function printCommandeTicket(quelstickets, cmd) {
           entreprise: {
             nom: removeDiacritics(String(entreprise.denomination).toUpperCase()),
             coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, entreprise.site_web ],
-            fiscal: [ `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` ]
+            fiscal: [ siret ]
           },
           // -> commande (id, date, articles, remises, totaux, tva, réglements)
           commande: commande,
