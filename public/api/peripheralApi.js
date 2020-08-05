@@ -578,12 +578,14 @@ function _printEntreprise(printer, data, strings) {
     printer.style('B').text(data.nom);
     // coordonnées
     data.coordonnees.forEach((string) => {
-      printer.style('NORMAL').text(string);
+      if (string!==null ) printer.style('NORMAL').text(string);
     });
     // fiscal
-    data.fiscal.forEach((string) => {
-      printer.style('NORMAL').text(string);
-    });
+    if (data.fiscal.length>0) {
+      data.fiscal.forEach((string) => {
+        printer.style('NORMAL').text(string);
+      });
+    }
     printer.feed(1);
 }
 

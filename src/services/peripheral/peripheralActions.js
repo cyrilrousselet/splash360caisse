@@ -45,12 +45,13 @@ function printAvoir(payload) {
 
 
     const siret = entreprise.siret;
+    const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
     const contenu = {
       // -> entreprise
       entreprise: {
         nom: String(entreprise.denomination).toUpperCase(),
         coordonnees: [ entreprise.adresse, `${entreprise.code_postal} ${String(entreprise.ville).toUpperCase()}`, entreprise.site_web ],
-        fiscal: [ `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` ]
+        fiscal: [ siret_formatted ]
       },
       code: payload.code,
       detail: {
@@ -305,9 +306,13 @@ function _getRecap(tickets, commande, catalogue, types) {
       const prd = _getProduit(article.produitid, catalogue);
       // si le groupe de produits ne doit pas s'imprimer sur ce ticket
       let __anoprint = catalogue[prd.groupe].noprint.find(p=>p===ticket.ticket_id);
+
+      // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur ce ticket
+      let __noprintableingredient = (article.ingredients.length>0 && __ingnum==0);
       
 
-      if (!__anoprint || (__anoprint && __ingnum>0)) {
+      // if (!__noprintableingredient && (!__anoprint || (__anoprint && __ingnum>0))) {
+      if (!__noprintableingredient && !__anoprint) {
         // tck.num += __ingnum>0 ? __ingnum : article.quantite;        
         tck.num += article.quantite;        
       }
@@ -470,6 +475,7 @@ function printCommandeTicket(quelstickets, cmd) {
 
     // pour chaque ticket à imprimer, on prépare les params et contenus
     const tckToPrint = ticketsListe.filter(t=>t.imprimantes.length>0);
+    let noarticle = false;
     tckToPrint.forEach(ticket => {
 
       impression_ordre = impression.find(it => it.ticket===ticket.ticket_id);
@@ -716,7 +722,7 @@ function printCommandeTicket(quelstickets, cmd) {
         const commande = {
           numero: cmdnumero,
           id: cmd.ticketId,
-          date: `${date} à ${heure}`,
+          date: removeDiacritics(`${date} à ${heure}`),
           articles: articles,
           total: {
             total: total.toFixed(2),
@@ -732,7 +738,6 @@ function printCommandeTicket(quelstickets, cmd) {
 
 
         const siret = entreprise.siret;
-
         const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
 
         // contenu :
@@ -743,7 +748,7 @@ function printCommandeTicket(quelstickets, cmd) {
           entreprise: {
             nom: removeDiacritics(String(entreprise.denomination).toUpperCase()),
             coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, entreprise.site_web ],
-            fiscal: [ siret ]
+            fiscal: [ siret_formatted ]
           },
           // -> commande (id, date, articles, remises, totaux, tva, réglements)
           commande: commande,
@@ -822,11 +827,15 @@ function printCommandeTicket(quelstickets, cmd) {
           const prd = _getProduit(article.produitid, catalogue);
           // si le groupe de produits ne doit pas s'imprimer sur ce ticket
           let __anoprint = catalogue[prd.groupe].noprint.find(p=>p===ticket.ticket_id);
+
+          // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
+          let __noprintableingredient =  (inglist.length>0 && articleIngredients.length==0);
           
           // si le groupe doit s'imprimer sur ce ticket
           // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
           // on ajoute ce produit à la liste à imprimer
-          if (!__anoprint || (__anoprint && articleIngredients.length>0)) {
+          // if (!__noprintableingredient && (!__anoprint || (__anoprint && articleIngredients.length>0))) {
+          if (!__noprintableingredient && !__anoprint) {
             articles.push({
               qte: article.quantite,
               nom: removeDiacritics(article.nom),
@@ -839,6 +848,10 @@ function printCommandeTicket(quelstickets, cmd) {
 
         // commentaire pour la commande :
         __comment = cmd.comments.find(c => c.item===null && c.ingredient===null);
+
+
+        // si aucun article ne s'imprime sur ce ticket, on n'imprime pas le ticket
+        noarticle = (articles.length==0);
 
         const cmdpartiel = {
           numero: cmdnumero,
@@ -865,6 +878,7 @@ function printCommandeTicket(quelstickets, cmd) {
       }
       else if (ticket.template==="principal") {
         
+        noarticle = false;
 
         template = templates.principal;
 
@@ -913,11 +927,16 @@ function printCommandeTicket(quelstickets, cmd) {
           const prd = _getProduit(article.produitid, catalogue);
           // si le groupe de produits ne doit pas s'imprimer sur ce ticket
           let __anoprint = catalogue[prd.groupe].noprint.find(p=>p===ticket.ticket_id);
+
+
+          // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
+          let __noprintableingredient =  (inglist.length>0 && articleIngredients.length==0);
           
           // si le groupe doit s'imprimer sur ce ticket
           // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
           // on ajoute ce produit à la liste à imprimer
-          if (!__anoprint || (__anoprint && articleIngredients.length>0)) {
+          // if (!__noprintableingredient && (!__anoprint || (__anoprint && articleIngredients.length>0))) {
+          if (!__noprintableingredient && !__anoprint) {
             articles.push({
               qte: article.quantite,
               nom: removeDiacritics(article.nom),
@@ -959,15 +978,20 @@ function printCommandeTicket(quelstickets, cmd) {
 
       }
 
-      peripheralServices.printTicket(target_imprimantes[0], template, contenu)
-      .then(
-        response => {
-          console.log(response);
+      if (noarticle) {
+        dispatch({ type: peripheralActionTypes.NOPRINT_TICKET, template: template, reason: 'no article' });
+      } else {
+
+        peripheralServices.printTicket(target_imprimantes[0], template, contenu)
+        .then(
+          response => {
+            console.log(response);
+          }
+        )
+        dispatch({ type: peripheralActionTypes.PRINT_TICKET });
+        if (ticket.template==='commande') {
+          dispatch(commandeActions.updateCommande({...cmd, printnum: Number(cmd.printnum)+1}));
         }
-      )
-      dispatch({ type: peripheralActionTypes.PRINT_TICKET });
-      if (ticket.template==='commande') {
-        dispatch(commandeActions.updateCommande({...cmd, printnum: Number(cmd.printnum)+1}));
       }
 
 
@@ -1007,12 +1031,14 @@ function printPeriodeX(payload={}) {
                  fin: __fin};
 
       const siret = entreprise.siret;
+      const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
+
       const contenu = {
         // -> entreprise
         entreprise: {
           nom: removeDiacritics(String(entreprise.denomination).toUpperCase()),
           coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, entreprise.site_web ],
-          fiscal: [ `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` ]
+          fiscal: [ siret_formatted ]
         },
         periode: __periode,
         strings: impression
@@ -1069,12 +1095,15 @@ function printCloture(payload={}) {
                 fin: __fin};
 
     const siret = entreprise.siret;
+    const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
+
+
     const contenu = {
       // -> entreprise
       entreprise: {
         nom: removeDiacritics(String(entreprise.denomination).toUpperCase()),
         coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, entreprise.site_web ],
-        fiscal: [ `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` ]
+        fiscal: [ siret_formatted ]
       },
       periode: __periode,
       prelevement: prelevement,
