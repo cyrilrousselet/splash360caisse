@@ -61,6 +61,11 @@ ipcRenderer.on('getNumero', (event, data) => {
   commandeActions.getNumeroAPI(data)(store.dispatch, store.getState);
 })
 
+ipcRenderer.on('setProductionChrono', (event, data) => {
+  logger.log('setProductionChrono()', event, data);
+  commandeActions.setProductionChrono(data)(store.dispatch, store.getState);
+});
+
 
 // listener sur la réception de commande via '/public/server.js'
 ipcRenderer.on('setCommandeSync', (event, commande) => {

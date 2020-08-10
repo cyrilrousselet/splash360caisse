@@ -479,6 +479,27 @@ function setLivreur(payload) {
   }
 }
 
+function setProductionChrono(payload) {
+  return (dispatch, getState) => {
+    const {ticketId, careTime, endTime} = payload;
+    const { commandeslist } = getState().commandesListReducer;
+    const commande = Object.values(commandeslist).find(cmd => cmd.ticketId==ticketId);
+
+    const prodChrono = Math.round(differenceInMilliseconds(endTime, careTime)/10)/100;
+
+    commandeServices.persistCommande({...commande, prodChrono:prodChrono})
+    .then(
+      data => {
+        dispatch({ type: commandeActionTypes.UPDATE_COMMANDE, payload:{prodChrono:prodChrono} });
+        dispatch(notificationActions.syncDispatch('commande',{...commande, prodChrono:prodChrono}));
+        dispatch(getCommandesList())
+      },
+      error => dispatch({ type: commandeActionTypes.UPDATE_COMMANDE_ERROR, error: error})
+    );
+
+  }
+}
+
 function addReglement(payload) {
   return (dispatch, getState) => {
     const state = getState();
@@ -822,6 +843,7 @@ export const commandeActions = {
   updateCommande,
   deleteCommande,
   setLivreur,
+  setProductionChrono,
   addReglement,
   removeReglement,
   addRendu,

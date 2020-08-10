@@ -396,14 +396,15 @@ function printCommandeTicket(quelstickets, cmd) {
       let kdsCmd = {
         id: cmdnumero,
         ticket_id: cmd.ticketId,
-        origine: caisse.nom,
-        origine_type: 'caisse', // rendre dynamique
+        // origine: caisse.nom,
+        // origine_type: 'caisse', // rendre dynamique
+        origine: 'caisse', // rendre dynamique
         name: clt ? `${clt.prenom} ${clt.nom}`: '',
         mode: cmd.mode, // attention
         timestamp: 1,
         status: 0,
-        endTime: undefined,
-        careTime: undefined,
+        endTime: '',
+        careTime: '',
         items: []
       }
 
@@ -434,8 +435,14 @@ function printCommandeTicket(quelstickets, cmd) {
         article.ingredients.forEach(ing => {
 
           // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-          // const zonei = ticketsListe.filter(t => types[ing.type].noprint.find(p=>p==t.ticket_id)!==undefined );
-          // const zoneilist = zonei.map(z => z.ticket_id);
+          const zonesi = ticketsListe.filter(t => types[ing.type].noprint.find(p=>p==t.ticket_id)!==undefined );
+          const zonesilist = zonesi.map(z => {
+            return {
+              name: z.ticket_id, 
+              status: 0, 
+              handledBy: null
+            }
+          });
 
           // ordre du type d'ingrédient
           let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
@@ -444,7 +451,8 @@ function printCommandeTicket(quelstickets, cmd) {
         //  if (ing.fromStep!=null) {
             articleIngredients.push({
               quantity: ing.qte,
-              subProductName: ing.nom
+              subProductName: ing.nom,
+              zones: zonesilist.length>0 ? zonesilist : []
             });
         //  }
         });
@@ -454,16 +462,23 @@ function printCommandeTicket(quelstickets, cmd) {
 
         
         // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-        const zone = ticketsProd.filter(t => (catalogue[prd.groupe].noprint.length===0 || catalogue[prd.groupe].noprint.find(p=>p===t.ticket_id)!==undefined) );
+        const zones = ticketsProd.filter(t => (catalogue[prd.groupe].noprint.length===0 || catalogue[prd.groupe].noprint.find(p=>p===t.ticket_id)!==undefined) );
 
         
+        const zoneslist = zones.map(z => {
+          return {
+            name: z.ticket_id, 
+            status: 0, 
+            handledBy: null
+          }
+        })
+        
+
         kdsCmd.items.push({
           quantity: article.quantite,
           productName: article.nom,
           subItems: articleIngredients,
-          status: 0,
-          handledBy: null,
-          zone: zone.length>0 ? zone[0].ticket_id : null
+          zones: zoneslist.length>0 ? zoneslist : []
         });        
 
       });
