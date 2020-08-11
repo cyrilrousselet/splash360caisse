@@ -388,14 +388,14 @@ function printCommandeTicket(quelstickets, cmd) {
 
 
     // y a-t-il KDS d'activé pour un des ticket de la liste ?
-    const withKds = ticketsListe.find(i=>i.kds);
+    const withKds = ticketsProd.find(i=>i.kds);
     if (withKds) {
 
       const clt = cmd.client ? clients.find(c=>c.client_id===cmd.client.client_id) : null;
 
       let kdsCmd = {
         id: cmdnumero,
-        label_id: '#'+cmdnumero,
+        label_id: cmdnumero,
         ticket_id: cmd.ticketId,
         // origine: caisse.nom,
         // origine_type: 'caisse', // rendre dynamique
@@ -418,7 +418,7 @@ function printCommandeTicket(quelstickets, cmd) {
         article.composition.forEach(ing => {
 
           // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-          const zonesi = ticketsListe.filter(t => types[ing.type].noprint.length===0 || types[ing.type].noprint.find(p=>p==t.ticket_id)===undefined );
+          const zonesi = ticketsProd.filter(t => types[ing.type].noprint.length===0 || types[ing.type].noprint.find(p=>p==t.ticket_id)===undefined );
           const zonesilist = zonesi.map(z => {
             return {
               name: z.ticket_id, 
@@ -443,7 +443,7 @@ function printCommandeTicket(quelstickets, cmd) {
         article.ingredients.forEach(ing => {
 
           // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-          const zonesi = ticketsListe.filter(t => types[ing.type].noprint.length===0 || types[ing.type].noprint.find(p=>p==t.ticket_id)===undefined );
+          const zonesi = ticketsProd.filter(t => types[ing.type].noprint.length===0 || types[ing.type].noprint.find(p=>p==t.ticket_id)===undefined );
           const zonesilist = zonesi.map(z => {
             return {
               name: z.ticket_id, 
