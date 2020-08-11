@@ -622,7 +622,7 @@ function transmitOrderAlt(order) {
   order.endTime = now
   if (devicesPerZones["salle"]) {
     devicesPerZones["salle"].forEach((device)=> {                   
-      io.to(device).emit('action', {type:'UPDATE_ORDER_SALLE', payload: order})
+      io.to(device).emit('action', {type:'UPDATE_ORDER_SALLE', payload: order, received: true})
       io.to(device).emit('ring')                
     })
   }
