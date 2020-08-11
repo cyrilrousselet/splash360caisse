@@ -415,32 +415,40 @@ function printCommandeTicket(quelstickets, cmd) {
 
         let articleIngredients = [];
 
-        article.composition.forEach(ing => {
 
-          // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-          const zonesi = ticketsProd.filter(t => types[ing.type].noprint.length===0 || types[ing.type].noprint.find(p=>p==t.ticket_id)===undefined );
-          const zonesilist = zonesi.map(z => {
-            return {
-              name: z.ticket_id, 
-              status: 0, 
-              handledBy: null
-            }
-          });
+        const inglist = [...article.composition, ...article.ingredients];
 
-          // ordre du type d'ingrédient
-          let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
-          // ordre du type d'ingrédient (défini dans les paramètres)
 
-        //  if (ing.fromStep!=null) {
-            articleIngredients.push({
-              quantity: ing.qte,
-              subProductName: ing.nom,
-              zones: zonesilist.length>0 ? zonesilist : []
-            });
-        //  }
-        });
 
-        article.ingredients.forEach(ing => {
+
+
+        // article.composition.forEach(ing => {
+
+        //   // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
+        //   const zonesi = ticketsProd.filter(t => types[ing.type].noprint.length===0 || types[ing.type].noprint.find(p=>p==t.ticket_id)===undefined );
+        //   const zonesilist = zonesi.map(z => {
+        //     return {
+        //       name: z.ticket_id, 
+        //       status: 0, 
+        //       handledBy: null
+        //     }
+        //   });
+
+        //   // ordre du type d'ingrédient
+        //   let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
+        //   // ordre du type d'ingrédient (défini dans les paramètres)
+
+        // //  if (ing.fromStep!=null) {
+        //     articleIngredients.push({
+        //       quantity: ing.qte,
+        //       subProductName: ing.nom,
+        //       zones: zonesilist.length>0 ? zonesilist : []
+        //     });
+        // //  }
+        // });
+
+        // article.ingredients.forEach(ing => {
+        inglist.forEach(ing => {
 
           // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
           const zonesi = ticketsProd.filter(t => types[ing.type].noprint.length===0 || types[ing.type].noprint.find(p=>p==t.ticket_id)===undefined );
@@ -472,6 +480,14 @@ function printCommandeTicket(quelstickets, cmd) {
         // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
         const zones = ticketsProd.filter(t => (catalogue[prd.groupe].noprint.length===0 || catalogue[prd.groupe].noprint.find(p=>p===t.ticket_id)===undefined) );
 
+
+
+        // si le groupe de produits ne doit pas s'imprimer sur ce ticket
+        let __anoprint = catalogue[prd.groupe].noprint.find(p=>p===ticket.ticket_id);
+
+        // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
+        let __noprintableingredient =  (inglist.length>0 && articleIngredients.length==0);
+
         
         const zoneslist = zones.map(z => {
           return {
@@ -481,13 +497,14 @@ function printCommandeTicket(quelstickets, cmd) {
           }
         })
         
-
-        kdsCmd.items.push({
-          quantity: article.quantite,
-          productName: article.nom,
-          subItems: articleIngredients,
-          zones: zoneslist.length>0 ? zoneslist : []
-        });        
+        if (!__anoprint && !__noprintableingredient) {
+          kdsCmd.items.push({
+            quantity: article.quantite,
+            productName: article.nom,
+            subItems: articleIngredients,
+            zones: zoneslist.length>0 ? zoneslist : []
+          });        
+        }
 
       });
 
