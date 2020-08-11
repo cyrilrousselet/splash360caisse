@@ -101,6 +101,9 @@
     }
     
     tbody {
+      .liste-id {
+        font-style: italic;
+      }
       .liste-nom {
           text-transform: capitalize;
           text-decoration: underline;

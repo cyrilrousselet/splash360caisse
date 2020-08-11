@@ -302,7 +302,7 @@ class EditTicketPopin extends React.Component {
         <div className="EditTicketModal">
           <div className="Modal-container">
             <div className="header">
-              <div className="title">{ ticket==null ? strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.new : strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.edit }</div>
+              <div className="title">{ ticket==null ? strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.new : strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.edit+' #'+ticket_id }</div>
             </div>
             <div className="body">
               <LabelledField
@@ -388,6 +388,7 @@ function ListeImpression(props) {
     <Table stickyHeader size="small" key={id} aria-label="a dense table">
       <TableHead>
         <TableRow>
+        {type==='tickets' && <TableCell key={`${id}-hd-id`} className="liste-id">{ strings.modules.parametres.submodules.peripheriques.impression[type].liste.id }</TableCell> }
           <TableCell key={`${id}-hd-nom`} className="liste-nom">{ strings.modules.parametres.submodules.peripheriques.impression[type].liste.nom }</TableCell>
           <TableCell key={`${id}-hd-type`} className="liste-type">{ strings.modules.parametres.submodules.peripheriques.impression[type].liste.type }</TableCell>
           <TableCell key={`${id}-hd-param`} className="liste-param">{ strings.modules.parametres.submodules.peripheriques.impression[type].liste.parametre }</TableCell>
@@ -397,6 +398,7 @@ function ListeImpression(props) {
       <TableBody>
         {liste.map((row, i) => (
           <TableRow key={row.id} className={` ${((i%2)?'odd':'even')}${ (row.disabled?' disabled':'')}` }>
+            {type==='tickets' && <TableCell key={`${i}-imp-id`} className={ `liste-id` }><div onClick={ () => { openEdit(row.id) } }>{ row.id }</div></TableCell> }
             <TableCell key={`${i}-imp-nom`} className={ `liste-nom` }><div onClick={ () => { openEdit(row.id) } }>{ row.nom }</div></TableCell>
             <TableCell key={`${i}-imp-connexion`} className="liste-type">{ row.type }</TableCell>
             <TableCell key={`${i}-param`} className="liste-param">{row.param}</TableCell>
