@@ -417,8 +417,14 @@ function printCommandeTicket(quelstickets, cmd) {
         article.composition.forEach(ing => {
 
           // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-          // const zonei = ticketsListe.filter(t => types[ing.type].noprint.find(p=>p==t.ticket_id)!==undefined );
-          // const zoneilist = zonei.map(z => z.ticket_id);
+          const zonesi = ticketsListe.filter(t => types[ing.type].noprint.length===0 || types[ing.type].noprint.find(p=>p==t.ticket_id)===undefined );
+          const zonesilist = zonesi.map(z => {
+            return {
+              name: z.ticket_id, 
+              status: 0, 
+              handledBy: null
+            }
+          });
 
           // ordre du type d'ingrédient
           let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
@@ -427,7 +433,8 @@ function printCommandeTicket(quelstickets, cmd) {
         //  if (ing.fromStep!=null) {
             articleIngredients.push({
               quantity: ing.qte,
-              subProductName: ing.nom
+              subProductName: ing.nom,
+              zones: zonesilist.length>0 ? zonesilist : []
             });
         //  }
         });
@@ -435,7 +442,7 @@ function printCommandeTicket(quelstickets, cmd) {
         article.ingredients.forEach(ing => {
 
           // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-          const zonesi = ticketsListe.filter(t => types[ing.type].noprint.find(p=>p==t.ticket_id)!==undefined );
+          const zonesi = ticketsListe.filter(t => types[ing.type].noprint.length===0 || types[ing.type].noprint.find(p=>p==t.ticket_id)===undefined );
           const zonesilist = zonesi.map(z => {
             return {
               name: z.ticket_id, 
@@ -462,7 +469,7 @@ function printCommandeTicket(quelstickets, cmd) {
 
         
         // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-        const zones = ticketsProd.filter(t => (catalogue[prd.groupe].noprint.length===0 || catalogue[prd.groupe].noprint.find(p=>p===t.ticket_id)!==undefined) );
+        const zones = ticketsProd.filter(t => (catalogue[prd.groupe].noprint.length===0 || catalogue[prd.groupe].noprint.find(p=>p===t.ticket_id)===undefined) );
 
         
         const zoneslist = zones.map(z => {
