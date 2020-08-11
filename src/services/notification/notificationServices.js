@@ -31,65 +31,18 @@ async function getDatabase(params) {
 
   const __splashToken = await getSplashToken(params);
 
+  console.log(__splashToken);
 
-  if (__splashToken.access_token) {
+  if (__splashToken.splash_token.access_token) {
     var __url = externalParams.synchro.getdb;
-    return emit('getDatabase', {url: __url, access_token: __splashToken.access_token});
+    return emit('getDatabase', {url: __url, access_token: __splashToken.splash_token.access_token});
   }
 }
 
 
 async function getSplashToken(params) {
-
-
-  return new Promise(async (resolve,reject)=> {
-    
-    const credentials = {
-      client: {
-        id: params.id,
-        secret: params.secret
-      },
-      auth: {
-        tokenHost: externalParams.synchro.oAuth
-      }
-    };
-
-    const url = externalParams.synchro.oAuth.replace('%ID%', params.id).replace('%PWD%', params.secret)
-
-    // console.log('credentials', credentials);
-    
-    // const tokenConfig = {
-    // //   scope: externalParams.uber[task].scope
-    // };
-
-    // console.log('tokenConfig', tokenConfig);
-
-    // const splashOAuth2 = create(credentials);
-
-    try {
-    //   const result = await splashOAuth2.clientCredentials.getToken(tokenConfig);
-    //   const accessToken = splashOAuth2.accessToken.create(result);
-      
-    // //   localStorage.setItem('uber_token', JSON.stringify(accessToken.token));
-    axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
-    //   console.log('token',accessToken);
-      axios.get(url, { headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-        })
-           .then(res => {
-            
-           //   res.data.access_token: "NzJhNzhlYTI3YTI2OGRjN2JmNWY3MWJjOGFmNjBlMzlmNGYwYWNmYTVjOWNlNmMxY2ZmNjE0NzAxMjkzZGVmMw",
-              resolve(res.data.access_token);
-           });
-          
-    } catch (error) {
-      console.log('Access splashOAuth2 token error', error.message);
-      reject(error.message);
-    }
-    
-
-  });
+  const url = externalParams.synchro.oAuth.replace('%ID%', params.id).replace('%PWD%', params.secret);
+  return emit('getSplashToken', {params:url});
 } 
 
 

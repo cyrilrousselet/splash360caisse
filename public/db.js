@@ -67,6 +67,7 @@ const db = {
  reglespanier: dbFactory('reglespanier.json', {reglespanier: reglespanier}),
  pendingOrders: dbFactory('pendingOrders.json',{pendingOrders:[]}),
  finishedOrders: dbFactory('finishedOrders.json',{finishedOrders:[]}),
+ caredOrdersSalle: dbFactory('caredOrdersSalle.json',{caredOrdersSalle:[]}),
 };
 
 module.exports = db;

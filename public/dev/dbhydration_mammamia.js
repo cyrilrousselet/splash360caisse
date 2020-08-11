@@ -41,6 +41,11 @@ const hydration = {
   reglescatalogue: [],
 
   parametres: [
+    { domaine: 'options', cle: 'first_start', valeur: false },
+    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '3_a8iriw1acbkk8kcwckokgs08c0wcok0ww8wwo4gswkokwcgo4' },
+    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '2c4fko22e8bo88c4w4skck0wgg00c0wk40s88oog0c4sgkkcc0' },
+    { domaine: 'options', cle: 'role', valeur: null},
+    { domaine: 'options', cle: 'primary', valeur: null},
     { domaine: 'entreprise', cle: 'denomination', valeur: 'MAMMA MIA'},
     { domaine: 'entreprise', cle: 'enseigne', valeur: 'MAMMA MIA'},
     { domaine: 'entreprise', cle: 'adresse', valeur: '250 AVENUE PIERRE BROSSOLETTE'},
@@ -53,8 +58,6 @@ const hydration = {
     { domaine: 'entreprise', cle: 'tva', valeur: ''},
     { domaine: 'entreprise', cle: 'site_web', valeur: ''},
     { domaine: 'entreprise', cle: 'heure_fin', valeur: '00:00' },
-    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '3_a8iriw1acbkk8kcwckokgs08c0wcok0ww8wwo4gswkokwcgo4' },
-    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '2c4fko22e8bo88c4w4skck0wgg00c0wk40s88oog0c4sgkkcc0' },
     { domaine: 'entreprise', cle: 'avoirs', valeur: true },
     { domaine: 'financier', cle: 'fidelite_activation', valeur: false},
     { domaine: 'peripheriques', cle: 'impression', valeur: [{ticket:'tck1',groupes:['grp69','grp70','grp71','grp72','grp73','grp74','grp75'], types:['typ84','typ84','typ85','typ86','typ87','typ88','typ89']},{ticket:'tck2',groupes:['grp69','grp70','grp71','grp72','grp73','grp74','grp75'], types:['typ84','typ84','typ85','typ86','typ87','typ88','typ89']},{ticket:'tck3',groupes:['grp69','grp70','grp71','grp72','grp73','grp74','grp75'], types:['typ84','typ84','typ85','typ86','typ87','typ88','typ89']}]},

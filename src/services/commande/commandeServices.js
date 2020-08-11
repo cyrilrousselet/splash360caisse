@@ -1204,14 +1204,45 @@ const _newModificateurId = () => {
 const _getCommandeTotal = (items, modificateurs) => {
   // montant à payer (somme des items)
   let __total = 0;
+  let articletotal = 0;
+  let __modificateur = null;
+
   if (undefined!==items) {
     items.forEach(itm => {
-      __total += itm.quantite * itm.prix;      
+
+
+      articletotal = itm.quantite * itm.prix;
+
+
+       // modificateurs pour l'article
+       __modificateur = modificateurs.find(m => m.item==itm.itemid && m.ingredient==null);
+       let amodtx = 1;
+       let __montant = 0;
+       if (__modificateur) {
+        // total += Number(__modificateur.valeur);
+
+         const ispc = String(__modificateur.valeur).substr(-1,1)==='%';
+         const val = Math.abs(Number(String(__modificateur.valeur).slice(0,-1)));
+         __montant = ispc ? articletotal*(val/100) : val;
+
+         // conversion du modificateur en coefficient
+         amodtx = (ispc) ? (100 - val) / 100 : 1 - (val/articletotal);
+
+         if (ispc) {
+           articletotal *= (100 - val) / 100;
+         } else {
+           articletotal -= val;
+         }
+     
+       }
+
+      __total += articletotal;
     });
   }
 
   // en attendant d'avoir un discount sur chaque item / ingredient
-  if (modificateurs && modificateurs.length) {
+  __modificateur = modificateurs.find(c => c.item===null && c.ingredient===null);
+  if (__modificateur) {
     const ispc = String(modificateurs[0].valeur).substr(-1,1)==='%';
     const val = Math.abs(Number(String(modificateurs[0].valeur).slice(0,-1)));
     if (ispc) {

@@ -41,6 +41,11 @@ const hydration = {
   reglescatalogue: [],
 
   parametres: [
+    { domaine: 'options', cle: 'first_start', valeur: false },
+    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '2_4fnx0c7d3v28kkk0ko8g888og04wg8wcoosgwg4sk8sg8sck0k' },
+    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '2b3odc752eo04cwwc8s84wwk08g48wcowkwgkkgk0kkks8s4cc' },
+    { domaine: 'options', cle: 'role', valeur: null},
+    { domaine: 'options', cle: 'primary', valeur: null},
     { domaine: 'entreprise', cle: 'denomination', valeur: 'CREP & COFFEE'},
     { domaine: 'entreprise', cle: 'enseigne', valeur: 'CREP & COFFEE'},
     { domaine: 'entreprise', cle: 'adresse', valeur: '9 RUE LEON NAUTIN'},
@@ -53,8 +58,6 @@ const hydration = {
     { domaine: 'entreprise', cle: 'tva', valeur: ''},
     { domaine: 'entreprise', cle: 'site_web', valeur: 'www.crepandcoffee.fr'},
     { domaine: 'entreprise', cle: 'heure_fin', valeur: '00:00' },
-    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '2_4fnx0c7d3v28kkk0ko8g888og04wg8wcoosgwg4sk8sg8sck0k' },
-    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '2b3odc752eo04cwwc8s84wwk08g48wcowkwgkkgk0kkks8s4cc' },
     { domaine: 'entreprise', cle: 'avoirs', valeur: true },
     { domaine: 'financier', cle: 'fidelite_activation', valeur: false},
     { domaine: 'peripheriques', cle: 'impression', valeur: [{ticket:'tck1',groupes:['grp63','grp64','grp65','grp66','grp67','grp68'], types:['typ68','typ69','typ70','typ71','typ72','typ73','typ74','typ75','typ76','typ77','typ78','typ79','typ80','typ81','typ82']},{ticket:'tck2',groupes:['grp63','grp64','grp65','grp66','grp67','grp68'], types:['typ68','typ69','typ70','typ71','typ72','typ73','typ74','typ75','typ76','typ77','typ78','typ79','typ80','typ81','typ82']},{ticket:'tck3',groupes:['grp63','grp64','grp65','grp66','grp67','grp68'], types:['typ68','typ69','typ70','typ71','typ72','typ73','typ74','typ75','typ76','typ77','typ78','typ79','typ80','typ81','typ82']}]},

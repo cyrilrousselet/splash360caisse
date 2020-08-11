@@ -16,6 +16,19 @@ const actions = {
     res.send(proxies);
 
   },
+
+  dbParametresCompleteDB: async (req,res) => {
+    const {data} = req.payload;
+
+    log.info("dbParametresCompleteDB() in API", data);
+
+    (await db.parametres)._.mixin(lodashId);
+
+    const confirm = await _replaceAll(data);
+
+    res.send(confirm);
+  },
+
   dbParametresUpdate: async (req,res) => {
       const {payload} = req;
       log.info("dbParametresPersist() in API");
@@ -78,6 +91,25 @@ async function _getAll() {
   const __rawt = await _findTickets();
   
   return _parseParametres({...__rawp, ...__rawi, ...__rawt});
+}
+
+
+async function _replaceAll(data) {
+
+  log.info('_replaceAll', data);
+  let count = 0;
+
+  const start = async () => {
+    await asyncForEach(data, async (obj) => {
+      
+        _param = await _insertParametre(obj);
+        if (_param!=null) count++;
+      
+    });
+    return count == data.length;
+  }
+  start();
+
 }
 
 

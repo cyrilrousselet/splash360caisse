@@ -3,6 +3,30 @@ import { parametresServices } from './parametresServices';
 import { commandeActions } from './../commande/commandeActions';
 
 
+
+function replaceDatabase(database) {
+  return (dispatch, getState) => {
+    dispatch({type: parametresActionTypes.REPLACE_DATABASE_REQUEST, dd:database.database.parametres});
+
+    parametresServices.replaceDatabase(database.database.parametres)
+    .then(
+      conf => {
+        dispatch({type: parametresActionTypes.REPLACE_DATABASE_SUCCESS});
+        const {dbupdated} = getState().parametresReducer;
+        let upd = ['parametres'];
+        if (dbupdated) {
+          upd = [...dbupdated, ...upd];
+        }
+        dispatch({type: parametresActionTypes.INSTALL_DATABASE, value:upd});
+
+      },
+      error => dispatch({type: parametresActionTypes.REPLACE_DATABASE_SUCCESS})
+
+    )
+  }
+}
+
+
 function getAll() {
   return dispatch => {
    //   dispatch({ type: parametresActionTypes.GETALL_REQUEST });
@@ -50,5 +74,6 @@ function update(payload) {
 
 export const parametresActions = {
   getAll,
-  update
+  update,
+  replaceDatabase
 };

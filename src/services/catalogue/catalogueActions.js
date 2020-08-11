@@ -2,9 +2,36 @@ import { catalogueActionTypes } from './catalogueActionTypes';
 import { catalogueServices } from './catalogueServices';
 import Logger from '../../helpers/Logger';
 import { notificationActions } from '../notification/notificationActions';
+import { userActions } from '../user/userActions';
+
+import history from '../../helpers/history';
+import paths from '../../constants/routes.json';
+import { parametresActions } from '../parametres/parametresActions';
+import { parametresActionTypes } from '../parametres/parametresActionTypes';
 
 const logger = new Logger();
 
+
+function replaceDatabase(database) {
+  return (dispatch, getState) => {
+    dispatch({type: catalogueActionTypes.REPLACE_DATABASE_REQUEST});
+
+    catalogueServices.replaceDatabase(database)
+    .then(
+      conf => {
+        dispatch({type: catalogueActionTypes.REPLACE_DATABASE_SUCCESS})
+        const {dbupdated} = getState().parametresReducer;
+        let upd = ['catalogue'];
+        if (dbupdated) {
+          upd = [...dbupdated, ...upd];
+        }
+        dispatch({type: parametresActionTypes.INSTALL_DATABASE, value:upd});
+      },
+      error => dispatch({type: catalogueActionTypes.REPLACE_DATABASE_SUCCESS})
+
+    )
+  }
+}
 
 function getAllActive() {
   return dispatch => {
@@ -279,6 +306,7 @@ function setIngredientTypeFromSync(payload) {
 
 
 export const catalogueActions = {
+  replaceDatabase,
   getAllActive,
   getAll,
   updateProduit,

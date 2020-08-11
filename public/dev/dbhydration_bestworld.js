@@ -41,6 +41,11 @@ const hydration = {
   reglescatalogue: [],
 
   parametres: [
+    { domaine: 'options', cle: 'first_start', valeur: false },
+    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '8_4tq4pbv30gw0ssc8wosoo08s8kko84ckoc8kc8gc0084cc44g0' },
+    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '5bo4n2s5zj40swc4k8oss0ko848gw0ks0wgo4scwc48go80so8' },
+    { domaine: 'options', cle: 'role', valeur: null},
+    { domaine: 'options', cle: 'primary', valeur: null},
     { domaine: 'entreprise', cle: 'denomination', valeur: 'BEST WORLD NANTERRE'},
     { domaine: 'entreprise', cle: 'enseigne', valeur: 'BEST WORLD NANTERRE'},
     { domaine: 'entreprise', cle: 'adresse', valeur: '422 Boulevard des Provinces Françaises'},
@@ -53,8 +58,6 @@ const hydration = {
     { domaine: 'entreprise', cle: 'tva', valeur: ''},
     { domaine: 'entreprise', cle: 'site_web', valeur: ''},
     { domaine: 'entreprise', cle: 'heure_fin', valeur: '00:00' },
-    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '8_4tq4pbv30gw0ssc8wosoo08s8kko84ckoc8kc8gc0084cc44g0' },
-    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '5bo4n2s5zj40swc4k8oss0ko848gw0ks0wgo4scwc48go80so8' },
     { domaine: 'entreprise', cle: 'avoirs', valeur: true },
     { domaine: 'financier', cle: 'fidelite_activation', valeur: false},
     { domaine: 'peripheriques', cle: 'impression', valeur: [{ticket:'tck1',groupes: [ 'grp77', 'grp78', 'grp79', 'grp80', 'grp81', 'grp82', 'grp83', 'grp85', 'grp84', 'grp88', 'grp89', 'grp110', 'grp111', 'grp161', 'grp163', 'grp164'], types: ['typ94', 'typ146', 'typ147', 'typ149', 'typ148', 'typ162', 'typ152', 'typ160','typ151', 'typ150', 'typ157', 'typ106', 'typ145', 'typ161']},{ticket:'tck2',groupes: [ 'grp77', 'grp78', 'grp79', 'grp80', 'grp81', 'grp82', 'grp83', 'grp85', 'grp84', 'grp88', 'grp89', 'grp110', 'grp111', 'grp161', 'grp163', 'grp164'], types: ['typ94', 'typ146', 'typ147', 'typ149', 'typ148', 'typ162', 'typ152', 'typ160','typ151', 'typ150', 'typ157', 'typ106', 'typ145', 'typ161']},{ticket:'tck3',groupes: [ 'grp77', 'grp78', 'grp79', 'grp80', 'grp81', 'grp82', 'grp83', 'grp85', 'grp84', 'grp88', 'grp89', 'grp110', 'grp111', 'grp161', 'grp163', 'grp164'], types: ['typ94', 'typ146', 'typ147', 'typ149', 'typ148', 'typ162', 'typ152', 'typ160','typ151', 'typ150', 'typ157', 'typ106', 'typ145', 'typ161']}]},

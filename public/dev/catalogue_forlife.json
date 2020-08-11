@@ -36,20 +36,6 @@
             "weight": 5
         },
         {
-            "groupe_id": "grp131",
-            "categorie": "cat39",
-            "nom": "FLURRY",
-            "noprint": [],
-            "weight": 6
-        },
-        {
-            "groupe_id": "grp132",
-            "categorie": "cat39",
-            "nom": "GAUFRE EN ÉPI & CRÊPE",
-            "noprint": [],
-            "weight": 7
-        },
-        {
             "groupe_id": "grp154",
             "categorie": "cat39",
             "nom": "BOISSONS",
@@ -196,6 +182,12 @@
             "weight": 19
         },
         {
+            "type_id": "typ255",
+            "nom": "LES CRUDITÉS",
+            "noprint": [],
+            "weight": 25
+        },
+        {
             "type_id": "typ196",
             "nom": "FROMAGES FOR LIFE",
             "noprint": [],
@@ -224,6 +216,12 @@
             "nom": "SUPPLÉMENTS GARNITURES FOR LIFE",
             "noprint": [],
             "weight": 140
+        },
+        {
+            "type_id": "typ245",
+            "nom": "TYPE DE CUISSONS FOR LIFE",
+            "noprint": [],
+            "weight": 24
         },
         {
             "type_id": "typ192",
@@ -882,6 +880,42 @@
             "color": "rouge"
         },
         {
+            "ingredient_id": "ing1799",
+            "type": "typ255",
+            "nom": "Salade",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 5,
+            "color": "vertclair"
+        },
+        {
+            "ingredient_id": "ing1800",
+            "type": "typ255",
+            "nom": "Tomate",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 6,
+            "color": "rouge"
+        },
+        {
+            "ingredient_id": "ing1801",
+            "type": "typ255",
+            "nom": "Oignons",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 7,
+            "color": "gris"
+        },
+        {
+            "ingredient_id": "ing1802",
+            "type": "typ255",
+            "nom": "Oignons Confits",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 8,
+            "color": "jauneorange"
+        },
+        {
             "ingredient_id": "ing1327",
             "type": "typ196",
             "nom": "EMMENTAL",
@@ -1060,6 +1094,42 @@
             "tva": "tva6",
             "weight": 10,
             "color": "jaune"
+        },
+        {
+            "ingredient_id": "ing1684",
+            "type": "typ245",
+            "nom": "BLEU",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 5,
+            "color": "bleufonce"
+        },
+        {
+            "ingredient_id": "ing1685",
+            "type": "typ245",
+            "nom": "Saignant",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 6,
+            "color": "rouge"
+        },
+        {
+            "ingredient_id": "ing1686",
+            "type": "typ245",
+            "nom": "A Point",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 7,
+            "color": "marron"
+        },
+        {
+            "ingredient_id": "ing1687",
+            "type": "typ245",
+            "nom": "Bien Cuit",
+            "supplement": "0.00",
+            "tva": "tva6",
+            "weight": 8,
+            "color": "noir"
         },
         {
             "ingredient_id": "ing1301",
@@ -1931,7 +2001,7 @@
             "produit_id": "prd1709",
             "groupe": "grp120",
             "active": 1,
-            "nom": "Le Menu Double",
+            "nom": "Le Menu Double Cheese",
             "prix": "5.90",
             "tva": "tva6",
             "composition": [],
@@ -2124,39 +2194,6 @@
             "composition": [],
             "weight": 13,
             "color": "marron"
-        },
-        {
-            "produit_id": "prd1785",
-            "groupe": "grp131",
-            "active": 1,
-            "nom": "Flurry",
-            "prix": "2.50",
-            "tva": "tva6",
-            "composition": [],
-            "weight": 1,
-            "color": "marron"
-        },
-        {
-            "produit_id": "prd1786",
-            "groupe": "grp132",
-            "active": 1,
-            "nom": "Gaufre En Épi",
-            "prix": "4.50",
-            "tva": "tva6",
-            "composition": [],
-            "weight": 1,
-            "color": "orange"
-        },
-        {
-            "produit_id": "prd1787",
-            "groupe": "grp132",
-            "active": 1,
-            "nom": "Crêpe",
-            "prix": "4.50",
-            "tva": "tva6",
-            "composition": [],
-            "weight": 2,
-            "color": "jauneorange"
         },
         {
             "produit_id": "prd2030",
@@ -3009,7 +3046,7 @@
             "produit_id": "prd2140",
             "groupe": "grp120",
             "active": 1,
-            "nom": "Le Menu Double",
+            "nom": "Le Menu Double Whooper",
             "prix": "7.90",
             "tva": "tva6",
             "composition": [],
@@ -3755,6 +3792,19 @@
             "weight": -1
         },
         {
+            "step_id": "step1712",
+            "produit": "prd1714",
+            "titre": "SAUCES",
+            "regles": [
+                {
+                    "type": "typ200",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
+        },
+        {
             "step_id": "step1082",
             "produit": "prd1715",
             "titre": "BOISSONS",
@@ -3779,6 +3829,19 @@
                 }
             ],
             "weight": 0
+        },
+        {
+            "step_id": "step1713",
+            "produit": "prd1715",
+            "titre": "SAUCES",
+            "regles": [
+                {
+                    "type": "typ200",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
         },
         {
             "step_id": "step1084",
@@ -3820,6 +3883,19 @@
             "weight": -1
         },
         {
+            "step_id": "step1714",
+            "produit": "prd1716",
+            "titre": "SAUCES",
+            "regles": [
+                {
+                    "type": "typ200",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
             "step_id": "step1086",
             "produit": "prd1717",
             "titre": "BOISSONS",
@@ -3859,6 +3935,19 @@
             "weight": -1
         },
         {
+            "step_id": "step1715",
+            "produit": "prd1717",
+            "titre": "SAUCES",
+            "regles": [
+                {
+                    "type": "typ200",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 0
+        },
+        {
             "step_id": "step1088",
             "produit": "prd1718",
             "titre": "BOISSONS",
@@ -3883,6 +3972,19 @@
                 }
             ],
             "weight": 0
+        },
+        {
+            "step_id": "step1727",
+            "produit": "prd1718",
+            "titre": "SAUCES",
+            "regles": [
+                {
+                    "type": "typ200",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
         },
         {
             "step_id": "step1090",
@@ -3911,17 +4013,17 @@
             "weight": 0
         },
         {
-            "step_id": "step1092",
-            "produit": "prd1720",
-            "titre": "BOISSONS",
+            "step_id": "step1726",
+            "produit": "prd1719",
+            "titre": "SAUCES",
             "regles": [
                 {
-                    "type": "typ143",
+                    "type": "typ200",
                     "regle": "{0,1}",
                     "supplement": "0.00"
                 }
             ],
-            "weight": 5
+            "weight": 1
         },
         {
             "step_id": "step1406",
@@ -3935,6 +4037,32 @@
                 }
             ],
             "weight": 4
+        },
+        {
+            "step_id": "step1729",
+            "produit": "prd1720",
+            "titre": "SAUCES",
+            "regles": [
+                {
+                    "type": "typ200",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 5
+        },
+        {
+            "step_id": "step1730",
+            "produit": "prd1720",
+            "titre": "BOISSONS",
+            "regles": [
+                {
+                    "type": "typ143",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 6
         },
         {
             "step_id": "step1094",
@@ -3963,6 +4091,19 @@
             "weight": 0
         },
         {
+            "step_id": "step1725",
+            "produit": "prd1758",
+            "titre": "SAUCES",
+            "regles": [
+                {
+                    "type": "typ200",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
+        },
+        {
             "step_id": "step1096",
             "produit": "prd1759",
             "titre": "BOISSONS",
@@ -3987,6 +4128,19 @@
                 }
             ],
             "weight": 0
+        },
+        {
+            "step_id": "step1722",
+            "produit": "prd1759",
+            "titre": "SAUCES",
+            "regles": [
+                {
+                    "type": "typ200",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
         },
         {
             "step_id": "step1098",
@@ -4015,6 +4169,19 @@
             "weight": 0
         },
         {
+            "step_id": "step1721",
+            "produit": "prd1760",
+            "titre": "SAUCES",
+            "regles": [
+                {
+                    "type": "typ200",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
+        },
+        {
             "step_id": "step1100",
             "produit": "prd1761",
             "titre": "BOISSONS",
@@ -4041,6 +4208,19 @@
             "weight": 0
         },
         {
+            "step_id": "step1720",
+            "produit": "prd1761",
+            "titre": "SAUCES",
+            "regles": [
+                {
+                    "type": "typ200",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
+        },
+        {
             "step_id": "step1102",
             "produit": "prd1762",
             "titre": "BOISSONS",
@@ -4065,6 +4245,19 @@
                 }
             ],
             "weight": 0
+        },
+        {
+            "step_id": "step1719",
+            "produit": "prd1762",
+            "titre": "SAUCES",
+            "regles": [
+                {
+                    "type": "typ200",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 1
         },
         {
             "step_id": "step1104",
@@ -4106,43 +4299,17 @@
             "weight": -1
         },
         {
-            "step_id": "step878",
-            "produit": "prd1785",
-            "titre": "ACCOMPAGNEMENTS",
+            "step_id": "step1718",
+            "produit": "prd1763",
+            "titre": "SAUCES",
             "regles": [
                 {
-                    "type": "typ120",
-                    "regle": "{0,8};s:{2,8}",
-                    "supplement": "0.50"
+                    "type": "typ200",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
                 }
             ],
             "weight": 1
-        },
-        {
-            "step_id": "step879",
-            "produit": "prd1786",
-            "titre": "ACCOMPAGNEMENTS",
-            "regles": [
-                {
-                    "type": "typ121",
-                    "regle": "{0,10};s:{2,10}",
-                    "supplement": "0.50"
-                }
-            ],
-            "weight": 0
-        },
-        {
-            "step_id": "step880",
-            "produit": "prd1787",
-            "titre": "ACCOMPAGNEMENTS",
-            "regles": [
-                {
-                    "type": "typ121",
-                    "regle": "{0,10};s:{2,10}",
-                    "supplement": "0.50"
-                }
-            ],
-            "weight": 0
         },
         {
             "step_id": "step950",
@@ -4210,6 +4377,19 @@
             "weight": 7
         },
         {
+            "step_id": "step1704",
+            "produit": "prd2059",
+            "titre": "LES CRUDITÉS",
+            "regles": [
+                {
+                    "type": "typ255",
+                    "regle": "{0,4}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 8
+        },
+        {
             "step_id": "step1398",
             "produit": "prd2060",
             "titre": "CHOIX DES SAUCES",
@@ -4221,6 +4401,19 @@
                 }
             ],
             "weight": 10
+        },
+        {
+            "step_id": "step1705",
+            "produit": "prd2060",
+            "titre": "LES CRUDITÉS",
+            "regles": [
+                {
+                    "type": "typ255",
+                    "regle": "{0,4}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 9
         },
         {
             "step_id": "step960",
@@ -4262,6 +4455,19 @@
             "weight": 5
         },
         {
+            "step_id": "step1703",
+            "produit": "prd2061",
+            "titre": "LES CRUDITÉS",
+            "regles": [
+                {
+                    "type": "typ255",
+                    "regle": "{0,4}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 6
+        },
+        {
             "step_id": "step1399",
             "produit": "prd2062",
             "titre": "CHOIX DES SAUCES",
@@ -4273,6 +4479,19 @@
                 }
             ],
             "weight": 10
+        },
+        {
+            "step_id": "step1706",
+            "produit": "prd2062",
+            "titre": "LES CRUDITÉS",
+            "regles": [
+                {
+                    "type": "typ255",
+                    "regle": "{0,4}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 9
         },
         {
             "step_id": "step961",
@@ -4314,6 +4533,19 @@
             "weight": 5
         },
         {
+            "step_id": "step1702",
+            "produit": "prd2063",
+            "titre": "LES CRUDITÉS",
+            "regles": [
+                {
+                    "type": "typ255",
+                    "regle": "{0,4}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 6
+        },
+        {
             "step_id": "step1400",
             "produit": "prd2064",
             "titre": "CHOIX DES SAUCES",
@@ -4325,6 +4557,19 @@
                 }
             ],
             "weight": 10
+        },
+        {
+            "step_id": "step1707",
+            "produit": "prd2064",
+            "titre": "LES CRUDITÉS",
+            "regles": [
+                {
+                    "type": "typ255",
+                    "regle": "{0,4}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 9
         },
         {
             "step_id": "step962",
@@ -4366,6 +4611,19 @@
             "weight": 5
         },
         {
+            "step_id": "step1701",
+            "produit": "prd2065",
+            "titre": "LES CRUDITÉS",
+            "regles": [
+                {
+                    "type": "typ255",
+                    "regle": "{0,4}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 6
+        },
+        {
             "step_id": "step1401",
             "produit": "prd2066",
             "titre": "CHOIX DES SAUCES",
@@ -4377,6 +4635,19 @@
                 }
             ],
             "weight": 10
+        },
+        {
+            "step_id": "step1708",
+            "produit": "prd2066",
+            "titre": "LES CRUDITÉS",
+            "regles": [
+                {
+                    "type": "typ255",
+                    "regle": "{0,4}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 9
         },
         {
             "step_id": "step963",
@@ -4418,6 +4689,19 @@
             "weight": 5
         },
         {
+            "step_id": "step1700",
+            "produit": "prd2067",
+            "titre": "LES CRUDITÉS",
+            "regles": [
+                {
+                    "type": "typ255",
+                    "regle": "{0,4}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 6
+        },
+        {
             "step_id": "step1402",
             "produit": "prd2068",
             "titre": "CHOIX DES SAUCES",
@@ -4429,6 +4713,19 @@
                 }
             ],
             "weight": 10
+        },
+        {
+            "step_id": "step1709",
+            "produit": "prd2068",
+            "titre": "LES CRUDITÉS",
+            "regles": [
+                {
+                    "type": "typ255",
+                    "regle": "{0,4}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 9
         },
         {
             "step_id": "step964",
@@ -4470,6 +4767,19 @@
             "weight": 5
         },
         {
+            "step_id": "step1699",
+            "produit": "prd2069",
+            "titre": "LES CRUDITÉS",
+            "regles": [
+                {
+                    "type": "typ255",
+                    "regle": "{0,4}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 6
+        },
+        {
             "step_id": "step1403",
             "produit": "prd2070",
             "titre": "CHOIX DES SAUCES",
@@ -4481,6 +4791,19 @@
                 }
             ],
             "weight": 10
+        },
+        {
+            "step_id": "step1710",
+            "produit": "prd2070",
+            "titre": "LES CRUDITÉS",
+            "regles": [
+                {
+                    "type": "typ255",
+                    "regle": "{0,4}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 9
         },
         {
             "step_id": "step965",
@@ -4522,6 +4845,19 @@
             "weight": 5
         },
         {
+            "step_id": "step1698",
+            "produit": "prd2071",
+            "titre": "LES CRUDITÉS",
+            "regles": [
+                {
+                    "type": "typ255",
+                    "regle": "{0,4}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 6
+        },
+        {
             "step_id": "step1404",
             "produit": "prd2072",
             "titre": "CHOIX DES SAUCES",
@@ -4533,6 +4869,19 @@
                 }
             ],
             "weight": 10
+        },
+        {
+            "step_id": "step1711",
+            "produit": "prd2072",
+            "titre": "LES CRUDITÉS",
+            "regles": [
+                {
+                    "type": "typ255",
+                    "regle": "{0,4}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 9
         },
         {
             "step_id": "step939",
@@ -4574,19 +4923,6 @@
             "weight": 4
         },
         {
-            "step_id": "step1393",
-            "produit": "prd2073",
-            "titre": "SAUCES",
-            "regles": [
-                {
-                    "type": "typ200",
-                    "regle": "{0,1}",
-                    "supplement": "0.00"
-                }
-            ],
-            "weight": 5
-        },
-        {
             "step_id": "step940",
             "produit": "prd2074",
             "titre": "FORMES DE PÂTES",
@@ -4624,19 +4960,6 @@
                 }
             ],
             "weight": 4
-        },
-        {
-            "step_id": "step1394",
-            "produit": "prd2074",
-            "titre": "SAUCES",
-            "regles": [
-                {
-                    "type": "typ200",
-                    "regle": "{0,1}",
-                    "supplement": "0.00"
-                }
-            ],
-            "weight": 5
         },
         {
             "step_id": "step941",
@@ -4678,19 +5001,6 @@
             "weight": 4
         },
         {
-            "step_id": "step1395",
-            "produit": "prd2075",
-            "titre": "SAUCES",
-            "regles": [
-                {
-                    "type": "typ200",
-                    "regle": "{0,1}",
-                    "supplement": "0.00"
-                }
-            ],
-            "weight": 6
-        },
-        {
             "step_id": "step942",
             "produit": "prd2076",
             "titre": "FORMES DE PÂTES",
@@ -4728,19 +5038,6 @@
                 }
             ],
             "weight": 4
-        },
-        {
-            "step_id": "step1396",
-            "produit": "prd2076",
-            "titre": "SAUCES",
-            "regles": [
-                {
-                    "type": "typ200",
-                    "regle": "{0,1}",
-                    "supplement": "0.00"
-                }
-            ],
-            "weight": 6
         },
         {
             "step_id": "step1110",
@@ -4795,19 +5092,6 @@
             "weight": 4
         },
         {
-            "step_id": "step1359",
-            "produit": "prd2078",
-            "titre": "FROMAGE",
-            "regles": [
-                {
-                    "type": "typ196",
-                    "regle": "{0,1}",
-                    "supplement": "0.00"
-                }
-            ],
-            "weight": 3
-        },
-        {
             "step_id": "step1112",
             "produit": "prd2079",
             "titre": "BOISSONS",
@@ -4819,19 +5103,6 @@
                 }
             ],
             "weight": 4
-        },
-        {
-            "step_id": "step1360",
-            "produit": "prd2079",
-            "titre": "FROMAGE",
-            "regles": [
-                {
-                    "type": "typ196",
-                    "regle": "{0,1}",
-                    "supplement": "0.00"
-                }
-            ],
-            "weight": 3
         },
         {
             "step_id": "step944",
@@ -5016,6 +5287,32 @@
             "weight": 5
         },
         {
+            "step_id": "step1616",
+            "produit": "prd2092",
+            "titre": "CUISSONS",
+            "regles": [
+                {
+                    "type": "typ245",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 4
+        },
+        {
+            "step_id": "step1617",
+            "produit": "prd2093",
+            "titre": "CUISSONS",
+            "regles": [
+                {
+                    "type": "typ245",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 10
+        },
+        {
             "step_id": "step954",
             "produit": "prd2094",
             "titre": "BOISSONS",
@@ -5040,6 +5337,32 @@
                 }
             ],
             "weight": 3
+        },
+        {
+            "step_id": "step1611",
+            "produit": "prd2094",
+            "titre": "CUISSONS",
+            "regles": [
+                {
+                    "type": "typ245",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 2
+        },
+        {
+            "step_id": "step1618",
+            "produit": "prd2095",
+            "titre": "CUISSONS",
+            "regles": [
+                {
+                    "type": "typ245",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 10
         },
         {
             "step_id": "step955",
@@ -5068,6 +5391,32 @@
             "weight": 3
         },
         {
+            "step_id": "step1612",
+            "produit": "prd2096",
+            "titre": "CUISSONS",
+            "regles": [
+                {
+                    "type": "typ245",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 2
+        },
+        {
+            "step_id": "step1619",
+            "produit": "prd2097",
+            "titre": "CUISSONS",
+            "regles": [
+                {
+                    "type": "typ245",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 10
+        },
+        {
             "step_id": "step956",
             "produit": "prd2098",
             "titre": "BOISSONS",
@@ -5092,6 +5441,32 @@
                 }
             ],
             "weight": 5
+        },
+        {
+            "step_id": "step1613",
+            "produit": "prd2098",
+            "titre": "CUISSONS",
+            "regles": [
+                {
+                    "type": "typ245",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 4
+        },
+        {
+            "step_id": "step1620",
+            "produit": "prd2099",
+            "titre": "CUISSONS",
+            "regles": [
+                {
+                    "type": "typ245",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 10
         },
         {
             "step_id": "step957",
@@ -5120,6 +5495,32 @@
             "weight": 5
         },
         {
+            "step_id": "step1614",
+            "produit": "prd2100",
+            "titre": "CUISSONS",
+            "regles": [
+                {
+                    "type": "typ245",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 4
+        },
+        {
+            "step_id": "step1621",
+            "produit": "prd2101",
+            "titre": "CUISSONS",
+            "regles": [
+                {
+                    "type": "typ245",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 10
+        },
+        {
             "step_id": "step958",
             "produit": "prd2102",
             "titre": "BOISSONS",
@@ -5144,6 +5545,32 @@
                 }
             ],
             "weight": 5
+        },
+        {
+            "step_id": "step1615",
+            "produit": "prd2102",
+            "titre": "CUISSONS",
+            "regles": [
+                {
+                    "type": "typ245",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 4
+        },
+        {
+            "step_id": "step1622",
+            "produit": "prd2103",
+            "titre": "CUISSONS",
+            "regles": [
+                {
+                    "type": "typ245",
+                    "regle": "{0,1}",
+                    "supplement": "0.00"
+                }
+            ],
+            "weight": 10
         },
         {
             "step_id": "step1343",

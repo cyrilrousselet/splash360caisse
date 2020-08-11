@@ -67,7 +67,7 @@ const beforeClickModule = (text) => {
 
 const mapStateToProps = (state) => {
   return {
-    cashname: (state.parametresReducer.parametres.options && state.parametresReducer.parametres.options.caisse.nom) || '',
+    cashname: (state.parametresReducer.parametres.options && state.parametresReducer.parametres.options.caisse && state.parametresReducer.parametres.options.caisse.nom) || '',
     username: state.authentication.user.nom,
     userid: state.authentication.user.id,
     commandeslist: getCommandesList(state),
@@ -110,7 +110,8 @@ const mapDispatchToProps = (dispatch) => {
     getParametres: parametresActions.getAll,
     getCurrentPeriode: clotureActions.getCurrentPeriode,
     getAvoirsList: marketingActions.getAvoirsList,
-    deleteCurrentCommande: commandeActions.deleteCurrentCommande
+    deleteCurrentCommande: commandeActions.deleteCurrentCommande,
+    getCommande: commandeActions.getCommande
   }, dispatch);
   return {
     ...binded,

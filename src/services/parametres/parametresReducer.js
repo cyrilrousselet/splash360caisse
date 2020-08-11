@@ -20,6 +20,12 @@ export function parametresReducer(state=initialState, action) {
         error: null
       };
 
+    case parametresActionTypes.INSTALL_DATABASE:
+      return {
+        ...state,
+        dbupdated: action.value
+      };
+
     case parametresActionTypes.GETALL_SUCCESS:
 
       let newparams = action.parametres;

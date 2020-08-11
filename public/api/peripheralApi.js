@@ -1,4 +1,6 @@
 const log = require('electron-log');
+const electron = require('electron');
+const { app } = electron;
 const escpos = require('escpos');
 escpos.USB = require('escpos-usb');
 escpos.Network = require('escpos-network');
@@ -18,6 +20,11 @@ let printerOpen = false;
 
 
 const actions = {
+
+  quitApp: (req,res) => {
+    log.info('QUIT APP');
+    app.quit();
+  },
 
 
   printTicket: (req, res) => {
@@ -571,12 +578,14 @@ function _printEntreprise(printer, data, strings) {
     printer.style('B').text(data.nom);
     // coordonnées
     data.coordonnees.forEach((string) => {
-      printer.style('NORMAL').text(string);
+      if (string!==null ) printer.style('NORMAL').text(string);
     });
     // fiscal
-    data.fiscal.forEach((string) => {
-      printer.style('NORMAL').text(string);
-    });
+    if (data.fiscal.length>0) {
+      data.fiscal.forEach((string) => {
+        printer.style('NORMAL').text(string);
+      });
+    }
     printer.feed(1);
 }
 
@@ -827,7 +836,7 @@ function _printCommande(printer, data, strings) {
         {text: '', cols:4},
         {text: strings.modificateur.discount_item, cols:22, align:'LEFT'},
         {text:'', cols:1},
-        {text: article.modificateur.montant ? '-'+article.modificateur.valeur : '', cols:6, align:'RIGHT'},
+        {text: article.modificateur.montant ? '' : '-'+article.modificateur.valeur, cols:6, align:'RIGHT'},
         {text:'', cols:1},
         {text: article.modificateur.montant ? '-'+article.modificateur.montant.toFixed(2) : '-'+article.modificateur.valeur, cols:6, align:'RIGHT'},
         {text:'', cols:2}

@@ -39,6 +39,11 @@ const hydration = {
    reglescatalogue: [],
  
    parametres: [
+    { domaine: 'options', cle: 'first_start', valeur: false },
+    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '7_55sqes59c40804sg4gswck4kkgc84wo8c80wowosw8oks8ksss' },
+    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '5b0vwvx1f400gko0c4804wwo4040kwc0w0wogg88g8ck0csc84' },
+    { domaine: 'options', cle: 'role', valeur: null},
+    { domaine: 'options', cle: 'primary', valeur: null},
     { domaine: 'entreprise', cle: 'denomination', valeur: 'Chamas Tacos'},
     { domaine: 'entreprise', cle: 'enseigne', valeur: ''},
     { domaine: 'entreprise', cle: 'adresse', valeur: '7, Avenue Du Champ De Mars'},
@@ -52,8 +57,6 @@ const hydration = {
      { domaine: 'entreprise', cle: 'site_web', valeur: 'www.chamas-tacos.com'},
      { domaine: 'entreprise', cle: 'heure_fin', valeur: '00:00' },
      { domaine: 'entreprise', cle: 'avoirs', valeur: true },
-     { domaine: 'entreprise', cle: 'restaurant_id', valeur: '7_55sqes59c40804sg4gswck4kkgc84wo8c80wowosw8oks8ksss' },
-     { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '5b0vwvx1f400gko0c4804wwo4040kwc0w0wogg88g8ck0csc84' },
      { domaine: 'financier', cle: 'fidelite_activation', valeur: false},
      { domaine: 'peripheriques', cle: 'impression', valeur: [{ticket:'tck1',groupes:['cat15','cat16','cat17','cat18','cat19','cat20','cat21','cat22','cat23','cat24','cat25','cat26','cat27','cat28','cat29','cat30'], types:['icat29','icat31','icat32','icat33','icat34','icat35','icat36','icat37']},{ticket:'tck2',groupes:['cat15','cat16','cat17','cat18','cat19','cat20','cat21','cat22','cat23','cat24','cat25','cat26','cat27','cat28','cat29','cat30'], types:['icat29','icat31','icat32','icat33','icat34','icat35','icat36','icat37']},{ticket:'tck3',groupes:['cat15','cat16','cat17','cat18','cat19','cat20','cat21','cat22','cat23','cat24','cat25','cat26','cat27','cat28','cat29','cat30'], types:['icat29','icat31','icat32','icat33','icat34','icat35','icat36','icat37']}]},
      { domaine: 'commandes', cle: 'numerotation_start', valeur: '0'},

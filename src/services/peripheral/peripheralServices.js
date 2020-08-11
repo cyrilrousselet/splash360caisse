@@ -10,8 +10,13 @@ export const peripheralServices = {
   updateTicket,
   deleteTicket,
   getAllTickets,
-  setCommandeToKDS
+  setCommandeToKDS,
+  quitApp
 };
+
+function quitApp() {
+  return emit('quitApp', {});
+}
 
 function printTest() {
   return emit('printTest', {msg:'message de test'});

@@ -981,7 +981,7 @@ const data = {
                 modificateur: {
                     charge: 'CHARGE',
                     discount_panier: 'REDUCTION PANIER',
-                    discount_item: 'Réduction article',
+                    discount_item: 'Reduction article',
                     monnaie: 'EUR'
                 },
                 tva: {
@@ -1016,14 +1016,14 @@ const data = {
             },
             uber: {
                 titre: 'Commande UberEats',
-                texte: 'LIVRAISON à ',
+                texte: 'LIVRAISON a ',
                 client: 'Client :',
                 couverts: 'AVEC COUVERTS, PAILLE...'
             },
             cuisine: {
                 titre: 'CUISINE',
                 numero: 'Cmd no ',
-                creation: 'Créée le ',
+                creation: 'Creee le ',
                 mode: {
                     livraison: 'LIVRAISON',
                     surplace: 'SUR PLACE',
@@ -1041,7 +1041,7 @@ const data = {
             sac: {
                 titre: 'SAC',
                 numero: 'Cmd no ',
-                creation: 'Créée le ',
+                creation: 'Creee le ',
                 mode: {
                     livraison: 'LIVRAISON',
                     surplace: 'SUR PLACE',

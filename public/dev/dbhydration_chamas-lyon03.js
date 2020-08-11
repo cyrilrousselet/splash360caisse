@@ -39,6 +39,11 @@ const hydration = {
    reglescatalogue: [],
  
    parametres: [
+    { domaine: 'options', cle: 'first_start', valeur: false },
+    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '5_4l2xryhllxyc08g8ssos88go4cco0gsk004cskw4cggo8oo00k' },
+    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '37gf8ehyswmc0okk4o0swgss08ggs8cs4wwsccksk80goggc48' },
+    { domaine: 'options', cle: 'role', valeur: null},
+    { domaine: 'options', cle: 'primary', valeur: null},
     { domaine: 'entreprise', cle: 'denomination', valeur: 'MW FOOD'},
     { domaine: 'entreprise', cle: 'enseigne', valeur: ''},
     { domaine: 'entreprise', cle: 'adresse', valeur: '63 rue Dauphine'},
@@ -52,8 +57,6 @@ const hydration = {
      { domaine: 'entreprise', cle: 'site_web', valeur: 'www.chamas-tacos.com'},
      { domaine: 'entreprise', cle: 'heure_fin', valeur: '00:00' },
      { domaine: 'entreprise', cle: 'avoirs', valeur: true },
-     { domaine: 'entreprise', cle: 'restaurant_id', valeur: '5_4l2xryhllxyc08g8ssos88go4cco0gsk004cskw4cggo8oo00k' },
-     { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '37gf8ehyswmc0okk4o0swgss08ggs8cs4wwsccksk80goggc48' },
      { domaine: 'financier', cle: 'fidelite_activation', valeur: false},
      { domaine: 'peripheriques', cle: 'impression', valeur: [{ticket:'tck1',groupes:['cat15','cat16','cat17','cat18','cat19','cat20','cat21','cat22','cat23','cat24','cat25','cat26','cat27','cat28','cat29','cat30'], types:['icat29','icat31','icat32','icat33','icat34','icat35','icat36','icat37']},{ticket:'tck2',groupes:['cat15','cat16','cat17','cat18','cat19','cat20','cat21','cat22','cat23','cat24','cat25','cat26','cat27','cat28','cat29','cat30'], types:['icat29','icat31','icat32','icat33','icat34','icat35','icat36','icat37']},{ticket:'tck3',groupes:['cat15','cat16','cat17','cat18','cat19','cat20','cat21','cat22','cat23','cat24','cat25','cat26','cat27','cat28','cat29','cat30'], types:['icat29','icat31','icat32','icat33','icat34','icat35','icat36','icat37']}]},
      { domaine: 'commandes', cle: 'numerotation_start', valeur: '0'},

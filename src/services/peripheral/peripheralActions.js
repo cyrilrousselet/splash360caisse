@@ -45,12 +45,13 @@ function printAvoir(payload) {
 
 
     const siret = entreprise.siret;
+    const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
     const contenu = {
       // -> entreprise
       entreprise: {
         nom: String(entreprise.denomination).toUpperCase(),
         coordonnees: [ entreprise.adresse, `${entreprise.code_postal} ${String(entreprise.ville).toUpperCase()}`, entreprise.site_web ],
-        fiscal: [ `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` ]
+        fiscal: [ siret_formatted ]
       },
       code: payload.code,
       detail: {
@@ -305,9 +306,13 @@ function _getRecap(tickets, commande, catalogue, types) {
       const prd = _getProduit(article.produitid, catalogue);
       // si le groupe de produits ne doit pas s'imprimer sur ce ticket
       let __anoprint = catalogue[prd.groupe].noprint.find(p=>p===ticket.ticket_id);
+
+      // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur ce ticket
+      let __noprintableingredient = (article.ingredients.length>0 && __ingnum==0);
       
 
-      if (!__anoprint || (__anoprint && __ingnum>0)) {
+      // if (!__noprintableingredient && (!__anoprint || (__anoprint && __ingnum>0))) {
+      if (!__noprintableingredient && !__anoprint) {
         // tck.num += __ingnum>0 ? __ingnum : article.quantite;        
         tck.num += article.quantite;        
       }
@@ -391,14 +396,15 @@ function printCommandeTicket(quelstickets, cmd) {
       let kdsCmd = {
         id: cmdnumero,
         ticket_id: cmd.ticketId,
-        origine: caisse.nom,
-        origine_type: 'caisse', // rendre dynamique
+        // origine: caisse.nom,
+        // origine_type: 'caisse', // rendre dynamique
+        origine: 'caisse', // rendre dynamique
         name: clt ? `${clt.prenom} ${clt.nom}`: '',
         mode: cmd.mode, // attention
         timestamp: 1,
         status: 0,
-        endTime: undefined,
-        careTime: undefined,
+        endTime: '',
+        careTime: '',
         items: []
       }
 
@@ -429,8 +435,14 @@ function printCommandeTicket(quelstickets, cmd) {
         article.ingredients.forEach(ing => {
 
           // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-          // const zonei = ticketsListe.filter(t => types[ing.type].noprint.find(p=>p==t.ticket_id)!==undefined );
-          // const zoneilist = zonei.map(z => z.ticket_id);
+          const zonesi = ticketsListe.filter(t => types[ing.type].noprint.find(p=>p==t.ticket_id)!==undefined );
+          const zonesilist = zonesi.map(z => {
+            return {
+              name: z.ticket_id, 
+              status: 0, 
+              handledBy: null
+            }
+          });
 
           // ordre du type d'ingrédient
           let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
@@ -439,7 +451,8 @@ function printCommandeTicket(quelstickets, cmd) {
         //  if (ing.fromStep!=null) {
             articleIngredients.push({
               quantity: ing.qte,
-              subProductName: ing.nom
+              subProductName: ing.nom,
+              zones: zonesilist.length>0 ? zonesilist : []
             });
         //  }
         });
@@ -449,16 +462,23 @@ function printCommandeTicket(quelstickets, cmd) {
 
         
         // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-        const zone = ticketsProd.filter(t => (catalogue[prd.groupe].noprint.length===0 || catalogue[prd.groupe].noprint.find(p=>p===t.ticket_id)!==undefined) );
+        const zones = ticketsProd.filter(t => (catalogue[prd.groupe].noprint.length===0 || catalogue[prd.groupe].noprint.find(p=>p===t.ticket_id)!==undefined) );
 
         
+        const zoneslist = zones.map(z => {
+          return {
+            name: z.ticket_id, 
+            status: 0, 
+            handledBy: null
+          }
+        })
+        
+
         kdsCmd.items.push({
           quantity: article.quantite,
           productName: article.nom,
           subItems: articleIngredients,
-          status: 0,
-          handledBy: null,
-          zone: zone.length>0 ? zone[0].ticket_id : null
+          zones: zoneslist.length>0 ? zoneslist : []
         });        
 
       });
@@ -470,6 +490,7 @@ function printCommandeTicket(quelstickets, cmd) {
 
     // pour chaque ticket à imprimer, on prépare les params et contenus
     const tckToPrint = ticketsListe.filter(t=>t.imprimantes.length>0);
+    let noarticle = false;
     tckToPrint.forEach(ticket => {
 
       impression_ordre = impression.find(it => it.ticket===ticket.ticket_id);
@@ -492,6 +513,8 @@ function printCommandeTicket(quelstickets, cmd) {
         let __modificateur = null;
         cmd.items.forEach(article => {
 
+
+          const artTva = {};
           let articleIngredients = [];
           articletotal = article.quantite * article.prix;
           // articletotal = Number(article.pu)*article.quantite;
@@ -542,9 +565,18 @@ function printCommandeTicket(quelstickets, cmd) {
          //   articletotal += Number(ing.supplement);
 
 
+            // // ajout et calcul de la tva pour l'ingrédient
+            // if (!cmdTva.hasOwnProperty(artIngTva.code)) {
+            //   Object.defineProperty(cmdTva, artIngTva.code, {
+            //     value: {taux:`${Number(artIngTva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
+            //     writable: true,
+            //     enumerable: true
+            //   });
+            // }
+
             // ajout et calcul de la tva pour l'ingrédient
-            if (!cmdTva.hasOwnProperty(artIngTva.code)) {
-              Object.defineProperty(cmdTva, artIngTva.code, {
+            if (!artTva.hasOwnProperty(artIngTva.code)) {
+              Object.defineProperty(artTva, artIngTva.code, {
                 value: {taux:`${Number(artIngTva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
                 writable: true,
                 enumerable: true
@@ -554,10 +586,10 @@ function printCommandeTicket(quelstickets, cmd) {
             // let iht = (Number(ing.prix)*ing.qte) / (1 + Number(artIngTva.valeur));
             let iht = Number(ing.supplement) / (1 + Number(artIngTva.valeur));
 
-            cmdTva[artIngTva.code] = Object.assign(cmdTva[artIngTva.code], {
-              montant: cmdTva[artIngTva.code].montant + (iht * Number(artIngTva.valeur)),
-              ht: cmdTva[artIngTva.code].ht + iht,
-              ttc: cmdTva[artIngTva.code].ttc + Number(ing.supplement)
+            artTva[artIngTva.code] = Object.assign(artTva[artIngTva.code], {
+              montant: artTva[artIngTva.code].montant + (iht * Number(artIngTva.valeur)),
+              ht: artTva[artIngTva.code].ht + iht,
+              ttc: artTva[artIngTva.code].ttc + Number(ing.supplement)
             });
 
             // console.log('iht','(Number('+ing.prix+')*'+ing.qte+') / (1 + Number('+artIngTva.valeur+'))');
@@ -607,6 +639,14 @@ function printCommandeTicket(quelstickets, cmd) {
           });
 
 
+          // modificateur au niveau de la tva pour les ingrédients de l'article
+          if (__modificateur) {
+            Object.keys(artTva).forEach(k => {
+              artTva[k].ht *= amodtx;
+              artTva[k].ttc *= amodtx;
+            });
+          } 
+
           // ajout et calcul de la tva pour l'article
           if (!cmdTva.hasOwnProperty(article.tva.code)) {
             Object.defineProperty(cmdTva, article.tva.code, {
@@ -616,20 +656,46 @@ function printCommandeTicket(quelstickets, cmd) {
             });
           }
 
-//          let ht = (Number(article.pu)*article.quantite) / (1 + Number(article.tva.valeur));
-          let ht = (Number(article.pu)*article.quantite) / (1 + Number(article.tva.valeur));
-
+          // let ht = (Number(article.pu)*article.quantite) / (1 + Number(article.tva.valeur));
+          let ht = (Number(article.pu)*article.quantite)*amodtx / (1 + Number(article.tva.valeur));
 
           cmdTva[article.tva.code] = Object.assign(cmdTva[article.tva.code], {
             montant: cmdTva[article.tva.code].montant + (ht * Number(article.tva.valeur)),
             ht: cmdTva[article.tva.code].ht + ht,
-            ttc: cmdTva[article.tva.code].ttc + Number(article.pu)*article.quantite
+            ttc: cmdTva[article.tva.code].ttc + ((Number(article.pu)*article.quantite)*amodtx)
           });
 
-          if (__modificateur) {
-            cmdTva[article.tva.code].ht *= amodtx;
-            cmdTva[article.tva.code].ttc *= amodtx;
-          }         
+          // if (__modificateur) {
+          //   cmdTva[article.tva.code].ht *= amodtx;
+          //   cmdTva[article.tva.code].ttc *= amodtx;
+          // }   
+          
+
+          // ajout des tva des ingrédients de l'article
+          Object.entries(artTva).forEach(([k,v]) => {
+            
+            // si le taux n'est pas listé dans les TVA
+            // on l'ajoute et on lui assigne les valeurs enregistrées pour les ingrédients
+            if (!cmdTva.hasOwnProperty(k)) {
+              Object.defineProperty(cmdTva, k, {
+                value: {taux:v.taux, montant: v.montant, ht: v.ht, ttc: v.ttc},
+                writable: true,
+                enumerable: true
+              });
+
+            } 
+            // si le taux est déjà listé,
+            // on additionne avec les valeurs enregistrées pour les ingrédients
+            else {
+              cmdTva[k] = Object.assign(cmdTva[k], {
+                montant: cmdTva[k].montant + v.montant,
+                ht: cmdTva[k].ht + v.ht,
+                ttc: cmdTva[k].ttc + v.ttc
+              });
+            }
+          });
+          
+
           // console.log('iht','(Number('+article.pu+')*'+article.quantite+') / (1 + Number('+article.tva.valeur +'))');
           // console.log(JSON.stringify(cmdTva));
           total += articletotal;
@@ -671,7 +737,7 @@ function printCommandeTicket(quelstickets, cmd) {
         const commande = {
           numero: cmdnumero,
           id: cmd.ticketId,
-          date: `${date} à ${heure}`,
+          date: removeDiacritics(`${date} à ${heure}`),
           articles: articles,
           total: {
             total: total.toFixed(2),
@@ -687,6 +753,7 @@ function printCommandeTicket(quelstickets, cmd) {
 
 
         const siret = entreprise.siret;
+        const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
 
         // contenu :
         contenu = {
@@ -696,7 +763,7 @@ function printCommandeTicket(quelstickets, cmd) {
           entreprise: {
             nom: removeDiacritics(String(entreprise.denomination).toUpperCase()),
             coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, entreprise.site_web ],
-            fiscal: [ `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` ]
+            fiscal: [ siret_formatted ]
           },
           // -> commande (id, date, articles, remises, totaux, tva, réglements)
           commande: commande,
@@ -775,11 +842,15 @@ function printCommandeTicket(quelstickets, cmd) {
           const prd = _getProduit(article.produitid, catalogue);
           // si le groupe de produits ne doit pas s'imprimer sur ce ticket
           let __anoprint = catalogue[prd.groupe].noprint.find(p=>p===ticket.ticket_id);
+
+          // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
+          let __noprintableingredient =  (inglist.length>0 && articleIngredients.length==0);
           
           // si le groupe doit s'imprimer sur ce ticket
           // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
           // on ajoute ce produit à la liste à imprimer
-          if (!__anoprint || (__anoprint && articleIngredients.length>0)) {
+          // if (!__noprintableingredient && (!__anoprint || (__anoprint && articleIngredients.length>0))) {
+          if (!__noprintableingredient && !__anoprint) {
             articles.push({
               qte: article.quantite,
               nom: removeDiacritics(article.nom),
@@ -792,6 +863,10 @@ function printCommandeTicket(quelstickets, cmd) {
 
         // commentaire pour la commande :
         __comment = cmd.comments.find(c => c.item===null && c.ingredient===null);
+
+
+        // si aucun article ne s'imprime sur ce ticket, on n'imprime pas le ticket
+        noarticle = (articles.length==0);
 
         const cmdpartiel = {
           numero: cmdnumero,
@@ -818,6 +893,7 @@ function printCommandeTicket(quelstickets, cmd) {
       }
       else if (ticket.template==="principal") {
         
+        noarticle = false;
 
         template = templates.principal;
 
@@ -866,11 +942,16 @@ function printCommandeTicket(quelstickets, cmd) {
           const prd = _getProduit(article.produitid, catalogue);
           // si le groupe de produits ne doit pas s'imprimer sur ce ticket
           let __anoprint = catalogue[prd.groupe].noprint.find(p=>p===ticket.ticket_id);
+
+
+          // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
+          let __noprintableingredient =  (inglist.length>0 && articleIngredients.length==0);
           
           // si le groupe doit s'imprimer sur ce ticket
           // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
           // on ajoute ce produit à la liste à imprimer
-          if (!__anoprint || (__anoprint && articleIngredients.length>0)) {
+          // if (!__noprintableingredient && (!__anoprint || (__anoprint && articleIngredients.length>0))) {
+          if (!__noprintableingredient && !__anoprint) {
             articles.push({
               qte: article.quantite,
               nom: removeDiacritics(article.nom),
@@ -912,15 +993,20 @@ function printCommandeTicket(quelstickets, cmd) {
 
       }
 
-      peripheralServices.printTicket(target_imprimantes[0], template, contenu)
-      .then(
-        response => {
-          console.log(response);
+      if (noarticle) {
+        dispatch({ type: peripheralActionTypes.NOPRINT_TICKET, template: template, reason: 'no article' });
+      } else {
+
+        peripheralServices.printTicket(target_imprimantes[0], template, contenu)
+        .then(
+          response => {
+            console.log(response);
+          }
+        )
+        dispatch({ type: peripheralActionTypes.PRINT_TICKET });
+        if (ticket.template==='commande') {
+          dispatch(commandeActions.updateCommande({...cmd, printnum: Number(cmd.printnum)+1}));
         }
-      )
-      dispatch({ type: peripheralActionTypes.PRINT_TICKET });
-      if (ticket.template==='commande') {
-        dispatch(commandeActions.updateCommande({...cmd, printnum: Number(cmd.printnum)+1}));
       }
 
 
@@ -960,12 +1046,14 @@ function printPeriodeX(payload={}) {
                  fin: __fin};
 
       const siret = entreprise.siret;
+      const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
+
       const contenu = {
         // -> entreprise
         entreprise: {
           nom: removeDiacritics(String(entreprise.denomination).toUpperCase()),
           coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, entreprise.site_web ],
-          fiscal: [ `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` ]
+          fiscal: [ siret_formatted ]
         },
         periode: __periode,
         strings: impression
@@ -1022,12 +1110,15 @@ function printCloture(payload={}) {
                 fin: __fin};
 
     const siret = entreprise.siret;
+    const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
+
+
     const contenu = {
       // -> entreprise
       entreprise: {
         nom: removeDiacritics(String(entreprise.denomination).toUpperCase()),
         coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, entreprise.site_web ],
-        fiscal: [ `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` ]
+        fiscal: [ siret_formatted ]
       },
       periode: __periode,
       prelevement: prelevement,
@@ -1041,6 +1132,13 @@ function printCloture(payload={}) {
       }
     )
     dispatch({ type: peripheralActionTypes.PRINT_PERIODE_Z });
+  }
+}
+
+function quitApp() {
+  return dispatch => {
+    dispatch({type: peripheralActionTypes.QUIT_APP});
+    peripheralServices.quitApp();
   }
 }
 
@@ -1061,4 +1159,5 @@ export const peripheralActions = {
   printTicket,
   printPeriodeX,
   printCloture,
+  quitApp
 };

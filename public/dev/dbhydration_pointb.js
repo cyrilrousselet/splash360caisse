@@ -41,6 +41,11 @@ const hydration = {
   reglescatalogue: [],
 
   parametres: [
+    { domaine: 'options', cle: 'first_start', valeur: false },
+    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '20_4gfb43hrojgg8wk8ccosgkkswsckw40w08c40oo0ooogo0w4kw' },
+    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '3nxlduk0jsao0ckgsg0osswo4kc8kcsk8w80ksw4kgcok0wg88' },
+    { domaine: 'options', cle: 'role', valeur: null},
+    { domaine: 'options', cle: 'primary', valeur: null},
     { domaine: 'entreprise', cle: 'denomination', valeur: 'POINT B'},
     { domaine: 'entreprise', cle: 'enseigne', valeur: 'POINT B'},
     { domaine: 'entreprise', cle: 'adresse', valeur: '198 rue de Paris'},
@@ -53,8 +58,6 @@ const hydration = {
     { domaine: 'entreprise', cle: 'tva', valeur: ''},
     { domaine: 'entreprise', cle: 'site_web', valeur: ''},
     { domaine: 'entreprise', cle: 'heure_fin', valeur: '00:00' },
-    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '20_4gfb43hrojgg8wk8ccosgkkswsckw40w08c40oo0ooogo0w4kw' },
-    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '3nxlduk0jsao0ckgsg0osswo4kc8kcsk8w80ksw4kgcok0wg88' },
     { domaine: 'entreprise', cle: 'avoirs', valeur: true },
     { domaine: 'financier', cle: 'fidelite_activation', valeur: false},
     { domaine: 'peripheriques', cle: 'impression', valeur: [{ticket:'tck1',groupes: ['grp190','grp192','grp193','grp194','grp195','grp211'], type:[]},{ticket:'tck2',groupes: ['grp190','grp192','grp193','grp194','grp195','grp211'], type:[]},{ticket:'tck3',groupes: ['grp190','grp192','grp193','grp194','grp195','grp211'], type:[]}]},

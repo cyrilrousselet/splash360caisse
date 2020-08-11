@@ -41,6 +41,11 @@ const hydration = {
   reglescatalogue: [],
 
   parametres: [
+    { domaine: 'options', cle: 'first_start', valeur: false },
+    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '15_2nxhdzjh9cqo4ww4w4ss8o8sc0ww44sokwkg8swkg4gkokkw8' },
+    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '2p6ah2easuw4c8kc44cwkg0wk0oo88c4gsk8gs40sc0ks8gkog' },
+    { domaine: 'options', cle: 'role', valeur: null},
+    { domaine: 'options', cle: 'primary', valeur: null},
     { domaine: 'entreprise', cle: 'denomination', valeur: 'SAFNA AFRICA'},
     { domaine: 'entreprise', cle: 'enseigne', valeur: 'SAFNA AFRICA'},
     { domaine: 'entreprise', cle: 'adresse', valeur: '54 RUE DE MEDON'},
@@ -53,8 +58,6 @@ const hydration = {
     { domaine: 'entreprise', cle: 'tva', valeur: ''},
     { domaine: 'entreprise', cle: 'site_web', valeur: ''},
     { domaine: 'entreprise', cle: 'heure_fin', valeur: '00:00' },
-    { domaine: 'entreprise', cle: 'restaurant_id', valeur: '15_2nxhdzjh9cqo4ww4w4ss8o8sc0ww44sokwkg8swkg4gkokkw8' },
-    { domaine: 'entreprise', cle: 'restaurant_secret', valeur: '2p6ah2easuw4c8kc44cwkg0wk0oo88c4gsk8gs40sc0ks8gkog' },
     { domaine: 'entreprise', cle: 'avoirs', valeur: true },
     { domaine: 'financier', cle: 'fidelite_activation', valeur: false},
     { domaine: 'peripheriques', cle: 'impression', valeur: [{ticket:'tck1',groupes: ['grp168','grp169','grp170', 'grp171','grp172','grp173','grp174','grp175','grp176'],types: ['typ171','typ172','typ173','typ174','typ175','typ176','typ177','typ178','typ179','typ180','typ181','typ182','typ183']},{ticket:'tck2',groupes: ['grp168','grp169','grp170', 'grp171','grp172','grp173','grp174','grp175','grp176'],types: ['typ171','typ172','typ173','typ174','typ175','typ176','typ177','typ178','typ179','typ180','typ181','typ182','typ183']},{ticket:'tck3',groupes: ['grp168','grp169','grp170', 'grp171','grp172','grp173','grp174','grp175','grp176'],types: ['typ171','typ172','typ173','typ174','typ175','typ176','typ177','typ178','typ179','typ180','typ181','typ182','typ183']}]},
