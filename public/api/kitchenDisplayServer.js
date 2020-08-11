@@ -1,4 +1,4 @@
-const app = require('express')();
+﻿const app = require('express')();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 // const moment = require('moment')
@@ -14,7 +14,7 @@ let pendingOrders = {}
 let finishedOrders = {}
 let periodHistory = 1800
 
-
+log.info("testmodedev")
 // try {
 //   pendingOrders = db.getData("/pendingOrders");
 // } catch(error) {
