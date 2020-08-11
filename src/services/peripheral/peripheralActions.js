@@ -395,6 +395,7 @@ function printCommandeTicket(quelstickets, cmd) {
 
       let kdsCmd = {
         id: cmdnumero,
+        label_id: '#'+cmdnumero,
         ticket_id: cmd.ticketId,
         // origine: caisse.nom,
         // origine_type: 'caisse', // rendre dynamique
