@@ -204,7 +204,7 @@ async function takeOrderV2(order, zoneOrder, ip) {
     careTimeObj = {}
     careTimeObj[deviceZone] = now
     careTimeObj.firstCare = now
-    order.careTime = now
+    order.careTime = careTimeObj
     order.status = 1
     pendingOrders[orderId] = order
     // db.push("/pendingOrders", pendingOrders)

@@ -44,11 +44,29 @@
       border-radius: 15px 15px 0 0;
       color: $noir;
       margin-right: 2px;
-      padding: 8px 25px;
+      padding: 8px 25px 8px 40px;
       &.Mui-selected {
         background-color: $blanc;
         color: $primary;
         font-family: $f_blk;
+      }
+      &.tab-prd {
+        background-image: url('./../../images/ico_produit.svg');
+        &.Mui-selected {
+          background-image: url('./../../images/ico_produit-on.svg');
+        }
+        background-repeat: no-repeat;
+        background-position: 10px center;
+        background-size: 20px;
+      }
+      &.tab-ing {
+        background-image: url('./../../images/ico_ingredient.svg');
+        &.Mui-selected {
+          background-image: url('./../../images/ico_ingredient-on.svg');
+        }
+        background-repeat: no-repeat;
+        background-position: 10px center;
+        background-size: 20px;
       }
     }
     .MuiTabs-fixed {
@@ -78,7 +96,7 @@
       height: 100%;
     }
   }
-  .cont-header .MuiExpansionPanelSummary-content {
+  .cont-header .MuiAccordionSummary-content {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -102,6 +120,18 @@
     }
     .MuiListItemText-secondary {
       color: $gris;
+    }
+    .MuiListItem-secondaryAction {
+      padding-right: 70px;
+    }
+    .asproduct .MuiListItemText-root {
+      .MuiTypography-root {
+        background-color: transparent; 
+      }
+      background-image: url('./../../images/ico_ingredient.svg');
+      background-repeat: no-repeat;
+      background-position: calc(100% - 60px) center;
+      background-size: 20px;
     }
   }
 
