@@ -822,6 +822,7 @@ const data = {
                             imprimantes: {
                                 titre: 'Imprimantes',
                                 liste: {
+                                    id: 'Id',
                                     nom: 'Nom',
                                     type: 'Connexion',
                                     parametre: 'Paramètre'
@@ -851,6 +852,7 @@ const data = {
                             tickets: {
                                 titre: 'Tickets',
                                 liste: {
+                                    id: 'Id',
                                     nom: 'Nom',
                                     type: 'Template',
                                     parametre: 'Imprimé par',
