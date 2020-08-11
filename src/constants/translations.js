@@ -603,7 +603,8 @@ const data = {
                         titre: 'Édition d’ingrédient',
                         nom: 'Nom :',
                         valeur: 'Supplement :',
-                        couleur: 'Couleur :'
+                        couleur: 'Couleur :',
+                        asproduct: 'Afficher comme un produit'
                     },
                     produit: {
                         titre: 'Édition de produit',

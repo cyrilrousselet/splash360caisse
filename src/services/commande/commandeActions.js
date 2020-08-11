@@ -7,6 +7,7 @@ import frLocale from "date-fns/locale/fr";
 import Logger from '../../helpers/Logger';
 import { notificationActions } from '../notification/notificationActions';
 import { notificationServices } from '../notification/notificationServices';
+import { differenceBy } from 'lodash';
 
 const logger = new Logger();
 
@@ -485,13 +486,16 @@ function setProductionChrono(payload) {
     const { commandeslist } = getState().commandesListReducer;
     const commande = Object.values(commandeslist).find(cmd => cmd.ticketId==ticketId);
 
-    const prodChrono = Math.round(differenceInMilliseconds(endTime, careTime)/10)/100;
+    const careTimeVal = careTime.firstCare;
 
-    commandeServices.persistCommande({...commande, prodChrono:prodChrono})
+    const waitChrono = Math.round(differenceInMilliseconds(careTimeVal, commande.end)/10)/100;
+    const prodChrono = Math.round(differenceInMilliseconds(endTime, careTimeVal)/10)/100;
+
+    commandeServices.persistCommande({...commande, prodChrono:prodChrono, waitChrono:waitChrono, care: careTime, finish:endTime})
     .then(
       data => {
-        dispatch({ type: commandeActionTypes.UPDATE_COMMANDE, payload:{prodChrono:prodChrono} });
-        dispatch(notificationActions.syncDispatch('commande',{...commande, prodChrono:prodChrono}));
+        dispatch({ type: commandeActionTypes.UPDATE_COMMANDE, payload:{prodChrono:prodChrono, waitChrono:waitChrono, care: careTime, finish:endTime} });
+        dispatch(notificationActions.syncDispatch('commande',{...commande, prodChrono:prodChrono, waitChrono:waitChrono, care: careTime, finish:endTime}));
         dispatch(getCommandesList())
       },
       error => dispatch({ type: commandeActionTypes.UPDATE_COMMANDE_ERROR, error: error})

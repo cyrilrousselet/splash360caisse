@@ -115,7 +115,7 @@ function updateIngredient(payload) {
     // (color, supplement, active)
     const filtered_update = {};
     Object.entries(update).forEach(([cle,valeur])=>{
-      if ((['color','supplement','active']).indexOf(cle)!=-1) {
+      if ((['color','supplement','active','asproduct']).indexOf(cle)!=-1) {
         filtered_update[cle] = valeur;
       }
     });

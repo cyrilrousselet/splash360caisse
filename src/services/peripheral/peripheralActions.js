@@ -289,7 +289,7 @@ function _getProduit(id, catalogue) {
   return produit;
 }
 
-function _getRecap(tickets, commande, catalogue, types) {
+function _getRecap(tickets, commande, catalogue, types, ingredients) {
   const recap = tickets.map(ticket => {
 
     let tck = {nom: ticket.nom, num:0};
@@ -297,10 +297,15 @@ function _getRecap(tickets, commande, catalogue, types) {
     commande.items.forEach(article => {
 
       let __ingnum = 0;
+      let __ingasprdnum = 0;
       article.ingredients.forEach(ing => {
         // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
         let __noprint = types[ing.type].noprint.find(p=>p===ticket.ticket_id);
-        __ingnum += (ing.fromStep!==null && !__noprint) ? ing.qte : 0;
+        // on comptabilise le nbre d'ingrédients imprimables provenant d'une personnalisation
+        // on ne compte pas les ingrédients de composition, parce qu'on compte les produits
+        __ingnum += (ing.fromStep!==null && !__noprint && !ingredients[ing.ingredient].asproduct) ? ing.qte : 0;
+        // si l'ingrédient doit s'afficher comme un produit
+        __ingasprdnum += (!__noprint && ingredients[ing.ingredient].asproduct) ? ing.qte : 0;
       });
 
       const prd = _getProduit(article.produitid, catalogue);
@@ -316,6 +321,9 @@ function _getRecap(tickets, commande, catalogue, types) {
         // tck.num += __ingnum>0 ? __ingnum : article.quantite;        
         tck.num += article.quantite;        
       }
+
+      // ajout du nombre d'ingrédients à afficher comme produits
+      tck.num += __ingasprdnum;
 
     });
     return tck;
@@ -384,7 +392,7 @@ function printCommandeTicket(quelstickets, cmd) {
     // récup de la liste des tickets à imprimer
     const ticketsListe = _getTicketsToPrint(quelstickets, tickets);
     const ticketsProd = ticketsListe.filter(t => (['partiel', 'principal']).indexOf(t.template)>-1);
-    const recapTickets = _getRecap(ticketsListe.filter(t => 'partiel' === t.template), cmd, catalogue, types);
+    const recapTickets = _getRecap(ticketsListe.filter(t => 'partiel' === t.template), cmd, catalogue, types, ingredients);
 
 
     // y a-t-il KDS d'activé pour un des ticket de la liste ?
@@ -414,6 +422,7 @@ function printCommandeTicket(quelstickets, cmd) {
       cmd.items.forEach(article => {
 
         let articleIngredients = [];
+        let ingredientsAsProducts = [];
 
 
         const inglist = [...article.composition, ...article.ingredients];
@@ -446,11 +455,20 @@ function printCommandeTicket(quelstickets, cmd) {
           // ordre du type d'ingrédient (défini dans les paramètres)
 
         //  if (ing.fromStep!=null) {
+          if (ingredients[ing.ingredient].asproduct) {
+            ingredientsAsProducts.push({
+              quantity: ing.qte,
+              productName: ing.nom,
+              subItems: [],
+              zones: zonesilist.length>0 ? zonesilist : []
+            });
+          } else {
             articleIngredients.push({
               quantity: ing.qte,
               subProductName: ing.nom,
               zones: zonesilist.length>0 ? zonesilist : []
             });
+          }
         //  }
         });
 
@@ -480,6 +498,9 @@ function printCommandeTicket(quelstickets, cmd) {
             subItems: articleIngredients,
             zones: zoneslist.length>0 ? zoneslist : []
           });        
+        }
+        if (ingredientsAsProducts.length>0) {
+          kdsCmd.items = [...kdsCmd.items, ...ingredientsAsProducts];
         }
 
       });
@@ -802,6 +823,7 @@ function printCommandeTicket(quelstickets, cmd) {
         cmd.items.forEach(article => {
 
           let articleIngredients = [];
+          let ingredientsAsProducts = [];
 
 
           const inglist = [...article.composition, ...article.ingredients];
@@ -825,12 +847,21 @@ function printCommandeTicket(quelstickets, cmd) {
 
 
             if (!__noprint) {
-              articleIngredients.push({
-                qte: ing.qte,
-                nom: removeDiacritics(ing.nom),
-                weight: __ingweight,
-                comment: __comment ? removeDiacritics(__comment.texte) : ''
-              });
+              if (ingredients[ing.ingredient].asproduct) {
+                ingredientsAsProducts.push({
+                    qte: ing.qte,
+                    nom: removeDiacritics(ing.nom),
+                    ingredients: [],
+                    comment: __comment ? removeDiacritics(__comment.texte) : ''
+                });
+              } else {
+                articleIngredients.push({
+                  qte: ing.qte,
+                  nom: removeDiacritics(ing.nom),
+                  weight: __ingweight,
+                  comment: __comment ? removeDiacritics(__comment.texte) : ''
+                });
+              }
             }
           });
 
@@ -858,6 +889,9 @@ function printCommandeTicket(quelstickets, cmd) {
               ingredients: articleIngredients,
               comment: __comment ? removeDiacritics(__comment.texte) : ''
             });        
+          }
+          if (ingredientsAsProducts.length>0) {
+            articles = [...articles, ...ingredientsAsProducts];
           }
 
         });
@@ -903,6 +937,7 @@ function printCommandeTicket(quelstickets, cmd) {
         cmd.items.forEach(article => {
 
           let articleIngredients = [];
+          let ingredientsAsProducts = [];
 
        //   article.ingredients.forEach(ing => {
           const inglist = [...article.composition, ...article.ingredients];
@@ -926,12 +961,21 @@ function printCommandeTicket(quelstickets, cmd) {
             __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient);
 
             if (!__noprint) {
-              articleIngredients.push({
-                qte: ing.qte,
-                nom: removeDiacritics(ing.nom),
-                weight: __ingweight,
-                comment: __comment ? removeDiacritics(__comment.texte) : ''
-              });
+              if (ingredients[ing.ingredient].asproduct) {
+                ingredientsAsProducts.push({
+                    qte: ing.qte,
+                    nom: removeDiacritics(ing.nom),
+                    ingredients: [],
+                    comment: __comment ? removeDiacritics(__comment.texte) : ''
+                });
+              } else {
+                articleIngredients.push({
+                  qte: ing.qte,
+                  nom: removeDiacritics(ing.nom),
+                  weight: __ingweight,
+                  comment: __comment ? removeDiacritics(__comment.texte) : ''
+                });
+              }
             }
           });
 
@@ -959,7 +1003,10 @@ function printCommandeTicket(quelstickets, cmd) {
               ingredients: articleIngredients,
               comment: __comment ? removeDiacritics(__comment.texte) : ''
             });     
-          }   
+          } 
+          if (ingredientsAsProducts.length>0) {
+            articles = [...articles, ...ingredientsAsProducts];
+          }  
 
         });
 

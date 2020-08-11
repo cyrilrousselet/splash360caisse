@@ -121,6 +121,17 @@
       }
     }
 
+
+    .form-group.asproduct {
+      label {
+        font-family: $f_boo;
+        font-size: 14px;
+        color: $noir;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+    }
+
     // .MuiButtonBase-root {
     //   font-family: $f_hea;
     //   font-size: 18px;

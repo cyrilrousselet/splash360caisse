@@ -5,7 +5,7 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../constants/translations';
 import TopZone from '../containers/TopZone';
 import LoadingSpinner from './common/LoadingSpinner';
-import { AppBar, Tabs, Tab, Typography, Box, Select, FormControl, InputLabel, MenuItem, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, ListItem, ListItemText, ListItemSecondaryAction, Switch, ListItemIcon, List, FormControlLabel, Checkbox, Modal, TextField, Fab } from '@material-ui/core';
+import { AppBar, Tabs, Tab, Typography, Box, Select, FormControl, InputLabel, MenuItem, Accordion, AccordionSummary, AccordionDetails, ListItem, ListItemText, ListItemSecondaryAction, Switch, ListItemIcon, List, FormControlLabel, Checkbox, Modal, TextField, Fab } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LensIcon from '@material-ui/icons/Lens';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
@@ -16,6 +16,7 @@ import StdButton from './common/StdButton';
 import CloseIcon from './common/icon/CloseIcon';
 import Clavier from './common/Clavier';
 import LabelledField from './common/LabelledField';
+import SwitchCheckbox from './common/SwitchCheckbox';
 
 
 let strings = new LocalizedStrings(data);
@@ -58,23 +59,26 @@ class MenuItemModal extends React.Component {
       this.updateItem = this.updateItem.bind(this);
       this.resetPopin = this.resetPopin.bind(this);
       this.changeHandler = this.changeHandler.bind(this);
+      this.asprodHandler = this.asprodHandler.bind(this);
       this.onKeyboardChange = this.onKeyboardChange.bind(this);
       this.handleChangeCouleur = this.handleChangeCouleur.bind(this);
     }
   
     updateItem() {
       const { id, type, item, updateItem } = this.props;
-      const { valeur, couleur } = this.state;
+      const { valeur, couleur, asproduct } = this.state;
   
       console.log('updateItem('+type+')',valeur, couleur);
 
       let nvaleur = 0;
       let ncouleur = couleur!==null ? couleur : item.color;
+      let nasproduct = null;
       
       if (type=='ingredient') {
         nvaleur = valeur!==null ? valeur : item.supplement;
+        nasproduct = asproduct!==null ? asproduct : false;
         console.log('updateItem ingredient');
-        updateItem({ingredient_id:id, update:{supplement:nvaleur, color:ncouleur}})
+        updateItem({ingredient_id:id, update:{supplement:nvaleur, color:ncouleur, asproduct:nasproduct}})
       }
       else if (type=='produit') {
         nvaleur = valeur!==null ? valeur : item.prix;
@@ -87,11 +91,14 @@ class MenuItemModal extends React.Component {
   
     }
     resetPopin() {
-      this.setState({valeur:null, couleur:null});
+      this.setState({valeur:null, couleur:null, asproduct:false});
     }
     changeHandler(params) {
      // console.log('CommentModal.changeHandler()', event.target.value);
       this.setState({valeur: params.value});
+    }
+    asprodHandler(isChecked) {
+      this.setState({asproduct: isChecked });
     }
     onKeyboardChange(input) {
       console.log("Valeur Input changed", input);
@@ -104,13 +111,16 @@ class MenuItemModal extends React.Component {
     render() {
   
       const { id, item, type, closeHandler, open, clavierOpen } = this.props;
-      const { valeur, couleur } = this.state;
+      const { valeur, couleur, asproduct } = this.state;
   
       let vvaleur = '';
       let vcouleur = '';
+      let vasproduct = false;
       if (item) {
         vvaleur = valeur==null ? (type=='ingredient') ? item.supplement : item.prix : valeur;
         vcouleur = couleur==null ? item.color : couleur;
+        vasproduct = asproduct==null ? (type=='ingredient') ? item.asproduct : false : asproduct;
+        if (vasproduct===undefined) vasproduct = false;
       }
   
     //  const __mttl = (ingredient) ? 'titre_ing' : (item) ? 'titre_itm' : 'titre_cmd';
@@ -138,6 +148,7 @@ class MenuItemModal extends React.Component {
                       className="valeur-input"
                       value={vvaleur}
                       postvalue="€"
+                      type="text"
                       onChange={this.changeHandler}
                     />
               </div>
@@ -155,6 +166,17 @@ class MenuItemModal extends React.Component {
                   </Select>
                 </FormControl> 
               </div>
+              {type==='ingredient' && <div className="form-group asproduct">
+                <SwitchCheckbox
+                  className="asproduct"
+                  name="asproduct"
+                  small={true}
+                  isChecked={vasproduct}
+                  label={strings.modules.menu.edit.ingredient.asproduct}
+                  onChange={(name, isChecked)=>{this.asprodHandler(isChecked)}}
+
+                />
+              </div>}
             </div>
             <div className="footer">
               <StdButton
@@ -361,8 +383,8 @@ class Menu extends React.Component {
                 </FormControl> 
               </div>
               <Tabs value={openTab} onChange={this.handleChangeTab} aria-label="simple tabs">
-                <Tab label={ strings.modules.menu.produits} {...a11yProps(0)} />
-                <Tab label={ strings.modules.menu.ingredients} {...a11yProps(1)} />
+                <Tab label={ strings.modules.menu.produits} className={ `tab-prd` } {...a11yProps(0)} />
+                <Tab label={ strings.modules.menu.ingredients} className={ `tab-ing` } {...a11yProps(1)} />
               </Tabs>
             </AppBar>
             <TabPanel key={ `panel-produits` } className="panel" value={openTab} index={0}>
@@ -442,8 +464,8 @@ function MenuListe(props) {
   const {data, type, changeDispo, openEdit, tickets, changeNoPrint, editOpen} = props;
 
   const mliste = data.map((cont,i) => (
-    <ExpansionPanel key={`panel${i}`}>
-      <ExpansionPanelSummary
+    <Accordion key={`panel${i}`}>
+      <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={ `panel${i}-content` }
         id={ `panel${i}-header` }
@@ -467,14 +489,15 @@ function MenuListe(props) {
                 />
               }
               label={tck.nom}
+              key={tck.ticket_id}
             />
             )}
           </div>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
+        </AccordionSummary>
+        <AccordionDetails>
           <List className="panel-liste" key={ `panel${i}-liste` }>
           { cont.produits && cont.produits.map((p,i) => ( 
-            <ListItem className={`item ${((i%2)?'odd':'even')}`}>
+            <ListItem key={i} className={`item ${((i%2)?'odd':'even')}`}>
               <ListItemIcon>
                 <LensIcon className={`couleur ${p.color}`} />
               </ListItemIcon>
@@ -483,13 +506,13 @@ function MenuListe(props) {
                 <IOSSwitch
                   edge="end"
                   onChange={(e)=>{changeDispo(p.id)}}
-                  checked={p.active}
+                  checked={p.active===1}
                 />
               </ListItemSecondaryAction>
             </ListItem>
           ))}
           { cont.ingredients && cont.ingredients.map((n,i) => (
-            <ListItem className={`item ${((i%2)?'odd':'even')}`}>
+            <ListItem key={i} className={`item ${((i%2)?'odd':'even')} ${(n.asproduct===true)?' asproduct':''}`}>
               <ListItemIcon>
                 <LensIcon className={`couleur ${n.color}`} />
               </ListItemIcon>
@@ -498,14 +521,14 @@ function MenuListe(props) {
                 <IOSSwitch
                   edge="end"
                   onChange={(e)=>{changeDispo(n.id)}}
-                  checked={n.active}
+                  checked={n.active===1}
                 />
               </ListItemSecondaryAction>
             </ListItem>
           ))}
           </List>
-        </ExpansionPanelDetails>
-    </ExpansionPanel>
+        </AccordionDetails>
+    </Accordion>
   ));
 
 
