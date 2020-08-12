@@ -17,6 +17,7 @@ import CloseIcon from './common/icon/CloseIcon';
 import Clavier from './common/Clavier';
 import LabelledField from './common/LabelledField';
 import SwitchCheckbox from './common/SwitchCheckbox';
+import logger from 'redux-logger';
 
 
 let strings = new LocalizedStrings(data);
@@ -275,26 +276,88 @@ class Menu extends React.Component {
     });
     return produit;
   }
-  changeNoPrintGroupe(groupeId,ticketId) {
-    const {catalogue, updateGroupe} = this.props;
-    const groupe = catalogue[groupeId];
-    const noprint = groupe.noprint;
+  changeNoPrintGroupe(id,ticketId, sub=false) {
+    const {catalogue, updateGroupe, updateProduit} = this.props;
+    let noprint = null;
+    
+    // édition pour un produit
+    if (sub) {
+      const produit = this.getProduit(id);
+      const prdnoprint = produit.noprint;
+      console.log('produit',produit);
+      noprint = catalogue[produit.groupe].noprint;
+      // s'il n'y a pas de noprint pour le produit, on se base sur celui du groupe correspondant
+      if (prdnoprint==undefined) {
 
-    if (noprint.indexOf(ticketId)==-1) {
-      updateGroupe({groupe_id:groupeId, update:{noprint:[...noprint, ticketId]}});
+        // si le ticket n'est pas indiqué dans le noprint du groupe, on doit le désactiver
+        // donc on clone le noprint du groupe et on ajoute l'id du ticket qu'on veut désactiver
+        if (noprint.indexOf(ticketId)==-1) {
+          updateProduit({produit_id:id, update:{noprint:[...noprint, ticketId]}});
+        } 
+        // si le ticket est indiqué dans le noprint du groupe, on doit le réactiver pour le produit
+        // donc clone le noprint du groupe et on supprime l'id du ticket qu'on veut activer
+        else {
+          updateProduit({produit_id:id, update:{noprint:noprint.filter(t=>t!=ticketId)}});
+        }
+      } 
+      // s'il y a un noprint pour le produit, on intervient comme pour le noprint du groupe
+      else {
+        if (prdnoprint.indexOf(ticketId)==-1) {
+          updateProduit({produit_id:id, update:{noprint:[...prdnoprint, ticketId]}});
+        } else {
+          updateProduit({produit_id:id, update:{noprint:prdnoprint.filter(t=>t!=ticketId)}});
+        }
+      }
     } else {
-      updateGroupe({groupe_id:groupeId, update:{noprint:noprint.filter(t=>t!=ticketId)}});
+
+      noprint = catalogue[id].noprint;
+      
+      if (noprint.indexOf(ticketId)==-1) {
+        updateGroupe({groupe_id:id, update:{noprint:[...noprint, ticketId]}});
+      } else {
+        updateGroupe({groupe_id:id, update:{noprint:noprint.filter(t=>t!=ticketId)}});
+      }
     }
   }
-  changeNoPrintType(typeId,ticketId) {
-    const {ingredientTypes, updateIngredientType} = this.props;
-    const type = ingredientTypes[typeId];
-    const noprint = type.noprint;
 
-    if (noprint.indexOf(ticketId)==-1) {
-      updateIngredientType({type_id:typeId, update:{noprint:[...noprint, ticketId]}});
+
+  changeNoPrintType(id,ticketId, sub=false) {
+    const {ingredientTypes, ingredients, updateIngredientType, updateIngredient} = this.props;
+    let noprint = null;
+
+    if (sub) {
+      const ingredient = ingredients[id];
+      const ingnoprint = ingredient.noprint;
+      noprint = ingredientTypes[ingredient.type].noprint;
+      // s'il n'y a pas de noprint pour l'ingredient, on se base sur celui du type correspondant
+      if (ingnoprint==undefined) {
+
+        // si le ticket n'est pas indiqué dans le noprint du type, on doit le désactiver
+        // donc on clone le noprint du type et on ajoute l'id du ticket qu'on veut désactiver
+        if (noprint.indexOf(ticketId)==-1) {
+          updateIngredient({ingredient_id:id, update:{noprint:[...noprint, ticketId]}});
+        } 
+        // si le ticket est indiqué dans le noprint du type, on doit le réactiver pour l'ingredient
+        // donc clone le noprint du type et on supprime l'id du ticket qu'on veut activer
+        else {
+          updateIngredient({ingredient_id:id, update:{noprint:noprint.filter(t=>t!=ticketId)}});
+        }
+      } 
+      // s'il y a un noprint pour l'ingredient, on intervient comme pour le noprint du type
+      else {
+        if (ingnoprint.indexOf(ticketId)==-1) {
+          updateIngredient({ingredient_id:id, update:{noprint:[...ingnoprint, ticketId]}});
+        } else {
+          updateIngredient({ingredient_id:id, update:{noprint:ingnoprint.filter(t=>t!=ticketId)}});
+        }
+      }
     } else {
-      updateIngredientType({type_id:typeId, update:{noprint:noprint.filter(t=>t!=ticketId)}});
+      noprint = ingredientTypes[id].noprint;
+      if (noprint.indexOf(ticketId)==-1) {
+        updateIngredientType({type_id:id, update:{noprint:[...noprint, ticketId]}});
+      } else {
+        updateIngredientType({type_id:id, update:{noprint:noprint.filter(t=>t!=ticketId)}});
+      }
     }
   }
 
@@ -503,6 +566,25 @@ function MenuListe(props) {
               </ListItemIcon>
               <ListItemText id={p.id} onClick={ () => { editOpen('produit', p.id) } } primary={p.nom} secondary={ `${devise(Number(p.prix))} €`} />
               <ListItemSecondaryAction>
+                <div className="cont-print">
+                  {tickets.map(tck=>
+                    <FormControlLabel
+                    control={
+                      <Checkbox
+                        icon={<CheckBoxOutlineBlankIcon htmlColor="#7FAD3B" fontSize="small" />}
+                        checkedIcon={<CheckBoxIcon  htmlColor="#7FAD3B" fontSize="small" />}
+                        checked={(p.noprint!=null) ? p.noprint.indexOf(tck.ticket_id)==-1 : cont.noprint.indexOf(tck.ticket_id)==-1}
+                        onClick={(e)=>{ e.stopPropagation();}}
+                        onChange={(e) => { changeNoPrint(p.id, tck.ticket_id, true) }}
+                        name="checkedB"
+                        color="primary"
+                      />
+                    }
+                    label={tck.nom}
+                    key={tck.ticket_id}
+                  />
+                  )}
+                </div>
                 <IOSSwitch
                   edge="end"
                   onChange={(e)=>{changeDispo(p.id)}}
@@ -518,6 +600,25 @@ function MenuListe(props) {
               </ListItemIcon>
               <ListItemText id={n.id} onClick={ () => { editOpen('ingredient', n.id) } } primary={n.nom} secondary={`${devise(Number(n.supplement))} €` } />
               <ListItemSecondaryAction>
+                <div className="cont-print">
+                  {tickets.map(tck=>
+                    <FormControlLabel
+                    control={
+                      <Checkbox
+                        icon={<CheckBoxOutlineBlankIcon htmlColor="#7FAD3B" fontSize="small" />}
+                        checkedIcon={<CheckBoxIcon  htmlColor="#7FAD3B" fontSize="small" />}
+                        checked={(n.noprint!=null) ? n.noprint.indexOf(tck.ticket_id)==-1 : cont.noprint.indexOf(tck.ticket_id)==-1}
+                        onClick={(e)=>{ e.stopPropagation();}}
+                        onChange={(e) => { changeNoPrint(n.id, tck.ticket_id, true) }}
+                        name="checkedB"
+                        color="primary"
+                      />
+                    }
+                    label={tck.nom}
+                    key={tck.ticket_id}
+                  />
+                  )}
+                </div>
                 <IOSSwitch
                   edge="end"
                   onChange={(e)=>{changeDispo(n.id)}}
