@@ -890,7 +890,7 @@ function printCommandeTicket(quelstickets, cmd) {
               comment: __comment ? removeDiacritics(__comment.texte) : ''
             });        
           }
-          if (ingredientsAsProducts.length>0) {
+          if (ingredientsAsProducts.length>0 && !__anoprint) {
             articles = [...articles, ...ingredientsAsProducts];
           }
 
@@ -1004,7 +1004,7 @@ function printCommandeTicket(quelstickets, cmd) {
               comment: __comment ? removeDiacritics(__comment.texte) : ''
             });     
           } 
-          if (ingredientsAsProducts.length>0) {
+          if (ingredientsAsProducts.length>0 && !__anoprint) {
             articles = [...articles, ...ingredientsAsProducts];
           }  
 
