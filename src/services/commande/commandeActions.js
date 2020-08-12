@@ -1,6 +1,6 @@
 import { commandeActionTypes } from './commandeActionTypes';
 import { commandeServices } from './commandeServices';
-import { differenceInMilliseconds, sub, differenceInMinutes, isBefore, endOfYesterday, parseISO, format } from 'date-fns';
+import { differenceInMilliseconds, sub, differenceInMinutes, isBefore, endOfYesterday, parseISO, format, formatISO } from 'date-fns';
 import { peripheralActions } from '../peripheral/peripheralActions';
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
@@ -14,10 +14,12 @@ const logger = new Logger();
 
 function getCommandesList(params={}) {
 
+  logger.log('CmdA.getCommandesList()');
+
   return dispatch => {
     dispatch({ type: commandeActionTypes.GET_ALLCOMMANDES_REQUEST });
 
-    return commandeServices.getCommandesList(params)
+    commandeServices.getCommandesList(params)
     .then(
         data => { dispatch({ type: commandeActionTypes.GET_ALLCOMMANDES_SUCCESS, ...data }) }
     )
@@ -111,7 +113,7 @@ function setNewNumero(defaultValue=null) {
 function getCommande(commandeId=null) {
   return (dispatch, getState) => {
     dispatch({ type: commandeActionTypes.GET_COMMANDE_REQUEST, id:commandeId });
-console.trace('getCommande()');
+
     logger.log('CmdA.getCommande()', commandeId);
     // sans id de commande, on crée une nouvelle commande
     if (null===commandeId) {
@@ -263,10 +265,10 @@ function livraisonCommande(payload) {
         // const { caisse } = state.parametresReducer.parametres.options;
         // const commande = commandeServices.getNewCommande({operator:user, caisse:caisse});
         dispatch(peripheralActions.printTicket('all'));
-      //  dispatch(getCommandesList());
         dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande:{}});
         dispatch(notificationActions.syncDispatch('commande',confirm));
         dispatch(getCommande());
+        dispatch(getCommandesList());
       },
       error => {
         logger.log(error);
@@ -486,12 +488,12 @@ function setProductionChrono(payload) {
     const { commandeslist } = getState().commandesListReducer;
     const commande = Object.values(commandeslist).find(cmd => cmd.ticketId==ticketId);
 
-    const careTimeVal = careTime.firstCare;
+    const waitChrono = Math.round(differenceInMilliseconds(careTime.firstCare, parseISO(commande.end))/10)/100;
+    const prodChrono = Math.round(differenceInMilliseconds(endTime, careTime.firstCare)/10)/100;
 
-    const waitChrono = Math.round(differenceInMilliseconds(careTimeVal, commande.end)/10)/100;
-    const prodChrono = Math.round(differenceInMilliseconds(endTime, careTimeVal)/10)/100;
+    Object.keys(careTime).forEach(k=> careTime[k] = formatISO(careTime[k]));
 
-    commandeServices.persistCommande({...commande, prodChrono:prodChrono, waitChrono:waitChrono, care: careTime, finish:endTime})
+    commandeServices.persistCommande({...commande, prodChrono:prodChrono, waitChrono:waitChrono, care: careTime, finish: formatISO(endTime)})
     .then(
       data => {
         dispatch({ type: commandeActionTypes.UPDATE_COMMANDE, payload:{prodChrono:prodChrono, waitChrono:waitChrono, care: careTime, finish:endTime} });
