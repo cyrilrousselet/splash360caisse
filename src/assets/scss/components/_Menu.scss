@@ -124,14 +124,34 @@
     .MuiListItem-secondaryAction {
       padding-right: 70px;
     }
+    .MuiListItemIcon-root {
+      min-width: 40px;
+    }
+    .MuiListItemSecondaryAction-root {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+    .MuiListItemText-root {
+      padding-left: 35px;
+    }
     .asproduct .MuiListItemText-root {
       .MuiTypography-root {
         background-color: transparent; 
       }
       background-image: url('./../../images/ico_produit.svg');
       background-repeat: no-repeat;
-      background-position: calc(100% - 60px) center;
+      background-position: left center;
       background-size: 20px;
+    }
+    .cont-print {
+
+      display: inline-flex;
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: wrap;
+      width: 250px;
+      justify-content: flex-end;
     }
   }
 

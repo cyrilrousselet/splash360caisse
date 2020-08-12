@@ -82,7 +82,7 @@ function updateProduit(payload) {
     // (color, prix, active)
     const filtered_update = {};
     Object.entries(update).forEach(([cle,valeur])=>{
-      if ((['color','prix','active']).indexOf(cle)!=-1) {
+      if ((['color','prix','active','noprint']).indexOf(cle)!=-1) {
         filtered_update[cle] = valeur;
       }
     });
@@ -115,7 +115,7 @@ function updateIngredient(payload) {
     // (color, supplement, active)
     const filtered_update = {};
     Object.entries(update).forEach(([cle,valeur])=>{
-      if ((['color','supplement','active','asproduct']).indexOf(cle)!=-1) {
+      if ((['color','supplement','active','asproduct', 'noprint']).indexOf(cle)!=-1) {
         filtered_update[cle] = valeur;
       }
     });
