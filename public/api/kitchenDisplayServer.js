@@ -396,7 +396,14 @@ async function endOrderV2(order, zoneOrder, ip, socket) {
         // db.push("/finishedOrders", finishedOrders)
 
         // envoi de l'update des temps de prise en charge pour persistance en bdd
-        webContents.send('setProductionChrono', {ticketId: truthOrder.ticket_id, careTime: truthOrder.careTime, endTime: truthOrder.endTime});
+    //    webContents.send('setProductionChrono', {ticketId: truthOrder.ticket_id, careTime: truthOrder.careTime, endTime: truthOrder.endTime});
+
+        let __chrono = {ticketId: truthOrder.ticket_id, careTime: truthOrder.careTime, endTime: truthOrder.endTime, createdAt: __now, updatedAt: __now};
+        const _chr = await (await db.cmdchrono).get('cmdchrono')
+                                               .push(__chrono)
+                                               .write();
+
+
 
 
         const _pord = await (await db.pendingOrders).get('pendingOrders')

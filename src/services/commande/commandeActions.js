@@ -172,7 +172,10 @@ function validateCommande(payload) {
         dispatch(notificationActions.syncDispatch('commande',confirm));
         // dispatch(setNewNumero());
         dispatch(getCommande());
-        dispatch(getCommandesList());
+//        logger.log('commande.createdAt', payload.createdAt);
+        // s'il y a un numéro de commande, c'est qu'on encaisse une commande déjà réglée
+        // donc on met à jour la liste des commande
+        if (payload.createdAt) dispatch(getCommandesList());
       },
       error => {
         logger.log(error);
@@ -268,7 +271,7 @@ function livraisonCommande(payload) {
         dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande:{}});
         dispatch(notificationActions.syncDispatch('commande',confirm));
         dispatch(getCommande());
-        dispatch(getCommandesList());
+        // dispatch(getCommandesList());
       },
       error => {
         logger.log(error);
@@ -482,29 +485,29 @@ function setLivreur(payload) {
   }
 }
 
-function setProductionChrono(payload) {
-  return (dispatch, getState) => {
-    const {ticketId, careTime, endTime} = payload;
-    const { commandeslist } = getState().commandesListReducer;
-    const commande = Object.values(commandeslist).find(cmd => cmd.ticketId==ticketId);
+// function setProductionChrono(payload) {
+//   return (dispatch, getState) => {
+//     const {ticketId, careTime, endTime} = payload;
+//     const { commandeslist } = getState().commandesListReducer;
+//     const commande = Object.values(commandeslist).find(cmd => cmd.ticketId==ticketId);
 
-    const waitChrono = Math.round(differenceInMilliseconds(careTime.firstCare, parseISO(commande.end))/10)/100;
-    const prodChrono = Math.round(differenceInMilliseconds(endTime, careTime.firstCare)/10)/100;
+//     const waitChrono = Math.round(differenceInMilliseconds(careTime.firstCare, parseISO(commande.end))/10)/100;
+//     const prodChrono = Math.round(differenceInMilliseconds(endTime, careTime.firstCare)/10)/100;
 
-    Object.keys(careTime).forEach(k=> careTime[k] = formatISO(careTime[k]));
+//     Object.keys(careTime).forEach(k=> careTime[k] = formatISO(careTime[k]));
 
-    commandeServices.persistCommande({...commande, prodChrono:prodChrono, waitChrono:waitChrono, care: careTime, finish: formatISO(endTime)})
-    .then(
-      data => {
-        dispatch({ type: commandeActionTypes.UPDATE_COMMANDE, payload:{prodChrono:prodChrono, waitChrono:waitChrono, care: careTime, finish:endTime} });
-        dispatch(notificationActions.syncDispatch('commande',{...commande, prodChrono:prodChrono, waitChrono:waitChrono, care: careTime, finish:endTime}));
-        dispatch(getCommandesList())
-      },
-      error => dispatch({ type: commandeActionTypes.UPDATE_COMMANDE_ERROR, error: error})
-    );
+//     commandeServices.persistCommande({...commande, prodChrono:prodChrono, waitChrono:waitChrono, care: careTime, finish: formatISO(endTime)})
+//     .then(
+//       data => {
+//         dispatch({ type: commandeActionTypes.UPDATE_COMMANDE, payload:{prodChrono:prodChrono, waitChrono:waitChrono, care: careTime, finish:endTime} });
+//         dispatch(notificationActions.syncDispatch('commande',{...commande, prodChrono:prodChrono, waitChrono:waitChrono, care: careTime, finish:endTime}));
+//         dispatch(getCommandesList())
+//       },
+//       error => dispatch({ type: commandeActionTypes.UPDATE_COMMANDE_ERROR, error: error})
+//     );
 
-  }
-}
+//   }
+// }
 
 function addReglement(payload) {
   return (dispatch, getState) => {
@@ -849,7 +852,7 @@ export const commandeActions = {
   updateCommande,
   deleteCommande,
   setLivreur,
-  setProductionChrono,
+  // setProductionChrono,
   addReglement,
   removeReglement,
   addRendu,
