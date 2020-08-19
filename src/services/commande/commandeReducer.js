@@ -303,7 +303,7 @@ export function commandeReducer(state = initialState, action) {
           ...state,
           loading: false,
           error: null,
-          commande: action.commande
+      //    commande: action.commande
         };
     
     case commandeActionTypes.GET_NUMERO:
