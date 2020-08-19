@@ -15,7 +15,8 @@ const dbClientsApi = require('./dbClientsApi.js');
 const peripheralApi = require('./peripheralApi.js');
 const server = require('./server.js');
 const sse = require('./sseApi.js');
-const kds = require('./kitchenDisplayServer.js');
+// const kds = require('./kitchenDisplayServer.js');
+const kds = require('./kdsEmitter.js');
 
 
 setupMainHandler(electron, {
