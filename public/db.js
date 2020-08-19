@@ -65,10 +65,10 @@ const db = {
  avoirs: dbFactory('avoirs.json', {avoirs: avoirs}),
  reglescatalogue: dbFactory('reglescatalogue.json', {reglescatalogue: reglescatalogue}),
  reglespanier: dbFactory('reglespanier.json', {reglespanier: reglespanier}),
- pendingOrders: dbFactory('pendingOrders.json',{pendingOrders:[]}),
- finishedOrders: dbFactory('finishedOrders.json',{finishedOrders:[]}),
- caredOrdersSalle: dbFactory('caredOrdersSalle.json',{caredOrdersSalle:[]}),
- cmdchrono: dbFactory('cmdchrono.json',{cmdchrono:[]}),
+//  pendingOrders: dbFactory('pendingOrders.json',{pendingOrders:[]}),
+//  finishedOrders: dbFactory('finishedOrders.json',{finishedOrders:[]}),
+//  caredOrdersSalle: dbFactory('caredOrdersSalle.json',{caredOrdersSalle:[]}),
+//  cmdchrono: dbFactory('cmdchrono.json',{cmdchrono:[]}),
 };
 
 module.exports = db;
