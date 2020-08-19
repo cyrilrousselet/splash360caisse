@@ -404,6 +404,8 @@ class Panier extends React.Component {
         else {
           this.props.closePersonnalisation('Panier.componentDidUpdate()');
         }
+    } else {
+      this.props.closeReglement();
     }
   }
 

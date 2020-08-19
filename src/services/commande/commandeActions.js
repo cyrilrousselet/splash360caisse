@@ -163,15 +163,18 @@ function validateCommande(payload) {
 
     payload.operator_encaissement = {id: user.id, nom: user.nom};
     payload.caisse_encaissement = caisse;
+
+
+    const payloadcopy = {...payload};
+    dispatch(getCommande());
     
-    commandeServices.saveCommande(payload, catalogueReducer)
+    commandeServices.saveCommande(payloadcopy, catalogueReducer)
     .then(
       confirm => {
       //  const commande = commandeServices.getNewCommande({operator:{id: user.id, nom: user.nom}, caisse: caisse});
         dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande:{}});
         dispatch(notificationActions.syncDispatch('commande',confirm));
         // dispatch(setNewNumero());
-        dispatch(getCommande());
 //        logger.log('commande.createdAt', payload.createdAt);
         // s'il y a un numéro de commande, c'est qu'on encaisse une commande déjà réglée
         // donc on met à jour la liste des commande
@@ -260,8 +263,11 @@ function livraisonCommande(payload) {
     if (payload.numero==null) { 
       payload.numero = getState().commandeReducer.commande.numero;
     }
+
+    const payloadcopy = {...payload};
+    dispatch(getCommande());
     
-    commandeServices.saveCommande(payload, state.catalogueReducer)
+    commandeServices.saveCommande(payloadcopy, state.catalogueReducer)
     .then(
       confirm => {
         // const { user } = state.authentication;
@@ -270,7 +276,7 @@ function livraisonCommande(payload) {
         dispatch(peripheralActions.printTicket('all'));
         dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande:{}});
         dispatch(notificationActions.syncDispatch('commande',confirm));
-        dispatch(getCommande());
+        
         // dispatch(getCommandesList());
       },
       error => {

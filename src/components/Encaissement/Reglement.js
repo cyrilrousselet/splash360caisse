@@ -162,7 +162,7 @@ class Reglement extends React.Component {
 
     }
     this.setState({input: false});
-    this.props.closeReglement();
+  //  this.props.closeReglement(); // 20.232.22:25
   }
 
 

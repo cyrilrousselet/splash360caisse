@@ -75,6 +75,7 @@ class Encaissement extends React.Component {
           <SelecteurCont />
           <PanierCont 
             openReglement={ this.openReglement } 
+            closeReglement={ this.closeReglement } 
             openPersonnalisation={ this.openPersonnalisation } 
             closePersonnalisation={ this.closePersonnalisation } 
             allowInput={ !this.state.reglementOpen }

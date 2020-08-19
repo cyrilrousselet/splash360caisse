@@ -2,6 +2,7 @@
 const cors = require('cors');
 const {net} = require('electron');
 const log = require('electron-log');
+const e = require('express');
 
 
 const KDS_PORT = 3330;
@@ -40,6 +41,10 @@ const actions = {
     //     res.send({confirm: true});
       });
     });
+
+    __request.on('error', (error) => {
+      log.error(error);
+    })
 
     __request.end();
   }
