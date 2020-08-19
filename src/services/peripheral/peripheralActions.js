@@ -401,6 +401,7 @@ function printCommandeTicket(quelstickets, cmd) {
     const withKds = ticketsProd.find(i=>i.kds);
     if (withKds) {
 
+      const kds_url = peripheriques.kdsurl || 'http://localhost';
       const clt = cmd.client ? clients.find(c=>c.client_id===cmd.client.client_id) : null;
 
       let kdsCmd = {
@@ -511,7 +512,7 @@ function printCommandeTicket(quelstickets, cmd) {
 
       });
 
-      peripheralServices.setCommandeToKDS(kdsCmd);
+      peripheralServices.setCommandeToKDS(kdsCmd, kds_url);
 
     }
 

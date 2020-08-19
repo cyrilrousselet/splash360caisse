@@ -57,6 +57,6 @@ function getAllTickets() {
   return emit('dbParametresGetallTickets',{});
 }
 
-function setCommandeToKDS(commande) {
-  return emit('setOrderToKDS', {order:commande});
+function setCommandeToKDS(commande, url) {
+  return emit('setOrderToKDS', {order:commande, url:url});
 }

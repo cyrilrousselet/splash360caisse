@@ -8,7 +8,7 @@ const isDev = require('electron-is-dev');
 const api = require('./api/index.js');
 const server = require('./api/server.js');
 const sse = require('./api/sseApi.js');
-const kds = require('./api/kitchenDisplayServer.js');
+// const kds = require('./api/kitchenDisplayServer.js');
 
 let mainWindow;
 let db_users;
@@ -52,7 +52,7 @@ function createWindow() {
 
     server.init(mainWindow.webContents);
     sse.init(mainWindow.webContents);
-    kds.init(mainWindow.webContents);
+    // kds.init(mainWindow.webContents);
 
 }
 
