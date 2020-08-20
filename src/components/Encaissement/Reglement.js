@@ -137,7 +137,7 @@ class Reglement extends React.Component {
     const { reste, rendu } = this.updateValeurs();
     const { trlist } = this.state;
     console.log(reste, rendu);
-    let closeReglementAtEnd = false;
+    let closeReglementAtEnd = true;
     if (reste==0) {
       if (this.props.commande.status=='pending') {
         this.props.commande.end = new Date();
@@ -150,8 +150,8 @@ class Reglement extends React.Component {
       if (this.props.commande.status=='a_encaisser') {
         this.props.printTicket({templates:['commande']});
         this.props.commande.status = 'confirmed';
-        closeReglementAtEnd = true;
       } else {
+        closeReglementAtEnd = false;
         this.props.commande.status = 'confirmed';
         // on imprime tous les tickets (sauf si on modifie juste les réglements)
         if (!modif) this.props.printTicket('all');
