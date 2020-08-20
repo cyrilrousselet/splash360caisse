@@ -266,6 +266,7 @@ function livraisonCommande(payload) {
     }
 
     const payloadcopy = {...payload};
+    dispatch(peripheralActions.printTicket('all'));
     dispatch(getCommande());
     
     commandeServices.saveCommande(payloadcopy, state.catalogueReducer)
@@ -274,7 +275,6 @@ function livraisonCommande(payload) {
         // const { user } = state.authentication;
         // const { caisse } = state.parametresReducer.parametres.options;
         // const commande = commandeServices.getNewCommande({operator:user, caisse:caisse});
-        dispatch(peripheralActions.printTicket('all'));
         dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande:{}});
         dispatch(notificationActions.syncDispatch('commande',confirm));
         
