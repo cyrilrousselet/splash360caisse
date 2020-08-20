@@ -284,12 +284,12 @@ export function commandeReducer(state = initialState, action) {
         }
       }
 
-    case commandeActionTypes.VALIDATE_COMMANDE_REQUEST:
-        return {
-          ...state,
-          loading: true,
-          error: null
-        };
+    // case commandeActionTypes.VALIDATE_COMMANDE_REQUEST:
+    //     return {
+    //       ...state,
+    //       loading: true,
+    //       error: null
+    //     };
 
     case commandeActionTypes.VALIDATE_COMMANDE_FAILURE:
         return {

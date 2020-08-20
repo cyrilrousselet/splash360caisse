@@ -8,6 +8,7 @@ import Logger from '../../helpers/Logger';
 import { notificationActions } from '../notification/notificationActions';
 import { notificationServices } from '../notification/notificationServices';
 import { differenceBy } from 'lodash';
+import ErrorBoundary from '../../components/common/ErrorBoundary';
 
 const logger = new Logger();
 
@@ -182,7 +183,7 @@ function validateCommande(payload) {
       },
       error => {
         logger.log(error);
-        dispatch({ type:commandeActionTypes.VALIDATE_COMMANDE_FAILURE, error: error.toString() })
+        dispatch({ type:commandeActionTypes.VALIDATE_COMMANDE_FAILURE, error: error })
       }
     );
     
@@ -281,7 +282,7 @@ function livraisonCommande(payload) {
       },
       error => {
         logger.log(error);
-        dispatch({ type:commandeActionTypes.VALIDATE_COMMANDE_FAILURE, error: error.toString() })
+        dispatch({ type:commandeActionTypes.VALIDATE_COMMANDE_FAILURE, error: error })
       }
     );
     
