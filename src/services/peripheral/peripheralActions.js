@@ -347,7 +347,7 @@ function printCommandeTicket(quelstickets, cmd) {
     const catalogue = state.catalogueReducer.catalogue;
     const tva = state.catalogueReducer.tva;
     const { imprimantes, tickets } = state.peripheralReducer;
-    const { peripheriques, entreprise } = state.parametresReducer.parametres;
+    const { peripheriques, entreprise, options } = state.parametresReducer.parametres;
     const { impression } = peripheriques;
     const { clients } = state.clientsReducer;
 
@@ -401,7 +401,7 @@ function printCommandeTicket(quelstickets, cmd) {
     const withKds = ticketsProd.find(i=>i.kds);
     if (withKds) {
 
-      const kds_url = peripheriques.kdsurl || 'http://localhost';
+      const kds_url = options.role==='secondary' ? (peripheriques.kdsurl || options.primary) : (peripheriques.kdsurl || 'http://localhost');
       const clt = cmd.client ? clients.find(c=>c.client_id===cmd.client.client_id) : null;
 
       let kdsCmd = {

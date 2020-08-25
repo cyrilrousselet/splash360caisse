@@ -1,17 +1,29 @@
 const db = require('../db.js');
 const lodashId = require('lodash-id');
 const log = require('electron-log');
+const isAfter = require('date-fns/isAfter');
 
 
 const actions = {
   dbCommandeGetAll: async (req,res) => {
     const {payload} = req;
-    log.info("dbCommandeGetAll() in API");
+    log.info("dbCommandeGetAll() in API", req);
     
+    let proxies = {};
+
     (await db.commandes)._.mixin(lodashId);
-    const proxies = await _getAll();
+    if (Object.entries(payload).length>0) {
+      proxies = await _getCommandes(payload);
+    } else {
+      proxies = await _getAll();
+    }
       
   //  log.info(proxies);
+    res.send(proxies);
+  },
+  dbCommandeGetToSync: async (req,res) => {
+    (await db.commandes)._.mixin(lodashId);
+    const proxies = await _getCommandesToSync();
     res.send(proxies);
   },
   dbCommandeGetCommande: async (req,res) => {
@@ -115,6 +127,52 @@ async function _getAll() {
   return _parseCommandes(__rawdata);
 }
 
+async function _getCommandesToSync() {
+  const _cmd = await (await db.commandes).get('commandes')
+                                         .filter(c => {
+                                           let toadd = true;
+                                           if (c.hasOwnProperty('sync')==true) {
+                                             if (isAfter(new Date(c.sync), new Date(c.updatedAt))) {
+                                               toadd = false;
+                                             }
+                                           }
+                                           if (c.status!=="confirmed" && c.status!=="deleted") toadd = false;
+                                           return toadd;
+                                         })
+                                         .value();
+
+  let _chr = [];
+  _cmd.forEach(async c=>{
+    const __ch = await (await db.cmdchrono).get('cmdchrono')
+                                           .find({ticketId:c.ticketId})
+                                           .value();
+    if (__ch) _chr.push(__ch);
+  });
+  return {commandes:_cmd, chronos:_chr};
+}
+
+async function _getCommandes(criteriae={}) {
+
+  log.info('CmdAPI._getCommandes()', criteriae);
+  let _cmd = [];
+
+  const critobj = Object.entries(criteriae);
+  // si le critère a pour valeur null : test de la présence de la propriété
+  if (critobj[0][1]===null) {
+    log.info('recherche de commande sans la prop',critobj[0][0]);
+
+    _cmd = await (await db.commandes).get('commandes')
+                                    .filter(c=>c.hasOwnProperty(critobj[0][0])==false)
+                                    .value();
+  }
+  else {
+
+    _cmd = await (await db.commandes).get('commandes')
+                                    .find(criteriae)
+                                    .value();
+  }
+  return _cmd;
+}
 
 /**
  * Get commandes data from DB

@@ -23,7 +23,8 @@ export const notificationServices = {
   syncConfirm,
   sendNumero,
   askNumero,
-  getDatabase
+  getDatabase,
+  syncCommandes
  };
 
 
@@ -36,6 +37,17 @@ async function getDatabase(params) {
   if (__splashToken.splash_token.access_token) {
     var __url = externalParams.synchro.getdb;
     return emit('getDatabase', {url: __url, access_token: __splashToken.splash_token.access_token});
+  }
+}
+
+async function syncCommandes(params) {
+  const __splashToken = await getSplashToken(params);
+
+  console.log(__splashToken);
+
+  if (__splashToken.splash_token.access_token) {
+    var __url = externalParams.synchro.syncCommandes;
+    return emit('syncCommandesBO', {url: __url, access_token: __splashToken.splash_token.access_token, commandes: params.commandes});
   }
 }
 
