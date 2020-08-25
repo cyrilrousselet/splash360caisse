@@ -261,7 +261,38 @@ const actions = {
 
     __request.end();
 
+  },
+
+  syncCommandesBO: (req,res) => {
+    const { url, access_token, commandes } = req.payload;
+
+    let __syncedCommandes = [];
+
+    const __request = net.request({
+      url: url,
+      method: 'post'
+    });
+    __request.setHeader('Authorization','Bearer '+access_token)
+    __request.setHeader('Access-Control-Allow-Origin', '*')
+    __request.setHeader('Content-Type', 'application/json');
+
+    __request.write(JSON.stringify(commandes));
+
+    __request.on('response', (response) => {
+      response.on('data', (chunk) => {
+        __syncedCommandes.push(chunk);
+        log.info(`syncCommandesBO BODY: ${chunk}`)
+      });
+      response.on('end', () => {
+        log.info('syncCommandesBO: end');
+        res.send({syncedCommandes: JSON.parse(__syncedCommandes.join(''))});
+        // res.send({confirm: true});
+      });
+    });
+
   }
+
+
 }
 
 

@@ -5,7 +5,7 @@ import { commandeActions } from '../commande/commandeActions';
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import Swal from 'sweetalert2';
-import { format } from 'date-fns';
+import { format, differenceInMilliseconds, parseISO } from 'date-fns';
 // import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import Logger from '../../helpers/Logger';
@@ -15,6 +15,7 @@ import { catalogueActions } from '../catalogue/catalogueActions';
 import { parametresActions } from '../parametres/parametresActions';
 import { parametresActionTypes } from '../parametres/parametresActionTypes';
 import { peripheralActions } from '../peripheral/peripheralActions';
+import { commandeServices } from '../commande/commandeServices';
 const strings = new LocalizedStrings(data);
 const logger = new Logger();
 
@@ -265,6 +266,52 @@ function getDatabase() {
   }
 }
 
+function initSyncCommandes() {
+  return (dispatch, getState) => {
+    commandeServices.getCommandesToSync()
+    .then(
+      results => {
+        const {commandes, chronos} = results;
+        logger.log('initSyncCommandes', commandes.length);
+        if (commandes.length>0) {
+          const chrcommandes = commandes.map(c => {
+            const chr = chronos.find(h=>h.ticketId==c.ticketId);
+            if (chr!==undefined) {
+              return {...c,
+                      endTime: chr.endTime,
+                      careTime: chr.careTime.firstCare,
+                      productionTime: Math.round(differenceInMilliseconds(chr.endTime, chr.careTime.firstCare)/10)/100,
+                      waitTime: Math.round(differenceInMilliseconds(chr.careTime.firstCare, parseISO(c.end))/10)/100,
+                    };
+            } else {
+              return c;
+            }
+          });
+
+          logger.log('preparation des commandes à envoyer au backo');
+          dispatch(syncCommandes(chrcommandes));
+        }
+      }
+    )
+  }
+}
+
+function syncCommandes(commandes) {
+  return (dispatch, getState) => {
+
+    const { entreprise } = getState().parametresReducer.parametres; 
+    notificationServices.syncCommandes({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret, commandes:commandes})
+    .then(
+      syncedCommandes => {
+        
+      },
+      error => {
+        logger.error(error);
+      }
+    )
+  }
+}
+
 export const notificationActions = {
   initSSE,
   setPOS,
@@ -276,5 +323,7 @@ export const notificationActions = {
   syncConfirm,
   sendNumero,
   getNewNumero,
-  getDatabase
+  getDatabase,
+  initSyncCommandes,
+  syncCommandes
 };

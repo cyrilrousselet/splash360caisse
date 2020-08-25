@@ -33,6 +33,7 @@ export const commandeServices = {
   setCommandeFromSync,
   setCommandeFromAPI,
   sendTicketId,
+  getCommandesToSync,
   getAllTicketsRestaurant,
   persistTicketsRestaurants
  };
@@ -1116,7 +1117,24 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
       } else {
         steps = [];
       }
-      
+
+      // récupérations des ingrédients de la composition à partir de la valeur de la propriété 'composition'
+      let complist = [];
+      if (prd.composition && !Array.isArray(prd.composition)) {
+
+        complist = Object.entries(prd.composition).map(([ingid,qte])=> {
+          const c_ing = catalogueReducer.ingredients[ingid];
+          return {
+            ingredient: ingid, 
+            type: c_ing.type, 
+            qte: qte, 
+            prix: Number(c_ing.supplement), 
+            nom: c_ing.nom, 
+            fromStep:null
+          };
+        });
+        
+      }
 
       // création de l'item (produit dans la commande)
       const item = {
@@ -1125,8 +1143,8 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
         prix: itm.quantite*Number(prd.prix),
         pu: Number(prd.prix),
         tva: {...catalogueReducer.tva[prd.tva_id]},
-        composition: prd.composition,
-        ingredients: [...prd.composition],
+        composition: complist,
+        ingredients: [...complist],
         steps: steps_list,
         stepslength: steps.length,
         quantite: itm.quantite,
@@ -1171,7 +1189,9 @@ function sendTicketId(ticketId, numero, response) {
   return emit('sendTicketId', {ticketId, numero, response});
 }
 
-
+function getCommandesToSync() {
+  return emit('dbCommandeGetToSync');
+}
 
 
 

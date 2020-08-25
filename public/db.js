@@ -68,7 +68,7 @@ const db = {
 //  pendingOrders: dbFactory('pendingOrders.json',{pendingOrders:[]}),
 //  finishedOrders: dbFactory('finishedOrders.json',{finishedOrders:[]}),
 //  caredOrdersSalle: dbFactory('caredOrdersSalle.json',{caredOrdersSalle:[]}),
-//  cmdchrono: dbFactory('cmdchrono.json',{cmdchrono:[]}),
+ cmdchrono: dbFactory('cmdchrono.json',{cmdchrono:[]}),
 };
 
 module.exports = db;

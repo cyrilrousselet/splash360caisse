@@ -48,6 +48,7 @@ const mapDispatchToProps = (dispatch) => {
     setPOS: notificationActions.setPOS,
     initSync: notificationActions.initSync,
     getDatabase: notificationActions.getDatabase,
+    initSyncCommandes: notificationActions.initSyncCommandes,
     quitApp: peripheralActions.quitApp
   }, dispatch);
   return {

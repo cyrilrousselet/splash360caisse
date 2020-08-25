@@ -15,20 +15,34 @@ class MainLoader extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      first_start: false,
+      paramLoaded: false,
+      sseInit: false,
+      catLoaded: false,
+      cmdLoaded: false,
+      cloLoaded: false
+    };
   }
 
   componentDidMount() {
 
     logger.log('MainLoader.componentDidMount()');
     
+    const {paramLoaded} = this.props;
       // this.props.getParametres();
       // this.props.getCommandesList();
       // this.props.getCatalogue();
       // this.props.getCurrentPeriode();
       // this.props.getCloturesList();
+
+    if (!paramLoaded) {
+      this.props.getParametres();
+    }
   }
 
-  render() {
+  componentDidUpdate(prevProps, prevState) {
+    logger.log('MainLoader.componentDidUpdate()');
     const { paramLoaded, paramLoading, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, cloLoading, sseInit, params, dbupdated } = this.props;
 
     let first_start = params ? params.first_start : null;
@@ -38,6 +52,30 @@ class MainLoader extends React.Component {
 
     if (!paramLoaded) {
       this.props.getParametres();
+    }
+    // logger.log('paramLoaded', paramLoaded);
+    // logger.log('first_start', first_start);
+    // logger.log('sseInit', sseInit);
+    // logger.log('catLoaded', catLoaded);
+    // logger.log('cmdLoaded', cmdLoaded);
+    // logger.log('cloLoaded', cloLoaded);
+    if (paramLoaded && prevProps.paramLoaded!==paramLoaded) {
+      this.setState({paramLoaded: paramLoaded});
+    }
+    if (first_start && prevProps.first_start!==first_start) {
+      this.setState({first_start: first_start});
+    }
+    if (sseInit && prevProps.sseInit!==sseInit) {
+      this.setState({sseInit: sseInit});
+    }
+    if (catLoaded && prevProps.catLoaded!==catLoaded) {
+      this.setState({catLoaded: catLoaded});
+    }
+    if (cmdLoaded && prevProps.cmdLoaded!==cmdLoaded) {
+      this.setState({cmdLoaded: cmdLoaded});
+    }
+    if (cloLoaded && prevProps.cloLoaded!==cloLoaded) {
+      this.setState({cloLoaded: cloLoaded});
     }
     if (paramLoaded && !sseInit) {
       first_start = params.first_start;
@@ -76,10 +114,18 @@ class MainLoader extends React.Component {
           });
 
         } else if (readytolauch===null) {
+       //   this.props.initSyncCommandes();
           this.props.loadingComplete();
         }
       }
     }
+  }
+
+  render() {
+    const { paramLoaded, catLoaded, cmdLoaded, cloLoaded, sseInit, params } = this.state;
+
+    let first_start = params ? params.first_start : null;
+
     return (      
       <div>
         <LoadingSpinner className="MainLoader-loading" />
