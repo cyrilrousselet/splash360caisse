@@ -278,13 +278,15 @@ function initSyncCommandes() {
       .then(
         results => {
           const {commandes, chronos} = results;
+
+          logger.log('initSyncCommandes chronos', chronos);
           logger.log('initSyncCommandes', commandes.length);
           if (commandes.length>0) {
 
             logger.log('preparation des commandes à envoyer au backo');
 
             const chrcommandes = commandes.map(c => {
-              const chr = chronos.find(h=>h.ticketId==c.ticketId);
+              const chr = chronos ? chronos.find(h=>h.ticketId==c.ticketId) : undefined;
               if (chr!==undefined) {
                 return {...c,
                         chrono: c.chrono || 0,
