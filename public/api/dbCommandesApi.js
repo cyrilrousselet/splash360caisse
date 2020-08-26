@@ -52,6 +52,15 @@ const actions = {
 
     res.send(confirm);
   },
+  dbCommandeSetSynced: async (req,res) => {
+    const { payload } = req;
+    log.info('dbCommandeSetSynced(['+payload.ids+'],'+payload.datetime+') in API');
+
+    (await db.commandes)._.mixin(lodashId);
+    const confirm = await _setSynced(payload.ids, payload.datetime);
+
+    res.send(confirm);
+  },
   dbCommandeDelete: async (req,res) => {
     const {payload} = req;
     log.info("dbCommandeDelete() in API");
@@ -141,14 +150,13 @@ async function _getCommandesToSync() {
                                          })
                                          .value();
 
-  let _chr = [];
-  _cmd.forEach(async c=>{
-    const __ch = await (await db.cmdchrono).get('cmdchrono')
-                                           .find({ticketId:c.ticketId})
-                                           .value();
-    if (__ch) _chr.push(__ch);
-  });
-  return {commandes:_cmd, chronos:_chr};
+  const ids = _cmd.map(c => c.ticketId);
+
+  const _chr = await (await db.cmdchrono).get('cmdchrono')
+                                          .find(c => ids.includes(c.ticketId))
+                                          .value();
+  
+  return {commandes:_cmd, chronos:(_chr && !Array.isArray(_chr))?[_chr]:_chr};
 }
 
 async function _getCommandes(criteriae={}) {
@@ -255,6 +263,19 @@ async function _setArchived(ids, clotureId) {
   return _cmd != null;
 }
 
+async function _setSynced(ids, datetime) {
+
+  const __datetime = new Date(datetime).getTime();
+
+  log.info('datetime', __datetime);
+
+  let _cmd = await (await db.commandes).get('commandes')
+                                       .find(c => ids.includes(c.id))
+                                       .assign({sync: __datetime, updatedAt: __datetime})
+                                       .write();
+  // let _cmd = 1;
+  return _cmd != null;
+}
 
 
 /**

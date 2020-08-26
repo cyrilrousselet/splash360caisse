@@ -114,7 +114,7 @@ class MainLoader extends React.Component {
           });
 
         } else if (readytolauch===null) {
-       //   this.props.initSyncCommandes();
+          this.props.initSyncCommandes();
           this.props.loadingComplete();
         }
       }

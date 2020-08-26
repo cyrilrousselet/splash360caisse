@@ -254,9 +254,9 @@ class Statistiques extends React.Component {
 
       
 
-      // par mode
       if (value.status=='confirmed') {
-
+        
+        // par mode
         if (!mode.hasOwnProperty(value.mode)) { mode[value.mode] = 0; }
         mode[value.mode] += Number(value.total);
       

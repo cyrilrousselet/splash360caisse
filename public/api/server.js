@@ -44,7 +44,8 @@ const SYNCHRO_TREATMENT = {
   'produit': 'setProduitSync',
   'groupe': 'setGroupeSync',
   'ingredient': 'setIngredientSync',
-  'type': 'setIngredientTypeSync'
+  'type': 'setIngredientTypeSync',
+  'setsyncedcommandes': 'setSynchedCommandesSync'
 }
 
 const allowedOrigins = [

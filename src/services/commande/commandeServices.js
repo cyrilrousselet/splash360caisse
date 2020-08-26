@@ -23,6 +23,7 @@ export const commandeServices = {
   persistCommande,
   deleteCommande,
   archiveCommands,
+  setSyncedCommands,
   addIngredient,
   removeIngredient,
   noIngredientForStep,
@@ -959,6 +960,9 @@ function persistCommande(commande) {
 function archiveCommands(commandesid, clotureId) {
   return emit('dbCommandeArchive', {ids:commandesid, clotureId:clotureId});
 }
+function setSyncedCommands(commandesid, datetime) {
+  return emit('dbCommandeSetSynced', {ids:commandesid, datetime:datetime});
+}
 
 
 function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
@@ -1144,7 +1148,7 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
         pu: Number(prd.prix),
         tva: {...catalogueReducer.tva[prd.tva_id]},
         composition: complist,
-        ingredients: [...complist],
+        ingredients: [],
         steps: steps_list,
         stepslength: steps.length,
         quantite: itm.quantite,
