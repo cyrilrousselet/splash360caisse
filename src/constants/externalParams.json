@@ -22,8 +22,8 @@
     }
   },
   "synchro": {
-    "oAuth": "http://api.splash360.local/oauth/v2/token?client_id=%ID%&client_secret=%PWD%&grant_type=client_credentials",
-    "getdb": "http://api.splash360.local/api/export/database",
-    "syncCommandes": "http://api.splash360.local/api/import/commandes"
+    "oAuth": "https://api.splash360.fr/oauth/v2/token?client_id=%ID%&client_secret=%PWD%&grant_type=client_credentials",
+    "getdb": "https://api.splash360.fr/api/export/database",
+    "syncCommandes": "https://api.splash360.fr/api/import/commandes"
   }
 }
