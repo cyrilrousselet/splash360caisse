@@ -287,6 +287,7 @@ function initSyncCommandes() {
               const chr = chronos.find(h=>h.ticketId==c.ticketId);
               if (chr!==undefined) {
                 return {...c,
+                        chrono: c.chrono || 0,
                         createdAt: formatISO(c.createdAt),
                         updatedAt: formatISO(c.updatedAt),
                         endTime: formatISO(chr.endTime),
@@ -296,6 +297,7 @@ function initSyncCommandes() {
                       };
               } else {
                 return {...c,
+                  chrono: c.chrono || 0,
                   createdAt: formatISO(c.createdAt),
                   updatedAt: formatISO(c.updatedAt)
                 };

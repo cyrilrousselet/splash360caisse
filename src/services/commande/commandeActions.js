@@ -178,6 +178,7 @@ function validateCommande(payload) {
 
         const cmdtosync = {
           ...confirm,
+          chrono: confirm.chrono || 0,
           createdAt: formatISO(confirm.createdAt),
           updatedAt: formatISO(confirm.updatedAt)
         };
@@ -472,6 +473,7 @@ function deleteCommande(payload) {
           
           const cmdtosync = {
             ...data,
+            chrono: data.chrono || 0,
             createdAt: formatISO(data.createdAt),
             updatedAt: formatISO(data.updatedAt)
           };
@@ -704,6 +706,7 @@ function setCommandeFromOrder(provider, payload) {
 
         const cmdtosync = {
           ...confirm,
+          chrono: confirm.chrono || 0,
           createdAt: formatISO(confirm.createdAt),
           updatedAt: formatISO(confirm.updatedAt)
         };
@@ -757,6 +760,7 @@ function setCommandeFromAPI(payload) {
 
         const cmdtosync = {
           ...confirm,
+          chrono: confirm.chrono || 0,
           createdAt: formatISO(confirm.createdAt),
           updatedAt: formatISO(confirm.updatedAt)
         };
@@ -824,6 +828,7 @@ function setCommandeFromSync(commande) {
 
             const cmdtosync = {
               ...confirm,
+              chrono: confirm.chrono || 0,
               createdAt: formatISO(confirm.createdAt),
               updatedAt: formatISO(confirm.updatedAt)
             };
