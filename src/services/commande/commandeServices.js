@@ -998,6 +998,24 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
       }
       
 
+      // récupérations des ingrédients de la composition à partir de la valeur de la propriété 'composition'
+      let complist = [];
+      if (prd.composition && !Array.isArray(prd.composition)) {
+
+        complist = Object.entries(prd.composition).map(([ingid,qte])=> {
+          const c_ing = catalogueReducer.ingredients[ingid];
+          return {
+            ingredient: ingid, 
+            type: c_ing.type, 
+            qte: qte, 
+            prix: Number(c_ing.supplement), 
+            nom: c_ing.nom, 
+            fromStep:null
+          };
+        });
+        
+      }
+
       // création de l'item (produit dans la commande)
       const item = {
         produitid: itm.id,
@@ -1006,8 +1024,8 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
         prix: itm.quantity*Number(itm.price.unit_price.amount/100),
         pu: Number(itm.price.unit_price.amount/100),
         tva: {...catalogueReducer.tva[prd.tva_id]},
-        composition: prd.composition,
-        ingredients: [...prd.composition],
+        composition: complist,
+        ingredients: [],
         steps: steps_list,
         stepslength: steps.length,
         quantite: itm.quantity,
@@ -1053,6 +1071,7 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
         });
       });
 
+      item.ingredients = _ventilationIngredientsSteps(itm, catalogueReducer.steps[itm.id])
       item.prix = Number(itm.price.total_price.amount/100);
       commande.items.push(item);
     }
@@ -1170,10 +1189,20 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
             return __istype;
           });
 
-          item.ingredients.push({ingredient: ing.ingredient, type: ingredient.type, qte: ing.qte, prix: Number(ingredient.supplement), nom: ingredient.nom, fromStep:ingredient_step.step_id});
+          item.ingredients.push({
+            ingredient: ing.ingredient, 
+            type: ingredient.type, 
+            qte: ing.qte, 
+            prix: Number(ingredient.supplement), 
+            supplement: Number(ingredient.supplement), 
+            nom: ingredient.nom, 
+            fromStep:ingredient_step.step_id
+          });
         }
 
       });
+
+      item.ingredients = _ventilationIngredientsSteps(itm, catalogueReducer.steps[itm.id]);
 
       item.prix = _getPrix(item, steps)    
       commande.items.push(item);
