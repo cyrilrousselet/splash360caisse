@@ -79,6 +79,13 @@ ipcRenderer.on('archiveCommandesSync', (event, commandes) => {
   commandeActions.archiveCommandesFromSync(commandes)(store.dispatch, store.getState);
 });
 
+
+ipcRenderer.on('setSynchedCommandesSync', (event, commandes) => {
+  logger.log('renderer: setSynchedCommandesSync', commandes);
+  commandeActions.setSyncedCommandsFromSync(commandes)(store.dispatch, store.getState);
+});
+
+
 ipcRenderer.on('setClientSync', (event, client) => {
   logger.log('renderer: setClientSync', client);
   clientsActions.setClientFromSync(client)(store.dispatch, store.getState);

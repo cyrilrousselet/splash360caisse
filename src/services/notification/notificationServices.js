@@ -32,7 +32,7 @@ async function getDatabase(params) {
 
   const __splashToken = await getSplashToken(params);
 
-  console.log(__splashToken);
+  console.log('notifSrv.getDatabase()',__splashToken);
 
   if (__splashToken.splash_token.access_token) {
     var __url = externalParams.synchro.getdb;
@@ -43,7 +43,7 @@ async function getDatabase(params) {
 async function syncCommandes(params) {
   const __splashToken = await getSplashToken(params);
 
-  console.log(__splashToken);
+  console.log('notifSrv.syncCommandes()',__splashToken);
 
   if (__splashToken.splash_token.access_token) {
     var __url = externalParams.synchro.syncCommandes;

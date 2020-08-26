@@ -5,7 +5,7 @@ import { commandeActions } from '../commande/commandeActions';
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import Swal from 'sweetalert2';
-import { format, differenceInMilliseconds, parseISO } from 'date-fns';
+import { format, formatISO, differenceInMilliseconds, parseISO } from 'date-fns';
 // import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import Logger from '../../helpers/Logger';
@@ -79,7 +79,7 @@ function initSync() {
 function syncDispatch(db,data,emitter=null) {
   return (dispatch, getState) => {
     const { options } = getState().parametresReducer.parametres;
-    console.log('NAct.syncDispatch()');
+    console.log('NAct.syncDispatch()', db, data);
     if (options.role==='primary') {
       notificationServices.syncDispatch(db, data, emitter)
       .then(result => {
@@ -268,47 +268,71 @@ function getDatabase() {
 
 function initSyncCommandes() {
   return (dispatch, getState) => {
-    commandeServices.getCommandesToSync()
-    .then(
-      results => {
-        const {commandes, chronos} = results;
-        logger.log('initSyncCommandes', commandes.length);
-        if (commandes.length>0) {
-          const chrcommandes = commandes.map(c => {
-            const chr = chronos.find(h=>h.ticketId==c.ticketId);
-            if (chr!==undefined) {
-              return {...c,
-                      endTime: chr.endTime,
-                      careTime: chr.careTime.firstCare,
-                      productionTime: Math.round(differenceInMilliseconds(chr.endTime, chr.careTime.firstCare)/10)/100,
-                      waitTime: Math.round(differenceInMilliseconds(chr.careTime.firstCare, parseISO(c.end))/10)/100,
-                    };
-            } else {
-              return c;
-            }
-          });
 
-          logger.log('preparation des commandes à envoyer au backo');
-          dispatch(syncCommandes(chrcommandes));
+
+    const { options } = getState().parametresReducer.parametres;
+
+    if (options.role!=="secondary") {
+      
+      commandeServices.getCommandesToSync()
+      .then(
+        results => {
+          const {commandes, chronos} = results;
+          logger.log('initSyncCommandes', commandes.length);
+          if (commandes.length>0) {
+
+            logger.log('preparation des commandes à envoyer au backo');
+
+            const chrcommandes = commandes.map(c => {
+              const chr = chronos.find(h=>h.ticketId==c.ticketId);
+              if (chr!==undefined) {
+                return {...c,
+                        createdAt: formatISO(c.createdAt),
+                        updatedAt: formatISO(c.updatedAt),
+                        endTime: formatISO(chr.endTime),
+                        careTime: formatISO(chr.careTime.firstCare),
+                        productionTime: Math.round(differenceInMilliseconds(chr.endTime, chr.careTime.firstCare)/10)/100,
+                        waitTime: Math.round(differenceInMilliseconds(chr.careTime.firstCare, parseISO(c.end))/10)/100,
+                      };
+              } else {
+                return {...c,
+                  createdAt: formatISO(c.createdAt),
+                  updatedAt: formatISO(c.updatedAt)
+                };
+              }
+            });
+
+            dispatch(syncCommandes(chrcommandes));
+          }
         }
-      }
-    )
-  }
+      )
+    } else {
+      logger.log('role secondary : pas de synchro commandes');
+    }
+  };
 }
 
 function syncCommandes(commandes) {
   return (dispatch, getState) => {
 
     const { entreprise } = getState().parametresReducer.parametres; 
-    notificationServices.syncCommandes({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret, commandes:commandes})
-    .then(
-      syncedCommandes => {
-        
-      },
-      error => {
-        logger.error(error);
-      }
-    )
+
+    const { options } = getState().parametresReducer.parametres;
+
+    if (options.role!=="secondary") {
+
+      notificationServices.syncCommandes({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret, commandes:commandes})
+      .then(
+        response => {
+          dispatch(commandeActions.setSyncedCommands(response.confirm))
+        },
+        error => {
+          logger.error(error);
+        }
+      )
+    } else {
+      logger.log('role secondary : pas de synchro commandes');
+    }
   }
 }
 

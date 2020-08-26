@@ -175,6 +175,14 @@ function validateCommande(payload) {
       //  const commande = commandeServices.getNewCommande({operator:{id: user.id, nom: user.nom}, caisse: caisse});
         dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande:{}});
         dispatch(notificationActions.syncDispatch('commande',confirm));
+
+        const cmdtosync = {
+          ...confirm,
+          createdAt: formatISO(confirm.createdAt),
+          updatedAt: formatISO(confirm.updatedAt)
+        };
+
+        dispatch(notificationActions.syncCommandes([cmdtosync]));
         // dispatch(setNewNumero());
 //        logger.log('commande.createdAt', payload.createdAt);
         // s'il y a un numéro de commande, c'est qu'on encaisse une commande déjà réglée
@@ -461,6 +469,15 @@ function deleteCommande(payload) {
         data => {
           dispatch({ type: commandeActionTypes.DELETE_COMMANDE_SUCCESS, ...data });
           dispatch(notificationActions.syncDispatch('commande', data));
+          
+          const cmdtosync = {
+            ...data,
+            createdAt: formatISO(data.createdAt),
+            updatedAt: formatISO(data.updatedAt)
+          };
+  
+          dispatch(notificationActions.syncCommandes([cmdtosync]));
+
           dispatch(getCommandesList());
         },
         error => dispatch({ type: commandeActionTypes.DELETE_COMMANDE_FAILURE, error: error })
@@ -621,6 +638,26 @@ function archiveCommands(payload) {
 }
 
 
+function setSyncedCommands(payload) {
+  return dispatch => {
+    dispatch({ type: commandeActionTypes.SETSYNCED_REQUEST });
+    logger.log('setSyncedCommands()', payload);
+    const {id, datetime} = payload;
+    commandeServices.setSyncedCommands(id,datetime)
+    .then(
+      confirm => {
+        dispatch({ type: commandeActionTypes.SETSYNCED_SUCCESS });
+        dispatch(notificationActions.syncDispatch('setsyncedcommandes', {id, datetime}));
+      },
+      error => {
+        dispatch({ type: commandeActionTypes.SETSYNCED_FAILURE, error: error });
+      }
+    );
+
+  }
+}
+
+
 function setCommandeFromOrder(provider, payload) {
   return (dispatch, getState) => {
 
@@ -664,6 +701,14 @@ function setCommandeFromOrder(provider, payload) {
         dispatch(notificationActions.syncDispatch('commande',confirm));
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
         const { numero } = commande;
+
+        const cmdtosync = {
+          ...confirm,
+          createdAt: formatISO(confirm.createdAt),
+          updatedAt: formatISO(confirm.updatedAt)
+        };
+
+        dispatch(notificationActions.syncCommandes([cmdtosync]));
       //  dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
       },
       error => {
@@ -709,6 +754,14 @@ function setCommandeFromAPI(payload) {
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
         const { numero } = commande;
       //  dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
+
+        const cmdtosync = {
+          ...confirm,
+          createdAt: formatISO(confirm.createdAt),
+          updatedAt: formatISO(confirm.updatedAt)
+        };
+
+        dispatch(notificationActions.syncCommandes([cmdtosync]));
       },
       error => {
         logger.log(error);
@@ -763,6 +816,20 @@ function setCommandeFromSync(commande) {
         if (emitter!==null && response!==null) {
           dispatch(notificationActions.syncConfirm(response));
           dispatch(notificationActions.syncDispatch('commande',data, emitter));
+
+          // synchro de la commande avec le BO,
+          // si la commande provient d'une caisse 'secondary'
+          // et s'il s'agit d'une commande confirmée ou supprimée
+          if (confirm.status==="confirmed" || confirm.status==="deleted") {
+
+            const cmdtosync = {
+              ...confirm,
+              createdAt: formatISO(confirm.createdAt),
+              updatedAt: formatISO(confirm.updatedAt)
+            };
+            
+            dispatch(notificationActions.syncCommandes([cmdtosync]));
+          }
         }
         dispatch(getCommandesList());
       },
@@ -809,6 +876,27 @@ function archiveCommandesFromSync(payload) {
   }
 
 }
+
+
+
+function setSyncedCommandsFromSync(payload) {
+  return dispatch => {
+    dispatch({ type: commandeActionTypes.SETSYNCED_FROM_SYNC_REQUEST });
+    logger.log('setSyncedCommandsFromSync()', payload);
+    const {id, datetime, emitter, response} = payload.data;
+    commandeServices.setSyncedCommands(id,datetime)
+    .then(
+      confirm => {
+        dispatch({ type: commandeActionTypes.SETSYNCED_FROM_SYNC_SUCCESS });
+      },
+      error => {
+        dispatch({ type: commandeActionTypes.SETSYNCED_FROM_SYNC_FAILURE, error: error });
+      }
+    );
+
+  }
+}
+
 
 /**
  * ajout de TR depuis la synchro
@@ -865,6 +953,7 @@ export const commandeActions = {
   addRendu,
   removeRendu,
   archiveCommands,
+  setSyncedCommands,
   addComment,
   updateComment,
   deleteComment,
@@ -878,6 +967,7 @@ export const commandeActions = {
   setCommandeFromSync,
   archiveCommandesFromSync,
   setTicketRestaurantFromSync,
+  setSyncedCommandsFromSync,
   getNumeroAPI,
   getNumero
 };

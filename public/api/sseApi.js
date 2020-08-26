@@ -276,7 +276,7 @@ const actions = {
     __request.setHeader('Access-Control-Allow-Origin', '*')
     __request.setHeader('Content-Type', 'application/json');
 
-    __request.write(JSON.stringify(commandes));
+    __request.write(JSON.stringify({commandes:commandes}));
 
     __request.on('response', (response) => {
       response.on('data', (chunk) => {
@@ -285,10 +285,12 @@ const actions = {
       });
       response.on('end', () => {
         log.info('syncCommandesBO: end');
-        res.send({syncedCommandes: JSON.parse(__syncedCommandes.join(''))});
+        res.send({confirm: JSON.parse(__syncedCommandes.join(''))});
         // res.send({confirm: true});
       });
     });
+
+    __request.end();
 
   }
 
