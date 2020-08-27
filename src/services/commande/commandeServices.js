@@ -1202,7 +1202,7 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
 
       });
 
-      item.ingredients = _ventilationIngredientsSteps(itm, catalogueReducer.steps[itm.id]);
+      item.ingredients = _ventilationIngredientsSteps(itm, catalogueReducer.steps[itm.produitid]);
 
       item.prix = _getPrix(item, steps)    
       commande.items.push(item);
