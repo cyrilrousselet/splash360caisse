@@ -466,7 +466,7 @@ function printCommandeTicket(quelstickets, cmd) {
           });
 
           // commentaire sur l'ingredient
-          const __ingcmt = cmd.comments.find(c => c.item=article.itemid && c.ingredient==ing.ingredient);
+          const __ingcmt = cmd.comments.find(c => c.item==article.itemid && c.ingredient==ing.ingredient);
 
           // ordre du type d'ingrédient
           let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
@@ -503,7 +503,7 @@ function printCommandeTicket(quelstickets, cmd) {
         let __noprintableingredient =  (inglist.length>0 && articleIngredients.length==0);
  
         // commentaire sur l'article
-        const __itmcmt = cmd.comments.find(c => c.item=article.itemid && c.ingredient==null);
+        const __itmcmt = cmd.comments.find(c => c.item==article.itemid && c.ingredient==null);
 
         
         const zoneslist = zones.map(z => {
