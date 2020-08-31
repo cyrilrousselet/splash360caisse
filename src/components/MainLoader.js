@@ -91,6 +91,7 @@ class MainLoader extends React.Component {
       }
       if (paramLoaded && sseInit && catLoaded && !cmdLoaded && !cmdLoading) {
         this.props.getCommandesList();
+        this.props.loadNumero();
       }
       if (paramLoaded && sseInit && catLoaded && cmdLoaded && !cloLoaded && !cloLoading) {
         this.props.getCloturesList();

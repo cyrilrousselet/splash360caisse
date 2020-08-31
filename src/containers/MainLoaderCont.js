@@ -49,7 +49,8 @@ const mapDispatchToProps = (dispatch) => {
     initSync: notificationActions.initSync,
     getDatabase: notificationActions.getDatabase,
     initSyncCommandes: notificationActions.initSyncCommandes,
-    quitApp: peripheralActions.quitApp
+    quitApp: peripheralActions.quitApp,
+    loadNumero: commandeActions.loadNumero
   }, dispatch);
   return {
     ...bound,

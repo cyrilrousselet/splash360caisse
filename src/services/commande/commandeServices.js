@@ -1115,7 +1115,7 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
   const commande = getNewCommande(data);
   commande.status = data.status; // "standby" ou "confirmed"
   commande.mode = data.mode; // "emporter", "surplace" ou "livraison"
-  commande.numero = data.numero || getNewNumero(parametres, numero);
+  commande.numero = numero;// || getNewNumero(parametres, numero);
 
   // on met tous les produits dans le même array
   let produits = [];
