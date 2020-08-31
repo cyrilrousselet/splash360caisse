@@ -724,6 +724,14 @@ function setCommandeFromOrder(provider, payload) {
   }
 }
 
+function loadNumero() {
+  return (dispatch, getState) => {
+    const {numero} = getState().commandeReducer;
+
+    if (null!==numero) dispatch(getNumero());
+  }
+}
+
 
 function setCommandeFromAPI(payload) {
   return (dispatch, getState) => {
@@ -741,13 +749,19 @@ function setCommandeFromAPI(payload) {
       };
     }
 
+    const {numero} = getState().commandeReducer;
+    logger.log('numero', numero);
+    dispatch(setNewNumero());
 
     logger.log(data);
-    const commande = commandeServices.setCommandeFromAPI(data, state.catalogueReducer, state.parametresReducer.parametres, state.commandeReducer.numero);
+    const commande = commandeServices.setCommandeFromAPI(data, state.catalogueReducer, state.parametresReducer.parametres, numero);
 
-    commandeServices.sendTicketId(commande.ticketId, commande.numero, payload.response);
 
-    dispatch(getNumero());
+    const numtosend = commande.numero.hex===true ? commande.numero.value.toString(16) : commande.numero.value;
+
+    commandeServices.sendTicketId(commande.ticketId, numtosend, payload.response);
+
+    dispatch(peripheralActions.printCommandeTicket('production', commande));
 
     commandeServices.saveCommande(commande, state.catalogueReducer)
     .then(
@@ -758,14 +772,17 @@ function setCommandeFromAPI(payload) {
         const { numero } = commande;
       //  dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
 
-        const cmdtosync = {
-          ...confirm,
-          chrono: confirm.chrono || 0,
-          createdAt: formatISO(confirm.createdAt),
-          updatedAt: formatISO(confirm.updatedAt)
-        };
+        if (confirm.status=="confirmed") {
 
-        dispatch(notificationActions.syncCommandes([cmdtosync]));
+          const cmdtosync = {
+            ...confirm,
+            chrono: confirm.chrono || 0,
+            createdAt: formatISO(confirm.createdAt),
+            updatedAt: formatISO(confirm.updatedAt)
+          };
+          
+          dispatch(notificationActions.syncCommandes([cmdtosync]));
+        }
       },
       error => {
         logger.log(error);
@@ -974,5 +991,6 @@ export const commandeActions = {
   setTicketRestaurantFromSync,
   setSyncedCommandsFromSync,
   getNumeroAPI,
-  getNumero
+  getNumero,
+  loadNumero
 };

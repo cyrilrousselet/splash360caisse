@@ -13,6 +13,7 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import { commandeActions } from '../commande/commandeActions';
 import { remove } from 'diacritics';
+import { lowerCase } from 'lodash';
 const removeDiacritics = remove;
 const strings = new LocalizedStrings(data);
 
@@ -253,6 +254,8 @@ function _getTicketsToPrint(filtre, tickets) {
   let liste;
   if (filtre==='all') {
     liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['commande','partiel','principal']).indexOf(tck.template)>-1));
+  } else if (filtre==='production') {
+    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['partiel','principal']).indexOf(tck.template)>-1));
   } else if (filtre==='all_uber') {
     liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['uber','partiel','principal']).indexOf(tck.template)>-1));
   } else if (filtre.hasOwnProperty('templates')) {
@@ -404,15 +407,20 @@ function printCommandeTicket(quelstickets, cmd) {
       const kds_url = options.role==='secondary' ? (peripheriques.kdsurl || options.primary) : (peripheriques.kdsurl || 'http://localhost');
       const clt = cmd.client ? clients.find(c=>c.client_id===cmd.client.client_id) : null;
 
+
+      let __origine = cmd.caisse.type || "caisse";
+      if (lowerCase(cmd.caisse.nom).indexOf('borne')>-1) __origine = 'borne';
+
+      const __cmt = cmd.comments.find(c => c.item==null && c.ingredient==null);
+
       let kdsCmd = {
         id: cmdnumero,
         label_id: cmdnumero,
         ticket_id: cmd.ticketId,
-        // origine: caisse.nom,
-        // origine_type: 'caisse', // rendre dynamique
-        origine: 'caisse', // rendre dynamique
+        origine: __origine,
         name: clt ? `${clt.prenom} ${clt.nom}`: '',
         mode: cmd.mode, // attention
+        comment: __cmt ? __cmt.texte : '',
         timestamp: 1,
         status: 0,
         endTime: '',
@@ -439,7 +447,7 @@ function printCommandeTicket(quelstickets, cmd) {
 
         const zones = ticketsProd.filter(t => (prdnoprint.length===0 || prdnoprint.find(p=>p===t.ticket_id)===undefined) );
 
-
+       
         inglist.forEach(ing => {
 
           const ingnoprint = ingredients[ing.ingredient].noprint!=null ? ingredients[ing.ingredient].noprint : types[ing.type].noprint;
@@ -457,6 +465,9 @@ function printCommandeTicket(quelstickets, cmd) {
             }
           });
 
+          // commentaire sur l'ingredient
+          const __ingcmt = cmd.comments.find(c => c.item=article.itemid && c.ingredient==ing.ingredient);
+
           // ordre du type d'ingrédient
           let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
           // ordre du type d'ingrédient (défini dans les paramètres)
@@ -467,13 +478,15 @@ function printCommandeTicket(quelstickets, cmd) {
               quantity: ing.qte * article.quantite,
               productName: ing.nom,
               subItems: [],
-              zones: zonesilist.length>0 ? zonesilist : []
+              zones: zonesilist.length>0 ? zonesilist : [],
+              comment: __ingcmt ? __ingcmt.texte : ''
             });
           } else {
             articleIngredients.push({
               quantity: ing.qte * article.quantite,
               subProductName: ing.nom,
-              zones: zonesilist.length>0 ? zonesilist : []
+              zones: zonesilist.length>0 ? zonesilist : [],
+              comment: __ingcmt ? __ingcmt.texte : ''
             });
           }
         //  }
@@ -488,6 +501,9 @@ function printCommandeTicket(quelstickets, cmd) {
 
         // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
         let __noprintableingredient =  (inglist.length>0 && articleIngredients.length==0);
+ 
+        // commentaire sur l'article
+        const __itmcmt = cmd.comments.find(c => c.item=article.itemid && c.ingredient==null);
 
         
         const zoneslist = zones.map(z => {
@@ -503,7 +519,8 @@ function printCommandeTicket(quelstickets, cmd) {
             quantity: article.quantite,
             productName: article.nom,
             subItems: articleIngredients,
-            zones: zoneslist.length>0 ? zoneslist : []
+            zones: zoneslist.length>0 ? zoneslist : [],
+            comment: __itmcmt ? __itmcmt.texte : ''
           });        
         }
         if (ingredientsAsProducts.length>0) {
