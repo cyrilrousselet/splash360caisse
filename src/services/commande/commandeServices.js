@@ -1071,7 +1071,9 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
         });
       });
 
-      item.ingredients = _ventilationIngredientsSteps(item, catalogueReducer.steps[item.produitid]);
+      if (catalogueReducer.steps[item.produitid]) {  
+        item.ingredients = _ventilationIngredientsSteps(item, catalogueReducer.steps[item.produitid]);
+      }
       item.prix = Number(itm.price.total_price.amount/100);
       commande.items.push(item);
     }
@@ -1202,7 +1204,9 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
 
       });
 
-      item.ingredients = _ventilationIngredientsSteps(item, catalogueReducer.steps[itm.produitid]);
+      if (catalogueReducer.steps[itm.produitid]) {
+        item.ingredients = _ventilationIngredientsSteps(item, catalogueReducer.steps[itm.produitid]);
+      }
 
       item.prix = _getPrix(item, steps)    
       commande.items.push(item);
