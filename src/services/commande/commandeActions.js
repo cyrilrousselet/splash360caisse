@@ -761,7 +761,9 @@ function setCommandeFromAPI(payload) {
 
     commandeServices.sendTicketId(commande.ticketId, numtosend, payload.response);
 
-    dispatch(peripheralActions.printCommandeTicket('production', commande));
+    if (commande.status=="confirmed") {
+      dispatch(peripheralActions.printCommandeTicket('production', commande));
+    }
 
     commandeServices.saveCommande(commande, state.catalogueReducer)
     .then(
