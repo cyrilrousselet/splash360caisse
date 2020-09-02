@@ -1066,7 +1066,7 @@ class Panier extends React.Component {
             <StdButton identifier='encaisser' elementclass={ `action action-encaisser${(ventecmd ? ' action-mid' : '')}` } disabled={ !__encaissable || open } icon={ false } text={ strings.modules.encaissement.panier.action.encaissement } onClick={ ()=> { openReglementHandler() }} />
             {(ventecmd) && (<StdButton identifier='valider' elementclass={ `action action-valider action-mid` } disabled={ !__encaissable || open } icon={ false } text={ strings.modules.encaissement.panier.action.valider } onClick={ ()=> { validationHandler() }} /> )}
             <StdButton identifier='tiroir' elementclass="action action-tiroir" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.tiroir } onClick={ tiroirHandler } />
-            <StdButton identifier='attente' elementclass="action action-attente" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.attente } onClick={ attenteHandler } />
+            <StdButton identifier='attente' elementclass="action action-attente" icon={ false } disabled={ !__encaissable || open } text={ strings.modules.encaissement.panier.action.attente } onClick={ attenteHandler } />
             <StdButton identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.reprise } onClick={gotoListeCommandes} />
           </div>
         </div>
