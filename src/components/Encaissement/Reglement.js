@@ -19,6 +19,9 @@ import PillButton from '../common/PillButton';
 import QRCodeIcon from '../common/icon/QRCodeIcon';
 import { endOfToday } from 'date-fns/esm';
 import { decodetable } from '../../constants/decodetable';
+import Logger from '../../helpers/Logger';
+
+const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 
@@ -133,6 +136,8 @@ class Reglement extends React.Component {
 
   beforeCloseReglement() {
 
+    logger.log('beforeCloseReglement()');
+
     const { modif } = this.props;
     const { reste, rendu } = this.updateValeurs();
     const { trlist } = this.state;
@@ -147,7 +152,7 @@ class Reglement extends React.Component {
       
       // si on encaisse une commande déjà produite, 
       // on ne réimprime pas les tickets de production (ms seulmt 'commande')
-      if (this.props.commande.status=='a_encaisser') {
+      if (this.props.commande.status=='a_encaisser' || this.props.commande.status=='standby') {
         this.props.printTicket({templates:['commande']});
         this.props.commande.status = 'confirmed';
       } else {
