@@ -152,11 +152,16 @@ class Reglement extends React.Component {
       
       // si on encaisse une commande déjà produite, 
       // on ne réimprime pas les tickets de production (ms seulmt 'commande')
-      if (this.props.commande.status=='a_encaisser' || this.props.commande.status=='standby') {
+      if (this.props.commande.status=='a_encaisser') {
         this.props.printTicket({templates:['commande']});
         this.props.commande.status = 'confirmed';
+      } else if (this.props.commande.status=='standby') {
+        this.props.printTicket({templates:['all']});
+        this.props.commande.status = 'confirmed';
       } else {
-        closeReglementAtEnd = false;
+        logger.log('reglement modif', modif);
+        closeReglementAtEnd = modif;
+        logger.log('reglement closeReglementAtEnd', closeReglementAtEnd);
         this.props.commande.status = 'confirmed';
         // on imprime tous les tickets (sauf si on modifie juste les réglements)
         if (!modif) this.props.printTicket('all');
