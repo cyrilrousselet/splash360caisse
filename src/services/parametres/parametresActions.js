@@ -19,6 +19,13 @@ function replaceDatabase(database) {
         }
         dispatch({type: parametresActionTypes.INSTALL_DATABASE, value:upd});
 
+        if (dbupdated && dbupdated.length>=1) {
+          dispatch(parametresActions.update({
+            domaine: "options",
+            cle: "first_start",
+            valeur: false
+          }));
+        }
       },
       error => dispatch({type: parametresActionTypes.REPLACE_DATABASE_SUCCESS})
 

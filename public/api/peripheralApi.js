@@ -1418,7 +1418,8 @@ function _printPeriodeZ(printer, data, strings) {
       printer
         .style('NORMAL')
         .tableCustom([
-          {text: Number(tva.taux*100).toFixed(2).replace('.',',')+'%', cols:9, align:'LEFT'},
+       //   {text: Number(tva.taux*100).toFixed(2).replace('.',',')+'%', cols:9, align:'LEFT'},
+          {text: tva.taux, cols:9, align:'LEFT'},
           {text:'', cols:3},
           {text: Number(tva.ht).toFixed(2).replace('.',','), cols:8, align:'RIGHT'},
           {text:'', cols:3},

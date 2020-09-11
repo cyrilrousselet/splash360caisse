@@ -15,13 +15,18 @@ class MainLoader extends React.Component {
 
   constructor(props) {
     super(props);
+
+
+    let first_start = props.params ? props.params.first_start : null;
+
     this.state = {
-      first_start: false,
-      paramLoaded: false,
-      sseInit: false,
-      catLoaded: false,
-      cmdLoaded: false,
-      cloLoaded: false
+      first_start: first_start,
+      paramLoaded: props.paramLoaded,
+      sseInit: props.sseInit,
+      catLoaded: props.catLoaded,
+      cmdLoaded: props.cmdLoaded,
+      cloLoaded: props.cloLoaded,
+      inspect: false
     };
   }
 
@@ -29,28 +34,106 @@ class MainLoader extends React.Component {
 
     logger.log('MainLoader.componentDidMount()');
     
-    const {paramLoaded} = this.props;
+    const { paramLoaded, paramLoading, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, cloLoading, sseInit, params, dbupdated, dbgetInit } = this.props;
+
+    let first_start = params ? params.first_start : null;
+
+    let readytolaunch = dbupdated || null;
       // this.props.getParametres();
       // this.props.getCommandesList();
       // this.props.getCatalogue();
       // this.props.getCurrentPeriode();
       // this.props.getCloturesList();
+      console.log('props', this.props);
 
-    if (!paramLoaded) {
-      this.props.getParametres();
+     if (!paramLoaded) {
+       logger.log('MainLoader.componentDidMount()', 'getParametres()');
+       this.props.getParametres();
+     }
+    
+    // logger.log('paramLoaded', paramLoaded);
+    // logger.log('first_start', first_start);
+    // logger.log('sseInit', sseInit);
+    // logger.log('catLoaded', catLoaded);
+    // logger.log('cmdLoaded', cmdLoaded);
+    // logger.log('cloLoaded', cloLoaded);
+    if (paramLoaded===true && this.state.paramLoaded!==paramLoaded) {
+      this.setState({paramLoaded: true});
     }
+    if (first_start===true && this.state.first_start!==first_start) {
+      this.setState({first_start: true});
+    }
+    if (sseInit===true && this.state.sseInit!==sseInit) {
+      this.setState({sseInit: true});
+    }
+    if (catLoaded===true && this.state.catLoaded!==catLoaded) {
+      this.setState({catLoaded: true});
+    }
+    if (cmdLoaded===true && this.state.cmdLoaded!==cmdLoaded) {
+      this.setState({cmdLoaded: true});
+    }
+    if (cloLoaded===true && this.state.cloLoaded!==cloLoaded) {
+      this.setState({cloLoaded: true});
+    }
+    if (paramLoaded===true && sseInit===false) {
+      first_start = params.first_start;
+      this.props.initSSE();
+      this.props.setPOS();
+      this.props.initSync();
+      logger.log('first_start',first_start);
+     if (first_start===true && dbgetInit===false) this.props.getDatabase();
+    }
+    if (first_start===false) {
+      if (paramLoaded===true && sseInit===true && 
+          catLoaded===false && catLoading===false) {
+        this.props.getCatalogue();
+      }
+      if (paramLoaded===true && sseInit===true && catLoaded===true && 
+          cmdLoaded===false && cmdLoading===false) {
+        this.props.getCommandesList();
+        this.props.loadNumero();
+      }
+      if (paramLoaded===true && sseInit===true && catLoaded===true && cmdLoaded===true && 
+          cloLoaded===false) {
+        this.props.getCloturesList();
+        this.props.getCurrentPeriode();
+      }
+      if (paramLoaded===true && sseInit===true && catLoaded===true && cmdLoaded===true && cloLoaded===true) {
+        if (readytolaunch && readytolaunch.length==2) {
+
+          Swal.fire({
+            type: 'warning',
+            title:'Installation prête',
+            text: 'Vous devez redémarrer l’application pour terminer l’installation',
+            showCancelButton: false,
+            focusConfirm: true,
+            allowEscapeKey: false,
+            allowOutsideClick: false
+          }).then((result)=> {
+            if (result.value) {
+              this.props.quitApp();
+            }
+          });
+
+        } else if (readytolaunch===null) {
+          this.props.initSyncCommandes();
+          this.props.loadingComplete();
+        }
+      }
+    }
+
   }
 
   componentDidUpdate(prevProps, prevState) {
-    logger.log('MainLoader.componentDidUpdate()');
-    const { paramLoaded, paramLoading, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, cloLoading, sseInit, params, dbupdated } = this.props;
+    logger.log('MainLoader.componentDidUpdate()', this.props);
+    const { paramLoaded, paramLoading, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, cloLoading, sseInit, params, dbupdated, dbgetInit } = this.props;
 
     let first_start = params ? params.first_start : null;
 
     let readytolauch = dbupdated || null;
     // let first_start = false;
 
-    if (!paramLoaded) {
+    if (paramLoaded===false) {
       this.props.getParametres();
     }
     // logger.log('paramLoaded', paramLoaded);
@@ -59,45 +142,48 @@ class MainLoader extends React.Component {
     // logger.log('catLoaded', catLoaded);
     // logger.log('cmdLoaded', cmdLoaded);
     // logger.log('cloLoaded', cloLoaded);
-    if (paramLoaded && prevProps.paramLoaded!==paramLoaded) {
-      this.setState({paramLoaded: paramLoaded});
+    if (paramLoaded===true && prevProps.paramLoaded!==paramLoaded) {
+      this.setState({paramLoaded: true});
     }
-    if (first_start && prevProps.first_start!==first_start) {
-      this.setState({first_start: first_start});
+    // if (first_start===true && prevProps.first_start!==first_start) {
+    //   this.setState({first_start: true});
+    // }
+    if (sseInit===true && prevProps.sseInit!==sseInit) {
+      this.setState({sseInit: true});
     }
-    if (sseInit && prevProps.sseInit!==sseInit) {
-      this.setState({sseInit: sseInit});
+    if (catLoaded===true && prevProps.catLoaded!==catLoaded) {
+      this.setState({catLoaded: true});
     }
-    if (catLoaded && prevProps.catLoaded!==catLoaded) {
-      this.setState({catLoaded: catLoaded});
+    if (cmdLoaded===true && prevProps.cmdLoaded!==cmdLoaded) {
+      this.setState({cmdLoaded: true});
     }
-    if (cmdLoaded && prevProps.cmdLoaded!==cmdLoaded) {
-      this.setState({cmdLoaded: cmdLoaded});
+    if (cloLoaded===true && prevProps.cloLoaded!==cloLoaded) {
+      this.setState({cloLoaded: true});
     }
-    if (cloLoaded && prevProps.cloLoaded!==cloLoaded) {
-      this.setState({cloLoaded: cloLoaded});
-    }
-    if (paramLoaded && !sseInit) {
+    if (paramLoaded===true && sseInit===false) {
       first_start = params.first_start;
       this.props.initSSE();
       this.props.setPOS();
       this.props.initSync();
       logger.log('first_start',first_start);
-     if (first_start===true) this.props.getDatabase();
+     if (first_start===true && dbgetInit===false) this.props.getDatabase();
     }
     if (first_start===false) {
-      if (paramLoaded && sseInit && !catLoaded && !catLoading) {
+      if (paramLoaded===true && sseInit===true && 
+          catLoaded===false && catLoading===false) {
         this.props.getCatalogue();
       }
-      if (paramLoaded && sseInit && catLoaded && !cmdLoaded && !cmdLoading) {
+      if (paramLoaded===true && sseInit===true && catLoaded===true && 
+          cmdLoaded===false && cmdLoading===false) {
         this.props.getCommandesList();
         this.props.loadNumero();
       }
-      if (paramLoaded && sseInit && catLoaded && cmdLoaded && !cloLoaded && !cloLoading) {
+      if (paramLoaded===true && sseInit===true && catLoaded===true && cmdLoaded===true && 
+          cloLoaded===false) {
         this.props.getCloturesList();
         this.props.getCurrentPeriode();
       }
-      if (paramLoaded && sseInit && catLoaded && cmdLoaded && cloLoaded) {
+      if (paramLoaded===true && sseInit===true && catLoaded===true && cmdLoaded===true && cloLoaded===true) {
         if (readytolauch && readytolauch.length==2) {
 
           Swal.fire({
@@ -123,9 +209,11 @@ class MainLoader extends React.Component {
   }
 
   render() {
-    const { paramLoaded, catLoaded, cmdLoaded, cloLoaded, sseInit, params } = this.state;
+    const { paramLoaded, catLoaded, cmdLoaded, cloLoaded, sseInit, params, first_start } = this.state;
+  //  const { paramLoaded, paramLoading, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, cloLoading, sseInit, params, dbupdated } = this.props;
 
-    let first_start = params ? params.first_start : null;
+  // if (!paramLoaded || !catLoaded || !cmdLoaded || !cloLoaded || !sseInit) this.setState({inspect: true});
+
 
     return (      
       <div>
@@ -134,7 +222,7 @@ class MainLoader extends React.Component {
           {first_start && <p className="MainLoader-item">Acquisition de la base de données...</p>}
           {paramLoaded && <p className="MainLoader-item">Paramètres chargés</p>}
           {sseInit && <p className="MainLoader-item">SSE initialisé</p>}
-          {catLoaded && <p className="MainLoader-item">Catalogue chargées</p>}
+          {catLoaded && <p className="MainLoader-item">Catalogue chargés</p>}
           {cmdLoaded && <p className="MainLoader-item">Commandes chargées</p>}
           {cloLoaded && <p className="MainLoader-item">Clotures chargées</p>}
         </div>

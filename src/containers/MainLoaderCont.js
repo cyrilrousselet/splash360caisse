@@ -33,7 +33,8 @@ const mapStateToProps = (state) => {
     cloLoaded: Object.entries(state.clotureReducer).length>0,
     sseInit: state.notificationReducer.sseInit,
     params: state.parametresReducer.parametres.options,
-    dbupdated: state.parametresReducer.dbupdated
+    dbupdated: state.parametresReducer.dbupdated,
+    dbgetInit: state.notificationReducer.getdbInit,
   }
 }
 

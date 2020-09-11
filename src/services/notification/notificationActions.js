@@ -251,11 +251,6 @@ function getDatabase() {
       .then(database => {
         dispatch({type: notificationActionTypes.GET_DATABASE_SUCCESS});
         dispatch({type: parametresActionTypes.INSTALL_DATABASE, value:[]});
-        dispatch(parametresActions.update({
-          domaine: "options",
-          cle: "first_start",
-          valeur: false
-        }));
         dispatch(catalogueActions.replaceDatabase(database));
         dispatch(parametresActions.replaceDatabase(database));
       },

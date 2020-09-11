@@ -16,6 +16,8 @@ function replaceDatabase(database) {
   return (dispatch, getState) => {
     dispatch({type: catalogueActionTypes.REPLACE_DATABASE_REQUEST});
 
+
+
     catalogueServices.replaceDatabase(database)
     .then(
       conf => {
@@ -26,6 +28,16 @@ function replaceDatabase(database) {
           upd = [...dbupdated, ...upd];
         }
         dispatch({type: parametresActionTypes.INSTALL_DATABASE, value:upd});
+
+        if (dbupdated && dbupdated.length>=1) {
+          dispatch(parametresActions.update({
+            domaine: "options",
+            cle: "first_start",
+            valeur: false
+          }));
+        }
+
+
       },
       error => dispatch({type: catalogueActionTypes.REPLACE_DATABASE_SUCCESS})
 
