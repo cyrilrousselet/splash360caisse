@@ -1,6 +1,9 @@
 import {emit} from 'eiphop';
 
-import { startOfToday, endOfToday, isAfter, isBefore, parseJSON } from 'date-fns';
+import { startOfDay, startOfToday, endOfToday, isAfter, isBefore, parseJSON } from 'date-fns';
+
+import Logger from '../../helpers/Logger';
+const logger = new Logger();
 
 export const clotureServices = {
   getCurrentPeriode,
@@ -26,6 +29,8 @@ function getCurrentPeriode(commandes, catalogue, params) {
      ,__numStandby = 0
      ,__fdcaisse_courant = Number(params.fdcaisse)
      ,__emission = 0
+     ,__start = startOfToday()
+     ,__end = startOfDay(new Date('2000-01-01'))
      ;
 
 
@@ -87,6 +92,10 @@ function getCurrentPeriode(commandes, catalogue, params) {
       __vnt += cmd.total;
       __remb += (cmd.remboursements) ? cmd.remboursements : 0;
       __tickets++;
+
+      // update de la date la plus ancienne
+      if ( isBefore(new Date(cmd.createdAt), __start) ) __start = new Date(cmd.createdAt);
+      if ( isAfter(new Date(cmd.createdAt), __end) ) __end = new Date(cmd.createdAt);
 
   
       // ventilation par vendeurs
@@ -201,11 +210,14 @@ function getCurrentPeriode(commandes, catalogue, params) {
           // ajout et calcul de la tva pour l'ingrédient
           if (!artTva.hasOwnProperty(artIngTva.code)) {
             Object.defineProperty(artTva, artIngTva.code, {
-              value: {taux:`${Number(artIngTva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
+              value: {taux:`${(Number.parseFloat(artIngTva.valeur)*100)} %`, montant: 0, ht: 0, ttc: 0},
               writable: true,
               enumerable: true
             });
           }
+
+
+          if (ing.supplement==null) logger.error('aucun supplement pour ing dans item id', itm.itemid);
 
           // let iht = (Number(ing.prix)*ing.qte) / (1 + Number(ing.tva.valeur));
           let iht = Number(ing.supplement) / (1 + Number(artIngTva.valeur));
@@ -249,7 +261,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
         // ajout et calcul de la tva pour l'article
         if (!cmdTva.hasOwnProperty(itm.tva.code)) {
           Object.defineProperty(cmdTva, itm.tva.code, {
-            value: {taux:`${Number(itm.tva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
+            value: {taux:`${(Number.parseFloat(itm.tva.valeur)*100)} %`, montant: 0, ht: 0, ttc: 0},
             writable: true,
             enumerable: true
           });
@@ -355,8 +367,8 @@ function getCurrentPeriode(commandes, catalogue, params) {
 
     return {
       periode: {
-        debut: startOfToday(),
-        fin: endOfToday(),
+        debut: __start, //startOfToday(),
+        fin: __end,   //endOfToday(),
         editeur: params.user,
         caisses: params.caisses,
         vendeurs: params.vendeurs,
