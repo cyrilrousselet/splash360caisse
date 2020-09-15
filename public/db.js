@@ -20,6 +20,7 @@ const {users} = hydration;
 const {clotures} = hydration;
 const {pointages, shifts, timeadjusts} = hydration;
 const {avoirs, reglescatalogue, reglespanier} = hydration;
+const {salles, tables} = hydration;
 
 
 const checkDirectorySync = (directory) => {  
@@ -65,6 +66,7 @@ const db = {
  avoirs: dbFactory('avoirs.json', {avoirs: avoirs}),
  reglescatalogue: dbFactory('reglescatalogue.json', {reglescatalogue: reglescatalogue}),
  reglespanier: dbFactory('reglespanier.json', {reglespanier: reglespanier}),
+ tables: dbFactory('tables.json', {salles: salles, tables: tables}),
 //  pendingOrders: dbFactory('pendingOrders.json',{pendingOrders:[]}),
 //  finishedOrders: dbFactory('finishedOrders.json',{finishedOrders:[]}),
 //  caredOrdersSalle: dbFactory('caredOrdersSalle.json',{caredOrdersSalle:[]}),

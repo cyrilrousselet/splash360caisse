@@ -11,6 +11,7 @@ const dbEmployesApi = require('./dbEmployesApi.js');
 const dbMarketingApi = require('./dbMarketingApi.js');
 const dbUsersApi = require('./dbUsersApi.js');
 const dbClientsApi = require('./dbClientsApi.js');
+const dbTableApi = require('./dbTableApi.js');
 
 const peripheralApi = require('./peripheralApi.js');
 const server = require('./server.js');
@@ -28,6 +29,7 @@ setupMainHandler(electron, {
                   ...dbMarketingApi,
                   ...dbUsersApi,
                   ...dbClientsApi,
+                  ...dbTableApi,
                   ...peripheralApi,
                   ...server,
                   ...sse,

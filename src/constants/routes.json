@@ -19,6 +19,7 @@
     "PARAM_FINANCIER": "/parametres/financier",
     "PARAM_PERIPHERIQUES": "/parametres/peripheriques",
     "PARAM_COMMANDES": "/parametres/commandes",
+    "PARAM_TABLES": "/parametres/tables",
     "PARAM_OPTIONS": "/parametres/options",
     "MARKET_AVOIRS": "/marketing/avoirs",
     "MARKET_PROMOTIONS": "/marketing/promotions",
