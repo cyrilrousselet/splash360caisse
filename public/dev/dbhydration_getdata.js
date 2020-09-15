@@ -45,6 +45,9 @@ const hydration = {
   reglespanier: [],
   reglescatalogue: [],
 
+  salles: [],
+  tables: [],
+
   parametres: [
     { domaine: 'options', cle: 'first_start', valeur: true },
     { domaine: 'entreprise', cle: 'restaurant_id', valeur: '' },

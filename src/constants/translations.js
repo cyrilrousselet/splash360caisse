@@ -954,6 +954,71 @@ const data = {
                             }
                         }
                     },
+                    tables: {
+                        nom: 'Gestion Tables',
+                        activation: 'Activation',
+                        salles: {
+                            liste: {
+                                titre: 'Salles',
+                                nom: 'Nom',
+                                ajouter: 'Ajouter une salle'
+                            },
+                            edition: {
+                                new: 'Nouvelle salle',
+                                edit: 'Édition de la salle',
+                                nom: 'Nom',
+                                couleur: 'Couleur',
+                                couleurs: {
+                                    blanc: '#ffffff',
+                                    bleuclair: '#5AC8FA',
+                                    bleufonce: '#0065E5',
+                                    gris: '#8F8E94',
+                                    jaune: '#FFE700',
+                                    jauneorange: '#FDC54F',
+                                    marron: '#7F592A',
+                                    noir: '#4A4A4A',
+                                    orange: '#FF9500',
+                                    rose: '#FF9DFF',
+                                    rouge: '#FF2D55',
+                                    vertclair: '#9CD04E',
+                                    vertfonce: '#628133',
+                                    violet: '#9867B6'
+                                }
+                            },
+                            suppression: {
+                                alerte: {
+                                    titre: 'Supprimer une salle',
+                                    texte: 'Vous allez supprimer une salle. Cette opération est irréversible.'
+                                },
+                                erreur: {
+                                    titre: 'Erreur de suppression',
+                                    texte: 'Pour pouvoir être supprimée, une salle ne doit contenir aucune table.'
+                                }
+                            }
+                        },
+                        tables: {
+                            liste: {
+                                titre: 'Tables',
+                                nom: 'Nom',
+                                ajouter: 'Ajouter une table'
+                            },
+                            edition: {
+                                new: 'Nouvelle table',
+                                edit: 'Édition de la table',
+                                nom: 'Nom'
+                            },
+                            suppression: {
+                                alerte: {
+                                    titre: 'Supprimer une table',
+                                    texte: 'Vous allez supprimer une table. Cette opération est irréversible.'
+                                },
+                                erreur: {
+                                    titre: 'Erreur de suppression',
+                                    texte: 'Pour pouvoir être supprimée, une table ne doit pas être occupée.'
+                                }
+                            }
+                        }
+                    },
                     options: { nom: 'Options' },
                 }
             }
