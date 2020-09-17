@@ -19,8 +19,41 @@ import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import FicheClientCont from '../../containers/FicheClientCont';
 import Clavier from '../common/Clavier';
 import {devise} from '../../helpers/toolbox';
+import TableIcon from '../common/icon/TableIcon';
+import Logger from '../../helpers/Logger';
 
 let strings = new LocalizedStrings(data);
+const logger = new Logger();
+
+
+
+class TablesModal extends React.Component {
+
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      phase: 'salles',
+      salleId: null,
+      tableId: null
+    }
+  }
+
+  render() {
+
+    const {salles} = this.props;
+
+    return (
+<div className="TablesModal"></div>
+    );
+  }
+
+}
+
+
+
+
+
 
 
 
@@ -67,7 +100,7 @@ class CommentModal extends React.Component {
     const { commentid, item, ingredient, sa } = this.props;
     const { texte } = this.state;
 
-    console.log('saveComment()');
+    logger.log('saveComment()');
 
     this.props.saveHandler(commentid, item, ingredient, texte);
     this.resetPopin();
@@ -78,7 +111,7 @@ class CommentModal extends React.Component {
     this.setState({texte:null});
   }
   changeHandler(event) {
-   // console.log('CommentModal.changeHandler()', event.target.value);
+   // logger.log('CommentModal.changeHandler()', event.target.value);
     this.setState({texte:String(event.target.value).toUpperCase()});
   }
   setComment(message) {
@@ -91,7 +124,7 @@ class CommentModal extends React.Component {
 
   onKeyboardChange(input) {
     this.setState({ texte:input });
-    console.log("Comment Input changed", input);
+    logger.log("Comment Input changed", input);
   };
 
   render() {
@@ -213,7 +246,7 @@ class DiscountModal extends React.Component {
     const { discountid, item, ingredient, sa } = this.props;
     const { valeur } = this.state;
 
-    console.log('saveDiscount()');
+    logger.log('saveDiscount()');
 
     this.props.saveHandler(discountid, item, ingredient, valeur);
     this.resetPopin();
@@ -224,7 +257,7 @@ class DiscountModal extends React.Component {
     this.setState({valeur:null});
   }
   changeHandler(event) {
-   // console.log('CommentModal.changeHandler()', event.target.value);
+   // logger.log('CommentModal.changeHandler()', event.target.value);
     this.setState({valeur:Math.abs(event.target.value)});
   }
   setDiscount(valeur) {
@@ -238,7 +271,7 @@ class DiscountModal extends React.Component {
     const { valeur } = this.state;
 
     const vvaleur = valeur==null ? discountval : valeur;
-    console.log('discountval', discountval);
+    logger.log('discountval', discountval);
 
     // setTimeout(() => {
     //   if (this.refs.commentInput) this.refs.commentInput.focus();
@@ -337,7 +370,8 @@ class Panier extends React.Component {
       keyboardLayoutName: 'default',
       clavierOpen: false,
       actualInput: null,
-      inputValue: ''
+      inputValue: '',
+      tablesOpen: false
     }
     this.setSelectedIndex = this.setSelectedIndex.bind(this);
     this.setSelectedIngredient = this.setSelectedIngredient.bind(this);
@@ -356,17 +390,22 @@ class Panier extends React.Component {
     this.closeFicheClient = this.closeFicheClient.bind(this);
     this.selectClient = this.selectClient.bind(this);
 
+    this.openTables = this.openTables.bind(this);
+    this.closeTables = this.closeTables.bind(this);
+    this.selectTables = this.selectTables.bind(this);
+
   }
 
   lock = false;
   search_tmo = -1;
 
   componentDidMount() {
-    const { getCommande, getParametres, getListeCommandes, getClientsList, commande } = this.props;
+    const { getCommande, getParametres, getListeCommandes, getClientsList, commande, getSallesList } = this.props;
     if (!commande.hasOwnProperty('ticketId')) getCommande();
     getListeCommandes();
     getParametres();    
     getClientsList();
+    getSallesList();
   }
   componentDidUpdate() {
     const { items } = this.props.commande;
@@ -383,12 +422,12 @@ class Panier extends React.Component {
         let __stepToRun = null;
         let __item = null;
         if (__forceItem) {
-          console.log('Panier.componentDidUpdate(), modif de personnalisation DEMANDÉE', __forceItem);
+          logger.log('Panier.componentDidUpdate(), modif de personnalisation DEMANDÉE', __forceItem);
           __stepToRun = __forceItem.steps.find(step => step.checked===false );
           __item = __forceItem;
         }
          else if (__pendingItem) {
-          console.log('Panier.componentDidUpdate(), pas de modif de personnalisation', __pendingItem);
+          logger.log('Panier.componentDidUpdate(), pas de modif de personnalisation', __pendingItem);
           __stepToRun = __pendingItem.steps.find(step => step.checked===false );
           __item = __pendingItem;
         }
@@ -418,7 +457,7 @@ class Panier extends React.Component {
   }
 
   setSelectedIngredient(index,ingidx) {
-    console.log(`setSelectedIngredient(${index}, ${ingidx})`)
+    logger.log(`setSelectedIngredient(${index}, ${ingidx})`)
     const {selectedIndex, selectedIngredient} = this.state;
     if (index==selectedIndex) {
       index = ingidx===selectedIngredient ? -1 : index;
@@ -471,7 +510,7 @@ class Panier extends React.Component {
 
   searchHandler(event) {
     if (event.keyCode==13) {
-      console.log(event.target.value);
+      logger.log(event.target.value);
       this.decodeQRCode(event.target.value);
       event.target.value = '';
     }    
@@ -530,7 +569,7 @@ class Panier extends React.Component {
 
     if (commandeslist) {
       const cmd = Object.values(commandeslist).find((c)=>c.ticketId==value);
-      console.log('s2s', cmd);
+      logger.log('s2s', cmd);
       if (cmd && cmd.status=='standby') {
         this.setState({inputfocus: false});
         this.props.getCommande(value);
@@ -689,6 +728,15 @@ class Panier extends React.Component {
     }
   }
 
+  openTables() {
+    logger.log('openTables()');
+  }
+  closeTables() {
+    logger.log('closeTables()');
+  }
+  selectTables() {
+    logger.log('selectTables()');
+  }
 
 
   interval = 0;
@@ -732,6 +780,9 @@ class Panier extends React.Component {
     const discountVal = (discountId!==null) ? modificateurs.find(dsc=>dsc.modificateur_id==discountId).valeur : '';
     // choix de discounts prédéfinis pour les discounts :
     const dsclib = (parametres && parametres.commandes) ? parametres.commandes.discount_predefini : [];
+    // gestion de tables :
+    const gestion_tables = (parametres && parametres.commandes) ? parametres.commandes.gestion_tables : false;
+    const tableId = null;
 
 
     const commandeClient = client ? clients.find(c=>c.client_id==client.client_id) : null;
@@ -745,14 +796,14 @@ class Panier extends React.Component {
                        : true 
                      : true;
 
-    console.log('searchval', searchval);
+    logger.log('searchval', searchval);
 
     const total = this.calculateTotal(items, modificateurs);
     const devisemonnaie = '€';
     const { selectedIndex, selectedIngredient } = this.state;
 
 
-    console.log(`index:${selectedIndex}, ingIndex:${selectedIngredient}`);
+    logger.log(`index:${selectedIndex}, ingIndex:${selectedIngredient}`);
 
 
     /* GESTION DE LA PERSONNALISATION */
@@ -776,7 +827,7 @@ class Panier extends React.Component {
     // gestion du focus sur le champ de recherche (scan QR code)
     clearInterval(this.interval);
 
-    console.log('inputfocus',inputfocus);
+    logger.log('inputfocus',inputfocus);
     
     const self = this;
     if (inputfocus && (!items || items.length==0)) {      
@@ -791,7 +842,7 @@ class Panier extends React.Component {
 
 
     
-    const onClickAction = (value) => { console.log(`Action: ${value}`) };
+    const onClickAction = (value) => { logger.log(`Action: ${value}`) };
 
     const onClickAdd = (event) => {
       updateProduit({itemid: items[selectedIndex].itemid, quantite: items[selectedIndex].quantite + 1});
@@ -870,7 +921,7 @@ class Panier extends React.Component {
     // affichage de la popin "carte de fidelite" si la fidélité est activée
     if (null!==parametres && parametres.hasOwnProperty("financier") && parametres.financier.fidelite_activation) {      
 
-      console.log('fidelite_Activation', parametres.financier.fidelite_activation);
+      logger.log('fidelite_Activation', parametres.financier.fidelite_activation);
       if (undefined === items || items.length==0) gotoEncaissement();
     }
 
@@ -913,7 +964,7 @@ class Panier extends React.Component {
         const val = Math.abs(Number(String(__moditem.valeur).slice(0,-1)));
         __montant = ispc ? __itemtotal*(val/100) : val
         
-        console.log('geDiscount', item.itemid)
+        logger.log('geDiscount', item.itemid)
       }
       return __moditem ? {...__moditem, montant: devise(__montant)} : null;
     }
@@ -963,6 +1014,9 @@ class Panier extends React.Component {
           {/* <div className="ticketId">{ (this.interval==0?'X':'√')+strings.modules.encaissement.panier.ticket_no+' '+ticketId }</div> */}
           <div className="ticketId">{ strings.modules.encaissement.panier.ticket_no+' '+ticketId }</div>
           <div className="ticketComment"></div>
+          {gestion_tables && (<div className="tablesList">
+            <TableIcon className={`ico-tables ${(tableId?'tables-set':'')}`} onClick={this.openTables} />
+          </div>)}
           <div className="ticketClient">
             <AccountBoxIcon className={`ico-client ${client?'client-set':'anonymous'}`} onClick={this.openFicheClient} />
           </div>
@@ -1010,7 +1064,7 @@ class Panier extends React.Component {
                           }}
                           _onSubClick={ this.setSelectedIngredient }
                           _onSubDoubleClick={ (stepid) => { 
-                            console.log('_onSubDoubleClick', stepid);
+                            logger.log('_onSubDoubleClick', stepid);
                             let __step = itm.steps.find(s=>s.id==stepid);
                             let __stepIndex = itm.steps.findIndex(s=>s.id==stepid);
                             let __previd = (__stepIndex==0) ? -1 : itm.steps[__stepIndex-1].id;
@@ -1123,7 +1177,7 @@ function DiscountListItem (props) {
   const {valeur, montant, id, onClick, className, deleteHandler} = props;
 
   const deleteDiscount = () => {
-    console.log('deleteDiscount',id);
+    logger.log('deleteDiscount',id);
 
     Swal.fire({
       title: strings.modules.encaissement.discount.suppression.titre,
@@ -1142,7 +1196,7 @@ function DiscountListItem (props) {
     });
   }
 
-  console.log('discount id', id);
+  logger.log('discount id', id);
 
   return (
     <ListItem className={ `discount ${className||''}` }>
@@ -1165,7 +1219,7 @@ class PanierListeItem extends React.Component {
     const {id, itemid, nom, quantite, prix, commentaire, selected, discount, deleteDiscountHandler, openDiscountHandler, selectedIng, disabled, ingredients, steps, _onClick, _onDoubleClick, _onSubClick, _onSubDoubleClick} = this.props;
 
 
-    console.log('item discount', discount);
+    logger.log('item discount', discount);
 
     let timer = 0;
     let prevent = false;
