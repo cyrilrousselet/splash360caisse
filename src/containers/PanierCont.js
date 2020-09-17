@@ -12,6 +12,7 @@ import Panier from '../components/Encaissement/Panier';
 import history from './../helpers/history';
 import paths from './../constants/routes.json';
 import { clientsActions } from '../services/clients/clientsActions';
+import { tableActions } from '../services/table/tableActions';
 
 const gotoListeCommandes = () => {
   history.push(paths.LISTECOMMANDES);
@@ -49,7 +50,8 @@ const mapDispatchToProps = (dispatch) => {
     addDiscount: commandeActions.addDiscount,
     updateDiscount: commandeActions.updateDiscount,
     deleteDiscount: commandeActions.deleteDiscount,
-    getClientsList: clientsActions.getClientsList
+    getClientsList: clientsActions.getClientsList,
+    getSallesList: tableActions.getSallesList
   }, dispatch);
   return {
     ...bound,

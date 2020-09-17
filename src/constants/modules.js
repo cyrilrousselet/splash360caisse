@@ -27,8 +27,8 @@ export const paramSubmodulesList = [
    'utilisateurs',
    'financier',
    'peripheriques',
-   'commandes',
-   'tables'
+   'commandes'
+//   'tables'
 //   'options'
 ];
 
