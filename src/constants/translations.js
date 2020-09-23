@@ -36,7 +36,8 @@ const data = {
                 accept: "Accepter",
                 deny: "Refuser",
                 select: "Sélectionner",
-                browse: "Parcourir"
+                browse: "Parcourir",
+                print: "Imprimer"
             },
             check: {
                 tous: 'Tout sélectionner',
@@ -566,6 +567,31 @@ const data = {
                         titre: "Commandes non clôturées",
                         texte: "Vous devez clôturer les commandes des jours précédents avant de commencer un nouveau service."
                     }
+                }
+            },
+            listeclotures: {
+                nom: "Liste Clotures",
+                dates: {
+                    start: "Liste des clôtures du ",
+                    end: " au "
+                },
+                liste: {
+                    id: "Id",
+                    debut: "Première cmd",
+                    fin: "Dernière cmd",
+                    ht: "Total HT",
+                    ventes: "Ventes",
+                    nombre: 'Nombre cmd',
+                    actions: "Actions"
+                },
+                view: {
+                    titre: "Ticket X"
+                },
+                actions: {
+                    view: "Visualiser",
+                    print: "Imprimer",
+                    synthese: "Synthèse",
+                    print_recap: "Imprimer Récap."
                 }
             },
             stocks: { nom: "Stocks" },

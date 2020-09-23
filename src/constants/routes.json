@@ -8,6 +8,7 @@
     "DEPENSES": "/depenses",
     "LISTECOMMANDES": "/listecommandes",
     "CLOTURE": "/cloture",
+    "LISTECLOTURES": "/listeclotures",
     "STOCKS": "/stocks",
     "STATISTIQUES": "/statistiques",
     "MENU": "/menu",

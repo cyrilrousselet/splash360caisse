@@ -10,6 +10,7 @@ import ParametresCont from './containers/ParametresCont';
 import Encaissement from './components/Encaissement';
 import MarketingCont from './containers/MarketingCont';
 import ClotureCont from './containers/ClotureCont';
+import ListeCloturesCont from './containers/ListeCloturesCont';
 import EmployesCont from './containers/EmployesCont';
 import DepensesCont from './containers/DepensesCont';
 import ListeCommandesCont from './containers/ListeCommandesCont';
@@ -31,6 +32,7 @@ export default () => (
       <PrivateRoute path={ paths.DEPENSES } component={DepensesCont} />
       <PrivateRoute path={ paths.LISTECOMMANDES } component={ListeCommandesCont} />
       <PrivateRoute path={ paths.CLOTURE } component={ClotureCont} />
+      <PrivateRoute path={ paths.LISTECLOTURES } component={ListeCloturesCont} />
       <PrivateRoute path={ paths.STOCKS } component={StocksCont} />
       <PrivateRoute path={ paths.STATISTIQUES } component={StatistiquesCont} />
       <PrivateRoute path={ paths.MENU } component={MenuCont} />

@@ -1,0 +1,291 @@
+.ListeClotures {
+  .caption {
+    font-family: $f_blk;
+    font-size: 18px;
+    color: $noir;
+    letter-spacing: 0;
+  }
+  .dates {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding-bottom: 20px;
+    .btnretour {
+      flex-grow: unset;
+      flex-shrink: unset;
+      background-color: $gris-bleu;
+      .StdButton-text {
+        text-decoration: underline;
+        color: $blanc;
+      }
+    }
+    .date-pickers {
+      width: calc(100% - 200px);
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+    }
+    .btnsynthese {
+      flex-grow: unset;
+      flex-shrink: unset;
+      background-color: $prairie;
+      .StdButton-text {
+        color: $blanc;
+      }
+    }
+    .caption.space-left {
+      margin-left: 30px;
+    }
+    .MuiFormControl-marginNormal {
+      margin: 0 10px;
+      width: 200px;
+      &:hover .MuiInput-underline:before,
+      &:hover .MuiInput-underline:after,
+      .MuiInput-underline:before,
+      .MuiInput-underline:after {
+        border: 0;
+      }
+      .MuiInput-formControl {
+        background-color: $blanc;
+        border-radius: 2px;
+        padding: 2px 0px 2px 5px;
+      }
+      input {
+        color: $primary;
+        font-family: $f_blk;
+        font-size: 18px;
+        text-align: center;
+      }
+    }
+  } // --- /.dates
+
+
+  .liste-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 0;
+  }
+  .StdButton {
+    margin: 0 2px !important;
+    padding: 0 10px!important;
+    min-width: 40px;
+    min-height: 25px;
+    border-radius: 8px !important;
+  }
+  .StdButton-text {
+    text-transform: uppercase;
+    font-size: 12px;
+    font-family: $f_blk;
+  }
+  .StdButton-icon {
+    height: 20px;
+    width: 20px;
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .action-view {
+    background-color: $prairie;
+  }
+  .action-print {
+    background-color: $primary;
+  }
+
+  .MuiTableCell-root {
+    font-family: $f_med;
+    border: none;
+  }
+  .MuiTableCell-stickyHeader {
+    background-color: $gris-clair;
+  }
+  thead {
+    background-color: $noir_010;
+  }
+  tbody {
+    .liste-id,
+    .liste-fin,
+    .liste-ventes,
+    .liste-actions {
+      background-color: $blanc-fonce;
+    }
+    .liste-ht,
+    .liste-ventes {
+      text-align: right;
+    }
+    .MuiTableCell-body {
+      font-size: 12px;
+    }
+    .MuiTableRow-root.odd {
+      
+      .liste-id,
+      .liste-fin,
+      .liste-ventes,
+      .liste-actions {
+        background-color: $gris-pale;
+      }
+    }
+    .liste-debut,
+    .liste-ht,
+    .liste-nombre {
+      background-color: $blanc;
+    }
+    .MuiTableRow-root.odd {
+      .liste-debut,
+      .liste-ht,
+      .liste-nombre {
+        background-color: $blanc-fonce;
+      }
+    }
+  }
+
+  .MuiTableContainer-root {
+    height: calc(100% - 40px);
+  }
+
+}
+
+.ViewCloturePopin {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none;
+  .Modal-container {
+      background-color: $blanc;
+      width: 500px;
+      border-radius: 15px;
+      padding: 0 20px;
+  }
+  .close-button {
+      background-color: $blanc;
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 30px;
+      height: 30px;
+      min-height: 30px;
+  }
+  .header {
+      height: 55px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      .title {
+          font-family: $f_blk;
+          font-size: 18px;
+          color: $noir;
+          text-align: center;
+          text-transform: uppercase;
+      }
+  }
+  .body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-bottom: 30px;
+
+    .blocwrapper {
+      width: 100%;
+    }
+
+  }
+
+  .footer {
+    text-align: right;
+    .print-cloture {
+        background-color:$primary;
+        width: 45%;
+        min-height: 30px;
+        .StdButton-text {
+            font-family: $f_blk;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+    }
+  }
+  .ticket-x {
+    box-shadow: none;
+    height: 550px;
+    width: 100%;
+    border: 1px dashed $noir;
+    padding: 20px;
+    font-family: $f_boo;
+    font-size: 12px;
+    @include font-smoothing(on);
+
+    overflow-y: scroll;
+
+    .wrapper {
+      height: 100%;
+      width: 100%;
+    }
+    .periode {
+      .val {
+        text-align: center;
+      }
+      padding-bottom: 10px;
+    }
+    .sel {
+      padding-bottom: 10px;
+    }
+
+    .recap {
+      .recap-item {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      padding-bottom: 10px;
+    }
+
+    .titre {
+      text-align: center;
+      border-top: 1px solid $noir;
+      border-bottom: 1px solid $noir;
+      padding: 5px 0;
+      margin: 10px 0 5px;
+    }
+    .detail {
+      .detail-item {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        &.pre-filet {
+          margin-top: 5px;
+          padding-top: 5px;
+          border-top: 1px solid $noir;
+        }
+        &.post-space {
+          padding-bottom: 10px;
+        }
+        &.total {
+          padding-left: 20px;
+        }
+      }
+    }
+    .ventil {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      .ventil-nom,
+      .ventil-intit:nth-child(1) {
+        width: 30%;
+      }
+      &.total {
+        padding-top: 10px;
+      }
+      &.intit {
+        padding-bottom: 5px;
+      }
+    }
+
+  }
+}
