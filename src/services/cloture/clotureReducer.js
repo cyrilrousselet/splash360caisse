@@ -4,7 +4,7 @@ const initialState = {
   loading: false,
   error: null,
   periode: {},
-  clotures: []
+  clotures: {}
 }
 
 export function clotureReducer(state = initialState, action) {

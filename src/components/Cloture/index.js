@@ -21,6 +21,10 @@ import Comptage from './Comptage';
 import { devise } from './../../helpers/toolbox';
 import NumberKeyboard from '../common/NumberKeyboard';
 
+
+import history from '../../helpers/history';
+import paths from '../../constants/routes';
+
 let strings = new LocalizedStrings(data);
 
 
@@ -61,7 +65,7 @@ class Cloture extends React.Component {
   }
 
   componentDidMount() {
-    const { getCommandesList, getCurrentPeriode, Parametres } = this.props;
+    const { getCommandesList, getCurrentPeriode, Parametres, getCloturesList } = this.props;
     // getCommandesList();
     //parametres :
     let params = {};
@@ -69,6 +73,7 @@ class Cloture extends React.Component {
     if (selection_caisse.id!='allcash') params['caisses'] = [selection_caisse];
     if (selection_operator.id!='allope') params['vendeurs'] = [selection_operator];
     getCurrentPeriode(params);
+    getCloturesList();
 //    getParametres();
   }
 
@@ -323,6 +328,7 @@ class Cloture extends React.Component {
                   <div className="no-item">{ strings.modules.cloture.derniere.aucune }</div>  
                 )}
                 <StdButton identifier="btnreprint" elementclass="btnreprint" key="btnreprint" text="Ré-imprimer" disabled={null==lastCloture} onClick={ () => { this.printLastCloture()} } />
+                <StdButton identifier="btnliste" elementclass="btnliste" key="btnliste" text="Liste des clôtures" onClick={ () => { history.push(paths.LISTECLOTURES) } } />
               </div>
               <div className="zone-selecteur">
                 <div className="label">{ strings.modules.cloture.selection.caisse }</div>

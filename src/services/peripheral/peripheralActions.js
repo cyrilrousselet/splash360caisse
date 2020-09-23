@@ -1106,7 +1106,13 @@ function printPeriodeX(payload={}) {
         'periode_x'
       ];
 
-      const { periode } = getState().clotureReducer;
+      let periode = {};
+      if (Object.values(payload).length===0) {
+        periode = getState().clotureReducer.periode;
+      } else {
+        periode = payload.periode;
+      }
+
       const { impression } = strings.modules.cloture;
       const { imprimantes, tickets } = getState().peripheralReducer;
       const { entreprise } = getState().parametresReducer.parametres;
