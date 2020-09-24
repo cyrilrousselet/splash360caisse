@@ -10,8 +10,12 @@ export const clotureServices = {
   makeCloture,
   saveCloture,
   getClotureById,
-  getCloturesList
+  getCloturesList,
+  setSyncedClotures,
+  getCloturesToSync
 };
+
+
 
 
 function getCurrentPeriode(commandes, catalogue, params) {
@@ -403,7 +407,7 @@ function makeCloture(commandes, catalogue, params) {
   return {
     clotureId: _newClotureId(),
     periode: periode,
-    cmdtoarchive: cmdtoarchive,
+    cmdtoarchive: [],
     archived: new Date(),
     comptage: params.comptage,
     prelevement: params.prelevement,
@@ -413,6 +417,12 @@ function makeCloture(commandes, catalogue, params) {
 
 function saveCloture(cloture) {
   return emit('dbCloturePersist', {cloture:cloture});
+}
+function setSyncedClotures(cloturesid, datetime) {
+  return emit('dbClotureSetSynced', {ids:cloturesid, datetime:datetime});
+}
+function getCloturesToSync() {
+  return emit('dbClotureGetToSync');
 }
 
 

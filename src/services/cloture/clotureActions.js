@@ -2,6 +2,7 @@ import { clotureActionTypes } from './clotureActionTypes';
 import { clotureServices } from './clotureServices';
 import { commandeActions } from '../commande/commandeActions';
 import { peripheralActions } from '../peripheral/peripheralActions';
+import { notificationActions } from '../notification/notificationActions';
 
 import { startOfToday, endOfToday, getHours, add, sub, formatISO } from 'date-fns';
 import { differenceInMinutes } from 'date-fns/esm';
@@ -12,7 +13,10 @@ import paths from '../../constants/routes.json';
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import Swal from 'sweetalert2';
+import Logger from '../../helpers/Logger';
 const strings = new LocalizedStrings(data);
+
+const logger = new Logger();
 
 function getCloturesList(params={}) {
 
@@ -138,8 +142,29 @@ function makeCloture(params={}) {
           dispatch({ type: clotureActionTypes.MAKE_CLOTURE, cloture });
           dispatch(getCloturesList());
           dispatch(peripheralActions.printCloture(cloture));
+        //  dispatch(notificationActions.syncClotures([data]));
         }
       )
+
+  }
+}
+
+
+function setSyncedClotures(payload) {
+  return dispatch => {
+    dispatch({ type: clotureActionTypes.SETSYNCED_REQUEST });
+    logger.log('setSyncedClotures()', payload);
+    const {id, datetime} = payload;
+    clotureServices.setSyncedClotures(id,datetime)
+    .then(
+      confirm => {
+        dispatch({ type: clotureActionTypes.SETSYNCED_SUCCESS });
+      //  dispatch(notificationActions.syncDispatch('setsyncedcommandes', {id, datetime}));
+      },
+      error => {
+        dispatch({ type: clotureActionTypes.SETSYNCED_FAILURE, error: error });
+      }
+    );
 
   }
 }
@@ -148,5 +173,6 @@ export const clotureActions = {
   getCurrentPeriode,
   loadCloture,
   makeCloture,
-  getCloturesList
+  getCloturesList,
+  setSyncedClotures
 };

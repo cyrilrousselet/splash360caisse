@@ -32,6 +32,12 @@ const actions = {
       res.send(confirm);
   },
 
+  dbClotureGetToSync: async (req,res) => {
+    (await db.clotures)._.mixin(lodashId);
+    const proxies = await _getCloturesToSync();
+    res.send(proxies);
+  },
+
   dbCloturesSummary: async () => {
 
     (await db.clotures)._.mixin(lodashId);
@@ -46,7 +52,16 @@ const actions = {
     return {
       clotures: _cloSummary
     };
-  }
+  },
+  dbClotureSetSynced: async (req,res) => {
+    const { payload } = req;
+    log.info('dbClotureSetSynced(['+payload.ids+'],'+payload.datetime+') in API');
+
+    (await db.clotures)._.mixin(lodashId);
+    const confirm = await _setSynced(payload.ids, payload.datetime);
+
+    res.send(confirm);
+  },
 
 }
 
@@ -99,7 +114,7 @@ async function _persistCloture(payload) {
                                     .write();
   }
 
-  return _clo != null;
+  return _clo;
 }
 
 function _parseCloture(_rawdata) {
@@ -109,6 +124,42 @@ function _parseCloture(_rawdata) {
   });
 
   return {clotureslist: __clotures};
+}
+
+
+
+async function _getCloturesToSync() {
+  const _clo = await (await db.clotures).get('clotures')
+                                         .filter(c => {
+                                           let toadd = true;
+                                           if (c.hasOwnProperty('sync')==true) {
+                                             if (isAfter(new Date(c.sync), new Date(c.updatedAt))) {
+                                               toadd = false;
+                                             }
+                                           }
+                                           return toadd;
+                                         })
+                                         .value();
+
+  
+  return {clotures:_clo};
+}
+
+
+async function _setSynced(ids, datetime) {
+
+  const __datetime = new Date(datetime).getTime();
+
+  log.info('datetime', __datetime);
+
+  // on en profite pour vider la propriété cmdtoarchive de chaque cloture synchronisée
+
+  let _clo = await (await db.clotures).get('clotures')
+                                       .find(c => ids.includes(c.id))
+                                       .assign({sync: __datetime, updatedAt: __datetime, cmdtoarchive: []})
+                                       .write();
+  // let _cmd = 1;
+  return _clo != null;
 }
 
 module.exports = actions;

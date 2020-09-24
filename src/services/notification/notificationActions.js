@@ -1,6 +1,10 @@
 import { notificationActionTypes } from './notificationActionTypes';
 import { notificationServices } from './notificationServices';
+
 import { commandeActions } from '../commande/commandeActions';
+import { commandeServices } from '../commande/commandeServices';
+import { clotureActions } from '../cloture/clotureActions';
+import { clotureServices } from '../cloture/clotureServices';
 
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
@@ -15,7 +19,6 @@ import { catalogueActions } from '../catalogue/catalogueActions';
 import { parametresActions } from '../parametres/parametresActions';
 import { parametresActionTypes } from '../parametres/parametresActionTypes';
 import { peripheralActions } from '../peripheral/peripheralActions';
-import { commandeServices } from '../commande/commandeServices';
 const strings = new LocalizedStrings(data);
 const logger = new Logger();
 
@@ -335,6 +338,70 @@ function syncCommandes(commandes) {
   }
 }
 
+
+
+function initSyncClotures() {
+  return (dispatch, getState) => {
+
+
+    const { options } = getState().parametresReducer.parametres;
+
+    if (options.role!=="secondary") {
+      
+      clotureServices.getCloturesToSync()
+      .then(
+        results => {
+          const {clotures} = results;
+
+          logger.log('initSyncClotures', clotures.length);
+          if (clotures.length>0) {
+
+            logger.log('preparation des clotures à envoyer au backo');
+
+            const cloturesWOcmdtoarchive = clotures.map(c => {
+                return {...c,
+                  cmdtoarchive: []
+                };
+              
+            });
+
+            dispatch(syncClotures(cloturesWOcmdtoarchive));
+          }
+        }
+      )
+    } else {
+      logger.log('role secondary : pas de synchro clotures');
+    }
+  };
+}
+
+function syncClotures(clotures) {
+  return (dispatch, getState) => {
+
+    const { entreprise } = getState().parametresReducer.parametres; 
+
+    const { options } = getState().parametresReducer.parametres;
+
+    if (options.role!=="secondary") {
+
+      notificationServices.syncClotures({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret, clotures:clotures})
+      .then(
+        response => {
+          dispatch(clotureActions.setSyncedClotures(response.confirm))
+        },
+        error => {
+          logger.error(error);
+        }
+      )
+    } else {
+      logger.log('role secondary : pas de synchro clotures');
+    }
+  }
+}
+
+
+
+
 export const notificationActions = {
   initSSE,
   setPOS,
@@ -348,5 +415,7 @@ export const notificationActions = {
   getNewNumero,
   getDatabase,
   initSyncCommandes,
-  syncCommandes
+  syncCommandes,
+  initSyncClotures,
+  syncClotures
 };

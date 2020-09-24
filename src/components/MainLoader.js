@@ -117,6 +117,7 @@ class MainLoader extends React.Component {
 
         } else if (readytolaunch===null) {
           this.props.initSyncCommandes();
+        //  this.props.initSyncClotures();
           this.props.loadingComplete();
         }
       }
@@ -125,7 +126,7 @@ class MainLoader extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    logger.log('MainLoader.componentDidUpdate()', this.props);
+  //  logger.log('MainLoader.componentDidUpdate()', this.props);
     const { paramLoaded, paramLoading, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, cloLoading, sseInit, params, dbupdated, dbgetInit } = this.props;
 
     let first_start = params ? params.first_start : null;
@@ -202,6 +203,7 @@ class MainLoader extends React.Component {
 
         } else if (readytolauch===null) {
           this.props.initSyncCommandes();
+        //  this.props.initSyncClotures();
           this.props.loadingComplete();
         }
       }

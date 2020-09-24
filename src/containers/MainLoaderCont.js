@@ -50,6 +50,7 @@ const mapDispatchToProps = (dispatch) => {
     initSync: notificationActions.initSync,
     getDatabase: notificationActions.getDatabase,
     initSyncCommandes: notificationActions.initSyncCommandes,
+    initSyncClotures: notificationActions.initSyncClotures,
     quitApp: peripheralActions.quitApp,
     loadNumero: commandeActions.loadNumero
   }, dispatch);
