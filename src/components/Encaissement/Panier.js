@@ -356,6 +356,7 @@ class Panier extends React.Component {
     this.state = {
       selectedIndex: -1,
       selectedIngredient: -1,
+      ingredientid: null,
       inputfocus: true,
       searchval:'',
       commentOpen: false, 
@@ -381,6 +382,7 @@ class Panier extends React.Component {
     this.openComment = this.openComment.bind(this);
     this.saveComment = this.saveComment.bind(this);
     this.closeComment = this.closeComment.bind(this);
+    this.getComment = this.getComment.bind(this);
 
     this.openDiscount = this.openDiscount.bind(this);
     this.saveDiscount = this.saveDiscount.bind(this);
@@ -453,17 +455,22 @@ class Panier extends React.Component {
     if (selectedIngredient===-1) {
       index = index===this.state.selectedIndex ? -1 : index;
     }
-    this.setState({selectedIndex: index, selectedIngredient: -1})
+    this.setState({selectedIndex: index, selectedIngredient: -1, ingredientid: null})
   }
 
-  setSelectedIngredient(index,ingidx) {
+  // sélection / désélection du subItem
+  setSelectedIngredient(index,ingidx, ingId) {
     logger.log(`setSelectedIngredient(${index}, ${ingidx})`)
     const {selectedIndex, selectedIngredient} = this.state;
+    // si l'item est déjà sélectionné
     if (index==selectedIndex) {
+      // si on clique sur un ingrédient déjà sélectionné,
+      // on désélectionne l'ingrédient et sont produit parent
       index = ingidx===selectedIngredient ? -1 : index;
       ingidx = ingidx===selectedIngredient ? -1 : ingidx;
+      ingId = ingidx===selectedIngredient ? null : ingId
     }
-    this.setState({selectedIndex: index, selectedIngredient: ingidx})
+    this.setState({selectedIndex: index, selectedIngredient: ingidx, ingredientid: ingId})
   }
 
   calculateTotal(items, modificateurs) {
@@ -646,11 +653,13 @@ class Panier extends React.Component {
 
     const {comments, items } = this.props.commande;
     const {clavier} = this.props.parametres.entreprise;
-    const {selectedIndex, selectedIngredient} = this.state;
+    const {selectedIndex, selectedIngredient, ingredientid} = this.state;
+
+    logger.log('openComment selectedIngredient', selectedIngredient);
 
     // récup des id d'item et d'ingrédients en fonction de la sélection du panier
     const itemid = (selectedIndex!==-1) ? items[selectedIndex].itemid : null;
-    const ingredientid = (selectedIngredient!==-1) ? items[selectedIndex].ingredients[selectedIngredient].ingredient : null;
+  //  const ingredientid = (selectedIngredient!==-1) ? items[selectedIndex].ingredients[selectedIngredient].ingredient : null;
 
     // si l'id de l'item est défini : 
     // - soit un comment d'item
@@ -683,6 +692,13 @@ class Panier extends React.Component {
         texte: texte
       });
     }
+  }
+
+  getComment(itemid, ingredientid=null) {
+    const {comments} = this.props.commande
+    const cmt = comments.find(c => (c.item==itemid && c.ingredient==ingredientid));
+    
+    return cmt ? cmt.texte : '';
   }
 
 
@@ -737,7 +753,6 @@ class Panier extends React.Component {
   selectTables() {
     logger.log('selectTables()');
   }
-
 
   interval = 0;
 
@@ -1047,6 +1062,7 @@ class Panier extends React.Component {
                           prix={ itm.pu*itm.quantite }
                           disabled={ open }
                           commentaire={ itm.commentaire!=='' }
+                          getComment={ this.getComment }
                           selected={ selectedIndex===i }
                           selectedIng={ selectedIngredient }
                           composition={ itm.composition }
@@ -1216,10 +1232,11 @@ class PanierListeItem extends React.Component {
 
  
   render() {
-    const {id, itemid, nom, quantite, prix, commentaire, selected, discount, deleteDiscountHandler, openDiscountHandler, selectedIng, disabled, ingredients, steps, _onClick, _onDoubleClick, _onSubClick, _onSubDoubleClick} = this.props;
+    const {id, itemid, nom, quantite, prix, commentaire, selected, discount, deleteDiscountHandler, openDiscountHandler, selectedIng, disabled, ingredients, composition, getComment, steps, _onClick, _onDoubleClick, _onSubClick, _onSubDoubleClick} = this.props;
 
 
     logger.log('item discount', discount);
+    logger.log('item compo', composition)
 
     let timer = 0;
     let prevent = false;
@@ -1240,7 +1257,7 @@ class PanierListeItem extends React.Component {
 
     // on définit la liste des ingrédients à partir de l'ordre des steps de personnalisation de l'item
     // (pour exclure les ingrédients non personnalisables et conserver l'ordre des steps)
-    let customIng = [];
+    let customIng = [...composition];
     let i =  -1;
     if (steps) {
       steps.forEach(stp => {
@@ -1266,6 +1283,8 @@ class PanierListeItem extends React.Component {
       });
     }
 
+    const comment = getComment(itemid);
+
     return (
       <div className="PanierListeItem" key={`pli-${id}`}>
         <ListItem 
@@ -1276,9 +1295,12 @@ class PanierListeItem extends React.Component {
           onClick={ handleClick }
           onDoubleClick={ handleDoubleClick }
           >
-          <div className="litm nom">{nom}</div> 
-          <div className="litm quantite">{quantite}</div> 
-          <div className="litm prix">{ prix.toFixed(2).replace('.',',') }</div>
+          <div className="litm row">
+            <div className="nom">{nom}</div> 
+            <div className="quantite">{quantite}</div> 
+            <div className="prix">{ prix.toFixed(2).replace('.',',') }</div>
+          </div>
+          {comment && <div className="litm-comment">{ `* ${comment} *` }</div>}
         </ListItem>
       {customIng.length>0 && (
         <div className="litm ingredients-list">
@@ -1291,11 +1313,12 @@ class PanierListeItem extends React.Component {
               produitIndex={ id }
               ingredientIndex={ i }
               fromStep={ ing.fromStep }
+              comment={ getComment(itemid, ing.ingredient) }
               _key={ `itm${itemid}-ing${ing.ingredient}` }
               _selected={ selectedIng===i && selected }
               _disabled={ disabled }
               _onClick={ _onSubClick }
-              _onDoubleClick={ _onSubDoubleClick }
+              _onDoubleClick={ (ing.fromStep!==null) ? _onSubDoubleClick : null }
             />
           ))}
         </div>
@@ -1331,7 +1354,7 @@ PanierListeItem.propTypes = {
 class PanierListeSubItem extends React.Component {
 
   render() {
-    const { nom, quantite, prix, ingredient, produitIndex, ingredientIndex, fromStep, _key, _selected, _disabled, _onClick, _onDoubleClick } = this.props;
+    const { nom, quantite, prix, ingredient, produitIndex, ingredientIndex, comment, fromStep, _key, _selected, _disabled, _onClick, _onDoubleClick } = this.props;
 
     let timer = 0;
     let prevent = false;
@@ -1339,7 +1362,7 @@ class PanierListeSubItem extends React.Component {
     const handleClick = () => {
       timer = setTimeout(() => {
         if (!prevent) {
-          _onClick(produitIndex, ingredientIndex);
+          _onClick(produitIndex, ingredientIndex, ingredient);
         }
         prevent = true;
       }, 200);
@@ -1347,7 +1370,9 @@ class PanierListeSubItem extends React.Component {
     const handleDoubleClick = () => {
       clearTimeout(timer);
       prevent = true;
-      _onDoubleClick(fromStep);
+      if (_onDoubleClick!==null) {        
+        _onDoubleClick(fromStep);
+      }
     }
 
     return (
@@ -1359,10 +1384,14 @@ class PanierListeSubItem extends React.Component {
         onClick={handleClick}
         onDoubleClick={handleDoubleClick}
         key={_key}
+        className={ `lsitm-${(fromStep===null ? 'compo' : 'ing')}` }
       >
-      <div className="lsitm nom">{ nom }</div>
-      <div className="lsitm quantite">{ quantite }</div>
-      <div className="lsitm prix">{ prix.toFixed(2).replace('.',',') }</div>
+      <div className="lsitm row">
+        <div className="nom">{ nom }</div>
+        <div className="quantite">{ quantite }</div>
+        <div className="prix">{ prix.toFixed(2).replace('.',',') }</div>
+      </div>
+      {comment && <div className="lsitm-comment">{ `* ${comment} *` }</div>}
     </ListItem>
     );
   }

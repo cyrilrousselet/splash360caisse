@@ -292,6 +292,38 @@ const actions = {
 
     __request.end();
 
+  },
+
+
+  syncCloturesBO: (req,res) => {
+    const { url, access_token, clotures } = req.payload;
+
+    let __syncedClotures = [];
+
+    const __request = net.request({
+      url: url,
+      method: 'post'
+    });
+    __request.setHeader('Authorization','Bearer '+access_token)
+    __request.setHeader('Access-Control-Allow-Origin', '*')
+    __request.setHeader('Content-Type', 'application/json');
+
+    __request.write(JSON.stringify({clotures:clotures}));
+
+    __request.on('response', (response) => {
+      response.on('data', (chunk) => {
+        __syncedClotures.push(chunk);
+        log.info(`syncCloturesBO BODY: ${chunk}`)
+      });
+      response.on('end', () => {
+        log.info('syncCloturesBO: end');
+        res.send({confirm: JSON.parse(__syncedClotures.join(''))});
+        // res.send({confirm: true});
+      });
+    });
+
+    __request.end();
+
   }
 
 

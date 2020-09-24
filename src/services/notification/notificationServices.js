@@ -24,7 +24,8 @@ export const notificationServices = {
   sendNumero,
   askNumero,
   getDatabase,
-  syncCommandes
+  syncCommandes,
+  syncClotures
  };
 
 
@@ -41,13 +42,25 @@ async function getDatabase(params) {
 }
 
 async function syncCommandes(params) {
+  console.log('notifSrv.syncCommandes()','init');
   const __splashToken = await getSplashToken(params);
-
+  
   console.log('notifSrv.syncCommandes()',__splashToken);
-
+  
   if (__splashToken.splash_token.access_token) {
     var __url = externalParams.synchro.syncCommandes;
     return emit('syncCommandesBO', {url: __url, access_token: __splashToken.splash_token.access_token, commandes: params.commandes});
+  }
+}
+async function syncClotures(params) {
+  console.log('notifSrv.syncClotures()','init');
+  const __splashToken = await getSplashToken(params);
+
+  console.log('notifSrv.syncClotures()',__splashToken);
+
+  if (__splashToken.splash_token.access_token) {
+    var __url = externalParams.synchro.syncClotures;
+    return emit('syncCloturesBO', {url: __url, access_token: __splashToken.splash_token.access_token, clotures: params.clotures});
   }
 }
 
