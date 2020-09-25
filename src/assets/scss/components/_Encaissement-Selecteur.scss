@@ -55,6 +55,7 @@
         color: $noir;
         text-align: center;
         text-transform: uppercase;
+        user-select: none;
         cursor: pointer;
         &.tab-link-active {
             background-color: $blanc;
