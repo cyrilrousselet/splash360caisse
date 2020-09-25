@@ -18,6 +18,7 @@
     .connexion {
         text-transform: capitalize;
         height: 23px;
+        user-select: none;
         &:before {
             content: '';
             display: inline-block;
@@ -41,24 +42,29 @@
         font-family: $f_med;
         color: $gris;
         font-size: 10px;
+        user-select: none;
     }
     .date {
         display: inline-block;
         padding-right: 50px;
+        user-select: none;
     }
     .heure {
         display: inline-block;
+        user-select: none;
     }
     .logout {
         display: inline-block;
         width: 24px;
         height: 24px;
         margin-left: 50px;
+        user-select: none;
     }
     .right {
         display: inline-flex;
         flex-direction: row;
         justify-content: flex-end;
         align-items: center;
+        user-select: none;
     }
 }

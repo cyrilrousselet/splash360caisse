@@ -21,6 +21,7 @@ import Clavier from '../common/Clavier';
 import {devise} from '../../helpers/toolbox';
 import TableIcon from '../common/icon/TableIcon';
 import Logger from '../../helpers/Logger';
+import CommentRemoveIcon from '../common/icon/CommentRemoveIcon';
 
 let strings = new LocalizedStrings(data);
 const logger = new Logger();
@@ -383,6 +384,7 @@ class Panier extends React.Component {
     this.saveComment = this.saveComment.bind(this);
     this.closeComment = this.closeComment.bind(this);
     this.getComment = this.getComment.bind(this);
+    this.removeComment = this.removeComment.bind(this);
 
     this.openDiscount = this.openDiscount.bind(this);
     this.saveDiscount = this.saveDiscount.bind(this);
@@ -701,7 +703,15 @@ class Panier extends React.Component {
     return cmt ? cmt.texte : '';
   }
 
+  removeComment(itemid, ingredientid=null) {
+    console.log('removeComment', itemid, ingredientid);
+    const {comments} = this.props.commande;
+    const cmt = comments.find(c => (c.item==itemid && c.ingredient==ingredientid));
 
+    if (cmt) {
+      this.props.deleteComment({commentId:cmt.comment_id});
+    }
+  }
 
   closeComment() {
     this.setState({
@@ -1063,6 +1073,7 @@ class Panier extends React.Component {
                           disabled={ open }
                           commentaire={ itm.commentaire!=='' }
                           getComment={ this.getComment }
+                          removeComment= { this.removeComment }
                           selected={ selectedIndex===i }
                           selectedIng={ selectedIngredient }
                           composition={ itm.composition }
@@ -1232,11 +1243,11 @@ class PanierListeItem extends React.Component {
 
  
   render() {
-    const {id, itemid, nom, quantite, prix, commentaire, selected, discount, deleteDiscountHandler, openDiscountHandler, selectedIng, disabled, ingredients, composition, getComment, steps, _onClick, _onDoubleClick, _onSubClick, _onSubDoubleClick} = this.props;
+    const {id, itemid, nom, quantite, prix, commentaire, selected, discount, deleteDiscountHandler, openDiscountHandler, selectedIng, disabled, ingredients, composition, getComment, removeComment, steps, _onClick, _onDoubleClick, _onSubClick, _onSubDoubleClick} = this.props;
 
 
-    logger.log('item discount', discount);
-    logger.log('item compo', composition)
+    // logger.log('item discount', discount);
+    // logger.log('item compo', composition)
 
     let timer = 0;
     let prevent = false;
@@ -1300,7 +1311,7 @@ class PanierListeItem extends React.Component {
             <div className="quantite">{quantite}</div> 
             <div className="prix">{ prix.toFixed(2).replace('.',',') }</div>
           </div>
-          {comment && <div className="litm-comment">{ `* ${comment} *` }</div>}
+          {comment && <div className="litm-comment">{ `* ${comment} *` }<div className="cmtdel" onClick={()=>{removeComment(itemid)}}><CommentRemoveIcon htmlColor="#FF2D55" /></div></div>}
         </ListItem>
       {customIng.length>0 && (
         <div className="litm ingredients-list">
@@ -1319,6 +1330,7 @@ class PanierListeItem extends React.Component {
               _disabled={ disabled }
               _onClick={ _onSubClick }
               _onDoubleClick={ (ing.fromStep!==null) ? _onSubDoubleClick : null }
+              _removeComment={()=>{removeComment(itemid, ing.ingredient)}}
             />
           ))}
         </div>
@@ -1354,7 +1366,7 @@ PanierListeItem.propTypes = {
 class PanierListeSubItem extends React.Component {
 
   render() {
-    const { nom, quantite, prix, ingredient, produitIndex, ingredientIndex, comment, fromStep, _key, _selected, _disabled, _onClick, _onDoubleClick } = this.props;
+    const { nom, quantite, prix, ingredient, produitIndex, ingredientIndex, comment, fromStep, _key, _selected, _disabled, _onClick, _onDoubleClick, _removeComment } = this.props;
 
     let timer = 0;
     let prevent = false;
@@ -1391,7 +1403,7 @@ class PanierListeSubItem extends React.Component {
         <div className="quantite">{ quantite }</div>
         <div className="prix">{ prix.toFixed(2).replace('.',',') }</div>
       </div>
-      {comment && <div className="lsitm-comment">{ `* ${comment} *` }</div>}
+      {comment && <div className="lsitm-comment">{ `* ${comment} *` }<div className="cmtdel" onClick={_removeComment}><CommentRemoveIcon htmlColor="#FF2D55" /></div></div>}
     </ListItem>
     );
   }

@@ -235,7 +235,7 @@ function CloturePopin(props) {
 
 
 function TableClotures(props) {
-  const { liste, id, openClotureId, printClotureId, ...other } = props;
+  const { liste, id, openClotureId, printClotureId, className } = props;
 
   liste.sort((a,b) => {
     let da = new Date(a.cloture.debut), db = new Date(b.cloture.debut);
@@ -354,7 +354,7 @@ class ListeClotures extends React.Component {
   }
 
   getSynthese(clotures) {
-    logger.log('getSynthese()');
+    logger.log('getSynthese()', clotures);
 
     if (clotures.length>0) {
 
@@ -424,7 +424,7 @@ class ListeClotures extends React.Component {
           let __vvi = __vvnd.findIndex(vv => vv.id==v.id);
           // si le vendeur n'est pas encore récupéré, on l'ajoute
           if (__vv==undefined) {
-            __vvnd.push(v);
+            __vvnd.push({...v});
           }
           // si le vendeur est déjà récupéré, on additionne les valeurs des clôtures
            else {
@@ -441,7 +441,7 @@ class ListeClotures extends React.Component {
           let __tti = __vtva.findIndex(tt => tt.id==t.id);
           // si la tva n'est pas encore récupérée, on l'ajoute
           if (__tt==undefined) {
-            __vtva.push(t);
+            __vtva.push({...t});
           }
           // si la tva est déjà récupérée, on additionne les valeurs des clôtures
            else {
@@ -459,7 +459,7 @@ class ListeClotures extends React.Component {
           let __mmi = __vmoy.findIndex(mm => mm.moyen==m.moyen);
           // si le moyen n'est pas encore récupéré, on l'ajoute
           if (__mm==undefined) {
-            __vmoy.push(m);
+            __vmoy.push({...m});
           }
           // si le moyen est déjà récupéré, on additionne les valeurs des clôtures
            else {
@@ -516,8 +516,8 @@ class ListeClotures extends React.Component {
             isBefore(__f, endDate)
         ) {
           
-          let ht = 0;
-          value.periode.ventilation.tva.forEach(t => { ht += t.hasOwnProperty('ht') ? t.ht : 0; });
+          let clotureht = 0;
+          value.periode.ventilation.tva.forEach(t => { clotureht += t.hasOwnProperty('ht') ? t.ht : 0; });
           
           clotures.push({
             id:key,
@@ -525,7 +525,7 @@ class ListeClotures extends React.Component {
               clotureId: value.clotureId,
               debut: value.periode.debut,
               fin: value.periode.fin,
-              ht: devise(ht),
+              ht: devise(clotureht),
               ventes: devise(value.periode.ca),
               nombre: value.archivedcommandesid.length
             }
@@ -533,6 +533,7 @@ class ListeClotures extends React.Component {
         } 
       });
     }
+
 
     return (
       <div className="ListeClotures container">

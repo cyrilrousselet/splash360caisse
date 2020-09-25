@@ -20,7 +20,7 @@ export const clotureServices = {
 
 function getCurrentPeriode(commandes, catalogue, params) {
 
-  console.log('clotureServices.getCurrentPeriode()', params);
+//  console.log('clotureServices.getCurrentPeriode()', params);
 
   let __dep = 0
      ,__vnt = 0
@@ -367,7 +367,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
 
     __mtcaisse = params.fdcaisse + __ca;
 
-    console.log('per.fdcaisse', __fdcaisse_courant);
+   // console.log('per.fdcaisse', __fdcaisse_courant);
 
     return {
       periode: {

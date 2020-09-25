@@ -28,12 +28,13 @@
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
-        height: 30px;
+        height: 20px;
         .ticketId {
             font-family: $f_med;
-            font-size: 18px;
+            font-size: 15px;
             color: $noir;
             padding: 5px;
+            user-select: none;
         }
         .ticketComment {
             float: right;
@@ -47,7 +48,7 @@
     }
 
     .body {
-        height: calc(100% - 205px);
+        height: calc(100% - 165px);
         .PanierListe {
             height: 100%;
         }
@@ -55,33 +56,36 @@
             background-color: $blanc-fonce;
             padding:5px;
             border-radius: 5px;
-            height: calc(100% - 40px);
+            height: calc(100% - 30px);
             .liste-header {
                 background-color: $gris-clair;
                 border-radius: 2px;
                 .lhdr {
                     font-family: $f_med;
-                    font-size: 15px;
+                    font-size: 13px;
                     color: $noir;
                     display: inline-block;
-                    padding: 7px 10px;
+                    padding: 5px 10px;
                     text-align: center;
                 }
                 .lhdr-nom {
                     width: 150px;
                     text-align: left;
+                    user-select: none;
                 }
                 .lhdr-quantite {
                     width: 40px;
-                    padding: 7px 6px;
+                    padding: 5px 6px;
                     background-color: $noir_005;
+                    user-select: none;
                 }
                 .lhdr-prix {
                     width: 80px;
+                    user-select: none;
                 }
             }
             .wrapper {
-                height: calc(100% - 94px);
+                height: calc(100% - 82px);
                 overflow-y: scroll;
                 background: linear-gradient($noir_005 0%, $noir_005 100%);
                 background-size: 40px 100%;
@@ -92,7 +96,7 @@
                 display: flex;
                 flex-direction: row;
                 justify-content: space-between;
-                padding: 10px 10px;
+                padding: 5px 10px;
                 .tool {
                     background-color: $blanc;
                 }
@@ -102,17 +106,19 @@
             display: flex;
             flex-direction: row;
             justify-content: space-between;
-            padding: 10px 10px 5px;
+            padding: 5px 10px 5px;
             .intitule {
                 font-family: $f_hea;
                 font-size: 18px;
                 color: $noir;
+                user-select: none;
             }
             .montant {
                 font-family: $f_hea;
                 font-size: 18px;
                 color: $noir;
                 text-align: right;
+                user-select: none;
             }
         }
     }
@@ -173,6 +179,9 @@
         .action-reprise {
             background-color: $jaune;
         }
+        .StdButton {
+            margin: 3px 5px !important;
+        }
     }
 
 
@@ -185,7 +194,7 @@
         .litm,
         .lsitm {
             font-family: $f_med;
-            font-size: 15px;
+            font-size: 13px;
             color: $noir;
             display: table-cell;
             padding: 7px 10px;
@@ -199,8 +208,8 @@
             align-items: center;
         }
         .lsitm {
-            font-family: $f_boo;
-            font-size: 14px;
+            font-family: $f_med;
+            font-size: 12px;
             color: $noir;
         }
         .MuiListItem-root.Mui-selected {
@@ -214,6 +223,7 @@
             width: 140px;
             text-align: left;
             box-sizing: border-box;
+            user-select: none;
         }
         .quantite {
             box-sizing: border-box;
@@ -221,6 +231,7 @@
             padding: 0px 6px;
             //  background-color: $noir_005;
             position: relative;
+            user-select: none;
             &:before {
                 content: '\00d7';
                 display: inline-block;
@@ -233,6 +244,7 @@
             box-sizing: border-box;
             width: 66px;
             text-align: right;
+            user-select: none;
         }
         .lsitm.row {
             width: 100%;
@@ -255,10 +267,26 @@
             margin-top: -5px;
             padding-bottom: 5px;
             font-size: 12px;
+            position: relative;
+            .cmtdel {
+                position: absolute;
+                top: 50%;
+                margin-top: -9px;
+                right: 0;
+                height: 17px;
+                width: 20px;
+                cursor: pointer;
+                svg {
+                    width: auto;
+                    height: 18px;
+                    padding: 0;
+                    margin: 0;
+                }
+            }
         }
         .lsitm-compo {
             .nom {
-                font-family: $f_boo;
+                font-family: $f_med;
                 color: $gris-fonce;
                 font-style: italic;
             }

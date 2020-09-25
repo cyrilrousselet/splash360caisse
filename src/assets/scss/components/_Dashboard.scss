@@ -22,6 +22,7 @@
             &.nopoint {
                 opacity: 0;
             }
+            user-select: none;
         }
         .disconnect-button {
             background-color: $blanc;
@@ -45,6 +46,7 @@
         }
     }
     .LargeButton {
+        user-select: none;
         &.marketing {
             background-color: #7AD4F6;
             .LargeButton-icon {
@@ -152,6 +154,7 @@
         font-size: 18px;
         color: $noir;
         letter-spacing: 0;
+        user-select: none;
         span {
             font-family: $f-hea;
             font-size: 21px;
