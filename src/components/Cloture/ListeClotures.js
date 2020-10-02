@@ -10,7 +10,7 @@ import history from '../../helpers/history';
 import paths from './../../constants/routes.json';
 
 import 'date-fns';
-import { format, compareAsc, compareDesc, startOfToday, endOfToday, startOfDay, endOfDay, isAfter, isBefore } from "date-fns";
+import { format, compareAsc, compareDesc, startOfToday, endOfToday, startOfDay, endOfDay, isAfter, isBefore, differenceInMinutes } from "date-fns";
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
@@ -169,7 +169,8 @@ function TicketX(props) {
       </div>
       {periode.ventilation.tva.map(tva => (
         <div className="ventil ventil-vendeur" key={ `ventil-${tva.id}` }>
-          <div className="ventil-nom">{`${devise(tva.taux*100)}%`}</div>
+          {/* <div className="ventil-nom">{`${devise(tva.taux*100)}%`}</div> */}
+          <div className="ventil-nom">{tva.taux}</div>
           <div className="ventil-val">{devise(tva.ht)}</div>
           <div className="ventil-val">{devise(tva.montant)}</div>
           <div className="ventil-val">{devise(tva.ttc)}</div>
@@ -512,8 +513,8 @@ class ListeClotures extends React.Component {
 
         if (startDate!==null && 
             endDate!==null &&
-            isAfter(__d, startDate) && 
-            isBefore(__f, endDate)
+            differenceInMinutes(__d, startDate)>=0 && 
+            differenceInMinutes(__f, endDate)<=0
         ) {
           
           let clotureht = 0;

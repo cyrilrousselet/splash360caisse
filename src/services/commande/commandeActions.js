@@ -183,7 +183,35 @@ function validateCommande(payload) {
           updatedAt: formatISO(confirm.updatedAt)
         };
 
-        dispatch(notificationActions.syncCommandes([cmdtosync]));
+        
+        commandeServices.getCommandesToSync(10)
+        .then(
+          results => {
+            const {commandes, chronos} = results;
+            const chrcommandes = commandes.map(c => {
+              const chr = chronos ? chronos.find(h=>h.ticketId==c.ticketId) : undefined;
+              if (chr!==undefined) {
+                return {...c,
+                        chrono: c.chrono || 0,
+                        createdAt: formatISO(c.createdAt),
+                        updatedAt: formatISO(c.updatedAt),
+                        endTime: formatISO(chr.endTime),
+                        careTime: formatISO(chr.careTime.firstCare),
+                        productionTime: Math.round(differenceInMilliseconds(chr.endTime, chr.careTime.firstCare)/10)/100,
+                        waitTime: Math.round(differenceInMilliseconds(chr.careTime.firstCare, parseISO(c.end))/10)/100,
+                      };
+              } else {
+                return {...c,
+                  chrono: c.chrono || 0,
+                  createdAt: formatISO(c.createdAt),
+                  updatedAt: formatISO(c.updatedAt)
+                };
+              }
+            });
+
+            dispatch(notificationActions.syncCommandes([...chrcommandes, cmdtosync]));
+          }
+        );
         // dispatch(setNewNumero());
 //        logger.log('commande.createdAt', payload.createdAt);
         // s'il y a un numéro de commande, c'est qu'on encaisse une commande déjà réglée

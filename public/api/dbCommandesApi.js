@@ -22,8 +22,10 @@ const actions = {
     res.send(proxies);
   },
   dbCommandeGetToSync: async (req,res) => {
+    const {payload} = req;
+    const limit = payload.limit;
     (await db.commandes)._.mixin(lodashId);
-    const proxies = await _getCommandesToSync();
+    const proxies = await _getCommandesToSync(limit);
     res.send(proxies);
   },
   dbCommandeGetCommande: async (req,res) => {
@@ -136,19 +138,40 @@ async function _getAll() {
   return _parseCommandes(__rawdata);
 }
 
-async function _getCommandesToSync() {
-  const _cmd = await (await db.commandes).get('commandes')
-                                         .filter(c => {
-                                           let toadd = true;
-                                           if (c.hasOwnProperty('sync')==true) {
-                                             if (isAfter(new Date(c.sync), new Date(c.updatedAt))) {
-                                               toadd = false;
-                                             }
-                                           }
-                                           if (c.status!=="confirmed" && c.status!=="deleted") toadd = false;
-                                           return toadd;
-                                         })
-                                         .value();
+async function _getCommandesToSync(limit=null) {
+  let _cmd = [];
+
+  if (limit!==null && limit>0) {
+
+    _cmd = await (await db.commandes).get('commandes')
+                                    .filter(c => {
+                                      let toadd = true;
+                                      if (c.hasOwnProperty('sync')==true) {
+                                        if (isAfter(new Date(c.sync), new Date(c.updatedAt))) {
+                                          toadd = false;
+                                        }
+                                      }
+                                      if (c.status!=="confirmed" && c.status!=="deleted") toadd = false;
+                                      return toadd;
+                                    })
+                                    .slice(0,limit)
+                                    .value();
+  } else {
+    
+
+    _cmd = await (await db.commandes).get('commandes')
+                                    .filter(c => {
+                                      let toadd = true;
+                                      if (c.hasOwnProperty('sync')==true) {
+                                        if (isAfter(new Date(c.sync), new Date(c.updatedAt))) {
+                                          toadd = false;
+                                        }
+                                      }
+                                      if (c.status!=="confirmed" && c.status!=="deleted") toadd = false;
+                                      return toadd;
+                                    })
+                                    .value();
+  }
 
   const ids = _cmd.map(c => c.ticketId);
 

@@ -443,7 +443,8 @@ class Cloture extends React.Component {
                 </div>
                 {periode.ventilation.tva.map(tva => (
                   <div className="ventil ventil-vendeur" key={ `ventil-${tva.id}` }>
-                    <div className="ventil-nom">{`${devise(tva.taux*100)}%`}</div>
+                    {/* <div className="ventil-nom">{`${devise(tva.taux*100)}%`}</div> */}
+                    <div className="ventil-nom">{tva.taux}</div>
                     <div className="ventil-val">{devise(tva.ht)}</div>
                     <div className="ventil-val">{devise(tva.montant)}</div>
                     <div className="ventil-val">{devise(tva.ttc)}</div>

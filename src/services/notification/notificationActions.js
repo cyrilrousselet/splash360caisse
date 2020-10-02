@@ -272,7 +272,7 @@ function initSyncCommandes() {
 
     if (options.role!=="secondary") {
       
-      commandeServices.getCommandesToSync()
+      commandeServices.getCommandesToSync(100)
       .then(
         results => {
           const {commandes, chronos} = results;

@@ -1226,8 +1226,8 @@ function sendTicketId(ticketId, numero, response) {
   return emit('sendTicketId', {ticketId, numero, response});
 }
 
-function getCommandesToSync() {
-  return emit('dbCommandeGetToSync');
+function getCommandesToSync(limit=null) {
+  return emit('dbCommandeGetToSync', {limit:limit});
 }
 
 
