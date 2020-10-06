@@ -89,47 +89,31 @@ const actions = {
     device.open(function() {
 
       log.debug('device open -> cashdraw()');
-      // printer
-      //   .cashdraw()
-      //   .cashdraw();
+      printer
+        .cashdraw()
+        .cashdraw();
 
         // device.write('\x1b\x70\x00\x19\xfa', data => {
         //   log.info("data", data);
         // })
 
 
-      device.on('data', function (data) {
-          // log.debug(data);
-          if (typeof data === "string") {
-            log.debug(' --> ',  data.charCodeAt(0).toString(2).padStart(8, '0'));
-          }
-        //   const st = new PrinterStatus(data);
-        //   const stjson = st.toJSON();
-        //   log.debug(stjson['byte'].toString(16));
-        // try{
-        //   const binaire = (parseInt(stjson.byte, 16).toString(2)).padStart(7, '0');
-        //   log.debug(hexa, binaire);
-        // } catch(e) {
-        //   log.debug('pas un nombre');
-        // }
+      // device.on('data', function (data) {
+      //     // log.debug(data);
+      //     if (typeof data === "string") {
+      //       log.debug(' --> ',  data.charCodeAt(0).toString(2).padStart(8, '0'));
+      //     }
           
-
-          // log.debug(st.toJSON());
-          
-      });
+      // });
   
-      log.info('demande de status');
-      device.write(_.DLE+_.EOT+String.fromCharCode(1));
-      // device.write('\x1d\x72\x02');
-      log.info('ouverture');
-      device.write('\x1b\x70\x00\x19\xfa');
+      // log.info('demande de status');
+      // device.write(_.DLE+_.EOT+String.fromCharCode(1));
+      // // device.write('\x1d\x72\x02');
+      // log.info('ouverture');
+      // device.write('\x1b\x70\x00\x19\xfa');
       
-      log.info('demande de status');
-      device.write(_.DLE+_.EOT+String.fromCharCode(1));
-
-      // device.write(_.DLE);
-      // device.write(_.EOT);
-      // device.write(String.fromCharCode(1));
+      // log.info('demande de status');
+      // device.write(_.DLE+_.EOT+String.fromCharCode(1));
 
 
       setTimeout(() => {
@@ -1032,7 +1016,6 @@ function _printPeriodeX(printer, data, strings) {
       ]);
     } else if (data.vendeurs.length==1){
       printer.tableCustom([
-        // {text: strings.vendeurs[0]+data.vendeurs[0].nom+' ('+data.vendeurs[0].id+')', cols:42, align:'LEFT'}
         {text: strings.vendeurs[0]+data.vendeurs[0].nom, cols:42, align:'LEFT'}
       ]);
     }
@@ -1181,7 +1164,8 @@ function _printPeriodeX(printer, data, strings) {
       printer
         .style('NORMAL')
         .tableCustom([
-          {text: Number(tva.taux*100).toFixed(2).replace('.',',')+'%', cols:9, align:'LEFT'},
+          // {text: Number(tva.taux*100).toFixed(2).replace('.',',')+'%', cols:9, align:'LEFT'},
+          {text: tva.taux, cols:9, align:'LEFT'},
           {text:'', cols:3},
           {text: Number(tva.ht).toFixed(2).replace('.',','), cols:8, align:'RIGHT'},
           {text:'', cols:3},
@@ -1259,7 +1243,6 @@ function _printPeriodeZ(printer, data, strings) {
       .align('CT')
       .tableCustom([{text: strings.periode.titre, cols:42, align:'LEFT'}])
       .tableCustom([{text: data.debut+' -> '+data.fin, cols:42, align:'CENTER'}])
-        // [{text: strings.editeur+data.editeur.nom+' ('+data.editeur.id+')', cols:42, align:'LEFT'}]
       .tableCustom([{text: strings.editeur+data.editeur.nom, cols:42, align:'LEFT'}])
       .feed(1)
       ;

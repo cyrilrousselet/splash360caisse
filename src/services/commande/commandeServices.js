@@ -1297,7 +1297,7 @@ const _getCommandeTotal = (items, modificateurs) => {
     });
   }
 
-  // en attendant d'avoir un discount sur chaque item / ingredient
+       // modificateurs pour la commande
   __modificateur = modificateurs.find(c => c.item===null && c.ingredient===null);
   if (__modificateur) {
     const ispc = String(modificateurs[0].valeur).substr(-1,1)==='%';

@@ -224,12 +224,12 @@ function getCurrentPeriode(commandes, catalogue, params) {
           if (ing.supplement==null) logger.error('aucun supplement pour ing dans item id', itm.itemid);
 
           // let iht = (Number(ing.prix)*ing.qte) / (1 + Number(ing.tva.valeur));
-          let iht = Number(ing.supplement) / (1 + Number(artIngTva.valeur));
+          let iht = Number(itm.quantite * ing.supplement) / (1 + Number(artIngTva.valeur));
 
           artTva[artIngTva.code] = Object.assign(artTva[artIngTva.code], {
             montant: artTva[artIngTva.code].montant + (iht * Number(artIngTva.valeur)),
             ht: artTva[artIngTva.code].ht + iht,
-            ttc: artTva[artIngTva.code].ttc + Number(ing.supplement)
+            ttc: artTva[artIngTva.code].ttc + Number(itm.quantite * ing.supplement)
           });
         });
 
