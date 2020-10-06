@@ -371,8 +371,12 @@ function _launchPrint(template, printer, contenu) {
     }
     else if ('uber' ===  section) {
       const pqr = await _printUber(printer, contenu.uber, contenu.strings.uber);
-    } else if ('recap' === section) {
+    } 
+    else if ('recap' === section) {
       _printRecap(printer, contenu.recap, contenu.strings);
+    } 
+    else if ('etiquette' === section) {
+      _printEtiquettes(printer, contenu);
     }
     // else if ('logo' === section) {
     //   if (contenu.logo!==null) {
@@ -393,7 +397,42 @@ function _launchPrint(template, printer, contenu) {
   });
 }
 
+function _printEtiquettes(printer, data) {
 
+
+  log.info('_printEtiquette', data);
+
+  data.articles.forEach(art => {
+
+    const inglist = art.ingredients.map(ing => ing.qte+'x '+ing.nom.toLowerCase());
+
+    printer
+    .font('A')
+    .align('CT')
+    .style('B')
+    .size(0,0)
+    .tableCustom([
+      {text:'#'+data.numero, align:'LEFT', cols:6, style:'B'},
+      {text:'', cols:3},
+      {text:data.mode, align:'CENTER', cols:10, style:'NORMAL'},
+      {text:'', cols:2},
+      {text:data.date, align:'RIGHT', cols:21, style:'NORMAL'}
+    ])
+    .size(1,1)
+    .tableCustom([
+      {text: art.nom, align:'LEFT', cols:42, style:'B'}
+    ])
+    .size(0.5,0.5)
+    .tableCustom([
+      {text: inglist.join(', '), align:'LEFT', cols:42, style:'NORMAL'}
+    ])
+    .feed(1)
+    .cut();
+
+
+  });
+
+}
 
 // informations commande sur le ticket
 function _printInfo(printer, data, strings) {

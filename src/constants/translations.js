@@ -893,7 +893,8 @@ const data = {
                                     template_liste: {
                                         //  commande: 'Commande',
                                         principal: 'Principal',
-                                        partiel: 'Partiel'//,
+                                        partiel: 'Partiel',
+                                        etiquette: 'Etiquette'//,
                                         //  cloture_x: 'X de caisse',
                                         //  cloture_z: 'Ticket de clôture'
                                     },

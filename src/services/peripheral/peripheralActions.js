@@ -14,6 +14,8 @@ import {data} from '../../constants/translations';
 import { commandeActions } from '../commande/commandeActions';
 import { remove } from 'diacritics';
 import { lowerCase } from 'lodash';
+import Logger from '../../helpers/Logger';
+const logger = new Logger();
 const removeDiacritics = remove;
 const strings = new LocalizedStrings(data);
 
@@ -22,7 +24,7 @@ function printTest(payload) {
     peripheralServices.printTest()
     .then(
       response => {
-        console.log(response);
+        logger.log(response);
       }
     )
     dispatch({ type: peripheralActionTypes.PRINT_TEST });
@@ -33,7 +35,7 @@ function printAvoir(payload) {
   return (dispatch, getState) => {  
     
    
-    console.log('printAvoir()', payload);
+    logger.log('printAvoir()', payload);
 
     const { imprimantes, tickets } = getState().peripheralReducer;
     const { entreprise } = getState().parametresReducer.parametres;
@@ -66,7 +68,7 @@ function printAvoir(payload) {
     peripheralServices.printTicket(imprimante, templates.avoir, contenu)
     .then(
       response => {
-        console.log('print Avoir');
+        logger.log('print Avoir');
       }
     )
     dispatch({ type: peripheralActionTypes.PRINT_AVOIR });
@@ -123,7 +125,7 @@ function updateImprimante(payload) {
 
     imprimante = {...imprimante, ...updated_data};
 
-    console.log('updateImprimante()', imprimante);
+    logger.log('updateImprimante()', imprimante);
 
     peripheralServices.updateImprimante(imprimante)
       .then(
@@ -198,7 +200,7 @@ function updateTicket(payload) {
     });
 
     ticket = {...ticket, ...updated_data};
-    console.log('updateTicket()', ticket);
+    logger.log('updateTicket()', ticket);
 
      peripheralServices.updateTicket(ticket)
       .then(
@@ -249,15 +251,15 @@ function createTicket(payload) {
 
 function _getTicketsToPrint(filtre, tickets) {
 
-  console.log('_getTicketsToPrint',filtre);
+  logger.log('_getTicketsToPrint',filtre);
 
   let liste;
   if (filtre==='all') {
-    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['commande','partiel','principal']).indexOf(tck.template)>-1));
+    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['commande','partiel','principal','etiquette']).indexOf(tck.template)>-1));
   } else if (filtre==='production') {
-    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['partiel','principal']).indexOf(tck.template)>-1));
+    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['partiel','principal','etiquette']).indexOf(tck.template)>-1));
   } else if (filtre==='all_uber') {
-    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['uber','partiel','principal']).indexOf(tck.template)>-1));
+    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['uber','partiel','principal','etiquette']).indexOf(tck.template)>-1));
   } else if (filtre.hasOwnProperty('templates')) {
     liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && filtre.templates.indexOf(tck.template)>-1));
   } else if (filtre.hasOwnProperty('ids')) {
@@ -355,8 +357,8 @@ function printCommandeTicket(quelstickets, cmd) {
     const { clients } = state.clientsReducer;
 
 
-    console.log(cmd);
-    // console.log(clients);
+    logger.log(cmd);
+    // logger.log(clients);
 
     const caisse = cmd.caisse;
     const operateur = cmd.operator;
@@ -399,6 +401,7 @@ function printCommandeTicket(quelstickets, cmd) {
     const ticketsProd = ticketsListe.filter(t => (['partiel', 'principal']).indexOf(t.template)>-1);
     const recapTickets = _getRecap(ticketsListe.filter(t => 'partiel' === t.template), cmd, catalogue, types, ingredients);
 
+    logger.log('ticketsListe', ticketsListe);
 
     // y a-t-il KDS d'activé pour un des ticket de la liste ?
     const withKds = ticketsProd.find(i=>i.kds);
@@ -638,8 +641,8 @@ function printCommandeTicket(quelstickets, cmd) {
               ttc: artTva[artIngTva.code].ttc + Number(ing.supplement)
             });
 
-            // console.log('iht','(Number('+ing.prix+')*'+ing.qte+') / (1 + Number('+artIngTva.valeur+'))');
-            // console.log(JSON.stringify(cmdTva));
+            // logger.log('iht','(Number('+ing.prix+')*'+ing.qte+') / (1 + Number('+artIngTva.valeur+'))');
+            // logger.log(JSON.stringify(cmdTva));
             
 
           });
@@ -742,8 +745,8 @@ function printCommandeTicket(quelstickets, cmd) {
           });
           
 
-          // console.log('iht','(Number('+article.pu+')*'+article.quantite+') / (1 + Number('+article.tva.valeur +'))');
-          // console.log(JSON.stringify(cmdTva));
+          // logger.log('iht','(Number('+article.pu+')*'+article.quantite+') / (1 + Number('+article.tva.valeur +'))');
+          // logger.log(JSON.stringify(cmdTva));
           total += articletotal;
         });
         
@@ -1071,6 +1074,94 @@ function printCommandeTicket(quelstickets, cmd) {
         }
 
       }
+      else if (ticket.template==="etiquette") {
+
+        // -> template ticket
+        template = templates.etiquette;
+
+        let __comment = null;
+        let articles = [];
+        cmd.items.forEach(article => {
+
+          let articleIngredients = [];
+          let ingredientsAsProducts = [];
+
+
+          const inglist = [...article.composition, ...article.ingredients];
+
+
+          inglist.forEach(ing => {
+
+            const ingnoprint = ingredients[ing.ingredient].noprint!=null ? ingredients[ing.ingredient].noprint : types[ing.type].noprint;
+
+            // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
+            let __noprint = ingnoprint.find(p=>p===ticket.ticket_id);
+
+            // ordre du type d'ingrédient
+            let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
+            // ordre du type d'ingrédient (défini dans les paramètres)
+            if (impression_ordre && impression_ordre.types) {
+              let __typeweight = impression_ordre.types.findIndex(t=>t===ing.type);
+              if (__typeweight!=-1) __ingweight = __typeweight;
+            }
+
+
+            if (!__noprint) {
+              if (ingredients[ing.ingredient].asproduct) {
+                ingredientsAsProducts.push({
+                    qte: ing.qte * article.quantite,
+                    nom: removeDiacritics(ing.nom),
+                    ingredients: []
+                });
+              } else {
+                articleIngredients.push({
+                  qte: ing.qte * article.quantite,
+                  nom: removeDiacritics(ing.nom),
+                  weight: __ingweight
+                });
+              }
+            }
+          });
+
+          articleIngredients.sort((a,b)=>a.weight-b.weight);
+
+          const prd = _getProduit(article.produitid, catalogue);
+          const prdnoprint = prd.noprint!=null ? prd.noprint : catalogue[prd.groupe].noprint;
+          // si le groupe de produits ne doit pas s'imprimer sur ce ticket
+          let __anoprint = prdnoprint.find(p=>p===ticket.ticket_id);
+
+          // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
+          let __noprintableingredient =  (inglist.length>0 && articleIngredients.length==0);
+          
+          // si le groupe doit s'imprimer sur ce ticket
+          // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
+          // on ajoute ce produit à la liste à imprimer
+          // if (!__noprintableingredient && (!__anoprint || (__anoprint && articleIngredients.length>0))) {
+          if (!__noprintableingredient && !__anoprint) {
+            articles.push({
+              qte: article.quantite,
+              nom: removeDiacritics(article.nom),
+              ingredients: articleIngredients
+            });        
+          }
+          if (ingredientsAsProducts.length>0 && !__anoprint) {
+            articles = [...articles, ...ingredientsAsProducts];
+          }
+
+        });
+
+
+        // si aucun article ne s'imprime sur ce ticket, on n'imprime pas le ticket
+        noarticle = (articles.length==0);
+
+        contenu = {
+          numero: cmdnumero,
+          mode: strings.tickets.sac.mode[cmd.mode],
+          date: `${format(__createdAt, "dd/MM/yyyy")} à ${heure}`,
+          articles: articles
+        };
+
+      }
 
       if (noarticle) {
         dispatch({ type: peripheralActionTypes.NOPRINT_TICKET, template: template, reason: 'no article' });
@@ -1079,7 +1170,7 @@ function printCommandeTicket(quelstickets, cmd) {
         peripheralServices.printTicket(target_imprimantes[0], template, contenu)
         .then(
           response => {
-            console.log(response);
+            logger.log(response);
           }
         )
         dispatch({ type: peripheralActionTypes.PRINT_TICKET });
@@ -1147,7 +1238,7 @@ function printPeriodeX(payload={}) {
     peripheralServices.printTicket(imprimante, template, contenu)
     .then(
       response => {
-        console.log('print X');
+        logger.log('print X');
       }
     )
     dispatch({ type: peripheralActionTypes.PRINT_PERIODE_X });
@@ -1175,7 +1266,7 @@ function printCloture(payload={}) {
     }
 
 
-    console.log('printCloture()', payload);
+    logger.log('printCloture()', payload);
 
     const { impression } = strings.modules.cloture;
     const { imprimantes, tickets } = getState().peripheralReducer;
@@ -1213,7 +1304,7 @@ function printCloture(payload={}) {
     peripheralServices.printTicket(imprimante, template, contenu)
     .then(
       response => {
-        console.log('print Z');
+        logger.log('print Z');
       }
     )
     dispatch({ type: peripheralActionTypes.PRINT_PERIODE_Z });

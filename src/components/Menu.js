@@ -398,7 +398,7 @@ class Menu extends React.Component {
 
   const defCat = categorie || categories[0].categorie_id;
 
-  const tickList = Object.values(tickets).filter(tck=> (['partiel','principal']).indexOf(tck.template)!==-1 && tck.imprimantes.length>0);
+  const tickList = Object.values(tickets).filter(tck=> (['partiel','principal','etiquette']).indexOf(tck.template)!==-1 && tck.imprimantes.length>0);
 
   const inglist = Object.entries(ingredientTypes).map(([typid,type]) => {
     const ing = type.ingredients.map(ingid => ingredients[ingid]);
