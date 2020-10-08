@@ -17,6 +17,7 @@ const getPixels = require('get-pixels');
 const QRCode = require('qrcode');
 
 let printerOpen = false;
+let waitInterval = -1;
 
 
 const actions = {
@@ -34,8 +35,10 @@ const actions = {
     log.info('printerOpen',printerOpen);
 
     if (printerOpen) {
-      let waitInterval = setInterval(function() {
+      waitInterval = setInterval(function() {
+        log.info('wait for printer close', printerOpen);
         if (!printerOpen) {
+          log.info('at last, printer closed', printerOpen);
           clearInterval(waitInterval);
           _doPrintTicket(imprimante, template, contenu);
         }
@@ -86,72 +89,121 @@ const actions = {
     }
     const options = {encoding: imprimante.encoding, width:42};
     const printer = new escpos.Printer(device, options);
-    device.open(function() {
-
-      log.debug('device open -> cashdraw()');
-      printer
-        .cashdraw()
-        .cashdraw();
-
-        // device.write('\x1b\x70\x00\x19\xfa', data => {
-        //   log.info("data", data);
-        // })
 
 
-      // device.on('data', function (data) {
-      //     // log.debug(data);
-      //     if (typeof data === "string") {
-      //       log.debug(' --> ',  data.charCodeAt(0).toString(2).padStart(8, '0'));
-      //     }
+    if (printerOpen) {
+      waitInterval = setInterval(function() {
+        log.info('wait for printer close', printerOpen);
+        if (!printerOpen) {
+          log.info('at last, printer closed', printerOpen);
+          clearInterval(waitInterval);
           
-      // });
-  
-      // log.info('demande de status');
-      // device.write(_.DLE+_.EOT+String.fromCharCode(1));
-      // // device.write('\x1d\x72\x02');
-      // log.info('ouverture');
-      // device.write('\x1b\x70\x00\x19\xfa');
+            // ATTENTION : même code que pour les lignes 122->135
+            device.open(function(error) {
+              if (error) {
+                log.error(`ERREUR IMPRIMANTE->TIROIR (${imprimante.connexion}: ${imprimante.param}) =>`, e.message);
+              } else {
+                log.debug('device open -> cashdraw()');
+                printer
+                  .cashdraw()
+                  .cashdraw();
+                  
+                setTimeout(() => {
+                    printer.close();
+                }, 1000);
+              }
+            });
+        }
+      },200);
+    }
+    else {
       
-      // log.info('demande de status');
-      // device.write(_.DLE+_.EOT+String.fromCharCode(1));
+      // ATTENTION : même code que pour les lignes 102->115
+      device.open(function(error) {
+        if (error) {
+          log.error(`ERREUR IMPRIMANTE->TIROIR (${imprimante.connexion}: ${imprimante.param}) =>`, e.message);
+        } else {
+          log.debug('device open -> cashdraw()');
+          printer
+            .cashdraw()
+            .cashdraw();
+            
+          setTimeout(() => {
+              printer.close();
+          }, 1000);
+        }
+      });
 
 
-      setTimeout(() => {
-          printer.close();
-      }, 1000);
+    }
 
 
 
 
 
-/*
 
-      if (imprimante.connexion==='usb') {
-        log.info('send "GS r 2" to printer');
+    // device.open(function() {
 
-        device.write('\x1d\x72\x02', (error,data) => {
-          log.info('get data',data);
-        });
+    //   log.debug('device open -> cashdraw()');
+    //   printer
+    //     .cashdraw()
+    //     .cashdraw();
 
-
-        device.write('\x1b\x70\x00\x19\xfa', (error,data) => {
-          log.info("open drawer data", data);
-        });
+    //     // device.write('\x1b\x70\x00\x19\xfa', data => {
+    //     //   log.info("data", data);
+    //     // })
 
 
-      } else {
-        printer.cashdraw();
-        printer.getStatus(statuses.PrinterStatus.getClassName(), status => {
-          log.info(status.toJSON());
-        });
-      }
-      printer.close();
-      // setTimeout(() => {
-      //   printer.close();
-      // }, 200);
-    */  
+    //   // device.on('data', function (data) {
+    //   //     // log.debug(data);
+    //   //     if (typeof data === "string") {
+    //   //       log.debug(' --> ',  data.charCodeAt(0).toString(2).padStart(8, '0'));
+    //   //     }
           
-    });
+    //   // });
+  
+    //   // log.info('demande de status');
+    //   // device.write(_.DLE+_.EOT+String.fromCharCode(1));
+    //   // // device.write('\x1d\x72\x02');
+    //   // log.info('ouverture');
+    //   // device.write('\x1b\x70\x00\x19\xfa');
+      
+    //   // log.info('demande de status');
+    //   // device.write(_.DLE+_.EOT+String.fromCharCode(1));
+
+
+    //   setTimeout(() => {
+    //       printer.close();
+    //   }, 1000);
+
+    // / *
+
+    //   if (imprimante.connexion==='usb') {
+    //     log.info('send "GS r 2" to printer');
+
+    //     device.write('\x1d\x72\x02', (error,data) => {
+    //       log.info('get data',data);
+    //     });
+
+
+    //     device.write('\x1b\x70\x00\x19\xfa', (error,data) => {
+    //       log.info("open drawer data", data);
+    //     });
+
+
+    //   } else {
+    //     printer.cashdraw();
+    //     printer.getStatus(statuses.PrinterStatus.getClassName(), status => {
+    //       log.info(status.toJSON());
+    //     });
+    //   }
+    //   printer.close();
+    //   // setTimeout(() => {
+    //   //   printer.close();
+    //   // }, 200);
+    // * /  
+          
+    // });
 
     res.send({msg: 'drawer open'});
 
@@ -246,7 +298,6 @@ function _doPrintTicket(imprimante, template, contenu) {
     
     // const options = {encoding: imprimante.encoding};
     printer = new escpos.Printer(device, options);
-    printerOpen = true;
     
   } catch(e) {
     log.error(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`, e.message);
@@ -271,16 +322,24 @@ function _doPrintTicket(imprimante, template, contenu) {
       // on ouvre la connexion à l'imprimante
       if (device) {
         
-        device.open(async function() {
-          log.debug('print logo');
-          // center logo
-          printer.align('CT');
-          // impression logo
-          let printimage = await _printImage(printer, image);
+        device.open(async function(error) {
 
-          // une fois le logo chargé on lance l'impression des sections du tickets
-          if (printimage) {
-          _launchPrint(template, printer, contenu);
+          if (error) {
+            log.error(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`, error.message);
+          } else {
+            
+            printerOpen = true;
+
+            log.debug('print logo');
+            // center logo
+            printer.align('CT');
+            // impression logo
+            let printimage = await _printImage(printer, image);
+
+            // une fois le logo chargé on lance l'impression des sections du tickets
+            if (printimage) {
+            _launchPrint(template, printer, contenu);
+            }
           }
 
         });
@@ -297,8 +356,14 @@ function _doPrintTicket(imprimante, template, contenu) {
     // on ouvre la connexion à l'imprimante
     // et on lance l'impression des sections du tickets
     if (device) {
-      device.open(function() {
-        _launchPrint(template, printer, contenu);
+      device.open(function(error) {
+
+        if (error) {
+          log.error(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`, error.message);
+        } else {
+          printerOpen = true;
+          _launchPrint(template, printer, contenu);
+        }
       });
     } else {
       log.error('impression impossible');
