@@ -1,5 +1,4 @@
 import {emit} from 'eiphop';
-import {add} from 'date-fns';
 import canonicalizeString from '@pelevesque/canonicalize-string';
 
 export const clientsServices = {

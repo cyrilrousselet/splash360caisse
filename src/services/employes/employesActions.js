@@ -1,6 +1,5 @@
 import { employesActionTypes } from "./employesActionTypes";
 import { employesServices } from "./employesServices";
-import { getTimeadjusts } from "./employesReducer";
 import { notificationActions } from "../notification/notificationActions";
 
 function getPointagesList(params={}) {
@@ -152,7 +151,6 @@ function setClockIn(payload) {
 
   return dispatch => {
 
-    const { time, user_id } = payload;
     dispatch({ type: employesActionTypes.CLOCKIN_REQUEST });
 
     employesServices.newPointage(payload)
@@ -175,7 +173,7 @@ function setClockOut(payload) {
     const { time, pointage_id } = payload;
     dispatch({ type: employesActionTypes.CLOCKOUT_REQUEST });
 
-    const pointage = getState().employesReducer.pointages.find(p => p.pointage_id==pointage_id);
+    const pointage = getState().employesReducer.pointages.find(p => p.pointage_id===pointage_id);
 
     employesServices.updatePointage({...pointage, clockout: time, status: 'closed'})
     .then(

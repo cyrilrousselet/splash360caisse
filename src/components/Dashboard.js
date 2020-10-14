@@ -15,12 +15,6 @@ const DISABLED_MODULES = ['stocks'];
 
 class Dashboard extends Component {
 
-  constructor(props) {
-    super(props);
-
-    // this.calculeCA = this.calculeCA.bind(this);
-  }
-
   componentDidMount() {
   //  console.log('Dashboard.componentDidMount()');
     this.props.getCommandesList();
@@ -56,10 +50,10 @@ class Dashboard extends Component {
 
   render() {
 
-    const { cashname, username, userid, modules, points, devise, onClickUseraccount, userLogout, onClickModule, periode } = this.props;
+    const { cashname, username, modules, devise, userLogout, onClickModule, periode } = this.props;
     const { ca, numtickets } = periode;
   
-    if (ca==undefined) {
+    if (ca===undefined || ca===null) {
       return <LoadingSpinner className="Dashboard-loader" />;
     }
 
@@ -75,9 +69,7 @@ class Dashboard extends Component {
         <div className="topzone">
           <div className="cashName">{ cashname }</div>
           <div className="userName" 
-            // onClick={()=>{onClickUseraccount(userid)} }
           >{ username }</div>
-          {/* <div className={ `points${points==null ? ' nopoint':''}` }>{ `${points}${strings.dashboard.points}` }</div> */}
           <Fab aria-label="disconnect" size="small" className="disconnect-button" onClick={userLogout}>
             <ConnectIcon />
           </Fab>
@@ -85,12 +77,12 @@ class Dashboard extends Component {
         <div className="modules">
         {modules.map((module, i) =>
           <div className="module-item" key={ i }>
-            <LargeButton identifier={ module.toUpperCase() } disabled={DISABLED_MODULES.indexOf(module)!=-1} elementclass={ module } icon={ true } text={ strings.modules[module].nom } onClick={(value) => { onClickModule(value) }}></LargeButton>
+            <LargeButton identifier={ module.toUpperCase() } disabled={DISABLED_MODULES.indexOf(module)>-1} elementclass={ module } icon={ true } text={ strings.modules[module].nom } onClick={(value) => { onClickModule(value) }}></LargeButton>
           </div>
         )}
         </div>
-        { modules.indexOf('statistiques')!==-1 && ( <div className="tickets">{ strings.dashboard.ticketsnum }<span>{ numtickets }</span></div> )}
-        { modules.indexOf('statistiques')!==-1 && ( <div className="ca">{ strings.dashboard.ca }<span className={ ca_eval }>{ ca.toFixed(2).replace(/\./g,',') }{ devise }</span></div> )}
+        { modules.indexOf('statistiques')>-1 && ( <div className="tickets">{ strings.dashboard.ticketsnum }<span>{ numtickets }</span></div> )}
+        { modules.indexOf('statistiques')>-1 && ( <div className="ca">{ strings.dashboard.ca }<span className={ ca_eval }>{ ca.toFixed(2).replace(/\./g,',') }{ devise }</span></div> )}
       </div>
       </ErrorBoundary>
     );

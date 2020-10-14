@@ -100,7 +100,7 @@ function updateUser(payload) {
 
     // on ne récupère que les propriétés qui ont été mises à jour
     let updated_data = {};
-    Object.entries(data).map(([key,value]) => {
+    Object.entries(data).forEach(([key,value]) => {
       console.log('updateUser: '+key,value);
       if (value!==null) updated_data[key] = value;
       if (key==='status' && value==='deleted') updated_data['identifiant'] = '';
@@ -130,7 +130,7 @@ function createUser(payload) {
     dispatch({ type: userActionTypes.CREATE_REQUEST });
 
     let updated_data = {};
-    Object.entries(payload).map(([key,value]) => {
+    Object.entries(payload).forEach(([key,value]) => {
       if (value) updated_data[key] = value;
     });
     const newuser = {...updated_data};

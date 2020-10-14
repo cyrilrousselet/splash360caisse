@@ -1,14 +1,11 @@
 import React from 'react';
 import {data} from '../../constants/translations';
 import LocalizedStrings from 'react-localization';
-import LabelledField from '../common/LabelledField';
-import SwitchCheckbox from '../common/SwitchCheckbox';
 import Swal from 'sweetalert2';
-import { List, ListItem, ListItemText, ListItemSecondaryAction, ListItemIcon, Input, Modal, Fab, TextField } from '@material-ui/core';
+import { List, ListItem, ListItemText, ListItemSecondaryAction, ListItemIcon, Modal, Fab, TextField } from '@material-ui/core';
 import { Container, Draggable } from 'react-smooth-dnd';
 import DragHandleIcon from "@material-ui/icons/DragHandle";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { move } from 'lodash-move';
 import EditIcon from '../common/icon/EditIcon';
 import CloseIcon from '../common/icon/CloseIcon';
 import StdButton from '../common/StdButton';
@@ -21,9 +18,6 @@ let strings = new LocalizedStrings(data);
 function CommentaireEditModal (props) {
   const {id, message, editOpen, closeHandler, clavierOpen, updateMessage, saveCommentaire} = props;
 
-  const onKeyboardChange = (input) => {
-    console.log('change',input);
-  }
 
   return(
     <div>
@@ -127,7 +121,7 @@ class CommandesCommentaires extends React.Component {
   }
   saveCommentaire(id) {
 
-    const { data, updateValeur } = this.props;
+    const { data } = this.props;
     const {comment_predefini} = data;
     const {editmessage} = this.state;
 
@@ -140,17 +134,11 @@ class CommandesCommentaires extends React.Component {
       if (id===-1) {
         nvcomment_predefini = [...comment_predefini, cmt];
       } else {
-        const cmtIndex = nvcomment_predefini.findIndex(c=>c.id==id);
+        const cmtIndex = nvcomment_predefini.findIndex(c=>c.id===id);
         cmt = nvcomment_predefini[cmtIndex];
         nvcomment_predefini[cmtIndex] = {...cmt, message: editmessage};
       }
 
-
-      updateValeur({
-        domaine: 'commandes',
-        cle:'comment_predefini',
-        valeur: nvcomment_predefini
-      });
     }
     this.setState({
       editing:null,
@@ -181,7 +169,7 @@ class CommandesCommentaires extends React.Component {
   }
 
   render() {
-    const { data, updateValeur, getAll, entreprise } = this.props;
+    const { data, entreprise } = this.props;
     const { comment_predefini } = data;
     const { editing, editmessage } = this.state;
     const { clavier } = entreprise;

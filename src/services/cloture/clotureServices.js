@@ -1,6 +1,6 @@
 import {emit} from 'eiphop';
 
-import { startOfDay, startOfToday, endOfToday, isAfter, isBefore, parseJSON } from 'date-fns';
+import { startOfDay, startOfToday, isAfter, isBefore, parseJSON } from 'date-fns';
 
 import Logger from '../../helpers/Logger';
 const logger = new Logger();
@@ -27,7 +27,6 @@ function getCurrentPeriode(commandes, catalogue, params) {
      ,__remb = 0
      ,__ca = 0
      ,__tickets = 0
-     ,__ticket_moy = 0
      ,__mtcaisse = 0
      ,__ventil = {vendeur:[], tva:[], moyen:[]}
      ,__numStandby = 0
@@ -55,37 +54,36 @@ function getCurrentPeriode(commandes, catalogue, params) {
       if (cmd.status==='deleted') __valid = false;
 
       // si on ne récupère que les cmd non archivées (cas du Z)
-      if (params.extract=='z' && cmd.archived!=null) __valid = false;
+      if (params.extract==='z' && cmd.archived!==null) __valid = false;
 
       // si une liste de vendeurs est fournie
       if (vendeurs.length>0) {
-        if (!cmd.operator_encaissement || (cmd.operator_encaissement && vendeurs.indexOf(cmd.operator_encaissement.id)==-1)) __valid = false;
+        if (!cmd.operator_encaissement || (cmd.operator_encaissement && vendeurs.indexOf(cmd.operator_encaissement.id)===-1)) __valid = false;
       } 
 
       // si une liste de caisse est fournie
       if (caisses.length>0) {
-        if (!cmd.caisse_encaissement || (caisses.indexOf(cmd.caisse_encaissement.id)==-1)) __valid = false;
+        if (!cmd.caisse_encaissement || (caisses.indexOf(cmd.caisse_encaissement.id)===-1)) __valid = false;
       } 
         
 
       // periode
-      let updatedAt = parseJSON(cmd.updatedAt);
       let createdAt = parseJSON(cmd.createdAt);
-      if (params.extract=='x') {
+      if (params.extract==='x') {
 //        if (isAfter(updatedAt, params.fin) || isBefore(updatedAt, params.debut)) __valid = false;
         if (isAfter(createdAt, params.fin) || isBefore(createdAt, params.debut)) __valid = false;
       } 
-      else if (params.extract=='z') {
+      else if (params.extract==='z') {
       // --- /!\ on récupère aussi les commandes non clôturées des périodes précédentes (pour n'en laisser aucune)
       // (donc on invalide uniquement les commandes ultérieures)
      //   if (isAfter(updatedAt, params.fin)) __valid = false;
         if (isAfter(createdAt, params.fin)) __valid = false;
       }
 
-      if (__valid && cmd.status!='confirmed') __numStandby++;
+      if (__valid && cmd.status!=='confirmed') __numStandby++;
 
       // status
-      if (cmd.status!='confirmed') __valid = false;
+      if (cmd.status!=='confirmed') __valid = false;
 
     //  console.log('cmd valid='+__valid,cmd);
       return __valid;
@@ -106,7 +104,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
       let __vId = __ventil.vendeur.findIndex(vnd => vnd.id===cmd.operator_encaissement.id);
       
       // si le vendeur n'est pas enregistré ds la liste
-      if (__vId==-1) {
+      if (__vId===-1) {
         // on ajoute un objet pour le vendeur dans le tableau
         // et on récupère son index (length - 1)
         __vId = __ventil.vendeur.push({
@@ -133,7 +131,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
         let __mId = __ventil.moyen.findIndex(moy => moy.moyen===rgl.moyen);
 
         // si le moyen de paiement n'est pas enregistré ds la liste
-        if (__mId==-1) {
+        if (__mId===-1) {
           // on ajoute un objet pour le moyen de paiement dans le tableau
           // et on récupère son index (length - 1)
           __mId = __ventil.moyen.push({
@@ -162,7 +160,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
           let __mId = __ventil.moyen.findIndex(moy => moy.moyen==='especes');
 
           // si le moyen de paiement "espèces" n'est pas enregistré ds la liste
-          if (__mId==-1) {
+          if (__mId===-1) {
             // on ajoute un objet pour le moyen de paiement dans le tableau
             // et on récupère son index (length - 1)
             __mId = __ventil.moyen.push({
@@ -206,7 +204,6 @@ function getCurrentPeriode(commandes, catalogue, params) {
 
 
         const artTva = {};
-        let articleIngredients = [];
         articletotal = itm.quantite * itm.prix;
 
         itm.ingredients.forEach(ing => {
@@ -221,7 +218,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
           }
 
 
-          if (ing.supplement==null) logger.error('aucun supplement pour ing dans item id', itm.itemid);
+          if (ing.supplement===null || ing.supplement===undefined) logger.error('aucun supplement pour ing dans item id', itm.itemid);
 
           // let iht = (Number(ing.prix)*ing.qte) / (1 + Number(ing.tva.valeur));
           let iht = Number(itm.quantite * ing.supplement) / (1 + Number(artIngTva.valeur));
@@ -234,7 +231,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
         });
 
 
-        __modificateur = cmd.modificateurs.find(m => m.item==itm.itemid && m.ingredient==null);
+        __modificateur = cmd.modificateurs.find(m => m.item===itm.itemid && (m.ingredient===null || m.ingredient===undefined));
         let amodtx = 1;
         if (__modificateur) {
          // total += Number(__modificateur.valeur);
@@ -309,7 +306,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
       });
 
        // modificateurs pour la commande
-       __modificateur = cmd.modificateurs.find(c => c.item==null && c.ingredient==null);
+       __modificateur = cmd.modificateurs.find(c => (c.item===null || c.item===undefined) && (c.ingredient===null || c.ingredient===undefined));
        if (__modificateur) {
       //   total += Number(__modificateur.valeur);
 
@@ -339,7 +336,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
         __tId = __ventil.tva.findIndex(t => t.id===key);
 
         // si la tva n'est pas enregistrée ds la liste
-        if (__tId==-1) {
+        if (__tId===-1) {
           // on ajoute un objet pour le moyen de paiement dans le tableau
           // et on récupère son index (length - 1)
           __tId = __ventil.tva.push({
@@ -384,7 +381,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
         paramfdcaisse: params.fdcaisse,
         mtcaisse: __mtcaisse,
         numtickets: __tickets,
-        ticket_moyen: __tickets==0 ? 0 : Math.round(__ca/__tickets),
+        ticket_moyen: __tickets===0 ? 0 : Math.round(__ca/__tickets),
         ventilation: __ventil,
         emission: __emission
       },
@@ -421,8 +418,8 @@ function saveCloture(cloture) {
 function setSyncedClotures(cloturesid, datetime) {
   return emit('dbClotureSetSynced', {ids:cloturesid, datetime:datetime});
 }
-function getCloturesToSync() {
-  return emit('dbClotureGetToSync');
+function getCloturesToSync(limit=null) {
+  return emit('dbClotureGetToSync', {limit:limit});
 }
 
 

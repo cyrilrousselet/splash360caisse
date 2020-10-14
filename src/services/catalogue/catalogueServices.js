@@ -1,5 +1,4 @@
 import {emit} from 'eiphop';
-import { eachMonthOfInterval } from 'date-fns';
 
 export const catalogueServices = {
   getAllActive,

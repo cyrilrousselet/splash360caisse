@@ -1,8 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
-
-import { Modal, Fab, AppBar, TableContainer, Table, TableHead, TableCell, TableBody, TableRow, TextField, InputAdornment, IconButton } from '@material-ui/core';
+import { Modal, Fab, TableContainer, Table, TableHead, TableCell, TableBody, TableRow, TextField, InputAdornment, IconButton } from '@material-ui/core';
 import CloseIcon from '../common/icon/CloseIcon';
 import StdButton from '../common/StdButton';
 
@@ -10,10 +8,8 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 
 import 'date-fns';
-import { Interval, format, compareAsc, startOfToday, endOfToday, startOfDay, endOfDay, isAfter, getWeek, getDay, getMonth, isFirstDayOfMonth, isLastDayOfMonth, add, isBefore, startOfWeek, endOfWeek, startOfMonth, endOfMonth, getHours, getMinutes, differenceInDays, differenceInHours, differenceInSeconds, subDays, subWeeks, subMonths, addDays, addWeeks, isSameDay, isToday, isEqual } from "date-fns";
-import DateFnsUtils from '@date-io/date-fns';
+import { format, startOfToday, startOfDay, endOfDay, isAfter, getWeek, getDay, getMonth, isFirstDayOfMonth, isLastDayOfMonth, add, isBefore, startOfWeek, endOfWeek, startOfMonth, endOfMonth, differenceInDays, subDays, subWeeks, subMonths, addDays, addWeeks, isSameDay, isEqual } from "date-fns";
 import frLocale from "date-fns/locale/fr";
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 
 import history from '../../helpers/history';
 import paths from '../../constants/routes';
@@ -24,14 +20,18 @@ import NextIcon from '../common/icon/NextIcon';
 
 import {devise} from '../../helpers/toolbox';
 
+import Logger from '../../helpers/Logger';
+
+const logger = new Logger();
+
 let strings = new LocalizedStrings(data);
 
 
-class LocalizedUtils extends DateFnsUtils {
-  getDatePickerHeaderText(date) {
-    return format(date, "d MMM yyyy", { locale: frLocale });
-  }
-}
+// class LocalizedUtils extends DateFnsUtils {
+//   getDatePickerHeaderText(date) {
+//     return format(date, "d MMM yyyy", { locale: frLocale });
+//   }
+// }
 
 class TimeadjustPopin extends React.Component {
 
@@ -57,25 +57,25 @@ class TimeadjustPopin extends React.Component {
     const hrs = this._getHeures(nv);
     const min = this._getMinutes(nv);
 
-console.log('setNewValeur',champ,val);
+    logger.log('setNewValeur',champ,val);
 
-    if (champ=='minutes') {
+    if (champ==='minutes') {
       this.setState({newvaleur:((hrs*3600)+val)*1000});
     }
-    else if (champ=='heures') {
+    else if (champ==='heures') {
       this.setState({newvaleur:((val*3600)+min)*1000});
     }
   }
   setNewValeurSign() {
     const nv = this.state.newvaleur || this.props.valeur;
-    console.log('sign',nv, (0-nv));
+    logger.log('sign',nv, (0-nv));
     this.setState({newvaleur:(0-nv)});
   }
   saveTimeadjust() {
     const { user, employe, fin, valeur } = this.props;
     const { newvaleur } = this.state;
 
-    if (newvaleur!=valeur) {
+    if (newvaleur!==valeur) {
 
       const ta = {
         employe: employe.user_id,
@@ -84,7 +84,7 @@ console.log('setNewValeur',champ,val);
         date: fin.getTime()
       };
 
-      console.log('nv,v', newvaleur, valeur, ta);
+      logger.log('nv,v', newvaleur, valeur, ta);
 
       this.props.saveTimeadjust(ta);
     } 
@@ -96,12 +96,13 @@ console.log('setNewValeur',champ,val);
     this.setState({newvaleur:null});
   }
 
+
   render() {
-    const { open, user, employe, periode, debut, fin, valeur, reel, prevu, closeHandler } = this.props;
+    const { open, employe, periode, debut, valeur, reel, prevu, closeHandler } = this.props;
     const newvaleur = (this.state.newvaleur!==null) ? this.state.newvaleur : valeur;
 
 
-    console.log("newvaleur",newvaleur);
+    logger.log("newvaleur",newvaleur);
 
     return (
       <Modal
@@ -119,7 +120,7 @@ console.log('setNewValeur',champ,val);
               </div>
               <div className="form-group group-periode">
                 <div className="label">{ strings.modules.employes.paies.timeadjust.periode[periode] }</div>
-                <div className="valeur periode">{ debut && (periode=='mois' ? format(debut, 'MMMM yyyy', { locale: frLocale }) : format(debut, 'd MMMM yyyy', { locale: frLocale })) }</div>
+                <div className="valeur periode">{ debut && (periode==='mois' ? format(debut, 'MMMM yyyy', { locale: frLocale }) : format(debut, 'd MMMM yyyy', { locale: frLocale })) }</div>
               </div>
               <div className="rappels">
                 <div className="form-group group-reel">
@@ -222,10 +223,10 @@ class Paies extends React.Component {
 
   setSelectedDate(bound,date) {
     const { startDate, endDate } = this.state;
-    if (bound=='start') {
+    if (bound==='start') {
       this.setState({startDate:(date<=endDate)?startOfDay(date):endDate});
     }
-    if (bound=='end') {
+    if (bound==='end') {
       this.setState({endDate:(date>=startDate)?endOfDay(date):startDate});
     }
   }
@@ -247,6 +248,9 @@ class Paies extends React.Component {
         start = startOfMonth(startDate);
         end = endOfMonth(startDate);
         break;
+      default:
+        start = startOfDay(startDate);
+        end = endOfDay(startDate);
     }
 
 
@@ -285,6 +289,9 @@ class Paies extends React.Component {
         start = startOfMonth(now);
         end = endOfMonth(now);
         break;
+      default:
+        start = startOfDay(now);
+        end = endOfDay(now);
     }
     this.setState({startDate: start, endDate: end});
   }
@@ -306,6 +313,9 @@ class Paies extends React.Component {
         start = startOfMonth(suivant?addMonths(startDate,1):subMonths(startDate,1));
         end = endOfMonth(suivant?addMonths(startDate,1):subMonths(startDate,1));
         break;
+      default:
+        start = startOfDay(suivant?addDays(startDate,1):subDays(startDate,1));
+        end = endOfDay(suivant?addDays(startDate,1):subDays(startDate,1));
     }
     this.setState({startDate: start, endDate: end});
   }
@@ -319,6 +329,8 @@ class Paies extends React.Component {
         return `${strings.modules.employes.paies.liste.semaine} ${format(startDate, 'd MMMM yyyy', { locale: frLocale })}`;
       case 'mois':
         return format(startDate, 'MMMM yyyy', { locale: frLocale });
+      default:
+        return format(startDate, 'EEEE d MMMM yyyy', { locale: frLocale });
     }    
   }
 
@@ -327,8 +339,8 @@ class Paies extends React.Component {
 
   getPlanningTotal(shifts, types, date=null) {
     let total = 0;
-    shifts.map(shift => {
-      const type = types.find(t=>t.id==shift.poste);
+    shifts.forEach(shift => {
+      const type = types.find(t=>t.id===shift.poste);
       if (type.tps) {
         
         const start = shift.start.split(':');
@@ -338,7 +350,7 @@ class Paies extends React.Component {
         const now = new Date();
 
         // si la date n'est pas fournie, on additionne tout le shift
-        if (date==null) {
+        if (date===null || date===undefined) {
           total += fin.getTime() - debut.getTime();
         }
         // si la date est fournie, on additionne uniquement le temps passé
@@ -386,23 +398,23 @@ class Paies extends React.Component {
         if (ok) {
           // récurrence valide :
           // • par semaine
-          if (sh.recurrence.periode=='semaine') {
+          if (sh.recurrence.periode==='semaine') {
             // si la semaine en cours ne tombe pas sur celle du shift 
             // ou si le jour n'est pas dans la liste du shift
             // -> pas de shift
-            if ((((getWeek(date) - getWeek(shdate)) % Number(sh.recurrence.rythme))!=0) || (sh.recurrence.jours.indexOf(getDay(date))==-1)) ok = false;
+            if ((((getWeek(date) - getWeek(shdate)) % Number(sh.recurrence.rythme))!==0) || (sh.recurrence.jours.indexOf(getDay(date))===-1)) ok = false;
           } 
           // • par mois
-          if (sh.recurrence.periode=='mois') {
+          if (sh.recurrence.periode==='mois') {
             
             // si le mois en cours ne tombe pas sur celle du shift
             // ou si le jour n'est pas dans la liste du shift (premier jour du mois, dernier jour du mois ou un jour de la liste)
             // -> pas de shift
             if (
-              ((getMonth(date) - getMonth(shdate)) % Number(sh.recurrence.rythme))!=0 || 
-              (sh.recurrence.jours[0]==0 && isFirstDayOfMonth(shdate)) ||
-              (sh.recurrence.jours[0]==-1 && isLastDayOfMonth(shdate)) ||
-              (sh.recurrence.jours.indexOf(getDay(shdate))==-1)
+              ((getMonth(date) - getMonth(shdate)) % Number(sh.recurrence.rythme))!==0 || 
+              (sh.recurrence.jours[0]===0 && isFirstDayOfMonth(shdate)) ||
+              (sh.recurrence.jours[0]===-1 && isLastDayOfMonth(shdate)) ||
+              (sh.recurrence.jours.indexOf(getDay(shdate))===-1)
             ) ok = false;
           } 
         }
@@ -420,7 +432,7 @@ class Paies extends React.Component {
 
   openTimeadjust(employe_id, valeur, reel, prevu) {
     const {employes} = this.props;
-    this.setState({timeadjustOpen:true, tmaEmploye:employes.find(e=>e.user_id==employe_id), tmaValeur: valeur, tmaReel:reel, tmaPrevu:prevu});
+    this.setState({timeadjustOpen:true, tmaEmploye:employes.find(e=>e.user_id===employe_id), tmaValeur: valeur, tmaReel:reel, tmaPrevu:prevu});
   }
   closeTimeadjust() {
     this.setState({timeadjustOpen:false, tmaEmploye:null, tmaValeur:null, tmaReel:null, tmaPrevu:null});
@@ -429,8 +441,8 @@ class Paies extends React.Component {
 
   render() {
 
-    const { users, params, employes, pointages, shifts, adjusts, createTimeadjust, admin } = this.props;
-    const { startDate, endDate, openTab, view, timeadjustOpen, tmaEmploye, tmaValeur, tmaReel, tmaPrevu } = this.state;
+    const { params, employes, pointages, shifts, adjusts, createTimeadjust, admin } = this.props;
+    const { startDate, endDate, view, timeadjustOpen, tmaEmploye, tmaValeur, tmaReel, tmaPrevu } = this.state;
     const { shifttypes } = params || {shifttypes:null};
 
 
@@ -441,14 +453,14 @@ class Paies extends React.Component {
       // return `${s}${getHours(Math.abs(ms)-d)}:${(m.toString().length==2?m:'0'+m)}`;
       const dh = Math.floor(Math.abs(ms)/h);
       const dm = Math.round((Math.abs(ms)%h)/60000).toString().padStart(2, '0');
-      return `${s} ${dh}h${(dm!='00'?dm:'')}`;
+      return `${s} ${dh}h${(dm!=='00'?dm:'')}`;
     }
 
-    const _toHmm = (ms) => {
-      const d = 3600 * 1000;
-      let m = getMinutes(ms-d);
-      return `${getHours(ms-d)}:${(m.toString().length==2?m:'0'+m)}`;
-    }
+    // const _toHmm = (ms) => {
+    //   const d = 3600 * 1000;
+    //   let m = getMinutes(ms-d);
+    //   return `${getHours(ms-d)}:${(m.toString().length===2?m:'0'+m)}`;
+    // }
     
     const _salaire = (taux, temps) => {
       const d = 3600 * 1000;
@@ -465,7 +477,7 @@ class Paies extends React.Component {
     if (employes && pointages) {
       employes.forEach(usr => {
       
-        console.log('user',usr.nom);
+        logger.log('user',usr.nom);
         let usr_obj = {
           id: usr.user_id, 
           nom: usr.nom, 
@@ -483,20 +495,20 @@ class Paies extends React.Component {
 
         // récup du pointage
         usr_obj.pointages = pointages.filter(p=>(
-          p.employe==usr.user_id && 
-          p.status=='closed' && 
+          p.employe===usr.user_id && 
+          p.status==='closed' && 
           p.clockin>=startDate.getTime() && 
           p.clockin<=endDate.getTime()
         ));
         if (usr_obj.pointages) {
           usr_obj.pointages.forEach(up => {
             usr_obj.reel += up.clockout - up.clockin;
-            // console.log('ptn', {itv: `${differenceInDays(up.clockout, up.clockin)}j ${differenceInHours(up.clockout, up.clockin)}h ${differenceInSeconds(up.clockout, up.clockin)}s`, id:up.pointage_id});
+            // logger.log('ptn', {itv: `${differenceInDays(up.clockout, up.clockin)}j ${differenceInHours(up.clockout, up.clockin)}h ${differenceInSeconds(up.clockout, up.clockin)}s`, id:up.pointage_id});
           });
         }
 
         usr_obj.adjust = adjusts.filter(a=>(
-          a.employe==usr.user_id &&
+          a.employe===usr.user_id &&
           a.date>=startDate.getTime() &&
           a.date<=endDate.getTime()
         ));
@@ -514,10 +526,10 @@ class Paies extends React.Component {
         // récup du temps prévu
        // usr_obj.shifts = [];
 
-        const shiftlist = shifts.filter(sh=>sh.employe==usr.user_id);
+        const shiftlist = shifts.filter(sh=>sh.employe===usr.user_id);
 
         let sh = [];
-        let shrt = [];
+        // let shrt = [];
 
         if (jours>0) {
           [...Array(jours+1).keys()].forEach((v,i) => {
@@ -533,7 +545,7 @@ class Paies extends React.Component {
           usr_obj.prevurealtime += this.getPlanningTotal(s.shifts, shifttypes, s.date);
         });
 
-     //   console.log(_ecartToHmm(usr_obj.prevu), _ecartToHmm(usr_obj.prevurealtime));
+     //   logger.log(_ecartToHmm(usr_obj.prevu), _ecartToHmm(usr_obj.prevurealtime));
 
         /* TODO - filtrage et comptage des shifts de la période */
 
@@ -623,7 +635,7 @@ class Paies extends React.Component {
               <TableCell key={`${row.id}-reel`} className="liste-reel">{ _ecartToHmm(row.reel) }</TableCell>
               {/* <TableCell key={`${row.id}-prevu`} className="liste-prevu">{ _ecartToHmm(row.prevu) }</TableCell> */}
               <TableCell key={`${row.id}-prevu`} className="liste-prevu">{ _ecartToHmm(row.prevurealtime) }</TableCell>
-              <TableCell key={`${row.id}-ecart`} className={ `liste-ecart${ (row.ecart>0 ? ' over': (row.ecart==0 ? '':' under')) }`}>{ _ecartToHmm(row.ecart) }</TableCell>
+              <TableCell key={`${row.id}-ecart`} className={ `liste-ecart${ (row.ecart>0 ? ' over': (row.ecart===0 ? '':' under')) }`}>{ _ecartToHmm(row.ecart) }</TableCell>
               <TableCell key={`${row.id}-correction`} className={ `liste-correction`}><div className="ecart-correction" onClick={()=>{ this.openTimeadjust(row.id, (row.ecart+row.correction), row.reel, row.prevu) }}>{ _ecartToHmm(row.correction) }</div></TableCell>
               <TableCell key={`${row.id}-travail`} className="liste-travail">{ _ecartToHmm(row.travail) }</TableCell>
               <TableCell key={`${row.id}-taux`} className="liste-taux">{ row.taux }</TableCell>

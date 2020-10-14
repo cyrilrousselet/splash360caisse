@@ -15,7 +15,7 @@ import { userActions } from '../services/user/userActions';
 const getTicketsListe = (state) => {
 
   const { tickets } = state.peripheralReducer;
-  const liste = Object.values(tickets).filter(tck => (tck.imprimantes.length>0 && (['commande','partiel','principal']).indexOf(tck.template)!=-1));
+  const liste = Object.values(tickets).filter(tck => (tck.imprimantes.length>0 && (['commande','partiel','principal']).indexOf(tck.template)>-1));
   return liste;
 }
 

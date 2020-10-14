@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Modal, Fab, List, ListItem, Button } from '@material-ui/core';
+import { Modal, Fab } from '@material-ui/core';
 import CloseIcon from '../common/icon/CloseIcon';
 import { commandeServices } from '../../services/commande/commandeServices';
 
@@ -9,9 +9,7 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import LoadingSpinner from '../common/LoadingSpinner';
 import MinusIcon from '../common/icon/MinusIcon';
-import PlusIcon from '../common/icon/PlusIcon';
 import StdButton from '../common/StdButton';
-import { getWeekYearWithOptions } from 'date-fns/fp';
 import Logger from '../../helpers/Logger';
 let strings = new LocalizedStrings(data);
 const logger = new Logger()
@@ -75,17 +73,16 @@ class Personnalisation extends React.Component {
   isIngredientTypeMaxnum(steptypes, itming, stepid) {
 
     let intypes = {}, typeMax = {};
-    let max, num, typeing;
     for (let [key, value] of Object.entries(steptypes)) {
-      max = commandeServices.getRuleValues(value.regle).max;
-      typeing = itming.filter(ing=>(ing.type==key && ing.fromStep==stepid));
-      num = 0;
+      let max = commandeServices.getRuleValues(value.regle).max;
+      let typeing = itming.filter(ing=>(ing.type===key && ing.fromStep===stepid));
+      let num = 0;
       typeing.forEach(ing=> { num += ing.qte });
       intypes[key] = {max, num};
     }
 
     // si le type est global
-    if (Object.values(steptypes)[0].regle.indexOf('g')!=-1) {
+    if (Object.values(steptypes)[0].regle.indexOf('g')>-1) {
       // on additionne le nbr d'ingredients de tous les types
       let allnum = 0;
       Object.values(intypes).forEach(value => {
@@ -98,7 +95,7 @@ class Personnalisation extends React.Component {
     // sinon on teste individuellement les types
     else {
       for (let [key, value] of Object.entries(intypes)) {
-        console.log(value.num+'>='+value.max);
+        logger.log(value.num+'>='+value.max);
         typeMax[key] = value.num>=value.max;
       }
     }
@@ -113,8 +110,8 @@ class Personnalisation extends React.Component {
 
     const { item, itemSteps, previousstep, openPersonnalisation } = this.props;
     
-    const __nextStep = itemSteps.find(s => s.id==previousstep);
-    let __stepIndex = itemSteps.findIndex(s=>s.id==previousstep);
+    const __nextStep = itemSteps.find(s => s.id===previousstep);
+    let __stepIndex = itemSteps.findIndex(s=>s.id===previousstep);
     let __previd = (__stepIndex<=0 ) ? -1 : itemSteps[__stepIndex-1].id;
 
     openPersonnalisation(item, previousstep, __previd, __nextStep.validated, 'previousbtn');
@@ -125,16 +122,16 @@ class Personnalisation extends React.Component {
 
   render() {
     
-    const { open, closePersonnalisation, itemstatus, contClass, stepObject, step, itemSteps, item, ingredientTypes, addIngredient, removeIngredient, noIngredientForStep, itemIngredients, completeStep, valide, previousstep, updateProduit, validatePersonnalisation } = this.props;
+    const { open, closePersonnalisation, itemstatus, contClass, stepObject, step, item, ingredientTypes, addIngredient, removeIngredient, itemIngredients, completeStep, valide, updateProduit } = this.props;
 
-    if (null==stepObject || Object.entries(stepObject).length==0) return <Modal open={open}><LoadingSpinner /></Modal>;
+    if (null===stepObject || Object.entries(stepObject).length===0) return <Modal open={open}><LoadingSpinner /></Modal>;
 
-    if (null==ingredientTypes || Object.entries(ingredientTypes).length==0) return <Modal open={open}><LoadingSpinner /></Modal>;
+    if (null===ingredientTypes || Object.entries(ingredientTypes).length===0) return <Modal open={open}><LoadingSpinner /></Modal>;
 
     const isTypesMax = this.isIngredientTypeMaxnum(ingredientTypes, itemIngredients, step);
 
     const onClickDelete = () => {
-      if (itemstatus=='pending') updateProduit({itemid: item, quantite: 0});
+      if (itemstatus==='pending') updateProduit({itemid: item, quantite: 0});
       closePersonnalisation('popin');
     }
 
@@ -165,7 +162,7 @@ class Personnalisation extends React.Component {
                         color={ingredient.color}
                         supplement={ingredient.supplement} 
                         step={step}
-                        disabled={isTypesMax[id] || ingredient.active==0}
+                        disabled={isTypesMax[id] || ingredient.active===0}
                         // withbuttons={ (!RegExp('^(\\?|\\{1\\}|\\{0\\}|\\{0,1\\})').test(type.regle)) || this.getIngredientQuantity(ingredient.id)>0 }
                         withbuttons={ (!RegExp('^(\\?|\\{1\\}|\\{0\\})').test(type.regle)) || this.getIngredientQuantity(ingredient.id)>0 }
                         qte={this.getIngredientQuantity(ingredient.id, step)}
@@ -193,7 +190,7 @@ class Personnalisation extends React.Component {
               </div>
             </div>
             <div className="footer">
-              {(this.props.previousstep!=-1) && <StdButton identifier="btnprecedent" elementclass="btnprecedent" key="btnprecedent" text={strings.modules.encaissement.personnalisation.precedent} onClick={ () => { this.gotoPreviousStep() }} />}
+              {(this.props.previousstep>-1) && <StdButton identifier="btnprecedent" elementclass="btnprecedent" key="btnprecedent" text={strings.modules.encaissement.personnalisation.precedent} onClick={ () => { this.gotoPreviousStep() }} />}
               <div className="intercalaire"></div>
               <StdButton identifier="btnsuivant" elementclass="btnsuivant" key="btnsuivant" text={strings.modules.encaissement.personnalisation.valider} disabled={!valide} onClick={ () => { completeStep({itemid: item, stepid: step}); }} />
             </div>

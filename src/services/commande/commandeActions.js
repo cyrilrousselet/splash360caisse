@@ -1,14 +1,10 @@
 import { commandeActionTypes } from './commandeActionTypes';
 import { commandeServices } from './commandeServices';
-import { differenceInMilliseconds, sub, differenceInMinutes, isBefore, endOfYesterday, parseISO, format, formatISO } from 'date-fns';
+import { differenceInMilliseconds, parseISO, format, formatISO } from 'date-fns';
 import { peripheralActions } from '../peripheral/peripheralActions';
-import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import Logger from '../../helpers/Logger';
 import { notificationActions } from '../notification/notificationActions';
-import { notificationServices } from '../notification/notificationServices';
-import { differenceBy } from 'lodash';
-import ErrorBoundary from '../../components/common/ErrorBoundary';
 
 const logger = new Logger();
 
@@ -98,7 +94,7 @@ function setNewNumero(defaultValue=null) {
 
     logger.log('setNewNumero',defaultValue);
 
-    const numero = defaultValue!==null ? {value: defaultValue-1, updated: new Date} : getState().commandeReducer.numero; 
+    const numero = defaultValue!==null ? {value: defaultValue-1, updated: new Date()} : getState().commandeReducer.numero; 
 
     const newnumero = commandeServices.getNewNumero( getState().parametresReducer.parametres, numero);
     dispatch({ type: commandeActionTypes.SET_NEW_NUMERO, newnumero });
@@ -189,7 +185,7 @@ function validateCommande(payload) {
           results => {
             const {commandes, chronos} = results;
             const chrcommandes = commandes.map(c => {
-              const chr = chronos ? chronos.find(h=>h.ticketId==c.ticketId) : undefined;
+              const chr = chronos ? chronos.find(h=>h.ticketId===c.ticketId) : undefined;
               if (chr!==undefined) {
                 return {...c,
                         chrono: c.chrono || 0,
@@ -482,7 +478,7 @@ function deleteCommande(payload) {
     dispatch({ type: commandeActionTypes.DELETE_COMMANDE_REQUEST });
 
     const { commandeslist } = getState().commandesListReducer;
-    const commande = Object.values(commandeslist).find(cmd => cmd.ticketId==payload.ticketId);
+    const commande = Object.values(commandeslist).find(cmd => cmd.ticketId===payload.ticketId);
 
     const {ticketId, motif} = payload;
 
@@ -525,7 +521,7 @@ function setLivreur(payload) {
     const {commandeId, livreur} = payload;
 
     const { commandeslist } = getState().commandesListReducer;
-    const commande = Object.values(commandeslist).find(cmd => cmd.ticketId==commandeId);
+    const commande = Object.values(commandeslist).find(cmd => cmd.ticketId===commandeId);
 
     commandeServices.persistCommande({...commande, livreur:livreur})
     .then(
@@ -612,7 +608,6 @@ function addComment(payload) {
 }
 function updateComment(payload) {
   return (dispatch, getState) => {
-    const {commentId, texte} = payload;
     logger.log('CommandeActions.updateComment', payload);
     dispatch({ type: commandeActionTypes.UPDATE_COMMENT, payload: payload });
   }
@@ -633,7 +628,6 @@ function addDiscount(payload) {
 }
 function updateDiscount(payload) {
   return (dispatch, getState) => {
-    const {discountId, valeur} = payload;
     logger.log('CommandeActions.updateDiscount', payload);
     dispatch({ type: commandeActionTypes.UPDATE_DISCOUNT, payload: payload });
   }
@@ -730,7 +724,6 @@ function setCommandeFromOrder(provider, payload) {
         dispatch(getCommandesList());
         dispatch(notificationActions.syncDispatch('commande',confirm));
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
-        const { numero } = commande;
 
         const cmdtosync = {
           ...confirm,
@@ -767,7 +760,7 @@ function setCommandeFromAPI(payload) {
     const state = getState();
     let { data } = payload;
 
-    if (data.status=='confirmed') {
+    if (data.status==='confirmed') {
 
       data = {
         ...data,
@@ -789,7 +782,7 @@ function setCommandeFromAPI(payload) {
 
     commandeServices.sendTicketId(commande.ticketId, numtosend, payload.response);
 
-    if (commande.status=="confirmed") {
+    if (commande.status==="confirmed") {
       dispatch(peripheralActions.printCommandeTicket('production', commande));
     }
 
@@ -799,10 +792,9 @@ function setCommandeFromAPI(payload) {
         dispatch(getCommandesList());
         dispatch(notificationActions.syncDispatch('commande',confirm));
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
-        const { numero } = commande;
-      //  dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
 
-        if (confirm.status=="confirmed") {
+        
+        if (confirm.status==="confirmed") {
 
           const cmdtosync = {
             ...confirm,
@@ -935,7 +927,7 @@ function setSyncedCommandsFromSync(payload) {
   return dispatch => {
     dispatch({ type: commandeActionTypes.SETSYNCED_FROM_SYNC_REQUEST });
     logger.log('setSyncedCommandsFromSync()', payload);
-    const {id, datetime, emitter, response} = payload.data;
+    const {id, datetime} = payload.data;
     commandeServices.setSyncedCommands(id,datetime)
     .then(
       confirm => {

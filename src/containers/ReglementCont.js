@@ -81,7 +81,7 @@ const getCommandeTotal = (items, modificateurs) => {
 
 const mapStateToProps = (...args) => { 
     const state = args[0];
-    const props = args[1];
+  //  const props = args[1];
   return {
     //open: state.openReglement,
     valueToPay: getCommandeTotal(getCommande(state).items, getCommande(state).modificateurs),

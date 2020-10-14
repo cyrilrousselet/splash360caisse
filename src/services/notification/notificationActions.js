@@ -14,7 +14,7 @@ import { format, formatISO, differenceInMilliseconds, parseISO } from 'date-fns'
 import frLocale from "date-fns/locale/fr";
 import Logger from '../../helpers/Logger';
 import { commandeActionTypes } from '../commande/commandeActionTypes';
-import { catalogueActionTypes } from '../catalogue/catalogueActionTypes';
+// import { catalogueActionTypes } from '../catalogue/catalogueActionTypes';
 import { catalogueActions } from '../catalogue/catalogueActions';
 import { parametresActions } from '../parametres/parametresActions';
 import { parametresActionTypes } from '../parametres/parametresActionTypes';
@@ -233,7 +233,7 @@ function getDatabase() {
     dispatch({type: notificationActionTypes.GET_DATABASE_REQUEST});
     const { entreprise } = getState().parametresReducer.parametres; 
 
-    if (entreprise.restaurant_id=='' || entreprise.restaurant_secret=='') {
+    if (entreprise.restaurant_id==='' || entreprise.restaurant_secret==='') {
       Swal.fire({
         type: 'warning',
         title: 'Configuration incomplète',
@@ -284,7 +284,7 @@ function initSyncCommandes() {
             logger.log('preparation des commandes à envoyer au backo');
 
             const chrcommandes = commandes.map(c => {
-              const chr = chronos ? chronos.find(h=>h.ticketId==c.ticketId) : undefined;
+              const chr = chronos ? chronos.find(h=>h.ticketId===c.ticketId) : undefined;
               if (chr!==undefined) {
                 return {...c,
                         chrono: c.chrono || 0,
@@ -306,6 +306,9 @@ function initSyncCommandes() {
 
             dispatch(syncCommandes(chrcommandes));
           }
+        },
+        error => {
+          dispatch({type: notificationActionTypes.INIT_SYNC_COMMANDES_ERROR, error:error});
         }
       )
     } else {
@@ -338,6 +341,50 @@ function syncCommandes(commandes) {
   }
 }
 
+function checkStation() {
+  return (dispatch, getState) => {
+
+    const { entreprise } = getState().parametresReducer.parametres; 
+
+    notificationServices.checkStation({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret})
+    .then(
+      response => {
+
+        logger.log('station status', response);
+
+        // si la réponse est négative
+        if (response.status==='error') {
+
+
+          // on laisse le compteur tourner
+
+          Swal.fire({
+            type: 'warning',
+            title: 'Erreur d’activation',
+            html: response.message.join('<br />'),
+            showCancelButton: false,
+            focusConfirm: true,
+            allowEscapeKey: false,
+            allowOutsideClick: false
+          }).then((result)=> {
+            if (result.value) {
+              dispatch(peripheralActions.quitApp());
+            }
+          });
+        } else {
+
+          // reset du compteur
+
+        }
+      },
+      error => {
+        logger.error(error);
+      }
+    )
+
+  }
+}
+
 
 
 function initSyncClotures() {
@@ -348,7 +395,7 @@ function initSyncClotures() {
 
     if (options.role!=="secondary") {
       
-      clotureServices.getCloturesToSync()
+      clotureServices.getCloturesToSync(50)
       .then(
         results => {
           const {clotures} = results;
@@ -367,6 +414,9 @@ function initSyncClotures() {
 
             dispatch(syncClotures(cloturesWOcmdtoarchive));
           }
+        },
+        error => {
+          dispatch({type: notificationActionTypes.INIT_SYNC_CLOTURES_ERROR, error:error});
         }
       )
     } else {
@@ -417,5 +467,6 @@ export const notificationActions = {
   initSyncCommandes,
   syncCommandes,
   initSyncClotures,
-  syncClotures
+  syncClotures,
+  checkStation
 };

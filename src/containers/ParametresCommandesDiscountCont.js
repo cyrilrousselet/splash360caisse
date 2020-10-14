@@ -2,8 +2,6 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux';
 import CommandesDiscount from '../components/Parametres/CommandesDiscount';
-import history from './../helpers/history';
-import paths from './../constants/routes.json';
 import { parametresActions } from './../services/parametres/parametresActions';
 
 

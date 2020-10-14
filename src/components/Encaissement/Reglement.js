@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { isDev } from 'electron-is-dev';
-
-import { Modal, Fab, List, ListItem, Button } from '@material-ui/core';
+import { Modal, Fab, List, ListItem } from '@material-ui/core';
 import { differenceInMilliseconds, isBefore, endOfDay } from 'date-fns';
 import StdButton from '../common/StdButton';
 import CloseIcon from '../common/icon/CloseIcon';
@@ -99,7 +97,7 @@ class Reglement extends React.Component {
 
   updateValeurs() {
 
-    const { reglements, rendus, items } = this.props.commande;
+    const { reglements, rendus } = this.props.commande;
     
     // déjà payé (réglements)
     let __paye = 0;
@@ -143,8 +141,8 @@ class Reglement extends React.Component {
     const { trlist } = this.state;
     console.log(reste, rendu);
     let closeReglementAtEnd = true;
-    if (reste==0) {
-      if (this.props.commande.status=='pending') {
+    if (reste===0) {
+      if (this.props.commande.status==='pending') {
         this.props.commande.end = new Date();
         this.props.commande.chrono = Math.round(differenceInMilliseconds(this.props.commande.end, this.props.commande.start)/10)/100;
       }
@@ -152,10 +150,10 @@ class Reglement extends React.Component {
       
       // si on encaisse une commande déjà produite, 
       // on ne réimprime pas les tickets de production (ms seulmt 'commande')
-      if (this.props.commande.status=='a_encaisser') {
+      if (this.props.commande.status==='a_encaisser') {
         this.props.printTicket({templates:['commande']});
         this.props.commande.status = 'confirmed';
-      } else if (this.props.commande.status=='standby') {
+      } else if (this.props.commande.status==='standby') {
         this.props.printTicket('all');
         this.props.commande.status = 'confirmed';
       } else {
@@ -183,11 +181,11 @@ class Reglement extends React.Component {
   toAddReglement(moyen, valeur=-1, info=null) {
 
 
-    const { addReglement, openDrawer, params, modif } = this.props;
+    const { addReglement, openDrawer, modif } = this.props;
 
     let montant = 0;
     const { reste } = this.updateValeurs();
-    if (valeur==-1) {
+    if (valeur===-1) {
       const {input, total} = this.state;
       montant = input ? total : reste;
     } else {
@@ -209,13 +207,13 @@ class Reglement extends React.Component {
       if (montant > 0) {
         addReglement({moyen: moyen, valeur: montant, info:info});
         const { reste } = this.updateValeurs();
-        if (moyen=='especes') openDrawer();
-        if (moyen=='ticket' && reste<0) openDrawer();
+        if (moyen==='especes') openDrawer();
+        if (moyen==='ticket' && reste<0) openDrawer();
         this.setState({total: 0, input: false});
 
         // s'il ne reste rien à payer ni à rendre, 
         // on ferme l'encaissement et on valide la commande
-        if (reste==0) this.beforeCloseReglement();
+        if (reste===0) this.beforeCloseReglement();
 
       }
     }
@@ -226,9 +224,9 @@ class Reglement extends React.Component {
     const { trlist } = this.state;
     const { reglements } = this.props.commande;
 
-    const rgt = reglements.find(r=>r.reglementId==id);
-    if (rgt && rgt.moyen=='ticket') {
-      this.setState({trlist: trlist.filter(t => t!=rgt.info)});
+    const rgt = reglements.find(r=>r.reglementId===id);
+    if (rgt && rgt.moyen==='ticket') {
+      this.setState({trlist: trlist.filter(t => t!==rgt.info)});
     }
 
     this.props.removeReglement({reglementId: id});
@@ -256,15 +254,15 @@ class Reglement extends React.Component {
   */
   closeTiroir() {
     this.props.closeDrawer();
-    const { reste, rendable } = this.updateValeurs();
-    // if (reste<0 && rendable) this.props.addRendu({moyen:'especes', valeur: -reste});
+    const { reste } = this.updateValeurs();
+    
     if (reste<0) this.props.addRendu({moyen:'especes', valeur: -reste});
     this.beforeCloseReglement();
   }
 
 
   scanHandler(event) {
-    if (event.keyCode==13) {
+    if (event.keyCode===13) {
       console.log(event.target.value);
       const decoded_string = this.decodeQRCode(event.target.value);
 
@@ -281,7 +279,7 @@ class Reglement extends React.Component {
 
   decodeQRCode(value) {
 
-    const platform = process.platform=='darwin' ? 'darwin' : 'win';
+    const platform = process.platform==='darwin' ? 'darwin' : 'win';
 
     let decoded = '';
     for (let caractere of value) {
@@ -303,9 +301,9 @@ class Reglement extends React.Component {
     const __trValue = Number(__value.substr(11,5)) / 100;
     const __trValid = Number(__value.substr(16,2));
 
-    const __now = new Date().getFullYear() - 2000;
+    // const __now = new Date().getFullYear() - 2000;
 
-    if (trlist.indexOf(__value)!==-1) error = 'yet';
+    if (trlist.indexOf(__value)>-1) error = 'yet';
 
   // on supprime le test de validité (certains TR n'ont pas de date limite)
   //  if (__trValid<__now) error = 'deprecated';
@@ -314,7 +312,7 @@ class Reglement extends React.Component {
       this.toAddReglement('ticket',__trValue, value);
       this.setState({ trlist: [...trlist, __value] });
     } else {
-      if (error=='deprecated') {
+      if (error==='deprecated') {
         Swal.fire({
           type: 'warning',
           title: strings.modules.encaissement.reglement.erreur.ticket[error].titre,
@@ -334,9 +332,9 @@ class Reglement extends React.Component {
   parseAvoir(value) {
     console.log('avoirID', value);
 
-    const { avoirs, updateAvoir, commande } = this.props;
+    const { avoirs, updateAvoir } = this.props;
     let error = '';
-    const avoir = avoirs.find(av => av.code==value);
+    const avoir = avoirs.find(av => av.code===value);
     // s'il y a un avoir correspondant au code
     // on vérifie qu'il n'a pas déjà été utilisé
     // et qu'il n'est pas périmé
@@ -385,10 +383,10 @@ class Reglement extends React.Component {
 
   render() {
 
-    const { open, valueToPay, contClass, closeReglement, addReglement, addRendu, tiroirOuvert, params, modif } = this.props;
-    const { items, reglements, rendus } = this.props.commande;
-    const { paye, reste, rendable } = this.updateValeurs();
-    const { total, input, inputTarget } = this.state;
+    const { open, contClass, closeReglement, tiroirOuvert, params, modif } = this.props;
+    const { reglements, rendus } = this.props.commande;
+    const { reste, rendable } = this.updateValeurs();
+    const { total, input } = this.state;
     
     const aAfficher = input ? total : Math.max(0,reste);
 
@@ -484,12 +482,12 @@ class Reglement extends React.Component {
             </div>
           </div>
         </div>
-        { (null==reglements || reglements.length==0) &&
+        { (null===reglements || undefined===reglements || reglements.length===0) &&
         <Fab aria-label="close" size="small" className="close-button" onClick={ this.beforeCloseReglement }>
           <CloseIcon />
         </Fab>
         }
-        { (modif && reste==0) &&
+        { (modif && reste===0) &&
         <Fab aria-label="close" size="small" className="close-button" onClick={ closeReglement }>
           <CloseIcon />
         </Fab>

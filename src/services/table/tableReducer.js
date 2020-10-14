@@ -10,7 +10,7 @@ export function tableReducer(state = initialState, action) {
 
   const { salles } = state;
   let salle = null;
-  let table = null;
+ // let table = null;
 
   switch (action.type) {
     case tableActionTypes.GET_ALL_REQUEST:
@@ -63,9 +63,8 @@ export function tableReducer(state = initialState, action) {
 
     case tableActionTypes.UPDATE_TABLE_SUCCESS:
 
-      let newtable = action.table;
       salle = salles[action.table.salleId];
-      let tableindex = salle.tables.findIndex(t=>t.tableId==action.table.tableId);
+      let tableindex = salle.tables.findIndex(t=>t.tableId===action.table.tableId);
       salle.tables[tableindex] = action.table;
 
       return {

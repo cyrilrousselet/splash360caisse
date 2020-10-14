@@ -497,7 +497,7 @@ const data = {
                         avoir_emis: "Avoirs émis :"
                     },
                     especes: {
-                        titre: 'Balance des transactions\<br \/\>en espèces',
+                        titre: ["Balance des transactions","en espèces"],
                         total_fdcaisse: "Total Fond de caisse :",
                         total_especes: "Total Espèces :",
                         total_depenses: "Total Dépenses :",
@@ -505,7 +505,7 @@ const data = {
                         total_montant: "Total montant :"
                     },
                     toutes: {
-                        titre: "Balance des transactions<br />Autres",
+                        titre: ["Balance des transactions","Autres"],
                         total: "Total :",
                         total_recu: "Total reçu :"
                     },

@@ -120,7 +120,7 @@ function updateTable(payload) {
     const { salles } = getState().tableReducer;
     const {salleId, tableId, update} = payload;
     const salle = salles[salleId];
-    const table = salle.tables.find(t => t.tableId == tableId);
+    const table = salle.tables.find(t => t.tableId === tableId);
 
     tableServices.persistTable({...table, ...update})
     .then(
@@ -141,8 +141,8 @@ function takeTable(payload) {
     const { user } = getState().authentication;
     const { ticketId } = getState().commandeReducer.commande;
 
-    const salle = salles.find(s => s.salleId == salleId);
-    const table = salle.tables.find(t => t.tableId == tableId);
+    const salle = salles.find(s => s.salleId === salleId);
+    const table = salle.tables.find(t => t.tableId === tableId);
 
     const takentable = {...table,
       couverts: couverts,
@@ -166,12 +166,12 @@ function takeTable(payload) {
 function freeTable(payload) {
   return (dispatch, getState) => {
 
-    const {tableId, salleId, couverts} = payload;
+    const {tableId, salleId} = payload;
   
     const { salles } = getState().tableReducer;
   
-    const salle = salles.find(s => s.salleId == salleId);
-    const table = salle.tables.find(t => t.tableId == tableId);
+    const salle = salles.find(s => s.salleId === salleId);
+    const table = salle.tables.find(t => t.tableId === tableId);
 
     const freetable = {...table,
       couverts: 0,

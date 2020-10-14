@@ -5,6 +5,9 @@ import SelecteurCont from '../../containers/SelecteurCont';
 import PanierCont from '../../containers/PanierCont';
 import ReglementCont from '../../containers/ReglementCont';
 import PersonnalisationCont from '../../containers/PersonnalisationCont';
+import Logger from '../../helpers/Logger';
+
+const logger = new Logger();
 
 class Encaissement extends React.Component {
 
@@ -35,7 +38,7 @@ class Encaissement extends React.Component {
     this.setState({reglementOpen: false});
   }
   openPersonnalisation(itemid, stepid, previousstepid, nextstepid, stepvalidated, itemstatus, from='unknown') {
-    console.log('openPersonnalisation(item:'+itemid+', stepid:'+stepid+', previd:'+previousstepid+', nextid:'+nextstepid+', itmstatus:'+itemstatus+', (from:'+from+'))');
+    logger.log('openPersonnalisation(item:'+itemid+', stepid:'+stepid+', previd:'+previousstepid+', nextid:'+nextstepid+', itmstatus:'+itemstatus+', (from:'+from+'))');
     this.setState({
       personnalisationOpen: true, 
       personnalisationStep: stepid, 
@@ -44,11 +47,11 @@ class Encaissement extends React.Component {
       personnalisationValide: stepvalidated,
       personnalisationStatus: itemstatus,
       commandeItemToPersonnalize: itemid,
-      personnalisationReview: from=='item' ? itemid : null
+      personnalisationReview: from==='item' ? itemid : null
     });
   }
   closePersonnalisation(from='unknown') {
-    console.log('closePersonnalisation('+from+')');
+    logger.log('closePersonnalisation('+from+')');
     this.setState({personnalisationOpen: false, personnalisationStep: -1, commandeItemToPersonnalize: null, personnalisationReview:null});
   }
 
@@ -66,7 +69,7 @@ class Encaissement extends React.Component {
 
  render () {
 
-    console.log('encaissement state', this.state.personnalisationReview);
+  logger.log('encaissement state', this.state.personnalisationReview);
 
     return (
       <div className="Encaissement container">

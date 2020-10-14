@@ -1,10 +1,7 @@
 import {emit} from 'eiphop';
 import externalParams from '../../constants/externalParams.json';
-import { isAfter, isBefore } from 'date-fns';
 import { create } from 'simple-oauth2';
-import devOrder from '../../constants/_devOrder.json';
 import Logger from '../../helpers/Logger';
-import axios from 'axios';
 
 const logger = new Logger();
 

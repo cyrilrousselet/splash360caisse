@@ -62,13 +62,14 @@ function update(payload) {
                 // parametres.commandes.numerotation_[start|hex|max]
                 // on lance la mise à jour des numéros
                 let in_numerotation = false;
+                const __numkeys = ['numerotation_start', 'numerotation_hex', 'numerotation_max'];
                 if (Array.isArray(payload)) {
-                  in_numerotation =  payload.findIndex( obj => (obj.domaine=="commandes" && ['numerotation_start', 'numerotation_hex', 'numerotation_max'].indexOf(obj.cle)!=-1) ) != -1;
+                  in_numerotation =  payload.findIndex( obj => (obj.domaine==="commandes" && __numkeys.indexOf(obj.cle)>-1) ) > -1;
                 }
                 else {
-                  in_numerotation = (payload.domaine=="commandes" && ['numerotation_start', 'numerotation_hex', 'numerotation_max'].indexOf(payload.cle)!=-1);
+                  in_numerotation = (payload.domaine==="commandes" && __numkeys.indexOf(payload.cle)>-1);
                 }
-                const { numerotation_start, numerotation_max, numerotation_hex } = getState().parametresReducer.parametres.commandes;
+                const { numerotation_start } = getState().parametresReducer.parametres.commandes;
                 if (in_numerotation) dispatch(commandeActions.setNewNumero(numerotation_start));
 
               },

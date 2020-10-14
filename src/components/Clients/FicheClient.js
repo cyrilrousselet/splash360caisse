@@ -3,19 +3,14 @@ import React from 'react';
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 
-import { Modal, Fab, FormControl, Select, MenuItem, List, Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TableFooter } from '@material-ui/core';
+import { Modal, Fab } from '@material-ui/core';
 import CloseIcon from '../common/icon/CloseIcon';
-import InfoIcon from '@material-ui/icons/Info';
 import StdButton from '../common/StdButton';
 import LabelledField from '../common/LabelledField';
 
-import Swal from 'sweetalert2';
-import { useState } from 'react';
 import { format } from 'date-fns';
-import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import MapIcon from './../common/icon/MapIcon';
-import { th } from 'date-fns/locale';
 import PlusIcon from '../common/icon/PlusIcon';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
@@ -34,7 +29,7 @@ class FicheClient extends React.Component {
     super(props);
     this.state = {
       search: '',
-      focusInput: props.contexte=='encaissement'?'search':'nom',
+      focusInput: props.contexte==='encaissement'?'search':'nom',
       innermode: null,
       client_id: null,
       bloque: null,
@@ -158,16 +153,16 @@ class FicheClient extends React.Component {
 
   saveClient(selection=false) {
     const { createClient, updateClient, closeHandler, client, contexte } = this.props;
-    const client_id = this.props.client && this.props.client.client_id || null;
+    const client_id = (this.props.client && this.props.client.client_id) || null;
     let params = this.getValeurs();
     params = {...params, autoselect:selection};
 
     // si on modifie la fiche client depuis l'Encaissement,
     // on demande la mise à jour des infos du client pour la commande en cours
-    if (contexte=="encaissement" && client) {
+    if (contexte==="encaissement" && client) {
       params = {...params, autoselect:true};
     }
-    if (client_id==null) { 
+    if (client_id===null) { 
       createClient(params);
     } else {
       updateClient(params);
@@ -178,13 +173,13 @@ class FicheClient extends React.Component {
 
   handleSelect() {
 
-    const { selectClient, client, closeHandler, mode, contexte } = this.props;
+    const { selectClient, client, closeHandler, mode } = this.props;
 
-    const client_id = this.state.client_id || (client && client.client_id || null);
-    if (client_id==null) { 
+    const client_id = this.state.client_id || ((client && client.client_id) || null);
+    if (client_id===null) { 
       this.saveClient(true);
     } else {
-      if (mode=='fiche') {
+      if (mode==='fiche') {
         selectClient(null);
       } else {
         const { nom, prenom, client_id } = this.getValeurs();

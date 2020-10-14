@@ -2,8 +2,6 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux';
 import FicheClient from '../components/Clients/FicheClient';
-import history from './../helpers/history';
-import paths from './../constants/routes.json';
 import { clientsActions } from './../services/clients/clientsActions';
 
 

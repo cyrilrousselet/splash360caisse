@@ -293,8 +293,11 @@ async function _setSynced(ids, datetime) {
   log.info('datetime', __datetime);
 
   let _cmd = await (await db.commandes).get('commandes')
-                                       .find(c => ids.includes(c.id))
-                                       .assign({sync: __datetime, updatedAt: __datetime})
+                                       .filter(c => ids.includes(c.id))
+                                       .each((c) => {
+                                         c.sync = __datetime; 
+                                         c.updatedAt = __datetime;
+                                        })
                                        .write();
   // let _cmd = 1;
   return _cmd != null;

@@ -28,7 +28,7 @@ export function userReducer(state = initialState, action) {
         users: action.users
       };
     case userActionTypes.UPDATE_SUCCESS:
-      const userindex = users.findIndex(usr=>usr.user_id==action.user.user_id);
+      const userindex = users.findIndex(usr=>usr.user_id===action.user.user_id);
       users[userindex] = action.user;
       return {
         ...state,

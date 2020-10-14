@@ -76,7 +76,7 @@ class CommandesCanaux extends React.Component {
 
 
   render() {
-    const { data, updateValeur, getAll } = this.props;
+    const { data, updateValeur } = this.props;
     const { uuid }  = this.state;
     const v_uuid = uuid || data.store_id;
 

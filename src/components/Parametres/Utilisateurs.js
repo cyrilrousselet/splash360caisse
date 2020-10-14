@@ -2,7 +2,7 @@ import React from 'react';
 
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
-import { Table, TableCell, TableRow, TableHead, TableBody, Modal, Fab, Paper, Typography } from '@material-ui/core';
+import { Table, TableCell, TableRow, TableHead, TableBody, Modal, Fab, Paper } from '@material-ui/core';
 import AddIcon from '../common/icon/AddIcon';
 import CloseIcon from '../common/icon/CloseIcon';
 import StdButton from '../common/StdButton';
@@ -108,8 +108,8 @@ class EditUtilisateurPopin extends React.Component {
 
     // si aucun droit n'est défini (cas d'un nouvel utilisateur)
     // on crée un objet à partir de clés
-    if (Object.keys(droits).length==0) {
-      Object.keys(strings.modules.parametres.submodules.utilisateurs.edition.droits).map( drt => { droits[drt] = false; });
+    if (Object.keys(droits).length===0) {
+      Object.keys(strings.modules.parametres.submodules.utilisateurs.edition.droits).forEach( drt => { droits[drt] = false; });
     } 
       
     const sdroits = this.state.droits;
@@ -117,7 +117,7 @@ class EditUtilisateurPopin extends React.Component {
     const vdroits = {};
     if (Object.keys(droits).length>0) {
       // on passe en revue les droits
-      Object.entries(droits).map(([k,v]) => {
+      Object.entries(droits).forEach(([k,v]) => {
         vdroits[k] = (sdroits && null!=sdroits[k]) ? sdroits[k] : v; 
       });
     }
@@ -133,22 +133,22 @@ class EditUtilisateurPopin extends React.Component {
     let memeident = [];
 
     // tronque l'identifiant s'il fait plus de 6 caractères (au bout de 1,5 sec)
-    if (identifiant_tmo!=-1) clearTimeout(identifiant_tmo);
+    if (identifiant_tmo>-1) clearTimeout(identifiant_tmo);
     identifiant_tmo = setTimeout(()=>{
       const trimmed = valeur.substr(0,passphrase_length);
       if (this.props.utilisateur) {
-        memeident = Object.entries(this.props.identifiants).find(([id,ident]) => (id!=this.props.utilisateur.user_id && trimmed==ident));
+        memeident = Object.entries(this.props.identifiants).find(([id,ident]) => (id!==this.props.utilisateur.user_id && trimmed===ident));
       } else {
-        memeident = Object.entries(this.props.identifiants).find(([id,ident]) => trimmed==ident);
+        memeident = Object.entries(this.props.identifiants).find(([id,ident]) => trimmed===ident);
       }
       this.setState({error_identifiant: (memeident && memeident.length>0), identifiant: trimmed});
       identifiant_tmo = -1;
     },1500);
 
     if (this.props.utilisateur) {
-      memeident = Object.entries(this.props.identifiants).find(([id,ident]) => (id!=this.props.utilisateur.user_id && valeur==ident));
+      memeident = Object.entries(this.props.identifiants).find(([id,ident]) => (id!==this.props.utilisateur.user_id && valeur===ident));
     } else {
-      memeident = Object.entries(this.props.identifiants).find(([id,ident]) => valeur==ident);
+      memeident = Object.entries(this.props.identifiants).find(([id,ident]) => valeur===ident);
     }
     this.setState({error_identifiant: (memeident && memeident.length>0), identifiant: valeur});
   }
@@ -162,13 +162,13 @@ class EditUtilisateurPopin extends React.Component {
     console.log('getValues() droits', droits);
     // si aucun droit n'est défini (cas d'un nouvel utilisateur)
     // on crée un objet à partir de clés
-    if (Object.keys(droits).length==0) {
+    if (Object.keys(droits).length===0) {
       console.log('remplissage des droits à partir de clés');
-      Object.keys(strings.modules.parametres.submodules.utilisateurs.edition.droits).map( drt => { droits[drt] = false; });
+      Object.keys(strings.modules.parametres.submodules.utilisateurs.edition.droits).forEach( drt => { droits[drt] = false; });
     }
     // si un nouveau droit a été ajouté depuis la création de l'utilisateur
     if (Object.keys(strings.modules.parametres.submodules.utilisateurs.edition.droits).length>Object.keys(droits).length) {
-      const nvdrt = Object.keys(strings.modules.parametres.submodules.utilisateurs.edition.droits).filter(d=>Object.keys(droits).indexOf(d)==-1);
+      const nvdrt = Object.keys(strings.modules.parametres.submodules.utilisateurs.edition.droits).filter(d=>Object.keys(droits).indexOf(d)===-1);
       nvdrt.forEach(d=>{ droits[d] = false});
     }
     
@@ -177,13 +177,13 @@ class EditUtilisateurPopin extends React.Component {
     const vdroits = {};
     if (Object.keys(droits).length>0) {
       // on passe en revue les droits
-      Object.entries(droits).map(([k,v]) => {
-        vdroits[k] = (sdroits && null!=sdroits[k]) ? sdroits[k] : v; 
+      Object.entries(droits).forEach(([k,v]) => {
+        vdroits[k] = (sdroits && null!==sdroits[k]) ? sdroits[k] : v; 
       });
     } 
 
     let droitsactifs = Object.values(vdroits).filter(drt=>drt);
-    let all = Object.keys(vdroits).length == droitsactifs.length;
+    let all = Object.keys(vdroits).length === droitsactifs.length;
 
     const snom = this.state.nom;
     const sidentifiant = this.state.identifiant;
@@ -223,16 +223,16 @@ class EditUtilisateurPopin extends React.Component {
   }
   
   saveUtilisateur() {
-    const user_id = this.props.utilisateur && this.props.utilisateur.user_id || null;
+    const user_id = (this.props.utilisateur && this.props.utilisateur.user_id) || null;
 
     let state = this.state;
 
     // si aucun droit n'est défini (cas d'un nouvel utilisateur)
     // on crée un objet à partir de clés
-    if (state.droits==null || Object.keys(state.droits).length==0) {
+    if (state.droits===null || state.droits===undefined || Object.keys(state.droits).length===0) {
       console.log('remplissage des droits à partir de clés');
       let droits = {};
-      Object.keys(strings.modules.parametres.submodules.utilisateurs.edition.droits).map( drt => { droits[drt] = false; });
+      Object.keys(strings.modules.parametres.submodules.utilisateurs.edition.droits).forEach( drt => { droits[drt] = false; });
       state = {...state, droits:droits};
     }
     console.log('saveUtilisateur', state);
@@ -248,7 +248,7 @@ class EditUtilisateurPopin extends React.Component {
     if (droits!==null) {
 
       let droitsactifs = Object.values(droits).filter(drt=>drt);
-      let all = Object.keys(droits).length == droitsactifs.length;
+      let all = Object.keys(droits).length === droitsactifs.length;
       console.log(Object.keys(droits).length+' == '+droitsactifs.length);
       Object.keys(droits).forEach(k=>{ droits[k] = !all });
       console.log(droits);  
@@ -333,7 +333,7 @@ class EditUtilisateurPopin extends React.Component {
               />
               <div className="status-zone">
                 <SwitchCheckbox 
-                    isChecked={ status!='disabled' } 
+                    isChecked={ status!=='disabled' } 
                     key="status"
                     name="status" 
                     className="status"
@@ -379,10 +379,10 @@ class EditUtilisateurPopin extends React.Component {
                 <div className="sep"></div>
                 { Object.keys(strings.modules.parametres.submodules.utilisateurs.edition.droits).map((field, i) => (
                   <SwitchCheckbox 
-                    isChecked={ droits && (droits[field]==true) } 
+                    isChecked={ droits && (droits[field]===true) } 
                     labelLeft={ true } 
                     key={`${field}-${i}`}
-                    disabled={status=='disabled'}
+                    disabled={status==='disabled'}
                     name={ field } 
                     onChange={ (name,checked) => { this.updateDroit(Object.fromEntries([[name, checked]])) }} 
                     label={ strings.modules.parametres.submodules.utilisateurs.edition.droits[field] } 
@@ -395,7 +395,7 @@ class EditUtilisateurPopin extends React.Component {
                 identifier="modal-suppr" 
                 elementclass="suppr" 
                 icon={ false } 
-                disabled={ utilisateur==null }
+                disabled={ utilisateur===null || utilisateur===undefined }
                 text={ strings.modules.parametres.submodules.utilisateurs.edition.suppression.bouton } 
                 onClick={this.supprimerUtilisateur} 
               />
@@ -465,7 +465,7 @@ export function DroitsPopper(props) {
 
 
 function TableUtilisateurs(props) {
-  const { liste, id, openEdit, ...other } = props;
+  const { liste, id, openEdit } = props;
 
 
   return (
@@ -480,7 +480,7 @@ function TableUtilisateurs(props) {
       <TableBody>
         {liste.map((row, i) => (
           (row.status!=='deleted') && (<TableRow key={row.id} className={(i%2)?'odd':'even'}>
-            <TableCell key={`${i}-nom`} className={ `liste-nom${ (row.status && row.status=='disabled')?' user-disabled':''}` }><div onClick={ () => { openEdit(i) } }>{ row.nom }{ row.livreur && <DeliveryIcon className="delivery" /> }{ (row.livreur && row.coordonnees) && `(${row.coordonnees})` }</div></TableCell>
+            <TableCell key={`${i}-nom`} className={ `liste-nom${ (row.status && row.status==='disabled')?' user-disabled':''}` }><div onClick={ () => { openEdit(i) } }>{ row.nom }{ row.livreur && <DeliveryIcon className="delivery" /> }{ (row.livreur && row.coordonnees) && `(${row.coordonnees})` }</div></TableCell>
             <TableCell key={`${i}-passe`} className="liste-passe">{ row.identifiant }</TableCell>
             <TableCell key={`${i}-droits`} className="liste-droits"><DroitsPopper id={`drt${i}`} droits={row.droits}></DroitsPopper></TableCell>
           </TableRow>)

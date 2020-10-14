@@ -4,6 +4,9 @@ import KeyboardReact from 'react-simple-keyboard';
 import layout from 'simple-keyboard-layouts/build/layouts/french';
 import 'react-simple-keyboard/build/css/index.css';
 import { Drawer } from '@material-ui/core';
+import Logger from '../../helpers/Logger';
+
+const logger = new Logger();
 
 
 const NUMERIC_LAYOUT = {
@@ -62,12 +65,12 @@ class Clavier extends React.Component {
 
 
   initHandler() {
-    console.log('Clavier KB init');
+    logger.log('Clavier KB init');
 
     const { inputVal, inputName, inputObject } = this.props;
 
 
-    if (this.keyboard) console.log(this.keyboard.getInput(inputName));
+    if (this.keyboard) logger.log(this.keyboard.getInput(inputName));
 
     if (this.keyboard && inputObject) {
       this.keyboard.replaceInput(inputObject);
@@ -75,9 +78,9 @@ class Clavier extends React.Component {
 
     if (this.keyboard) {
       this.keyboard.setInput(inputVal || '', inputName);
-      this.keyboard.setOptions({carretPosition: inputVal && inputVal.length || 0});
+      this.keyboard.setOptions({carretPosition: (inputVal && inputVal.length) || 0});
     } else {
-      console.log('keyboard inconnu');
+      logger.log('keyboard inconnu');
     }
 
 
@@ -86,10 +89,9 @@ class Clavier extends React.Component {
 
   render() {
 
-    const { onChange, open, inputVal, inputName, defaultLayout, inputObject, variant, className, baseClass} = this.props;
+    const { onChange, open, inputVal, inputName, defaultLayout, variant, className, baseClass} = this.props;
     const { layoutName } = this.state;
 
-    const _self = this;
     const vvariant = variant || 'temporary';
 
 
@@ -109,7 +111,7 @@ class Clavier extends React.Component {
           display={display_c}
           disableCaretPositioning={true}
           onInit={this.initHandler}
-          onChange={(input) => { console.log(`[${inputVal}]`, input); onChange(input)}}
+          onChange={(input) => { logger.log(`[${inputVal}]`, input); onChange(input)}}
           onKeyPress={this.onKeyboardKeyPress}
           keyboardRef={ r=>{ if (this.keyboard==null) this.setRef(r)} }
           debug={true}

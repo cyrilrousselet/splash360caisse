@@ -2,10 +2,7 @@ import { catalogueActionTypes } from './catalogueActionTypes';
 import { catalogueServices } from './catalogueServices';
 import Logger from '../../helpers/Logger';
 import { notificationActions } from '../notification/notificationActions';
-import { userActions } from '../user/userActions';
 
-import history from '../../helpers/history';
-import paths from '../../constants/routes.json';
 import { parametresActions } from '../parametres/parametresActions';
 import { parametresActionTypes } from '../parametres/parametresActionTypes';
 
@@ -94,7 +91,7 @@ function updateProduit(payload) {
     // (color, prix, active)
     const filtered_update = {};
     Object.entries(update).forEach(([cle,valeur])=>{
-      if ((['color','prix','active','noprint']).indexOf(cle)!=-1) {
+      if ((['color','prix','active','noprint']).indexOf(cle)>-1) {
         filtered_update[cle] = valeur;
       }
     });
@@ -127,7 +124,7 @@ function updateIngredient(payload) {
     // (color, supplement, active)
     const filtered_update = {};
     Object.entries(update).forEach(([cle,valeur])=>{
-      if ((['color','supplement','active','asproduct', 'noprint']).indexOf(cle)!=-1) {
+      if ((['color','supplement','active','asproduct', 'noprint']).indexOf(cle)>-1) {
         filtered_update[cle] = valeur;
       }
     });
@@ -159,7 +156,7 @@ function updateIngredientType(payload) {
     // (noprint)
     const filtered_update = {};
     Object.entries(update).forEach(([cle,valeur])=>{
-      if ((['noprint']).indexOf(cle)!=-1) {
+      if ((['noprint']).indexOf(cle)>-1) {
         filtered_update[cle] = valeur;
       }
     });
@@ -190,7 +187,7 @@ function updateGroupe(payload) {
     // (noprint)
     const filtered_update = {};
     Object.entries(update).forEach(([cle,valeur])=>{
-      if ((['noprint']).indexOf(cle)!=-1) {
+      if ((['noprint']).indexOf(cle)>-1) {
         filtered_update[cle] = valeur;
       }
     });

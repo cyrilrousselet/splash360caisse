@@ -1,6 +1,7 @@
 const db = require('../db.js');
 const lodashId = require('lodash-id');
 const log = require('electron-log');
+const isAfter = require('date-fns/isAfter');
 
 
 const actions = {
@@ -33,8 +34,10 @@ const actions = {
   },
 
   dbClotureGetToSync: async (req,res) => {
+    const {payload} = req;
+    const limit = payload.limit;
     (await db.clotures)._.mixin(lodashId);
-    const proxies = await _getCloturesToSync();
+    const proxies = await _getCloturesToSync(limit);
     res.send(proxies);
   },
 
@@ -128,8 +131,26 @@ function _parseCloture(_rawdata) {
 
 
 
-async function _getCloturesToSync() {
-  const _clo = await (await db.clotures).get('clotures')
+async function _getCloturesToSync(limit=null) {
+
+  let _clo = [];
+
+  if (limit!==null && limit>0) {
+    _clo = await (await db.clotures).get('clotures')
+                                         .filter(c => {
+                                           let toadd = true;
+                                           if (c.hasOwnProperty('sync')==true) {
+                                             if (isAfter(new Date(c.sync), new Date(c.updatedAt))) {
+                                               toadd = false;
+                                             }
+                                           }
+                                           return toadd;
+                                         })
+                                         .slice(0,limit)
+                                         .value();
+  } else {
+
+    _clo = await (await db.clotures).get('clotures')
                                          .filter(c => {
                                            let toadd = true;
                                            if (c.hasOwnProperty('sync')==true) {
@@ -140,6 +161,7 @@ async function _getCloturesToSync() {
                                            return toadd;
                                          })
                                          .value();
+  }
 
   
   return {clotures:_clo};
@@ -155,9 +177,16 @@ async function _setSynced(ids, datetime) {
   // on en profite pour vider la propriété cmdtoarchive de chaque cloture synchronisée
 
   let _clo = await (await db.clotures).get('clotures')
-                                       .find(c => ids.includes(c.id))
-                                       .assign({sync: __datetime, updatedAt: __datetime, cmdtoarchive: []})
-                                       .write();
+                                       .filter(c => ids.includes(c.id))
+                                       .each((c) => {
+                                         c.sync = __datetime;
+                                         c.updatedAt = __datetime;
+                                         c.cmdtoarchive = [];
+                                        })
+                                        .write();
+                                       
+
+  log.info('_clo', _clo.length);
   // let _cmd = 1;
   return _clo != null;
 }

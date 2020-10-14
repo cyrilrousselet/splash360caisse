@@ -2,13 +2,9 @@ import { clotureActionTypes } from './clotureActionTypes';
 import { clotureServices } from './clotureServices';
 import { commandeActions } from '../commande/commandeActions';
 import { peripheralActions } from '../peripheral/peripheralActions';
-import { notificationActions } from '../notification/notificationActions';
 
-import { startOfToday, endOfToday, getHours, add, sub, formatISO } from 'date-fns';
+import { startOfToday, endOfToday, add, sub } from 'date-fns';
 import { differenceInMinutes } from 'date-fns/esm';
-
-import history from '../../helpers/history';
-import paths from '../../constants/routes.json';
 
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
@@ -51,7 +47,7 @@ function getCurrentPeriode(params={}) {
     let periode_start = startOfToday();
     let periode_end = endOfToday();
     // si l'heure de fin définie est différente de minuit
-    if (heure_fin!="0:00") {
+    if (heure_fin!=="0:00") {
       // si l'heure actuelle est < à l'heure de fin, le début était hier
       if (differenceInMinutes(new Date(), new Date().setHours(hfin_ar[0],hfin_ar[1]))<0) {
         periode_start = sub(new Date(), {hours: 24}).setHours(hfin_ar[0],hfin_ar[1]);
@@ -117,7 +113,7 @@ function makeCloture(params={}) {
     const state = getState();
     const catalogue = state.catalogueReducer;
     const {commandeslist} = state.commandesListReducer;
-    const {financier, entreprise} = state.parametresReducer.parametres;
+    const {financier} = state.parametresReducer.parametres;
 
   //  console.log(commandeslist);
 

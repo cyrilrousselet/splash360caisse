@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import LocalizedStrings from 'react-localization';
 import {data} from '../constants/translations';
@@ -11,14 +10,10 @@ import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+
+
 import StdButton from './common/StdButton';
 import { Doughnut } from 'react-chartjs-2';
-import history from '../helpers/history';
-import paths from '../constants/routes';
 
 
 let strings = new LocalizedStrings(data);
@@ -44,22 +39,22 @@ class LocalizedUtils extends DateFnsUtils {
 }
 
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
+// function TabPanel(props) {
+//   const { children, value, index, ...other } = props;
 
-  return (
-    <Typography
-      component="div"
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box p={3}>{children}</Box>}
-    </Typography>
-  );
-}
+//   return (
+//     <Typography
+//       component="div"
+//       role="tabpanel"
+//       hidden={value !== index}
+//       id={`simple-tabpanel-${index}`}
+//       aria-labelledby={`simple-tab-${index}`}
+//       {...other}
+//     >
+//       {value === index && <Box p={3}>{children}</Box>}
+//     </Typography>
+//   );
+// }
 
 
 function CanalChart(props) {
@@ -176,10 +171,10 @@ class Statistiques extends React.Component {
 
   setSelectedDate(bound,date) {
     const { startDate, endDate } = this.state;
-    if (bound=='start') {
+    if (bound==='start') {
       this.setState({startDate:(date<=endDate)?startOfDay(date):endDate});
     }
-    if (bound=='end') {
+    if (bound==='end') {
       this.setState({endDate:(date>=startDate)?endOfDay(date):startDate});
     }
   }
@@ -199,6 +194,9 @@ class Statistiques extends React.Component {
         startDate = startOfMonth(new Date());
         endDate = endOfMonth(new Date());
         break;
+      default:
+        startDate = startOfToday();
+        endDate = endOfToday();
     }
     this.setState({startDate:startDate, endDate:endDate});
     
@@ -206,23 +204,22 @@ class Statistiques extends React.Component {
 
  render() {
 
-  const { commandeslist, error, loading, canaux } = this.props;
-  const { startDate, endDate, openTab } = this.state;
+  const { commandeslist, loading, canaux } = this.props;
+  const { startDate, endDate } = this.state;
 
   let /*ca_total = 0,*/ 
-    chrono_total = 0, 
     ca_confirmes = 0, 
     nbre_total = 0, 
+  //  chrono_total = 0,
     nbre_confirmes = 0, 
-    moy = 0, 
     tps_total = 0, 
     canal = {}, 
     moyen = {}, 
     vendeur = {}, 
-    mode = {}, 
-    modes = {}
+    mode = {}
     ;
-  for (let [key, value] of Object.entries(commandeslist)) {
+  // for (let [key, value] of Object.entries(commandeslist)) {
+  Object.values(commandeslist).forEach(value => {
     // let cmd = {
     //   id: value.ticketId,
     //   createdAt: value.createdAt,
@@ -237,7 +234,7 @@ class Statistiques extends React.Component {
     let __end = compareAsc(new Date(value.createdAt), endDate);
     if (__start>-1 && __end<1) {
 
-      if (value.status=='confirmed') {
+      if (value.status==='confirmed') {
         ca_confirmes += Number(value.total);
         nbre_confirmes++;
       }
@@ -247,14 +244,14 @@ class Statistiques extends React.Component {
 
       // calcul du temps moyen (uniquement pour les commandes chonométrées)
       tps_total += value.chrono || 0;
-      if (value.chrono) chrono_total++;
+    //  if (value.chrono) chrono_total++;
 
 
 
 
       
 
-      if (value.status=='confirmed') {
+      if (value.status==='confirmed') {
         
         // par mode
         if (!mode.hasOwnProperty(value.mode)) { mode[value.mode] = 0; }
@@ -273,7 +270,7 @@ class Statistiques extends React.Component {
         // par canal
         let can = canaux.find(cnl => {
           console.log(cnl.ids);
-          return cnl.ids.indexOf(value.caisse.id)!=-1
+          return cnl.ids.indexOf(value.caisse.id)>-1
         });
         const nomcanal = (can) ? can.nom : value.caisse.id;
         if (!canal.hasOwnProperty(nomcanal)) { canal[nomcanal] = 0; }
@@ -285,7 +282,7 @@ class Statistiques extends React.Component {
         
       }
     }
-  }
+  });
 
 
 
@@ -304,12 +301,12 @@ class Statistiques extends React.Component {
     }]
   };
   let i = 0;
-  for(let [id,val] of Object.entries(vendeur)) {
+  Object.entries(vendeur).forEach(([id,val])=> {
     vendeur_data.labels.push(`${id} ${val.toFixed(2).replace('.',',')}€`);
     vendeur_data.datasets[0].data.push(Math.round(val));
     vendeur_data.datasets[0].backgroundColor.push(_colorWheel[i]);
     vendeur_data.datasets[0].hoverBackgroundColor.push(_colorWheel[i++]);
-  }
+  });
 
   const vendeur_options = {
     maintainAspectRation: true,
@@ -320,12 +317,12 @@ class Statistiques extends React.Component {
       cutoutPercentage: 75
   }
 
-  const a11yProps = (index) => {
-    return {
-      id: `simple-tab-${index}`,
-      'aria-controls': `simple-tabpanel-${index}`,
-    };
-  }
+  // const a11yProps = (index) => {
+  //   return {
+  //     id: `simple-tab-${index}`,
+  //     'aria-controls': `simple-tabpanel-${index}`,
+  //   };
+  // }
 
   const panier_moyen = Number(ca_confirmes / nbre_confirmes) || 0;
   const nbsp = String.fromCharCode(160);

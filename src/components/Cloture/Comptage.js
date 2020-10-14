@@ -3,15 +3,13 @@ import React from 'react';
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 
-import { Modal, Fab, FormControl, Select, MenuItem, List, Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TableFooter } from '@material-ui/core';
+import { Modal, Fab } from '@material-ui/core';
 import CloseIcon from '../common/icon/CloseIcon';
 import InfoIcon from '@material-ui/icons/Info';
 import StdButton from '../common/StdButton';
 import { devise, htmlentities } from './../../helpers/toolbox';
-import LabelledField from '../common/LabelledField';
 import NumberKeyboard from '../common/NumberKeyboard';
 import Swal from 'sweetalert2';
-import { useState } from 'react';
 
 let strings = new LocalizedStrings(data);
 
@@ -35,7 +33,7 @@ class CountTRTool extends React.Component {
 
 
   trHandler(event) {
-    if (event.keyCode==13) {
+    if (event.keyCode===13) {
       console.log(event.target.value);
       this.decodeQRCode(event.target.value);
       event.target.value = '';
@@ -76,7 +74,7 @@ class CountTRTool extends React.Component {
       return;
     }
 
-    const platform = process.platform=='darwin' ? 'darwin' : 'win';
+    const platform = process.platform==='darwin' ? 'darwin' : 'win';
 
     let decoded = '';
     for (let caractere of value) {
@@ -101,8 +99,7 @@ class CountTRTool extends React.Component {
     const __trValue = Number(__value.substr(11,5)) / 100;
     const __trValid = Number(__value.substr(16,2));
 
-    const __now = new Date().getFullYear() - 2000;
-    if (liste.find(tr=>tr.id==__value)) error = 'yet';
+    if (liste.find(tr=>tr.id===__value)) error = 'yet';
  // on supprime le test de valididé (certains TR n'ont pas de date limite)
  //   if (__trValid<__now) error = 'deprecated';
 
@@ -114,7 +111,7 @@ class CountTRTool extends React.Component {
       if (this.refs.listeBody) this.refs.listeBody.scrollTop = this.refs.listeBody.scrollHeight;
 
     } else {
-      if (error=='deprecated') {
+      if (error==='deprecated') {
         Swal.fire({
           type: 'warning',
           title: strings.modules.cloture.comptage.counttrtool.erreur[error].titre,
@@ -137,7 +134,7 @@ class CountTRTool extends React.Component {
 
 
   render() {
-    const {open, onValidate, closeHandler} = this.props;
+    const {open, onValidate} = this.props;
 
     const { liste, counttotal } = this.state;
 
@@ -356,7 +353,7 @@ class Comptage extends React.Component {
 
   closeKeyboard() {
     const { fieldval, activeField } = this.state;
-    const newval = ['saisie_carte','saisie_ticket','saisie_cheque','saisie_especes','saisie_avoir'].indexOf(activeField)==-1 ? Number(fieldval) : fieldval.replace(',','.');
+    const newval = ['saisie_carte','saisie_ticket','saisie_cheque','saisie_especes','saisie_avoir'].indexOf(activeField)===-1 ? Number(fieldval) : fieldval.replace(',','.');
     this.setState({keyboardOpen: false, [activeField]:newval});
     setTimeout(()=> {
       this.checkComptage()
@@ -381,7 +378,7 @@ class Comptage extends React.Component {
     let errors = {};
     let valid = true;
     //check cb
-    if (Number(saisie_carte).toFixed(2) != carte.toFixed(2)) {
+    if (Number(saisie_carte).toFixed(2) !== carte.toFixed(2)) {
       errors['error_carte'] = true;
       valid = false;
     } else {
@@ -389,7 +386,7 @@ class Comptage extends React.Component {
     }
 
     //check tickets
-    if (Number(saisie_ticket).toFixed(2) != ticket.toFixed(2)) {
+    if (Number(saisie_ticket).toFixed(2) !== ticket.toFixed(2)) {
       errors['error_ticket'] = true;
       valid = false;
     } else {
@@ -397,7 +394,7 @@ class Comptage extends React.Component {
     }
 
     //check chèques
-    if (Number(saisie_cheque).toFixed(2) != cheque.toFixed(2)) {
+    if (Number(saisie_cheque).toFixed(2) !== cheque.toFixed(2)) {
       errors['error_cheque'] = true;
       valid = false;
     } else {
@@ -405,7 +402,7 @@ class Comptage extends React.Component {
     }
 
     //check espèces
-    if (Number(saisie_especes).toFixed(2) != (especes+Number(periode.fdcaisse)).toFixed(2)) {
+    if (Number(saisie_especes).toFixed(2) !== (especes+Number(periode.fdcaisse)).toFixed(2)) {
       errors['error_especes'] = true;
       valid = false;
     } else {
@@ -413,7 +410,7 @@ class Comptage extends React.Component {
     }
 
     //check avoirs
-    if (Number(saisie_avoir).toFixed(2) != avoir.toFixed(2)) {
+    if (Number(saisie_avoir).toFixed(2) !== avoir.toFixed(2)) {
       errors['error_avoir'] = true;
       valid = false;
     } else {
@@ -472,15 +469,15 @@ class Comptage extends React.Component {
         avoir = 0;
 
     if (ventilation && ventilation.moyen) {
-      const esp = ventilation.moyen.find(moy=>moy.moyen=='especes');
+      const esp = ventilation.moyen.find(moy=>moy.moyen==='especes');
       if (esp) especes = esp.valeur;
-      const cb = ventilation.moyen.find(moy=>moy.moyen=='carte');
+      const cb = ventilation.moyen.find(moy=>moy.moyen==='carte');
       if (cb) carte = cb.valeur;
-      const tr = ventilation.moyen.find(moy=>moy.moyen=='ticket');
+      const tr = ventilation.moyen.find(moy=>moy.moyen==='ticket');
       if (tr) ticket = tr.valeur;
-      const chq = ventilation.moyen.find(moy=>moy.moyen=='cheque');
+      const chq = ventilation.moyen.find(moy=>moy.moyen==='cheque');
       if (chq) cheque = chq.valeur;
-      const avr = ventilation.moyen.find(moy=>moy.moyen=='avoir');
+      const avr = ventilation.moyen.find(moy=>moy.moyen==='avoir');
       if (avr) avoir = avr.valeur;
     }
 
@@ -508,7 +505,7 @@ class Comptage extends React.Component {
 
   render() {
 
-    const { open, closeComptage, openCommandesListe, caisses, operators, selection_operator, selection_caisse, periode, commandes, emission, validComptage } = this.props;
+    const { open, closeComptage, openCommandesListe, periode, emission } = this.props;
 
 
     const { 
@@ -535,11 +532,11 @@ class Comptage extends React.Component {
       eur100,eur200 } = this.state;
 
 
-    let saisie_carte_fv = activeField=='saisie_carte' ? String(fieldval).replace(',','.') : saisie_carte;
-    let saisie_ticket_fv = activeField=='saisie_ticket' ? String(fieldval).replace(',','.') : saisie_ticket;
-    let saisie_cheque_fv = activeField=='saisie_cheque' ? String(fieldval).replace(',','.') : saisie_cheque;
-    let saisie_especes_fv = activeField=='saisie_especes' ? String(fieldval).replace(',','.') : saisie_especes;
-    let saisie_avoir_fv = activeField=='saisie_avoir' ? String(fieldval).replace(',','.') : saisie_avoir;
+    let saisie_carte_fv = activeField==='saisie_carte' ? String(fieldval).replace(',','.') : saisie_carte;
+    let saisie_ticket_fv = activeField==='saisie_ticket' ? String(fieldval).replace(',','.') : saisie_ticket;
+    let saisie_cheque_fv = activeField==='saisie_cheque' ? String(fieldval).replace(',','.') : saisie_cheque;
+    let saisie_especes_fv = activeField==='saisie_especes' ? String(fieldval).replace(',','.') : saisie_especes;
+    let saisie_avoir_fv = activeField==='saisie_avoir' ? String(fieldval).replace(',','.') : saisie_avoir;
 
 
     const { especes, carte, ticket, cheque, avoir } = this.getVentilation();
@@ -547,20 +544,20 @@ class Comptage extends React.Component {
     let mtcaisse = Number(periode.fdcaisse) + especes - Number(periode.depenses) - Number(periode.remboursements);
 
     const monnaie = {
-      cent1: activeField=='cent1' ? Number(fieldval) : cent1,
-      cent2: activeField=='cent2' ? Number(fieldval) : cent2,
-      cent5: activeField=='cent5' ? Number(fieldval) : cent5,
-      cent10: activeField=='cent10' ? Number(fieldval) : cent10,
-      cent20: activeField=='cent20' ? Number(fieldval) : cent20,
-      cent50: activeField=='cent50' ? Number(fieldval) : cent50,
-      eur1: activeField=='eur1' ? Number(fieldval) : eur1,
-      eur2: activeField=='eur2' ? Number(fieldval) : eur2,
-      eur5: activeField=='eur5' ? Number(fieldval) : eur5,
-      eur10: activeField=='eur10' ? Number(fieldval) : eur10,
-      eur20: activeField=='eur20' ? Number(fieldval) : eur20,
-      eur50: activeField=='eur50' ? Number(fieldval) : eur50,
-      eur100: activeField=='eur100' ? Number(fieldval) : eur100,
-      eur200: activeField=='eur200' ? Number(fieldval) : eur200
+      cent1: activeField==='cent1' ? Number(fieldval) : cent1,
+      cent2: activeField==='cent2' ? Number(fieldval) : cent2,
+      cent5: activeField==='cent5' ? Number(fieldval) : cent5,
+      cent10: activeField==='cent10' ? Number(fieldval) : cent10,
+      cent20: activeField==='cent20' ? Number(fieldval) : cent20,
+      cent50: activeField==='cent50' ? Number(fieldval) : cent50,
+      eur1: activeField==='eur1' ? Number(fieldval) : eur1,
+      eur2: activeField==='eur2' ? Number(fieldval) : eur2,
+      eur5: activeField==='eur5' ? Number(fieldval) : eur5,
+      eur10: activeField==='eur10' ? Number(fieldval) : eur10,
+      eur20: activeField==='eur20' ? Number(fieldval) : eur20,
+      eur50: activeField==='eur50' ? Number(fieldval) : eur50,
+      eur100: activeField==='eur100' ? Number(fieldval) : eur100,
+      eur200: activeField==='eur200' ? Number(fieldval) : eur200
     }
     const counttotal = (monnaie.cent1*.01) + 
                        (monnaie.cent2*.02) + 
@@ -605,7 +602,7 @@ class Comptage extends React.Component {
               </FormControl>
             </div> */}
             <div className="bloc bloc-especes">
-              <div className="bloctitre">{ htmlentities(strings.modules.cloture.comptage.especes.titre) }</div>
+              <div className="bloctitre">{ strings.modules.cloture.comptage.especes.titre[0] }<br />{ strings.modules.cloture.comptage.especes.titre[1] }</div>
               <div className="cptitems-liste">
                 <div className="cptitem cptitem-fdc">
                   <div className="label">{ strings.modules.cloture.comptage.especes.total_fdcaisse }</div>
@@ -632,7 +629,7 @@ class Comptage extends React.Component {
               </div>
             </div>
             <div className="bloc bloc-toutes">
-              <div className="bloctitre">{ htmlentities(strings.modules.cloture.comptage.toutes.titre) }</div>
+              <div className="bloctitre">{ strings.modules.cloture.comptage.toutes.titre[0] }<br />{ strings.modules.cloture.comptage.toutes.titre[1] }</div>
               <div className="cptitems-liste">
                 <div className="cptitem cptitem-cb">
                   <div className="label">{ strings.modules.cloture.comptage.moyens.carte }</div>
@@ -712,7 +709,7 @@ class Comptage extends React.Component {
                   <StdButton identifier="btncomptcaisse" elementclass="btncomptcaisse" key="btncomptcaisse" text={ strings.modules.cloture.comptage.actions.outilcomptage } onClick={ this.openCountTool } />
                   <StdButton identifier="btncompttr" elementclass="btncompttr" key="btncompttr" text={ strings.modules.cloture.comptage.actions.outilcomptagetr } onClick={ this.openCountTRTool } />
               </div>
-              <StdButton identifier="btncomptverif" elementclass="btncomptverif" key="btncomptverif" disabled={saisie_carte=='' || saisie_cheque=='' || saisie_ticket=='' || saisie_especes==''} text={ strings.modules.cloture.comptage.actions.validation } onClick={ () => { this.checkComptageBeforeValidation() } } />          
+              <StdButton identifier="btncomptverif" elementclass="btncomptverif" key="btncomptverif" disabled={saisie_carte==='' || saisie_cheque==='' || saisie_ticket==='' || saisie_especes===''} text={ strings.modules.cloture.comptage.actions.validation } onClick={ () => { this.checkComptageBeforeValidation() } } />          
             </div>
 
           </div>

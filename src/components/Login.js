@@ -45,6 +45,19 @@ class Login extends React.Component {
     const { checkUsers } = this.props;
     checkUsers();
   }
+  componentDidUpdate(prevProps, prevState) {
+    
+    const {passphrase, activated } = this.state;
+    const {error} = this.props;
+
+
+    if (error) {
+      this.displayError(error);
+    }
+
+
+    if (activated && !error) this.submitPassphrase(passphrase);
+  }
 
   // action on buttons (fill in passphrase)
   buttonHandler(text) {
@@ -137,16 +150,16 @@ class Login extends React.Component {
 
   render() {
 
-    const {passphrase, activated, boutons, prepareToSet} = this.state;
-    const {hasUsers, error, inPopin} = this.props;
+    const {passphrase, boutons, prepareToSet} = this.state;
+    const {hasUsers, inPopin} = this.props;
 
 
-    if (error) {
-      this.displayError(error);
-    }
+    // if (error) {
+    //   this.displayError(error);
+    // }
 
 
-    if (activated && !error) this.submitPassphrase(passphrase);
+    // if (activated && !error) this.submitPassphrase(passphrase);
 
     return (
       <div className="Login">

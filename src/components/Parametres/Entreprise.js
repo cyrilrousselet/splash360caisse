@@ -68,9 +68,9 @@ browseHandle(e) {
         return;
     }
 
-    const platform = process.platform=='darwin' ? 'darwin' : 'win';
+    const platform = process.platform==='darwin' ? 'darwin' : 'win';
 
-    const path_ar = fileNames[0].split(platform=='darwin'?'/':'\\');
+    const path_ar = fileNames[0].split(platform==='darwin'?'/':'\\');
     const file_ar = path_ar.pop().split('.');
     file_ar[file_ar.length-2] += `_${new Date().getTime()}`;
     this.checkDirectorySync(`${app.getPath('userData')}/userdata`);
@@ -100,7 +100,7 @@ getLogoImg(filePath) {
  render() {
 
   const { message_ticket } = this.state;
-  const { data, updateValeur, getAll } = this.props;
+  const { data, updateValeur } = this.props;
 
   console.log(strings.modules.parametres.submodules.entreprise.options.label.auto_update);
 
@@ -140,7 +140,7 @@ getLogoImg(filePath) {
           <div className="subttl">{ strings.modules.parametres.submodules.entreprise.options.titre }</div>
           { general_switch.map((field, i) => (
             <SwitchCheckbox 
-              isChecked={ data_ent[field] } 
+              isChecked={ data_ent[field]===undefined ? false : data_ent[field] } 
               labelLeft={ true } 
               key={`${field}-${i}`}
               name={ field } 
@@ -149,7 +149,7 @@ getLogoImg(filePath) {
             />
           ))}
           <SwitchCheckbox 
-            isChecked={ data.clavier } 
+            isChecked={ (data.clavier===undefined) ? false : data.clavier } 
             labelLeft={ true } 
             key={`clavier`}
             name={ `clavier` } 
@@ -163,7 +163,7 @@ getLogoImg(filePath) {
             label={ strings.modules.parametres.submodules.entreprise.options.label.clavier } 
           />
           <SwitchCheckbox 
-            isChecked={ data.avoirs } 
+            isChecked={ data.avoirs===undefined ? false : data.avoirs } 
             labelLeft={ true } 
             key={`avoirs`}
             name={ `avoirs` } 
@@ -177,7 +177,7 @@ getLogoImg(filePath) {
             label={ strings.modules.parametres.submodules.entreprise.options.label.avoirs } 
           />
           <SwitchCheckbox 
-            isChecked={ data.service } 
+            isChecked={ data.service===undefined ? false : data.service } 
             labelLeft={ true } 
             key={`service`}
             name={ `service` } 
@@ -211,12 +211,12 @@ getLogoImg(filePath) {
           <div className="caption heure-caption">{ strings.modules.parametres.submodules.entreprise.options.label.heure_fin_caption }</div>
           <div className="message-ticket">
             <label>{ strings.modules.parametres.submodules.entreprise.options.label.message_ticket }</label>
-            <textarea onChange={this.messageHandler}>{ message_ticket }</textarea>
+            <textarea onChange={this.messageHandler} defaultValue={ message_ticket } />
           </div>
           <div className="logo-ticket">
             <label>{ strings.modules.parametres.submodules.entreprise.options.label.logo_ticket }</label>
             <div className="caption ticket-caption">{ strings.modules.parametres.submodules.entreprise.options.label.logo_ticket_caption }</div>
-            {data.ticket_logo && <div className="logo-ticket-image"><img src={this.getLogoImg(data.ticket_logo)} /></div>}
+            {data.ticket_logo && <div className="logo-ticket-image"><img src={this.getLogoImg(data.ticket_logo)} alt="" /></div>}
             <div className="logo-boutons">
               <StdButton identifier={`browse-logo`} elementclass={`browse-logo`} icon={false} noStroke={true} text={`${(data.ticket_logo?strings.modules.parametres.submodules.entreprise.options.label.logo_ticket_replace:strings.general.dialog.browse)}...`} disabled={false} onClick={this.browseHandle} />
               {data.ticket_logo && <StdButton identifier={`delete-logo`} elementclass={`delete-logo`} icon={false} noStroke={true} text={strings.general.dialog.delete} disabled={false} onClick={() => { updateValeur({domaine:'entreprise', cle:'ticket_logo', valeur:null})}} />}

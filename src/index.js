@@ -17,8 +17,6 @@ import { notificationActions } from './services/notification/notificationActions
 
 // import log from 'electron-log';
 
-import paths from './constants/routes';
-
 // import reducer from './reducers';
 import './index.scss';
 import registerServiceWorker from './registerServiceWorker';

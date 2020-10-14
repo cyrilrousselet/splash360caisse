@@ -1,14 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import TopZone from '../../containers/TopZone';
 import LoadingSpinner from './../common/LoadingSpinner';
-import LabelledField from './../common/LabelledField';
 
-import { Modal, Fab, FormControl, Select, MenuItem } from '@material-ui/core';
-import CloseIcon from '../common/icon/CloseIcon';
+import { FormControl, Select, MenuItem } from '@material-ui/core';
 import StdButton from '../common/StdButton';
 import { startOfToday, endOfToday, parseJSON, format } from 'date-fns';
 import frLocale from "date-fns/locale/fr";
@@ -21,10 +18,14 @@ import Comptage from './Comptage';
 import { devise } from './../../helpers/toolbox';
 import NumberKeyboard from '../common/NumberKeyboard';
 
+import Logger from '../../helpers/Logger';
+
 
 import history from '../../helpers/history';
 import paths from '../../constants/routes';
 
+
+const logger = new Logger();
 let strings = new LocalizedStrings(data);
 
 
@@ -65,13 +66,13 @@ class Cloture extends React.Component {
   }
 
   componentDidMount() {
-    const { getCommandesList, getCurrentPeriode, Parametres, getCloturesList } = this.props;
+    const { getCurrentPeriode, getCloturesList } = this.props;
     // getCommandesList();
     //parametres :
     let params = {};
     const { selection_caisse, selection_operator} = this.state;
-    if (selection_caisse.id!='allcash') params['caisses'] = [selection_caisse];
-    if (selection_operator.id!='allope') params['vendeurs'] = [selection_operator];
+    if (selection_caisse.id!=='allcash') params['caisses'] = [selection_caisse];
+    if (selection_operator.id!=='allope') params['vendeurs'] = [selection_operator];
     getCurrentPeriode(params);
     getCloturesList();
 //    getParametres();
@@ -143,8 +144,8 @@ class Cloture extends React.Component {
     
     let params = {};
     const {selection_operator} = this.state;
-    params['caisses'] = selection.id=="allcash" ? [] : [selection];
-    if (selection_operator.id!='allope') params['vendeurs'] = [selection_operator];
+    params['caisses'] = selection.id==="allcash" ? [] : [selection];
+    if (selection_operator.id!=='allope') params['vendeurs'] = [selection_operator];
     this.props.getCurrentPeriode(params);
   }
 
@@ -156,23 +157,23 @@ class Cloture extends React.Component {
 
     let params = {};
     const {selection_caisse} = this.state;
-    params['vendeurs'] = selection.id=="allope" ? [] : [selection];
-    if (selection_caisse.id!='allcash') params['caisses'] = [selection_caisse];
+    params['vendeurs'] = selection.id==="allope" ? [] : [selection];
+    if (selection_caisse.id!=='allcash') params['caisses'] = [selection_caisse];
     this.props.getCurrentPeriode(params);
   }
 
   validComptage(comptageobject) {
-    console.log('validComptage()', comptageobject);
+    logger.log('validComptage()', comptageobject);
 //    this.setState({comptage: valeur, comptageOpen: false});
     this.setState({comptage: comptageobject});
   }
   openCommandesListe() {
-    console.log('openCommandesListe()');
+    logger.log('openCommandesListe()');
   }
   startSaisie(field) {
-    console.log('startSaisie',field);
+    logger.log('startSaisie',field);
     let comptage = this.state.comptage;
-    if (field=='saisie_comptage') {
+    if (field==='saisie_comptage') {
       comptage = null;
     }
     this.setState({keyboardOpen: true, comptage: comptage, fieldvalue: this.state[field], activeField: field});
@@ -190,7 +191,7 @@ class Cloture extends React.Component {
 
   closeKeyboard() {
     const { fieldvalue, activeField } = this.state;
-    const newval = ['saisie_prelevement','saisie_comptage'].indexOf(activeField)==-1 ? Number(fieldvalue) : fieldvalue.replace(',','.');
+    const newval = ['saisie_prelevement','saisie_comptage'].indexOf(activeField)===-1 ? Number(fieldvalue) : fieldvalue.replace(',','.');
     this.setState({keyboardOpen: false, [activeField]:newval});
   }
 
@@ -199,12 +200,12 @@ class Cloture extends React.Component {
     const { selection_operator, selection_caisse, comptage } = this.state;
     
     let params = {};
-    if (selection_caisse.id!='allcash') params['caisses'] = [selection_caisse];
-    if (selection_operator.id!='allope') params['vendeurs'] = [selection_operator];
+    if (selection_caisse.id!=='allcash') params['caisses'] = [selection_caisse];
+    if (selection_operator.id!=='allope') params['vendeurs'] = [selection_operator];
     params['comptage'] = (comptage!==null) ? comptage : {total:comptagemanuel};
     params['prelevement'] = prelevement;
 
-    if (selection_caisse.id!='allcash' || selection_operator.id!='allope') {
+    if (selection_caisse.id!=='allcash' || selection_operator.id!=='allope') {
       Swal.fire({
         title: strings.modules.cloture.alerte.partielle.titre,
         text: strings.modules.cloture.alerte.partielle.texte,
@@ -230,9 +231,9 @@ class Cloture extends React.Component {
 
   render() {
 
-    const { periode, clotures, error, loading, printPeriodeX, listeCommandes, catalogue, fonddecaissetheo } = this.props;
+    const { periode, clotures, printPeriodeX, listeCommandes, catalogue, fonddecaissetheo } = this.props;
 
-    const { saisie_prelevement, saisie_comptage, activeField, comptageOpen, comptcaisseOpen, comptage, selection_caisse, selection_operator, keyboardOpen, fieldvalue, prelevement} = this.state;
+    const { saisie_prelevement, saisie_comptage, activeField, comptageOpen, comptage, selection_caisse, selection_operator, keyboardOpen, fieldvalue} = this.state;
 
     let params = {
       user: periode.editeur,
@@ -243,10 +244,10 @@ class Cloture extends React.Component {
       fin: endOfToday(),
       extract: 'z'
     }
-    if (selection_caisse.id!='allcash') params['caisses'] = [selection_caisse];
-    if (selection_operator.id!='allope') params['vendeurs'] = [selection_operator];
+    if (selection_caisse.id!=='allcash') params['caisses'] = [selection_caisse];
+    if (selection_operator.id!=='allope') params['vendeurs'] = [selection_operator];
     const periode_z = clotureServices.getCurrentPeriode(listeCommandes, catalogue, params);
-    console.log(periode_z);
+    logger.log(periode_z);
 
     const __strimp = strings.modules.cloture.impression;
 
@@ -256,18 +257,18 @@ class Cloture extends React.Component {
   //  const prelevement_fv = keyboardOpen ? fieldvalue.replace(',','.') : prelevement;
 
     // la valeur doit être une chaîne avec 
-    const prelevement_fv = activeField=='saisie_prelevement' ? String(fieldvalue).replace(',','.') : saisie_prelevement;
-    const comptage_fv = activeField=='saisie_comptage' ? String(fieldvalue).replace(',','.') : saisie_comptage;
+    const prelevement_fv = activeField==='saisie_prelevement' ? String(fieldvalue).replace(',','.') : saisie_prelevement;
+    const comptage_fv = activeField==='saisie_comptage' ? String(fieldvalue).replace(',','.') : saisie_comptage;
 
-    console.log('fieldvalue', activeField, fieldvalue);
-    console.log('comptage', comptage);
-    console.log('prelevement_fv l.258', prelevement_fv);
+    logger.log('fieldvalue', activeField, fieldvalue);
+    logger.log('comptage', comptage);
+    logger.log('prelevement_fv l.258', prelevement_fv);
 
     const comptage_total = (null!==comptage) ? comptage.total : Number(comptage_fv);
     const fdcaisse_new = (null!==comptage) ? devise(comptage.total-Number(prelevement_fv.replace(',','.'))) : devise(Number(comptage_fv)-Number(prelevement_fv.replace(',','.')));
     
-    // console.log('operators', operators);
-    // console.log('caisses', caisses);
+    // logger.log('operators', operators);
+    // logger.log('caisses', caisses);
 
     if(!this.shouldComponentRender()) {
       return <LoadingSpinner />
@@ -348,9 +349,9 @@ class Cloture extends React.Component {
                   </Select>
                 </FormControl>
               </div>
-              <StdButton identifier="btncomptage" elementclass="btncomptage" key="btncomptage" text={(selection_caisse.id!='allcash' || selection_operator.id!='allope') ? strings.modules.cloture.selection.comptagebtn_partiel : strings.modules.cloture.selection.comptagebtn } disabled={periode_z.cmdtoarchive.length==0} onClick={ () => {this.openComptage(periode_z) }} />
+              <StdButton identifier="btncomptage" elementclass="btncomptage" key="btncomptage" text={(selection_caisse.id!=='allcash' || selection_operator.id!=='allope') ? strings.modules.cloture.selection.comptagebtn_partiel : strings.modules.cloture.selection.comptagebtn } disabled={periode_z.cmdtoarchive.length===0} onClick={ () => {this.openComptage(periode_z) }} />
             </div>
-            <StdButton identifier="btnx" elementclass="btnx" key="btnx" text={(selection_caisse.id!='allcash' || selection_operator.id!='allope') ? strings.modules.cloture.print_partiel : strings.modules.cloture.print_x } onClick={ () => { console.log('printPeriodeX()'); printPeriodeX() } } />
+            <StdButton identifier="btnx" elementclass="btnx" key="btnx" text={(selection_caisse.id!=='allcash' || selection_operator.id!=='allope') ? strings.modules.cloture.print_partiel : strings.modules.cloture.print_x } onClick={ () => { logger.log('printPeriodeX()'); printPeriodeX() } } />
           </div>
           <div className="clo-centre">
             <div className="bloccentre">
@@ -362,9 +363,9 @@ class Cloture extends React.Component {
                 </div>
                 <div className="sel">
                   {(periode.vendeurs.length>1) && (<div className="val">{ `${__strimp.vendeurs[1]}${strings.vendeurs_all}` }</div>)}
-                  {(periode.vendeurs.length==1) && (<div className="val">{ `${__strimp.vendeurs[0]}${periode.vendeurs[0].nom} (${periode.vendeurs[0].id})` }</div>)}
+                  {(periode.vendeurs.length===1) && (<div className="val">{ `${__strimp.vendeurs[0]}${periode.vendeurs[0].nom} (${periode.vendeurs[0].id})` }</div>)}
                   {(periode.caisses.length>1) && (<div className="val">{ `${__strimp.caisses[1]}${strings.caisses_all}` }</div>)}
-                  {(periode.caisses.length==1) && (<div className="val">{ `${__strimp.caisses[0]}${periode.caisses[0].nom} (${periode.caisses[0].id})` }</div>)}
+                  {(periode.caisses.length===1) && (<div className="val">{ `${__strimp.caisses[0]}${periode.caisses[0].nom} (${periode.caisses[0].id})` }</div>)}
                 </div>
                 <div className="recap">
                   <div className="recap-item">
@@ -527,7 +528,7 @@ class Cloture extends React.Component {
                 /> */}
               </div>
             </div>
-            <StdButton identifier="btncloture" elementclass="btncloture" key="btncloture" text={(selection_caisse.id!='allcash' || selection_operator.id!='allope') ? strings.modules.cloture.cloture_partielle : strings.modules.cloture.cloture_z } disabled={(comptage==null && comptage_fv=='') || periode_z.standby>0 || periode_z.cmdtoarchive.length==0} onClick={ () => {this.prepareCloture(Number(prelevement_fv.replace(',','.')), comptage_total)} } />
+            <StdButton identifier="btncloture" elementclass="btncloture" key="btncloture" text={(selection_caisse.id!=='allcash' || selection_operator.id!=='allope') ? strings.modules.cloture.cloture_partielle : strings.modules.cloture.cloture_z } disabled={(comptage===null && comptage_fv==='') || periode_z.standby>0 || periode_z.cmdtoarchive.length===0} onClick={ () => {this.prepareCloture(Number(prelevement_fv.replace(',','.')), comptage_total)} } />
           </div>
         </div>
         <Comptage 

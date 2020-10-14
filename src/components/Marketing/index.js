@@ -7,9 +7,9 @@ import paths from '../../constants/routes';
 import { marketSubmodulesList } from '../../constants/modules';
 
 import MarketingAvoirsCont from './../../containers/MarketingAvoirsCont';
-import Promotions from './Promotions';
-import Newsletter from './Newsletter';
-import Sms from './Sms';
+// import Promotions from './Promotions';
+// import Newsletter from './Newsletter';
+// import Sms from './Sms';
 
 import {data} from '../../constants/translations';
 import LocalizedStrings from 'react-localization';

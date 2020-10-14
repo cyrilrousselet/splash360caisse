@@ -20,13 +20,13 @@ import Personnalisation from '../components/Encaissement/Personnalisation';
 
 
 const _findStep = (state, stepId) => {
-  if (stepId==-1) return null;
+  if (stepId===-1) return null;
 
   const steps = getSteps(state);
   let stepobj = {};
   
   Object.values(steps).forEach(st => {
-    const stepo = st.find(so => so.step_id == stepId);
+    const stepo = st.find(so => so.step_id === stepId);
     if (stepo) stepobj = stepo;
   });
 
@@ -34,7 +34,7 @@ const _findStep = (state, stepId) => {
 }
 
 const _getIngredientTypes = (state, stepId) => {
-  if (stepId==-1) return null;
+  if (stepId===-1) return null;
   
   const stepObj = _findStep(state, stepId);
   let ingredientTypes = {};
@@ -74,18 +74,18 @@ const _getIngredientTypes = (state, stepId) => {
  * @param {*} itemid  id de l'item en cours de personnalisation
  */
 const _getItemIngredients = (state, itemid) => {
-  if (itemid==-1) return null;
-  if (undefined == state.commandeReducer.commande.items) return null;
- const item_obj = state.commandeReducer.commande.items.find(item=>item.itemid==itemid);
- if (null==item_obj) return null;
+  if (itemid===-1) return null;
+  if (undefined === state.commandeReducer.commande.items) return null;
+ const item_obj = state.commandeReducer.commande.items.find(item=>item.itemid===itemid);
+ if (undefined===item_obj) return null;
  return item_obj.ingredients;
 }
 
 const _getItemSteps = (state, itemid) => {
-  if (itemid==-1) return null;
-  if (undefined == state.commandeReducer.commande.items) return null;
-  const item_obj = state.commandeReducer.commande.items.find(item=>item.itemid==itemid);
-  if (null==item_obj) return null;
+  if (itemid===-1) return null;
+  if (undefined === state.commandeReducer.commande.items) return null;
+  const item_obj = state.commandeReducer.commande.items.find(item=>item.itemid===itemid);
+  if (undefined===item_obj) return null;
   return item_obj.steps;
 }
 

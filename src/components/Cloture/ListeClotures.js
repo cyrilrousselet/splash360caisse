@@ -1,16 +1,14 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 
 import TopZone from '../../containers/TopZone';
-import LoadingSpinner from '../common/LoadingSpinner';
 import history from '../../helpers/history';
 import paths from './../../constants/routes.json';
 
 import 'date-fns';
-import { format, compareAsc, compareDesc, startOfToday, endOfToday, startOfDay, endOfDay, isAfter, isBefore, differenceInMinutes } from "date-fns";
+import { format, compareAsc, startOfToday, endOfToday, startOfDay, endOfDay, isAfter, isBefore, differenceInMinutes } from "date-fns";
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
@@ -24,15 +22,10 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
 
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
 import StdButton from '../common/StdButton';
 import PrinterIcon from '../common/icon/PrinterIcon';
-import { Modal, Fab, Input, Badge, ListItemAvatar } from '@material-ui/core';
+import { Modal, Fab } from '@material-ui/core';
 import CloseIcon from '../common/icon/CloseIcon';
-import PillField from '../common/PillField';
-import NumberKeyboard from '../common/NumberKeyboard';
-import Swal from 'sweetalert2';
 
 import Logger from '../../helpers/Logger';
 import {devise} from '../../helpers/toolbox';
@@ -88,9 +81,9 @@ function TicketX(props) {
       </div>
       <div className="sel">
         {(periode.vendeurs.length>1) && (<div className="val">{ `${__strimp.vendeurs[1]}${strings.vendeurs_all}` }</div>)}
-        {(periode.vendeurs.length==1) && (<div className="val">{ `${__strimp.vendeurs[0]}${periode.vendeurs[0].nom} (${periode.vendeurs[0].id})` }</div>)}
+        {(periode.vendeurs.length===1) && (<div className="val">{ `${__strimp.vendeurs[0]}${periode.vendeurs[0].nom} (${periode.vendeurs[0].id})` }</div>)}
         {(periode.caisses.length>1) && (<div className="val">{ `${__strimp.caisses[1]}${strings.caisses_all}` }</div>)}
-        {(periode.caisses.length==1) && (<div className="val">{ `${__strimp.caisses[0]}${periode.caisses[0].nom} (${periode.caisses[0].id})` }</div>)}
+        {(periode.caisses.length===1) && (<div className="val">{ `${__strimp.caisses[0]}${periode.caisses[0].nom} (${periode.caisses[0].id})` }</div>)}
       </div>
       <div className="recap">
         <div className="recap-item">
@@ -236,7 +229,7 @@ function CloturePopin(props) {
 
 
 function TableClotures(props) {
-  const { liste, id, openClotureId, printClotureId, className } = props;
+  const { liste, id, openClotureId, printClotureId } = props;
 
   liste.sort((a,b) => {
     let da = new Date(a.cloture.debut), db = new Date(b.cloture.debut);
@@ -307,10 +300,10 @@ class ListeClotures extends React.Component {
 
   setSelectedDate(bound,date) {
     const { startDate, endDate } = this.state;
-    if (bound=='start') {
+    if (bound==='start') {
       this.setState({startDate:(date<=endDate)?startOfDay(date):endDate});
     }
-    if (bound=='end') {
+    if (bound==='end') {
       this.setState({endDate:(date>=startDate)?endOfDay(date):startDate});
     }
   }
@@ -385,8 +378,8 @@ class ListeClotures extends React.Component {
         // récup de la liste des vendeurs
         // s'il n'y a qu'un seul vendeur dans la période et dans la liste
         // on vérifie si c'est le même
-        if (periode.vendeurs.length==1 && __vnd.length==1) {
-          let __v = __vnd.filter(v => v.id==periode.vendeurs[0].id);
+        if (periode.vendeurs.length===1 && __vnd.length===1) {
+          let __v = __vnd.filter(v => v.id===periode.vendeurs[0].id);
           if (__v) __vnd = __v;
         } else {
           __vnd = __vnd.concat(periode.vendeurs);
@@ -394,8 +387,8 @@ class ListeClotures extends React.Component {
         // récup de la liste des caisses
         // s'il n'y a qu'une seule caisses dans la période et dans la liste
         // on vérifie si c'est la même
-        if (periode.caisses.length==1 && __csh.length==1) {
-          let __c = __csh.filter(c => c.id==periode.caisses[0].id);
+        if (periode.caisses.length===1 && __csh.length===1) {
+          let __c = __csh.filter(c => c.id===periode.caisses[0].id);
           if (__c) __csh = __c;
         } else {
           __csh = __csh.concat(periode.caisses);
@@ -421,10 +414,10 @@ class ListeClotures extends React.Component {
         // ventilation vendeurs
         periode.ventilation.vendeur.forEach(v => {
 
-          let __vv = __vvnd.find(vv => vv.id==v.id);
-          let __vvi = __vvnd.findIndex(vv => vv.id==v.id);
+          let __vv = __vvnd.find(vv => vv.id===v.id);
+          let __vvi = __vvnd.findIndex(vv => vv.id===v.id);
           // si le vendeur n'est pas encore récupéré, on l'ajoute
-          if (__vv==undefined) {
+          if (__vv===undefined) {
             __vvnd.push({...v});
           }
           // si le vendeur est déjà récupéré, on additionne les valeurs des clôtures
@@ -438,10 +431,10 @@ class ListeClotures extends React.Component {
         // ventilation tva
         periode.ventilation.tva.forEach(t => {
 
-          let __tt = __vtva.find(tt => tt.id==t.id);
-          let __tti = __vtva.findIndex(tt => tt.id==t.id);
+          let __tt = __vtva.find(tt => tt.id===t.id);
+          let __tti = __vtva.findIndex(tt => tt.id===t.id);
           // si la tva n'est pas encore récupérée, on l'ajoute
-          if (__tt==undefined) {
+          if (__tt===undefined) {
             __vtva.push({...t});
           }
           // si la tva est déjà récupérée, on additionne les valeurs des clôtures
@@ -456,10 +449,10 @@ class ListeClotures extends React.Component {
         // ventilation moyens de paiement
         periode.ventilation.moyen.forEach(m => {
 
-          let __mm = __vmoy.find(mm => mm.moyen==m.moyen);
-          let __mmi = __vmoy.findIndex(mm => mm.moyen==m.moyen);
+          let __mm = __vmoy.find(mm => mm.moyen===m.moyen);
+          let __mmi = __vmoy.findIndex(mm => mm.moyen===m.moyen);
           // si le moyen n'est pas encore récupéré, on l'ajoute
-          if (__mm==undefined) {
+          if (__mm===undefined) {
             __vmoy.push({...m});
           }
           // si le moyen est déjà récupéré, on additionne les valeurs des clôtures
@@ -498,10 +491,8 @@ class ListeClotures extends React.Component {
   }
 
   render() {
-    const { clotureslist, error, loading } = this.props;
-    const { startDate, endDate, clotureId, cloture, clotureOpen } = this.state;
-
-    const self = this;
+    const { clotureslist } = this.props;
+    const { startDate, endDate, cloture, clotureOpen } = this.state;
 
     let clotures = [];
 

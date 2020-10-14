@@ -1,12 +1,12 @@
 import {emit} from 'eiphop';
-import { differenceInMilliseconds, sub, differenceInMinutes, isBefore, endOfYesterday, parseISO } from 'date-fns';
+import { sub, differenceInMinutes, isBefore, endOfYesterday, parseISO } from 'date-fns';
 
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
-import { commandeActions } from '../commande/commandeActions';
 import Logger from '../../helpers/Logger';
 const strings = new LocalizedStrings(data);
 const logger = new Logger();
+
 
 export const commandeServices = {
   getNewCommande,
@@ -103,7 +103,7 @@ function getNewNumero(parametres, numero) {
     // fin de la période précédente
     let lastperiode_end = endOfYesterday();
     // si l'heure de fin définie est différente de minuit
-    if (heure_fin!="0:00") {
+    if (heure_fin!=="0:00") {
       const hfin_ar = heure_fin.split(':');
       // si l'heure actuelle est > à l'heure de fin, la fin de la période précédente était ce matin
       if (differenceInMinutes(new Date(), new Date().setHours(hfin_ar[0],hfin_ar[1]))>0) {
@@ -135,7 +135,7 @@ function getNewNumero(parametres, numero) {
     newvalue = Number(numerotation_start);
   }
 
-  const newnumero = {value: newvalue, hex: numerotation_hex, updated: new Date};
+  const newnumero = {value: newvalue, hex: numerotation_hex, updated: new Date()};
 
   localStorage.setItem('numero', JSON.stringify(newnumero));
   
@@ -256,20 +256,20 @@ function addIngredient(ingredient, quantite, step, item, produitSteps, tva) {
     // s'il n'y a aucun type précisé, on supprime l'ingrédient du step
     if (null==type) {
       logger.log('aucun type précisé => suppression de l’ing du step');
-      ingdustepInCmd = ingredients.findIndex(ing=>ing.fromStep==step.step_id);
+      ingdustepInCmd = ingredients.findIndex(ing=>ing.fromStep===step.step_id);
       if (ingdustepInCmd>-1) ingredients.splice(ingdustepInCmd,1);
     }
     // si un type est précisé, on supprime l'ingrédient du type (et du step)
     else {
       logger.log('type '+type+' => suppression de l’ing du type et du step');
-      ingdustepInCmd = ingredients.findIndex(ing=>(ing.fromStep==step.step_id && ing.type==type));
+      ingdustepInCmd = ingredients.findIndex(ing=>(ing.fromStep===step.step_id && ing.type===type));
       if (ingdustepInCmd>-1) ingredients.splice(ingdustepInCmd,1);
     }
   }
   
-  const ingInCmdId = ingredients.findIndex(ing=>ing.ingredient==ingredient.id);
+  const ingInCmdId = ingredients.findIndex(ing=>ing.ingredient===ingredient.id);
   // si l'ingredient n'est pas encore dans la liste de l'item
-  if (-1==ingInCmdId) {
+  if (-1===ingInCmdId) {
     item.ingredients.push({
       ingredient: ingredient.id, 
       type: ingredient.type, 
@@ -290,7 +290,7 @@ function addIngredient(ingredient, quantite, step, item, produitSteps, tva) {
   const {completed, validated} = _checkStepRegles(step, item);
   // on vérifie si l'ajout est raccord avec la liste
   // et on indique que le step est "completed", le cas échéant
-  const itemstepid = steps.findIndex(st => st.id == step.step_id);
+  const itemstepid = steps.findIndex(st => st.id === step.step_id);
   steps[itemstepid].validated = validated;
   steps[itemstepid].completed = completed;
   steps[itemstepid].checked = validated && completed;
@@ -300,7 +300,7 @@ function addIngredient(ingredient, quantite, step, item, produitSteps, tva) {
     
     // si tous les steps sont "validated" (dans les règles) et "checked" (personnalisé)
     // on passe le status de l'item de "pending" à "completed"
-    if (-1==steps.findIndex(st => st.validated == false || st.checked == false )) {
+    if (steps.findIndex(st => st.validated === false || st.checked === false )===-1) {
       item.status = 'completed';
       item.ingredients = _ventilationIngredientsSteps(item, produitSteps);
 
@@ -330,9 +330,9 @@ function removeIngredient(ingredient, quantite, step, item, produitSteps) {
 
   logger.log(step)
   
-  const ingInCmdId = ingredients.findIndex(ing=>ing.ingredient==ingredient.id);
+  const ingInCmdId = ingredients.findIndex(ing=>ing.ingredient===ingredient.id);
   // l'ingredient est-il dans la liste de l'item ?
-  if (-1!==ingInCmdId) {
+  if (-1<ingInCmdId) {
 
     ingredients[ingInCmdId].qte -= 1;
     // si la quantité de l'ingrédient est à 0, on le supprime de la liste
@@ -347,7 +347,7 @@ function removeIngredient(ingredient, quantite, step, item, produitSteps) {
   const {validated, completed} = _checkStepRegles(step, item);
   // on vérifie si l'ajout est raccord avec la liste
   // et on indique que le step est "completed", le cas échéant
-  const itemstepid = steps.findIndex(st => st.id == step.step_id);
+  const itemstepid = steps.findIndex(st => st.id === step.step_id);
   steps[itemstepid].validated = validated;
   steps[itemstepid].completed = completed;
   steps[itemstepid].checked = validated && completed;
@@ -357,7 +357,7 @@ function removeIngredient(ingredient, quantite, step, item, produitSteps) {
   if (validated) {
     // si tous les steps sont "validated" (dans les règles) et "checked" (personnalisé)
     // on passe le status de l'item de "pending" à "completed"
-    if (-1==steps.findIndex(st => st.validated == false || st.checked == false)) {
+    if (-1===steps.findIndex(st => st.validated === false || st.checked === false)) {
       item.status = 'completed';
     }
   }
@@ -382,7 +382,7 @@ function noIngredientForStep(step, item, produitSteps) {
   logger.log(step)
 
   ingredients.forEach((ing,i) => {
-    if (ing.fromStep == step.step_id) ingredients.splice(i,1);
+    if (ing.fromStep === step.step_id) ingredients.splice(i,1);
   });
 
   item.ingredients = [...ingredients];
@@ -392,7 +392,7 @@ function noIngredientForStep(step, item, produitSteps) {
   // on vérifie si l'ajout est raccord avec la liste
   // et on indique que le step est "completed", le cas échéant
   if (validated) {
-    const itemstepid = steps.findIndex(st => st.id == step.step_id);
+    const itemstepid = steps.findIndex(st => st.id === step.step_id);
     steps[itemstepid].validated = true;
     steps[itemstepid].completed = completed;
     steps[itemstepid].checked = true;
@@ -401,7 +401,7 @@ function noIngredientForStep(step, item, produitSteps) {
 
     // si tous les steps sont "validated" (dans les règles) et "checked" (personnalisé)
     // on passe le status de l'item de "pending" à "completed"
-    if (-1==steps.findIndex(st => st.validated == false || st.checked == false)) {
+    if (steps.findIndex(st => st.validated === false || st.checked === false)===-1) {
       item.status = 'completed';
     }
   }
@@ -414,15 +414,14 @@ function noIngredientForStep(step, item, produitSteps) {
 
 function uncheckItemSteps(item, stepid) {
   const {steps} = item;
-  if (stepid!=null) {
-    const itemstepid = steps.findIndex(st => st.id == stepid);
+  if (stepid!==null && stepid!==undefined) {
+    const itemstepid = steps.findIndex(st => st.id === stepid);
     steps[itemstepid].checked = false;
     item.steps = [...steps];
   } else {
     const uncheckedSteps = steps.map( st => ({...st, checked:false}) );
     item.steps = uncheckedSteps;
   }
-
 
   return item;
 }
@@ -436,7 +435,7 @@ function completeStep(step, item, produitSteps) {
 
     const {validated, completed } = _checkStepRegles(step, item);
     if (validated) {
-      const itemstepid = steps.findIndex(st => st.id == step.step_id);
+      const itemstepid = steps.findIndex(st => st.id === step.step_id);
       steps[itemstepid].checked = true;
       steps[itemstepid].completed = completed;
       
@@ -444,9 +443,9 @@ function completeStep(step, item, produitSteps) {
 
       // si tous les steps sont "validated" (dans les règles) et "checked" (personnalisé)
       // on passe le status de l'item de "pending" à "completed"
-      const pasfiniIndex = steps.findIndex(st => st.validated == false || st.checked == false);
+      const pasfiniIndex = steps.findIndex(st => st.validated === false || st.checked === false);
       logger.log('pasfiniIndex',pasfiniIndex);
-      if (-1==pasfiniIndex) {
+      if (-1===pasfiniIndex) {
         logger.log('item completed');
         item.status = 'completed';
 
@@ -467,21 +466,21 @@ function completeStep(step, item, produitSteps) {
 function _ventilationIngredientsSteps(item, produitSteps) {
 
   logger.log('_ventilationIngredientsSteps()');
-  let __supplement = 0;
+  // let __supplement = 0;
   let __ing = null;
 
   let __ingredients = [];
 
   produitSteps.forEach(step => {
-    if (step.regles.length == 1 || (step.regles.length>1 && step.regles[0].regle.toLowerCase().indexOf('g') != -1)) {
+    if (step.regles.length === 1 || (step.regles.length>1 && step.regles[0].regle.toLowerCase().indexOf('g') > -1)) {
       // on exécute le même test sur tous les types
       logger.log('on applique le test sur tous les types d’ingredients à la fois');
-      __ing = item.ingredients.filter(ing => ing.fromStep == step.step_id);
+      __ing = item.ingredients.filter(ing => ing.fromStep === step.step_id);
       if (__ing.length>0) __ingredients = [...__ingredients, ..._setSupplements(step.regles[0], __ing)];
     }
     else {
       step.regles.forEach( regle => {
-        __ing = item.ingredients.filter(ing => regle.type == ing.type);
+        __ing = item.ingredients.filter(ing => regle.type === ing.type);
         if (__ing.length>0) __ingredients = [...__ingredients, ..._setSupplements(regle, __ing)];
       })
     }
@@ -501,10 +500,10 @@ function _setSupplements(rule, ingredients) {
   let __ingredients = [];
 
   // s'il y a une indication de supplément dans la règle :
-  if (regle.indexOf('s')!=-1) {
+  if (regle.indexOf('s')>-1) {
     const __deuxregles = regle.split(';s:');
 
-    const __rulevaleurs = getRuleValues(__deuxregles[0]);
+    // const __rulevaleurs = getRuleValues(__deuxregles[0]);
     const __supvaleurs = getRuleValues(__deuxregles[1]);
 
     // si la liste des ingrédients entre dans les critères du supplément
@@ -531,7 +530,7 @@ function _setSupplements(rule, ingredients) {
 
     } else {
 
-      let __stack = 0;
+      // let __stack = 0;
       // on compte uniquement le prix des ingrédients
       ingredients.forEach(ing => {
         ing.supplement = 0;
@@ -560,15 +559,15 @@ function _getPrix(item, produitSteps) {
   let __ing = null;
 
   produitSteps.forEach(step => {
-    if (step.regles.length == 1 || (step.regles.length>1 && step.regles[0].regle.toLowerCase().indexOf('g') != -1)) {
+    if (step.regles.length === 1 || (step.regles.length>1 && step.regles[0].regle.toLowerCase().indexOf('g') > -1)) {
       // on exécute le même test sur tous les types
       logger.log('on applique le test sur tous les types d’ingredients à la fois');
-      __ing = item.ingredients.filter(ing => ing.fromStep == step.step_id);
+      __ing = item.ingredients.filter(ing => ing.fromStep === step.step_id);
       __supplement += _getSupplements(step.regles[0], __ing);
     }
     else {
       step.regles.forEach( regle => {
-        __ing = item.ingredients.filter(ing => regle.type == ing.type);
+        __ing = item.ingredients.filter(ing => regle.type === ing.type);
         __supplement += _getSupplements(regle, __ing);
       })
     }
@@ -680,7 +679,7 @@ function _getSupplements(rule, ingredients) {
   if (regle.indexOf('s')>-1) {
     const __deuxregles = regle.split(';s:');
 
-    const __rulevaleurs = getRuleValues(__deuxregles[0]);
+    // const __rulevaleurs = getRuleValues(__deuxregles[0]);
     const __supvaleurs = getRuleValues(__deuxregles[1]);
   
     // si la liste des ingrédients entre dans les critères du supplément
@@ -736,16 +735,16 @@ function _testIngredient(rule, ingredients, max=false) {
   let __c = 0;
 
   if (max) {
-    if (__valeurs.max == __total) __c = 2;
+    if (__valeurs.max === __total) __c = 2;
   } else {
     // si la quantité est dans le créneau valeurs min <= total <= max
-    if (__valeurs.max == -1 || __total <= __valeurs.max) __c++;
+    if (__valeurs.max === -1 || __total <= __valeurs.max) __c++;
     if (__total >= __valeurs.min) __c++;
 
     // si la quantité correspond à la valeur fixe
-    if (__valeurs.max == __valeurs.min && __valeurs.min == __total) __c = 2;
+    if (__valeurs.max === __valeurs.min && __valeurs.min === __total) __c = 2;
   }
-  if (__c==2) __confirm = true;
+  if (__c===2) __confirm = true;
 
   return __confirm;
 }
@@ -769,32 +768,32 @@ function  getRuleValues(rule) {
     let __valeurs = {min:0, max:-1, global:false}; // par défaut, règle '*'
 
     let __rule = '';
-    if (rule.indexOf(';')!=-1) {
+    if (rule.indexOf(';')>-1) {
       __rule = rule.substring(0, rule.indexOf(';'));
     }  else {
       __rule = rule;
     }
 
     // valeur booléenne
-    if (__rule == "?") {
+    if (__rule === "?") {
       __valeurs.max = 1;
     }
     // 1 ou plus
-    else if (__rule == "+") {
+    else if (__rule === "+") {
       __valeurs.min = 1;
     }
     // valeurs explicites
-    else if (__rule.slice(0,1)=="{") {
+    else if (__rule.slice(0,1)==="{") {
       // on récupère le contenu de la règle et le flag précisant si la règle est globale
       let __cont = /^\{(.*)\}(g?)$/.exec(__rule);
-      __valeurs.global = __cont[2]=="g";
+      __valeurs.global = __cont[2]==="g";
 
       // s'il y a deux valeurs explicites
       if (__cont[1].indexOf(',')>-1) {
         __valeurs.min = Number(__cont[1].split(',')[0]);
         __valeurs.max = Number(__cont[1].split(',')[1]);
         // si la valeur max n'est pas fixée ('*', '+' ou chaîne vide)
-        if ((/^$|^[\*\+]$/).test(__cont[1].split(',')[1])) __valeurs.max = -1;
+        if ((/^$|^[*+]$/).test(__cont[1].split(',')[1])) __valeurs.max = -1;
       }
       // s'il n'y a qu'une valeur explicite (min = max)
       else {
@@ -818,9 +817,9 @@ function  getRuleValues(rule) {
 function addReglement(payload, reglements) {
   const { moyen, valeur, info } = payload;
 
-  const esp = reglements.filter(rgl=>rgl.moyen=='especes');
+  const esp = reglements.filter(rgl=>rgl.moyen==='especes');
   
-  if (esp.length>0 && moyen=='especes') {
+  if (esp.length>0 && moyen==='especes') {
     const newvaleur = esp[0].valeur + valeur;
     return {
       ...esp[0],
@@ -911,9 +910,10 @@ function saveCommande(commande, catalogueReducer) {
 
   // on met tous les produits dans le même array
   let produits = [];
-  for (let [key, value] of Object.entries(catalogueReducer.catalogue)) {
+  // for (let [key, value] of Object.entries(catalogueReducer.catalogue)) {
+  Object.values(catalogueReducer.catalogue).forEach(value => {
     produits = [...produits, ...value.produits];
-  }
+  });
 
   // on ajoute les infos de tva à chaque item de la commande
   commande.items.forEach(itm => {
@@ -932,7 +932,7 @@ function saveCommande(commande, catalogueReducer) {
     }
 
 
-    const prd = produits.find(p => p.id==itm.produitid);
+    const prd = produits.find(p => p.id===itm.produitid);
     items.push({
       ...itm,
       tva: {id: prd.tva_id, code: catalogueReducer.tva[prd.tva_id].code, valeur: catalogueReducer.tva[prd.tva_id].valeur}
@@ -975,14 +975,15 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
 
   // on met tous les produits dans le même array
   let produits = [];
-  for (let [key, value] of Object.entries(catalogueReducer.catalogue)) {
+  // for (let [key, value] of Object.entries(catalogueReducer.catalogue)) {
+  Object.values(catalogueReducer.catalogue).forEach(value => {
     produits = [...produits, ...value.produits];
-  }
+  });
 
   data.cart.items.forEach(itm => {
 
     // infos du produit issues du catalogue
-    const prd = produits.find(p => p.id==itm.id);
+    const prd = produits.find(p => p.id===itm.id);
 
     if (prd) {
 
@@ -1059,7 +1060,7 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
               let __istype = false;
               st.regles.forEach(str => {
                 logger.log(str.type, ingredient.type);
-                if (str.type==ingredient.type) __istype = true;
+                if (str.type===ingredient.type) __istype = true;
               });
               return __istype;
             });
@@ -1121,14 +1122,15 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
 
   // on met tous les produits dans le même array
   let produits = [];
-  for (let [key, value] of Object.entries(catalogueReducer.catalogue)) {
+  // for (let [key, value] of Object.entries(catalogueReducer.catalogue)) {
+  Object.values(catalogueReducer.catalogue).forEach(value => {
     produits = [...produits, ...value.produits];
-  }
+  });
 
   data.items.forEach(itm => {
 
     // infos du produit issues du catalogue
-    const prd = produits.find(p => p.id==itm.produitid);
+    const prd = produits.find(p => p.id===itm.produitid);
 
     if (prd) {
 
@@ -1186,7 +1188,7 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
           const ingredient_step = steps.find(st => {
             let __istype = false;
             st.regles.forEach(str => {
-              if (str.type==ingredient.type) __istype = true;
+              if (str.type===ingredient.type) __istype = true;
             });
             return __istype;
           });
@@ -1272,18 +1274,18 @@ const _getCommandeTotal = (items, modificateurs) => {
 
 
        // modificateurs pour l'article
-       __modificateur = modificateurs.find(m => m.item==itm.itemid && m.ingredient==null);
-       let amodtx = 1;
-       let __montant = 0;
+       __modificateur = modificateurs.find(m => m.item===itm.itemid && m.ingredient===null);
+      //  let amodtx = 1;
+      //  let __montant = 0;
        if (__modificateur) {
         // total += Number(__modificateur.valeur);
 
          const ispc = String(__modificateur.valeur).substr(-1,1)==='%';
          const val = Math.abs(Number(String(__modificateur.valeur).slice(0,-1)));
-         __montant = ispc ? articletotal*(val/100) : val;
+       //  let __montant = ispc ? articletotal*(val/100) : val;
 
          // conversion du modificateur en coefficient
-         amodtx = (ispc) ? (100 - val) / 100 : 1 - (val/articletotal);
+        // let amodtx = (ispc) ? (100 - val) / 100 : 1 - (val/articletotal);
 
          if (ispc) {
            articletotal *= (100 - val) / 100;
