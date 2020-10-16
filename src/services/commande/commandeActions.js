@@ -66,6 +66,7 @@ async function _getNumero(parametres, numero) {
   }
   else {
     const nnumero = numero ? numero : commandeServices.getNewNumero( parametres, null);
+    // const nnumero = commandeServices.getNewNumero( parametres, null);
     logger.log('_getNumero()', nnumero);
     return nnumero;
   }
@@ -84,7 +85,12 @@ function getNumero() {
     const newnumero = await _getNumero(parametres, numero);
 
     dispatch({type: commandeActionTypes.GET_NUMERO, numero: newnumero});
-    dispatch(setNewNumero(newnumero.value));
+    if (parametres.options.role==="secondary") {
+      dispatch(setNewNumero(newnumero.value));
+    } else {
+      dispatch(setNewNumero());
+    }
+
     /*
     if (options.role==='secondary') {
       logger.log('getNumero() from primary');
@@ -284,6 +290,8 @@ function standByCommande(payload, needNumero) {
     const state = getState();
 
 
+    logger.log('standByCommande needNumero', needNumero);
+
     if (needNumero) {
 
       const {parametres} = state.parametresReducer;
@@ -292,16 +300,22 @@ function standByCommande(payload, needNumero) {
       const newnumero = await _getNumero(parametres, numero);
       payload.numero = newnumero;
 
+      dispatch({type: commandeActionTypes.GET_NUMERO, numero: newnumero});
+      if (parametres.options.role==="secondary") {
+        dispatch(setNewNumero(newnumero.value));
+      } else {
+        dispatch(setNewNumero());
+      }
+
+      logger.log('standByCommande nn numero', payload.numero);
+      
     }
+    logger.log('standByCommande nn numero', payload.numero);
+
 
     // if (payload.numero==null) { 
-    //   const numero = commandeServices.getNewNumero(state.parametresReducer.parametres, state.commandeReducer.numero);
-    //   payload.numero = numero;
-    //   dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
+    //   payload.numero = getState().commandeReducer.commande.numero;
     // }
-    if (payload.numero==null) { 
-      payload.numero = getState().commandeReducer.commande.numero;
-    }
     
     commandeServices.saveCommande(payload, state.catalogueReducer)
     .then(
@@ -331,7 +345,7 @@ function livraisonCommande(payload, needNumero) {
     logger.log(payload);
     const state = getState();
 
-    
+    logger.log('livraisonCommande needNumero', needNumero);
 
     if (needNumero) {
 
@@ -339,19 +353,26 @@ function livraisonCommande(payload, needNumero) {
       const {numero} = state.commandeReducer;
   
       const newnumero = await _getNumero(parametres, numero);
-      payload.numero = newnumero;
 
+      dispatch({type: commandeActionTypes.GET_NUMERO, numero: newnumero});
+      if (parametres.options.role==="secondary") {
+        dispatch(setNewNumero(newnumero.value));
+      } else {
+        dispatch(setNewNumero());
+      }
+
+      payload.numero = newnumero;
+      
+      logger.log('livraisonCommande nn numero', payload.numero);
     }
+
+    logger.log('livraisonCommande numero', payload.numero);
+
 
 
     // if (payload.numero==null) { 
-    //   const numero = commandeServices.getNewNumero(state.parametresReducer.parametres, state.commandeReducer.numero);
-    //   payload.numero = numero
-    //   dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
+    //   payload.numero = getState().commandeReducer.commande.numero;
     // }
-    if (payload.numero==null) { 
-      payload.numero = getState().commandeReducer.commande.numero;
-    }
 
     const payloadcopy = {...payload};
     dispatch(peripheralActions.printTicket('all'));
