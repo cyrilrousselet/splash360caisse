@@ -9,7 +9,7 @@ import { marketSubmodulesList } from '../../constants/modules';
 import MarketingAvoirsCont from './../../containers/MarketingAvoirsCont';
 // import Promotions from './Promotions';
 // import Newsletter from './Newsletter';
-// import Sms from './Sms';
+import Sms from './Sms';
 
 import {data} from '../../constants/translations';
 import LocalizedStrings from 'react-localization';
@@ -29,8 +29,8 @@ class Marketing extends React.Component {
           <Switch>
             <PrivateRoute path={ paths.MARKET_AVOIRS } component={ MarketingAvoirsCont } />
             {/* <PrivateRoute exact path={ paths.MARKET_NEWSLETTER } component={ Newsletter } />
-            <PrivateRoute path={ paths.MARKET_PROMOTIONS } component={ Promotions } />
-            <PrivateRoute exact path={ paths.MARKET_SMS } component={ Sms } /> */}
+            <PrivateRoute path={ paths.MARKET_PROMOTIONS } component={ Promotions } /> */}
+            <PrivateRoute exact path={ paths.MARKET_SMS } component={ Sms } />
             <Route path={ paths.MARKETING }>
               {/* <Redirect to={{ pathname: paths.MARKET_PROMOTIONS }} /> */}
               <Redirect to={{ pathname: paths.MARKET_PROMOTIONS }} />

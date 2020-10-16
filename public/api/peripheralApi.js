@@ -17,7 +17,9 @@ const getPixels = require('get-pixels');
 const QRCode = require('qrcode');
 
 let printerOpen = false;
-let waitInterval = -1;
+let waitInterval = null;
+
+let printSpool = [];
 
 
 const actions = {
@@ -32,21 +34,29 @@ const actions = {
 
     const { imprimante, template, contenu } = req.payload;
 
-    log.info('printerOpen',printerOpen);
+    log.info('printerOpen',printerOpen, 'actions.printTicket()');
 
-    if (printerOpen) {
-      waitInterval = setInterval(function() {
-        log.info('wait for printer close', printerOpen);
-        if (!printerOpen) {
-          log.info('at last, printer closed', printerOpen);
-          clearInterval(waitInterval);
-          _doPrintTicket(imprimante, template, contenu);
-        }
-      },200);
-    }
-    else {
-      _doPrintTicket(imprimante, template, contenu);
-    }
+    _spoolManager({
+      action: _doPrintTicket,
+      imprimante: imprimante,
+      template: template,
+      contenu: contenu
+    });
+
+    // if (printerOpen) {
+    //   clearInterval(waitInterval);
+    //   waitInterval = setInterval(function() {
+    //     log.info('wait for printer close', printerOpen, 'actions.printTicket()');
+    //     if (!printerOpen) {
+    //       log.info('at last, printer closed', printerOpen, 'actions.printTicket()');
+    //       clearInterval(waitInterval);
+    //       _doPrintTicket(imprimante, template, contenu);
+    //     }
+    //   },200);
+    // }
+    // else {
+    //   _doPrintTicket(imprimante, template, contenu);
+    // }
 
    
 
@@ -63,81 +73,14 @@ const actions = {
 
     const { imprimante } = req.payload;
 
-    log.debug('openDrawer', imprimante);
+  //  log.debug('openDrawer', imprimante);
 
-    // déclaration de l'imprimante
-    let device;
-    if (imprimante.connexion=='usb') {
-      if (imprimante.param && (typeof imprimante.param==="string") ) {
-      vp = imprimante.param.split(';');
-        vid = parseInt(vp[0], 16);
-        pid = parseInt(vp[1], 16);
-        device = new escpos.USB(vid,pid);
-      } else {
-        device = new escpos.USB();
-      }
-
-      // const alldevices = escpos.USB.findPrinter();
-      // alldevices.forEach(el=>{
-      //   log.info('usb', el);
-      // });
-
-    } else if (imprimante.connexion=='network') {
-      device = new escpos.Network(imprimante.param); 
-    } else if (imprimante.connexion=='serial') {
-      device = new escpos.SerialPort(imprimante.param);
-    }
-    const options = {encoding: imprimante.encoding, width:42};
-    const printer = new escpos.Printer(device, options);
-
-
-    if (printerOpen) {
-      waitInterval = setInterval(function() {
-        log.info('wait for printer close', printerOpen);
-        if (!printerOpen) {
-          log.info('at last, printer closed', printerOpen);
-          clearInterval(waitInterval);
-          
-            // ATTENTION : même code que pour les lignes 122->135
-            device.open(function(error) {
-              if (error) {
-                log.error(`ERREUR IMPRIMANTE->TIROIR (${imprimante.connexion}: ${imprimante.param}) =>`, e.message);
-              } else {
-                log.debug('device open -> cashdraw()');
-                printer
-                  .cashdraw()
-                  .cashdraw();
-                  
-                setTimeout(() => {
-                    printer.close();
-                }, 1000);
-              }
-            });
-        }
-      },200);
-    }
-    else {
-      
-      // ATTENTION : même code que pour les lignes 102->115
-      device.open(function(error) {
-        if (error) {
-          log.error(`ERREUR IMPRIMANTE->TIROIR (${imprimante.connexion}: ${imprimante.param}) =>`, e.message);
-        } else {
-          log.debug('device open -> cashdraw()');
-          printer
-            .cashdraw()
-            .cashdraw();
-            
-          setTimeout(() => {
-              printer.close();
-          }, 1000);
-        }
-      });
-
-
-    }
-
-
+    _spoolManager({
+      action: _openDrawer,
+      imprimante: imprimante,
+      template: null,
+      contenu: null
+    });
 
 
 
@@ -267,9 +210,100 @@ const actions = {
 }
 
 
+// gestion des jobs envoyés aux imprimantes
+function _spoolManager(job=null) {
+
+  
+  // on ajoute le job demandé à la liste d'attente
+  if (job!==null) printSpool.push(job);
 
 
+  // si l'imprimante est ouverte...
+  if (printerOpen) {
 
+    // si aucune boucle d'attente n'est déclarée...
+    if (waitInterval===null) {
+
+      // ...on déclare un nouvel intervalle
+      waitInterval = setInterval(function() {
+        log.info('wait for printer close', printerOpen, '_spoolManager()');
+        // si l'imprimante est (enfin) fermée
+        if (!printerOpen) {
+          log.info('at last, printer closed', printerOpen, '_spoolManager()');
+          
+
+          // on récupère le premier job de la liste
+          const firstJobi = printSpool.shift();
+          // et on exécute le job
+          firstJobi.action(firstJobi.imprimante, firstJobi.template, firstJobi.contenu);
+
+          // si la liste d'attente est vide
+          if (printSpool.length===0) {
+            // on efface l'intervalle (et on met sa valeur à 'null')
+            clearInterval(waitInterval);
+            waitInterval = null;
+          }
+        }
+      },200);
+    }
+  }
+  // si l'imprimante est fermée...
+  else {
+    // si un job est déclaré dans la liste
+    if (printSpool.length>0) {
+      // on récupère le premier job de la liste
+      const firstJobd = printSpool.shift();
+      firstJobd.action(firstJobd.imprimante, firstJobd.template, firstJobd.contenu);
+
+      // on relance le manager au cas où un autre job serait en attente dans la liste
+      _spoolManager();
+    }
+  }
+}
+
+
+function _openDrawer(imprimante, template, contenu) {
+
+  // déclaration de l'imprimante
+  let device;
+  if (imprimante.connexion=='usb') {
+    if (imprimante.param && (typeof imprimante.param==="string") ) {
+      vp = imprimante.param.split(';');
+      vid = parseInt(vp[0], 16);
+      pid = parseInt(vp[1], 16);
+      device = new escpos.USB(vid,pid);
+    } else {
+      device = new escpos.USB();
+    }
+
+  } else if (imprimante.connexion=='network') {
+    device = new escpos.Network(imprimante.param); 
+  } else if (imprimante.connexion=='serial') {
+    device = new escpos.SerialPort(imprimante.param);
+  }
+  
+  const printer = new escpos.Printer(device);
+
+  device.open(function(error) {
+    if (error) {
+      log.error(`ERREUR IMPRIMANTE->TIROIR (${imprimante.connexion}: ${imprimante.param}) =>`, e.message);
+    } else {
+      log.debug('device open -> cashdraw()');
+      printerOpen = true;
+      printer
+        .cashdraw()
+        .cashdraw();
+        
+      setTimeout(() => {
+        log.debug('printer.close()', '_openDrawer() 2');
+        printer.close(function() {
+          printerOpen = false;
+        });
+      }, 1000);
+    }
+  });
+
+}
 
 
 function _doPrintTicket(imprimante, template, contenu) {

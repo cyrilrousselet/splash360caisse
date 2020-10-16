@@ -35,6 +35,6 @@ export const paramSubmodulesList = [
 export const marketSubmodulesList = [
   // 'promotions',
   // 'newsletter',
-  // 'sms',
+  'sms',
   'avoirs'
 ];

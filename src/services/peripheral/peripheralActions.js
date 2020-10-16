@@ -396,13 +396,13 @@ function printCommandeTicket(quelstickets, cmd) {
 
     // récup de la liste des tickets à imprimer
     const ticketsListe = _getTicketsToPrint(quelstickets, tickets);
-    const ticketsProd = ticketsListe.filter(t => (['partiel', 'principal']).indexOf(t.template)>-1);
+    const ticketsKDS = ticketsListe.filter(t => (['partiel', 'principal']).indexOf(t.template)>-1 && (t.kds!==undefined && t.kds===true));
     const recapTickets = _getRecap(ticketsListe.filter(t => 'partiel' === t.template), cmd, catalogue, types, ingredients);
 
     logger.log('ticketsListe', ticketsListe);
 
     // y a-t-il KDS d'activé pour un des ticket de la liste ?
-    const withKds = ticketsProd.find(i=>i.kds);
+    const withKds = ticketsKDS.length>0;
     if (withKds) {
 
       const kds_url = options.role==='secondary' ? (peripheriques.kdsurl || options.primary) : (peripheriques.kdsurl || 'http://localhost');
@@ -446,14 +446,14 @@ function printCommandeTicket(quelstickets, cmd) {
 
         const prdnoprint = prd.noprint!=null ? prd.noprint : catalogue[prd.groupe].noprint;
 
-        const zones = ticketsProd.filter(t => (prdnoprint.length===0 || prdnoprint.find(p=>p===t.ticket_id)===undefined) );
+        const zones = ticketsKDS.filter(t => (prdnoprint.length===0 || prdnoprint.find(p=>p===t.ticket_id)===undefined) );
 
        
         inglist.forEach((ing, ii) => {
 
           const ingnoprint = ingredients[ing.ingredient].noprint!=null ? ingredients[ing.ingredient].noprint : types[ing.type].noprint;
           // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-          const zonesi = ticketsProd.filter(t => ingnoprint.length===0 || ingnoprint.find(p=>p===t.ticket_id)===undefined );
+          const zonesi = ticketsKDS.filter(t => ingnoprint.length===0 || ingnoprint.find(p=>p===t.ticket_id)===undefined );
           
           // on supprime les zones qui ne sont pas dans la liste des zones du produit
           const zonesifiltred = zonesi.filter(iz => zones.find(pz => pz.ticket_id===iz.ticket_id)!==undefined);

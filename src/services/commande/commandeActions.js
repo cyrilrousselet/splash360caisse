@@ -59,9 +59,11 @@ function persistTicketsRestaurants(liste) {
 function getNumero() {
   return (dispatch, getState) => {
     
+    logger.log('commandeAction.getNumero()');
 
     const {options} = getState().parametresReducer.parametres;
     if (options.role==='secondary') {
+      logger.log('getNumero() from primary');
       dispatch(notificationActions.getNewNumero());
     } else {
       const {numero} = getState().commandeReducer;
