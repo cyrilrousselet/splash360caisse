@@ -5,6 +5,7 @@ import { peripheralActions } from '../peripheral/peripheralActions';
 import frLocale from "date-fns/locale/fr";
 import Logger from '../../helpers/Logger';
 import { notificationActions } from '../notification/notificationActions';
+import { notificationServices } from '../notification/notificationServices';
 
 const logger = new Logger();
 
@@ -56,15 +57,45 @@ function persistTicketsRestaurants(liste) {
 }
 
 
+async function _getNumero(parametres, numero) {
+
+  if (parametres.options.role==="secondary") {
+    logger.log('_getNumero() from primary');
+    const conf = await notificationServices.askNumero(parametres.options.primary)
+    return conf.numero;
+  }
+  else {
+    const nnumero = numero ? numero : commandeServices.getNewNumero( parametres, null);
+    logger.log('_getNumero()', nnumero);
+    return nnumero;
+  }
+
+}
+
+
 function getNumero() {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     
     logger.log('commandeAction.getNumero()');
 
-    const {options} = getState().parametresReducer.parametres;
+    const {parametres} = getState().parametresReducer;
+    const {numero} = getState().commandeReducer;
+
+    const newnumero = await _getNumero(parametres, numero);
+
+    dispatch({type: commandeActionTypes.GET_NUMERO, numero: newnumero});
+    dispatch(setNewNumero(newnumero.value));
+    /*
     if (options.role==='secondary') {
       logger.log('getNumero() from primary');
-      dispatch(notificationActions.getNewNumero());
+
+      notificationServices.askNumero(options.primary)
+      .then(conf => {
+        console.log('getNumero() from primary', conf.numero);
+        dispatch({type: commandeActionTypes.GET_NUMERO, numero: conf.numero});
+        dispatch(setNewNumero(conf.numero.value));
+      });
+
     } else {
       const {numero} = getState().commandeReducer;
       const nnumero = numero ? numero : commandeServices.getNewNumero( getState().parametresReducer.parametres, null);
@@ -73,6 +104,9 @@ function getNumero() {
       dispatch({type: commandeActionTypes.GET_NUMERO, numero: nnumero});
       dispatch(setNewNumero());
     }
+    */
+
+
 
   }
 }
@@ -237,9 +271,9 @@ function validateCommandeAndUpdateList(payload) {
   }
 }
 
-function standByCommande(payload) {
+function standByCommande(payload, needNumero) {
 
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
 
     dispatch({ type: commandeActionTypes.STANDBY_COMMANDE });
 
@@ -248,6 +282,17 @@ function standByCommande(payload) {
     payload.chrono = Math.round(differenceInMilliseconds(payload.end, payload.start)/10)/100;
     logger.log(payload);
     const state = getState();
+
+
+    if (needNumero) {
+
+      const {parametres} = state.parametresReducer;
+      const {numero} = state.commandeReducer;
+  
+      const newnumero = await _getNumero(parametres, numero);
+      payload.numero = newnumero;
+
+    }
 
     // if (payload.numero==null) { 
     //   const numero = commandeServices.getNewNumero(state.parametresReducer.parametres, state.commandeReducer.numero);
@@ -261,14 +306,9 @@ function standByCommande(payload) {
     commandeServices.saveCommande(payload, state.catalogueReducer)
     .then(
       confirm => {
-        // const { user } = state.authentication;
-        // const { caisse } = state.parametresReducer.parametres.options;
-
-        // const commande = commandeServices.getNewCommande({operator:user, caisse:caisse});
         dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande:{}});
         dispatch(notificationActions.syncDispatch('commande',confirm));
         dispatch(getCommande());
-        // dispatch(getCommandesList());
       },
       error => {
         logger.log(error);
@@ -279,7 +319,7 @@ function standByCommande(payload) {
   }
 }
 
-function livraisonCommande(payload) {
+function livraisonCommande(payload, needNumero) {
 
   return (dispatch, getState) => {
 
@@ -290,6 +330,10 @@ function livraisonCommande(payload) {
     payload.chrono = Math.round(differenceInMilliseconds(payload.end, payload.start)/10)/100;
     logger.log(payload);
     const state = getState();
+
+    
+
+
 
     // if (payload.numero==null) { 
     //   const numero = commandeServices.getNewNumero(state.parametresReducer.parametres, state.commandeReducer.numero);
