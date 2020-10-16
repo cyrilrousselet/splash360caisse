@@ -321,7 +321,7 @@ function standByCommande(payload, needNumero) {
 
 function livraisonCommande(payload, needNumero) {
 
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
 
     dispatch({ type: commandeActionTypes.AENCAISSER_COMMANDE });
 
@@ -333,6 +333,15 @@ function livraisonCommande(payload, needNumero) {
 
     
 
+    if (needNumero) {
+
+      const {parametres} = state.parametresReducer;
+      const {numero} = state.commandeReducer;
+  
+      const newnumero = await _getNumero(parametres, numero);
+      payload.numero = newnumero;
+
+    }
 
 
     // if (payload.numero==null) { 
