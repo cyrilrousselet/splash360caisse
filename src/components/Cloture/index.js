@@ -7,7 +7,9 @@ import LoadingSpinner from './../common/LoadingSpinner';
 
 import { FormControl, Select, MenuItem } from '@material-ui/core';
 import StdButton from '../common/StdButton';
-import { startOfToday, endOfToday, parseJSON, format } from 'date-fns';
+import { startOfToday, endOfToday, parseJSON, format, startOfDay, endOfDay } from 'date-fns';
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import frLocale from "date-fns/locale/fr";
 import Swal from 'sweetalert2';
 
@@ -28,6 +30,11 @@ import paths from '../../constants/routes';
 const logger = new Logger();
 let strings = new LocalizedStrings(data);
 
+class LocalizedUtils extends DateFnsUtils {
+  getDatePickerHeaderText(date) {
+    return format(date, "d MMM yyyy", { locale: this.locale });
+  }
+}
 
 
 class Cloture extends React.Component {
@@ -45,7 +52,9 @@ class Cloture extends React.Component {
       activeField: null,
       saisie_prelevement: '0',
       saisie_comptage: '',
-      prelevement: 0
+      prelevement: 0,
+      startDate: startOfToday(),
+      endDate: endOfToday()
     }
     this.shouldComponentRender = this.shouldComponentRender.bind(this);
     this.openComptage = this.openComptage.bind(this);
@@ -63,6 +72,7 @@ class Cloture extends React.Component {
     this.closeKeyboard = this.closeKeyboard.bind(this);
     this.prepareCloture = this.prepareCloture.bind(this);
     this.printLastCloture = this.printLastCloture.bind(this);
+    this.setSelectedDate = this.setSelectedDate.bind(this);
   }
 
   componentDidMount() {
@@ -70,9 +80,11 @@ class Cloture extends React.Component {
     // getCommandesList();
     //parametres :
     let params = {};
-    const { selection_caisse, selection_operator} = this.state;
+    const { selection_caisse, selection_operator, startDate, endDate } = this.state;
     if (selection_caisse.id!=='allcash') params['caisses'] = [selection_caisse];
     if (selection_operator.id!=='allope') params['vendeurs'] = [selection_operator];
+    params['debut'] = startDate;
+    params['fin'] = endDate;
     getCurrentPeriode(params);
     getCloturesList();
 //    getParametres();
@@ -197,13 +209,15 @@ class Cloture extends React.Component {
 
 
   prepareCloture(prelevement, comptagemanuel) {
-    const { selection_operator, selection_caisse, comptage } = this.state;
+    const { selection_operator, selection_caisse, comptage, startDate, endDate } = this.state;
     
     let params = {};
     if (selection_caisse.id!=='allcash') params['caisses'] = [selection_caisse];
     if (selection_operator.id!=='allope') params['vendeurs'] = [selection_operator];
     params['comptage'] = (comptage!==null) ? comptage : {total:comptagemanuel};
     params['prelevement'] = prelevement;
+    params['debut'] = startDate;
+    params['fin'] = endDate;
 
     if (selection_caisse.id!=='allcash' || selection_operator.id!=='allope') {
       Swal.fire({
@@ -229,25 +243,40 @@ class Cloture extends React.Component {
     printLastCloture(Object.values(clotures).pop());
   }
 
+  setSelectedDate(bound,date) {
+    const { startDate, endDate } = this.state;
+    if (bound==='start') {
+      this.setState({startDate:(date<=endDate)?startOfDay(date):endDate});
+    }
+    if (bound==='end') {
+      this.setState({endDate:(date>=startDate)?endOfDay(date):startDate});
+    }
+  }
+
   render() {
 
     const { periode, clotures, printPeriodeX, listeCommandes, catalogue, fonddecaissetheo } = this.props;
 
-    const { saisie_prelevement, saisie_comptage, activeField, comptageOpen, comptage, selection_caisse, selection_operator, keyboardOpen, fieldvalue} = this.state;
+    const { saisie_prelevement, saisie_comptage, activeField, comptageOpen, comptage, selection_caisse, selection_operator, keyboardOpen, fieldvalue, startDate, endDate} = this.state;
+
+
 
     let params = {
       user: periode.editeur,
       caisses: [],
       vendeurs: [],
       fdcaisse: fonddecaissetheo,
-      debut: startOfToday(),
-      fin: endOfToday(),
+      debut: startDate,
+      fin: endDate,
       extract: 'z'
     }
+
+    // logger.log('listeCommandes', Object.values(listeCommandes).length);
+
     if (selection_caisse.id!=='allcash') params['caisses'] = [selection_caisse];
     if (selection_operator.id!=='allope') params['vendeurs'] = [selection_operator];
     const periode_z = clotureServices.getCurrentPeriode(listeCommandes, catalogue, params);
-    logger.log(periode_z);
+    // logger.log("periode_z", periode_z);
 
     const __strimp = strings.modules.cloture.impression;
 
@@ -307,49 +336,81 @@ class Cloture extends React.Component {
         <div className="MainZone">
           <div className="clo-gauche">
             <div className="blocgauche">
-              <div className="zone-lastcloture">
-                <div className="titre">{ strings.modules.cloture.derniere.titre }</div>
-                {(lastCloture && 
-                <div className="itmliste">
-                  <div className="item item-date">
-                    <div className="label">{ strings.modules.cloture.derniere.caption.date }</div>
-                    <div className="valeur">{ format(parseJSON(lastCloture.archived), 'dd/MM/yyyy') }</div>
+              <div class="blocgauche-wrapper">
+                <div className="zone-lastcloture">
+                  <div className="titre">{ strings.modules.cloture.derniere.titre }</div>
+                  {(lastCloture && 
+                  <div className="itmliste">
+                    <div className="item item-date">
+                      <div className="label">{ strings.modules.cloture.derniere.caption.date }</div>
+                      <div className="valeur">{ format(parseJSON(lastCloture.archived), 'dd/MM/yyyy') }</div>
+                    </div>
+                    <div className="item item-heure">
+                      <div className="label">{ strings.modules.cloture.derniere.caption.heure }</div>
+                      <div className="valeur">{ format(parseJSON(lastCloture.archived), 'HH:mm:ss') }</div>
+                    </div>
+                    <div className="item item-editeur">
+                      <div className="label">{ strings.modules.cloture.derniere.caption.editeur }</div>
+                      <div className="valeur">{ `${lastCloture.periode.editeur.nom} (${lastCloture.periode.editeur.id})` }</div>
+                    </div>
                   </div>
-                  <div className="item item-heure">
-                    <div className="label">{ strings.modules.cloture.derniere.caption.heure }</div>
-                    <div className="valeur">{ format(parseJSON(lastCloture.archived), 'HH:mm:ss') }</div>
-                  </div>
-                  <div className="item item-editeur">
-                    <div className="label">{ strings.modules.cloture.derniere.caption.editeur }</div>
-                    <div className="valeur">{ `${lastCloture.periode.editeur.nom} (${lastCloture.periode.editeur.id})` }</div>
-                  </div>
+                  )}
+                  {(lastCloture==null && 
+                    <div className="no-item">{ strings.modules.cloture.derniere.aucune }</div>  
+                  )}
+                  <StdButton identifier="btnreprint" elementclass="btnreprint" key="btnreprint" text="Ré-imprimer" disabled={null==lastCloture} onClick={ () => { this.printLastCloture()} } />
+                  <StdButton identifier="btnliste" elementclass="btnliste" key="btnliste" text="Liste des clôtures" onClick={ () => { history.push(paths.LISTECLOTURES) } } />
                 </div>
-                )}
-                {(lastCloture==null && 
-                  <div className="no-item">{ strings.modules.cloture.derniere.aucune }</div>  
-                )}
-                <StdButton identifier="btnreprint" elementclass="btnreprint" key="btnreprint" text="Ré-imprimer" disabled={null==lastCloture} onClick={ () => { this.printLastCloture()} } />
-                <StdButton identifier="btnliste" elementclass="btnliste" key="btnliste" text="Liste des clôtures" onClick={ () => { history.push(paths.LISTECLOTURES) } } />
+                <div className="zone-selecteur">
+                  <MuiPickersUtilsProvider utils={LocalizedUtils} locale={ frLocale }>
+                    <div className="label-inline">
+                      <div className="label">{ strings.modules.cloture.selection.debut }</div>
+                      <KeyboardDatePicker
+                        className="datepicker"
+                        id="debutdatepicker"
+                        margin="normal"
+                        value={ params.debut }
+                        format="d MMM yyyy"
+                        onChange={date => { this.setSelectedDate('start', date) }}
+                        KeyboardButtonProps={{ 'aria-label': 'change date' }}
+                        clearLabel={ strings.general.dialog.clear }
+                        cancelLabel={ strings.general.dialog.cancel }
+                        />
+                    </div>
+                    <div className="label-inline">
+                      <div className="label">{ strings.modules.cloture.selection.fin }</div>
+                      <KeyboardDatePicker
+                        className="datepicker"
+                        id="findatepicker"
+                        margin="normal"
+                        value={ params.fin }
+                        format="d MMM yyyy"
+                        onChange={date => { this.setSelectedDate('end', date) }}
+                        KeyboardButtonProps={{ 'aria-label': 'change date' }}
+                        clearLabel={ strings.general.dialog.clear }
+                        cancelLabel={ strings.general.dialog.cancel }
+                        />
+                    </div>
+                  </MuiPickersUtilsProvider>
+                  <div className="label">{ strings.modules.cloture.selection.caisse }</div>
+                  <FormControl variant="outlined" className="selecteur-caisse">
+                    <Select value={selection_caisse.id} onChange={this.selectCaisse} className="selecteur selecteur-caisse-select">
+                      {Object.values(caisses).map(cash => (
+                        <MenuItem key={ `cashitm${cash.id}`} value={cash.id}>{cash.nom}</MenuItem>
+                        ))}
+                    </Select>
+                  </FormControl>
+                  <div className="label">{ strings.modules.cloture.selection.vendeur }</div>
+                  <FormControl variant="outlined" className="selecteur-vendeur">
+                    <Select value={selection_operator.id} onChange={this.selectVendeur} className="selecteur selecteur-vendeur-select">
+                      {Object.values(operators).map(ope => (
+                        <MenuItem key={ `opeitm${ope.id}`} value={ope.id}>{ope.nom}</MenuItem>
+                        ))}
+                    </Select>
+                  </FormControl>
+                </div>
+                <StdButton identifier="btncomptage" elementclass="btncomptage" key="btncomptage" text={(selection_caisse.id!=='allcash' || selection_operator.id!=='allope') ? strings.modules.cloture.selection.comptagebtn_partiel : strings.modules.cloture.selection.comptagebtn } disabled={periode_z.cmdtoarchive.length===0} onClick={ () => {this.openComptage(periode_z) }} />
               </div>
-              <div className="zone-selecteur">
-                <div className="label">{ strings.modules.cloture.selection.caisse }</div>
-                <FormControl variant="outlined" className="selecteur-caisse">
-                  <Select value={selection_caisse.id} onChange={this.selectCaisse} className="selecteur selecteur-caisse-select">
-                    {Object.values(caisses).map(cash => (
-                      <MenuItem key={ `cashitm${cash.id}`} value={cash.id}>{cash.nom}</MenuItem>
-                      ))}
-                  </Select>
-                </FormControl>
-                <div className="label">{ strings.modules.cloture.selection.vendeur }</div>
-                <FormControl variant="outlined" className="selecteur-vendeur">
-                  <Select value={selection_operator.id} onChange={this.selectVendeur} className="selecteur selecteur-vendeur-select">
-                    {Object.values(operators).map(ope => (
-                      <MenuItem key={ `opeitm${ope.id}`} value={ope.id}>{ope.nom}</MenuItem>
-                      ))}
-                  </Select>
-                </FormControl>
-              </div>
-              <StdButton identifier="btncomptage" elementclass="btncomptage" key="btncomptage" text={(selection_caisse.id!=='allcash' || selection_operator.id!=='allope') ? strings.modules.cloture.selection.comptagebtn_partiel : strings.modules.cloture.selection.comptagebtn } disabled={periode_z.cmdtoarchive.length===0} onClick={ () => {this.openComptage(periode_z) }} />
             </div>
             <StdButton identifier="btnx" elementclass="btnx" key="btnx" text={(selection_caisse.id!=='allcash' || selection_operator.id!=='allope') ? strings.modules.cloture.print_partiel : strings.modules.cloture.print_x } onClick={ () => { logger.log('printPeriodeX()'); printPeriodeX() } } />
           </div>

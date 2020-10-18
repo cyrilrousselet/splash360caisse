@@ -43,12 +43,14 @@ function getCurrentPeriode(params={}) {
     const { heure_fin } = entreprise;
     const hfin_ar = heure_fin.split(':');
 
+    logger.log('heure_fin',heure_fin);
+
     // début / fin de la période :
     let periode_start = startOfToday();
     let periode_end = endOfToday();
     // si l'heure de fin définie est différente de minuit
-    if (heure_fin!=="0:00") {
-      // si l'heure actuelle est < à l'heure de fin, le début était hier
+    if (heure_fin!=="00:00") {
+      // si l'heure actuelle est < à l'heure de fin de service, le début était hier
       if (differenceInMinutes(new Date(), new Date().setHours(hfin_ar[0],hfin_ar[1]))<0) {
         periode_start = sub(new Date(), {hours: 24}).setHours(hfin_ar[0],hfin_ar[1]);
         periode_end = new Date().setHours(hfin_ar[0],hfin_ar[1]);
@@ -62,13 +64,15 @@ function getCurrentPeriode(params={}) {
     
     // récup. cmd non clôturées
     const cmdopen = Object.values(commandeslist).filter(cmd=>((!cmd.hasOwnProperty('archived') || cmd.archived==null) && cmd.status!=='deleted' && (!cmd.hasOwnProperty('centre_revenu') || cmd.centre_revenu==='restaurant')));
+    // const cmdopen = Object.values(commandeslist).filter(cmd=>((!cmd.hasOwnProperty('archived') || cmd.archived==null) && cmd.status!=='deleted'));
 
-    console.log('nbre cmd non archivées', cmdopen.length);
+    logger.log('nbre cmd non archivées', cmdopen.length, '/', Object.values(commandeslist).length);
 
     // si les cmd non clôt. proviennent d'une période précédente.
     if (cmdopen.length>0) {
-      const pastcmdopen = cmdopen.find(oc=>differenceInMinutes(new Date(oc.updatedAt), periode_start)<0);
-      if (pastcmdopen) {
+      const pastcmdopen = cmdopen.findIndex(oc=>differenceInMinutes(new Date(oc.updatedAt), periode_start)<0);
+      logger.log('commandes provenant d’une période précédente', pastcmdopen);
+      if (pastcmdopen>-1) {
         dispatch({ type: clotureActionTypes.PREVIOUS_PERIOD_ERROR });
 
         Swal.fire({

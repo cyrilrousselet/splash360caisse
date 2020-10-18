@@ -485,6 +485,8 @@ const data = {
                     caisse_all: "Toutes les caisses",
                     comptagebtn: "Comptage",
                     comptagebtn_partiel: "Comptage sélection",
+                    debut: "Début",
+                    fin: "Fin"
                 },
                 comptage: {
                     titre: "Comptage",

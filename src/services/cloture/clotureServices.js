@@ -20,7 +20,7 @@ export const clotureServices = {
 
 function getCurrentPeriode(commandes, catalogue, params) {
 
-//  console.log('clotureServices.getCurrentPeriode()', params);
+ logger.log('clotureServices.getCurrentPeriode()', params);
 
   let __dep = 0
      ,__vnt = 0
@@ -43,6 +43,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
 
   // filtrage de la liste des commandes
   if (commandes) {
+    let numvalid = 0;
     const __filtered_cmd = Object.values(commandes).filter(cmd => {
 
       let __valid = true;
@@ -54,7 +55,8 @@ function getCurrentPeriode(commandes, catalogue, params) {
       if (cmd.status==='deleted') __valid = false;
 
       // si on ne récupère que les cmd non archivées (cas du Z)
-      if (params.extract==='z' && cmd.archived!==null) __valid = false;
+      if (params.extract==='z' && cmd.archived!==undefined) __valid = false;
+      if (__valid) numvalid++;
 
       // si une liste de vendeurs est fournie
       if (vendeurs.length>0) {
@@ -70,13 +72,11 @@ function getCurrentPeriode(commandes, catalogue, params) {
       // periode
       let createdAt = parseJSON(cmd.createdAt);
       if (params.extract==='x') {
-//        if (isAfter(updatedAt, params.fin) || isBefore(updatedAt, params.debut)) __valid = false;
         if (isAfter(createdAt, params.fin) || isBefore(createdAt, params.debut)) __valid = false;
       } 
       else if (params.extract==='z') {
       // --- /!\ on récupère aussi les commandes non clôturées des périodes précédentes (pour n'en laisser aucune)
       // (donc on invalide uniquement les commandes ultérieures)
-     //   if (isAfter(updatedAt, params.fin)) __valid = false;
         if (isAfter(createdAt, params.fin)) __valid = false;
       }
 
@@ -88,6 +88,10 @@ function getCurrentPeriode(commandes, catalogue, params) {
     //  console.log('cmd valid='+__valid,cmd);
       return __valid;
     });
+
+    logger.log('après deleted', numvalid, '/', Object.values(commandes).length);
+
+    logger.log('filtererd_cmd', __filtered_cmd.length);
 
     // récup des différentes valeurs :
     __filtered_cmd.forEach(cmd => {

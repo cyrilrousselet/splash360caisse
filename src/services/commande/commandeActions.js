@@ -87,7 +87,7 @@ function getNumero() {
     dispatch({type: commandeActionTypes.GET_NUMERO, numero: newnumero});
     if (parametres.options.role==="secondary") {
       dispatch(setNewNumero(newnumero.value));
-    } else {
+    } else {  
       dispatch(setNewNumero());
     }
 
