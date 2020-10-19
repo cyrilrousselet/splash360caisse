@@ -28,28 +28,28 @@ const logger = new Logger();
 
 
 
-class TablesModal extends React.Component {
+// class TablesModal extends React.Component {
 
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      phase: 'salles',
-      salleId: null,
-      tableId: null
-    }
-  }
+//   constructor(props) {
+//     super(props);
+//     this.state = {
+//       phase: 'salles',
+//       salleId: null,
+//       tableId: null
+//     }
+//   }
 
-  render() {
+//   render() {
 
-    const {salles} = this.props;
+//     const {salles} = this.props;
 
-    return (
-<div className="TablesModal"></div>
-    );
-  }
+//     return (
+// <div className="TablesModal"></div>
+//     );
+//   }
 
-}
+// }
 
 
 
@@ -74,7 +74,7 @@ class CommentModal extends React.Component {
   }
 
   deleteComment() {
-    const {commentid, deleteHandler, inputValue} = this.props;
+    const {commentid, deleteHandler} = this.props;
     if (commentid!==null) {
 
       Swal.fire({
@@ -98,7 +98,7 @@ class CommentModal extends React.Component {
   }
 
   saveComment() {
-    const { commentid, item, ingredient, sa } = this.props;
+    const { commentid, item, ingredient } = this.props;
     const { texte } = this.state;
 
     logger.log('saveComment()');
@@ -130,7 +130,7 @@ class CommentModal extends React.Component {
 
   render() {
 
-    const { commentid, item, ingredient, cmtlib, closeHandler, deleteHandler, commenttexte, open, clavierOpen } = this.props;
+    const { commentid, item, ingredient, cmtlib, closeHandler, commenttexte, open, clavierOpen } = this.props;
     const { texte } = this.state;
 
     const vtexte = texte==null ? commenttexte : texte;
@@ -244,7 +244,7 @@ class DiscountModal extends React.Component {
   }
 
   saveDiscount() {
-    const { discountid, item, ingredient, sa } = this.props;
+    const { discountid, item, ingredient } = this.props;
     const { valeur } = this.state;
 
     logger.log('saveDiscount()');
@@ -268,7 +268,7 @@ class DiscountModal extends React.Component {
   }
   render() {
 
-    const { discountid, item, ingredient, dsclib, closeHandler, deleteHandler, discountval, open } = this.props;
+    const { discountid, item, ingredient, dsclib, closeHandler, discountval, open } = this.props;
     const { valeur } = this.state;
 
     const vvaleur = valeur==null ? discountval : valeur;
@@ -410,21 +410,24 @@ class Panier extends React.Component {
     getParametres();    
     getClientsList();
     getSallesList();
+    this.listewrapper.scrollTop = this.listewrapper.scrollHeight;
   }
   componentDidUpdate() {
     const { items } = this.props.commande;
 
     // s'il y a des items dans la commande
-    if (undefined!==items && items.length>0) {
+    if ((undefined!==items && null!==items) && items.length>0) {
       
         // vérifie si un item est 'pending'
         // si c'est le cas, on ouvre la Personnalisation avec le premier step non complet
         
-        const __pendingItem = items.find(item => item.status==='pending');
+        const __pendingItem = items.find(itm => itm.status==="pending");
         const __forceItem = (this.props.forcePersonnalisationItem) ? items.find(item => item.itemid===this.props.forcePersonnalisationItem) : null;
         // le prochain step que l'on affiche est celui qui n'a pas encore été revu
         let __stepToRun = null;
         let __item = null;
+
+
         if (__forceItem) {
           logger.log('Panier.componentDidUpdate(), modif de personnalisation DEMANDÉE', __forceItem);
           __stepToRun = __forceItem.steps.find(step => step.checked===false );
@@ -438,10 +441,10 @@ class Panier extends React.Component {
 
         if (__stepToRun) {
           // id du step précédent et suivant
-          let __stepIndex = __item.steps.findIndex(s=>s.id==__stepToRun.id);
+          let __stepIndex = __item.steps.findIndex(s=>s.id===__stepToRun.id);
           let __previd = (__stepIndex<=0 ) ? -1 : __item.steps[__stepIndex-1].id;
           let __nextid = (__stepIndex>=__item.steps.length-1 ) ? -1 : __item.steps[__stepIndex+1].id;
-          this.props.openPersonnalisation(__item.itemid, __stepToRun.id, __previd, __nextid, __stepToRun.validated, __item.status, __forceItem===null ? 'Panier.componentDidUpdate()' : 'item');
+          this.props.openPersonnalisation(__item.itemid, __stepToRun.id, __previd, __nextid, __stepToRun.validated, __item.status, __forceItem==null ? 'Panier.componentDidUpdate()' : 'item');
         } 
         // si aucun item n'est 'pending'
         else {
@@ -450,10 +453,12 @@ class Panier extends React.Component {
     } else {
       this.props.closeReglement();
     }
+
+    this.listewrapper.scrollTop = this.listewrapper.scrollHeight;
   }
 
   setSelectedIndex(index) {
-    const {selectedIndex, selectedIngredient} = this.state;
+    const {selectedIngredient} = this.state;
     if (selectedIngredient===-1) {
       index = index===this.state.selectedIndex ? -1 : index;
     }
@@ -465,7 +470,7 @@ class Panier extends React.Component {
     logger.log(`setSelectedIngredient(${index}, ${ingidx})`)
     const {selectedIndex, selectedIngredient} = this.state;
     // si l'item est déjà sélectionné
-    if (index==selectedIndex) {
+    if (index===selectedIndex) {
       // si on clique sur un ingrédient déjà sélectionné,
       // on désélectionne l'ingrédient et sont produit parent
       index = ingidx===selectedIngredient ? -1 : index;
@@ -518,7 +523,7 @@ class Panier extends React.Component {
 
 
   searchHandler(event) {
-    if (event.keyCode==13) {
+    if (event.keyCode===13) {
       logger.log(event.target.value);
       this.decodeQRCode(event.target.value);
       event.target.value = '';
@@ -557,7 +562,7 @@ class Panier extends React.Component {
       return;
     }
 
-    const platform = process.platform=='darwin' ? 'darwin' : 'win';
+    const platform = process.platform==='darwin' ? 'darwin' : 'win';
 
     let decoded = '';
     for (let caractere of value) {
@@ -574,12 +579,12 @@ class Panier extends React.Component {
 
 
   send_to_search(value) {
-    const {commandeslist, getCommande } = this.props;
+    const {commandeslist } = this.props;
 
     if (commandeslist) {
-      const cmd = Object.values(commandeslist).find((c)=>c.ticketId==value);
+      const cmd = Object.values(commandeslist).find((c)=>c.ticketId===value);
       logger.log('s2s', cmd);
-      if (cmd && cmd.status=='standby') {
+      if (cmd && cmd.status==='standby') {
         this.setState({inputfocus: false});
         this.props.getCommande(value);
       }
@@ -595,10 +600,10 @@ class Panier extends React.Component {
   openDiscount() {
 
     const {modificateurs, items } = this.props.commande;
-    const {selectedIndex, selectedIngredient} = this.state;
+    const {selectedIndex} = this.state;
 
     // récup des id d'item et d'ingrédients en fonction de la sélection du panier
-    const itemid = (selectedIndex!==-1) ? items[selectedIndex].itemid : null;
+    const itemid = (selectedIndex>-1) ? items[selectedIndex].itemid : null;
    // const ingredientid = (selectedIngredient!==-1) ? items[selectedIndex].ingredients[selectedIngredient].ingredient : null;
     const ingredientid = null;
 
@@ -610,7 +615,7 @@ class Panier extends React.Component {
     // - soit un comment d'item
     // - soit un comment d'ingrédient
     // si pas d'id d'item : comment de commande
-    const discount = modificateurs.find(dsc => dsc.item==itemid && dsc.ingredient==ingredientid);
+    const discount = modificateurs.find(dsc => dsc.item===itemid && dsc.ingredient===ingredientid);
 
     const discountId = (discount) ? discount.modificateur_id : null;
 
@@ -660,14 +665,14 @@ class Panier extends React.Component {
     logger.log('openComment selectedIngredient', selectedIngredient);
 
     // récup des id d'item et d'ingrédients en fonction de la sélection du panier
-    const itemid = (selectedIndex!==-1) ? items[selectedIndex].itemid : null;
+    const itemid = (selectedIndex>-1) ? items[selectedIndex].itemid : null;
   //  const ingredientid = (selectedIngredient!==-1) ? items[selectedIndex].ingredients[selectedIngredient].ingredient : null;
 
     // si l'id de l'item est défini : 
     // - soit un comment d'item
     // - soit un comment d'ingrédient
     // si pas d'id d'item : comment de commande
-    const comment = comments.find(cmt => cmt.item==itemid && cmt.ingredient==ingredientid);
+    const comment = comments.find(cmt => cmt.item===itemid && cmt.ingredient===ingredientid);
 
     const commentId = (comment) ? comment.comment_id : null;
 
@@ -698,7 +703,7 @@ class Panier extends React.Component {
 
   getComment(itemid, ingredientid=null) {
     const {comments} = this.props.commande
-    const cmt = comments.find(c => (c.item==itemid && c.ingredient==ingredientid));
+    const cmt = comments.find(c => (c.item===itemid && c.ingredient===ingredientid));
     
     return cmt ? cmt.texte : '';
   }
@@ -706,7 +711,7 @@ class Panier extends React.Component {
   removeComment(itemid, ingredientid=null) {
     console.log('removeComment', itemid, ingredientid);
     const {comments} = this.props.commande;
-    const cmt = comments.find(c => (c.item==itemid && c.ingredient==ingredientid));
+    const cmt = comments.find(c => (c.item===itemid && c.ingredient===ingredientid));
 
     if (cmt) {
       this.props.deleteComment({commentId:cmt.comment_id});
@@ -768,10 +773,7 @@ class Panier extends React.Component {
 
   render() {
 
-    const { commandeslist, 
-            error, 
-            loading, 
-            updateProduit, 
+    const { updateProduit, 
             updateCommande, 
             standByCommande, 
             livraisonCommande, 
@@ -781,28 +783,26 @@ class Panier extends React.Component {
             open, 
             openDrawer, 
             parametres, 
-            itemToPersonnalize, 
-            uncompleteStep,
             deleteComment,
             deleteDiscount,
             clients } = this.props;
 
-    const { comments, modificateurs, items, status, ticketId, mode, client } = this.props.commande;
+    const { comments, modificateurs, items, ticketId, mode, client } = this.props.commande;
     
     const {inputfocus, searchval, 
            commentOpen, commentId, commentItemId, commentIngredientId,
            discountOpen, discountId, discountItemId, discountIngredientId,
            ficheClientOpen,
-           keyboardLayoutName, clavierOpen } = this.state;
+           clavierOpen } = this.state;
 
     // récup du texte en fonction de l'id du commentaire (s'il est défini)
-    let commentTexte = (commentId!==null) ? comments.find(cmt=>cmt.comment_id==commentId).texte : '';
+    let commentTexte = (commentId!==null) ? comments.find(cmt=>cmt.comment_id===commentId).texte : '';
 
     // choix de messages prédéfinis pour les commentaires :
     const cmtlib = (parametres && parametres.commandes) ? parametres.commandes.comment_predefini : [];
 
     // récup de la valeur en fonction de l'id du discount (s'il est défini)
-    const discountVal = (discountId!==null) ? modificateurs.find(dsc=>dsc.modificateur_id==discountId).valeur : '';
+    const discountVal = (discountId!==null) ? modificateurs.find(dsc=>dsc.modificateur_id===discountId).valeur : '';
     // choix de discounts prédéfinis pour les discounts :
     const dsclib = (parametres && parametres.commandes) ? parametres.commandes.discount_predefini : [];
     // gestion de tables :
@@ -810,7 +810,7 @@ class Panier extends React.Component {
     const tableId = null;
 
 
-    const commandeClient = client ? clients.find(c=>c.client_id==client.client_id) : null;
+    const commandeClient = client ? clients.find(c=>c.client_id===client.client_id) : null;
 
 
     // autorise-t-on la vente avec encaissement ultérieur ?
@@ -855,7 +855,7 @@ class Panier extends React.Component {
     logger.log('inputfocus',inputfocus);
     
     const self = this;
-    if (inputfocus && (!items || items.length==0)) {      
+    if (inputfocus && (!items || items.length===0)) {      
       this.interval = setInterval(() => {
         if (self.refs.searchInput) self.refs.searchInput.focus();
        },500);
@@ -867,7 +867,7 @@ class Panier extends React.Component {
 
 
     
-    const onClickAction = (value) => { logger.log(`Action: ${value}`) };
+    // const onClickAction = (value) => { logger.log(`Action: ${value}`) };
 
     const onClickAdd = (event) => {
       updateProduit({itemid: items[selectedIndex].itemid, quantite: items[selectedIndex].quantite + 1});
@@ -947,23 +947,23 @@ class Panier extends React.Component {
     if (null!==parametres && parametres.hasOwnProperty("financier") && parametres.financier.fidelite_activation) {      
 
       logger.log('fidelite_Activation', parametres.financier.fidelite_activation);
-      if (undefined === items || items.length==0) gotoEncaissement();
+      if (undefined === items || items.length===0) gotoEncaissement();
     }
 
     const attenteHandler = (event) => {
-      if (!this.props.commande.numero) this.props.getNumero();
+    //  if (!this.props.commande.numero) this.props.getNumero();
       this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1});
-      standByCommande(this.props.commande);
+      standByCommande(this.props.commande, !this.props.commande.numero);
     }
     const validationHandler = (event) => {
-      if (!this.props.commande.numero) this.props.getNumero();
+    //  if (!this.props.commande.numero) this.props.getNumero();
       this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1});
-      livraisonCommande(this.props.commande);
+      livraisonCommande(this.props.commande, !this.props.commande.numero);
     }
 
-    const repriseHandler = (event) => {
-      gotoListeCommandes();
-    }
+    // const repriseHandler = (event) => {
+    //   gotoListeCommandes();
+    // }
 
     const tiroirHandler = (event) => {
       openDrawer();
@@ -1055,7 +1055,10 @@ class Panier extends React.Component {
                 <div className="lhdr lhdr-quantite">{ strings.modules.encaissement.panier.liste.quantite }</div>
                 <div className="lhdr lhdr-prix">{ strings.modules.encaissement.panier.liste.prix }</div>
               </div>
-              <div className="wrapper">
+              <div 
+                className="wrapper" 
+                ref={(element) => { this.listewrapper = element; }}
+              >
                   <List
                     disablePadding
                   >
@@ -1092,9 +1095,9 @@ class Panier extends React.Component {
                           _onSubClick={ this.setSelectedIngredient }
                           _onSubDoubleClick={ (stepid) => { 
                             logger.log('_onSubDoubleClick', stepid);
-                            let __step = itm.steps.find(s=>s.id==stepid);
-                            let __stepIndex = itm.steps.findIndex(s=>s.id==stepid);
-                            let __previd = (__stepIndex==0) ? -1 : itm.steps[__stepIndex-1].id;
+                            let __step = itm.steps.find(s=>s.id===stepid);
+                            let __stepIndex = itm.steps.findIndex(s=>s.id===stepid);
+                            let __previd = (__stepIndex===0) ? -1 : itm.steps[__stepIndex-1].id;
                             let __nextid = (__stepIndex>=itm.steps.length-1) ? -1 : itm.steps[__stepIndex+1].id;
                             this.props.uncheckItemSteps({itemid:itm.itemid.toString(), stepid: stepid});
                             this.props.openPersonnalisation(itm.itemid.toString(), stepid, __previd, __nextid, __step.validated, itm.status, 'item');
@@ -1243,7 +1246,7 @@ class PanierListeItem extends React.Component {
 
  
   render() {
-    const {id, itemid, nom, quantite, prix, commentaire, selected, discount, deleteDiscountHandler, openDiscountHandler, selectedIng, disabled, ingredients, composition, getComment, removeComment, steps, _onClick, _onDoubleClick, _onSubClick, _onSubDoubleClick} = this.props;
+    const {id, itemid, nom, quantite, prix, selected, discount, deleteDiscountHandler, openDiscountHandler, selectedIng, disabled, ingredients, composition, getComment, removeComment, steps, _onClick, _onDoubleClick, _onSubClick, _onSubDoubleClick} = this.props;
 
 
     // logger.log('item discount', discount);
@@ -1269,10 +1272,10 @@ class PanierListeItem extends React.Component {
     // on définit la liste des ingrédients à partir de l'ordre des steps de personnalisation de l'item
     // (pour exclure les ingrédients non personnalisables et conserver l'ordre des steps)
     let customIng = [...composition];
-    let i =  -1;
+    // let i =  -1;
     if (steps) {
       steps.forEach(stp => {
-        let ing = ingredients.filter(ingrd => ingrd.fromStep==stp.id);
+        let ing = ingredients.filter(ingrd => ingrd.fromStep===stp.id);
         
         // s'il n'y a aucun ingrédient pour le step,
         // on ajoute un item "aucun" pour permettre d'ouvrir la popin de personnalisation pour ce step
@@ -1305,6 +1308,7 @@ class PanierListeItem extends React.Component {
           disabled={ disabled }
           onClick={ handleClick }
           onDoubleClick={ handleDoubleClick }
+          key={`lpli-${id}`}
           >
           <div className="litm row">
             <div className="nom">{nom}</div> 

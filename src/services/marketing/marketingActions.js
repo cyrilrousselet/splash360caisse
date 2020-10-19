@@ -47,8 +47,6 @@ function updateAvoir(payload) {
   return (dispatch, getState) => {
     dispatch({ type: marketingActionTypes.UPDATE_AVOIR_REQUEST });
     
-    const { avoirs } = getState().marketingReducer;
-    const avoir = avoirs.find(av => av.avoir_id = payload.avoir_id);
 
 //    marketingServices.updateAvoir({...avoir, ...payload})
     marketingServices.updateAvoir({...payload})

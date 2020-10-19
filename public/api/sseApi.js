@@ -1,6 +1,7 @@
 const EventSource = require('eventsource');
 const log = require('electron-log');
 const {net} = require('electron');
+const {machineId, machineIdSync} = require('node-machine-id');
 
 // const externalUrls = require('../../src/constants/externalUrls.json');
 
@@ -33,6 +34,7 @@ const actions = {
 
     if (_webContents==null) res.error({msg: 'SSE not initialized'});
 
+    log.info('materialID: ', machineIdSync(true));
 
     const { restaurant_id } = req.payload;
 
@@ -79,10 +81,20 @@ const actions = {
         log.info(`getUberOrder BODY: ${chunk}`)
       });
       response.on('end', () => {
-        log.info('getUberOrder: end')
-        res.send({order: JSON.parse(__order.join(''))});
+        log.info('getUberOrder: end');
+        let __ord = {};
+        try {
+          __ord = {order: JSON.parse(__order.join(''))};
+        } catch (e) {
+          __ord = {error: e.message}
+          log.error('JSON error', e);
+        }
+        res.send(__ord);
       });
     });
+    __request.on('error', (error) => {
+      res.error(error);
+    })
 
     __request.end();
 
@@ -254,7 +266,16 @@ const actions = {
       });
       response.on('end', () => {
         log.info('getDatabase: end');
-        res.send({database: JSON.parse(__database.join(''))});
+
+        let __db = {};
+        try {
+          __db = {database: JSON.parse(__database.join(''))};
+        } catch (e) {
+          __db = {error: e.message}
+          log.error('JSON error', e);
+        }
+
+        res.send(__db);
         // res.send({confirm: true});
       });
     });
@@ -285,7 +306,17 @@ const actions = {
       });
       response.on('end', () => {
         log.info('syncCommandesBO: end');
-        res.send({confirm: JSON.parse(__syncedCommandes.join(''))});
+
+        let __conf = {};
+        try {
+          __conf = {confirm: JSON.parse(__syncedCommandes.join(''))};
+        } catch (e) {
+          __conf = {error: e.message}
+          log.error('JSON error', e);
+        }
+
+        res.send(__conf);
+        // res.send({confirm: JSON.parse(__syncedCommandes.join(''))});
         // res.send({confirm: true});
       });
     });
@@ -317,7 +348,16 @@ const actions = {
       });
       response.on('end', () => {
         log.info('syncCloturesBO: end');
-        res.send({confirm: JSON.parse(__syncedClotures.join(''))});
+        
+        let __conf = {};
+        try {
+          __conf = {confirm: JSON.parse(__syncedClotures.join(''))};
+        } catch (e) {
+          __conf = {error: e.message}
+          log.error('JSON error', e);
+        }
+        res.send(__conf);
+//        res.send({confirm: JSON.parse(__syncedClotures.join(''))});
         // res.send({confirm: true});
       });
     });

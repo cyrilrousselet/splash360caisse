@@ -1,12 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
-import LocalizedStrings from 'react-localization';
-import {data} from '../../constants/translations';
 import paths from '../../constants/routes';
 import TopZone from '../../containers/TopZone';
 import LoadingSpinner from './../common/LoadingSpinner';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import { PrivateRoute } from '../common/PrivateRoute';
 import Fournisseurs from './Fournisseurs';
 import EtatFournisseurs from './EtatFournisseurs';
@@ -17,7 +14,6 @@ import Inventaires from './Inventaires';
 import LargeButton from '../common/LargeButton';
 import history from '../../helpers/history';
 
-let strings = new LocalizedStrings(data);
 
 class Stocks extends React.Component {
 

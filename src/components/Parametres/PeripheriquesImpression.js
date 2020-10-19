@@ -237,7 +237,7 @@ class EditTicketPopin extends React.Component {
     const { imprimantes } = this.getValues();
     let idx = imprimantes.findIndex(prnt=>prnt===value);
     console.log('updateImprimantesSelection', value);
-    if (idx==-1) {
+    if (idx===-1) {
       this.setState({imprimantes:[...imprimantes, value]});
     } else {
      // const __upd = imprimantes.splice(idx,1);
@@ -507,7 +507,7 @@ class PeripheriquesImpression extends React.Component {
           type: tck.template,
           param: printlist.join(', '),
           weight: tck.weight,
-          disabled: printlist.length==0,
+          disabled: printlist.length===0,
           kds: tck.kds
         };
     });

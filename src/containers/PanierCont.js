@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux';
 import { commandeActions } from '../services/commande/commandeActions';
-import { getAll, parametresActions } from '../services/parametres/parametresActions';
+import { parametresActions } from '../services/parametres/parametresActions';
 import { peripheralActions } from '../services/peripheral/peripheralActions';
 import { getCommandeError, getCommandeLoading, getCommande } from '../services/commande/commandeReducer';
 import { getCommandesList } from '../services/commande/commandesListReducer';

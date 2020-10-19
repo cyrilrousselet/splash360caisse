@@ -485,6 +485,8 @@ const data = {
                     caisse_all: "Toutes les caisses",
                     comptagebtn: "Comptage",
                     comptagebtn_partiel: "Comptage sélection",
+                    debut: "Début",
+                    fin: "Fin"
                 },
                 comptage: {
                     titre: "Comptage",
@@ -497,7 +499,7 @@ const data = {
                         avoir_emis: "Avoirs émis :"
                     },
                     especes: {
-                        titre: 'Balance des transactions\<br \/\>en espèces',
+                        titre: ["Balance des transactions","en espèces"],
                         total_fdcaisse: "Total Fond de caisse :",
                         total_especes: "Total Espèces :",
                         total_depenses: "Total Dépenses :",
@@ -505,7 +507,7 @@ const data = {
                         total_montant: "Total montant :"
                     },
                     toutes: {
-                        titre: "Balance des transactions<br />Autres",
+                        titre: ["Balance des transactions","Autres"],
                         total: "Total :",
                         total_recu: "Total reçu :"
                     },
@@ -893,7 +895,8 @@ const data = {
                                     template_liste: {
                                         //  commande: 'Commande',
                                         principal: 'Principal',
-                                        partiel: 'Partiel'//,
+                                        partiel: 'Partiel',
+                                        etiquette: 'Etiquette'//,
                                         //  cloture_x: 'X de caisse',
                                         //  cloture_z: 'Ticket de clôture'
                                     },

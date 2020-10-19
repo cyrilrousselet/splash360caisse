@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
-import {Button} from '@material-ui/core';
 import LoadingSpinner from '../common/LoadingSpinner';
 
 import LocalizedStrings from 'react-localization';
@@ -58,7 +57,7 @@ class Selecteur extends React.Component {
     
 //    for (let [key, value] of Object.entries(catalogue)) {
     groupes.forEach(grp => {
-      if (grp.categorie==categories[0].categorie_id) tlinks.push({id: grp.groupe_id, nom: grp.nom});
+      if (grp.categorie===categories[0].categorie_id) tlinks.push({id: grp.groupe_id, nom: grp.nom});
       grp.produits.sort((a,b)=> a.weight - b.weight); 
       tcontents.push({parent: grp.groupe_id, liste: grp.produits});
     });
@@ -100,7 +99,7 @@ class Selecteur extends React.Component {
                   nom={ prd.nom } 
                   prix={ prd.prix } 
                   color={ prd.color }
-                  disabled={ prd.active==0 }
+                  disabled={ prd.active===0 }
                   composition={prd.composition}
                   onClick={ () => addProduit({produitid: prd.id, nom: prd.nom, prix: Number(prd.prix), composition: prd.composition, customizable: prd.customizable, tva_id:prd.tva_id }) } />
               )}

@@ -6,12 +6,9 @@ import LabelledField from '../common/LabelledField';
 import SwitchCheckbox from '../common/SwitchCheckbox';
 import StdButton from '../common/StdButton';
 import AddIcon from '../common/icon/AddIcon';
-import LoadingSpinner from '../common/LoadingSpinner';
-import { AppBar, Tabs, Tab, Typography, Box, Select, FormControl, InputLabel, MenuItem, Accordion, AccordionSummary, AccordionDetails, ListItem, ListItemText, ListItemSecondaryAction, Switch, ListItemIcon, List, FormControlLabel, Checkbox, Modal, TextField, Fab } from '@material-ui/core';
+import { Typography, Select, FormControl, MenuItem, Accordion, AccordionSummary, AccordionDetails, ListItem, ListItemText, ListItemSecondaryAction, ListItemIcon, List, Modal, Fab } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LensIcon from '@material-ui/icons/Lens';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CloseIcon from '../common/icon/CloseIcon';
 import Clavier from '../common/Clavier';
 import Logger from '../../helpers/Logger';
@@ -217,7 +214,7 @@ class SalleModal extends React.Component {
   }
 
   updateSalle() {
-    const { salleId, salle, updateSalle, addSalle, open } = this.props;
+    const { salleId, salle, updateSalle, addSalle } = this.props;
     const { nom, couleur } = this.state;
 
     logger.log('updateSalle('+salleId+')',nom, couleur);
@@ -256,7 +253,7 @@ class SalleModal extends React.Component {
 
   render() {
 
-    const { salleId, salle, closeHandler, open, clavierOpen } = this.props;
+    const { salle, closeHandler, open, clavierOpen } = this.props;
     const { nom, couleur } = this.state;
 
     logger.log('SalleModal', open);
@@ -349,7 +346,7 @@ class TableModal extends React.Component {
   }
 
   updateTable() {
-    const { salleId, tableId, table, updateTable, addTable, open } = this.props;
+    const { salleId, tableId, table, updateTable, addTable } = this.props;
     const { nom } = this.state;
 
     logger.log('updateTable('+salleId+', '+tableId+')',nom);
@@ -383,7 +380,7 @@ class TableModal extends React.Component {
 
   render() {
 
-    const { salleId, tableId, table, closeHandler, open, clavierOpen } = this.props;
+    const { table, closeHandler, open, clavierOpen } = this.props;
     const { nom } = this.state;
 
 
@@ -448,7 +445,7 @@ class TableModal extends React.Component {
 
 function SalleListe(props) {
 
-  const {data, type, openEdit, removeSalle, removeTable, openTable, editOpen} = props;
+  const {data, openEdit, removeSalle, removeTable, openTable} = props;
 
   const mliste = data.map((cont,i) => (
     <Accordion key={`panel${i}`}>

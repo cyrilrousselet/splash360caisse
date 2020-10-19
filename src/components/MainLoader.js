@@ -1,14 +1,11 @@
 import React from 'react';
 
-import {data} from '../constants/translations';
-import LocalizedStrings from 'react-localization';
 import LoadingSpinner from './common/LoadingSpinner';
 import Logger from '../helpers/Logger';
 import Swal from 'sweetalert2';
 
 const logger = new Logger();
 
-let strings = new LocalizedStrings(data);
 
 class MainLoader extends React.Component {
   
@@ -34,7 +31,7 @@ class MainLoader extends React.Component {
 
     logger.log('MainLoader.componentDidMount()');
     
-    const { paramLoaded, paramLoading, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, cloLoading, sseInit, params, dbupdated, dbgetInit } = this.props;
+    const { paramLoaded, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, sseInit, params, dbupdated, dbgetInit } = this.props;
 
     let first_start = params ? params.first_start : null;
 
@@ -99,7 +96,7 @@ class MainLoader extends React.Component {
         this.props.getCurrentPeriode();
       }
       if (paramLoaded===true && sseInit===true && catLoaded===true && cmdLoaded===true && cloLoaded===true) {
-        if (readytolaunch && readytolaunch.length==2) {
+        if (readytolaunch && readytolaunch.length===2) {
 
           Swal.fire({
             type: 'warning',
@@ -117,7 +114,7 @@ class MainLoader extends React.Component {
 
         } else if (readytolaunch===null) {
           this.props.initSyncCommandes();
-        //  this.props.initSyncClotures();
+          this.props.initSyncClotures();
           this.props.loadingComplete();
         }
       }
@@ -127,7 +124,7 @@ class MainLoader extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
   //  logger.log('MainLoader.componentDidUpdate()', this.props);
-    const { paramLoaded, paramLoading, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, cloLoading, sseInit, params, dbupdated, dbgetInit } = this.props;
+    const { paramLoaded, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, sseInit, params, dbupdated, dbgetInit } = this.props;
 
     let first_start = params ? params.first_start : null;
 
@@ -185,7 +182,7 @@ class MainLoader extends React.Component {
         this.props.getCurrentPeriode();
       }
       if (paramLoaded===true && sseInit===true && catLoaded===true && cmdLoaded===true && cloLoaded===true) {
-        if (readytolauch && readytolauch.length==2) {
+        if (readytolauch && readytolauch.length===2) {
 
           Swal.fire({
             type: 'warning',
@@ -203,7 +200,7 @@ class MainLoader extends React.Component {
 
         } else if (readytolauch===null) {
           this.props.initSyncCommandes();
-        //  this.props.initSyncClotures();
+          this.props.initSyncClotures();
           this.props.loadingComplete();
         }
       }
@@ -211,7 +208,7 @@ class MainLoader extends React.Component {
   }
 
   render() {
-    const { paramLoaded, catLoaded, cmdLoaded, cloLoaded, sseInit, params, first_start } = this.state;
+    const { paramLoaded, catLoaded, cmdLoaded, cloLoaded, sseInit, first_start } = this.state;
   //  const { paramLoaded, paramLoading, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, cloLoading, sseInit, params, dbupdated } = this.props;
 
   // if (!paramLoaded || !catLoaded || !cmdLoaded || !cloLoaded || !sseInit) this.setState({inspect: true});

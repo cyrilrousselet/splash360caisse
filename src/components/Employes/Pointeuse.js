@@ -1,9 +1,7 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import 'date-fns';
 import { format } from "date-fns";
-import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 
 import { Modal, Fab } from '@material-ui/core';
@@ -20,7 +18,6 @@ import LargeButton from '../common/LargeButton';
 
 import LoginCont from '../../containers/LoginCont';
 import Swal from 'sweetalert2';
-import BackIcon from '../common/icon/BackIcon';
 
 let strings = new LocalizedStrings(data);
 
@@ -125,7 +122,7 @@ class Pointeuse extends React.Component {
     let __usr = null;
     let __pnt = null;
     if (users.length>0) {
-      __usr = users.find(u => u.identifiant==identifiant);
+      __usr = users.find(u => u.identifiant===identifiant);
     }
 
 
@@ -134,12 +131,12 @@ class Pointeuse extends React.Component {
 
       // récup d'un pointage ouvert éventuel
       if (pointages.length) {
-        __pnt = pointages.find(p => p.status=='opened' && p.employe==__usr.user_id);
+        __pnt = pointages.find(p => p.status==='opened' && p.employe===__usr.user_id);
       }
       console.log('validClock, pointage', __pnt, clocktype);
 
 
-      if (clocktype=='in') {
+      if (clocktype==='in') {
         // si aucun pointage n'est ouvert pour l'employé
         if (!__pnt) {
           setClockIn({time: time, user_id: __usr.user_id});
@@ -194,7 +191,7 @@ class Pointeuse extends React.Component {
 
  render() {
 
-  const { users } = this.props;
+  // const { users } = this.props;
   const { jour, heure, popinOpen, clocktype, time, error, error_detail } = this.state;
 
  // console.log('pointage', this.state);

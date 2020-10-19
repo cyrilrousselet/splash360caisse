@@ -2,7 +2,6 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux';
 import { getPointages, getShifts } from '../services/employes/employesReducer';
-import { getUsers } from '../services/user/userReducer';
 import { employesActions } from '../services/employes/employesActions';
 import { userActions } from '../services/user/userActions';
 import Planning from '../components/Employes/Plannings';

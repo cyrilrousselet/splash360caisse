@@ -1,12 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import { Modal, Fab } from '@material-ui/core';
 import CloseIcon from '../common/icon/CloseIcon';
 import StdButton from '../common/StdButton';
 
-import LocalizedStrings from 'react-localization';
-import {data} from '../../constants/translations';
 
 import fakesearch from '../../assets/images/fake_searchfield.svg';
 import history from '../../helpers/history';
@@ -15,7 +12,6 @@ import paths from '../../constants/routes';
 import fakeliste from '../../assets/images/fake_stocks_articles.svg';
 import fakepopin from '../../assets/images/fake_stocks_article_popin.svg';
 
-let strings = new LocalizedStrings(data);
 
 const NewArticle = ({open, closePopin}) => (
 
@@ -27,7 +23,7 @@ const NewArticle = ({open, closePopin}) => (
         </div>
         <div className="body">
           <div className="popin-wrapper">
-          <img src={ fakepopin } className="contimage" />
+          <img src={ fakepopin } className="contimage" alt="" />
           <StdButton identifier="btnassocier" elementclass="btnassocier" key="btnassocier" text="Associer" onClick={ ()=> void(0) } />
           </div>
         </div>
@@ -74,11 +70,11 @@ class Articles extends React.Component {
             <StdButton identifier="btnnew" elementclass="btnnew" key="btnnew" text="Nouveau" onClick={ openPopin } />
           </div>
           <div className="titre">Articles</div>
-          <div className="search"><img src={ fakesearch } /></div>
+          <div className="search"><img src={ fakesearch } alt="" /></div>
         </div>
         <div className="zoneliste">
           <div class="wrapper">
-            <img src={ fakeliste } className="fakeliste" />
+            <img src={ fakeliste } className="fakeliste" alt="" />
           </div>
         </div>
         <NewArticle open={popinOpen} closePopin={closePopin} />

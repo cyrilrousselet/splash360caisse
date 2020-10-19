@@ -1,7 +1,6 @@
 import React from 'react';
 import LocalizedStrings from 'react-localization';
 import { data } from '../constants/translations';
-import ConnectIcon from './common/icon/ConnectIcon';
 import packageJson from './../../package.json';
 
 let strings = new LocalizedStrings(data);
@@ -48,8 +47,6 @@ class Footer extends React.Component {
     }
 
     render() {
-
-        const { userLogout } = this.props;
 
         return (
           <div className="Footer">

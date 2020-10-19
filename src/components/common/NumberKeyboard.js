@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import PillField from '../common/PillField';
 import PillButton from '../common/PillButton';
 import { Modal, Fab } from '@material-ui/core';
 import CloseIcon from './icon/CloseIcon';

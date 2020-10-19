@@ -48,8 +48,6 @@ function updateClient(payload) {
   return (dispatch, getState) => {
     dispatch({ type: clientsActionTypes.UPDATE_REQUEST });
     
-    const { clients } = getState().clientsReducer;
-    const client = clients.find(c => c.client_id = payload.client_id);
 
     clientsServices.updateClient({...payload})
     .then(

@@ -17,6 +17,9 @@ const getPixels = require('get-pixels');
 const QRCode = require('qrcode');
 
 let printerOpen = false;
+let waitInterval = null;
+
+let printSpool = [];
 
 
 const actions = {
@@ -31,19 +34,29 @@ const actions = {
 
     const { imprimante, template, contenu } = req.payload;
 
-    log.info('printerOpen',printerOpen);
+    log.info('printerOpen',printerOpen, 'actions.printTicket()');
 
-    if (printerOpen) {
-      let waitInterval = setInterval(function() {
-        if (!printerOpen) {
-          clearInterval(waitInterval);
-          _doPrintTicket(imprimante, template, contenu);
-        }
-      },200);
-    }
-    else {
-      _doPrintTicket(imprimante, template, contenu);
-    }
+    _spoolManager({
+      action: _doPrintTicket,
+      imprimante: imprimante,
+      template: template,
+      contenu: contenu
+    });
+
+    // if (printerOpen) {
+    //   clearInterval(waitInterval);
+    //   waitInterval = setInterval(function() {
+    //     log.info('wait for printer close', printerOpen, 'actions.printTicket()');
+    //     if (!printerOpen) {
+    //       log.info('at last, printer closed', printerOpen, 'actions.printTicket()');
+    //       clearInterval(waitInterval);
+    //       _doPrintTicket(imprimante, template, contenu);
+    //     }
+    //   },200);
+    // }
+    // else {
+    //   _doPrintTicket(imprimante, template, contenu);
+    // }
 
    
 
@@ -60,114 +73,80 @@ const actions = {
 
     const { imprimante } = req.payload;
 
-    log.debug('openDrawer', imprimante);
+  //  log.debug('openDrawer', imprimante);
 
-    // déclaration de l'imprimante
-    let device;
-    if (imprimante.connexion=='usb') {
-      if (imprimante.param && (typeof imprimante.param==="string") ) {
-      vp = imprimante.param.split(';');
-        vid = parseInt(vp[0], 16);
-        pid = parseInt(vp[1], 16);
-        device = new escpos.USB(vid,pid);
-      } else {
-        device = new escpos.USB();
-      }
-
-      // const alldevices = escpos.USB.findPrinter();
-      // alldevices.forEach(el=>{
-      //   log.info('usb', el);
-      // });
-
-    } else if (imprimante.connexion=='network') {
-      device = new escpos.Network(imprimante.param); 
-    } else if (imprimante.connexion=='serial') {
-      device = new escpos.SerialPort(imprimante.param);
-    }
-    const options = {encoding: imprimante.encoding, width:42};
-    const printer = new escpos.Printer(device, options);
-    device.open(function() {
-
-      log.debug('device open -> cashdraw()');
-      // printer
-      //   .cashdraw()
-      //   .cashdraw();
-
-        // device.write('\x1b\x70\x00\x19\xfa', data => {
-        //   log.info("data", data);
-        // })
-
-
-      device.on('data', function (data) {
-          // log.debug(data);
-          if (typeof data === "string") {
-            log.debug(' --> ',  data.charCodeAt(0).toString(2).padStart(8, '0'));
-          }
-        //   const st = new PrinterStatus(data);
-        //   const stjson = st.toJSON();
-        //   log.debug(stjson['byte'].toString(16));
-        // try{
-        //   const binaire = (parseInt(stjson.byte, 16).toString(2)).padStart(7, '0');
-        //   log.debug(hexa, binaire);
-        // } catch(e) {
-        //   log.debug('pas un nombre');
-        // }
-          
-
-          // log.debug(st.toJSON());
-          
-      });
-  
-      log.info('demande de status');
-      device.write(_.DLE+_.EOT+String.fromCharCode(1));
-      // device.write('\x1d\x72\x02');
-      log.info('ouverture');
-      device.write('\x1b\x70\x00\x19\xfa');
-      
-      log.info('demande de status');
-      device.write(_.DLE+_.EOT+String.fromCharCode(1));
-
-      // device.write(_.DLE);
-      // device.write(_.EOT);
-      // device.write(String.fromCharCode(1));
-
-
-      setTimeout(() => {
-          printer.close();
-      }, 1000);
-
-
-
-
-
-/*
-
-      if (imprimante.connexion==='usb') {
-        log.info('send "GS r 2" to printer');
-
-        device.write('\x1d\x72\x02', (error,data) => {
-          log.info('get data',data);
-        });
-
-
-        device.write('\x1b\x70\x00\x19\xfa', (error,data) => {
-          log.info("open drawer data", data);
-        });
-
-
-      } else {
-        printer.cashdraw();
-        printer.getStatus(statuses.PrinterStatus.getClassName(), status => {
-          log.info(status.toJSON());
-        });
-      }
-      printer.close();
-      // setTimeout(() => {
-      //   printer.close();
-      // }, 200);
-    */  
-          
+    _spoolManager({
+      action: _openDrawer,
+      imprimante: imprimante,
+      template: null,
+      contenu: null
     });
+
+
+
+
+    // device.open(function() {
+
+    //   log.debug('device open -> cashdraw()');
+    //   printer
+    //     .cashdraw()
+    //     .cashdraw();
+
+    //     // device.write('\x1b\x70\x00\x19\xfa', data => {
+    //     //   log.info("data", data);
+    //     // })
+
+
+    //   // device.on('data', function (data) {
+    //   //     // log.debug(data);
+    //   //     if (typeof data === "string") {
+    //   //       log.debug(' --> ',  data.charCodeAt(0).toString(2).padStart(8, '0'));
+    //   //     }
+          
+    //   // });
+  
+    //   // log.info('demande de status');
+    //   // device.write(_.DLE+_.EOT+String.fromCharCode(1));
+    //   // // device.write('\x1d\x72\x02');
+    //   // log.info('ouverture');
+    //   // device.write('\x1b\x70\x00\x19\xfa');
+      
+    //   // log.info('demande de status');
+    //   // device.write(_.DLE+_.EOT+String.fromCharCode(1));
+
+
+    //   setTimeout(() => {
+    //       printer.close();
+    //   }, 1000);
+
+    // / *
+
+    //   if (imprimante.connexion==='usb') {
+    //     log.info('send "GS r 2" to printer');
+
+    //     device.write('\x1d\x72\x02', (error,data) => {
+    //       log.info('get data',data);
+    //     });
+
+
+    //     device.write('\x1b\x70\x00\x19\xfa', (error,data) => {
+    //       log.info("open drawer data", data);
+    //     });
+
+
+    //   } else {
+    //     printer.cashdraw();
+    //     printer.getStatus(statuses.PrinterStatus.getClassName(), status => {
+    //       log.info(status.toJSON());
+    //     });
+    //   }
+    //   printer.close();
+    //   // setTimeout(() => {
+    //   //   printer.close();
+    //   // }, 200);
+    // * /  
+          
+    // });
 
     res.send({msg: 'drawer open'});
 
@@ -231,9 +210,100 @@ const actions = {
 }
 
 
+// gestion des jobs envoyés aux imprimantes
+function _spoolManager(job=null) {
+
+  
+  // on ajoute le job demandé à la liste d'attente
+  if (job!==null) printSpool.push(job);
 
 
+  // si l'imprimante est ouverte...
+  if (printerOpen) {
 
+    // si aucune boucle d'attente n'est déclarée...
+    if (waitInterval===null) {
+
+      // ...on déclare un nouvel intervalle
+      waitInterval = setInterval(function() {
+        log.info('wait for printer close', printerOpen, '_spoolManager()');
+        // si l'imprimante est (enfin) fermée
+        if (!printerOpen) {
+          log.info('at last, printer closed', printerOpen, '_spoolManager()');
+          
+
+          // on récupère le premier job de la liste
+          const firstJobi = printSpool.shift();
+          // et on exécute le job
+          firstJobi.action(firstJobi.imprimante, firstJobi.template, firstJobi.contenu);
+
+          // si la liste d'attente est vide
+          if (printSpool.length===0) {
+            // on efface l'intervalle (et on met sa valeur à 'null')
+            clearInterval(waitInterval);
+            waitInterval = null;
+          }
+        }
+      },200);
+    }
+  }
+  // si l'imprimante est fermée...
+  else {
+    // si un job est déclaré dans la liste
+    if (printSpool.length>0) {
+      // on récupère le premier job de la liste
+      const firstJobd = printSpool.shift();
+      firstJobd.action(firstJobd.imprimante, firstJobd.template, firstJobd.contenu);
+
+      // on relance le manager au cas où un autre job serait en attente dans la liste
+      _spoolManager();
+    }
+  }
+}
+
+
+function _openDrawer(imprimante, template, contenu) {
+
+  // déclaration de l'imprimante
+  let device;
+  if (imprimante.connexion=='usb') {
+    if (imprimante.param && (typeof imprimante.param==="string") ) {
+      vp = imprimante.param.split(';');
+      vid = parseInt(vp[0], 16);
+      pid = parseInt(vp[1], 16);
+      device = new escpos.USB(vid,pid);
+    } else {
+      device = new escpos.USB();
+    }
+
+  } else if (imprimante.connexion=='network') {
+    device = new escpos.Network(imprimante.param); 
+  } else if (imprimante.connexion=='serial') {
+    device = new escpos.SerialPort(imprimante.param);
+  }
+  
+  const printer = new escpos.Printer(device);
+
+  device.open(function(error) {
+    if (error) {
+      log.error(`ERREUR IMPRIMANTE->TIROIR (${imprimante.connexion}: ${imprimante.param}) =>`, e.message);
+    } else {
+      log.debug('device open -> cashdraw()');
+      printerOpen = true;
+      printer
+        .cashdraw()
+        .cashdraw();
+        
+      setTimeout(() => {
+        log.debug('printer.close()', '_openDrawer() 2');
+        printer.close(function() {
+          printerOpen = false;
+        });
+      }, 1000);
+    }
+  });
+
+}
 
 
 function _doPrintTicket(imprimante, template, contenu) {
@@ -262,7 +332,6 @@ function _doPrintTicket(imprimante, template, contenu) {
     
     // const options = {encoding: imprimante.encoding};
     printer = new escpos.Printer(device, options);
-    printerOpen = true;
     
   } catch(e) {
     log.error(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`, e.message);
@@ -287,16 +356,24 @@ function _doPrintTicket(imprimante, template, contenu) {
       // on ouvre la connexion à l'imprimante
       if (device) {
         
-        device.open(async function() {
-          log.debug('print logo');
-          // center logo
-          printer.align('CT');
-          // impression logo
-          let printimage = await _printImage(printer, image);
+        device.open(async function(error) {
 
-          // une fois le logo chargé on lance l'impression des sections du tickets
-          if (printimage) {
-          _launchPrint(template, printer, contenu);
+          if (error) {
+            log.error(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`, error.message);
+          } else {
+            
+            printerOpen = true;
+
+            log.debug('print logo');
+            // center logo
+            printer.align('CT');
+            // impression logo
+            let printimage = await _printImage(printer, image);
+
+            // une fois le logo chargé on lance l'impression des sections du tickets
+            if (printimage) {
+            _launchPrint(template, printer, contenu);
+            }
           }
 
         });
@@ -313,8 +390,14 @@ function _doPrintTicket(imprimante, template, contenu) {
     // on ouvre la connexion à l'imprimante
     // et on lance l'impression des sections du tickets
     if (device) {
-      device.open(function() {
-        _launchPrint(template, printer, contenu);
+      device.open(function(error) {
+
+        if (error) {
+          log.error(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`, error.message);
+        } else {
+          printerOpen = true;
+          _launchPrint(template, printer, contenu);
+        }
       });
     } else {
       log.error('impression impossible');
@@ -387,8 +470,12 @@ function _launchPrint(template, printer, contenu) {
     }
     else if ('uber' ===  section) {
       const pqr = await _printUber(printer, contenu.uber, contenu.strings.uber);
-    } else if ('recap' === section) {
+    } 
+    else if ('recap' === section) {
       _printRecap(printer, contenu.recap, contenu.strings);
+    } 
+    else if ('etiquette' === section) {
+      _printEtiquettes(printer, contenu);
     }
     // else if ('logo' === section) {
     //   if (contenu.logo!==null) {
@@ -409,7 +496,42 @@ function _launchPrint(template, printer, contenu) {
   });
 }
 
+function _printEtiquettes(printer, data) {
 
+
+  log.info('_printEtiquette', data);
+
+  data.articles.forEach(art => {
+
+    const inglist = art.ingredients.map(ing => ing.qte+'x '+ing.nom.toLowerCase());
+
+    printer
+    .font('A')
+    .align('CT')
+    .style('B')
+    .size(0,0)
+    .tableCustom([
+      {text:'#'+data.numero, align:'LEFT', cols:6, style:'B'},
+      {text:'', cols:3},
+      {text:data.mode, align:'CENTER', cols:10, style:'NORMAL'},
+      {text:'', cols:2},
+      {text:data.date, align:'RIGHT', cols:21, style:'NORMAL'}
+    ])
+    .size(1,1)
+    .tableCustom([
+      {text: art.nom, align:'LEFT', cols:42, style:'B'}
+    ])
+    .size(0.5,0.5)
+    .tableCustom([
+      {text: inglist.join(', '), align:'LEFT', cols:42, style:'NORMAL'}
+    ])
+    .feed(1)
+    .cut();
+
+
+  });
+
+}
 
 // informations commande sur le ticket
 function _printInfo(printer, data, strings) {
@@ -1032,7 +1154,6 @@ function _printPeriodeX(printer, data, strings) {
       ]);
     } else if (data.vendeurs.length==1){
       printer.tableCustom([
-        // {text: strings.vendeurs[0]+data.vendeurs[0].nom+' ('+data.vendeurs[0].id+')', cols:42, align:'LEFT'}
         {text: strings.vendeurs[0]+data.vendeurs[0].nom, cols:42, align:'LEFT'}
       ]);
     }
@@ -1181,7 +1302,8 @@ function _printPeriodeX(printer, data, strings) {
       printer
         .style('NORMAL')
         .tableCustom([
-          {text: Number(tva.taux*100).toFixed(2).replace('.',',')+'%', cols:9, align:'LEFT'},
+          // {text: Number(tva.taux*100).toFixed(2).replace('.',',')+'%', cols:9, align:'LEFT'},
+          {text: tva.taux, cols:9, align:'LEFT'},
           {text:'', cols:3},
           {text: Number(tva.ht).toFixed(2).replace('.',','), cols:8, align:'RIGHT'},
           {text:'', cols:3},
@@ -1259,7 +1381,6 @@ function _printPeriodeZ(printer, data, strings) {
       .align('CT')
       .tableCustom([{text: strings.periode.titre, cols:42, align:'LEFT'}])
       .tableCustom([{text: data.debut+' -> '+data.fin, cols:42, align:'CENTER'}])
-        // [{text: strings.editeur+data.editeur.nom+' ('+data.editeur.id+')', cols:42, align:'LEFT'}]
       .tableCustom([{text: strings.editeur+data.editeur.nom, cols:42, align:'LEFT'}])
       .feed(1)
       ;

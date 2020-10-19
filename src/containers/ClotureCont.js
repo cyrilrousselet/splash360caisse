@@ -1,10 +1,8 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux';
 import Cloture from '../components/Cloture';
-import { commandeActions } from '../services/commande/commandeActions';
 import { clotureActions } from '../services/cloture/clotureActions';
 import { peripheralActions } from '../services/peripheral/peripheralActions';
-import { parametresActions } from '../services/parametres/parametresActions';
 import { getPeriode } from '../services/cloture/clotureReducer';
 
 // import {data} from '../constants/translations';

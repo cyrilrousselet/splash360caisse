@@ -25,6 +25,7 @@
     "oAuth": "https://api.splash360.fr/oauth/v2/token?client_id=%ID%&client_secret=%PWD%&grant_type=client_credentials",
     "getdb": "https://api.splash360.fr/api/export/database",
     "syncCommandes": "https://api.splash360.fr/api/import/commandes",
-    "syncClotures": "https://api.splash360.fr/api/import/clotures"
+    "syncClotures": "https://api.splash360.fr/api/import/clotures",
+    "getStatus": "https://api.splash360.fr/api/licence/station/%STATIONID%/%UUID%"
   }
 }

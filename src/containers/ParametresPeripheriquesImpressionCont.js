@@ -2,8 +2,6 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux';
 import PeripheriquesImpression from '../components/Parametres/PeripheriquesImpression';
-import history from './../helpers/history';
-import paths from './../constants/routes.json';
 import { peripheralActions } from './../services/peripheral/peripheralActions';
 
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 
 import { Modal, Fab, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, FormControl, Select, MenuItem, TextField } from '@material-ui/core';
@@ -13,7 +12,7 @@ import history from '../../helpers/history';
 import paths from '../../constants/routes';
 
 import 'date-fns';
-import { format, startOfWeek, isValid, isToday, addDays, getDay, getWeek, isFirstDayOfMonth, isLastDayOfMonth, isAfter, getMonth, startOfToday, add, addWeeks, subWeeks, startOfDay } from "date-fns";
+import { format, startOfWeek, isToday, addDays, getDay, getWeek, isFirstDayOfMonth, isLastDayOfMonth, isAfter, getMonth, startOfToday, add, addWeeks, subWeeks, startOfDay } from "date-fns";
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import { MuiPickersUtilsProvider, KeyboardDatePicker, KeyboardTimePicker } from '@material-ui/pickers';
@@ -24,6 +23,9 @@ import NextIcon from '../common/icon/NextIcon';
 import BackIcon from '../common/icon/BackIcon';
 import LockIcon from '../common/icon/LockIcon';
 import LockOpenIcon from '../common/icon/LockOpenIcon';
+
+import Logger from '../../helpers/Logger';
+const logger = new Logger();
 
 
 
@@ -91,7 +93,7 @@ class ShiftEditModal extends React.Component {
       date: this.props.shift && this.props.shift.date,
       recurrence: this.props.shift && this.props.shift.recurrence
     }
-    console.log('componentDidMount', st);
+    logger.log('componentDidMount', st);
     this.setState(st);
   }
 
@@ -121,18 +123,18 @@ class ShiftEditModal extends React.Component {
 
 
   updateValue(value) {
-    console.log('updateValue', value);
+    logger.log('updateValue', value);
     this.setState(value);
   }
 
   updateRecurrence(value) {
-    console.log('updateRecurrence', value);
+    logger.log('updateRecurrence', value);
     const {recurrence} = this.getValues();
 
     if (recurrence.periode!=='none') {
       this.setState({recurrence:{...recurrence, ...value}});
     } else {
-      console.log('uu rr',{...value, rythme:1, jours:[], limite:null});
+      logger.log('uu rr',{...value, rythme:1, jours:[], limite:null});
       this.setState({recurrence:{...value, rythme:1, jours:[], limite:null}});
     }
   }
@@ -142,7 +144,7 @@ class ShiftEditModal extends React.Component {
     if (add) {
       this.setState({recurrence: { ...recurrence, jours:[...jours,jour] } });
     } else {
-      this.setState({recurrence: { ...recurrence, jours:jours.filter(j=>j!=jour) } });
+      this.setState({recurrence: { ...recurrence, jours:jours.filter(j=>j!==jour) } });
     }
   }
 
@@ -154,10 +156,10 @@ class ShiftEditModal extends React.Component {
 
   saveShift() {
 
-    const shift_id = this.props.shift && this.props.shift.shift_id || null;
+    const shift_id = (this.props.shift && this.props.shift.shift_id) || null;
     let params = this.getValues();
-    if (params.date && params.date === 'object') params.date = format(params.date, 'yyyy-MM-dd');
-    if (shift_id==null) {
+    if (params.date && (params.date === 'object')) params.date = format(params.date, 'yyyy-MM-dd');
+    if (shift_id===null || shift_id===undefined) {
       params.date = format(params.date, 'yyyy-MM-dd');
     }
     if (params.recurrence.limite) {
@@ -197,14 +199,14 @@ class ShiftEditModal extends React.Component {
   checkHour(heure,which) {
     const { start, end } = this.getValues();
     let erreur = null;
-    if (which=="start") {
+    if (which==="start") {
       if (isAfter(heure, end)) {
         erreur = 'start';
       } else {
         this.setState({start: format(heure, 'HH:mm:ss')});
       }
     }
-    else if (which=="end") {
+    else if (which==="end") {
       if (isBefore(heure, start)) {
         erreur = 'end';
       } else {
@@ -226,12 +228,12 @@ class ShiftEditModal extends React.Component {
 
   
   render() {
-    const {open, shift, shiftdate, closeHandler, saveShift, types, employes} = this.props;
-    const { shift_id, poste, employe, start, end, date, recurrence } = this.getValues();
+    const {open, shift, closeHandler, types, employes} = this.props;
+    const { poste, employe, start, end, date, recurrence } = this.getValues();
 
     let nom_employe = '';
     if (shift && shift.employe) {
-      nom_employe = employes.find(emp=>emp.user_id==shift.employe)['nom'];
+      nom_employe = employes.find(emp=>emp.user_id===shift.employe)['nom'];
     }
     
     // valeurs de récurrence
@@ -262,7 +264,7 @@ class ShiftEditModal extends React.Component {
     const readytovalidate = (poste && employe && start && end && recurrence && recurrence.periode);
     
 
-    console.log('recurrence', recurrence, shift && shift.recurrence);
+    logger.log('recurrence', recurrence, shift && shift.recurrence);
     
     return (
       <Modal
@@ -356,20 +358,20 @@ class ShiftEditModal extends React.Component {
               </div>
               }
               <div className="recurrence-params">
-                {periode=='semaine' && <div className="form-group jours semaine">
+                {periode==='semaine' && <div className="form-group jours semaine">
                     <div className="label">{ strings.modules.employes.planning.edit.recurrence.jours.semaine }</div>
                     <div className="jours-semaine">
                       {joursdelasemaine.map(jourid=>(
-                        <JourCheckbox label={ strings.general.jours[jourid].substr(0,1) } key={jourid} checked={jours.indexOf(jourid)!=-1} className="jour" changeHandler={(val)=>{ this.updateRecurrenceJours(val,jourid) } } />
+                        <JourCheckbox label={ strings.general.jours[jourid].substr(0,1) } key={jourid} checked={jours.indexOf(jourid)>-1} className="jour" changeHandler={(val)=>{ this.updateRecurrenceJours(val,jourid) } } />
                       ))}
                     </div>
                 </div>
                 }
-                {periode=='mois' && <div className="form-group jours mois">
+                {periode==='mois' && <div className="form-group jours mois">
                   <div className="label">{ strings.modules.employes.planning.edit.recurrence.jours.mois }</div>
                   <div className="jours-mois">
                     {joursdumois.map(jourid=>(
-                      <JourCheckbox label={ jourid } key={jourid} checked={jours.indexOf(jourid)!=-1} className="jour" changeHandler={(val) => { this.updateRecurrenceJours(val,jourid) }} />
+                      <JourCheckbox label={ jourid } key={jourid} checked={jours.indexOf(jourid)>-1} className="jour" changeHandler={(val) => { this.updateRecurrenceJours(val,jourid) }} />
                     ))}
                   </div>
                 </div>}
@@ -397,7 +399,7 @@ class ShiftEditModal extends React.Component {
                 identifier="modal-suppr" 
                 elementclass="suppr" 
                 icon={ false } 
-                disabled={ shift==null }
+                disabled={ shift===null || shift===undefined }
                 text={ strings.modules.employes.planning.edit.suppression.bouton } 
                 onClick={this.deleteShift} 
               />
@@ -464,11 +466,11 @@ class PlanningSemaine extends React.Component {
   getPlanningTotal(jours) {
     let total = 0;
     jours.forEach(jour=> {
-      jour.shifts.map(shift => {
+      jour.shifts.forEach(shift => {
         const start = shift.start.split(':');
         const end = shift.end.split(':');
-        console.log('start-end', start, end);
-        console.log('shift poste tps', shift.poste);
+        logger.log('start-end', start, end);
+        logger.log('shift poste tps', shift.poste);
         if (shift.poste.tps) {
           total += add(startOfToday(), {hours:Number(end[0]), minutes:Number(end[1])}).getTime() - add(startOfToday(), {hours:Number(start[0]), minutes:Number(start[1])}).getTime();
         }
@@ -498,23 +500,23 @@ class PlanningSemaine extends React.Component {
         if (ok) {
           // récurrence valide :
           // • par semaine
-          if (sh.recurrence.periode=='semaine') {
+          if (sh.recurrence.periode==='semaine') {
             // si la semaine en cours ne tombe pas sur celle du shift 
             // ou si le jour n'est pas dans la liste du shift
             // -> pas de shift
-            if ((((getWeek(date) - getWeek(shdate)) % Number(sh.recurrence.rythme))!=0) || (sh.recurrence.jours.indexOf(getDay(date))==-1)) ok = false;
+            if ((((getWeek(date) - getWeek(shdate)) % Number(sh.recurrence.rythme))!==0) || (sh.recurrence.jours.indexOf(getDay(date))===-1)) ok = false;
           } 
           // • par mois
-          if (sh.recurrence.periode=='mois') {
+          if (sh.recurrence.periode==='mois') {
             
             // si le mois en cours ne tombe pas sur celle du shift
             // ou si le jour n'est pas dans la liste du shift (premier jour du mois, dernier jour du mois ou un jour de la liste)
             // -> pas de shift
             if (
-              ((getMonth(date) - getMonth(shdate)) % Number(sh.recurrence.rythme))!=0 || 
-              (sh.recurrence.jours[0]==0 && isFirstDayOfMonth(shdate)) ||
-              (sh.recurrence.jours[0]==-1 && isLastDayOfMonth(shdate)) ||
-              (sh.recurrence.jours.indexOf(getDay(shdate))==-1)
+              ((getMonth(date) - getMonth(shdate)) % Number(sh.recurrence.rythme))!==0 || 
+              (sh.recurrence.jours[0]===0 && isFirstDayOfMonth(shdate)) ||
+              (sh.recurrence.jours[0]===-1 && isLastDayOfMonth(shdate)) ||
+              (sh.recurrence.jours.indexOf(getDay(shdate))===-1)
             ) ok = false;
           } 
         }
@@ -535,15 +537,15 @@ class PlanningSemaine extends React.Component {
   }
 
   setPosteToShift(shifts) {
-    console.log(shifts.length);
+    logger.log(shifts.length);
     const {shifttypes} = this.props;
-    return shifts.map(sh=>{ return {...sh, poste:shifttypes.find(st=>st.id==sh.poste)} });
+    return shifts.map(sh=>{ return {...sh, poste:shifttypes.find(st=>st.id===sh.poste)} });
   }
 
   lockHandler(colonne) {
     const {lockColonnes} = this.state;
-    if (lockColonnes.indexOf(colonne)!=-1) {
-      this.setState({lockColonnes: lockColonnes.filter(c=>c!=colonne)});
+    if (lockColonnes.indexOf(colonne)>-1) {
+      this.setState({lockColonnes: lockColonnes.filter(c=>c!==colonne)});
     } else {
       this.setState({lockColonnes: [...lockColonnes, colonne]});
     }
@@ -557,12 +559,12 @@ class PlanningSemaine extends React.Component {
     const planning = (liste) ? this.getPlanning() : null;
 
     const addShiftHandler = (date, colonne) => {
-      if (lockColonnes.indexOf(colonne)==-1) {
+      if (lockColonnes.indexOf(colonne)===-1) {
         openEditor(null,date);
       }
     }
     const editShiftHandler = (shift_id, colonne) => {
-      if (lockColonnes.indexOf(colonne)==-1) {
+      if (lockColonnes.indexOf(colonne)===-1) {
         openEditor(shift_id);
       }
     }
@@ -573,10 +575,10 @@ class PlanningSemaine extends React.Component {
       const s = ms<0 ? '-':'';
       const dh = Math.floor(Math.abs(ms)/h);
       const dm = Math.round((Math.abs(ms)%h)/60000).toString().padStart(2, '0');
-      return `${s} ${dh}h${(dm!='00'?dm:'')}`;
+      return `${s} ${dh}h${(dm!=='00'?dm:'')}`;
     }
 
-    console.log('planning', planning);
+    logger.log('planning', planning);
 
     return(
       <TableContainer className="planning-week">
@@ -588,8 +590,8 @@ class PlanningSemaine extends React.Component {
                 <TableCell key={ `h-jour-${i}` } className={ `h-jour${(jour.today?' jour-today':'')}` }>
                   <div className="nom">{ jour.nom.split(';')[0] }<br />{ jour.nom.split(';')[1] }</div>
                   <div className="btns">
-                  <div className={ `add-btn${(lockColonnes.indexOf(i)!=-1 ? ' closed':'')}` } onClick={()=>{ addShiftHandler(jour.date, i)}}>+</div>
-                  <div className={ `lock-btn${(lockColonnes.indexOf(i)!=-1 ? ' closed':'')}` } onClick={()=>{ this.lockHandler(i)}}>
+                  <div className={ `add-btn${(lockColonnes.indexOf(i)>-1 ? ' closed':'')}` } onClick={()=>{ addShiftHandler(jour.date, i)}}>+</div>
+                  <div className={ `lock-btn${(lockColonnes.indexOf(i)>-1 ? ' closed':'')}` } onClick={()=>{ this.lockHandler(i)}}>
                     <LockIcon className="lock" htmlColor="#F7F7F7" />
                     <LockOpenIcon className="lockopen" htmlColor="#F7F7F7" />
                   </div>
@@ -604,7 +606,7 @@ class PlanningSemaine extends React.Component {
             <TableRow key={ rowindex }>
               <TableCell key={ `b-employe-${pl.id}` } className="b-employe"><div className="nom">{ pl.employe }</div></TableCell>
               {pl.jours.map((pljr,j) => (
-                <TableCell key={ `b-jour-${j}` } className={ `b-jour${(pljr.today?' jour-today':'')}${(lockColonnes.indexOf(j)!=-1 ? ' closed':'')}` }>
+                <TableCell key={ `b-jour-${j}` } className={ `b-jour${(pljr.today?' jour-today':'')}${(lockColonnes.indexOf(j)>-1 ? ' closed':'')}` }>
                   {pljr.shifts.map((sh,k) => (
                     <div key={ `sh-${k}`} className={ `shift color-${sh.poste.couleur}` } onClick={()=>{ editShiftHandler(sh.shift_id, j) }}>
                       <div className="creneau">{ `${sh.start.substr(0,5)}-${sh.end.substr(0,5)}` }</div>
@@ -674,7 +676,7 @@ class Plannings extends React.Component {
         nom: emp.nom,
         user_id: emp.user_id,
         status: emp.status,
-        shifts: shifts.filter(sh=>sh.employe==emp.user_id)
+        shifts: shifts.filter(sh=>sh.employe===emp.user_id)
       }
     ))
 
@@ -682,7 +684,7 @@ class Plannings extends React.Component {
 
   openEditor(shift_id, date=null) {
     const { shifts } = this.props;
-    const shift = shifts.find(sh => sh.shift_id==shift_id)
+    const shift = shifts.find(sh => sh.shift_id===shift_id)
     this.setState({editOpen:true, editShift:shift, editDate:date});
   }
 
@@ -700,8 +702,8 @@ class Plannings extends React.Component {
 
  render() {
 
-  const { shifts, employes, params, createShift, updateShift, deleteShift } = this.props;
-  const { view, startDate, endDate, editOpen, editShift, editDate } = this.state;
+  const { employes, params, deleteShift } = this.props;
+  const { view, startDate, editOpen, editShift, editDate } = this.state;
 
   const { shifttypes } = params || {shifttypes:null};
 
@@ -742,7 +744,7 @@ class Plannings extends React.Component {
       </div>
       <div className="zoneliste">
         <div className="wrapper">
-          {view=='semaine'&&(
+          {view==='semaine'&&(
             <PlanningSemaine 
               liste={liste} 
               startDate={startDate} 

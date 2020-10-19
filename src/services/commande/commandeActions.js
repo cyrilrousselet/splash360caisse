@@ -1,14 +1,11 @@
 import { commandeActionTypes } from './commandeActionTypes';
 import { commandeServices } from './commandeServices';
-import { differenceInMilliseconds, sub, differenceInMinutes, isBefore, endOfYesterday, parseISO, format, formatISO } from 'date-fns';
+import { differenceInMilliseconds, parseISO, format, formatISO } from 'date-fns';
 import { peripheralActions } from '../peripheral/peripheralActions';
-import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import Logger from '../../helpers/Logger';
 import { notificationActions } from '../notification/notificationActions';
 import { notificationServices } from '../notification/notificationServices';
-import { differenceBy } from 'lodash';
-import ErrorBoundary from '../../components/common/ErrorBoundary';
 
 const logger = new Logger();
 
@@ -60,13 +57,51 @@ function persistTicketsRestaurants(liste) {
 }
 
 
-function getNumero() {
-  return (dispatch, getState) => {
-    
+async function _getNumero(parametres, numero) {
 
-    const {options} = getState().parametresReducer.parametres;
+  if (parametres.options.role==="secondary") {
+    logger.log('_getNumero() from primary');
+    const conf = await notificationServices.askNumero(parametres.options.primary)
+    return conf.numero;
+  }
+  else {
+    const nnumero = numero ? numero : commandeServices.getNewNumero( parametres, null);
+    // const nnumero = commandeServices.getNewNumero( parametres, null);
+    logger.log('_getNumero()', nnumero);
+    return nnumero;
+  }
+
+}
+
+
+function getNumero() {
+  return async (dispatch, getState) => {
+    
+    logger.log('commandeAction.getNumero()');
+
+    const {parametres} = getState().parametresReducer;
+    const {numero} = getState().commandeReducer;
+
+    const newnumero = await _getNumero(parametres, numero);
+
+    dispatch({type: commandeActionTypes.GET_NUMERO, numero: newnumero});
+    if (parametres.options.role==="secondary") {
+      dispatch(setNewNumero(newnumero.value));
+    } else {  
+      dispatch(setNewNumero());
+    }
+
+    /*
     if (options.role==='secondary') {
-      dispatch(notificationActions.getNewNumero());
+      logger.log('getNumero() from primary');
+
+      notificationServices.askNumero(options.primary)
+      .then(conf => {
+        console.log('getNumero() from primary', conf.numero);
+        dispatch({type: commandeActionTypes.GET_NUMERO, numero: conf.numero});
+        dispatch(setNewNumero(conf.numero.value));
+      });
+
     } else {
       const {numero} = getState().commandeReducer;
       const nnumero = numero ? numero : commandeServices.getNewNumero( getState().parametresReducer.parametres, null);
@@ -75,6 +110,9 @@ function getNumero() {
       dispatch({type: commandeActionTypes.GET_NUMERO, numero: nnumero});
       dispatch(setNewNumero());
     }
+    */
+
+
 
   }
 }
@@ -98,7 +136,7 @@ function setNewNumero(defaultValue=null) {
 
     logger.log('setNewNumero',defaultValue);
 
-    const numero = defaultValue!==null ? {value: defaultValue-1, updated: new Date} : getState().commandeReducer.numero; 
+    const numero = defaultValue!==null ? {value: defaultValue-1, updated: new Date()} : getState().commandeReducer.numero; 
 
     const newnumero = commandeServices.getNewNumero( getState().parametresReducer.parametres, numero);
     dispatch({ type: commandeActionTypes.SET_NEW_NUMERO, newnumero });
@@ -183,7 +221,35 @@ function validateCommande(payload) {
           updatedAt: formatISO(confirm.updatedAt)
         };
 
-        dispatch(notificationActions.syncCommandes([cmdtosync]));
+        
+        commandeServices.getCommandesToSync(10)
+        .then(
+          results => {
+            const {commandes, chronos} = results;
+            const chrcommandes = commandes.map(c => {
+              const chr = chronos ? chronos.find(h=>h.ticketId===c.ticketId) : undefined;
+              if (chr!==undefined) {
+                return {...c,
+                        chrono: c.chrono || 0,
+                        createdAt: formatISO(c.createdAt),
+                        updatedAt: formatISO(c.updatedAt),
+                        endTime: formatISO(chr.endTime),
+                        careTime: formatISO(chr.careTime.firstCare),
+                        productionTime: Math.round(differenceInMilliseconds(chr.endTime, chr.careTime.firstCare)/10)/100,
+                        waitTime: Math.round(differenceInMilliseconds(chr.careTime.firstCare, parseISO(c.end))/10)/100,
+                      };
+              } else {
+                return {...c,
+                  chrono: c.chrono || 0,
+                  createdAt: formatISO(c.createdAt),
+                  updatedAt: formatISO(c.updatedAt)
+                };
+              }
+            });
+
+            dispatch(notificationActions.syncCommandes([...chrcommandes, cmdtosync]));
+          }
+        );
         // dispatch(setNewNumero());
 //        logger.log('commande.createdAt', payload.createdAt);
         // s'il y a un numéro de commande, c'est qu'on encaisse une commande déjà réglée
@@ -211,9 +277,9 @@ function validateCommandeAndUpdateList(payload) {
   }
 }
 
-function standByCommande(payload) {
+function standByCommande(payload, needNumero) {
 
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
 
     dispatch({ type: commandeActionTypes.STANDBY_COMMANDE });
 
@@ -223,26 +289,40 @@ function standByCommande(payload) {
     logger.log(payload);
     const state = getState();
 
-    // if (payload.numero==null) { 
-    //   const numero = commandeServices.getNewNumero(state.parametresReducer.parametres, state.commandeReducer.numero);
-    //   payload.numero = numero;
-    //   dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
-    // }
-    if (payload.numero==null) { 
-      payload.numero = getState().commandeReducer.commande.numero;
+
+    logger.log('standByCommande needNumero', needNumero);
+
+    if (needNumero) {
+
+      const {parametres} = state.parametresReducer;
+      const {numero} = state.commandeReducer;
+  
+      const newnumero = await _getNumero(parametres, numero);
+      payload.numero = newnumero;
+
+      dispatch({type: commandeActionTypes.GET_NUMERO, numero: newnumero});
+      if (parametres.options.role==="secondary") {
+        dispatch(setNewNumero(newnumero.value));
+      } else {
+        dispatch(setNewNumero());
+      }
+
+      logger.log('standByCommande nn numero', payload.numero);
+      
     }
+    logger.log('standByCommande nn numero', payload.numero);
+
+
+    // if (payload.numero==null) { 
+    //   payload.numero = getState().commandeReducer.commande.numero;
+    // }
     
     commandeServices.saveCommande(payload, state.catalogueReducer)
     .then(
       confirm => {
-        // const { user } = state.authentication;
-        // const { caisse } = state.parametresReducer.parametres.options;
-
-        // const commande = commandeServices.getNewCommande({operator:user, caisse:caisse});
         dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande:{}});
         dispatch(notificationActions.syncDispatch('commande',confirm));
         dispatch(getCommande());
-        // dispatch(getCommandesList());
       },
       error => {
         logger.log(error);
@@ -253,9 +333,9 @@ function standByCommande(payload) {
   }
 }
 
-function livraisonCommande(payload) {
+function livraisonCommande(payload, needNumero) {
 
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
 
     dispatch({ type: commandeActionTypes.AENCAISSER_COMMANDE });
 
@@ -265,14 +345,34 @@ function livraisonCommande(payload) {
     logger.log(payload);
     const state = getState();
 
-    // if (payload.numero==null) { 
-    //   const numero = commandeServices.getNewNumero(state.parametresReducer.parametres, state.commandeReducer.numero);
-    //   payload.numero = numero
-    //   dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
-    // }
-    if (payload.numero==null) { 
-      payload.numero = getState().commandeReducer.commande.numero;
+    logger.log('livraisonCommande needNumero', needNumero);
+
+    if (needNumero) {
+
+      const {parametres} = state.parametresReducer;
+      const {numero} = state.commandeReducer;
+  
+      const newnumero = await _getNumero(parametres, numero);
+
+      dispatch({type: commandeActionTypes.GET_NUMERO, numero: newnumero});
+      if (parametres.options.role==="secondary") {
+        dispatch(setNewNumero(newnumero.value));
+      } else {
+        dispatch(setNewNumero());
+      }
+
+      payload.numero = newnumero;
+      
+      logger.log('livraisonCommande nn numero', payload.numero);
     }
+
+    logger.log('livraisonCommande numero', payload.numero);
+
+
+
+    // if (payload.numero==null) { 
+    //   payload.numero = getState().commandeReducer.commande.numero;
+    // }
 
     const payloadcopy = {...payload};
     dispatch(peripheralActions.printTicket('all'));
@@ -454,7 +554,7 @@ function deleteCommande(payload) {
     dispatch({ type: commandeActionTypes.DELETE_COMMANDE_REQUEST });
 
     const { commandeslist } = getState().commandesListReducer;
-    const commande = Object.values(commandeslist).find(cmd => cmd.ticketId==payload.ticketId);
+    const commande = Object.values(commandeslist).find(cmd => cmd.ticketId===payload.ticketId);
 
     const {ticketId, motif} = payload;
 
@@ -497,7 +597,7 @@ function setLivreur(payload) {
     const {commandeId, livreur} = payload;
 
     const { commandeslist } = getState().commandesListReducer;
-    const commande = Object.values(commandeslist).find(cmd => cmd.ticketId==commandeId);
+    const commande = Object.values(commandeslist).find(cmd => cmd.ticketId===commandeId);
 
     commandeServices.persistCommande({...commande, livreur:livreur})
     .then(
@@ -584,7 +684,6 @@ function addComment(payload) {
 }
 function updateComment(payload) {
   return (dispatch, getState) => {
-    const {commentId, texte} = payload;
     logger.log('CommandeActions.updateComment', payload);
     dispatch({ type: commandeActionTypes.UPDATE_COMMENT, payload: payload });
   }
@@ -605,7 +704,6 @@ function addDiscount(payload) {
 }
 function updateDiscount(payload) {
   return (dispatch, getState) => {
-    const {discountId, valeur} = payload;
     logger.log('CommandeActions.updateDiscount', payload);
     dispatch({ type: commandeActionTypes.UPDATE_DISCOUNT, payload: payload });
   }
@@ -702,7 +800,6 @@ function setCommandeFromOrder(provider, payload) {
         dispatch(getCommandesList());
         dispatch(notificationActions.syncDispatch('commande',confirm));
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
-        const { numero } = commande;
 
         const cmdtosync = {
           ...confirm,
@@ -739,7 +836,7 @@ function setCommandeFromAPI(payload) {
     const state = getState();
     let { data } = payload;
 
-    if (data.status=='confirmed') {
+    if (data.status==='confirmed') {
 
       data = {
         ...data,
@@ -761,7 +858,7 @@ function setCommandeFromAPI(payload) {
 
     commandeServices.sendTicketId(commande.ticketId, numtosend, payload.response);
 
-    if (commande.status=="confirmed") {
+    if (commande.status==="confirmed") {
       dispatch(peripheralActions.printCommandeTicket('production', commande));
     }
 
@@ -771,10 +868,9 @@ function setCommandeFromAPI(payload) {
         dispatch(getCommandesList());
         dispatch(notificationActions.syncDispatch('commande',confirm));
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
-        const { numero } = commande;
-      //  dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
 
-        if (confirm.status=="confirmed") {
+        
+        if (confirm.status==="confirmed") {
 
           const cmdtosync = {
             ...confirm,
@@ -907,7 +1003,7 @@ function setSyncedCommandsFromSync(payload) {
   return dispatch => {
     dispatch({ type: commandeActionTypes.SETSYNCED_FROM_SYNC_REQUEST });
     logger.log('setSyncedCommandsFromSync()', payload);
-    const {id, datetime, emitter, response} = payload.data;
+    const {id, datetime} = payload.data;
     commandeServices.setSyncedCommands(id,datetime)
     .then(
       confirm => {

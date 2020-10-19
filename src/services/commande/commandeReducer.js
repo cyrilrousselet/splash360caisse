@@ -16,10 +16,8 @@ export function commandeReducer(state = initialState, action) {
     , itm = {}
     , reglements = []
     , rglIndex = -1
-    , rgl = {}
     , rendus = []
     , rndIndex = -1
-    , rnd = {}
     , comments = []
     , cmtIndex = -1
     , modificateurs = []
@@ -53,7 +51,7 @@ export function commandeReducer(state = initialState, action) {
 
       items = commande.items;
       let start = commande.start;
-      if (items.length==0) start = new Date();
+      if (items.length===0) start = new Date();
       items.push(action.commandeItem);
 
 
@@ -79,7 +77,7 @@ export function commandeReducer(state = initialState, action) {
 
       items = commande.items;
       commandeitem = action.commandeItem;
-      itmIndex = items.findIndex((obj => obj.itemid == commandeitem.itemid));
+      itmIndex = items.findIndex((obj => obj.itemid === commandeitem.itemid));
       if (-1 < itmIndex) { 
         items.splice(itmIndex,1);
 
@@ -88,6 +86,7 @@ export function commandeReducer(state = initialState, action) {
           commande: {...commande, items}
         }
       }
+      return state;
 
     case commandeActionTypes.UPDATE_COMMANDE:
 
@@ -150,7 +149,7 @@ export function commandeReducer(state = initialState, action) {
       const {commentId, texte} = action.payload;
 
       comments = commande.comments;
-      cmtIndex = comments.findIndex((obj => obj.comment_id == commentId));
+      cmtIndex = comments.findIndex((obj => obj.comment_id === commentId));
 
       if (-1 < cmtIndex) { 
         
@@ -162,12 +161,13 @@ export function commandeReducer(state = initialState, action) {
           commande: {...commande, comments:comments}
         }
       };
+      return state;
 
 
     case commandeActionTypes.DELETE_COMMENT:
 
       comments = commande.comments;
-      cmtIndex = comments.findIndex((obj => obj.comment_id == action.commentId));
+      cmtIndex = comments.findIndex((obj => obj.comment_id === action.commentId));
       
       if (-1 < cmtIndex) { 
         comments.splice(cmtIndex,1);
@@ -177,6 +177,7 @@ export function commandeReducer(state = initialState, action) {
           commande: {...commande, comments}
         }
       }
+      return state;
 
 
 
@@ -196,7 +197,7 @@ export function commandeReducer(state = initialState, action) {
       const {discountId, valeur} = action.payload;
 
       modificateurs = commande.modificateurs;
-      modIndex = modificateurs.findIndex((obj => obj.modificateur_id == discountId));
+      modIndex = modificateurs.findIndex((obj => obj.modificateur_id === discountId));
 
       if (-1 < modIndex) { 
         
@@ -208,12 +209,13 @@ export function commandeReducer(state = initialState, action) {
           commande: {...commande, modificateurs:modificateurs}
         }
       };
+      return state;
 
 
     case commandeActionTypes.DELETE_DISCOUNT:
 
       modificateurs = commande.modificateurs;
-      modIndex = modificateurs.findIndex((obj => obj.modificateur_id == action.discountId));
+      modIndex = modificateurs.findIndex((obj => obj.modificateur_id === action.discountId));
       
       if (-1 < modIndex) { 
         modificateurs.splice(modIndex,1);
@@ -223,6 +225,7 @@ export function commandeReducer(state = initialState, action) {
           commande: {...commande, modificateurs}
         }
       }
+      return state;
 
     case commandeActionTypes.ADD_REGLEMENT:
 
@@ -230,7 +233,7 @@ export function commandeReducer(state = initialState, action) {
 
       // dans le cas de l'update d'un règlement en espèces
       // on supprime l'ancienne occurrence du règlement
-      rglIndex = reglements.findIndex(reglement=>reglement.reglementId==action.reglement.reglementId);
+      rglIndex = reglements.findIndex(reglement=>reglement.reglementId===action.reglement.reglementId);
       if (rglIndex>-1) {
         reglements.splice(rglIndex, 1);
       }
@@ -245,7 +248,7 @@ export function commandeReducer(state = initialState, action) {
     case commandeActionTypes.REMOVE_REGLEMENT:
 
       reglements = commande.reglements;
-      rglIndex = reglements.findIndex((obj => obj.reglementId == action.reglementId));
+      rglIndex = reglements.findIndex((obj => obj.reglementId === action.reglementId));
       
       if (-1 < rglIndex) { 
         reglements.splice(rglIndex,1);
@@ -255,6 +258,7 @@ export function commandeReducer(state = initialState, action) {
           commande: {...commande, reglements}
         }
       }
+      return state;
 
     case commandeActionTypes.ADD_RENDU:
 
@@ -270,7 +274,7 @@ export function commandeReducer(state = initialState, action) {
 
       
       rendus = commande.rendus;
-      rndIndex = rendus.findIndex((obj => obj.renduId == action.renduId));
+      rndIndex = rendus.findIndex((obj => obj.renduId === action.renduId));
       
       if (-1 < rndIndex) { 
       //  rendus.splice(rndIndex,1);
@@ -279,10 +283,11 @@ export function commandeReducer(state = initialState, action) {
           ...state,
           commande: {
             ...commande, 
-            rendus: rendus.filter(r=>r.renduId!=action.renduId)
+            rendus: rendus.filter(r=>r.renduId!==action.renduId)
           }
         }
       }
+      return state;
 
     // case commandeActionTypes.VALIDATE_COMMANDE_REQUEST:
     //     return {

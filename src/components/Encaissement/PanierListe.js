@@ -59,9 +59,10 @@ PanierListe.propTypes = {
 
 
 
-export const PanierListeItem = ({id, itemid, nom, quantite, prix, commentaire, selected, ingredients, _onClick}) => (
+export const PanierListeItem = ({id, itemid, nom, quantite, prix, commentaire, selected, ingredients, key, _onClick}) => (
     <ListItem 
         button 
+        key={key}
         selected={ selected }
         onClick={ event => _onClick(event, id) }
     >

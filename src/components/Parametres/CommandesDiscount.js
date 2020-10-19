@@ -2,13 +2,11 @@ import React from 'react';
 import {data} from '../../constants/translations';
 import LocalizedStrings from 'react-localization';
 import LabelledField from '../common/LabelledField';
-import SwitchCheckbox from '../common/SwitchCheckbox';
 import Swal from 'sweetalert2';
-import { List, ListItem, ListItemText, ListItemSecondaryAction, ListItemIcon, Input, Modal, Fab, TextField } from '@material-ui/core';
+import { List, ListItem, ListItemText, ListItemSecondaryAction, ListItemIcon, Modal, Fab } from '@material-ui/core';
 import { Container, Draggable } from 'react-smooth-dnd';
 import DragHandleIcon from "@material-ui/icons/DragHandle";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { move } from 'lodash-move';
 import EditIcon from '../common/icon/EditIcon';
 import CloseIcon from '../common/icon/CloseIcon';
 import StdButton from '../common/StdButton';
@@ -27,6 +25,10 @@ function DiscountEditModal (props) {
     if ((['€','%']).indexOf(String(discount).substr(-1,1))>-1) opt = String(discount).substr(-1,1);
     updateDiscount({value:val, option:opt});
   }
+  const getOption = (str) => {
+    const o = String(str).substr(-1,1);
+    return ['€','%'].indexOf(o)>-1 ? o : '€';
+  }
 
   return(
     <div>
@@ -41,8 +43,10 @@ function DiscountEditModal (props) {
                 {/* <TextField className="edit-input" defaultValue={discount} onChange={updateDiscount} variant="filled" /> */}
                 <LabelledField 
                   className="edit-input"
+                  type="number"
                   value={Number(String(discount).slice(0,-1))}
-                  option={String(discount).substr(-1,1)}
+                  // option={String(discount).substr(-1,1)}
+                  option={getOption(discount)}
                   options={['€','%']}
                   onChange={updateDiscount}
                 />
@@ -128,7 +132,7 @@ class CommandesDiscount extends React.Component {
   updateDiscount(val) {
     const {value, option} = val;
 
-    if (!isNaN(parseInt(value)) || option==undefined) {
+    if (!isNaN(parseInt(value))) {
       this.setState({
         editdiscount: Math.abs(value)+option
       });
@@ -152,7 +156,7 @@ class CommandesDiscount extends React.Component {
       if (id===-1) {
         nvdiscount_predefini = [...nvdiscount_predefini, dsc];
       } else {
-        const dscIndex = nvdiscount_predefini.findIndex(d=>d.id==id);
+        const dscIndex = nvdiscount_predefini.findIndex(d=>d.id===id);
         dsc = nvdiscount_predefini[dscIndex];
         nvdiscount_predefini[dscIndex] = {...dsc, valeur: editdiscount};
       }
@@ -192,7 +196,7 @@ class CommandesDiscount extends React.Component {
   }
 
   render() {
-    const { data, updateValeur, getAll, entreprise } = this.props;
+    const { data, entreprise } = this.props;
     const { discount_predefini } = data;
     const { editing, editdiscount } = this.state;
     const { clavier } = entreprise;

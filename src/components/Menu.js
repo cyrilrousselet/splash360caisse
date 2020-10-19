@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import LocalizedStrings from 'react-localization';
 import {data} from '../constants/translations';
 import TopZone from '../containers/TopZone';
-import LoadingSpinner from './common/LoadingSpinner';
-import { AppBar, Tabs, Tab, Typography, Box, Select, FormControl, InputLabel, MenuItem, Accordion, AccordionSummary, AccordionDetails, ListItem, ListItemText, ListItemSecondaryAction, Switch, ListItemIcon, List, FormControlLabel, Checkbox, Modal, TextField, Fab } from '@material-ui/core';
+// import LoadingSpinner from './common/LoadingSpinner';
+import { AppBar, Tabs, Tab, Typography, Box, Select, FormControl, MenuItem, Accordion, AccordionSummary, AccordionDetails, ListItem, ListItemText, ListItemSecondaryAction, Switch, ListItemIcon, List, FormControlLabel, Checkbox, Modal, Fab } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LensIcon from '@material-ui/icons/Lens';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
@@ -17,8 +17,9 @@ import CloseIcon from './common/icon/CloseIcon';
 import Clavier from './common/Clavier';
 import LabelledField from './common/LabelledField';
 import SwitchCheckbox from './common/SwitchCheckbox';
-import logger from 'redux-logger';
+import Logger from '../helpers/Logger';
 
+const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 
@@ -69,21 +70,21 @@ class MenuItemModal extends React.Component {
       const { id, type, item, updateItem } = this.props;
       const { valeur, couleur, asproduct } = this.state;
   
-      console.log('updateItem('+type+')',valeur, couleur);
+      logger.log('updateItem('+type+')',valeur, couleur);
 
       let nvaleur = 0;
       let ncouleur = couleur!==null ? couleur : item.color;
       let nasproduct = null;
       
-      if (type=='ingredient') {
+      if (type==='ingredient') {
         nvaleur = valeur!==null ? valeur : item.supplement;
         nasproduct = asproduct!==null ? asproduct : false;
-        console.log('updateItem ingredient');
+        logger.log('updateItem ingredient');
         updateItem({ingredient_id:id, update:{supplement:nvaleur, color:ncouleur, asproduct:nasproduct}})
       }
-      else if (type=='produit') {
+      else if (type==='produit') {
         nvaleur = valeur!==null ? valeur : item.prix;
-        console.log('updateItem produit');
+        logger.log('updateItem produit');
         updateItem({produit_id:id, update:{prix:nvaleur, color:ncouleur}})
       }
 
@@ -95,14 +96,14 @@ class MenuItemModal extends React.Component {
       this.setState({valeur:null, couleur:null, asproduct:false});
     }
     changeHandler(params) {
-     // console.log('CommentModal.changeHandler()', event.target.value);
+     // logger.log('CommentModal.changeHandler()', event.target.value);
       this.setState({valeur: params.value});
     }
     asprodHandler(isChecked) {
       this.setState({asproduct: isChecked });
     }
     onKeyboardChange(input) {
-      console.log("Valeur Input changed", input);
+      logger.log("Valeur Input changed", input);
       this.setState({ valeur:input });
     };
     handleChangeCouleur(event) {
@@ -111,22 +112,22 @@ class MenuItemModal extends React.Component {
   
     render() {
   
-      const { id, item, type, closeHandler, open, clavierOpen } = this.props;
+      const { item, type, closeHandler, open, clavierOpen } = this.props;
       const { valeur, couleur, asproduct } = this.state;
   
       let vvaleur = '';
       let vcouleur = '';
       let vasproduct = false;
       if (item) {
-        vvaleur = valeur==null ? (type=='ingredient') ? item.supplement : item.prix : valeur;
-        vcouleur = couleur==null ? item.color : couleur;
-        vasproduct = asproduct==null ? (type=='ingredient') ? item.asproduct : false : asproduct;
-        if (vasproduct===undefined) vasproduct = false;
+        vvaleur = (valeur===null || valeur===undefined) ? (type==='ingredient') ? item.supplement : item.prix : valeur;
+        vcouleur = (couleur===null || couleur===undefined) ? item.color : couleur;
+        vasproduct = (asproduct===null || asproduct===undefined) ? (type==='ingredient') ? item.asproduct : false : asproduct;
+        if (vasproduct===null || vasproduct===undefined) vasproduct = false;
       }
   
     //  const __mttl = (ingredient) ? 'titre_ing' : (item) ? 'titre_itm' : 'titre_cmd';
   
-      if (item==null) return false;
+      if (item===undefined || item===null) return false;
 
       const readytosave = true;
   
@@ -247,28 +248,28 @@ class Menu extends React.Component {
   }
 
   changeDispoProduit(id) {
-    console.log('changeDispoProduit()', id);
+    logger.log('changeDispoProduit()', id);
     const produit = this.getProduit(id);
-    this.props.updateProduit({produit_id:id, update:{active:produit.active==1?0:1}});
+    this.props.updateProduit({produit_id:id, update:{active:produit.active===1?0:1}});
   }
   editProduit(id) {
-    console.log('editProduit()', id);
+    logger.log('editProduit()', id);
   }
   changeDispoIngredient(id) {
-    console.log('changeDispoIngredient()', id);
+    logger.log('changeDispoIngredient()', id);
     const {ingredients} = this.props;
     const ingredient = ingredients[id];
-    this.props.updateIngredient({ingredient_id:id, update:{active:ingredient.active==1?0:1}});
+    this.props.updateIngredient({ingredient_id:id, update:{active:ingredient.active===1?0:1}});
   }
   editIngredient(id) {
-    console.log('editIngredient()', id);
+    logger.log('editIngredient()', id);
   }
 
   getProduit(id) {
     const {catalogue} = this.props;
     let produit = {};
     Object.values(catalogue).forEach(grp => {
-      const p = grp.produits.find(p=>p.id==id);
+      const p = grp.produits.find(p=>p.id===id);
       if (p!==undefined) {
         produit = p;
         return;
@@ -284,38 +285,38 @@ class Menu extends React.Component {
     if (sub) {
       const produit = this.getProduit(id);
       const prdnoprint = produit.noprint;
-      console.log('produit',produit);
+      logger.log('produit',produit);
       noprint = catalogue[produit.groupe].noprint;
       // s'il n'y a pas de noprint pour le produit, on se base sur celui du groupe correspondant
-      if (prdnoprint==undefined) {
+      if (prdnoprint===undefined || prdnoprint===null) {
 
         // si le ticket n'est pas indiqué dans le noprint du groupe, on doit le désactiver
         // donc on clone le noprint du groupe et on ajoute l'id du ticket qu'on veut désactiver
-        if (noprint.indexOf(ticketId)==-1) {
+        if (noprint.indexOf(ticketId)===-1) {
           updateProduit({produit_id:id, update:{noprint:[...noprint, ticketId]}});
         } 
         // si le ticket est indiqué dans le noprint du groupe, on doit le réactiver pour le produit
         // donc clone le noprint du groupe et on supprime l'id du ticket qu'on veut activer
         else {
-          updateProduit({produit_id:id, update:{noprint:noprint.filter(t=>t!=ticketId)}});
+          updateProduit({produit_id:id, update:{noprint:noprint.filter(t=>t!==ticketId)}});
         }
       } 
       // s'il y a un noprint pour le produit, on intervient comme pour le noprint du groupe
       else {
-        if (prdnoprint.indexOf(ticketId)==-1) {
+        if (prdnoprint.indexOf(ticketId)===-1) {
           updateProduit({produit_id:id, update:{noprint:[...prdnoprint, ticketId]}});
         } else {
-          updateProduit({produit_id:id, update:{noprint:prdnoprint.filter(t=>t!=ticketId)}});
+          updateProduit({produit_id:id, update:{noprint:prdnoprint.filter(t=>t!==ticketId)}});
         }
       }
     } else {
 
       noprint = catalogue[id].noprint;
       
-      if (noprint.indexOf(ticketId)==-1) {
+      if (noprint.indexOf(ticketId)===-1) {
         updateGroupe({groupe_id:id, update:{noprint:[...noprint, ticketId]}});
       } else {
-        updateGroupe({groupe_id:id, update:{noprint:noprint.filter(t=>t!=ticketId)}});
+        updateGroupe({groupe_id:id, update:{noprint:noprint.filter(t=>t!==ticketId)}});
       }
     }
   }
@@ -330,33 +331,33 @@ class Menu extends React.Component {
       const ingnoprint = ingredient.noprint;
       noprint = ingredientTypes[ingredient.type].noprint;
       // s'il n'y a pas de noprint pour l'ingredient, on se base sur celui du type correspondant
-      if (ingnoprint==undefined) {
+      if (ingnoprint===undefined || ingnoprint===null) {
 
         // si le ticket n'est pas indiqué dans le noprint du type, on doit le désactiver
         // donc on clone le noprint du type et on ajoute l'id du ticket qu'on veut désactiver
-        if (noprint.indexOf(ticketId)==-1) {
+        if (noprint.indexOf(ticketId)===-1) {
           updateIngredient({ingredient_id:id, update:{noprint:[...noprint, ticketId]}});
         } 
         // si le ticket est indiqué dans le noprint du type, on doit le réactiver pour l'ingredient
         // donc clone le noprint du type et on supprime l'id du ticket qu'on veut activer
         else {
-          updateIngredient({ingredient_id:id, update:{noprint:noprint.filter(t=>t!=ticketId)}});
+          updateIngredient({ingredient_id:id, update:{noprint:noprint.filter(t=>t!==ticketId)}});
         }
       } 
       // s'il y a un noprint pour l'ingredient, on intervient comme pour le noprint du type
       else {
-        if (ingnoprint.indexOf(ticketId)==-1) {
+        if (ingnoprint.indexOf(ticketId)===-1) {
           updateIngredient({ingredient_id:id, update:{noprint:[...ingnoprint, ticketId]}});
         } else {
-          updateIngredient({ingredient_id:id, update:{noprint:ingnoprint.filter(t=>t!=ticketId)}});
+          updateIngredient({ingredient_id:id, update:{noprint:ingnoprint.filter(t=>t!==ticketId)}});
         }
       }
     } else {
       noprint = ingredientTypes[id].noprint;
-      if (noprint.indexOf(ticketId)==-1) {
+      if (noprint.indexOf(ticketId)===-1) {
         updateIngredientType({type_id:id, update:{noprint:[...noprint, ticketId]}});
       } else {
-        updateIngredientType({type_id:id, update:{noprint:noprint.filter(t=>t!=ticketId)}});
+        updateIngredientType({type_id:id, update:{noprint:noprint.filter(t=>t!==ticketId)}});
       }
     }
   }
@@ -365,10 +366,10 @@ class Menu extends React.Component {
 
     const { ingredients } = this.props;
     let item = {}
-    if (type=='ingredient') {
+    if (type==='ingredient') {
       item = ingredients[itemId];
     }
-    else if (type=='produit') {
+    else if (type==='produit') {
       item = this.getProduit(itemId);
     }
 
@@ -381,12 +382,12 @@ class Menu extends React.Component {
   }
 
   updateMenuItem(params) {
-    console.log('updateMenuItem()',params)
+    logger.log('updateMenuItem()',params)
     const {editType} = this.state;
-    if (editType=='ingredient') {
+    if (editType==='ingredient') {
       this.props.updateIngredient(params);
     }
-    else if (editType=='produit') {
+    else if (editType==='produit') {
       this.props.updateProduit(params);
     }
   }
@@ -398,7 +399,7 @@ class Menu extends React.Component {
 
   const defCat = categorie || categories[0].categorie_id;
 
-  const tickList = Object.values(tickets).filter(tck=> (['partiel','principal']).indexOf(tck.template)!==-1 && tck.imprimantes.length>0);
+  const tickList = Object.values(tickets).filter(tck=> (['partiel','principal','etiquette']).indexOf(tck.template)>-1 && tck.imprimantes.length>0);
 
   const inglist = Object.entries(ingredientTypes).map(([typid,type]) => {
     const ing = type.ingredients.map(ingid => ingredients[ingid]);
@@ -411,12 +412,12 @@ class Menu extends React.Component {
 
   let prdlist = [];
   Object.entries(catalogue).forEach(([groupid, groupe]) => {
-      if (groupe.categorie==defCat) {
+      if (groupe.categorie===defCat) {
         prdlist.push({...groupe, groupe_id: groupid})
       }
     });
 
-  console.log(prdlist);
+    logger.log(prdlist);
 
   const a11yProps = (index) => {
     return {
@@ -524,7 +525,7 @@ const IOSSwitch = withStyles((theme) => ({
 
 function MenuListe(props) {
 
-  const {data, type, changeDispo, openEdit, tickets, changeNoPrint, editOpen} = props;
+  const {data, type, changeDispo, tickets, changeNoPrint, editOpen} = props;
 
   const mliste = data.map((cont,i) => (
     <Accordion key={`panel${i}`}>
@@ -544,9 +545,9 @@ function MenuListe(props) {
                 <Checkbox
                   icon={<CheckBoxOutlineBlankIcon htmlColor="#7FAD3B" fontSize="small" />}
                   checkedIcon={<CheckBoxIcon  htmlColor="#7FAD3B" fontSize="small" />}
-                  checked={cont.noprint.indexOf(tck.ticket_id)==-1}
+                  checked={cont.noprint.indexOf(tck.ticket_id)===-1}
                   onClick={(e)=>{ e.stopPropagation();}}
-                  onChange={(e) => { changeNoPrint(type=='produits'?cont.groupe_id:cont.id, tck.ticket_id) }}
+                  onChange={(e) => { changeNoPrint(type==='produits'?cont.groupe_id:cont.id, tck.ticket_id) }}
                   name="checkedB"
                   color="primary"
                 />
@@ -573,7 +574,7 @@ function MenuListe(props) {
                       <Checkbox
                         icon={<CheckBoxOutlineBlankIcon htmlColor="#7FAD3B" fontSize="small" />}
                         checkedIcon={<CheckBoxIcon  htmlColor="#7FAD3B" fontSize="small" />}
-                        checked={(p.noprint!=null) ? p.noprint.indexOf(tck.ticket_id)==-1 : cont.noprint.indexOf(tck.ticket_id)==-1}
+                        checked={(p.noprint!=null) ? p.noprint.indexOf(tck.ticket_id)===-1 : cont.noprint.indexOf(tck.ticket_id)===-1}
                         onClick={(e)=>{ e.stopPropagation();}}
                         onChange={(e) => { changeNoPrint(p.id, tck.ticket_id, true) }}
                         name="checkedB"
@@ -607,7 +608,7 @@ function MenuListe(props) {
                       <Checkbox
                         icon={<CheckBoxOutlineBlankIcon htmlColor="#7FAD3B" fontSize="small" />}
                         checkedIcon={<CheckBoxIcon  htmlColor="#7FAD3B" fontSize="small" />}
-                        checked={(n.noprint!=null) ? n.noprint.indexOf(tck.ticket_id)==-1 : cont.noprint.indexOf(tck.ticket_id)==-1}
+                        checked={(n.noprint!=null) ? n.noprint.indexOf(tck.ticket_id)===-1 : cont.noprint.indexOf(tck.ticket_id)===-1}
                         onClick={(e)=>{ e.stopPropagation();}}
                         onChange={(e) => { changeNoPrint(n.id, tck.ticket_id, true) }}
                         name="checkedB"

@@ -26,5 +26,8 @@ export const templates = {
     'entreprise',
     'avoir',
     'qrcode'
+  ],
+  etiquette: [
+    'etiquette'
   ]
 };

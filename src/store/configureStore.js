@@ -1,5 +1,5 @@
 import { createStore, applyMiddleware, compose } from 'redux';
-import { createBrowserHistory } from 'history';
+// import { createBrowserHistory } from 'history';
 import { routerMiddleware, routerActions } from 'connected-react-router';
 //import Reactotron from '../ReactotronConfig';
 
@@ -11,7 +11,8 @@ import createRootReducer from '../reducers';
 import * as generalActions from '../actions';
 import history from '../helpers/history';
 
-import Logger from '../helpers/Logger';
+// import Logger from '../helpers/Logger';
+// const logger = new Logger();
 
 
 const rootReducer = createRootReducer(history);

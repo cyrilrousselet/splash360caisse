@@ -1,12 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import { Modal, Fab } from '@material-ui/core';
 import CloseIcon from '../common/icon/CloseIcon';
 import StdButton from '../common/StdButton';
 
-import LocalizedStrings from 'react-localization';
-import {data} from '../../constants/translations';
 
 import fakesearch from '../../assets/images/fake_searchfield.svg';
 import history from '../../helpers/history';
@@ -15,7 +12,6 @@ import paths from '../../constants/routes';
 import fakeliste from '../../assets/images/fake_stocks_fournisseurs.svg';
 import fakepopin from '../../assets/images/fake_stocks_fournisseur_popin.svg';
 
-let strings = new LocalizedStrings(data);
 
 
 const NewFournisseur = ({open, closePopin}) => (
@@ -27,7 +23,7 @@ const NewFournisseur = ({open, closePopin}) => (
           <div className="title">Nouveau Fournisseur</div>
         </div>
         <div className="body">
-          <img src={ fakepopin } className="contimage" />
+          <img src={ fakepopin } className="contimage" alt="" />
           <StdButton identifier="btnvalider" elementclass="btnvalider" key="btnvalider" text="Valider" onClick={ closePopin } />
         </div>
       </div>
@@ -72,11 +68,11 @@ class Fournisseurs extends React.Component {
             <StdButton identifier="btnetat" elementclass="btnetat" key="btnetat" text="État" onClick={ () => { history.push(paths.STOCKS_ETATFOURNISSEURS) }} />
           </div>
           <div className="titre">Fournisseurs</div>
-          <div className="search"><img src={ fakesearch } /></div>
+          <div className="search"><img src={ fakesearch } alt="" /></div>
         </div>
         <div className="zoneliste">
           <div class="wrapper">
-            <img src={ fakeliste } className="fakeliste" />
+            <img src={ fakeliste } className="fakeliste" alt="" />
           </div>
         </div>
         <NewFournisseur open={popinOpen} closePopin={closePopin} />

@@ -116,7 +116,7 @@ class EditTypePopin extends React.Component {
                   id={ `frais` }
                   name={ `frais` }
                   className="fieldfrais"
-                  value={ commandtype && commandtype.frais.replace(/(\ )?(€|%)/,'') } 
+                  value={ commandtype && commandtype.frais.replace(/(\s)?(€|%)/,'') } 
                   placeholder='' 
                   type='text' 
                   options={['€','%']}
@@ -129,7 +129,7 @@ class EditTypePopin extends React.Component {
                   id={ `remise` }
                   name={ `remise` }
                   className="fieldremise"
-                  value={ commandtype && commandtype.remise.replace(/(\ )?(€|%)/,'') } 
+                  value={ commandtype && commandtype.remise.replace(/(\s)?(€|%)/,'') } 
                   placeholder='' 
                   type='text' 
                   options={['€','%']}
@@ -196,7 +196,7 @@ class CommandesGeneral extends React.Component {
   }
   numerotationHexaUpdate(isChecked) {
     const { updateValeur, data } = this.props;
-    const { numerotation_start, numerotation_max } = data;
+    const { numerotation_max } = data;
     let nummax = isChecked ? parseInt(numerotation_max) + 1000 : parseInt(numerotation_max) - 1000;
     console.log(numerotation_max, nummax);
     updateValeur([
@@ -220,8 +220,8 @@ class CommandesGeneral extends React.Component {
 
   render() {
 
-    const { commandtype, editOpen, currentNumero } = this.state;
-    const { data, lastnumero, updateValeur, getAll, resetNumero, options } = this.props;
+    const { commandtype, editOpen } = this.state;
+    const { data, lastnumero, updateValeur, resetNumero, options } = this.props;
 
     const num_not_editable = options.role==='secondary';
 

@@ -31,7 +31,7 @@ import Box from '@material-ui/core/Box';
 import StdButton from './common/StdButton';
 import PrinterIcon from './common/icon/PrinterIcon';
 import ReglementCont from '../containers/ReglementCont';
-import { Modal, Fab, Input, Badge, ListItemAvatar } from '@material-ui/core';
+import { Modal, Fab, Badge } from '@material-ui/core';
 import CloseIcon from './common/icon/CloseIcon';
 import PillField from './common/PillField';
 import NumberKeyboard from './common/NumberKeyboard';
@@ -57,7 +57,7 @@ class LocalizedUtils extends DateFnsUtils {
 
 
 function TabPanel(props) {
-  const { children, value, index, ...other } = props;
+  const { children, value, index, key, className } = props;
 
   return (
     <Typography
@@ -66,7 +66,8 @@ function TabPanel(props) {
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
-      {...other}
+      key={key}
+      className={className}
     >
       {value === index && <Box p={3}>{children}</Box>}
     </Typography>
@@ -81,7 +82,7 @@ TabPanel.propTypes = {
 
 
 function TableCommandes(props) {
-  const { liste, id, openReglement, openReprise, deleteCommande, openPrint, openLivreurs, thiscash, ...other } = props;
+  const { liste, id, openReglement, openReprise, deleteCommande, openPrint, openLivreurs, thiscash } = props;
 
   liste.sort((a,b) => {
     let da = new Date(a.commande.createdAt), db = new Date(b.commande.createdAt);
@@ -105,7 +106,7 @@ function TableCommandes(props) {
         </TableHead>
         <TableBody>
           {liste.map((row, i) => (
-            <TableRow key={row.id} className={ `${(i%2)?'odd':'even'} color-${(row.commande.caisse.id==thiscash.id)?'0':'autre'} ${(row.commande.centre==='uber'?'autrecentre':'')}` }>
+            <TableRow key={row.id} className={ `${(i%2)?'odd':'even'} color-${(row.commande.caisse.id===thiscash.id)?'0':'autre'} ${(row.commande.centre==='uber'?'autrecentre':'')}` }>
               <TableCell key={`${row.id}-date`} className="liste-date">{ row.commande.date }</TableCell>
               <TableCell key={`${row.id}-heure`} className="liste-heure">{ row.commande.heure }</TableCell>
               <TableCell key={`${row.id}-numero`} className="liste-numero">{ row.commande.numero }</TableCell>
@@ -114,7 +115,7 @@ function TableCommandes(props) {
               <TableCell key={`${row.id}-client`} className="liste-client">{ row.commande.client }</TableCell>
               <TableCell key={`${row.id}-mode`} className="liste-mode">{ strings.modules.listecommandes.liste.modes[row.commande.mode] }</TableCell>
               <TableCell key={`${row.id}-actions`} className="liste-actions">
-                {(row.commande.mode=='livraison' && id!=='standby') && <StdButton key={`${row.id}-livreur`} identifier='livreur' elementclass={ `action action-livreur${(row.commande.livreur?' lvr-active':'')}` } icon={ <DeliveryIcon htmlColor={(row.commande.livreur?'#FF2D55':'#666666')} /> } noStroke={true} text='' onClick={() => { openLivreurs(row.id) }} />}
+                {(row.commande.mode==='livraison' && id!=='standby') && <StdButton key={`${row.id}-livreur`} identifier='livreur' elementclass={ `action action-livreur${(row.commande.livreur?' lvr-active':'')}` } icon={ <DeliveryIcon htmlColor={(row.commande.livreur?'#FF2D55':'#666666')} /> } noStroke={true} text='' onClick={() => { openLivreurs(row.id) }} />}
                 <StdButton key={`${row.id}-encaissement`} identifier='encaissement' elementclass="action action-encaissement" icon={ <PaymentIcon htmlColor="#ffffff" /> } disabled={false} noStroke={true} text={ '' } onClick={ () => { openReglement(row.id) } } />
                 <StdButton key={`${row.id}-annuler`} identifier='annuler' elementclass="action action-annuler" icon={ <DeleteIcon htmlColor="#ffffff" /> } disabled={id==='confirmed'} noStroke={true} text={ '' } onClick={() => { deleteCommande(row.id) }} />
                 <StdButton key={`${row.id}-reprise`} identifier='reprise' elementclass="action action-reprise" icon={ <EditIcon htmlColor="#ffffff" /> } disabled={id==='confirmed' || (row.commande.livreur!==null && row.commande.livreur!==undefined)} noStroke={true} text={ '' } onClick={() => { openReprise(row.id) }} />
@@ -142,7 +143,7 @@ function LivreurPopin(props) {
           </div>
           <div className="body">
           { livreurs.map((lvr,i) =>
-            <StdButton identifier={ lvr.user_id } key={i} elementclass={ `livreur${((commandeLivreur && commandeLivreur.id==lvr.user_id)?' activated':'')}`} icon={ false } noStroke={true} text={ `${lvr.nom}${(lvr.coordonnees && ` (${lvr.coordonnees})`)}` } onClick={(value) => { setLivreur({commandeId:commandeId, livreur:{nom:lvr.nom, id:lvr.user_id}}); closeHandler(); }} />
+            <StdButton identifier={ lvr.user_id } key={i} elementclass={ `livreur${((commandeLivreur && commandeLivreur.id===lvr.user_id)?' activated':'')}`} icon={ false } noStroke={true} text={ `${lvr.nom}${(lvr.coordonnees && ` (${lvr.coordonnees})`)}` } onClick={(value) => { setLivreur({commandeId:commandeId, livreur:{nom:lvr.nom, id:lvr.user_id}}); closeHandler(); }} />
             )}
             <StdButton identifier="none" key={livreurs.length} elementclass="livreur livreur-none" icon={ false } noStroke={true} text={ strings.modules.listecommandes.livreurs.aucun } onClick={(value) => { setLivreur({commandeId:commandeId, livreur:null}); closeHandler(); }} />
           </div>
@@ -157,7 +158,7 @@ function LivreurPopin(props) {
 
 
 function ImpressionTicketPopin(props) {
-  const { tickets, printOpen, closeHandler, commandeId, launchTicket } = props;
+  const { tickets, printOpen, closeHandler, launchTicket } = props;
 
 
   return (
@@ -232,10 +233,10 @@ class ListeCommandes extends React.Component {
 
   setSelectedDate(bound,date) {
     const { startDate, endDate } = this.state;
-    if (bound=='start') {
+    if (bound==='start') {
       this.setState({startDate:(date<=endDate)?startOfDay(date):endDate});
     }
-    if (bound=='end') {
+    if (bound==='end') {
       this.setState({endDate:(date>=startDate)?endOfDay(date):startDate});
     }
   }
@@ -275,7 +276,7 @@ class ListeCommandes extends React.Component {
 
 
   searchHandler(event) {
-    if (event.keyCode==13) {
+    if (event.keyCode===13) {
       logger.log(event.target.value);
       this.decodeQRCode(event.target.value);
       event.target.value = '';
@@ -283,7 +284,7 @@ class ListeCommandes extends React.Component {
   }
 
   searchBtn() {
-    if (this.state.searchval=='') {
+    if (this.state.searchval==='') {
       this.setState({keyboardOpen: true});
     } else {
       this.setState({searchval: ''});
@@ -328,7 +329,7 @@ class ListeCommandes extends React.Component {
       return;
     }
 
-    const platform = process.platform=='darwin' ? 'darwin' : 'win';
+    const platform = process.platform==='darwin' ? 'darwin' : 'win';
 
     let decoded = '';
     for (let caractere of value) {
@@ -382,7 +383,7 @@ class ListeCommandes extends React.Component {
   }
 
   render() {
-    const { commandeslist, error, loading, tickets, printTicket, thiscash, livreurs, setLivreur } = this.props;
+    const { commandeslist, loading, tickets, printTicket, thiscash, livreurs, setLivreur } = this.props;
 
     const { startDate, endDate, openTab, commandeId, printOpen, searchval, inputfocus, keyboardOpen, livreurOpen } = this.state;
 
@@ -398,7 +399,7 @@ class ListeCommandes extends React.Component {
       let cmdnum = value.ticketId;
       if (value.numero) {
         cmdnum = value.numero.value;
-        if (value.numero.hex==true) {
+        if (value.numero.hex===true) {
           cmdnum = value.numero.value.toString(16);
         }
       }
@@ -418,13 +419,13 @@ class ListeCommandes extends React.Component {
       };
       let __start = compareAsc(new Date(value.createdAt), startDate);
       let __end = compareAsc(new Date(value.createdAt), endDate);
-      if ((__start>-1 && __end<1) && (searchval=='' || cmd.id.indexOf(searchval)!=-1)) {
-        if (value.status=='a_encaisser') a_encaisserlist.push({id: key, commande: cmd});
-        if (value.status=='standby') standbylist.push({id: key, commande: cmd});
-        if (value.status=='confirmed') confirmedlist.push({id: key, commande: cmd});
+      if ((__start>-1 && __end<1) && (searchval==='' || cmd.id.indexOf(searchval)>-1)) {
+        if (value.status==='a_encaisser') a_encaisserlist.push({id: key, commande: cmd});
+        if (value.status==='standby') standbylist.push({id: key, commande: cmd});
+        if (value.status==='confirmed') confirmedlist.push({id: key, commande: cmd});
       }
     }
-    logger.log('searchval :',searchval!='');
+    logger.log('searchval :',searchval!=='');
     
   
     if(loading) {
@@ -492,7 +493,7 @@ class ListeCommandes extends React.Component {
               <Tab label={<Badge color="primary" badgeContent={a_encaisserlist.length}>{ strings.modules.listecommandes.status.a_encaisser }</Badge>} {...a11yProps(1)} />
               <Tab label={<Badge color="primary" badgeContent={confirmedlist.length}>{ strings.modules.listecommandes.status.confirmed }</Badge>} {...a11yProps(2)} />
             </Tabs>
-            <PillField value={searchval} type="text" className="displayId" innerButton={ `${searchval=='' ? 'keyboard' : 'delete'}`} innerButtonHandler={this.searchBtn} />
+            <PillField value={searchval} type="text" className="displayId" innerButton={ `${searchval==='' ? 'keyboard' : 'delete'}`} innerButtonHandler={this.searchBtn} />
           </AppBar>
           <TabPanel key="standby-panel" className="panel" value={openTab} index={0}>
             <TableCommandes className="standby" id="standby" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } liste={standbylist} />
@@ -505,7 +506,7 @@ class ListeCommandes extends React.Component {
           </TabPanel>
         </div>
 
-        <ReglementCont open={ this.state.reglementOpen } contClass="ListeCommandeReglement" commandeId={ this.state.commandeId } closeReglement={ this.closeReglement } modif={openTab==2} />
+        <ReglementCont open={ this.state.reglementOpen } contClass="ListeCommandeReglement" commandeId={ this.state.commandeId } closeReglement={ this.closeReglement } modif={openTab===2} />
         <NumberKeyboard open={keyboardOpen} numbersOnly={true} buttonHandler={this.keyboardButtonHandler} closeHandler={this.closeKeyboard} />
         <ImpressionTicketPopin tickets={tickets} printOpen={printOpen} closeHandler={this.closePrint} commandeId={ this.state.commandeId } launchTicket={printTicket} />
         <LivreurPopin livreurs={livreurs} livreurOpen={livreurOpen} setLivreur={setLivreur} closeHandler={this.closeLivreurs} commandeId={ this.state.commandeId } commandeLivreur={commandeLivreur} launchTicket={printTicket} />

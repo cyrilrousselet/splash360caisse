@@ -2,8 +2,6 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux';
 import CommandesCanaux from '../components/Parametres/CommandesCanaux';
-import history from './../helpers/history';
-import paths from './../constants/routes.json';
 import { parametresActions } from './../services/parametres/parametresActions';
 import { notificationActions } from '../services/notification/notificationActions';
 

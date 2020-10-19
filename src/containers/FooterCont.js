@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux';
+// import { bindActionCreators } from 'redux';
 import Footer from '../components/Footer';
 import history from '../helpers/history';
 import paths from './../constants/routes.json';

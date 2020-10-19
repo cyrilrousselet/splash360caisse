@@ -2,8 +2,6 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux';
 import Utilisateurs from '../components/Parametres/Utilisateurs';
-import history from './../helpers/history';
-import paths from './../constants/routes.json';
 import { userActions } from './../services/user/userActions';
 
 

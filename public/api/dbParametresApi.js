@@ -130,7 +130,8 @@ async function _getAllTickets() {
 function _parseImprimantes(_rawimp) {
   const __impr = {};
   _rawimp.forEach(p => {
-    __impr[p.printer_id] = {printer_id: p.printer_id, nom: p.nom, connexion: p.connexion, param: p.param, encoding: p.encoding, pardefaut: p.pardefaut};
+    // __impr[p.printer_id] = {printer_id: p.printer_id, nom: p.nom, connexion: p.connexion, param: p.param, encoding: p.encoding, pardefaut: p.pardefaut};
+    __impr[p.printer_id] = p;
   });
   return __impr;
 }
@@ -138,7 +139,8 @@ function _parseImprimantes(_rawimp) {
 function _parseTickets(_rawtck) {
   const __tck = {};
   _rawtck.forEach(t => {
-    __tck[t.ticket_id] = {ticket_id: t.ticket_id, nom: t.nom, template: t.template, imprimantes: t.imprimantes, weight: t.weight, kds: t.kds};
+    // __tck[t.ticket_id] = {ticket_id: t.ticket_id, nom: t.nom, template: t.template, imprimantes: t.imprimantes, weight: t.weight, kds: t.kds};
+    __tck[t.ticket_id] = t;
   });
   return __tck;
 }

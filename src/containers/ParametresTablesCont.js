@@ -2,8 +2,6 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux';
 import Tables from '../components/Parametres/Tables';
-import history from './../helpers/history';
-import paths from './../constants/routes.json';
 import { parametresActions } from './../services/parametres/parametresActions';
 import { tableActions } from './../services/table/tableActions';
 
