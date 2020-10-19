@@ -168,7 +168,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
             // on ajoute un objet pour le moyen de paiement dans le tableau
             // et on récupère son index (length - 1)
             __mId = __ventil.moyen.push({
-                              moyen: 'espèces',
+                              moyen: 'especes',
                               valeur: 0
                             }) - 1;
           }
