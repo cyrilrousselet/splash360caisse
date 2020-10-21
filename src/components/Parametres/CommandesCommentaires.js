@@ -11,6 +11,8 @@ import CloseIcon from '../common/icon/CloseIcon';
 import StdButton from '../common/StdButton';
 import AddIcon from '../common/icon/AddIcon';
 import Clavier from '../common/Clavier';
+import Logger from '../../helpers/Logger';
+const logger = new Logger();
 let strings = new LocalizedStrings(data);
 
 
@@ -121,14 +123,18 @@ class CommandesCommentaires extends React.Component {
   }
   saveCommentaire(id) {
 
-    const { data } = this.props;
+    const { data, updateValeur } = this.props;
     const {comment_predefini} = data;
     const {editmessage} = this.state;
 
+    logger.log('saveCommentaire', id);
+    
     if (editmessage!=='') {
-
+      
       let cmt = {id: new Date().getTime(), message: editmessage};
       let nvcomment_predefini = comment_predefini;
+      
+      logger.log('saveCommentaire', cmt);
 
       // nouveau commentaire
       if (id===-1) {
@@ -138,6 +144,11 @@ class CommandesCommentaires extends React.Component {
         cmt = nvcomment_predefini[cmtIndex];
         nvcomment_predefini[cmtIndex] = {...cmt, message: editmessage};
       }
+      updateValeur({
+        domaine: 'commandes',
+        cle: 'comment_predefini',
+        valeur: nvcomment_predefini
+      });
 
     }
     this.setState({
