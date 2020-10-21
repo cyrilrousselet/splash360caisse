@@ -808,6 +808,7 @@ function printCommandeTicket(quelstickets, cmd) {
             tva: cmdTva
           },
           mode: cmd.mode,
+          bipper: cmd.bipper || null,
           reglements: cmd.reglements,
           rendus: cmd.rendus,
           comment: __comment ? __comment.texte : '',
@@ -962,6 +963,7 @@ function printCommandeTicket(quelstickets, cmd) {
           numero: cmdnumero,
           id: cmd.ticketId,
           mode: cmd.mode,
+          bipper: cmd.bipper || null,
           date: `${date} à ${heure}`,
           articles: articles,
           comment: __comment ? removeDiacritics(__comment.texte) : '',
@@ -976,7 +978,7 @@ function printCommandeTicket(quelstickets, cmd) {
           },
           nomticket: ticket.nom,
           detail: cmdpartiel,
-          strings: strings.tickets.cuisine
+          strings: strings.tickets.production
         }
 
 
@@ -1088,6 +1090,7 @@ function printCommandeTicket(quelstickets, cmd) {
           numero: cmdnumero,
           id: cmd.ticketId,
           mode: cmd.mode,
+          bipper: cmd.bipper || null,
           date: `${date} à ${heure}`,
           articles: articles,
           comment: __comment ? removeDiacritics(__comment.texte) : '',
@@ -1104,7 +1107,7 @@ function printCommandeTicket(quelstickets, cmd) {
           },
           nomticket: ticket.nom,
           detail: cmdprincipal,
-          strings: strings.tickets.sac,
+          strings: strings.tickets.production,
           recap: recapTickets
         }
 
@@ -1200,7 +1203,7 @@ function printCommandeTicket(quelstickets, cmd) {
 
         contenu = {
           numero: cmdnumero,
-          mode: strings.tickets.sac.mode[cmd.mode],
+          mode: strings.tickets.production.mode[cmd.mode],
           date: `${format(__createdAt, "dd/MM/yyyy")} à ${heure}`,
           articles: articles
         };

@@ -233,34 +233,17 @@ class CommandesGeneral extends React.Component {
         <Fab aria-label="addtype" size="small" className="addtype-button" onClick={ ()=>{ this.openEdit() } }>
           <AddIcon htmlColor="#ffffff" />
         </Fab>
-        <div className="table-wrapper">
-          <TableTypes liste={data_types} id='typesliste' openEdit={this.openEdit} />
-        </div>
-        <div className="subttl">{ strings.modules.parametres.submodules.commandes.general.numero.nom }</div>
-        <div className="numero-wrapper">
-          <LabelledField 
-              id={ `numerotation_start` }
-              name={ `numerotation_start` }
-              className="fieldnumerotation_start"
-              value={ data.numerotation_start } 
-              placeholder='1' 
-              type='text' 
-              readOnly={ num_not_editable } 
-              onChange={(value,option)=>void(0)}
-              onSubmit={(name,value) => {
-                updateValeur({
-                  domaine: 'commandes',
-                  cle: name,
-                  valeur: value
-                })
-              }}
-              label={ strings.modules.parametres.submodules.commandes.general.numero.label.debut }
-            />
+        <div className="main-wrapper">
+          <div className="table-wrapper">
+            <TableTypes liste={data_types} id='typesliste' openEdit={this.openEdit} />
+          </div>
+          <div className="subttl">{ strings.modules.parametres.submodules.commandes.general.numero.nom }</div>
+          <div className="numero-wrapper">
             <LabelledField 
-                id={ `numerotation_max` }
-                name={ `numerotation_max` }
-                className="fieldnumerotation_max"
-                value={ data.numerotation_max } 
+                id={ `numerotation_start` }
+                name={ `numerotation_start` }
+                className="fieldnumerotation_start"
+                value={ data.numerotation_start } 
                 placeholder='1' 
                 type='text' 
                 readOnly={ num_not_editable } 
@@ -272,32 +255,69 @@ class CommandesGeneral extends React.Component {
                     valeur: value
                   })
                 }}
-                label={ strings.modules.parametres.submodules.commandes.general.numero.label.max }
+                label={ strings.modules.parametres.submodules.commandes.general.numero.label.debut }
               />
-          <div className="currentnum-wrapper">
-            <LabelledField
-              id={ `compteur` }
-              name={ `compteur` }
-              className="fieldcompteur"
-              value={ currnum } 
-              placeholder='0' 
-              type='text' 
-              readOnly={ true } 
-              onChange={()=>{console.log('click')}}
-              label={ strings.modules.parametres.submodules.commandes.general.numero.label.compteur }
-              />
-            {!num_not_editable && <div className="btn-reset" onClick={()=>{ resetNumero() }}>{ strings.modules.parametres.submodules.commandes.general.numero.label.reset }</div>}
+              <LabelledField 
+                  id={ `numerotation_max` }
+                  name={ `numerotation_max` }
+                  className="fieldnumerotation_max"
+                  value={ data.numerotation_max } 
+                  placeholder='1' 
+                  type='text' 
+                  readOnly={ num_not_editable } 
+                  onChange={(value,option)=>void(0)}
+                  onSubmit={(name,value) => {
+                    updateValeur({
+                      domaine: 'commandes',
+                      cle: name,
+                      valeur: value
+                    })
+                  }}
+                  label={ strings.modules.parametres.submodules.commandes.general.numero.label.max }
+                />
+            <div className="currentnum-wrapper">
+              <LabelledField
+                id={ `compteur` }
+                name={ `compteur` }
+                className="fieldcompteur"
+                value={ currnum } 
+                placeholder='0' 
+                type='text' 
+                readOnly={ true } 
+                onChange={()=>{console.log('click')}}
+                label={ strings.modules.parametres.submodules.commandes.general.numero.label.compteur }
+                />
+              {!num_not_editable && <div className="btn-reset" onClick={()=>{ resetNumero() }}>{ strings.modules.parametres.submodules.commandes.general.numero.label.reset }</div>}
+            </div>
+            <SwitchCheckbox
+              isChecked={ data.numerotation_hex } 
+              key={`numerotation_hex`}
+              name={ `numerotation_hex` } 
+              labelLeft={ true }
+              onChange={ (name, isChecked) => {
+                this.numerotationHexaUpdate(isChecked);
+              } } 
+              label={ strings.modules.parametres.submodules.commandes.general.numero.label.hexa } 
+            />
           </div>
-          <SwitchCheckbox
-            isChecked={ data.numerotation_hex } 
-            key={`numerotation_hex`}
-            name={ `numerotation_hex` } 
-            labelLeft={ true }
-            onChange={ (name, isChecked) => {
-              this.numerotationHexaUpdate(isChecked);
-            } } 
-            label={ strings.modules.parametres.submodules.commandes.general.numero.label.hexa } 
-          />
+          <div className="bipper-wrapper">
+            <div className="subttl">{ strings.modules.parametres.submodules.commandes.general.bippers.nom }</div>
+            <SwitchCheckbox
+              isChecked={ data.active_bippers } 
+              key={`active_bippers`}
+              name={ `active_bippers` } 
+              labelLeft={ true }
+              onChange={ (name, isChecked) => {
+              // this.numerotationHexaUpdate(isChecked);
+                updateValeur({
+                  domaine: 'commandes',
+                  cle: 'active_bippers',
+                  valeur: isChecked
+                })
+              } } 
+              label={ strings.modules.parametres.submodules.commandes.general.bippers.label.activation } 
+            />
+          </div>
         </div>
         <EditTypePopin commandtype={commandtype} editOpen={editOpen} closeHandler={this.closeEdit} saveType={this.saveType} />
       </div>
