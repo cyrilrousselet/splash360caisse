@@ -53,7 +53,7 @@ function printAvoir(payload) {
       // -> entreprise
       entreprise: {
         nom: String(entreprise.denomination).toUpperCase(),
-        coordonnees: [ entreprise.adresse, `${entreprise.code_postal} ${String(entreprise.ville).toUpperCase()}`, entreprise.site_web ],
+        coordonnees: [ entreprise.adresse, `${entreprise.code_postal} ${String(entreprise.ville).toUpperCase()}`, entreprise.telephone, entreprise.site_web ],
         fiscal: [ siret_formatted ]
       },
       code: payload.code,
@@ -827,7 +827,7 @@ function printCommandeTicket(quelstickets, cmd) {
           // -> entreprise
           entreprise: {
             nom: removeDiacritics(String(entreprise.denomination).toUpperCase()),
-            coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, entreprise.site_web ],
+            coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, entreprise.telephone, entreprise.site_web ],
             fiscal: [ siret_formatted ]
           },
           // -> commande (id, date, articles, remises, totaux, tva, réglements)
