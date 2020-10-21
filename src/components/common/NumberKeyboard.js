@@ -9,7 +9,7 @@ class NumberKeyboard extends React.Component {
 
   render() {
 
-    const { buttonHandler, closeHandler, open, numbersOnly, inner } = this.props;
+    const { buttonHandler, closeHandler, open, numbersOnly, inner, keyboardOnly } = this.props;
 
     const boutons = [1,2,3,4,5,6,7,8,9,',','0','c'];
     if (numbersOnly) boutons.splice(9,1,'');
@@ -28,12 +28,12 @@ class NumberKeyboard extends React.Component {
 
     if (inner) {
       return (
-        <div className={ `NumberKeyboardContainer${(open ? ' visible' : '')}` }>
+        <div className={ `NumberKeyboardContainer${(open ? ' visible' : '')}${(keyboardOnly ? ' keyboard-only' : '')}` }>
           <div className="NumberKeyboard">
             <div className="inner-container">{ __content }</div>
-            <Fab aria-label="close" size="small" className="close-button" onClick={ closeHandler }>
+            {!keyboardOnly && (<Fab aria-label="close" size="small" className="close-button" onClick={ closeHandler }>
               <CloseIcon />
-            </Fab>
+            </Fab>)}
           </div>
         </div>
       );

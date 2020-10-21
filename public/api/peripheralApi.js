@@ -457,7 +457,7 @@ function _launchPrint(template, printer, contenu) {
       _printPrelevement(printer, contenu.prelevement, contenu.strings);
     }
     else if ('info' === section) {
-      _printInfo(printer, {info: contenu.info, nomticket: contenu.nomticket, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode, client:contenu.detail.client}}, contenu.strings);
+      _printInfo(printer, {info: contenu.info, nomticket: contenu.nomticket, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode, client:contenu.detail.client, bipper: contenu.detail.bipper}}, contenu.strings);
     }
     else if ('detail' ===  section) {
       _printDetail(printer, contenu.detail, contenu.strings);
@@ -573,11 +573,19 @@ function _printInfo(printer, data, strings) {
     .text(`${strings.creation}${data.info.date} à ${data.info.heure}`)
     // .size(2,2)
     .size(1,1)
-    .text(`*** ${strings.mode[data.commande.mode]} ***`)
-    // .size(1,2)
+    .text(`*** ${strings.mode[data.commande.mode]} ***`);
+
+  if (data.commande.bipper) {
+    printer
+      .size(0,0)
+      .drawLine()
+      .style('NORMAL')
+      .size(1,1)
+      .text(`--- ${strings.bipper}${data.commande.bipper} ---`);
+  }
+  printer
     .size(0,1)
     .drawLine()
-    // .size(1,1);
     .size(0,0);
 }
 
@@ -836,6 +844,16 @@ function _printCommande(printer, data, strings) {
     .style('NORMAL')
     .drawLine()
     ;
+
+
+  if (data.bipper) {
+    printer
+      .size(1,1)
+      .text(`--- ${strings.bipper}${data.bipper} ---`)
+      .size(0,1)
+      .drawLine()
+      .size(0,0);
+  }
 
 
   if (data.comment!=='') {

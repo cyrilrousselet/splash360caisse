@@ -55,4 +55,16 @@
   .NumberKeyboard {
     box-shadow: $boxshadow;
   }
+  &.keyboard-only {
+    width: auto;
+    height: auto;
+    background-color: transparent;
+    position: relative;
+    .NumberKeyboard {
+      position: relative;
+      transform: none;
+      top: auto;
+      left: auto;
+    }
+  }
 }

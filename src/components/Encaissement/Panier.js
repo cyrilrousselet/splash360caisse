@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import StdButton from '../common/StdButton';
 
-import { List, ListItem, Fab, Modal, TextField, ListItemText, ListItemIcon, ListItemSecondaryAction } from '@material-ui/core';
+import { List, ListItem, Fab, Modal, TextField, ListItemText, ListItemIcon, ListItemSecondaryAction, Badge } from '@material-ui/core';
 import Swal from 'sweetalert2';
 
 import PlusIcon from '../common/icon/PlusIcon';
@@ -20,8 +20,10 @@ import FicheClientCont from '../../containers/FicheClientCont';
 import Clavier from '../common/Clavier';
 import {devise} from '../../helpers/toolbox';
 import TableIcon from '../common/icon/TableIcon';
+import BellIcon from '../common/icon/BellIcon';
 import Logger from '../../helpers/Logger';
 import CommentRemoveIcon from '../common/icon/CommentRemoveIcon';
+import NumberKeyboard from '../common/NumberKeyboard';
 
 let strings = new LocalizedStrings(data);
 const logger = new Logger();
@@ -52,7 +54,84 @@ const logger = new Logger();
 // }
 
 
+class BipperModal extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      bipperId: null
+    };
+    this.resetPopin = this.resetPopin.bind(this);
+    this.keyboardButtonHandler = this.keyboardButtonHandler.bind(this);
+  }
+
+  resetPopin() {
+    this.setState({bipperId: null});
+  }
+
+
+  keyboardButtonHandler(text) {
+    const { bipperId } = this.state;
+    const { bipper } = this.props;
+    let bipperval = bipperId!==null ? bipperId : ((bipper!==null && bipper!==undefined ) ? bipper : '');
+    if (text!=='c') {
+      this.setState({bipperId: (bipperval || '')+text});
+    } else {
+      this.setState({bipperId: String(bipperval).slice(0,-1)});
+    }
+  }
+
+  render() {
+    const { bipper, selectBipper, closeHandler, open } = this.props;
+    const { bipperId } = this.state;
+
+    const bipperVal = bipperId!==null ? bipperId : ((bipper!==null && bipper!==undefined ) ? bipper : '');
+
+    return (
+      <Modal
+      open={open}
+      >
+      <div className={ `BipperModal`}>
+        <div className="Modal-container">
+          <div className="header">
+            <div className="title">{ strings.modules.encaissement.bipper.titre }</div>
+          </div>
+          <div className="body">
+            <div className="bipper-valeur">{ bipperVal }</div>
+            <NumberKeyboard
+              numbersOnly={true}
+              keyboardOnly={true}
+              inner={true}
+              open={true}
+              buttonHandler={this.keyboardButtonHandler}
+              />
+          </div>
+          <div className="footer">
+            <StdButton 
+                identifier="modal-suppr" 
+                elementclass="suppr" 
+                icon={ false } 
+                text={ strings.modules.encaissement.bipper.suppression.bouton } 
+                onClick={() => { selectBipper(null); this.resetPopin(); }} 
+              />
+            <StdButton 
+              identifier="modal-save" 
+              elementclass="save" 
+              icon={ false } 
+              disabled={ !bipperId }
+              text={ strings.general.dialog.save } 
+              onClick={() => {selectBipper(bipperId); this.resetPopin(); }} 
+            />
+          </div>
+        </div>
+        <Fab aria-label="close" size="small" className="close-button" onClick={ ()=>{this.resetPopin(); closeHandler()} }>
+          <CloseIcon />
+        </Fab>
+      </div>
+    </Modal>  
+    );
+  }
+}
 
 
 
@@ -373,7 +452,8 @@ class Panier extends React.Component {
       clavierOpen: false,
       actualInput: null,
       inputValue: '',
-      tablesOpen: false
+      tablesOpen: false,
+      bippersOpen: false
     }
     this.setSelectedIndex = this.setSelectedIndex.bind(this);
     this.setSelectedIngredient = this.setSelectedIngredient.bind(this);
@@ -397,6 +477,10 @@ class Panier extends React.Component {
     this.openTables = this.openTables.bind(this);
     this.closeTables = this.closeTables.bind(this);
     this.selectTables = this.selectTables.bind(this);
+
+    this.openBippers = this.openBippers.bind(this);
+    this.closeBippers = this.closeBippers.bind(this);
+    this.selectBipper = this.selectBipper.bind(this);
 
   }
 
@@ -454,6 +538,16 @@ class Panier extends React.Component {
       this.props.closeReglement();
     }
 
+    const {bippersOpen} = this.state;
+    const {parametres} = this.props;
+    const gestion_bippers = (parametres && parametres.commandes) ? parametres.commandes.active_bippers : false;
+    
+    if (!bippersOpen && gestion_bippers && !this.props.commande.hasOwnProperty('bipper')) {
+      this.setState({bippersOpen: true});
+    }
+
+
+    // liste panier se cale en bas (sur le dernier produit ajouté)
     this.listewrapper.scrollTop = this.listewrapper.scrollHeight;
   }
 
@@ -769,6 +863,21 @@ class Panier extends React.Component {
     logger.log('selectTables()');
   }
 
+
+  openBippers() {
+    logger.log('openBippers()');
+    this.setState({bippersOpen: true});
+  }
+  closeBippers() {
+    logger.log('closeBippers()');
+    this.setState({bippersOpen: false});
+  }
+  selectBipper(bipperId) {
+    logger.log('selectBipper('+bipperId+')');
+    this.setState({bippersOpen: false});
+    this.props.updateCommande({bipper:bipperId});
+  }
+
   interval = 0;
 
   render() {
@@ -787,13 +896,14 @@ class Panier extends React.Component {
             deleteDiscount,
             clients } = this.props;
 
-    const { comments, modificateurs, items, ticketId, mode, client } = this.props.commande;
+    const { comments, modificateurs, items, ticketId, mode, client, bipper } = this.props.commande;
     
     const {inputfocus, searchval, 
            commentOpen, commentId, commentItemId, commentIngredientId,
            discountOpen, discountId, discountItemId, discountIngredientId,
            ficheClientOpen,
-           clavierOpen } = this.state;
+           clavierOpen,
+           bippersOpen } = this.state;
 
     // récup du texte en fonction de l'id du commentaire (s'il est défini)
     let commentTexte = (commentId!==null) ? comments.find(cmt=>cmt.comment_id===commentId).texte : '';
@@ -808,7 +918,9 @@ class Panier extends React.Component {
     // gestion de tables :
     const gestion_tables = (parametres && parametres.commandes) ? parametres.commandes.gestion_tables : false;
     const tableId = null;
-
+    
+    const gestion_bippers = (parametres && parametres.commandes) ? parametres.commandes.active_bippers : false;
+    
 
     const commandeClient = client ? clients.find(c=>c.client_id===client.client_id) : null;
 
@@ -950,6 +1062,7 @@ class Panier extends React.Component {
       if (undefined === items || items.length===0) gotoEncaissement();
     }
 
+
     const attenteHandler = (event) => {
     //  if (!this.props.commande.numero) this.props.getNumero();
       this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1});
@@ -1039,6 +1152,9 @@ class Panier extends React.Component {
           {/* <div className="ticketId">{ (this.interval==0?'X':'√')+strings.modules.encaissement.panier.ticket_no+' '+ticketId }</div> */}
           <div className="ticketId">{ strings.modules.encaissement.panier.ticket_no+' '+ticketId }</div>
           <div className="ticketComment"></div>
+          {gestion_bippers && (<Badge className="bipper" badgeContent={bipper} max={999} color="primary">
+              <BellIcon className={`ico-bipper ${((bipper!==null && bipper!==undefined)?'bipper-set':'')}`} onClick={this.openBippers} />
+            </Badge>)}
           {gestion_tables && (<div className="tablesList">
             <TableIcon className={`ico-tables ${(tableId?'tables-set':'')}`} onClick={this.openTables} />
           </div>)}
@@ -1176,6 +1292,12 @@ class Panier extends React.Component {
           discountval={ discountVal }
           ingredient={discountIngredientId}
           dsclib={ dsclib }
+          />
+        <BipperModal
+          open={bippersOpen}
+          closeHandler={this.closeBippers}
+          selectBipper={this.selectBipper}
+          bipper={bipper}
           />
         <FicheClientCont open={ficheClientOpen} clavierOpen={ clavierOpen } client={commandeClient} mode={commandeClient?'fiche':'recherche'} contexte="encaissement" closeHandler={this.closeFicheClient} selectClient={this.selectClient} />
       </div>

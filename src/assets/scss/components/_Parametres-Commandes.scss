@@ -80,6 +80,7 @@
     // box-shadow: 0 5px 15px 0 rgba(0,0,0,0.10);
     .panel {
       text-align: left;
+      overflow-y: auto;
     }
     .CommandesGeneral {
         position: relative;
@@ -231,21 +232,21 @@
                 cursor: pointer;
             }
             
-            .switch-container {
-                width: 220px;
-                padding-top: 10px;
-                label {
-                position: relative;
-                user-select: none;
-                left: 75%;
-                }
-                label+label {
-                font-family: $f_med;
-                font-size: 14px;
-                color: $noir;
-                position: absolute;
-                left: auto;
-                }
+        }
+        .switch-container {
+            width: 220px;
+            padding-top: 10px;
+            label {
+            position: relative;
+            user-select: none;
+            left: 75%;
+            }
+            label+label {
+            font-family: $f_med;
+            font-size: 14px;
+            color: $noir;
+            position: absolute;
+            left: auto;
             }
         }
     }

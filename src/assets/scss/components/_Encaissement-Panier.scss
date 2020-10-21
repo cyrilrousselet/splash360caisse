@@ -45,6 +45,23 @@
                 fill: $vert;
             }
         }
+        .bipper {
+            margin-top: -5px;
+            .ico-bipper {
+
+                height: 20px;
+                cursor: pointer;
+                
+                &.bipper-set {
+                    fill: $vert;
+                }
+                
+                svg {
+                    width: auto;
+                    height: 100%;
+                }
+            }
+        }
     }
 
     .body {

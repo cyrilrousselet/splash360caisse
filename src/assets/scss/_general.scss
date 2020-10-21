@@ -36,3 +36,11 @@ body {
     top: 50%;
     transform: translate(-50%, -50%);
 }
+.clearfix {
+    &::before,
+    &::after {
+        display: block;
+        content: "";
+        clear: both;
+    }
+}

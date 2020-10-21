@@ -162,6 +162,13 @@ const data = {
                         texte: "Êtes-vous sûr de supprimer la réduction ?<br />Cette opération est définitive"
                     }
                 },
+                bipper: {
+                    titre: "Sélection de Bipper",
+                    identifiant: "ID du bipper",
+                    suppression: {
+                        bouton: "Aucun bipper"
+                    }
+                },
                 reglement: {
                     titre: "Encaissement",
                     liste: {
@@ -938,6 +945,12 @@ const data = {
                                     reset: 'Reset',
                                     hexa: 'Activer N° hexadécimal'
                                 }
+                            },
+                            bippers: {
+                                nom: 'Bippers',
+                                label: {
+                                    activation: 'Activation'
+                                }
                             }
                         },
                         commentaires: {
@@ -1065,6 +1078,7 @@ const data = {
             commande: {
                 titre: 'COMMANDE',
                 numero: 'Cmd no ',
+                bipper: 'BIPPER #',
                 detail: {
                     quantite: 'QTE',
                     articles: 'ARTICLES',
@@ -1117,28 +1131,11 @@ const data = {
                 client: 'Client :',
                 couverts: 'AVEC COUVERTS, PAILLE...'
             },
-            cuisine: {
+            production: {
                 titre: 'CUISINE',
                 numero: 'Cmd no ',
                 creation: 'Creee le ',
-                mode: {
-                    livraison: 'LIVRAISON',
-                    surplace: 'SUR PLACE',
-                    emporter: 'A EMPORTER'
-                },
-                caption: {
-                    quantite: 'QTE',
-                    articles: 'ARTICLES',
-                    num_articles: 'NOMBRE D\'ARTICLES : '
-                },
-                client: {
-                    titre: 'Client :'
-                }
-            },
-            sac: {
-                titre: 'SAC',
-                numero: 'Cmd no ',
-                creation: 'Creee le ',
+                bipper: 'BIPPER #',
                 mode: {
                     livraison: 'LIVRAISON',
                     surplace: 'SUR PLACE',
