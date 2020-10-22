@@ -179,6 +179,52 @@ function getCommande(commandeId=null) {
   }
 }
 
+
+function setChrono(payload) {
+  return async (dispatch, getState) => {
+
+    const { ticketId, endTime, careTime } = payload.commande;
+
+    logger.log('setChrono', payload);
+
+    const cmd = await commandeServices.getCommandeById(ticketId)
+    
+    const commande = cmd._cmd;
+
+    const careDatetime = new Date(careTime);
+    const endDatetime = new Date(endTime);
+
+    // si la commande a déjà été synchronisée avec le Backend
+    let cmdToSync = {};
+    if (commande.hasOwnProperty('sync')) {
+      cmdToSync = {
+          id: commande.id,
+          careTime: formatISO(careDatetime),
+          endTime: formatISO(endDatetime),
+          productionTime: Math.round(differenceInMilliseconds(endDatetime, careDatetime)/10)/100,
+          waitTime: Math.round(differenceInMilliseconds(careDatetime, parseISO(commande.end))/10)/100,
+          status: commande.status,
+          updatedAt: formatISO(new Date())
+      };
+    }
+    // sinon,
+    else {
+      cmdToSync = {
+          ...commande,
+          careTime: formatISO(careDatetime),
+          endTime: formatISO(endDatetime),
+          productionTime: Math.round(differenceInMilliseconds(endDatetime, careDatetime)/10)/100,
+          waitTime: Math.round(differenceInMilliseconds(careDatetime, parseISO(commande.end))/10)/100,
+          updatedAt: formatISO(new Date())
+      };
+    }
+
+    dispatch(notificationActions.syncCommandes([cmdToSync]));
+
+  }
+}
+
+
 // payload = commande à sauvegarder
 function validateCommande(payload) {
   return (dispatch, getState) => {
@@ -1052,6 +1098,7 @@ export const commandeActions = {
   setNewNumero,
   resetNumero,
   getCommande,
+  setChrono,
   validateCommande,
   validateCommandeAndUpdateList,
   standByCommande,

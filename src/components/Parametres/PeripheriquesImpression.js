@@ -507,7 +507,7 @@ class PeripheriquesImpression extends React.Component {
           type: tck.template,
           param: printlist.join(', '),
           weight: tck.weight,
-          disabled: printlist.length===0,
+          disabled: printlist.length===0 && !tck.kds,
           kds: tck.kds
         };
     });
