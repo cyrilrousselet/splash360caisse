@@ -119,6 +119,13 @@ const server = {
 
     });
 
+    api_server.post('/chrono', (req, res) => {
+      log.info('POST chrono', req.body);
+      
+      wcont.send('chrono', {commande: req.body});
+      res.json({status:'success'});
+    });
+
 
 
     api_server.listen(API_PORT, () => {

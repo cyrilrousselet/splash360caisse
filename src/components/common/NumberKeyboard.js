@@ -59,5 +59,5 @@ NumberKeyboard.propTypes = {
   open: PropTypes.bool.isRequired,
   numbersOnly: PropTypes.bool,
   buttonHandler: PropTypes.func.isRequired,
-  closeHandler: PropTypes.func.isRequired
+  closeHandler: PropTypes.func
 }

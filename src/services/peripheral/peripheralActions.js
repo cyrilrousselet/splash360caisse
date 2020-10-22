@@ -414,6 +414,12 @@ function printCommandeTicket(quelstickets, cmd) {
 
       const __cmt = cmd.comments.find(c => c.item==null && c.ingredient==null);
 
+
+      // URL de réponse du kds : 
+      // si caisse secondary : url de la primary
+      // si caisse primary : caisse_ip ou à défaut localhost
+      const __responseurl = options.role==='secondary' ? options.primary : (options.caisse.url || 'http://localhost');
+
       let kdsCmd = {
         id: cmdnumero,
         label_id: cmdnumero,
@@ -426,7 +432,8 @@ function printCommandeTicket(quelstickets, cmd) {
         status: 0,
         endTime: '',
         careTime: '',
-        items: []
+        items: [],
+        confirmurl: __responseurl+':3300/chrono'
       }
 
    

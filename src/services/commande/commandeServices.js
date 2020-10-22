@@ -66,6 +66,7 @@ function getNewCommande(params) {
 }
 
 function getCommandeById(id) {
+  logger.log('getCommandeById', id);
   return emit('dbCommandeGetCommande', {ticketId: id});
 }
 function deleteCommande(id, motif) {

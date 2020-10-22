@@ -144,6 +144,11 @@ ipcRenderer.on('setUserSync', (event, user) => {
   userActions.setUserFromSync(user)(store.dispatch, store.getState);
 });
 
+ipcRenderer.on('chrono', (event, commande) => {
+  logger.log('renderer: chrono', commande);
+  commandeActions.setChrono(commande)(store.dispatch, store.getState);
+});
+
 // log.transports.file.level = 'info';
 // log.info('arrivée sur le Dashboard');
 

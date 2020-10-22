@@ -1,7 +1,9 @@
 import { parametresActionTypes } from './parametresActionTypes';
 import { parametresServices } from './parametresServices';
 import { commandeActions } from './../commande/commandeActions';
+import Logger from '../../helpers/Logger';
 
+const logger = new Logger();
 
 
 function replaceDatabase(database) {
@@ -51,7 +53,7 @@ function update(payload) {
   return (dispatch, getState) => {
   //    dispatch({ type: parametresActionTypes.UPDATE_REQUEST });
 
-      console.log('ParametresActions.update', payload);
+      logger.log('ParametresActions.update', payload);
 
       parametresServices.update(payload)
           .then(
