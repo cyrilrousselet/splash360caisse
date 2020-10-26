@@ -1,40 +1,37 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-
-import { Modal, Fab, List, ListItem } from '@material-ui/core';
-import { differenceInMilliseconds, isBefore, endOfDay } from 'date-fns';
-import StdButton from '../common/StdButton';
-import CloseIcon from '../common/icon/CloseIcon';
-import EspecesIcon from '../common/icon/EspecesIcon';
-import TicketIcon from '../common/icon/TicketIcon';
-import CarteIcon from '../common/icon/CarteIcon';
-import ChequeIcon from '../common/icon/ChequeIcon';
-import Calculette from './Calculette';
-import LocalizedStrings from 'react-localization';
-import {data} from '../../constants/translations';
-import Swal from 'sweetalert2';
-import PillButton from '../common/PillButton';
-import QRCodeIcon from '../common/icon/QRCodeIcon';
-import { endOfToday } from 'date-fns/esm';
-import { decodetable } from '../../constants/decodetable';
-import Logger from '../../helpers/Logger';
+import { Fab, List, ListItem, Modal } from "@material-ui/core";
+import { differenceInMilliseconds, endOfDay, isBefore } from "date-fns";
+import { endOfToday } from "date-fns/esm";
+import PropTypes from "prop-types";
+import React from "react";
+import LocalizedStrings from "react-localization";
+import Swal from "sweetalert2";
+import { decodetable } from "../../constants/decodetable";
+import { data } from "../../constants/translations";
+import Logger from "../../helpers/Logger";
+import CarteIcon from "../common/icon/CarteIcon";
+import ChequeIcon from "../common/icon/ChequeIcon";
+import CloseIcon from "../common/icon/CloseIcon";
+import EspecesIcon from "../common/icon/EspecesIcon";
+import QRCodeIcon from "../common/icon/QRCodeIcon";
+import TicketIcon from "../common/icon/TicketIcon";
+import PillButton from "../common/PillButton";
+import StdButton from "../common/StdButton";
+import Calculette from "./Calculette";
 
 const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 
-
-const RACCOURCIS = [5,10,20,50];
+const RACCOURCIS = [5, 10, 20, 50];
 
 class Reglement extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
       total: 0,
       input: false,
-      trlist: []
-    }
+      trlist: [],
+    };
     this.addValeur = this.addValeur.bind(this);
     this.calculetteClick = this.calculetteClick.bind(this);
     this.deleteCalculette = this.deleteCalculette.bind(this);
@@ -60,190 +57,184 @@ class Reglement extends React.Component {
 
   componentDidMount() {
     const { getCommande, commandeId } = this.props;
-    console.log('commandeId', commandeId);
+    console.log("commandeId", commandeId);
     if (commandeId) getCommande(commandeId);
   }
 
   addValeur(value) {
     let __t = Number(this.state.total) + Number(value);
-    console.log('addValeur : +'+value);
-    this.setState({total:__t, input: true});
-    this.toAddReglement('especes', value);
+    console.log("addValeur : +" + value);
+    this.setState({ total: __t, input: true });
+    this.toAddReglement("especes", value);
   }
 
   calculetteClick(value) {
     let __t = this.state.total;
     let __i = true;
     switch (value) {
-      case 'c':
+      case "c":
         __t = 0;
         __i = false;
         break;
-      case '00':
+      case "00":
         __t *= 100;
         break;
-      case '0':
+      case "0":
         __t *= 10;
         break;
       default:
-        __t = (__t*10) + (value/100);
+        __t = __t * 10 + value / 100;
     }
-    this.setState({total:__t, input: __i});
+    this.setState({ total: __t, input: __i });
   }
 
   deleteCalculette() {
-    this.setState({total: 0, input: false});
+    this.setState({ total: 0, input: false });
   }
 
   updateValeurs() {
-
     const { reglements, rendus } = this.props.commande;
-    
+
     // déjà payé (réglements)
     let __paye = 0;
     let __especes = 0;
-    if (undefined!==reglements) {
-      reglements.forEach(rgl => {
+    if (undefined !== reglements) {
+      reglements.forEach((rgl) => {
         __paye += rgl.valeur;
-        if (rgl.moyen==='especes') __especes += rgl.valeur;
+        if (rgl.moyen === "especes") __especes += rgl.valeur;
       });
     }
     let __rendu = 0;
-    if (undefined!==rendus) {
-      rendus.forEach(rnd => {
+    if (undefined !== rendus) {
+      rendus.forEach((rnd) => {
         __rendu += rnd.valeur;
       });
     }
-    
+
     // montant à payer (somme des items)
     let __total = this.props.valueToPay;
 
-    let __reste = (__total - __paye + __rendu);
+    let __reste = __total - __paye + __rendu;
 
     // payé, montant à payer et reste à payer (ou rendu monnaie si négatif)
     // s'il y a un trop perçu, peut-on le rendre sur les especes ?
     return {
-      paye: __paye, 
-      apayer: __total, 
+      paye: __paye,
+      apayer: __total,
       reste: __reste,
       rendu: __rendu,
-      rendable: (__reste < 0 && __especes+__reste>0)
+      rendable: __reste < 0 && __especes + __reste > 0,
     };
-
   }
 
   beforeCloseReglement() {
-
-    logger.log('beforeCloseReglement()');
+    logger.log("beforeCloseReglement()");
 
     const { modif } = this.props;
     const { reste, rendu } = this.updateValeurs();
     const { trlist } = this.state;
     console.log(reste, rendu);
     let closeReglementAtEnd = true;
-    if (reste===0) {
-      if (this.props.commande.status==='pending') {
+    if (reste === 0) {
+      if (this.props.commande.status === "pending") {
         this.props.commande.end = new Date();
-        this.props.commande.chrono = Math.round(differenceInMilliseconds(this.props.commande.end, this.props.commande.start)/10)/100;
+        this.props.commande.chrono =
+          Math.round(
+            differenceInMilliseconds(
+              this.props.commande.end,
+              this.props.commande.start
+            ) / 10
+          ) / 100;
       }
 
-      
-      // si on encaisse une commande déjà produite, 
+      // si on encaisse une commande déjà produite,
       // on ne réimprime pas les tickets de production (ms seulmt 'commande')
-      if (this.props.commande.status==='a_encaisser') {
-        this.props.printTicket({templates:['commande']});
-        this.props.commande.status = 'confirmed';
-      } else if (this.props.commande.status==='standby') {
-        this.props.printTicket('all');
-        this.props.commande.status = 'confirmed';
+      if (this.props.commande.status === "a_encaisser") {
+        this.props.printTicket({ templates: ["commande"] });
+        this.props.commande.status = "confirmed";
+      } else if (this.props.commande.status === "standby") {
+        this.props.printTicket("all");
+        this.props.commande.status = "confirmed";
       } else {
-        logger.log('reglement modif', modif);
+        logger.log("reglement modif", modif);
         closeReglementAtEnd = modif;
-        logger.log('reglement closeReglementAtEnd', closeReglementAtEnd);
-        this.props.commande.status = 'confirmed';
+        logger.log("reglement closeReglementAtEnd", closeReglementAtEnd);
+        this.props.commande.status = "confirmed";
         // on imprime tous les tickets (sauf si on modifie juste les réglements)
-        if (!modif) this.props.printTicket('all');
+        if (!modif) this.props.printTicket("all");
       }
 
       // enregistrement des TR en base (pour contrôle ultérieur)
-      if (trlist.length>0) this.props.persistTicketsRestaurants(trlist);
+      if (trlist.length > 0) this.props.persistTicketsRestaurants(trlist);
       this.props.validateCommande(this.props.commande);
-
-
     }
-    this.setState({input: false});
+    this.setState({ input: false });
     if (closeReglementAtEnd) {
       this.props.closeReglement();
     }
   }
 
-
-  toAddReglement(moyen, valeur=-1, info=null) {
-
-
+  toAddReglement(moyen, valeur = -1, info = null) {
     const { addReglement, openDrawer, modif } = this.props;
 
     let montant = 0;
     const { reste } = this.updateValeurs();
-    if (valeur===-1) {
-      const {input, total} = this.state;
+    if (valeur === -1) {
+      const { input, total } = this.state;
       montant = input ? total : reste;
     } else {
       montant = valeur;
     }
 
-    // lors de la modif d'encaissement, 
+    // lors de la modif d'encaissement,
     // le montant du réglement ne peut pas être supérieur à la somme à régler
-    if (modif && montant>reste) {
+    if (modif && montant > reste) {
       Swal.fire({
-        title: strings.modules.encaissement.reglement.erreur.modif.depassement.titre,
-        html: strings.modules.encaissement.reglement.erreur.modif.depassement.texte,
+        title:
+          strings.modules.encaissement.reglement.erreur.modif.depassement.titre,
+        html:
+          strings.modules.encaissement.reglement.erreur.modif.depassement.texte,
         showCancelButton: false,
         focusCancel: false,
-        focusConfirm: true
-      })
+        focusConfirm: true,
+      });
     } else {
-      
       if (montant > 0) {
-        addReglement({moyen: moyen, valeur: montant, info:info});
+        addReglement({ moyen: moyen, valeur: montant, info: info });
         const { reste } = this.updateValeurs();
-        if (moyen==='especes') openDrawer();
-        if (moyen==='ticket' && reste<0) openDrawer();
-        this.setState({total: 0, input: false});
+        if (moyen === "especes") openDrawer();
+        if (moyen === "ticket" && reste < 0) openDrawer();
+        this.setState({ total: 0, input: false });
 
-        // s'il ne reste rien à payer ni à rendre, 
+        // s'il ne reste rien à payer ni à rendre,
         // on ferme l'encaissement et on valide la commande
-        if (reste===0) this.beforeCloseReglement();
-
+        if (reste === 0) this.beforeCloseReglement();
       }
     }
   }
 
   toRemoveReglement(id) {
-
     const { trlist } = this.state;
     const { reglements } = this.props.commande;
 
-    const rgt = reglements.find(r=>r.reglementId===id);
-    if (rgt && rgt.moyen==='ticket') {
-      this.setState({trlist: trlist.filter(t => t!==rgt.info)});
+    const rgt = reglements.find((r) => r.reglementId === id);
+    if (rgt && rgt.moyen === "ticket") {
+      this.setState({ trlist: trlist.filter((t) => t !== rgt.info) });
     }
 
-    this.props.removeReglement({reglementId: id});
+    this.props.removeReglement({ reglementId: id });
   }
 
   toRemoveRendu(id) {
-
-   // const { rendus } = this.props.commande;
+    // const { rendus } = this.props.commande;
 
     // const rnd = rendus.find(r=>r.renduId==id);
     // if (rnd && rnd.moyen=='ticket') {
     //   this.setState({trlist: trlist.filter(t => t!=rgt.info)});
     // }
 
-    this.props.removeRendu({renduId: id});
+    this.props.removeRendu({ renduId: id });
   }
-
 
   // --- DEV / TEMPORAIRE ---
   /*
@@ -255,33 +246,30 @@ class Reglement extends React.Component {
   closeTiroir() {
     this.props.closeDrawer();
     const { reste } = this.updateValeurs();
-    
-    if (reste<0) this.props.addRendu({moyen:'especes', valeur: -reste});
+
+    if (reste < 0) this.props.addRendu({ moyen: "especes", valeur: -reste });
     this.beforeCloseReglement();
   }
 
-
   scanHandler(event) {
-    if (event.keyCode===13) {
+    if (event.keyCode === 13) {
       console.log(event.target.value);
       const decoded_string = this.decodeQRCode(event.target.value);
 
-      if (decoded_string.substr(0,3)==='cdt') {
-        this.parseAvoir(decoded_string)
+      if (decoded_string.substr(0, 3) === "cdt") {
+        this.parseAvoir(decoded_string);
       } else {
-        this.parseTR(decoded_string)
+        this.parseTR(decoded_string);
       }
-      
-      event.target.value = '';
+
+      event.target.value = "";
     }
   }
 
-
   decodeQRCode(value) {
+    const platform = process.platform === "darwin" ? "darwin" : "win";
 
-    const platform = process.platform==='darwin' ? 'darwin' : 'win';
-
-    let decoded = '';
+    let decoded = "";
     for (let caractere of value) {
       if (!decodetable[platform].hasOwnProperty(caractere)) {
         continue;
@@ -291,218 +279,327 @@ class Reglement extends React.Component {
     return decoded;
   }
 
-
   parseTR(value) {
     const { trlist } = this.state;
-    let error = '';
+    let error = "";
 
     const __value = String(value);
 
-    const __trValue = Number(__value.substr(11,5)) / 100;
-    const __trValid = Number(__value.substr(16,2));
+    const __trValue = Number(__value.substr(11, 5)) / 100;
+    const __trValid = Number(__value.substr(16, 2));
 
     // const __now = new Date().getFullYear() - 2000;
 
-    if (trlist.indexOf(__value)>-1) error = 'yet';
+    if (trlist.indexOf(__value) > -1) error = "yet";
 
-  // on supprime le test de validité (certains TR n'ont pas de date limite)
-  //  if (__trValid<__now) error = 'deprecated';
+    // on supprime le test de validité (certains TR n'ont pas de date limite)
+    //  if (__trValid<__now) error = 'deprecated';
 
-    if (error==='') {
-      this.toAddReglement('ticket',__trValue, value);
+    if (error === "") {
+      this.toAddReglement("ticket", __trValue, value);
       this.setState({ trlist: [...trlist, __value] });
     } else {
-      if (error==='deprecated') {
+      if (error === "deprecated") {
         Swal.fire({
-          type: 'warning',
-          title: strings.modules.encaissement.reglement.erreur.ticket[error].titre,
-          html: strings.modules.encaissement.reglement.erreur.ticket[error].texte,
+          type: "warning",
+          title:
+            strings.modules.encaissement.reglement.erreur.ticket[error].titre,
+          html:
+            strings.modules.encaissement.reglement.erreur.ticket[error].texte,
           showCancelButton: false,
           focusCancel: false,
-          focusConfirm: true
+          focusConfirm: true,
         });
       }
     }
 
-    console.log('tr', __trValue, __trValid);
-
+    console.log("tr", __trValue, __trValid);
   }
 
-
   parseAvoir(value) {
-    console.log('avoirID', value);
+    console.log("avoirID", value);
 
     const { avoirs, updateAvoir } = this.props;
-    let error = '';
-    const avoir = avoirs.find(av => av.code===value);
+    let error = "";
+    const avoir = avoirs.find((av) => av.code === value);
     // s'il y a un avoir correspondant au code
     // on vérifie qu'il n'a pas déjà été utilisé
     // et qu'il n'est pas périmé
     // AJOUTER ICI : la vérification du client
     if (avoir) {
-     if (avoir.hasOwnProperty('burnt')) error = 'burnt';
-     if (isBefore(endOfDay(new Date(avoir.limite)), endOfToday())) error = 'deprecated';
-    //  if (avoir.client && avoir.client!==commande.client_id) error = 'client';
+      if (avoir.hasOwnProperty("burnt")) error = "burnt";
+      if (isBefore(endOfDay(new Date(avoir.limite)), endOfToday()))
+        error = "deprecated";
+      //  if (avoir.client && avoir.client!==commande.client_id) error = 'client';
     } else {
-      error = 'inconnu';
+      error = "inconnu";
     }
 
-    if (error==='') {
-      this.toAddReglement('avoir', avoir.valeur, avoir.avoir_id);
+    if (error === "") {
+      this.toAddReglement("avoir", avoir.valeur, avoir.avoir_id);
       updateAvoir({
-        avoir_id: avoir.avoir_id, 
-        burnt: new Date().getTime()
+        avoir_id: avoir.avoir_id,
+        burnt: new Date().getTime(),
       });
     } else {
-
       Swal.fire({
-        type: 'warning',
+        type: "warning",
         title: strings.modules.encaissement.reglement.erreur.avoir[error].titre,
         html: strings.modules.encaissement.reglement.erreur.avoir[error].texte,
         showCancelButton: false,
         focusCancel: false,
-        focusConfirm: true
+        focusConfirm: true,
       });
     }
   }
 
   createAvoir(montant) {
-
     const { commande, createAvoir, addRendu } = this.props;
 
     createAvoir({
       client_id: null,
       ticket_id: commande.ticketId,
-      valeur: montant
+      valeur: montant,
     });
-    addRendu({moyen:'avoir', valeur: montant});
+    addRendu({ moyen: "avoir", valeur: montant });
 
     this.closeTiroir();
   }
 
-
   render() {
-
-    const { open, contClass, closeReglement, tiroirOuvert, params, modif } = this.props;
+    const {
+      open,
+      contClass,
+      closeReglement,
+      tiroirOuvert,
+      params,
+      modif,
+    } = this.props;
     const { reglements, rendus } = this.props.commande;
     const { reste, rendable } = this.updateValeurs();
     const { total, input } = this.state;
-    
-    const aAfficher = input ? total : Math.max(0,reste);
 
+    const aAfficher = input ? total : Math.max(0, reste);
 
     // gestion du focus sur le champ de recherche (scan QR code)
     clearInterval(this.interval);
-    
+
     const self = this;
-    if (open) {      
+    if (open) {
       this.interval = setInterval(() => {
         if (self.refs.trInput) self.refs.trInput.focus();
-      },500);
+      }, 500);
     } else {
       clearInterval(this.interval);
       this.interval = 0;
     }
 
-
-    
     return (
-    <Modal
-      open={open}
-      >
-      <div className={ `Reglement ${contClass}`}>
-        <div className="Modal-container">
-          <div className="header">
-            <div className="title">{ strings.modules.encaissement.reglement.titre }</div>
-            {/* { tiroirOuvert && 
+      <Modal open={open}>
+        <div className={`Reglement ${contClass}`}>
+          <div className="Modal-container">
+            <div className="header">
+              <div className="title">
+                {strings.modules.encaissement.reglement.titre}
+              </div>
+              {/* { tiroirOuvert && 
             <Button variant="outlined" size="small" style={{alignSelf:'flex-end',position:"absolute"}} className="fermeture-tiroir" onClick={ () => this.closeTiroir() }>Fermeture tiroir</Button>
             } */}
-          </div>
-          <div className="body">
-            <input className="tr-input" ref="trInput" onKeyUp={this.scanHandler} /> 
-            <div className="calculette">
-              <Calculette total={ aAfficher } buttonHandler={ this.calculetteClick } deleteHandler={ this.deleteCalculette } />
             </div>
-            <div className="liste">
-              <div className="liste-header">
-                <div className="lhdr lhdr-nom">{ strings.modules.encaissement.reglement.liste.titre }</div>
+            <div className="body">
+              <input
+                className="tr-input"
+                ref="trInput"
+                onKeyUp={this.scanHandler}
+              />
+              <div className="calculette">
+                <Calculette
+                  total={aAfficher}
+                  buttonHandler={this.calculetteClick}
+                  deleteHandler={this.deleteCalculette}
+                />
               </div>
-              <div className="wrapper">
-                <List
-                  disablePadding
-                >
-                { (undefined !== reglements) &&
-                    reglements.map((rgl,i) => 
-                      (undefined!==rgl) && <ReglementListeItem
-                          id={ i } 
-                          reglementid={ rgl.reglementId.toString() }
-                          key={ i }
-                          moyen={ rgl.moyen }
-                          valeur={ rgl.valeur }
-                          info={ rgl.info }
-                          removeItem={ this.toRemoveReglement } />
-                  )}
-                  { (undefined !== rendus) &&
-                      rendus.map((rgl,i) => 
-                        (undefined!==rgl) && <RenduListeItem
-                            id={ i } 
-                            renduid={ rgl.renduId.toString() }
-                            key={ i }
-                            moyen={ rgl.moyen }
-                            valeur={ rgl.valeur }
-                            removeItem={ this.toRemoveRendu }  />
-                    )}
-                </List>
-              </div>
-              {/* affichage du trop perçu : affiche si on peut rendre ou non la monnaie */}
-              <div className={ (reste<0 && rendable) ? 'trop-percu rendable' : 'trop-percu' }>
-              { (reste<0) && 
-                <div className="libelle"> 
-                {rendable && strings.modules.encaissement.reglement.liste.rendre }
-                {(!rendable && params.avoirs) && <PillButton elementclass="create-avoir" onClick={()=>{this.createAvoir((0-reste))}} text={strings.modules.encaissement.reglement.liste.create_avoir} />}
-                {(!rendable && !params.avoirs) && strings.modules.encaissement.reglement.liste.trop }
+              <div className="liste">
+                <div className="liste-header">
+                  <div className="lhdr lhdr-nom">
+                    {strings.modules.encaissement.reglement.liste.titre}
+                  </div>
                 </div>
-              }
-              { (reste<0) && <div className="reste">{ (0-reste).toFixed(2).replace('.',',') }</div> }
-              </div>
-            </div>
-            <div className="boutons">
-              <div className="raccourcis">
-                { RACCOURCIS.map((racc,i) =>
-                  <StdButton identifier={ `${racc}` } key={i} elementclass="raccourci" icon={ false } text={ strings.modules.encaissement.reglement.raccourcis[i] } onClick={(value) => { this.addValeur(Number(value)) }} />
+                <div className="wrapper">
+                  <List disablePadding>
+                    {undefined !== reglements &&
+                      reglements.map(
+                        (rgl, i) =>
+                          undefined !== rgl && (
+                            <ReglementListeItem
+                              id={i}
+                              reglementid={rgl.reglementId.toString()}
+                              key={i}
+                              moyen={rgl.moyen}
+                              valeur={rgl.valeur}
+                              info={rgl.info}
+                              removeItem={this.toRemoveReglement}
+                            />
+                          )
+                      )}
+                    {undefined !== rendus &&
+                      rendus.map(
+                        (rgl, i) =>
+                          undefined !== rgl && (
+                            <RenduListeItem
+                              id={i}
+                              renduid={rgl.renduId.toString()}
+                              key={i}
+                              moyen={rgl.moyen}
+                              valeur={rgl.valeur}
+                              removeItem={this.toRemoveRendu}
+                            />
+                          )
+                      )}
+                  </List>
+                </div>
+                {/* affichage du trop perçu : affiche si on peut rendre ou non la monnaie */}
+                <div
+                  className={
+                    reste < 0 && rendable ? "trop-percu rendable" : "trop-percu"
+                  }
+                >
+                  {reste < 0 && (
+                    <div className="libelle">
+                      {rendable &&
+                        strings.modules.encaissement.reglement.liste.rendre}
+                      {!rendable && params.avoirs && (
+                        <PillButton
+                          elementclass="create-avoir"
+                          onClick={() => {
+                            this.createAvoir(0 - reste);
+                          }}
+                          text={
+                            strings.modules.encaissement.reglement.liste
+                              .create_avoir
+                          }
+                        />
+                      )}
+                      {!rendable &&
+                        !params.avoirs &&
+                        strings.modules.encaissement.reglement.liste.trop}
+                    </div>
                   )}
+                  {reste < 0 && (
+                    <div className="reste">
+                      {(0 - reste).toFixed(2).replace(".", ",")}
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="moyens">
-                  <StdButton identifier="especes" elementclass="moyen" icon={ <EspecesIcon /> } text={ strings.modules.encaissement.reglement.moyens.especes } onClick={(value) => { this.toAddReglement(value) }} />
-                  <StdButton identifier="ticket" elementclass="moyen" icon={ <TicketIcon /> } text={ strings.modules.encaissement.reglement.moyens.ticket } onClick={(value) => { this.toAddReglement(value) }} />
-                  <StdButton identifier="carte" elementclass="moyen" icon={ <CarteIcon /> } text={ strings.modules.encaissement.reglement.moyens.carte } onClick={(value) => { this.toAddReglement(value) }} />
-                  <StdButton identifier="cheque" elementclass="moyen" icon={ <ChequeIcon /> } text={ strings.modules.encaissement.reglement.moyens.cheque } onClick={(value) => { this.toAddReglement(value) }} />
-                { params.avoirs && <StdButton identifier="avoir" elementclass={ `moyen avr`} icon={ <QRCodeIcon htmlColor="#ffffff" /> } text={ strings.modules.encaissement.reglement.moyens.avoir } onClick={(value) => { this.toAddReglement(value) }} /> }
+              <div className="boutons">
+                <div className="raccourcis">
+                  {RACCOURCIS.map((racc, i) => (
+                    <StdButton
+                      identifier={`${racc}`}
+                      key={i}
+                      elementclass="raccourci"
+                      icon={false}
+                      text={
+                        strings.modules.encaissement.reglement.raccourcis[i]
+                      }
+                      onClick={(value) => {
+                        this.addValeur(Number(value));
+                      }}
+                    />
+                  ))}
+                </div>
+                <div className="moyens">
+                  <StdButton
+                    identifier="especes"
+                    elementclass="moyen"
+                    icon={<EspecesIcon />}
+                    text={strings.modules.encaissement.reglement.moyens.especes}
+                    onClick={(value) => {
+                      this.toAddReglement(value);
+                    }}
+                  />
+                  <StdButton
+                    identifier="ticket"
+                    elementclass="moyen"
+                    icon={<TicketIcon />}
+                    text={strings.modules.encaissement.reglement.moyens.ticket}
+                    onClick={(value) => {
+                      this.toAddReglement(value);
+                    }}
+                  />
+                  <StdButton
+                    identifier="carte"
+                    elementclass="moyen"
+                    icon={<CarteIcon />}
+                    text={strings.modules.encaissement.reglement.moyens.carte}
+                    onClick={(value) => {
+                      this.toAddReglement(value);
+                    }}
+                  />
+                  <StdButton
+                    identifier="cheque"
+                    elementclass="moyen"
+                    icon={<ChequeIcon />}
+                    text={strings.modules.encaissement.reglement.moyens.cheque}
+                    onClick={(value) => {
+                      this.toAddReglement(value);
+                    }}
+                  />
+                  {params && params.avoirs && (
+                    <StdButton
+                      identifier="avoir"
+                      elementclass={`moyen avr`}
+                      icon={<QRCodeIcon htmlColor="#ffffff" />}
+                      text={strings.modules.encaissement.reglement.moyens.avoir}
+                      onClick={(value) => {
+                        this.toAddReglement(value);
+                      }}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        { (null===reglements || undefined===reglements || reglements.length===0) &&
-        <Fab aria-label="close" size="small" className="close-button" onClick={ this.beforeCloseReglement }>
-          <CloseIcon />
-        </Fab>
-        }
-        { (modif && reste===0) &&
-        <Fab aria-label="close" size="small" className="close-button" onClick={ closeReglement }>
-          <CloseIcon />
-        </Fab>
-        }
-         { tiroirOuvert && 
-        <Fab aria-label="close" size="small" className="close-button" onClick={ () => this.closeTiroir() }>
-          <CloseIcon />
-        </Fab>
-          // <Button variant="outlined" size="small" style={{alignSelf:'flex-end',position:"absolute"}} className="fermeture-tiroir" onClick={ () => this.closeTiroir() }>Fermeture tiroir</Button>
+          {(null === reglements ||
+            undefined === reglements ||
+            reglements.length === 0) && (
+            <Fab
+              aria-label="close"
+              size="small"
+              className="close-button"
+              onClick={this.beforeCloseReglement}
+            >
+              <CloseIcon />
+            </Fab>
+          )}
+          {modif && reste === 0 && (
+            <Fab
+              aria-label="close"
+              size="small"
+              className="close-button"
+              onClick={closeReglement}
+            >
+              <CloseIcon />
+            </Fab>
+          )}
+          {
+            tiroirOuvert && (
+              <Fab
+                aria-label="close"
+                size="small"
+                className="close-button"
+                onClick={() => this.closeTiroir()}
+              >
+                <CloseIcon />
+              </Fab>
+            )
+            // <Button variant="outlined" size="small" style={{alignSelf:'flex-end',position:"absolute"}} className="fermeture-tiroir" onClick={ () => this.closeTiroir() }>Fermeture tiroir</Button>
           }
-      </div>
-    </Modal>
+        </div>
+      </Modal>
     );
   }
-
 }
 
 export default Reglement;
@@ -523,31 +620,52 @@ Reglement.propTypes = {
   closeDrawer: PropTypes.func,
 };
 
-
-const RenduListeItem = ({id, renduid, moyen, valeur, removeItem}) => (
+const RenduListeItem = ({ id, renduid, moyen, valeur, removeItem }) => (
   <div className="RenduListeItem">
-    <ListItem 
-      disableGutters
+    <ListItem disableGutters>
+      <div className="rnditm moyen">
+        {strings.modules.encaissement.reglement.moyens[moyen]}
+      </div>
+      <div className="rnditm valeur">{`-${valeur
+        .toFixed(2)
+        .replace(".", ",")}`}</div>
+      <Fab
+        aria-label="remove"
+        size="small"
+        className="rnditm removebtn"
+        onClick={() => {
+          removeItem(renduid);
+        }}
       >
-      <div className="rnditm moyen">{ strings.modules.encaissement.reglement.moyens[moyen] }</div> 
-      <div className="rnditm valeur">{ `-${valeur.toFixed(2).replace('.',',')}` }</div>
-      <Fab aria-label="remove" size="small" className="rnditm removebtn" onClick={ () => { removeItem(renduid) } }>
-          <CloseIcon htmlColor="#FFFFFF" />
+        <CloseIcon htmlColor="#FFFFFF" />
       </Fab>
     </ListItem>
   </div>
 );
 
-
-const ReglementListeItem = ({id, reglementid, moyen, valeur, info, removeItem}) => (
+const ReglementListeItem = ({
+  id,
+  reglementid,
+  moyen,
+  valeur,
+  info,
+  removeItem,
+}) => (
   <div className="ReglementListeItem">
-    <ListItem 
-      disableGutters
+    <ListItem disableGutters>
+      <div className="ritm moyen">
+        {strings.modules.encaissement.reglement.moyens[moyen]}
+      </div>
+      <div className="ritm valeur">{valeur.toFixed(2).replace(".", ",")}</div>
+      <Fab
+        aria-label="remove"
+        size="small"
+        className="ritm removebtn"
+        onClick={() => {
+          removeItem(reglementid);
+        }}
       >
-      <div className="ritm moyen">{ strings.modules.encaissement.reglement.moyens[moyen] }</div> 
-      <div className="ritm valeur">{ valeur.toFixed(2).replace('.',',') }</div> 
-      <Fab aria-label="remove" size="small" className="ritm removebtn" onClick={ () => { removeItem(reglementid) } }>
-          <CloseIcon htmlColor="#FFFFFF" />
+        <CloseIcon htmlColor="#FFFFFF" />
       </Fab>
     </ListItem>
   </div>
@@ -559,5 +677,5 @@ ReglementListeItem.propTypes = {
   moyen: PropTypes.string.isRequired,
   valeur: PropTypes.number,
   info: PropTypes.string,
-  _onClick: PropTypes.func
+  _onClick: PropTypes.func,
 };

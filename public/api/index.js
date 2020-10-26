@@ -1,37 +1,42 @@
 // main process domain
 
-const electron = require('electron');
-const {setupMainHandler} = require('eiphop');
+const electron = require("electron");
+const { setupMainHandler } = require("eiphop");
 
-const dbCatalogueApi = require('./dbCatalogueApi.js');
-const dbCommandesApi = require('./dbCommandesApi.js');
-const dbCloturesApi = require('./dbCloturesApi.js');
-const dbParametresApi = require('./dbParametresApi.js');
-const dbEmployesApi = require('./dbEmployesApi.js');
-const dbMarketingApi = require('./dbMarketingApi.js');
-const dbUsersApi = require('./dbUsersApi.js');
-const dbClientsApi = require('./dbClientsApi.js');
-const dbTableApi = require('./dbTableApi.js');
+const dbCatalogueApi = require("./dbCatalogueApi.js");
+const dbCommandesApi = require("./dbCommandesApi.js");
+const dbCloturesApi = require("./dbCloturesApi.js");
+const dbParametresApi = require("./dbParametresApi.js");
+const dbEmployesApi = require("./dbEmployesApi.js");
+const dbMarketingApi = require("./dbMarketingApi.js");
+const dbUsersApi = require("./dbUsersApi.js");
+const dbClientsApi = require("./dbClientsApi.js");
+const dbTableApi = require("./dbTableApi.js");
+const dbProductApi = require("./dbProductApi.js");
 
-const peripheralApi = require('./peripheralApi.js');
-const server = require('./server.js');
-const sse = require('./sseApi.js');
+const peripheralApi = require("./peripheralApi.js");
+const server = require("./server.js");
+const sse = require("./sseApi.js");
 // const kds = require('./kitchenDisplayServer.js');
-const kds = require('./kdsEmitter.js');
+const kds = require("./kdsEmitter.js");
 
-
-setupMainHandler(electron, {
-                  ...dbCatalogueApi, 
-                  ...dbCommandesApi,
-                  ...dbCloturesApi,
-                  ...dbParametresApi,
-                  ...dbEmployesApi,
-                  ...dbMarketingApi,
-                  ...dbUsersApi,
-                  ...dbClientsApi,
-                  ...dbTableApi,
-                  ...peripheralApi,
-                  ...server,
-                  ...sse,
-                  ...kds
-                }, true);
+setupMainHandler(
+  electron,
+  {
+    ...dbCatalogueApi,
+    ...dbCommandesApi,
+    ...dbCloturesApi,
+    ...dbParametresApi,
+    ...dbEmployesApi,
+    ...dbMarketingApi,
+    ...dbUsersApi,
+    ...dbClientsApi,
+    ...dbTableApi,
+    ...peripheralApi,
+    ...server,
+    ...sse,
+    ...kds,
+    ...dbProductApi,
+  },
+  true
+);

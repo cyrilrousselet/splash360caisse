@@ -1,14 +1,14 @@
 export const modulesList = [
-  'marketing',
-  'encaissement',
-  'employes',
-  'listecommandes',
-  'cloture',
-  'menu',
-//  'stocks',
-  'statistiques',
-  'parametres',
-  'clients',
+  "marketing",
+  "encaissement",
+  "employes",
+  "listecommandes",
+  "cloture",
+  "menu",
+  //  'stocks',
+  "statistiques",
+  "parametres",
+  "clients",
 ];
 
 // modulesList[0] = 'marketing';
@@ -23,18 +23,18 @@ export const modulesList = [
 // modulesList[9] = 'parametres';
 
 export const paramSubmodulesList = [
-   'entreprise',
-   'utilisateurs',
-   'financier',
-   'peripheriques',
-   'commandes'
-//   'tables'
-//   'options'
+  "entreprise",
+  "utilisateurs",
+  "financier",
+  "peripheriques",
+  "commandes",
+  //   'tables'
+  //   'options'
 ];
 
 export const marketSubmodulesList = [
   // 'promotions',
   // 'newsletter',
-  // 'sms',
-  'avoirs'
+  "sms",
+  "avoirs",
 ];
