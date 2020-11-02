@@ -8,12 +8,7 @@ const { net } = require("electron");
 const http = require("http").Server(sync_server);
 const io = require("socket.io")(http);
 const ioclient = require("socket.io-client");
-const {
-  lowerFirst,
-  difference,
-  differenceBy,
-  intersection,
-} = require("lodash");
+const { difference, intersection } = require("lodash");
 
 const dbCatalogueApi = require("./dbCatalogueApi.js");
 const dbClientsApi = require("./dbClientsApi.js");
@@ -22,7 +17,6 @@ const dbCommandesApi = require("./dbCommandesApi.js");
 const dbEmployesApi = require("./dbEmployesApi.js");
 const dbMarketingApi = require("./dbMarketingApi.js");
 const dbUsersApi = require("./dbUsersApi.js");
-const { createProduct, deleteProduct, getProducts } = require("./dbProductApi");
 
 const connectedSecondaries = {};
 const connectedTerminals = {};
@@ -52,13 +46,6 @@ const SYNCHRO_TREATMENT = {
   setsyncedcommandes: "setSynchedCommandesSync",
 };
 
-const allowedOrigins = [
-  "http://127.0.0.1",
-  "http://localhost",
-  "http://192.168.1.185",
-  //'*'
-];
-
 let responses = [];
 
 const server = {
@@ -80,6 +67,7 @@ const server = {
     //     return callback(null, true);
     //   }
     // }));
+    api_server.disable("x-powered-by");
     api_server.use(cors({ origin: "*" }));
 
     api_server.use(express.urlencoded({ extended: false })).use(express.json());
@@ -130,19 +118,6 @@ const server = {
       wcont.send("chrono", { commande: req.body });
       res.json({ status: "success" });
     });
-
-    // api_server.post("/createProduct", (req, res) => {
-    //   const payload = req.body;
-    //   createProduct(payload).then((product) => {
-    //     res.send(product);
-    //   });
-    // });
-
-    // api_server.get("/allProducts", (req, res) => {
-    //   getProducts().then((product) => {
-    //     res.send(product);
-    //   });
-    // });
 
     api_server.listen(API_PORT, () => {
       log.info(`api_server listening on *:${API_PORT}`);
@@ -533,6 +508,7 @@ const actions = {
 
   // lancement du webservice (si la caisse est "primary")
   syncStartPrimary: (req, res) => {
+    log.info("Start sync service oon primary ...");
     sync_server.use(cors({ origin: "*" }));
 
     io.on("connection", (sock) => {
@@ -589,7 +565,7 @@ const actions = {
           sock.connect();
         }
         // else the socket will automatically try to reconnect
-        Object.entries(connectedSecondaries).forEach(([sockid, device]) => {
+        Object.entries(connectedSecondaries).forEach(([sockid]) => {
           // console.log("device", device)
           try {
             if (sockid == sock.id) {
@@ -611,7 +587,7 @@ const actions = {
 
   // émission de la synchro du primary en direction des secondaries
   syncDispatchToSecondaries: (req, res) => {
-    const { db, data, emitter } = req.payload;
+    const { db, emitter } = req.payload;
 
     // on envoie la synchro à tous les secondaries,
     // sauf celui qui est à l'origine de la synchro
@@ -669,7 +645,7 @@ const actions = {
       res.send({ msg: `synchro ${db} to primary` });
       //   log.info(`acceptUberOrder STATUS: ${response.statusCode}`);
       //   log.info(`acceptUberOrder HEADERS: ${JSON.stringify(response.headers)}`);
-      response.on("data", (chunk) => {
+      response.on("data", () => {
         //     __confirmation.push(chunk);
         //     log.info(`acceptUberOrder BODY: ${chunk}`)
       });

@@ -98,6 +98,11 @@ body {
   top: 50%;
   transform: translate(-50%, -50%); }
 
+.clearfix::before, .clearfix::after {
+  display: block;
+  content: "";
+  clear: both; }
+
 .Footer {
   position: fixed;
   padding: 0 25px 0 23px;
@@ -118,7 +123,8 @@ body {
   -moz-osx-font-smoothing: grayscale; }
   .Footer .connexion {
     text-transform: capitalize;
-    height: 23px; }
+    height: 23px;
+    user-select: none; }
     .Footer .connexion:before {
       content: '';
       display: inline-block;
@@ -131,21 +137,33 @@ body {
       box-shadow: inset 0 0 0 2px #7FAD3B; }
     .Footer .connexion span {
       vertical-align: baseline; }
+  .Footer .build-version {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: "Livvic-Regular";
+    color: #8F8E94;
+    font-size: 10px;
+    user-select: none; }
   .Footer .date {
     display: inline-block;
-    padding-right: 50px; }
+    padding-right: 50px;
+    user-select: none; }
   .Footer .heure {
-    display: inline-block; }
+    display: inline-block;
+    user-select: none; }
   .Footer .logout {
     display: inline-block;
     width: 24px;
     height: 24px;
-    margin-left: 50px; }
+    margin-left: 50px;
+    user-select: none; }
   .Footer .right {
     display: inline-flex;
     flex-direction: row;
     justify-content: flex-end;
-    align-items: center; }
+    align-items: center;
+    user-select: none; }
 
 .PillButton {
   display: inline-block;
@@ -303,7 +321,8 @@ body {
   display: inline-flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between; }
+  justify-content: space-between;
+  position: relative; }
   .switch-container.switch-disabled {
     opacity: .5; }
 
@@ -380,7 +399,7 @@ input[type="checkbox"].switch {
   align-items: center; }
   .topzone .cashName {
     display: inline-block;
-    padding: 0 60px 0 85px;
+    padding: 0 20px 0 85px;
     height: 60px;
     line-height: 60px;
     font-family: "Livvic-SemiBold";
@@ -394,7 +413,8 @@ input[type="checkbox"].switch {
     background-repeat: no-repeat;
     background-size: 28px 25px;
     background-position: 25px center;
-    width: 260px; }
+    width: 260px;
+    user-select: none; }
   .topzone .userName {
     display: inline-block;
     border-radius: 25px;
@@ -408,7 +428,8 @@ input[type="checkbox"].switch {
     text-align: center;
     background: #FFFFFF;
     text-transform: uppercase;
-    box-shadow: 0 5px 12px 0 rgba(0, 0, 0, 0.05); }
+    box-shadow: 0 5px 12px 0 rgba(0, 0, 0, 0.05);
+    user-select: none; }
   .topzone .dashboardLink {
     display: inline-block;
     padding: 0 40px 0 65px;
@@ -425,7 +446,8 @@ input[type="checkbox"].switch {
     background-image: url("./../../images/ico_home.svg");
     background-repeat: no-repeat;
     background-size: 24px 23px;
-    background-position: 25px center; }
+    background-position: 25px center;
+    user-select: none; }
 
 .labelledfield {
   display: inline-block;
@@ -518,6 +540,27 @@ input[type="checkbox"].switch {
     display: block; }
   .NumberKeyboardContainer .NumberKeyboard {
     box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1); }
+  .NumberKeyboardContainer.keyboard-only {
+    width: auto;
+    height: auto;
+    background-color: transparent;
+    position: relative; }
+    .NumberKeyboardContainer.keyboard-only .NumberKeyboard {
+      position: relative;
+      transform: none;
+      top: auto;
+      left: auto; }
+
+.Clavier {
+  top: auto !important;
+  position: absolute;
+  z-index: 1301;
+  font-family: "Livvic-Bold";
+  font-size: 18px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+  .Clavier .MuiBackdrop-root {
+    display: none; }
 
 .Login {
   height: calc(100% - 60px);
@@ -525,7 +568,7 @@ input[type="checkbox"].switch {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-image: url("./../../images/VISU_SPLASH.jpg");
+  background-image: url("./../../images/VISU_SPLASH-2_sslogo.jpg");
   background-size: cover; }
   .Login .logo {
     width: 350px;
@@ -591,6 +634,17 @@ input[type="checkbox"].switch {
     .Login .PillConnect.active {
       background-color: #FF2D55; }
 
+.MainLoader-items {
+  bottom: 100px;
+  position: absolute;
+  width: 100%; }
+
+.MainLoader-item {
+  font-family: "Livvic-Light";
+  color: #4A4A4A;
+  font-size: 14px;
+  text-align: center; }
+
 .Dashboard {
   height: calc(100% - 60px);
   background-image: url("./../../images/VISU_SPLASH-2.jpg");
@@ -610,7 +664,8 @@ input[type="checkbox"].switch {
     background-image: url("./../../images/ico_trophy.svg");
     background-repeat: no-repeat;
     background-size: 24px 23px;
-    background-position: 25px center; }
+    background-position: 25px center;
+    user-select: none; }
     .Dashboard .topzone .points.nopoint {
       opacity: 0; }
   .Dashboard .topzone .disconnect-button {
@@ -629,71 +684,73 @@ input[type="checkbox"].switch {
       text-align: center;
       width: 30%;
       padding: 5px 0; }
-  .Dashboard .LargeButton.marketing {
-    background-color: #7AD4F6; }
-    .Dashboard .LargeButton.marketing .LargeButton-icon {
-      background-image: url("./../../images/ico_marketing.svg");
-      background-size: 30px 30px; }
-    .Dashboard .LargeButton.marketing.Mui-disabled .LargeButton-icon {
-      background-image: url("./../../images/ico_marketing-noir.svg");
-      background-size: 30px 30px; }
-  .Dashboard .LargeButton.encaissement {
-    background-color: #9CD04E; }
-    .Dashboard .LargeButton.encaissement .LargeButton-icon {
-      background-image: url("./../../images/ico_encaissement.svg"); }
-  .Dashboard .LargeButton.employes {
-    background-color: #7AD4F6; }
-    .Dashboard .LargeButton.employes .LargeButton-icon {
-      background-image: url("./../../images/ico_employes.svg");
-      background-size: 30px 30px; }
-  .Dashboard .LargeButton.depenses {
-    background-color: #1EA9DF; }
-    .Dashboard .LargeButton.depenses .LargeButton-icon {
-      background-image: url("./../../images/ico_depenses.svg");
-      background-size: 27px 25px; }
-  .Dashboard .LargeButton.listecommandes {
-    background-color: #1EA9DF; }
-    .Dashboard .LargeButton.listecommandes .LargeButton-icon {
-      background-image: url("./../../images/ico_depenses.svg");
-      background-size: 27px 25px; }
-  .Dashboard .LargeButton.cloture {
-    background-color: #FE485F; }
-    .Dashboard .LargeButton.cloture .LargeButton-icon {
-      background-image: url("./../../images/ico_cloture.svg"); }
-  .Dashboard .LargeButton.stocks {
-    background-color: #1EA9DF; }
-    .Dashboard .LargeButton.stocks .LargeButton-icon {
-      background-image: url("./../../images/ico_stock.svg");
-      background-size: 34px 16px; }
-  .Dashboard .LargeButton.statistiques {
-    background-color: #167093; }
-    .Dashboard .LargeButton.statistiques .LargeButton-icon {
-      background-image: url("./../../images/ico_statistiques.svg");
-      background-size: 34px 30px; }
-  .Dashboard .LargeButton.menu {
-    background-color: #FDC24F; }
-    .Dashboard .LargeButton.menu .LargeButton-icon {
-      background-image: url("./../../images/ico_menu.svg");
-      background-size: 30px 30px; }
-    .Dashboard .LargeButton.menu.Mui-disabled .LargeButton-icon {
-      background-image: url("./../../images/ico_menu-noir.svg");
-      background-size: 30px 30px; }
-  .Dashboard .LargeButton.clients {
-    background-color: #167093; }
-    .Dashboard .LargeButton.clients .LargeButton-icon {
-      background-image: url("./../../images/ico_clients.svg");
-      background-size: 50px 24px; }
-  .Dashboard .LargeButton.parametres {
-    background-color: #ac61df; }
-    .Dashboard .LargeButton.parametres .LargeButton-icon {
-      background-image: url("./../../images/ico_parametres-blanc.svg");
-      background-size: 46px 30px; }
-    .Dashboard .LargeButton.parametres .LargeButton-text {
-      color: #FFFFFF; }
-  .Dashboard .LargeButton.Mui-disabled {
-    background-color: #EFEFEF; }
-    .Dashboard .LargeButton.Mui-disabled .LargeButton-text {
-      color: #4A4A4A; }
+  .Dashboard .LargeButton {
+    user-select: none; }
+    .Dashboard .LargeButton.marketing {
+      background-color: #7AD4F6; }
+      .Dashboard .LargeButton.marketing .LargeButton-icon {
+        background-image: url("./../../images/ico_marketing.svg");
+        background-size: 30px 30px; }
+      .Dashboard .LargeButton.marketing.Mui-disabled .LargeButton-icon {
+        background-image: url("./../../images/ico_marketing-noir.svg");
+        background-size: 30px 30px; }
+    .Dashboard .LargeButton.encaissement {
+      background-color: #9CD04E; }
+      .Dashboard .LargeButton.encaissement .LargeButton-icon {
+        background-image: url("./../../images/ico_encaissement.svg"); }
+    .Dashboard .LargeButton.employes {
+      background-color: #7AD4F6; }
+      .Dashboard .LargeButton.employes .LargeButton-icon {
+        background-image: url("./../../images/ico_employes.svg");
+        background-size: 30px 30px; }
+    .Dashboard .LargeButton.depenses {
+      background-color: #1EA9DF; }
+      .Dashboard .LargeButton.depenses .LargeButton-icon {
+        background-image: url("./../../images/ico_depenses.svg");
+        background-size: 27px 25px; }
+    .Dashboard .LargeButton.listecommandes {
+      background-color: #1EA9DF; }
+      .Dashboard .LargeButton.listecommandes .LargeButton-icon {
+        background-image: url("./../../images/ico_depenses.svg");
+        background-size: 27px 25px; }
+    .Dashboard .LargeButton.cloture {
+      background-color: #FE485F; }
+      .Dashboard .LargeButton.cloture .LargeButton-icon {
+        background-image: url("./../../images/ico_cloture.svg"); }
+    .Dashboard .LargeButton.stocks {
+      background-color: #1EA9DF; }
+      .Dashboard .LargeButton.stocks .LargeButton-icon {
+        background-image: url("./../../images/ico_stock.svg");
+        background-size: 34px 16px; }
+    .Dashboard .LargeButton.statistiques {
+      background-color: #167093; }
+      .Dashboard .LargeButton.statistiques .LargeButton-icon {
+        background-image: url("./../../images/ico_statistiques.svg");
+        background-size: 34px 30px; }
+    .Dashboard .LargeButton.menu {
+      background-color: #FDC24F; }
+      .Dashboard .LargeButton.menu .LargeButton-icon {
+        background-image: url("./../../images/ico_menu.svg");
+        background-size: 30px 30px; }
+      .Dashboard .LargeButton.menu.Mui-disabled .LargeButton-icon {
+        background-image: url("./../../images/ico_menu-noir.svg");
+        background-size: 30px 30px; }
+    .Dashboard .LargeButton.clients {
+      background-color: #167093; }
+      .Dashboard .LargeButton.clients .LargeButton-icon {
+        background-image: url("./../../images/ico_clients.svg");
+        background-size: 50px 24px; }
+    .Dashboard .LargeButton.parametres {
+      background-color: #ac61df; }
+      .Dashboard .LargeButton.parametres .LargeButton-icon {
+        background-image: url("./../../images/ico_parametres-blanc.svg");
+        background-size: 46px 30px; }
+      .Dashboard .LargeButton.parametres .LargeButton-text {
+        color: #FFFFFF; }
+    .Dashboard .LargeButton.Mui-disabled {
+      background-color: #EFEFEF; }
+      .Dashboard .LargeButton.Mui-disabled .LargeButton-text {
+        color: #4A4A4A; }
   .Dashboard .tickets,
   .Dashboard .ca {
     position: absolute;
@@ -701,7 +758,8 @@ input[type="checkbox"].switch {
     font-family: "Livvic-Light";
     font-size: 18px;
     color: #4A4A4A;
-    letter-spacing: 0; }
+    letter-spacing: 0;
+    user-select: none; }
     .Dashboard .tickets span,
     .Dashboard .ca span {
       font-family: "Livvic-SemiBold";
@@ -796,6 +854,7 @@ input[type="checkbox"].switch {
   color: #4A4A4A;
   text-align: center;
   text-transform: uppercase;
+  user-select: none;
   cursor: pointer; }
   .Encaissement .tab-link.tab-link-active {
     background-color: #FFFFFF;
@@ -887,10 +946,15 @@ input[type="checkbox"].switch {
     background-color: #628133; }
   .Encaissement .ProduitBtn.violet {
     background-color: #9867B6; }
-  .Encaissement .ProduitBtn.blanc, .Encaissement .ProduitBtn.bleuclair, .Encaissement .ProduitBtn.gris, .Encaissement .ProduitBtn.jaune, .Encaissement .ProduitBtn.jauneorange, .Encaissement .ProduitBtn.orange, .Encaissement .ProduitBtn.rose, .Encaissement .ProduitBtn.vertclair {
+  .Encaissement .ProduitBtn.blanc, .Encaissement .ProduitBtn.bleuclair, .Encaissement .ProduitBtn.jaune, .Encaissement .ProduitBtn.jauneorange, .Encaissement .ProduitBtn.orange, .Encaissement .ProduitBtn.rose, .Encaissement .ProduitBtn.vertclair {
     color: #4A4A4A; }
-  .Encaissement .ProduitBtn.bleufonce, .Encaissement .ProduitBtn.marron, .Encaissement .ProduitBtn.noir, .Encaissement .ProduitBtn.vertfonce, .Encaissement .ProduitBtn.violet, .Encaissement .ProduitBtn.rouge {
+  .Encaissement .ProduitBtn.bleufonce, .Encaissement .ProduitBtn.marron, .Encaissement .ProduitBtn.gris, .Encaissement .ProduitBtn.noir, .Encaissement .ProduitBtn.vertfonce, .Encaissement .ProduitBtn.violet, .Encaissement .ProduitBtn.rouge {
     color: #FFFFFF; }
+  .Encaissement .ProduitBtn.btn-disabled {
+    cursor: default;
+    color: #666666;
+    background-color: #8F8E94;
+    box-shadow: inset 0 0 0 3px #666666, 0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12); }
 
 .Encaissement .Panier {
   display: inline-block;
@@ -912,44 +976,66 @@ input[type="checkbox"].switch {
   .Encaissement .Panier.reglement-ouvert {
     z-index: 1301; }
   .Encaissement .Panier .header {
-    height: 30px; }
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 20px; }
     .Encaissement .Panier .header .ticketId {
       font-family: "Livvic-Regular";
-      font-size: 18px;
+      font-size: 15px;
       color: #4A4A4A;
-      padding: 5px; }
+      padding: 5px;
+      user-select: none; }
     .Encaissement .Panier .header .ticketComment {
       float: right; }
+    .Encaissement .Panier .header .ticketClient {
+      cursor: pointer; }
+      .Encaissement .Panier .header .ticketClient .client-set {
+        fill: #7FAD3B; }
+    .Encaissement .Panier .header .bipper {
+      margin-top: -5px; }
+      .Encaissement .Panier .header .bipper .ico-bipper {
+        height: 20px;
+        cursor: pointer; }
+        .Encaissement .Panier .header .bipper .ico-bipper.bipper-set {
+          fill: #7FAD3B; }
+        .Encaissement .Panier .header .bipper .ico-bipper svg {
+          width: auto;
+          height: 100%; }
   .Encaissement .Panier .body {
-    height: calc(100% - 205px); }
+    height: calc(100% - 165px); }
     .Encaissement .Panier .body .PanierListe {
       height: 100%; }
     .Encaissement .Panier .body .Liste {
       background-color: #F7F7F7;
       padding: 5px;
       border-radius: 5px;
-      height: calc(100% - 40px); }
+      height: calc(100% - 30px); }
       .Encaissement .Panier .body .Liste .liste-header {
         background-color: #E6E6E6;
         border-radius: 2px; }
         .Encaissement .Panier .body .Liste .liste-header .lhdr {
           font-family: "Livvic-Regular";
-          font-size: 15px;
+          font-size: 13px;
           color: #4A4A4A;
           display: inline-block;
-          padding: 7px 10px;
+          padding: 5px 10px;
           text-align: center; }
         .Encaissement .Panier .body .Liste .liste-header .lhdr-nom {
           width: 150px;
-          text-align: left; }
+          text-align: left;
+          user-select: none; }
         .Encaissement .Panier .body .Liste .liste-header .lhdr-quantite {
           width: 40px;
-          padding: 7px 6px;
-          background-color: rgba(0, 0, 0, 0.05); }
+          padding: 5px 6px;
+          background-color: rgba(0, 0, 0, 0.05);
+          user-select: none; }
         .Encaissement .Panier .body .Liste .liste-header .lhdr-prix {
-          width: 80px; }
+          width: 80px;
+          user-select: none; }
       .Encaissement .Panier .body .Liste .wrapper {
-        height: calc(100% - 94px);
+        height: calc(100% - 82px);
         overflow-y: scroll;
         background: linear-gradient(rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.05) 100%);
         background-size: 40px 100%;
@@ -959,23 +1045,25 @@ input[type="checkbox"].switch {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-        padding: 10px 10px; }
+        padding: 5px 10px; }
         .Encaissement .Panier .body .Liste .tools .tool {
           background-color: #FFFFFF; }
     .Encaissement .Panier .body .total {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      padding: 10px 10px 5px; }
+      padding: 5px 10px 5px; }
       .Encaissement .Panier .body .total .intitule {
         font-family: "Livvic-SemiBold";
         font-size: 18px;
-        color: #4A4A4A; }
+        color: #4A4A4A;
+        user-select: none; }
       .Encaissement .Panier .body .total .montant {
         font-family: "Livvic-SemiBold";
         font-size: 18px;
         color: #4A4A4A;
-        text-align: right; }
+        text-align: right;
+        user-select: none; }
   .Encaissement .Panier .modes {
     width: 100%;
     display: flex;
@@ -1002,27 +1090,45 @@ input[type="checkbox"].switch {
         font-family: "Livvic-Bold";
         font-size: 18px;
         text-transform: uppercase; }
+    .Encaissement .Panier .actions .action-mid {
+      width: 46%; }
+      .Encaissement .Panier .actions .action-mid .StdButton-text {
+        font-size: 15px; }
+    .Encaissement .Panier .actions .action-valider {
+      background-color: #5AC8FA;
+      min-height: 45px; }
+      .Encaissement .Panier .actions .action-valider .StdButton-text {
+        font-family: "Livvic-Bold";
+        font-size: 15px;
+        text-transform: uppercase; }
     .Encaissement .Panier .actions .action-tiroir {
       background-color: #4A4A4A; }
     .Encaissement .Panier .actions .action-attente {
       background-color: #FFCC00; }
     .Encaissement .Panier .actions .action-reprise {
       background-color: #FFCC00; }
+    .Encaissement .Panier .actions .StdButton {
+      margin: 3px 5px !important; }
   .Encaissement .Panier .PanierListeItem .MuiButtonBase-root {
     padding: 0 !important;
-    display: table-row; }
+    flex-wrap: wrap; }
   .Encaissement .Panier .PanierListeItem .litm,
   .Encaissement .Panier .PanierListeItem .lsitm {
     font-family: "Livvic-Regular";
-    font-size: 15px;
+    font-size: 13px;
     color: #4A4A4A;
     display: table-cell;
     padding: 7px 10px;
     text-align: center;
     vertical-align: middle; }
+  .Encaissement .Panier .PanierListeItem .litm.row {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center; }
   .Encaissement .Panier .PanierListeItem .lsitm {
-    font-family: "Livvic-Light";
-    font-size: 14px;
+    font-family: "Livvic-Regular";
+    font-size: 12px;
     color: #4A4A4A; }
   .Encaissement .Panier .PanierListeItem .MuiListItem-root.Mui-selected {
     background-color: #1EA9DF; }
@@ -1030,24 +1136,101 @@ input[type="checkbox"].switch {
       font-family: "Livvic-SemiBold";
       color: #FFFFFF; }
   .Encaissement .Panier .PanierListeItem .nom {
-    width: 150px;
-    text-align: left; }
+    width: 140px;
+    text-align: left;
+    box-sizing: border-box;
+    user-select: none; }
   .Encaissement .Panier .PanierListeItem .quantite {
+    box-sizing: border-box;
     width: 40px;
-    padding: 7px 6px; }
-    .Encaissement .Panier .PanierListeItem .quantite:after {
+    padding: 0px 6px;
+    text-align: right;
+    position: relative;
+    user-select: none; }
+    .Encaissement .Panier .PanierListeItem .quantite:before {
       content: '\00d7';
       display: inline-block;
       position: absolute;
-      padding-left: 3px; }
+      padding-left: 5px;
+      padding-right: 3px;
+      left: 3px; }
   .Encaissement .Panier .PanierListeItem .prix {
-    width: 80px; }
+    box-sizing: border-box;
+    width: 50px;
+    text-align: right;
+    user-select: none; }
+  .Encaissement .Panier .PanierListeItem .lsitm.row {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center; }
+  .Encaissement .Panier .PanierListeItem .litm-comment,
+  .Encaissement .Panier .PanierListeItem .lsitm-comment {
+    box-sizing: border-box;
+    width: 100%;
+    text-align: center;
+    background-color: #F7F7F7;
+    background-image: linear-gradient(#E6E6E6 0%, #E6E6E6 100%);
+    background-repeat: no-repeat;
+    background-size: 50% 1px;
+    background-position: center bottom;
+    font-family: "Livvic-Light";
+    color: #4A4A4A;
+    margin-top: -5px;
+    padding-bottom: 5px;
+    font-size: 12px;
+    position: relative; }
+    .Encaissement .Panier .PanierListeItem .litm-comment .cmtdel,
+    .Encaissement .Panier .PanierListeItem .lsitm-comment .cmtdel {
+      position: absolute;
+      top: 50%;
+      margin-top: -9px;
+      right: 0;
+      height: 17px;
+      width: 20px;
+      cursor: pointer; }
+      .Encaissement .Panier .PanierListeItem .litm-comment .cmtdel svg,
+      .Encaissement .Panier .PanierListeItem .lsitm-comment .cmtdel svg {
+        width: auto;
+        height: 18px;
+        padding: 0;
+        margin: 0; }
+  .Encaissement .Panier .PanierListeItem .lsitm-compo .nom {
+    font-family: "Livvic-Regular";
+    color: #666666;
+    font-style: italic; }
   .Encaissement .Panier .PanierListeItem .ingredients-list {
     display: table;
     width: 100%;
     padding: 0; }
     .Encaissement .Panier .PanierListeItem .ingredients-list .nom {
       padding-left: 20px; }
+  .Encaissement .Panier .separateur {
+    height: 10px; }
+  .Encaissement .Panier .discount {
+    border-radius: 18px;
+    background-color: #9CD04E;
+    padding: 3px 20px; }
+    .Encaissement .Panier .discount .MuiTypography-body1 {
+      font-size: 16px;
+      font-family: "Livvic-SemiBold"; }
+    .Encaissement .Panier .discount + .MuiListItemSecondaryAction-root {
+      display: inline-flex;
+      flex-direction: row;
+      padding-right: 5px; }
+      .Encaissement .Panier .discount + .MuiListItemSecondaryAction-root .MuiTypography-body1 {
+        font-size: 16px;
+        font-family: "Livvic-SemiBold"; }
+    .Encaissement .Panier .discount.item-discount {
+      background-color: #5AC8FA;
+      margin-left: 15px;
+      width: calc(100% - 15px); }
+      .Encaissement .Panier .discount.item-discount .MuiTypography-body1 {
+        font-size: 14px;
+        font-family: "Livvic-Light"; }
+      .Encaissement .Panier .discount.item-discount + .MuiListItemSecondaryAction-root .MuiTypography-body1 {
+        font-size: 14px;
+        font-family: "Livvic-Light"; }
 
 .Reglement {
   display: inline-block;
@@ -1083,6 +1266,20 @@ input[type="checkbox"].switch {
       color: #4A4A4A;
       text-align: center;
       text-transform: uppercase; }
+  .Reglement .body .tr-input {
+    opacity: 0;
+    position: absolute;
+    right: 30px;
+    top: 120px;
+    outline: none;
+    user-select: none; }
+  .Reglement .body .avr-input {
+    opacity: 0;
+    position: absolute;
+    right: 30px;
+    top: 120px;
+    outline: none;
+    user-select: none; }
   .Reglement .body .calculette {
     display: inline-block;
     vertical-align: top;
@@ -1147,11 +1344,19 @@ input[type="checkbox"].switch {
       height: 35px;
       align-items: center;
       padding: 0 10px;
-      font-family: "Avenir-Black";
+      font-family: "Livvic-Bold";
       font-size: 15px;
       color: #FF2D55; }
       .Reglement .body .liste .trop-percu.rendable {
         color: #4A4A4A; }
+      .Reglement .body .liste .trop-percu .create-avoir {
+        box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.1);
+        background-color: #7FAD3B;
+        height: 30px;
+        line-height: 30px; }
+        .Reglement .body .liste .trop-percu .create-avoir .PillButton-text {
+          color: #FFFFFF;
+          font-size: 17px; }
   .Reglement .body .boutons .raccourcis {
     display: flex;
     flex-direction: row;
@@ -1186,32 +1391,52 @@ input[type="checkbox"].switch {
       .Reglement .body .boutons .moyens .moyen.StdButton .StdButton-text {
         font-family: "Livvic-Bold";
         font-size: 17px; }
-  .Reglement .ReglementListeItem {
+      .Reglement .body .boutons .moyens .moyen.avr .StdButton-icon {
+        height: 20px; }
+      .Reglement .body .boutons .moyens .moyen.avr.actif {
+        background-color: #FF2D55; }
+  .Reglement .ReglementListeItem,
+  .Reglement .RenduListeItem {
     background-color: #FFFFFF;
     border-radius: 18px;
     margin-top: 2px;
     height: 36px; }
-    .Reglement .ReglementListeItem .MuiListItem-root {
+    .Reglement .ReglementListeItem .MuiListItem-root,
+    .Reglement .RenduListeItem .MuiListItem-root {
       justify-content: space-between;
       padding: 0 3px 0 10px;
       align-items: center;
       height: 36px; }
-    .Reglement .ReglementListeItem .ritm.moyen {
+    .Reglement .ReglementListeItem .ritm.moyen,
+    .Reglement .ReglementListeItem .rnditm.moyen,
+    .Reglement .RenduListeItem .ritm.moyen,
+    .Reglement .RenduListeItem .rnditm.moyen {
       font-family: "Livvic-Regular";
       font-size: 15px;
       color: #4A4A4A;
       width: 160px; }
-    .Reglement .ReglementListeItem .ritm.valeur {
+    .Reglement .ReglementListeItem .ritm.valeur,
+    .Reglement .ReglementListeItem .rnditm.valeur,
+    .Reglement .RenduListeItem .ritm.valeur,
+    .Reglement .RenduListeItem .rnditm.valeur {
       font-family: "Livvic-Bold";
       font-size: 15px;
       color: #4A4A4A;
       width: 60px; }
-    .Reglement .ReglementListeItem .ritm.removebtn {
+    .Reglement .ReglementListeItem .ritm.removebtn,
+    .Reglement .ReglementListeItem .rnditm.removebtn,
+    .Reglement .RenduListeItem .ritm.removebtn,
+    .Reglement .RenduListeItem .rnditm.removebtn {
       width: 30px;
       height: 30px;
       min-height: 30px;
       background-color: red;
       box-shadow: none; }
+  .Reglement .RenduListeItem {
+    background-color: #EE7886; }
+    .Reglement .RenduListeItem .rnditm.moyen,
+    .Reglement .RenduListeItem .rnditm.valeur {
+      color: #FFFFFF; }
 
 .CommentModal {
   display: inline-block;
@@ -1304,10 +1529,176 @@ input[type="checkbox"].switch {
         font-size: 14px;
         text-transform: uppercase; }
 
+.DiscountModal {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none; }
+  .DiscountModal .Modal-container {
+    background-color: #FFFFFF;
+    width: 500px;
+    border-radius: 15px;
+    padding: 0 20px; }
+  .DiscountModal .close-button {
+    background-color: #FFFFFF;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px; }
+  .DiscountModal .header {
+    height: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; }
+    .DiscountModal .header .title {
+      font-family: "Livvic-Bold";
+      font-size: 18px;
+      color: #4A4A4A;
+      text-align: center;
+      text-transform: uppercase; }
+  .DiscountModal .body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-bottom: 30px; }
+    .DiscountModal .body .form-group {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      width: 100%; }
+      .DiscountModal .body .form-group .label {
+        font-family: "Livvic-Light";
+        font-size: 14px;
+        color: #4A4A4A;
+        padding-right: 10px;
+        -webkit-user-select: none;
+        user-select: none;
+        display: inline-block; }
+      .DiscountModal .body .form-group .valeur {
+        width: 100%;
+        font-family: "Livvic-Bold";
+        font-size: 25px;
+        color: #4A4A4A;
+        text-align: center;
+        -webkit-user-select: none;
+        user-select: none;
+        display: inline-block; }
+        .DiscountModal .body .form-group .valeur .MuiTextField-root {
+          width: 100%; }
+      .DiscountModal .body .form-group .caption {
+        font-family: "Livvic-Light";
+        font-size: 13px;
+        width: 100%;
+        text-align: right;
+        color: #4A4A4A;
+        -webkit-user-select: none;
+        user-select: none;
+        display: inline-block; }
+    .DiscountModal .body .dsclib-item {
+      font-family: "Livvic-Bold";
+      font-size: 20px;
+      color: #4A4A4A;
+      -webkit-user-select: none;
+      user-select: none;
+      display: inline-block;
+      padding: 8px 15px;
+      margin: 5px;
+      border-radius: 3px;
+      background-color: #F7F7F7;
+      cursor: pointer; }
+  .DiscountModal .footer {
+    text-align: right; }
+    .DiscountModal .footer .save {
+      background-color: #7FAD3B;
+      width: 45%;
+      min-height: 30px; }
+      .DiscountModal .footer .save .StdButton-text {
+        font-family: "Livvic-Bold";
+        font-size: 14px;
+        text-transform: uppercase; }
+
+.BipperModal {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none; }
+  .BipperModal .Modal-container {
+    background-color: #FFFFFF;
+    width: 500px;
+    border-radius: 15px;
+    padding: 0 20px; }
+  .BipperModal .close-button {
+    background-color: #FFFFFF;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px; }
+  .BipperModal .header {
+    height: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; }
+    .BipperModal .header .title {
+      font-family: "Livvic-Bold";
+      font-size: 18px;
+      color: #4A4A4A;
+      text-align: center;
+      text-transform: uppercase; }
+  .BipperModal .body {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 30px; }
+    .BipperModal .body .bipper-valeur {
+      font-family: "Livvic-Bold";
+      font-size: 20px;
+      color: #4A4A4A;
+      background-color: #F7F7F7;
+      border-radius: 10px;
+      height: 50px;
+      display: inline-flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      width: 75%;
+      margin-bottom: 20px; }
+  .BipperModal .footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center; }
+    .BipperModal .footer .suppr {
+      background-color: #FF2D55;
+      width: 45%;
+      min-height: 30px; }
+      .BipperModal .footer .suppr .StdButton-text {
+        font-family: "Livvic-Bold";
+        font-size: 14px;
+        text-transform: uppercase; }
+    .BipperModal .footer .save {
+      background-color: #7FAD3B;
+      width: 45%;
+      min-height: 30px; }
+      .BipperModal .footer .save .StdButton-text {
+        font-family: "Livvic-Bold";
+        font-size: 14px;
+        text-transform: uppercase; }
+
 .subcontent {
   display: inline-flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   margin-left: 20px;
   height: 100%;
@@ -1317,22 +1708,65 @@ input[type="checkbox"].switch {
   font-size: 30px;
   text-align: center; }
 
+.Parametres .Commandes header {
+  box-shadow: none;
+  background-color: transparent;
+  flex-direction: row;
+  justify-content: space-between; }
+  .Parametres .Commandes header .MuiButtonBase-root {
+    font-family: "Livvic-SemiBold";
+    font-size: 18px;
+    background-color: #E6E6E6;
+    border-radius: 15px 15px 0 0;
+    color: #4A4A4A;
+    margin-right: 2px;
+    padding: 8px 25px; }
+    .Parametres .Commandes header .MuiButtonBase-root.Mui-selected {
+      background-color: #FFFFFF;
+      color: #1EA9DF;
+      font-family: "Livvic-Bold"; }
+  .Parametres .Commandes header .MuiTabs-fixed {
+    width: auto; }
+  .Parametres .Commandes header .MuiTabs-indicator {
+    background-color: transparent; }
+  .Parametres .Commandes header .MuiTabs-flexContainer {
+    display: inline-flex; }
+  .Parametres .Commandes header .displayId {
+    height: 40px;
+    background-color: #FFFFFF;
+    padding-left: 20px;
+    width: 280px; }
+    .Parametres .Commandes header .displayId input {
+      height: 40px;
+      width: 200px;
+      margin-top: 0;
+      font-size: 15px;
+      font-family: "Livvic-SemiBold";
+      letter-spacing: 0; }
+    .Parametres .Commandes header .displayId .innerButton {
+      height: 40px; }
+      .Parametres .Commandes header .displayId .innerButton.btn-keyboard {
+        background-image: url("./../../images/numberkeyboard.svg"); }
+
+.Parametres .Commandes .MuiTypography-root {
+  height: calc(100% - 48px);
+  width: 100%;
+  background-color: #FFFFFF;
+  border-radius: 0px 15px 15px 15px; }
+
 .Parametres .Commandes div {
   box-sizing: content-box; }
 
-.Parametres .Commandes.subcontent {
-  display: inline-flex;
-  justify-content: flex-start;
-  align-items: start;
+.Parametres .Commandes.subcontent .panel {
   text-align: left;
-  padding: 15px;
-  background-color: #FFFFFF;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1); }
-  .Parametres .Commandes.subcontent header {
+  overflow-y: auto; }
+
+.Parametres .Commandes.subcontent .CommandesGeneral {
+  position: relative; }
+  .Parametres .Commandes.subcontent .CommandesGeneral header {
     box-shadow: none;
     background-color: transparent; }
-    .Parametres .Commandes.subcontent header .MuiButtonBase-root {
+    .Parametres .Commandes.subcontent .CommandesGeneral header .MuiButtonBase-root {
       font-family: "Livvic-SemiBold";
       font-size: 18px;
       background-color: #E6E6E6;
@@ -1340,55 +1774,56 @@ input[type="checkbox"].switch {
       color: #4A4A4A;
       margin-right: 2px;
       padding: 8px 25px; }
-      .Parametres .Commandes.subcontent header .MuiButtonBase-root.Mui-selected {
+      .Parametres .Commandes.subcontent .CommandesGeneral header .MuiButtonBase-root.Mui-selected {
         background-color: #FFFFFF;
         color: #1EA9DF;
         font-family: "Livvic-Bold"; }
-    .Parametres .Commandes.subcontent header .MuiTabs-indicator {
+    .Parametres .Commandes.subcontent .CommandesGeneral header .MuiTabs-indicator {
       background-color: transparent; }
-  .Parametres .Commandes.subcontent .MuiTableCell-stickyHeader {
+  .Parametres .Commandes.subcontent .CommandesGeneral .MuiTableCell-stickyHeader {
     background-color: transparent; }
-  .Parametres .Commandes.subcontent .MuiTableCell-root {
+  .Parametres .Commandes.subcontent .CommandesGeneral .MuiTableCell-root {
     font-family: "Livvic-Regular";
     border: none; }
-    .Parametres .Commandes.subcontent .MuiTableCell-root.MuiTableCell-head {
+    .Parametres .Commandes.subcontent .CommandesGeneral .MuiTableCell-root.MuiTableCell-head {
       font-family: "Livvic-SemiBold"; }
-  .Parametres .Commandes.subcontent thead {
+  .Parametres .Commandes.subcontent .CommandesGeneral thead {
     background-color: rgba(0, 0, 0, 0.1); }
-  .Parametres .Commandes.subcontent .liste-frais {
+  .Parametres .Commandes.subcontent .CommandesGeneral .liste-frais {
     width: 150px;
     text-align: center; }
-  .Parametres .Commandes.subcontent .liste-remise {
+  .Parametres .Commandes.subcontent .CommandesGeneral .liste-remise {
     width: 150px;
     text-align: center; }
-  .Parametres .Commandes.subcontent .liste-activation {
+  .Parametres .Commandes.subcontent .CommandesGeneral .liste-activation {
     width: 100px;
     text-align: center; }
-  .Parametres .Commandes.subcontent tbody .liste-nom {
+  .Parametres .Commandes.subcontent .CommandesGeneral tbody .liste-nom {
     text-transform: capitalize;
     text-decoration: underline; }
-    .Parametres .Commandes.subcontent tbody .liste-nom div {
+    .Parametres .Commandes.subcontent .CommandesGeneral tbody .liste-nom div {
       cursor: pointer; }
-  .Parametres .Commandes.subcontent tbody .liste-frais {
+  .Parametres .Commandes.subcontent .CommandesGeneral tbody .liste-frais {
     text-align: right; }
-  .Parametres .Commandes.subcontent tbody .liste-remise {
+  .Parametres .Commandes.subcontent .CommandesGeneral tbody .liste-remise {
     text-align: right; }
-  .Parametres .Commandes.subcontent tbody .liste-activation {
+  .Parametres .Commandes.subcontent .CommandesGeneral tbody .liste-activation {
     text-align: center; }
-  .Parametres .Commandes.subcontent tbody .odd {
+  .Parametres .Commandes.subcontent .CommandesGeneral tbody .odd {
     background-color: rgba(0, 0, 0, 0.05); }
-  .Parametres .Commandes.subcontent .subttl {
+  .Parametres .Commandes.subcontent .CommandesGeneral .subttl {
     font-family: "Livvic-Bold";
     font-size: 18px;
     padding: 10px 0; }
-  .Parametres .Commandes.subcontent .addtype-button {
+  .Parametres .Commandes.subcontent .CommandesGeneral .addtype-button {
     background-color: #1EA9DF;
     position: absolute;
-    right: 60px;
+    top: 0;
+    right: 0px;
     width: 30px;
     height: 30px;
     min-height: 30px; }
-  .Parametres .Commandes.subcontent .table-wrapper {
+  .Parametres .Commandes.subcontent .CommandesGeneral .table-wrapper {
     width: 100%;
     height: calc(100% - 200px);
     overflow-y: auto;
@@ -1399,33 +1834,33 @@ input[type="checkbox"].switch {
     background-repeat: no-repeat;
     background-size: calc(50% - 195px) 100%, 150px 100%, 100px 100%;
     background-position: 0 0, calc(100% - 250px) 0, 100% 0; }
-  .Parametres .Commandes.subcontent .numero-wrapper {
+  .Parametres .Commandes.subcontent .CommandesGeneral .numero-wrapper {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     width: 100%; }
-    .Parametres .Commandes.subcontent .numero-wrapper .labelledfield {
+    .Parametres .Commandes.subcontent .CommandesGeneral .numero-wrapper .labelledfield {
       width: 230px; }
-      .Parametres .Commandes.subcontent .numero-wrapper .labelledfield label {
+      .Parametres .Commandes.subcontent .CommandesGeneral .numero-wrapper .labelledfield label {
         display: inline-block;
         width: 50%; }
-      .Parametres .Commandes.subcontent .numero-wrapper .labelledfield .input-wrapper {
+      .Parametres .Commandes.subcontent .CommandesGeneral .numero-wrapper .labelledfield .input-wrapper {
         width: 50%; }
-      .Parametres .Commandes.subcontent .numero-wrapper .labelledfield.fielddebut {
+      .Parametres .Commandes.subcontent .CommandesGeneral .numero-wrapper .labelledfield.fielddebut {
         width: 260px; }
-        .Parametres .Commandes.subcontent .numero-wrapper .labelledfield.fielddebut label {
+        .Parametres .Commandes.subcontent .CommandesGeneral .numero-wrapper .labelledfield.fielddebut label {
           width: 70%; }
-        .Parametres .Commandes.subcontent .numero-wrapper .labelledfield.fielddebut .input-wrapper {
+        .Parametres .Commandes.subcontent .CommandesGeneral .numero-wrapper .labelledfield.fielddebut .input-wrapper {
           width: 30%; }
-      .Parametres .Commandes.subcontent .numero-wrapper .labelledfield.fieldcompteur input {
+      .Parametres .Commandes.subcontent .CommandesGeneral .numero-wrapper .labelledfield.fieldcompteur input {
         border-radius: 5px 0px 0px 5px; }
-    .Parametres .Commandes.subcontent .numero-wrapper .currentnum-wrapper {
+    .Parametres .Commandes.subcontent .CommandesGeneral .numero-wrapper .currentnum-wrapper {
       display: flex;
       flex-direction: row;
       align-items: baseline; }
-    .Parametres .Commandes.subcontent .numero-wrapper .btn-reset {
+    .Parametres .Commandes.subcontent .CommandesGeneral .numero-wrapper .btn-reset {
       display: inline-block;
       background-color: #F7F7F7;
       padding: 0 5px;
@@ -1437,33 +1872,99 @@ input[type="checkbox"].switch {
       color: #8F8E94;
       text-decoration: underline;
       cursor: pointer; }
-    .Parametres .Commandes.subcontent .numero-wrapper .switch-container {
-      width: 220px;
-      padding-top: 10px; }
-      .Parametres .Commandes.subcontent .numero-wrapper .switch-container label {
-        position: relative;
-        user-select: none;
-        left: 75%; }
-      .Parametres .Commandes.subcontent .numero-wrapper .switch-container label + label {
-        font-family: "Livvic-Regular";
-        font-size: 14px;
-        color: #4A4A4A;
-        position: absolute;
-        left: auto; }
+  .Parametres .Commandes.subcontent .CommandesGeneral .switch-container {
+    width: 220px;
+    padding-top: 10px; }
+    .Parametres .Commandes.subcontent .CommandesGeneral .switch-container label {
+      position: relative;
+      user-select: none;
+      left: 75%; }
+    .Parametres .Commandes.subcontent .CommandesGeneral .switch-container label + label {
+      font-family: "Livvic-Regular";
+      font-size: 14px;
+      color: #4A4A4A;
+      position: absolute;
+      left: auto; }
+
+.Parametres .Commandes.subcontent .CommandesCommentaires {
+  position: relative; }
+  .Parametres .Commandes.subcontent .CommandesCommentaires .subttl {
+    font-family: "Livvic-Bold";
+    font-size: 18px;
+    padding: 10px 0; }
+  .Parametres .Commandes.subcontent .CommandesCommentaires .addcmt-button {
+    background-color: #1EA9DF;
+    position: absolute;
+    top: 0;
+    right: 0px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px; }
+
+.Parametres .Commandes.subcontent .CommandesCanaux {
+  text-align: left; }
+  .Parametres .Commandes.subcontent .CommandesCanaux .providerGroup {
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 2px #4A4A4A; }
+  .Parametres .Commandes.subcontent .CommandesCanaux .subttl {
+    font-family: "Livvic-Bold";
+    font-size: 18px;
+    padding: 0 10px 10px 0;
+    background-color: #FFFFFF;
+    display: inline-block; }
+  .Parametres .Commandes.subcontent .CommandesCanaux .labelledfield {
+    display: flex;
+    padding: 0 10px 10px 10px; }
+    .Parametres .Commandes.subcontent .CommandesCanaux .labelledfield label {
+      width: 150px; }
+    .Parametres .Commandes.subcontent .CommandesCanaux .labelledfield .input-wrapper {
+      width: calc(100% - 150px); }
+  .Parametres .Commandes.subcontent .CommandesCanaux .switch-container {
+    padding: 0 0 10px 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start; }
+    .Parametres .Commandes.subcontent .CommandesCanaux .switch-container label {
+      position: relative;
+      user-select: none; }
+    .Parametres .Commandes.subcontent .CommandesCanaux .switch-container label + label {
+      font-family: "Livvic-Regular";
+      font-size: 14px;
+      color: #4A4A4A;
+      padding-left: 20px;
+      left: auto; }
+
+.Parametres .Commandes.subcontent .CommandesDiscount {
+  position: relative; }
+  .Parametres .Commandes.subcontent .CommandesDiscount .subttl {
+    font-family: "Livvic-Bold";
+    font-size: 18px;
+    padding: 10px 0; }
+  .Parametres .Commandes.subcontent .CommandesDiscount .adddsc-button {
+    background-color: #1EA9DF;
+    position: absolute;
+    top: 0;
+    right: 0px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px; }
 
 .Parametres .Entreprise div {
   box-sizing: content-box; }
 
 .Parametres .Entreprise.subcontent {
-  display: inline-flex;
-  justify-content: flex-start;
-  align-items: start;
-  text-align: left;
-  padding: 15px;
-  flex-wrap: wrap;
+  overflow-y: auto;
+  height: 100%;
   background-color: #FFFFFF;
   border-radius: 15px;
   box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1); }
+  .Parametres .Entreprise.subcontent .wrapper {
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    text-align: left;
+    padding: 15px;
+    flex-wrap: wrap; }
   .Parametres .Entreprise.subcontent .col {
     width: 55%; }
     .Parametres .Entreprise.subcontent .col:last-child {
@@ -1529,6 +2030,31 @@ input[type="checkbox"].switch {
       margin-left: 20px;
       width: calc(100% - 20px);
       resize: none; }
+  .Parametres .Entreprise.subcontent .logo-ticket {
+    padding-top: 10px; }
+    .Parametres .Entreprise.subcontent .logo-ticket label {
+      font-family: "Livvic-Regular";
+      font-size: 14px;
+      color: #4A4A4A;
+      padding-bottom: 6px;
+      user-select: none;
+      display: block; }
+    .Parametres .Entreprise.subcontent .logo-ticket .ticket-caption {
+      padding-left: 20px; }
+    .Parametres .Entreprise.subcontent .logo-ticket .logo-boutons {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center; }
+    .Parametres .Entreprise.subcontent .logo-ticket .browse-logo {
+      background-color: #5AC8FA; }
+    .Parametres .Entreprise.subcontent .logo-ticket .delete-logo {
+      background-color: #FF2D55; }
+    .Parametres .Entreprise.subcontent .logo-ticket .logo-ticket-image {
+      width: 100%; }
+      .Parametres .Entreprise.subcontent .logo-ticket .logo-ticket-image img {
+        width: 100%;
+        height: auto; }
 
 .Parametres .Utilisateurs div {
   box-sizing: content-box; }
@@ -1536,7 +2062,7 @@ input[type="checkbox"].switch {
 .Parametres .Utilisateurs.subcontent {
   display: inline-flex;
   justify-content: flex-start;
-  align-items: start;
+  align-items: flex-start;
   text-align: left;
   padding: 15px;
   background-color: #FFFFFF;
@@ -1578,9 +2104,16 @@ input[type="checkbox"].switch {
     text-transform: capitalize;
     text-decoration: underline; }
     .Parametres .Utilisateurs.subcontent tbody .liste-nom div {
-      cursor: pointer; }
+      cursor: pointer;
+      display: inline-flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center; }
     .Parametres .Utilisateurs.subcontent tbody .liste-nom.user-disabled {
       color: #FF2D55; }
+    .Parametres .Utilisateurs.subcontent tbody .liste-nom .delivery {
+      margin-left: 10px;
+      margin-right: 20px; }
   .Parametres .Utilisateurs.subcontent tbody .odd {
     background-color: rgba(0, 0, 0, 0.05); }
   .Parametres .Utilisateurs.subcontent .subttl {
@@ -1631,7 +2164,7 @@ input[type="checkbox"].switch {
     overflow: auto;
     display: inline-flex;
     justify-content: space-between;
-    align-items: start;
+    align-items: flex-start;
     text-align: left;
     flex-wrap: wrap; }
   .Parametres .Financier.subcontent .col {
@@ -1765,7 +2298,7 @@ input[type="checkbox"].switch {
   display: inline-flex;
   justify-content: space-between;
   flex-direction: row;
-  align-items: start;
+  align-items: flex-start;
   text-align: left;
   flex-wrap: wrap;
   width: 100%; }
@@ -1799,6 +2332,9 @@ input[type="checkbox"].switch {
 .Parametres .Peripheriques .MuiTableCell-body {
   font-family: "Livvic-Regular"; }
 
+.Parametres .Peripheriques tbody .liste-id {
+  font-style: italic; }
+
 .Parametres .Peripheriques tbody .liste-nom {
   text-transform: capitalize;
   text-decoration: underline; }
@@ -1811,19 +2347,132 @@ input[type="checkbox"].switch {
   font-family: "Livvic-Light";
   color: #8F8E94; }
 
-.EditTypeModal {
+.Parametres .Tables div {
+  box-sizing: content-box; }
+
+.Parametres .Tables.subcontent {
+  overflow-y: auto;
+  height: 100%;
+  background-color: #FFFFFF;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1); }
+  .Parametres .Tables.subcontent .wrapper {
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    text-align: left;
+    padding: 15px;
+    flex-wrap: wrap;
+    width: 100%;
+    box-sizing: border-box; }
+
+.Parametres .Tables .liste-zone {
+  width: 100%; }
+  .Parametres .Tables .liste-zone.inactive {
+    opacity: .5; }
+
+.Parametres .Tables .sub-section {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: flex-start;
+  position: relative; }
+
+.Parametres .Tables .switch-activation {
+  margin-left: 20px; }
+
+.Parametres .Tables .subttl {
+  font-family: "Livvic-Bold";
+  font-size: 18px;
+  padding: 10px 0; }
+
+.Parametres .Tables .addsalle-button {
+  background-color: #1EA9DF;
+  position: absolute;
+  top: 0;
+  right: 0px;
+  width: 30px;
+  height: 30px;
+  min-height: 30px; }
+
+.Parametres .Tables .MuiAccordionSummary-content {
+  align-items: center; }
+
+.Parametres .Tables .actions {
+  margin-left: auto; }
+  .Parametres .Tables .actions .MuiFab-root {
+    background-color: #FFFFFF;
+    width: 32px;
+    height: 32px;
+    margin-left: 5px;
+    min-height: 32px; }
+    .Parametres .Tables .actions .MuiFab-root svg {
+      width: 0.75em; }
+
+.Parametres .Tables .panel-liste {
+  width: 100%; }
+
+.Parametres .Tables .couleur.blanc {
+  fill: #FFFFFF; }
+
+.Parametres .Tables .couleur.bleuclair {
+  fill: #5AC8FA; }
+
+.Parametres .Tables .couleur.bleufonce {
+  fill: #0065E5; }
+
+.Parametres .Tables .couleur.gris {
+  fill: #8F8E94; }
+
+.Parametres .Tables .couleur.jaune {
+  fill: #FFE700; }
+
+.Parametres .Tables .couleur.jauneorange {
+  fill: #FDC54F; }
+
+.Parametres .Tables .couleur.marron {
+  fill: #7F592A; }
+
+.Parametres .Tables .couleur.noir {
+  fill: #4A4A4A; }
+
+.Parametres .Tables .couleur.orange {
+  fill: #FF9500; }
+
+.Parametres .Tables .couleur.rose {
+  fill: #FF9DFF; }
+
+.Parametres .Tables .couleur.rouge {
+  fill: #FF2D55; }
+
+.Parametres .Tables .couleur.vertclair {
+  fill: #9CD04E; }
+
+.Parametres .Tables .couleur.vertfonce {
+  fill: #628133; }
+
+.Parametres .Tables .couleur.violet {
+  fill: #9867B6; }
+
+.EditTypeModal,
+.CommentaireEditModal,
+.DiscountEditModal {
   display: inline-block;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   outline: none; }
-  .EditTypeModal .Modal-container {
+  .EditTypeModal .Modal-container,
+  .CommentaireEditModal .Modal-container,
+  .DiscountEditModal .Modal-container {
     background-color: #FFFFFF;
     width: 500px;
     border-radius: 15px;
     padding: 0 20px; }
-  .EditTypeModal .close-button {
+  .EditTypeModal .close-button,
+  .CommentaireEditModal .close-button,
+  .DiscountEditModal .close-button {
     background-color: #FFFFFF;
     position: absolute;
     top: -10px;
@@ -1831,39 +2480,74 @@ input[type="checkbox"].switch {
     width: 30px;
     height: 30px;
     min-height: 30px; }
-  .EditTypeModal .header {
+  .EditTypeModal .header,
+  .CommentaireEditModal .header,
+  .DiscountEditModal .header {
     height: 55px;
     display: flex;
     flex-direction: column;
     justify-content: center; }
-    .EditTypeModal .header .title {
+    .EditTypeModal .header .title,
+    .CommentaireEditModal .header .title,
+    .DiscountEditModal .header .title {
       font-family: "Livvic-Bold";
       font-size: 18px;
       color: #4A4A4A;
       text-align: center;
       text-transform: uppercase; }
-  .EditTypeModal .body {
+  .EditTypeModal .body,
+  .CommentaireEditModal .body,
+  .DiscountEditModal .body {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     padding-bottom: 30px; }
-    .EditTypeModal .body .labelledfield {
+    .EditTypeModal .body .labelledfield,
+    .CommentaireEditModal .body .labelledfield,
+    .DiscountEditModal .body .labelledfield {
       width: calc(50% - 20px);
       padding-bottom: 15px; }
-      .EditTypeModal .body .labelledfield label {
+      .EditTypeModal .body .labelledfield label,
+      .CommentaireEditModal .body .labelledfield label,
+      .DiscountEditModal .body .labelledfield label {
         display: block; }
-      .EditTypeModal .body .labelledfield .input-wrapper {
+      .EditTypeModal .body .labelledfield .input-wrapper,
+      .CommentaireEditModal .body .labelledfield .input-wrapper,
+      .DiscountEditModal .body .labelledfield .input-wrapper {
         width: 100%; }
-  .EditTypeModal .footer {
+  .EditTypeModal .footer,
+  .CommentaireEditModal .footer,
+  .DiscountEditModal .footer {
     text-align: right; }
-    .EditTypeModal .footer .save {
+    .EditTypeModal .footer .save,
+    .CommentaireEditModal .footer .save,
+    .DiscountEditModal .footer .save {
       background-color: #7FAD3B;
       width: 45%;
       min-height: 30px; }
-      .EditTypeModal .footer .save .StdButton-text {
+      .EditTypeModal .footer .save .StdButton-text,
+      .CommentaireEditModal .footer .save .StdButton-text,
+      .DiscountEditModal .footer .save .StdButton-text {
         font-family: "Livvic-Bold";
         font-size: 14px;
         text-transform: uppercase; }
+
+.CommentaireEditModal .edit-zone,
+.DiscountEditModal .edit-zone {
+  width: 100%; }
+
+.CommentaireEditModal .edit-input,
+.DiscountEditModal .edit-input {
+  width: 100% !important; }
+
+.DiscountEditModal .edit-input .labelledfield-field {
+  text-align: right; }
+
+.ClavierParamCmdDiscount .MuiDrawer-paperAnchorBottom {
+  right: auto;
+  left: 50%;
+  width: 250px;
+  transform: translateX(-50%); }
 
 .EditUserModal {
   display: inline-block;
@@ -1872,9 +2556,13 @@ input[type="checkbox"].switch {
   top: 50%;
   transform: translate(-50%, -50%);
   outline: none; }
+  .EditUserModal.with-clavier {
+    top: calc(50% - 145px);
+    height: calc(100% - 320px); }
   .EditUserModal .Modal-container {
     background-color: #FFFFFF;
     width: 500px;
+    height: 100%;
     border-radius: 15px;
     padding: 0 20px; }
   .EditUserModal .close-button {
@@ -1900,7 +2588,9 @@ input[type="checkbox"].switch {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    padding-bottom: 30px; }
+    padding-bottom: 30px;
+    height: calc(100% - 105px);
+    overflow-y: auto; }
     .EditUserModal .body .droits-wrapper {
       display: flex;
       flex-wrap: wrap;
@@ -1957,7 +2647,17 @@ input[type="checkbox"].switch {
       .EditUserModal .body .status.switch-container label + label {
         margin-left: 15px;
         font-family: "Livvic-Bold"; }
+    .EditUserModal .body .livreur.switch-container {
+      justify-content: flex-start; }
+      .EditUserModal .body .livreur.switch-container label + label {
+        margin-left: 15px;
+        font-family: "Livvic-Bold"; }
   .EditUserModal .footer {
+    background-color: #FFFFFF;
+    background-image: linear-gradient(#8F8E94 0%, #8F8E94 100%);
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+    background-position: center 3px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -2079,11 +2779,15 @@ input[type="checkbox"].switch {
       position: absolute;
       left: auto; }
     .EditImprimanteModal .body .imprimantes-liste,
-    .EditTicketModal .body .imprimantes-liste {
+    .EditImprimanteModal .body .kds,
+    .EditTicketModal .body .imprimantes-liste,
+    .EditTicketModal .body .kds {
       padding-top: 15px;
       width: 100%; }
       .EditImprimanteModal .body .imprimantes-liste .liste-label,
-      .EditTicketModal .body .imprimantes-liste .liste-label {
+      .EditImprimanteModal .body .kds .liste-label,
+      .EditTicketModal .body .imprimantes-liste .liste-label,
+      .EditTicketModal .body .kds .liste-label {
         font-family: "Livvic-Regular";
         position: relative;
         user-select: none;
@@ -2092,7 +2796,9 @@ input[type="checkbox"].switch {
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale; }
       .EditImprimanteModal .body .imprimantes-liste .liste-liste,
-      .EditTicketModal .body .imprimantes-liste .liste-liste {
+      .EditImprimanteModal .body .kds .liste-liste,
+      .EditTicketModal .body .imprimantes-liste .liste-liste,
+      .EditTicketModal .body .kds .liste-liste {
         padding: 15px;
         width: 100%;
         min-height: 60px;
@@ -2102,7 +2808,9 @@ input[type="checkbox"].switch {
         justify-content: space-between;
         align-items: flex-start; }
         .EditImprimanteModal .body .imprimantes-liste .liste-liste .switch-container,
-        .EditTicketModal .body .imprimantes-liste .liste-liste .switch-container {
+        .EditImprimanteModal .body .kds .liste-liste .switch-container,
+        .EditTicketModal .body .imprimantes-liste .liste-liste .switch-container,
+        .EditTicketModal .body .kds .liste-liste .switch-container {
           width: auto; }
   .EditImprimanteModal .footer,
   .EditTicketModal .footer {
@@ -2117,6 +2825,143 @@ input[type="checkbox"].switch {
         font-family: "Livvic-Bold";
         font-size: 14px;
         text-transform: uppercase; }
+
+.TableModal,
+.SalleModal {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none; }
+  .TableModal .Modal-container,
+  .SalleModal .Modal-container {
+    background-color: #FFFFFF;
+    width: 500px;
+    border-radius: 15px;
+    padding: 0 20px; }
+  .TableModal .close-button,
+  .SalleModal .close-button {
+    background-color: #FFFFFF;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px; }
+  .TableModal .header,
+  .SalleModal .header {
+    height: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; }
+    .TableModal .header .title,
+    .SalleModal .header .title {
+      font-family: "Livvic-Bold";
+      font-size: 18px;
+      color: #4A4A4A;
+      text-align: center;
+      text-transform: uppercase; }
+  .TableModal .body,
+  .SalleModal .body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-bottom: 30px; }
+    .TableModal .body .item-nom,
+    .SalleModal .body .item-nom {
+      width: 100%;
+      text-align: center;
+      font-family: "Livvic-SemiBold";
+      font-size: 18px;
+      color: #4A4A4A;
+      padding-bottom: 20px; }
+    .TableModal .body .form-group,
+    .SalleModal .body .form-group {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      padding-bottom: 10px;
+      width: 100%; }
+      .TableModal .body .form-group .label,
+      .SalleModal .body .form-group .label {
+        font-family: "Livvic-Light";
+        font-size: 14px;
+        color: #4A4A4A;
+        padding-right: 10px;
+        -webkit-user-select: none;
+        user-select: none;
+        display: inline-block; }
+      .TableModal .body .form-group .nom-input input,
+      .SalleModal .body .form-group .nom-input input {
+        text-align: right; }
+      .TableModal .body .form-group .nom-input .input-wrapper,
+      .SalleModal .body .form-group .nom-input .input-wrapper {
+        width: 120px; }
+      .TableModal .body .form-group .caption,
+      .SalleModal .body .form-group .caption {
+        font-family: "Livvic-Light";
+        font-size: 13px;
+        width: 100%;
+        text-align: right;
+        color: #4A4A4A;
+        -webkit-user-select: none;
+        user-select: none;
+        display: inline-block; }
+    .TableModal .body .cmtlib-item,
+    .SalleModal .body .cmtlib-item {
+      font-family: "Livvic-Bold";
+      font-size: 14px;
+      color: #4A4A4A;
+      -webkit-user-select: none;
+      user-select: none;
+      display: inline-block;
+      text-decoration: underline;
+      padding: 5px 10px;
+      border-radius: 3px;
+      background-color: #F7F7F7; }
+    .TableModal .body .color-label,
+    .SalleModal .body .color-label {
+      display: inline-block;
+      padding-right: 10px; }
+    .TableModal .body .color,
+    .SalleModal .body .color {
+      display: inline-flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center; }
+      .TableModal .body .color .MuiFilledInput-root,
+      .SalleModal .body .color .MuiFilledInput-root {
+        border-radius: 5px;
+        background-color: #F7F7F7; }
+        .TableModal .body .color .MuiFilledInput-root.MuiFilledInput-underline:before,
+        .SalleModal .body .color .MuiFilledInput-root.MuiFilledInput-underline:before {
+          display: none; }
+      .TableModal .body .color .MuiFilledInput-input,
+      .SalleModal .body .color .MuiFilledInput-input {
+        padding: 5px 32px 0px 12px;
+        font-family: "Livvic-SemiBold"; }
+  .TableModal .footer,
+  .SalleModal .footer {
+    text-align: right; }
+    .TableModal .footer .save,
+    .SalleModal .footer .save {
+      background-color: #7FAD3B;
+      width: 45%;
+      min-height: 30px; }
+      .TableModal .footer .save .StdButton-text,
+      .SalleModal .footer .save .StdButton-text {
+        font-family: "Livvic-Bold";
+        font-size: 14px;
+        text-transform: uppercase; }
+
+.ClavierSalle .MuiDrawer-paperAnchorBottom,
+.ClavierTable .MuiDrawer-paperAnchorBottom {
+  right: auto;
+  left: 50%;
+  width: 250px;
+  transform: translateX(-50%); }
 
 .ListeCommandes .caption {
   font-family: "Livvic-Bold";
@@ -2209,8 +3054,8 @@ input[type="checkbox"].switch {
     background-color: #FFFFFF;
     border-radius: 0 0 15px 15px; }
   .ListeCommandes .listes .liste-actions {
-    width: 350px;
-    padding-right: 3px; }
+    display: flex;
+    padding: 6px 0; }
   .ListeCommandes .listes .MuiTableCell-root {
     font-family: "Livvic-Regular";
     border: none; }
@@ -2218,31 +3063,49 @@ input[type="checkbox"].switch {
     background-color: #E6E6E6; }
   .ListeCommandes .listes thead {
     background-color: rgba(0, 0, 0, 0.1); }
-  .ListeCommandes .listes tbody .liste-date,
-  .ListeCommandes .listes tbody .liste-numero,
-  .ListeCommandes .listes tbody .liste-client {
-    background-color: #F7F7F7; }
-  .ListeCommandes .listes tbody .MuiTableRow-root.odd .liste-date,
-  .ListeCommandes .listes tbody .MuiTableRow-root.odd .liste-numero,
-  .ListeCommandes .listes tbody .MuiTableRow-root.odd .liste-client {
-    background-color: #EFEFEF; }
   .ListeCommandes .listes tbody .liste-heure,
   .ListeCommandes .listes tbody .liste-montant,
+  .ListeCommandes .listes tbody .liste-client,
   .ListeCommandes .listes tbody .liste-actions {
-    background-color: #FFFFFF; }
+    background-color: #F7F7F7; }
+  .ListeCommandes .listes tbody .MuiTableCell-body {
+    font-size: 12px; }
   .ListeCommandes .listes tbody .MuiTableRow-root.odd .liste-heure,
   .ListeCommandes .listes tbody .MuiTableRow-root.odd .liste-montant,
+  .ListeCommandes .listes tbody .MuiTableRow-root.odd .liste-client,
   .ListeCommandes .listes tbody .MuiTableRow-root.odd .liste-actions {
+    background-color: #EFEFEF; }
+  .ListeCommandes .listes tbody .liste-date,
+  .ListeCommandes .listes tbody .liste-numero,
+  .ListeCommandes .listes tbody .liste-caisse,
+  .ListeCommandes .listes tbody .liste-mode {
+    background-color: #FFFFFF; }
+  .ListeCommandes .listes tbody .MuiTableRow-root.odd .liste-date,
+  .ListeCommandes .listes tbody .MuiTableRow-root.odd .liste-numero,
+  .ListeCommandes .listes tbody .MuiTableRow-root.odd .liste-caisse,
+  .ListeCommandes .listes tbody .MuiTableRow-root.odd .liste-mode {
     background-color: #F7F7F7; }
   .ListeCommandes .listes tbody .MuiTableRow-root:not(.color-0) .liste-heure,
   .ListeCommandes .listes tbody .MuiTableRow-root:not(.color-0) .liste-montant,
   .ListeCommandes .listes tbody .MuiTableRow-root:not(.color-0) .liste-actions,
   .ListeCommandes .listes tbody .MuiTableRow-root:not(.color-0) .liste-date,
   .ListeCommandes .listes tbody .MuiTableRow-root:not(.color-0) .liste-numero,
-  .ListeCommandes .listes tbody .MuiTableRow-root:not(.color-0) .liste-client {
+  .ListeCommandes .listes tbody .MuiTableRow-root:not(.color-0) .liste-caisse,
+  .ListeCommandes .listes tbody .MuiTableRow-root:not(.color-0) .liste-client,
+  .ListeCommandes .listes tbody .MuiTableRow-root:not(.color-0) .liste-mode {
     background-image: linear-gradient(rgba(0, 174, 255, 0.5) 0%, rgba(0, 174, 255, 0.5) 100%); }
+  .ListeCommandes .listes tbody .MuiTableRow-root.autrecentre .liste-heure,
+  .ListeCommandes .listes tbody .MuiTableRow-root.autrecentre .liste-montant,
+  .ListeCommandes .listes tbody .MuiTableRow-root.autrecentre .liste-actions,
+  .ListeCommandes .listes tbody .MuiTableRow-root.autrecentre .liste-date,
+  .ListeCommandes .listes tbody .MuiTableRow-root.autrecentre .liste-numero,
+  .ListeCommandes .listes tbody .MuiTableRow-root.autrecentre .liste-caisse,
+  .ListeCommandes .listes tbody .MuiTableRow-root.autrecentre .liste-client,
+  .ListeCommandes .listes tbody .MuiTableRow-root.autrecentre .liste-mode {
+    background-image: linear-gradient(rgba(0, 255, 64, 0.5) 0%, rgba(0, 255, 64, 0.5) 100%); }
   .ListeCommandes .listes tbody .liste-actions {
-    text-align: right; }
+    text-align: right;
+    justify-content: center; }
   .ListeCommandes .listes .StdButton {
     margin: 0 2px !important;
     padding: 0 10px !important;
@@ -2254,11 +3117,11 @@ input[type="checkbox"].switch {
     font-size: 12px;
     font-family: "Livvic-Bold"; }
   .ListeCommandes .listes .StdButton-icon {
-    height: 17px;
-    width: 16px; }
+    height: 20px;
+    width: 20px; }
     .ListeCommandes .listes .StdButton-icon svg {
-      width: 16px;
-      height: 17px; }
+      width: 20px;
+      height: 20px; }
   .ListeCommandes .listes .action-encaissement {
     background-color: #9CD04E; }
   .ListeCommandes .listes .action-annuler {
@@ -2266,19 +3129,22 @@ input[type="checkbox"].switch {
   .ListeCommandes .listes .action-reprise {
     background-color: #1EA9DF; }
 
-.ImpressionTicket {
+.ImpressionTicket,
+.LivreursModal {
   display: inline-block;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   outline: none; }
-  .ImpressionTicket .Modal-container {
+  .ImpressionTicket .Modal-container,
+  .LivreursModal .Modal-container {
     background-color: #FFFFFF;
     width: 500px;
     border-radius: 15px;
     padding: 0 20px; }
-  .ImpressionTicket .close-button {
+  .ImpressionTicket .close-button,
+  .LivreursModal .close-button {
     background-color: #FFFFFF;
     position: absolute;
     top: -10px;
@@ -2286,38 +3152,289 @@ input[type="checkbox"].switch {
     width: 30px;
     height: 30px;
     min-height: 30px; }
-  .ImpressionTicket .header {
+  .ImpressionTicket .header,
+  .LivreursModal .header {
     height: 55px;
     display: flex;
     flex-direction: column;
     justify-content: center; }
-    .ImpressionTicket .header .title {
+    .ImpressionTicket .header .title,
+    .LivreursModal .header .title {
       font-family: "Livvic-Bold";
       font-size: 18px;
       color: #4A4A4A;
       text-align: center;
       text-transform: uppercase; }
-  .ImpressionTicket .body {
+  .ImpressionTicket .body,
+  .LivreursModal .body {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     padding-bottom: 30px; }
-    .ImpressionTicket .body .ticket {
+    .ImpressionTicket .body .ticket,
+    .LivreursModal .body .ticket {
       background-color: #9EB3BB;
       width: 45%;
       min-height: 45px; }
-      .ImpressionTicket .body .ticket .StdButton-text {
+      .ImpressionTicket .body .ticket .StdButton-text,
+      .LivreursModal .body .ticket .StdButton-text {
         font-family: "Livvic-Bold";
         font-size: 18px;
         text-transform: uppercase; }
 
+.LivreursModal .livreur {
+  width: 100%;
+  background-color: #8F8E94; }
+  .LivreursModal .livreur.livreur-none {
+    background-color: #FF2D55; }
+  .LivreursModal .livreur.activated {
+    background-color: #1EA9DF; }
+    .LivreursModal .livreur.activated .StdButton-text:before {
+      content: '';
+      display: inline-block;
+      background-image: url("../../images/ico_check-blanc.svg");
+      background-repeat: no-repeat;
+      background-size: 18px 18px;
+      background-position: left center;
+      width: 25px;
+      height: 18px; }
+
+.ListeClotures .caption {
+  font-family: "Livvic-Bold";
+  font-size: 18px;
+  color: #4A4A4A;
+  letter-spacing: 0; }
+
+.ListeClotures .dates {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  padding-bottom: 20px; }
+  .ListeClotures .dates .btnretour {
+    flex-grow: unset;
+    flex-shrink: unset;
+    background-color: #9EB3BB; }
+    .ListeClotures .dates .btnretour .StdButton-text {
+      text-decoration: underline;
+      color: #FFFFFF; }
+  .ListeClotures .dates .date-pickers {
+    width: calc(100% - 200px);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center; }
+  .ListeClotures .dates .btnsynthese {
+    flex-grow: unset;
+    flex-shrink: unset;
+    background-color: #9CD04E; }
+    .ListeClotures .dates .btnsynthese .StdButton-text {
+      color: #FFFFFF; }
+  .ListeClotures .dates .caption.space-left {
+    margin-left: 30px; }
+  .ListeClotures .dates .MuiFormControl-marginNormal {
+    margin: 0 10px;
+    width: 200px; }
+    .ListeClotures .dates .MuiFormControl-marginNormal:hover .MuiInput-underline:before,
+    .ListeClotures .dates .MuiFormControl-marginNormal:hover .MuiInput-underline:after,
+    .ListeClotures .dates .MuiFormControl-marginNormal .MuiInput-underline:before,
+    .ListeClotures .dates .MuiFormControl-marginNormal .MuiInput-underline:after {
+      border: 0; }
+    .ListeClotures .dates .MuiFormControl-marginNormal .MuiInput-formControl {
+      background-color: #FFFFFF;
+      border-radius: 2px;
+      padding: 2px 0px 2px 5px; }
+    .ListeClotures .dates .MuiFormControl-marginNormal input {
+      color: #1EA9DF;
+      font-family: "Livvic-Bold";
+      font-size: 18px;
+      text-align: center; }
+
+.ListeClotures .liste-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 0; }
+
+.ListeClotures .StdButton {
+  margin: 0 2px !important;
+  padding: 0 10px !important;
+  min-width: 40px;
+  min-height: 25px;
+  border-radius: 8px !important; }
+
+.ListeClotures .StdButton-text {
+  text-transform: uppercase;
+  font-size: 12px;
+  font-family: "Livvic-Bold"; }
+
+.ListeClotures .StdButton-icon {
+  height: 20px;
+  width: 20px; }
+  .ListeClotures .StdButton-icon svg {
+    width: 20px;
+    height: 20px; }
+
+.ListeClotures .action-view {
+  background-color: #9CD04E; }
+
+.ListeClotures .action-print {
+  background-color: #1EA9DF; }
+
+.ListeClotures .MuiTableCell-root {
+  font-family: "Livvic-Regular";
+  border: none; }
+
+.ListeClotures .MuiTableCell-stickyHeader {
+  background-color: #E6E6E6; }
+
+.ListeClotures thead {
+  background-color: rgba(0, 0, 0, 0.1); }
+
+.ListeClotures tbody .liste-id,
+.ListeClotures tbody .liste-fin,
+.ListeClotures tbody .liste-ventes,
+.ListeClotures tbody .liste-actions {
+  background-color: #F7F7F7; }
+
+.ListeClotures tbody .liste-ht,
+.ListeClotures tbody .liste-ventes {
+  text-align: right; }
+
+.ListeClotures tbody .MuiTableCell-body {
+  font-size: 12px; }
+
+.ListeClotures tbody .MuiTableRow-root.odd .liste-id,
+.ListeClotures tbody .MuiTableRow-root.odd .liste-fin,
+.ListeClotures tbody .MuiTableRow-root.odd .liste-ventes,
+.ListeClotures tbody .MuiTableRow-root.odd .liste-actions {
+  background-color: #EFEFEF; }
+
+.ListeClotures tbody .liste-debut,
+.ListeClotures tbody .liste-ht,
+.ListeClotures tbody .liste-nombre {
+  background-color: #FFFFFF; }
+
+.ListeClotures tbody .MuiTableRow-root.odd .liste-debut,
+.ListeClotures tbody .MuiTableRow-root.odd .liste-ht,
+.ListeClotures tbody .MuiTableRow-root.odd .liste-nombre {
+  background-color: #F7F7F7; }
+
+.ListeClotures .MuiTableContainer-root {
+  height: calc(100% - 40px); }
+
+.ViewCloturePopin {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none; }
+  .ViewCloturePopin .Modal-container {
+    background-color: #FFFFFF;
+    width: 500px;
+    border-radius: 15px;
+    padding: 0 20px; }
+  .ViewCloturePopin .close-button {
+    background-color: #FFFFFF;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px; }
+  .ViewCloturePopin .header {
+    height: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; }
+    .ViewCloturePopin .header .title {
+      font-family: "Livvic-Bold";
+      font-size: 18px;
+      color: #4A4A4A;
+      text-align: center;
+      text-transform: uppercase; }
+  .ViewCloturePopin .body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-bottom: 30px; }
+    .ViewCloturePopin .body .blocwrapper {
+      width: 100%; }
+  .ViewCloturePopin .footer {
+    text-align: right; }
+    .ViewCloturePopin .footer .print-cloture {
+      background-color: #1EA9DF;
+      width: 45%;
+      min-height: 30px; }
+      .ViewCloturePopin .footer .print-cloture .StdButton-text {
+        font-family: "Livvic-Bold";
+        font-size: 14px;
+        text-transform: uppercase; }
+  .ViewCloturePopin .ticket-x {
+    box-shadow: none;
+    height: 550px;
+    width: 100%;
+    border: 1px dashed #4A4A4A;
+    padding: 20px;
+    font-family: "Livvic-Light";
+    font-size: 12px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-y: scroll; }
+    .ViewCloturePopin .ticket-x .wrapper {
+      height: 100%;
+      width: 100%; }
+    .ViewCloturePopin .ticket-x .periode {
+      padding-bottom: 10px; }
+      .ViewCloturePopin .ticket-x .periode .val {
+        text-align: center; }
+    .ViewCloturePopin .ticket-x .sel {
+      padding-bottom: 10px; }
+    .ViewCloturePopin .ticket-x .recap {
+      padding-bottom: 10px; }
+      .ViewCloturePopin .ticket-x .recap .recap-item {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between; }
+    .ViewCloturePopin .ticket-x .titre {
+      text-align: center;
+      border-top: 1px solid #4A4A4A;
+      border-bottom: 1px solid #4A4A4A;
+      padding: 5px 0;
+      margin: 10px 0 5px; }
+    .ViewCloturePopin .ticket-x .detail .detail-item {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between; }
+      .ViewCloturePopin .ticket-x .detail .detail-item.pre-filet {
+        margin-top: 5px;
+        padding-top: 5px;
+        border-top: 1px solid #4A4A4A; }
+      .ViewCloturePopin .ticket-x .detail .detail-item.post-space {
+        padding-bottom: 10px; }
+      .ViewCloturePopin .ticket-x .detail .detail-item.total {
+        padding-left: 20px; }
+    .ViewCloturePopin .ticket-x .ventil {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between; }
+      .ViewCloturePopin .ticket-x .ventil .ventil-nom,
+      .ViewCloturePopin .ticket-x .ventil .ventil-intit:nth-child(1) {
+        width: 30%; }
+      .ViewCloturePopin .ticket-x .ventil.total {
+        padding-top: 10px; }
+      .ViewCloturePopin .ticket-x .ventil.intit {
+        padding-bottom: 5px; }
+
 .Clients div {
-  box-sizing: content-box; }
+  box-sizing: border-box; }
 
 .Clients .toolbar {
   display: flex;
   height: 80px;
-  width: calc(100% - 70px); }
+  width: 100%; }
   .Clients .toolbar .adduser-btn {
     background-color: #7FAD3B;
     min-height: 40px;
@@ -2331,17 +3448,14 @@ input[type="checkbox"].switch {
 .Clients .table-wrapper {
   display: flex;
   justify-content: flex-start;
-  align-items: start;
+  align-items: flex-start;
   text-align: left;
   padding: 3px;
-  width: calc(100% - 70px);
+  width: 100%;
   height: calc(100% - 70px);
   border-radius: 5px;
   box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.1);
-  background: linear-gradient(#FFFFFF 0%, #FFFFFF 100%), linear-gradient(#FFFFFF 0%, #FFFFFF 100%), linear-gradient(#FFFFFF 0%, #FFFFFF 100%), linear-gradient(#FFFFFF 0%, #FFFFFF 100%);
-  background-repeat: no-repeat;
-  background-size: 70px 100%, 140px 100%, 110px 100%, 100px 100%;
-  background-position: 0 0, calc(100% - 560px) 0, calc(100% - 270px) 0, 100% 0; }
+  background-color: #FFFFFF; }
   .Clients .table-wrapper header {
     box-shadow: none;
     background-color: transparent; }
@@ -2369,17 +3483,17 @@ input[type="checkbox"].switch {
   .Clients .table-wrapper .liste-code {
     width: 70px;
     text-align: center; }
-  .Clients .table-wrapper .liste-tel1 {
-    width: 140px; }
-  .Clients .table-wrapper .liste-email {
-    width: 190px; }
-  .Clients .table-wrapper .liste-codepostal {
-    width: 110px;
-    text-align: center; }
-  .Clients .table-wrapper .liste-ville {
-    width: 200px; }
+  .Clients .table-wrapper .liste-nom,
+  .Clients .table-wrapper .liste-tel1,
+  .Clients .table-wrapper .liste-codepostal,
   .Clients .table-wrapper .liste-actions {
-    width: 100px;
+    background-color: rgba(0, 0, 0, 0.05); }
+  .Clients .table-wrapper .liste-prenom,
+  .Clients .table-wrapper .liste-ville,
+  .Clients .table-wrapper .liste-email {
+    background-color: transparent; }
+  .Clients .table-wrapper .liste-codepostal,
+  .Clients .table-wrapper .liste-actions {
     text-align: center; }
   .Clients .table-wrapper thead {
     background-color: rgba(0, 0, 0, 0.1); }
@@ -2412,6 +3526,8 @@ input[type="checkbox"].switch {
         height: 17px; }
   .Clients .table-wrapper tbody .odd {
     background-color: rgba(0, 0, 0, 0.05); }
+  .Clients .table-wrapper tbody .bloque .MuiTableCell-root {
+    color: #FF2D55; }
 
 .Cloture .contimage {
   width: 100%;
@@ -2444,7 +3560,8 @@ input[type="checkbox"].switch {
   box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1);
   border-radius: 15px;
   width: 100%;
-  height: calc(100% - 60px); }
+  height: calc(100% - 60px);
+  overflow-y: auto; }
 
 .Cloture .bloccentre {
   box-shadow: none;
@@ -2503,6 +3620,12 @@ input[type="checkbox"].switch {
   justify-content: space-between;
   align-items: center; }
 
+.Cloture .blocgauche-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center; }
+
 .Cloture .zone-lastcloture {
   width: calc(100% - 30px);
   text-align: center;
@@ -2544,12 +3667,28 @@ input[type="checkbox"].switch {
   .Cloture .zone-lastcloture .btnreprint {
     width: 200px;
     background-color: #9EB3BB; }
+  .Cloture .zone-lastcloture .btnliste {
+    width: 200px;
+    background-color: #9EB3BB; }
 
 .Cloture .zone-selecteur {
   width: calc(100% - 30px); }
   .Cloture .zone-selecteur .selecteur-caisse,
   .Cloture .zone-selecteur .selecteur-vendeur {
     width: 100%; }
+  .Cloture .zone-selecteur .label-inline {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center; }
+    .Cloture .zone-selecteur .label-inline .label {
+      width: 70px;
+      padding-top: 5px; }
+  .Cloture .zone-selecteur .datepicker {
+    width: calc(100% - 70px);
+    margin-top: 0; }
+    .Cloture .zone-selecteur .datepicker .MuiInputBase-root {
+      font-size: 13px; }
   .Cloture .zone-selecteur .label {
     font-family: "Livvic-Bold";
     font-size: 14px;
@@ -2642,6 +3781,13 @@ input[type="checkbox"].switch {
       font-family: "Livvic-Light";
       font-size: 14px;
       color: #4A4A4A; }
+  .blocdroite .totalcomptageField .valeur-input .input {
+    height: 40px;
+    background-color: #1EA9DF;
+    color: #FFFFFF;
+    font-family: "Livvic-Bold";
+    font-size: 16px;
+    background-image: url("../../images/ico_edit-blanc.svg"); }
 
 .ClotureComptage,
 .ClotureComptcaisse {
@@ -2690,11 +3836,18 @@ input[type="checkbox"].switch {
       text-transform: uppercase; }
   .ClotureComptage .btncomptcaisse,
   .ClotureComptcaisse .btncomptcaisse {
-    width: calc(100% - 20px);
+    width: calc(100% - 10px);
     background-color: #7FAD3B !important; }
     .ClotureComptage .btncomptcaisse .MuiButton-label,
     .ClotureComptcaisse .btncomptcaisse .MuiButton-label {
       padding: 0 25px; }
+  .ClotureComptage .btncompttr,
+  .ClotureComptcaisse .btncompttr {
+    width: calc(100% - 10px);
+    background-color: #7FAD3B !important; }
+    .ClotureComptage .btncompttr .MuiButton-label,
+    .ClotureComptcaisse .btncompttr .MuiButton-label {
+      padding: 0; }
   .ClotureComptage .btncomptverif,
   .ClotureComptcaisse .btncomptverif {
     width: 100%;
@@ -2763,7 +3916,7 @@ input[type="checkbox"].switch {
     box-sizing: content-box;
     height: 35px; }
     .ClotureComptage .bloc .cptitem + .cptitem {
-      padding-top: 10px; }
+      padding-top: 5px; }
     .ClotureComptage .bloc .cptitem .label {
       font-family: "Livvic-Regular";
       font-size: 14px;
@@ -2813,14 +3966,16 @@ input[type="checkbox"].switch {
 
 .ClotureComptage .bloc-toutes .cptitem-total .valeur,
 .ClotureComptage .bloc-toutes .cptitem-esp .valeur,
-.ClotureComptage .bloc-toutes .cptitem-rec .valeur {
+.ClotureComptage .bloc-toutes .cptitem-rec .valeur,
+.ClotureComptage .bloc-toutes .cptitem-avre .valeur {
   padding-right: 34px; }
 
 .ClotureComptage .bloc-toutes .cptitem-cb .label:before,
 .ClotureComptage .bloc-toutes .cptitem-tr .label:before,
 .ClotureComptage .bloc-toutes .cptitem-chq .label:before,
 .ClotureComptage .bloc-toutes .cptitem-total .label:before,
-.ClotureComptage .bloc-toutes .cptitem-rec .label:before {
+.ClotureComptage .bloc-toutes .cptitem-rec .label:before,
+.ClotureComptage .bloc-toutes .cptitem-avrr .label:before {
   display: none; }
 
 .ClotureComptage .bloc-toutes .cptitem-total {
@@ -2887,7 +4042,8 @@ input[type="checkbox"].switch {
     .swal2-container .standbycommandes .swal2-actions button.swal2-cancel {
       background-color: #5AC8FA; }
 
-.CountTool {
+.CountTool,
+.CountTRTool {
   position: absolute;
   display: none;
   width: 100%;
@@ -2896,45 +4052,56 @@ input[type="checkbox"].switch {
   left: 0;
   background-color: #FFFFFF;
   border-radius: 15px; }
-  .CountTool.counttool-open {
+  .CountTool.counttool-open, .CountTool.counttrtool-open,
+  .CountTRTool.counttool-open,
+  .CountTRTool.counttrtool-open {
     display: block; }
-  .CountTool .tete {
+  .CountTool .tete,
+  .CountTRTool .tete {
     height: 50px;
     line-height: 50px;
     text-align: center; }
-    .CountTool .tete .titre {
+    .CountTool .tete .titre,
+    .CountTRTool .tete .titre {
       font-family: "Livvic-Bold";
       font-size: 16px;
       color: #4A4A4A; }
-  .CountTool .corps {
+  .CountTool .corps,
+  .CountTRTool .corps {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     padding: 10px 20px; }
-    .CountTool .corps .colonne {
+    .CountTool .corps .colonne,
+    .CountTRTool .corps .colonne {
       background-color: #F7F7F7;
       border-radius: 15px;
       padding: 30px 60px;
       display: flex;
       flex-direction: column;
       width: calc(50% - 10px); }
-      .CountTool .corps .colonne + .colonne {
+      .CountTool .corps .colonne + .colonne,
+      .CountTRTool .corps .colonne + .colonne {
         justify-content: space-between; }
-      .CountTool .corps .colonne .champ {
+      .CountTool .corps .colonne .champ,
+      .CountTRTool .corps .colonne .champ {
         height: 35px;
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         width: 100%; }
-        .CountTool .corps .colonne .champ + .champ {
+        .CountTool .corps .colonne .champ + .champ,
+        .CountTRTool .corps .colonne .champ + .champ {
           margin-top: 10px; }
-        .CountTool .corps .colonne .champ .nom {
+        .CountTool .corps .colonne .champ .nom,
+        .CountTRTool .corps .colonne .champ .nom {
           font-family: "Livvic-Light";
           font-size: 14px;
           color: #4A4A4A;
           width: 80px;
           line-height: 35px; }
-        .CountTool .corps .colonne .champ .field {
+        .CountTool .corps .colonne .champ .field,
+        .CountTRTool .corps .colonne .champ .field {
           background-color: #FFFFFF;
           width: 100px;
           border-radius: 5px;
@@ -2944,53 +4111,150 @@ input[type="checkbox"].switch {
           color: #8F8E94;
           font-size: 14px;
           line-height: 35px; }
-        .CountTool .corps .colonne .champ .subtotal {
+        .CountTool .corps .colonne .champ .subtotal,
+        .CountTRTool .corps .colonne .champ .subtotal {
           text-align: right;
           padding: 0 5px;
           font-family: "Livvic-Regular";
           font-size: 14px;
           line-height: 35px;
           width: 100px; }
-        .CountTool .corps .colonne .champ.filled .field {
+        .CountTool .corps .colonne .champ.filled .field,
+        .CountTRTool .corps .colonne .champ.filled .field {
           font-family: "Livvic-Regular";
           color: #4A4A4A; }
-        .CountTool .corps .colonne .champ.filled .subtotal {
+        .CountTool .corps .colonne .champ.filled .subtotal,
+        .CountTRTool .corps .colonne .champ.filled .subtotal {
           font-family: "Livvic-Bold";
           color: #1EA9DF; }
-      .CountTool .corps .colonne .counttotal {
+      .CountTool .corps .colonne .counttotal,
+      .CountTRTool .corps .colonne .counttotal {
         display: flex;
         flex-direction: row;
         justify-content: space-between; }
-        .CountTool .corps .colonne .counttotal .ttl {
+        .CountTool .corps .colonne .counttotal .ttl,
+        .CountTRTool .corps .colonne .counttotal .ttl {
           font-family: "Livvic-Bold";
           font-size: 16px;
           color: #4A4A4A; }
-        .CountTool .corps .colonne .counttotal .val {
+        .CountTool .corps .colonne .counttotal .val,
+        .CountTRTool .corps .colonne .counttotal .val {
           font-family: "Livvic-Bold";
           font-size: 20px;
           color: #1EA9DF; }
-  .CountTool .pied {
+  .CountTool .pied,
+  .CountTRTool .pied {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center; }
-    .CountTool .pied .btnvalidcounttool {
+    .CountTool .pied .btnvalidcounttool,
+    .CountTool .pied .btnvalidcounttrtool,
+    .CountTRTool .pied .btnvalidcounttool,
+    .CountTRTool .pied .btnvalidcounttrtool {
       background-color: #7FAD3B;
       width: 250px; }
 
-.ClientModal {
+.CountTRTool .corps {
+  height: calc(100% - 105px); }
+
+.CountTRTool .MuiTableContainer-root {
+  position: relative;
+  height: 100%; }
+
+.CountTRTool .liste {
+  margin-left: 50px;
+  width: calc(100% - 100px);
+  background-color: #F7F7F7;
+  border-radius: 10px; }
+  .CountTRTool .liste .liste-body {
+    height: calc(100% - 110px);
+    width: 100%;
+    overflow-y: scroll; }
+  .CountTRTool .liste .liste-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center; }
+  .CountTRTool .liste .head-id,
+  .CountTRTool .liste .prix,
+  .CountTRTool .liste .body-id,
+  .CountTRTool .liste .footer-id {
+    padding: 0 20px; }
+  .CountTRTool .liste .liste-row {
+    border-bottom: 1px solid #FFFFFF; }
+  .CountTRTool .liste .liste-head {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3); }
+  .CountTRTool .liste .liste-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.3); }
+  .CountTRTool .liste .liste-head,
+  .CountTRTool .liste .liste-row,
+  .CountTRTool .liste .liste-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 55px;
+    width: 100%;
+    font-family: "Livvic-Bold";
+    font-size: 14px;
+    color: #4A4A4A; }
+  .CountTRTool .liste .liste-row {
+    font-family: "Livvic-Regular";
+    height: 40px; }
+
+.CountTRTool .prix {
+  text-align: right; }
+
+.CountTRTool .tr-input {
+  opacity: 0;
+  position: absolute;
+  right: 30px;
+  top: 120px;
+  outline: none;
+  user-select: none; }
+
+.ClientModal,
+.FicheClient {
   display: inline-block;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   outline: none; }
-  .ClientModal .Modal-container {
+  .ClientModal.with-clavier,
+  .FicheClient.with-clavier {
+    top: calc(50% - 120px);
+    height: calc(100% - 260px); }
+  .ClientModal .Modal-container,
+  .FicheClient .Modal-container {
     background-color: #FFFFFF;
     width: 900px;
+    height: 100%;
     border-radius: 15px;
     padding: 10px 0 0; }
-  .ClientModal .close-button {
+    .ClientModal .Modal-container.recherche,
+    .FicheClient .Modal-container.recherche {
+      width: 500px; }
+  .ClientModal .recherche-cont,
+  .FicheClient .recherche-cont {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px 10px; }
+    .ClientModal .recherche-cont .titre,
+    .FicheClient .recherche-cont .titre {
+      font-family: "Livvic-Bold";
+      font-size: 20px;
+      color: #4A4A4A;
+      text-transform: uppercase; }
+  .ClientModal .recherche-input,
+  .FicheClient .recherche-input {
+    width: 340px; }
+  .ClientModal .close-button,
+  .FicheClient .close-button {
     background-color: #FFFFFF;
     position: absolute;
     top: -10px;
@@ -2998,63 +4262,99 @@ input[type="checkbox"].switch {
     width: 30px;
     height: 30px;
     min-height: 30px; }
-  .ClientModal .body {
+  .ClientModal .recherche-option,
+  .FicheClient .recherche-option {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start; }
+    .ClientModal .recherche-option .nom,
+    .FicheClient .recherche-option .nom {
+      font-family: "Livvic-Regular";
+      font-size: 14px;
+      color: #4A4A4A; }
+    .ClientModal .recherche-option .detail,
+    .FicheClient .recherche-option .detail {
+      font-family: "Livvic-Light";
+      font-size: 12px;
+      color: #8F8E94; }
+  .ClientModal .body,
+  .FicheClient .body {
     display: flex;
     padding: 0 20px 0 0;
     flex-wrap: wrap;
-    justify-content: space-between; }
-    .ClientModal .body .col {
+    justify-content: space-between;
+    max-height: calc(100% - 55px);
+    overflow-y: auto; }
+    .ClientModal .body .col,
+    .FicheClient .body .col {
       width: 50%; }
-    .ClientModal .body .section-fidelite {
+    .ClientModal .body .section-fidelite,
+    .FicheClient .body .section-fidelite {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       background-color: #F7F7F7;
       padding: 10px 20px; }
-      .ClientModal .body .section-fidelite .labelledfield .input-wrapper {
+      .ClientModal .body .section-fidelite .labelledfield .input-wrapper,
+      .FicheClient .body .section-fidelite .labelledfield .input-wrapper {
         background-color: #FFFFFF; }
-      .ClientModal .body .section-fidelite .check-bloque {
+      .ClientModal .body .section-fidelite .check-bloque,
+      .FicheClient .body .section-fidelite .check-bloque {
         padding: 10px 0 15px; }
-        .ClientModal .body .section-fidelite .check-bloque label + label {
+        .ClientModal .body .section-fidelite .check-bloque label + label,
+        .FicheClient .body .section-fidelite .check-bloque label + label {
           font-family: "Livvic-Regular";
           font-size: 14px;
           color: #4A4A4A; }
-      .ClientModal .body .section-fidelite .fid {
+      .ClientModal .body .section-fidelite .fid,
+      .FicheClient .body .section-fidelite .fid {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         align-items: center; }
-        .ClientModal .body .section-fidelite .fid .labelledfield {
+        .ClientModal .body .section-fidelite .fid .labelledfield,
+        .FicheClient .body .section-fidelite .fid .labelledfield {
           width: 30%; }
-    .ClientModal .body .section-fiche {
+    .ClientModal .body .section-fiche,
+    .FicheClient .body .section-fiche {
       padding: 10px 20px 0;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between; }
       .ClientModal .body .section-fiche .fieldbatiment,
-      .ClientModal .body .section-fiche .fieldetage {
+      .ClientModal .body .section-fiche .fieldetage,
+      .FicheClient .body .section-fiche .fieldbatiment,
+      .FicheClient .body .section-fiche .fieldetage {
         width: 20%; }
-    .ClientModal .body .title {
+    .ClientModal .body .title,
+    .FicheClient .body .title {
       font-family: "Livvic-Bold";
       font-size: 18px;
       color: #4A4A4A;
       text-align: center;
       text-transform: uppercase; }
-    .ClientModal .body .labelledfield {
+    .ClientModal .body .labelledfield,
+    .FicheClient .body .labelledfield {
       width: calc(50% - 5px);
       padding-bottom: 8px; }
-      .ClientModal .body .labelledfield label {
+      .ClientModal .body .labelledfield label,
+      .FicheClient .body .labelledfield label {
         display: block; }
-      .ClientModal .body .labelledfield .input-wrapper {
+      .ClientModal .body .labelledfield .input-wrapper,
+      .FicheClient .body .labelledfield .input-wrapper {
         width: 100%; }
-    .ClientModal .body .remarque {
+    .ClientModal .body .remarque,
+    .FicheClient .body .remarque {
       width: 100%; }
-      .ClientModal .body .remarque label {
+      .ClientModal .body .remarque label,
+      .FicheClient .body .remarque label {
         font-family: "Livvic-Regular";
         font-size: 14px;
         color: #4A4A4A;
         user-select: none; }
-      .ClientModal .body .remarque textarea {
+      .ClientModal .body .remarque textarea,
+      .FicheClient .body .remarque textarea {
         font-family: "Livvic-Light";
         font-size: 14px;
         color: #167093;
@@ -3067,7 +4367,8 @@ input[type="checkbox"].switch {
         outline: none;
         width: 100%;
         resize: none; }
-    .ClientModal .body .map {
+    .ClientModal .body .map,
+    .FicheClient .body .map {
       width: 100%;
       height: 100%;
       display: flex;
@@ -3075,31 +4376,57 @@ input[type="checkbox"].switch {
       justify-content: center;
       background-attachment: no-repeat;
       background-size: 200%; }
-      .ClientModal .body .map.map-123 {
+      .ClientModal .body .map.map-123,
+      .FicheClient .body .map.map-123 {
         background-image: url("./../../images/maps-123.png"); }
-      .ClientModal .body .map.map-150 {
+      .ClientModal .body .map.map-150,
+      .FicheClient .body .map.map-150 {
         background-image: url("./../../images/maps-150.png"); }
-      .ClientModal .body .map.map-158 {
+      .ClientModal .body .map.map-158,
+      .FicheClient .body .map.map-158 {
         background-image: url("./../../images/maps-158.png"); }
-      .ClientModal .body .map.map-170 {
+      .ClientModal .body .map.map-170,
+      .FicheClient .body .map.map-170 {
         background-image: url("./../../images/maps-170.png"); }
-      .ClientModal .body .map .emptymap {
+      .ClientModal .body .map .emptymap,
+      .FicheClient .body .map .emptymap {
         display: none; }
-      .ClientModal .body .map.map-none {
+      .ClientModal .body .map.map-none,
+      .FicheClient .body .map.map-none {
         background-color: #F7F7F7; }
-        .ClientModal .body .map.map-none .emptymap {
+        .ClientModal .body .map.map-none .emptymap,
+        .FicheClient .body .map.map-none .emptymap {
           display: inline-block;
           width: 150px;
           height: 150px;
           opacity: .2; }
-  .ClientModal .footer {
-    text-align: right;
+  .ClientModal .footer,
+  .FicheClient .footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
     padding: 0 20px; }
-    .ClientModal .footer .save {
-      background-color: #7FAD3B;
-      width: 45%;
+    .ClientModal .footer .select,
+    .FicheClient .footer .select {
+      background-color: #5AC8FA;
+      min-width: 200px;
       min-height: 30px; }
-      .ClientModal .footer .save .StdButton-text {
+      .ClientModal .footer .select .StdButton-text,
+      .FicheClient .footer .select .StdButton-text {
+        font-family: "Livvic-Bold";
+        font-size: 14px;
+        text-transform: uppercase; }
+      .ClientModal .footer .select.unselect,
+      .FicheClient .footer .select.unselect {
+        background-color: #FF2D55; }
+    .ClientModal .footer .save,
+    .FicheClient .footer .save {
+      background-color: #7FAD3B;
+      min-width: 200px;
+      min-height: 30px; }
+      .ClientModal .footer .save .StdButton-text,
+      .FicheClient .footer .save .StdButton-text {
         font-family: "Livvic-Bold";
         font-size: 14px;
         text-transform: uppercase; }
@@ -3256,7 +4583,7 @@ input[type="checkbox"].switch {
         text-transform: uppercase; }
       .Statistiques .listes .zonecharts .chartblock .chartcont {
         height: 145px;
-        width: calc(100% - 40px); }
+        width: calc(100% - 20px); }
         .Statistiques .listes .zonecharts .chartblock .chartcont.chart-doughnut {
           width: 250px; }
   .Statistiques .listes .CanalChart {
@@ -3314,7 +4641,7 @@ input[type="checkbox"].switch {
       flex-direction: column;
       justify-content: flex-end;
       align-items: center;
-      width: 25%;
+      width: 20%;
       height: 100%;
       text-align: center;
       background-image: linear-gradient(#4A4A4A 0%, #4A4A4A 100%);
@@ -3342,7 +4669,7 @@ input[type="checkbox"].switch {
         height: 20px;
         line-height: 26px;
         font-family: "Livvic-SemiBold";
-        font-size: 14px;
+        font-size: 12px;
         color: #4A4A4A; }
     .Statistiques .listes .MoyenChart .legende {
       display: flex;
@@ -3480,7 +4807,7 @@ input[type="checkbox"].switch {
 .Promotions.subcontent {
   display: inline-flex;
   justify-content: flex-start;
-  align-items: start;
+  align-items: flex-start;
   text-align: left;
   padding: 15px;
   flex-wrap: wrap;
@@ -3491,6 +4818,49 @@ input[type="checkbox"].switch {
 .Promotions .contimage {
   width: 100%;
   height: auto; }
+
+.Promotions div {
+  box-sizing: content-box; }
+
+.Promotions.subcontent {
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  text-align: left;
+  padding: 15px;
+  flex-wrap: wrap;
+  background-color: #FFFFFF;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1); }
+
+.Promotions .contimage {
+  width: 100%;
+  height: auto; }
+
+.Avoirs div {
+  box-sizing: content-box; }
+
+.Avoirs.subcontent {
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  text-align: left;
+  padding: 15px;
+  flex-wrap: wrap;
+  background-color: #FFFFFF;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1); }
+
+.Avoirs .burnt {
+  background-color: #1EA9DF; }
+
+.Avoirs .perime {
+  background-color: #FF2D55; }
+
+.Avoirs .wrapper {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto; }
 
 .Stocks .MainZone {
   height: calc(100% - 110px); }
@@ -4639,6 +6009,290 @@ input[type="checkbox"].switch {
         font-family: "Livvic-Bold";
         font-size: 14px;
         text-transform: uppercase; }
+
+.Menu .listes {
+  height: calc(100% - 40px); }
+
+.Menu header {
+  box-shadow: none;
+  background-color: transparent;
+  flex-direction: row;
+  justify-content: space-between; }
+  .Menu header .catalogue {
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center; }
+    .Menu header .catalogue .MuiFilledInput-root {
+      border-radius: 5px; }
+      .Menu header .catalogue .MuiFilledInput-root.MuiFilledInput-underline:before {
+        display: none; }
+    .Menu header .catalogue .MuiFilledInput-input {
+      padding: 10px 32px 10px 12px;
+      font-family: "Livvic-SemiBold"; }
+  .Menu header .catalogue-label {
+    display: inline-block;
+    font-family: "Livvic-SemiBold";
+    color: #4A4A4A;
+    font-size: 17px;
+    padding-right: 10px; }
+  .Menu header .MuiButtonBase-root {
+    font-family: "Livvic-SemiBold";
+    font-size: 18px;
+    background-color: #E6E6E6;
+    border-radius: 15px 15px 0 0;
+    color: #4A4A4A;
+    margin-right: 2px;
+    padding: 8px 25px 8px 40px; }
+    .Menu header .MuiButtonBase-root.Mui-selected {
+      background-color: #FFFFFF;
+      color: #1EA9DF;
+      font-family: "Livvic-Bold"; }
+    .Menu header .MuiButtonBase-root.tab-prd {
+      background-image: url("./../../images/ico_produit.svg");
+      background-repeat: no-repeat;
+      background-position: 10px center;
+      background-size: 20px; }
+      .Menu header .MuiButtonBase-root.tab-prd.Mui-selected {
+        background-image: url("./../../images/ico_produit-on.svg"); }
+    .Menu header .MuiButtonBase-root.tab-ing {
+      background-image: url("./../../images/ico_ingredient.svg");
+      background-repeat: no-repeat;
+      background-position: 10px center;
+      background-size: 20px; }
+      .Menu header .MuiButtonBase-root.tab-ing.Mui-selected {
+        background-image: url("./../../images/ico_ingredient-on.svg"); }
+  .Menu header .MuiTabs-fixed {
+    width: auto; }
+  .Menu header .MuiTabs-indicator {
+    background-color: transparent; }
+  .Menu header .MuiTabs-flexContainer {
+    display: inline-flex; }
+
+.Menu .MuiTypography-root {
+  height: 100%;
+  background-color: #FFFFFF;
+  border-radius: 15px 0 15px 15px; }
+
+.Menu .liste-wrapper {
+  height: 100%;
+  overflow-y: auto; }
+
+.Menu .panel {
+  position: relative;
+  height: 100%; }
+  .Menu .panel .MuiBox-root {
+    height: 100%; }
+
+.Menu .cont-header .MuiAccordionSummary-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center; }
+
+.Menu .cont-title {
+  font-family: "Livvic-SemiBold"; }
+
+.Menu .cont-print .MuiFormControlLabel-label {
+  font-size: 13px;
+  font-family: "Livvic-Regular"; }
+
+.Menu .panel-liste {
+  width: 100%; }
+  .Menu .panel-liste .MuiTypography-root {
+    font-family: "Livvic-Regular";
+    cursor: pointer; }
+  .Menu .panel-liste .MuiListItemText-primary {
+    color: #4A4A4A; }
+  .Menu .panel-liste .MuiListItemText-secondary {
+    color: #8F8E94; }
+  .Menu .panel-liste .MuiListItem-secondaryAction {
+    padding-right: 70px; }
+  .Menu .panel-liste .MuiListItemIcon-root {
+    min-width: 40px; }
+  .Menu .panel-liste .MuiListItemSecondaryAction-root {
+    display: flex;
+    flex-direction: row;
+    align-items: center; }
+  .Menu .panel-liste .MuiListItemText-root {
+    padding-left: 35px; }
+  .Menu .panel-liste .asproduct .MuiListItemText-root {
+    background-image: url("./../../images/ico_produit.svg");
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 20px; }
+    .Menu .panel-liste .asproduct .MuiListItemText-root .MuiTypography-root {
+      background-color: transparent; }
+  .Menu .panel-liste .cont-print {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 250px;
+    justify-content: flex-end; }
+
+.Menu .couleur.blanc {
+  fill: #FFFFFF; }
+
+.Menu .couleur.bleuclair {
+  fill: #5AC8FA; }
+
+.Menu .couleur.bleufonce {
+  fill: #0065E5; }
+
+.Menu .couleur.gris {
+  fill: #8F8E94; }
+
+.Menu .couleur.jaune {
+  fill: #FFE700; }
+
+.Menu .couleur.jauneorange {
+  fill: #FDC54F; }
+
+.Menu .couleur.marron {
+  fill: #7F592A; }
+
+.Menu .couleur.noir {
+  fill: #4A4A4A; }
+
+.Menu .couleur.orange {
+  fill: #FF9500; }
+
+.Menu .couleur.rose {
+  fill: #FF9DFF; }
+
+.Menu .couleur.rouge {
+  fill: #FF2D55; }
+
+.Menu .couleur.vertclair {
+  fill: #9CD04E; }
+
+.Menu .couleur.vertfonce {
+  fill: #628133; }
+
+.Menu .couleur.violet {
+  fill: #9867B6; }
+
+.MenuItemModal {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none; }
+  .MenuItemModal .Modal-container {
+    background-color: #FFFFFF;
+    width: 500px;
+    border-radius: 15px;
+    padding: 0 20px; }
+  .MenuItemModal .close-button {
+    background-color: #FFFFFF;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px; }
+  .MenuItemModal .header {
+    height: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; }
+    .MenuItemModal .header .title {
+      font-family: "Livvic-Bold";
+      font-size: 18px;
+      color: #4A4A4A;
+      text-align: center;
+      text-transform: uppercase; }
+  .MenuItemModal .body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-bottom: 30px; }
+    .MenuItemModal .body .item-nom {
+      width: 100%;
+      text-align: center;
+      font-family: "Livvic-SemiBold";
+      font-size: 18px;
+      color: #4A4A4A;
+      padding-bottom: 20px; }
+    .MenuItemModal .body .form-group {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      padding-bottom: 10px;
+      width: 100%; }
+      .MenuItemModal .body .form-group .label {
+        font-family: "Livvic-Light";
+        font-size: 14px;
+        color: #4A4A4A;
+        padding-right: 10px;
+        -webkit-user-select: none;
+        user-select: none;
+        display: inline-block; }
+      .MenuItemModal .body .form-group .valeur-input input {
+        text-align: right; }
+      .MenuItemModal .body .form-group .valeur-input .input-wrapper {
+        width: 120px; }
+      .MenuItemModal .body .form-group .caption {
+        font-family: "Livvic-Light";
+        font-size: 13px;
+        width: 100%;
+        text-align: right;
+        color: #4A4A4A;
+        -webkit-user-select: none;
+        user-select: none;
+        display: inline-block; }
+    .MenuItemModal .body .cmtlib-item {
+      font-family: "Livvic-Bold";
+      font-size: 14px;
+      color: #4A4A4A;
+      -webkit-user-select: none;
+      user-select: none;
+      display: inline-block;
+      text-decoration: underline;
+      padding: 5px 10px;
+      border-radius: 3px;
+      background-color: #F7F7F7; }
+    .MenuItemModal .body .color-label {
+      display: inline-block;
+      padding-right: 10px; }
+    .MenuItemModal .body .color {
+      display: inline-flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center; }
+      .MenuItemModal .body .color .MuiFilledInput-root {
+        border-radius: 5px;
+        background-color: #F7F7F7; }
+        .MenuItemModal .body .color .MuiFilledInput-root.MuiFilledInput-underline:before {
+          display: none; }
+      .MenuItemModal .body .color .MuiFilledInput-input {
+        padding: 5px 32px 0px 12px;
+        font-family: "Livvic-SemiBold"; }
+    .MenuItemModal .body .form-group.asproduct label {
+      font-family: "Livvic-Light";
+      font-size: 14px;
+      color: #4A4A4A;
+      -webkit-user-select: none;
+      user-select: none; }
+  .MenuItemModal .footer {
+    text-align: right; }
+    .MenuItemModal .footer .save {
+      background-color: #7FAD3B;
+      width: 45%;
+      min-height: 30px; }
+      .MenuItemModal .footer .save .StdButton-text {
+        font-family: "Livvic-Bold";
+        font-size: 14px;
+        text-transform: uppercase; }
+
+.ClavierMenuItem .MuiDrawer-paperAnchorBottom {
+  right: auto;
+  left: 50%;
+  width: 250px;
+  transform: translateX(-50%); }
 
 .sidebar {
   display: inline-block;
