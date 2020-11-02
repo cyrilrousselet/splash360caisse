@@ -636,8 +636,11 @@ const actions = {
     });
     // on envoie la synchro à tous les bornes, 
     // sauf celui qui est à l'origine de la synchro
+    let prix = db==='ingredient' ? data.supplement : data.prix;
+    let centimes = Math.round(Number(prix)*100);
+    log.info(`Prix du produit : ${centimes} centimes`);
     Object.entries(connectedTerminals).forEach(([sockid, secondary]) => {
-      io.to(sockid).emit('updateproduit', {id: data.custom_id, active: data.active, prix: db==='ingredient'?data.supplement:data.prix});
+      io.to(sockid).emit('updateproduit', {id: data.custom_id, active: data.active, prix: centimes});
     });
 
     log.info(`syncDispatchToSecondaries() [${db}] to ${Object.keys(connectedSecondaries).length} secondaries and ${Object.keys(connectedTerminals).length} terminals`);
