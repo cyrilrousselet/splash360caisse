@@ -271,6 +271,11 @@ class Cloture extends React.Component {
       extract: 'z'
     }
 
+    if (periode) {
+      params.debut = periode.debut;
+      params.fin = periode.fin;
+    }
+
     // logger.log('listeCommandes', Object.values(listeCommandes).length);
 
     if (selection_caisse.id!=='allcash') params['caisses'] = [selection_caisse];
