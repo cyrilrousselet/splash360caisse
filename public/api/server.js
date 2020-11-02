@@ -22,6 +22,7 @@ const dbUsersApi = require('./dbUsersApi.js');
 
 
 const connectedSecondaries = {};
+const connectedTerminals = {};
 
 let socket = null;
 
@@ -553,7 +554,7 @@ const actions = {
       io.to(sock.id).emit('sync',{type:'syncinit'});
 
       // écouteur d'événement 'register' :
-      // le secondary envoie son identité afin que le primary le stocke dans un objet
+      // le secondary envoie son identité afin que le primary la stocke dans un objet
       sock.on('register', async (data) => {
         log.info('secondary register', data);
 
@@ -566,6 +567,23 @@ const actions = {
 
         const summary = await welcomeTreatment();
         io.to(sock.id).emit('welcome', summary);
+        
+      });
+
+      // écouteur d'événement 'registerterminal' :
+      // la borne envoie son identité afin que la caisse la stocke dans un objet
+      sock.on('registerterminal', async (data) => {
+        log.info('borne register', data);
+
+        Object.defineProperty(connectedTerminals, sock.id, {
+          value: data,
+          writable: false,
+          enumerable: true,
+          configurable: true
+        });
+
+      //  const summary = await welcomeTreatment();
+        io.to(sock.id).emit('welcome');
         
       });
 
@@ -616,9 +634,14 @@ const actions = {
     Object.entries(connectedSecondaries).forEach(([sockid, secondary]) => {
       if (emitter!==secondary.id) io.to(sockid).emit('sync', req.payload);
     });
+    // on envoie la synchro à tous les bornes, 
+    // sauf celui qui est à l'origine de la synchro
+    Object.entries(connectedTerminals).forEach(([sockid, secondary]) => {
+      io.to(sockid).emit('updateproduit', {id: data.custom_id, active: data.active, prix: db==='ingredient'?data.supplement:data.prix});
+    });
 
-    log.info(`syncDispatchToSecondaries() [${db}] to ${Object.keys(connectedSecondaries).length} secondaries`);
-    res.send({msg:`sync to ${Object.keys(connectedSecondaries).length} secondaries`});
+    log.info(`syncDispatchToSecondaries() [${db}] to ${Object.keys(connectedSecondaries).length} secondaries and ${Object.keys(connectedTerminals).length} terminals`);
+    res.send({msg:`sync to ${Object.keys(connectedSecondaries).length} secondaries and ${Object.keys(connectedTerminals).length} terminals`});
   },
 
   syncDispatchToPrimary: (req,res) => {
