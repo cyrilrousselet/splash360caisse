@@ -71,14 +71,14 @@ function getCurrentPeriode(commandes, catalogue, params) {
 
       // periode
       let createdAt = parseJSON(cmd.createdAt);
-      if (params.extract==='x') {
-        if (isAfter(createdAt, params.fin) || isBefore(createdAt, params.debut)) __valid = false;
-      } 
-      else if (params.extract==='z') {
+ //     if (params.extract==='x') {
+ //       if (isAfter(createdAt, params.fin) || isBefore(createdAt, params.debut)) __valid = false;
+ //     } 
+ //     else if (params.extract==='z') {
       // --- /!\ on récupère aussi les commandes non clôturées des périodes précédentes (pour n'en laisser aucune)
       // (donc on invalide uniquement les commandes ultérieures)
         if (isAfter(createdAt, params.fin)) __valid = false;
-      }
+ //     }
 
       if (__valid && cmd.status!=='confirmed') __numStandby++;
 
