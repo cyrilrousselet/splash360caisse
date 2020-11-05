@@ -1,4 +1,4 @@
-const app = require('express')();
+﻿const app = require('express')();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 // const moment = require('moment')
@@ -15,8 +15,8 @@ let finishedOrders = {}
 let caredOrdersSalle = {}
 let periodHistory = 1800
 
-let webContents = null;
 
+let webContents = null;
 
 // try {
 //   pendingOrders = db.getData("/pendingOrders");
@@ -556,7 +556,7 @@ function transmitOrderAlt(order) {
   order.endTime = now
   if (devicesPerZones["salle"]) {
     devicesPerZones["salle"].forEach((device)=> {                   
-      io.to(device).emit('action', {type:'UPDATE_ORDER_SALLE', payload: order})
+      io.to(device).emit('action', {type:'UPDATE_ORDER_SALLE', payload: order, received: true})
       io.to(device).emit('ring')                
     })
   }
