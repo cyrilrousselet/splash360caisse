@@ -1,0 +1,7 @@
+export const numeroActionTypes = {
+
+    SET_NEW_NUMERO: 'COMMANDE_SETNEW_NUMERO',
+    NEW_NUMERO_ERROR: 'COMMANDE_NEW_NUMERO_ERROR',
+    GET_NUMERO: 'COMMANDE_GET_NUMERO'
+    
+}

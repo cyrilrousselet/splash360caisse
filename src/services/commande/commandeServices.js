@@ -1,5 +1,4 @@
 import {emit} from 'eiphop';
-import { sub, differenceInMinutes, isBefore, endOfYesterday, parseISO } from 'date-fns';
 
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
@@ -12,7 +11,7 @@ export const commandeServices = {
   getNewCommande,
   getCommandeById,
   getCommandesList,
-  getNewNumero,
+//  getNewNumero,
   addProduit,
   updateProduit,
   addReglement,
@@ -88,61 +87,61 @@ function persistTicketsRestaurants(liste) {
   return emit('dbTicketsRestauPersist', {payload: trliste});
 }
 
-function getNewNumero(parametres, numero) {
+// function getNewNumero(parametres, numero) {
 
-  const { heure_fin } = parametres.entreprise;
-  const { numerotation_start, numerotation_max, numerotation_hex } = parametres.commandes;
+//   const { heure_fin } = parametres.entreprise;
+//   const { numerotation_start, numerotation_max, numerotation_hex } = parametres.commandes;
 
-  logger.log('getNewNumero()');
+//   logger.log('getNewNumero()');
 
-  let newvalue = null;
+//   let newvalue = null;
 
-  // si un numéro est défini
-  if (null!==numero && numero.hasOwnProperty('updated')) {
+//   // si un numéro est défini
+//   if (null!==numero && numero.hasOwnProperty('updated')) {
 
-    // *** définition de la fin de la période précédente
-    // fin de la période précédente
-    let lastperiode_end = endOfYesterday();
-    // si l'heure de fin définie est différente de minuit
-    if (heure_fin!=="0:00") {
-      const hfin_ar = heure_fin.split(':');
-      // si l'heure actuelle est > à l'heure de fin, la fin de la période précédente était ce matin
-      if (differenceInMinutes(new Date(), new Date().setHours(hfin_ar[0],hfin_ar[1]))>0) {
-        lastperiode_end = new Date().setHours(hfin_ar[0],hfin_ar[1]);
-      } else {
-        lastperiode_end = sub(new Date(), {hours: 24}).setHours(hfin_ar[0],hfin_ar[1]);
-      }
-    }
+//     // *** définition de la fin de la période précédente
+//     // fin de la période précédente
+//     let lastperiode_end = endOfYesterday();
+//     // si l'heure de fin définie est différente de minuit
+//     if (heure_fin!=="0:00") {
+//       const hfin_ar = heure_fin.split(':');
+//       // si l'heure actuelle est > à l'heure de fin, la fin de la période précédente était ce matin
+//       if (differenceInMinutes(new Date(), new Date().setHours(hfin_ar[0],hfin_ar[1]))>0) {
+//         lastperiode_end = new Date().setHours(hfin_ar[0],hfin_ar[1]);
+//       } else {
+//         lastperiode_end = sub(new Date(), {hours: 24}).setHours(hfin_ar[0],hfin_ar[1]);
+//       }
+//     }
 
-    // si la dernière numérotation date d'un service précédent,
-    // on repart de la valeur du début
-    if (isBefore(parseISO(numero.updated), lastperiode_end)) {
-      newvalue = Number(numerotation_start);
-    } 
-    // sinon on continue la numérotation
-    else {
-      // si la valeur du numéro est sous la valeur maximum
-      if (Number(numero.value) < Number(numerotation_max)) {
-        newvalue = Number(numero.value) + 1;
-      }
-      // sinon on repart de la valeur du début
-      else {
-        newvalue = Number(numerotation_start);
-      }
-    }
-  }
-  // sinon on crée un numéro en partant de la valeur du début
-  else {
-    newvalue = Number(numerotation_start);
-  }
+//     // si la dernière numérotation date d'un service précédent,
+//     // on repart de la valeur du début
+//     if (isBefore(parseISO(numero.updated), lastperiode_end)) {
+//       newvalue = Number(numerotation_start);
+//     } 
+//     // sinon on continue la numérotation
+//     else {
+//       // si la valeur du numéro est sous la valeur maximum
+//       if (Number(numero.value) < Number(numerotation_max)) {
+//         newvalue = Number(numero.value) + 1;
+//       }
+//       // sinon on repart de la valeur du début
+//       else {
+//         newvalue = Number(numerotation_start);
+//       }
+//     }
+//   }
+//   // sinon on crée un numéro en partant de la valeur du début
+//   else {
+//     newvalue = Number(numerotation_start);
+//   }
 
-  const newnumero = {value: newvalue, hex: numerotation_hex, updated: new Date()};
+//   const newnumero = {value: newvalue, hex: numerotation_hex, updated: new Date()};
 
-  localStorage.setItem('numero', JSON.stringify(newnumero));
+//   localStorage.setItem('numero', JSON.stringify(newnumero));
   
-  return newnumero;
+//   return newnumero;
 
-}
+// }
 
 // function setNewNumero(numero) {
 //   localStorage.setItem('numero', JSON.stringify(numero));

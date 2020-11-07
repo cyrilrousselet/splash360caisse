@@ -1,4 +1,5 @@
 import { commandeActionTypes } from './commandeActionTypes';
+import { numeroActionTypes } from './numeroActionTypes';
 
 const initialState = {
   loading: false,
@@ -311,13 +312,13 @@ export function commandeReducer(state = initialState, action) {
       //    commande: action.commande
         };
     
-    case commandeActionTypes.GET_NUMERO:
+    case numeroActionTypes.GET_NUMERO:
         return {
           ...state,
           commande: {...commande, numero: action.numero},
         }
     
-    case commandeActionTypes.SET_NEW_NUMERO:
+    case numeroActionTypes.SET_NEW_NUMERO:
         return {
           ...state,
           numero: action.newnumero

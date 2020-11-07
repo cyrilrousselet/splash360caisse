@@ -634,16 +634,19 @@ const actions = {
     Object.entries(connectedSecondaries).forEach(([sockid, secondary]) => {
       if (emitter!==secondary.id) io.to(sockid).emit('sync', req.payload);
     });
-    // on envoie la synchro à tous les bornes, 
-    // sauf celui qui est à l'origine de la synchro
-    let prix = db==='ingredient' ? data.supplement : data.prix;
-    let centimes = Math.round(Number(prix)*100);
-    log.info(`Prix du produit : ${centimes} centimes`);
-    Object.entries(connectedTerminals).forEach(([sockid, secondary]) => {
-      io.to(sockid).emit('updateproduit', {id: data.custom_id, active: data.active, prix: centimes});
-    });
 
-    log.info(`syncDispatchToSecondaries() [${db}] to ${Object.keys(connectedSecondaries).length} secondaries and ${Object.keys(connectedTerminals).length} terminals`);
+    // s'il s'agit d'une synchro de produit ou d'ingrédient, on envoie la synchro à toutees les bornes, 
+    // sauf celui qui est à l'origine de la synchro
+    if ((['ingredient','produit']).includes(db)) {
+      let prix = db==='ingredient' ? data.supplement : data.prix;
+      let centimes = Math.round(Number(prix)*100);
+      log.info(`Prix du produit : ${centimes} centimes`);
+      Object.entries(connectedTerminals).forEach(([sockid, secondary]) => {
+        io.to(sockid).emit('updateproduit', {id: data.custom_id, active: data.active, prix: centimes});
+      });
+    }
+      
+      log.info(`syncDispatchToSecondaries() [${db}] to ${Object.keys(connectedSecondaries).length} secondaries and ${Object.keys(connectedTerminals).length} terminals`);
     res.send({msg:`sync to ${Object.keys(connectedSecondaries).length} secondaries and ${Object.keys(connectedTerminals).length} terminals`});
   },
 

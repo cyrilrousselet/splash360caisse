@@ -13,6 +13,7 @@ import history from './../helpers/history';
 import paths from './../constants/routes.json';
 import { clientsActions } from '../services/clients/clientsActions';
 import { tableActions } from '../services/table/tableActions';
+import { numeroActions } from '../services/commande/numeroActions';
 
 const gotoListeCommandes = () => {
   history.push(paths.LISTECOMMANDES);
@@ -41,7 +42,7 @@ const mapDispatchToProps = (dispatch) => {
     livraisonCommande: commandeActions.livraisonCommande,
     deleteCommande: commandeActions.deleteCurrentCommande,
     // setNewNumero: commandeActions.setNewNumero,
-    getNumero: commandeActions.getNumero,
+    getNumero: numeroActions.takeNumero,
     uncheckItemSteps: commandeActions.uncheckItemSteps,
     openDrawer: peripheralActions.openDrawer,
     addComment: commandeActions.addComment,
