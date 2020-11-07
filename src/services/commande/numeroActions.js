@@ -60,7 +60,7 @@ function getNumeroAPI(response) {
     dispatch({type: numeroActionTypes.GET_NUMERO, numero: newnumero});
     // const {commande} = getState().commandeReducer;
 
-    dispatch(notificationActions.sendNumero({newnumero, response}));
+    dispatch(notificationActions.sendNumero({numero: newnumero, response}));
     // if (parametres.options.role==="secondary") {
     //   dispatch(setNewNumero(newnumero.value));
     // } else {  

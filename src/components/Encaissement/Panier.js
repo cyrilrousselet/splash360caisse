@@ -1070,6 +1070,7 @@ class Panier extends React.Component {
     }
     const validationHandler = (event) => {
     //  if (!this.props.commande.numero) this.props.getNumero();
+   //   logger.log('validationHandler commande numero :', this.props.commande.numero);
       this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1});
       livraisonCommande(this.props.commande, !this.props.commande.numero);
     }
