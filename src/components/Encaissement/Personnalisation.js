@@ -1,50 +1,74 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import { Fab, Modal } from "@material-ui/core";
+import PropTypes from "prop-types";
+import React from "react";
+import LocalizedStrings from "react-localization";
+import { data } from "../../constants/translations";
+import Logger from "../../helpers/Logger";
+import { commandeServices } from "../../services/commande/commandeServices";
+import CloseIcon from "../common/icon/CloseIcon";
+import MinusIcon from "../common/icon/MinusIcon";
+import LoadingSpinner from "../common/LoadingSpinner";
+import StdButton from "../common/StdButton";
 
-import { Modal, Fab } from '@material-ui/core';
-import CloseIcon from '../common/icon/CloseIcon';
-import { commandeServices } from '../../services/commande/commandeServices';
-
-import LocalizedStrings from 'react-localization';
-import {data} from '../../constants/translations';
-import LoadingSpinner from '../common/LoadingSpinner';
-import MinusIcon from '../common/icon/MinusIcon';
-import StdButton from '../common/StdButton';
-import Logger from '../../helpers/Logger';
 let strings = new LocalizedStrings(data);
-const logger = new Logger()
+const logger = new Logger();
 
-
-
-
-const IngredientBtn = ({ id, nom, supplement, color, step, addIng, removeIng, qte, withbuttons, disabled }) => (
+const IngredientBtn = ({
+  id,
+  nom,
+  supplement,
+  color,
+  step,
+  addIng,
+  removeIng,
+  qte,
+  withbuttons,
+  disabled,
+}) => (
   <div
-    className={`IngredientBtn${withbuttons ? ' with-qtebtn' :''}${disabled ? ' btn-disabled' :''} ${color}`}
+    className={`IngredientBtn${withbuttons ? " with-qtebtn" : ""}${
+      disabled ? " btn-disabled" : ""
+    } ${color}`}
     id={id}
-    step={ step }
-    onClick={ (e) => { e.stopPropagation(); if(!disabled) addIng(id)} }
-  ><div className="btnlabel">
-    <div className="nom">{ nom }</div>
-  {supplement>0 && <div className="supplt">{ Number(supplement).toFixed(2).replace('.',',') }&nbsp;€</div>}
+    step={step}
+    onClick={(e) => {
+      e.stopPropagation();
+      if (!disabled) addIng(id);
+    }}
+  >
+    <div className="btnlabel">
+      <div className="nom">{nom}</div>
+      {supplement > 0 && (
+        <div className="supplt">
+          {Number(supplement).toFixed(2).replace(".", ",")}&nbsp;€
+        </div>
+      )}
     </div>
-  {qte>0 && <div className="qte-label">{qte}</div>}
-  {withbuttons && (
-    <div className="qte-btn">
-      {(qte>0 && <Fab aria-label="remove" size="small" className="moins" onClick={(e) => { e.stopPropagation(); removeIng(id)}}>
-        <MinusIcon htmlColor="#ffffff" />
-      </Fab>)}
-      {/* <Fab aria-label="add" size="small" className="plus" disabled={false} onClick={(e) => { e.stopPropagation(); addIng(id)}}>
+    {qte > 0 && <div className="qte-label">{qte}</div>}
+    {withbuttons && (
+      <div className="qte-btn">
+        {qte > 0 && (
+          <Fab
+            aria-label="remove"
+            size="small"
+            className="moins"
+            onClick={(e) => {
+              e.stopPropagation();
+              removeIng(id);
+            }}
+          >
+            <MinusIcon htmlColor="#ffffff" />
+          </Fab>
+        )}
+        {/* <Fab aria-label="add" size="small" className="plus" disabled={false} onClick={(e) => { e.stopPropagation(); addIng(id)}}>
         <PlusIcon htmlColor="#ffffff" />
       </Fab> */}
-    </div>
-  )}
+      </div>
+    )}
   </div>
 );
 
-
-
 class Personnalisation extends React.Component {
-
   constructor(props) {
     super(props);
     this.getIngredientQuantity = this.getIngredientQuantity.bind(this);
@@ -53,50 +77,56 @@ class Personnalisation extends React.Component {
 
   /**
    * Retourne la quantité choisie pour l'ingrédient passé en paramètre
-   * 
+   *
    * @param {*} ingredientid id de l'ingrédient
    */
   getIngredientQuantity(ingredientid, stepid) {
     const { itemIngredients } = this.props;
-    const ingredient = itemIngredients.find(ing=>(ing.ingredient===ingredientid && ing.fromStep===stepid));
-    if (null==ingredient) return 0; 
+    const ingredient = itemIngredients.find(
+      (ing) => ing.ingredient === ingredientid && ing.fromStep === stepid
+    );
+    if (null == ingredient) return 0;
     return ingredient.qte;
   }
 
   /**
    * Définit si le nombre maximum de choix d'ingrédient a été atteint par type
-   * 
+   *
    * @param {*} steptypes liste des regles du step
    * @param {*} itming    liste des ingredients de l'item de commande
    * @returns un objet ayant comme propriétés l'id de chaque type et comme valeur un booléen (true = nombre max atteint)
    */
   isIngredientTypeMaxnum(steptypes, itming, stepid) {
-
-    let intypes = {}, typeMax = {};
+    let intypes = {},
+      typeMax = {};
     for (let [key, value] of Object.entries(steptypes)) {
       let max = commandeServices.getRuleValues(value.regle).max;
-      let typeing = itming.filter(ing=>(ing.type===key && ing.fromStep===stepid));
+      let typeing = itming.filter(
+        (ing) => ing.type === key && ing.fromStep === stepid
+      );
       let num = 0;
-      typeing.forEach(ing=> { num += ing.qte });
-      intypes[key] = {max, num};
+      typeing.forEach((ing) => {
+        num += ing.qte;
+      });
+      intypes[key] = { max, num };
     }
 
     // si le type est global
-    if (Object.values(steptypes)[0].regle.indexOf('g')>-1) {
+    if (Object.values(steptypes)[0].regle.indexOf("g") > -1) {
       // on additionne le nbr d'ingredients de tous les types
       let allnum = 0;
-      Object.values(intypes).forEach(value => {
+      Object.values(intypes).forEach((value) => {
         allnum += value.num;
       });
       for (let [key, value] of Object.entries(intypes)) {
-        typeMax[key] = allnum>=value.max;
+        typeMax[key] = allnum >= value.max;
       }
     }
     // sinon on teste individuellement les types
     else {
       for (let [key, value] of Object.entries(intypes)) {
-        logger.log(value.num+'>='+value.max);
-        typeMax[key] = value.num>=value.max;
+        logger.log(value.num + ">=" + value.max);
+        typeMax[key] = value.num >= value.max;
       }
     }
 
@@ -107,70 +137,121 @@ class Personnalisation extends React.Component {
    * récupère les id du step précédent (n-1) et du step d'avant (n-2) pour ouvrir le step précédent
    */
   gotoPreviousStep() {
-
     const { item, itemSteps, previousstep, openPersonnalisation } = this.props;
-    
-    const __nextStep = itemSteps.find(s => s.id===previousstep);
-    let __stepIndex = itemSteps.findIndex(s=>s.id===previousstep);
-    let __previd = (__stepIndex<=0 ) ? -1 : itemSteps[__stepIndex-1].id;
 
-    openPersonnalisation(item, previousstep, __previd, __nextStep.validated, 'previousbtn');
+    const __nextStep = itemSteps.find((s) => s.id === previousstep);
+    let __stepIndex = itemSteps.findIndex((s) => s.id === previousstep);
+    let __previd = __stepIndex <= 0 ? -1 : itemSteps[__stepIndex - 1].id;
 
+    openPersonnalisation(
+      item,
+      previousstep,
+      __previd,
+      __nextStep.validated,
+      "previousbtn"
+    );
   }
 
-
-
   render() {
-    
-    const { open, closePersonnalisation, itemstatus, contClass, stepObject, step, item, ingredientTypes, addIngredient, removeIngredient, itemIngredients, completeStep, valide, updateProduit } = this.props;
+    const {
+      open,
+      closePersonnalisation,
+      itemstatus,
+      contClass,
+      stepObject,
+      step,
+      item,
+      ingredientTypes,
+      addIngredient,
+      removeIngredient,
+      itemIngredients,
+      completeStep,
+      valide,
+      updateProduit,
+    } = this.props;
 
-    if (null===stepObject || Object.entries(stepObject).length===0) return <Modal open={open}><LoadingSpinner /></Modal>;
+    if (null === stepObject || Object.entries(stepObject).length === 0)
+      return (
+        <Modal open={open}>
+          <LoadingSpinner />
+        </Modal>
+      );
 
-    if (null===ingredientTypes || Object.entries(ingredientTypes).length===0) return <Modal open={open}><LoadingSpinner /></Modal>;
+    if (
+      null === ingredientTypes ||
+      Object.entries(ingredientTypes).length === 0
+    )
+      return (
+        <Modal open={open}>
+          <LoadingSpinner />
+        </Modal>
+      );
 
-    const isTypesMax = this.isIngredientTypeMaxnum(ingredientTypes, itemIngredients, step);
+    const isTypesMax = this.isIngredientTypeMaxnum(
+      ingredientTypes,
+      itemIngredients,
+      step
+    );
 
     const onClickDelete = () => {
-      if (itemstatus==='pending') updateProduit({itemid: item, quantite: 0});
-      closePersonnalisation('popin');
-    }
+      if (itemstatus === "pending")
+        updateProduit({ itemid: item, quantite: 0 });
+      closePersonnalisation("popin");
+    };
 
     const removeBtnHandler = (payload) => {
-      removeIngredient({...payload, itemstatus:itemstatus});
-    }
-
+      removeIngredient({ ...payload, itemstatus: itemstatus });
+    };
 
     return (
-      <Modal
-        open={open}
-        >
-        <div className={ `Personnalisation ${contClass}`}>
+      <Modal open={open}>
+        <div className={`Personnalisation ${contClass}`}>
           <div className="Modal-container">
             <div className="header">
-              <div className="title">{ stepObject.titre }</div>
+              <div className="title">{stepObject.titre}</div>
             </div>
             <div className="body">
               <div className="modal-wrapper">
-                {Object.entries(ingredientTypes).map(([id,type])=>
+                {Object.entries(ingredientTypes).map(([id, type]) => (
                   <div className="igtype" key={id} data-regle={type.regle}>
-                    { Object.entries(ingredientTypes).length>1 && <div className="igtype-nom">{ type.nom }</div> }
+                    {Object.entries(ingredientTypes).length > 1 && (
+                      <div className="igtype-nom">{type.nom}</div>
+                    )}
                     <div className="igtype-liste">
-                      { type.ingredients.map(ingredient => 
-                      <IngredientBtn 
-                        id={ingredient.id}
-                        nom={ingredient.nom}
-                        color={ingredient.color}
-                        supplement={ingredient.supplement} 
-                        step={step}
-                        disabled={isTypesMax[id] || ingredient.active===0}
-                        // withbuttons={ (!RegExp('^(\\?|\\{1\\}|\\{0\\}|\\{0,1\\})').test(type.regle)) || this.getIngredientQuantity(ingredient.id)>0 }
-                        withbuttons={ (!RegExp('^(\\?|\\{1\\}|\\{0\\})').test(type.regle)) || this.getIngredientQuantity(ingredient.id)>0 }
-                        qte={this.getIngredientQuantity(ingredient.id, step)}
-                        addIng={()=>{ addIngredient({itemid: item, stepid: step, ingredientid: ingredient.id, quantite: 1}) }} 
-                        removeIng={()=>{ removeBtnHandler({itemid: item, stepid: step, ingredientid: ingredient.id, quantite: 1}) }} 
-                        key={ingredient.id}
-                      />
-                      )}
+                      {type.ingredients.map((ingredient) => (
+                        <IngredientBtn
+                          id={ingredient.id}
+                          nom={ingredient.nom}
+                          color={ingredient.color}
+                          supplement={ingredient.supplement}
+                          step={step}
+                          disabled={isTypesMax[id] || ingredient.active === 0}
+                          // withbuttons={ (!RegExp('^(\\?|\\{1\\}|\\{0\\}|\\{0,1\\})').test(type.regle)) || this.getIngredientQuantity(ingredient.id)>0 }
+                          withbuttons={
+                            !RegExp("^(\\?|\\{1\\}|\\{0\\})").test(
+                              type.regle
+                            ) || this.getIngredientQuantity(ingredient.id) > 0
+                          }
+                          qte={this.getIngredientQuantity(ingredient.id, step)}
+                          addIng={() => {
+                            addIngredient({
+                              itemid: item,
+                              stepid: step,
+                              ingredientid: ingredient.id,
+                              quantite: 1,
+                            });
+                          }}
+                          removeIng={() => {
+                            removeBtnHandler({
+                              itemid: item,
+                              stepid: step,
+                              ingredientid: ingredient.id,
+                              quantite: 1,
+                            });
+                          }}
+                          key={ingredient.id}
+                        />
+                      ))}
 
                       {/* {RegExp('^(\\?|\\*|\\{0)').test(type.regle) && 
                         <IngredientBtn 
@@ -186,24 +267,46 @@ class Personnalisation extends React.Component {
                       } */}
                     </div>
                   </div>
-                )}
+                ))}
               </div>
             </div>
             <div className="footer">
-              {(this.props.previousstep>-1) && <StdButton identifier="btnprecedent" elementclass="btnprecedent" key="btnprecedent" text={strings.modules.encaissement.personnalisation.precedent} onClick={ () => { this.gotoPreviousStep() }} />}
+              {this.props.previousstep !== -1 && (
+                <StdButton
+                  identifier="btnprecedent"
+                  elementclass="btnprecedent"
+                  key="btnprecedent"
+                  text={strings.modules.encaissement.personnalisation.precedent}
+                  onClick={() => {
+                    this.gotoPreviousStep();
+                  }}
+                />
+              )}
               <div className="intercalaire"></div>
-              <StdButton identifier="btnsuivant" elementclass="btnsuivant" key="btnsuivant" text={strings.modules.encaissement.personnalisation.valider} disabled={!valide} onClick={ () => { completeStep({itemid: item, stepid: step}); }} />
+              <StdButton
+                identifier="btnsuivant"
+                elementclass="btnsuivant"
+                key="btnsuivant"
+                text={strings.modules.encaissement.personnalisation.valider}
+                disabled={!valide}
+                onClick={() => {
+                  completeStep({ itemid: item, stepid: step });
+                }}
+              />
             </div>
           </div>
-          <Fab aria-label="close" size="small" className="close-button" onClick={ onClickDelete }>
+          <Fab
+            aria-label="close"
+            size="small"
+            className="close-button"
+            onClick={onClickDelete}
+          >
             <CloseIcon />
           </Fab>
         </div>
       </Modal>
     );
-
   }
-
 }
 
 export default Personnalisation;
@@ -211,4 +314,4 @@ export default Personnalisation;
 Personnalisation.propTypes = {
   open: PropTypes.bool,
   closePersonnalisation: PropTypes.func.isRequired,
-}
+};
