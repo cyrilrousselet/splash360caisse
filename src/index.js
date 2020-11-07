@@ -11,6 +11,7 @@ import {ipcRenderer} from 'electron';
 import {setupFrontendListener} from 'eiphop';
 
 import { commandeActions } from './services/commande/commandeActions';
+import { numeroActions } from './services/commande/numeroActions';
 import { notificationActions } from './services/notification/notificationActions';
 
 //import routes from './Routes';
@@ -56,7 +57,7 @@ ipcRenderer.on('getNotification', (event, data) => {
 // listener sur la demande de numero de commande (via '/public/server.js')
 ipcRenderer.on('getNumero', (event, data) => {
   logger.log('getNumero()', event, data);
-  commandeActions.getNumeroAPI(data)(store.dispatch, store.getState);
+  numeroActions.getNumeroAPI(data)(store.dispatch, store.getState);
 })
 
 // ipcRenderer.on('setProductionChrono', (event, data) => {

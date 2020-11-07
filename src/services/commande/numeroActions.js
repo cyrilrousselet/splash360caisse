@@ -48,20 +48,30 @@ function loadNumero() {
 
 function getNumeroAPI(response) {
 
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
 
     logger.log('NumeroActions.getNumeroAPI()');
 
-    const numero = getState().commandeReducer.numero;
-    const {commande} = getState().commandeReducer;
+    const {parametres} = getState().parametresReducer;
+    const {numero} = getState().commandeReducer;
 
-    dispatch(notificationActions.sendNumero({numero, response}));
+    const newnumero = await _getNumero(parametres, numero);
 
-    if (commande.hasOwnProperty('ticketId')) {
-      dispatch(takeNumero());
-    } else {
+    dispatch({type: numeroActionTypes.GET_NUMERO, numero: newnumero});
+    // const {commande} = getState().commandeReducer;
+
+    dispatch(notificationActions.sendNumero({newnumero, response}));
+    // if (parametres.options.role==="secondary") {
+    //   dispatch(setNewNumero(newnumero.value));
+    // } else {  
       dispatch(setNewNumero());
-    }
+    // }
+
+    // if (commande.hasOwnProperty('ticketId')) {
+    //   dispatch(takeNumero());
+    // } else {
+    //   dispatch(setNewNumero());
+    // }
 
 
 
@@ -78,15 +88,17 @@ function takeNumero() {
     const {parametres} = getState().parametresReducer;
     const {numero} = getState().commandeReducer;
 
-    const newnumero = await _getNumero(parametres, numero);
+    _getNumero(parametres, numero)
+    .then(newnumero => {
 
-    dispatch({type: numeroActionTypes.GET_NUMERO, numero: newnumero});
-    if (parametres.options.role==="secondary") {
-      dispatch(setNewNumero(newnumero.value));
-    } else {  
-      dispatch(setNewNumero());
-    }
-
+      dispatch({type: numeroActionTypes.GET_NUMERO, numero: newnumero});
+      if (parametres.options.role==="secondary") {
+        dispatch(setNewNumero(newnumero.value));
+      } else {  
+        dispatch(setNewNumero());
+      }
+      
+    });
   }
 }
 
