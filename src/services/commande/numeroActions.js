@@ -57,7 +57,7 @@ function getNumeroAPI(response) {
 
     const newnumero = await _getNumero(parametres, numero);
 
-    dispatch({type: numeroActionTypes.GET_NUMERO, numero: newnumero});
+  //  dispatch({type: numeroActionTypes.GET_NUMERO, numero: newnumero});
     // const {commande} = getState().commandeReducer;
 
     dispatch(notificationActions.sendNumero({numero: newnumero, response}));
