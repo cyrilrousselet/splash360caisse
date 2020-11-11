@@ -1,13 +1,8 @@
-import { commandeActionTypes } from './commandeActionTypes';
-import { numeroActionTypes } from './numeroActionTypes';
-import { commandeServices } from './commandeServices';
-import { clotureActions } from '../cloture/clotureActions';
-import { numeroActions } from './numeroActions';
-import { differenceInMilliseconds, parseISO, format, formatISO } from 'date-fns';
-import { peripheralActions } from '../peripheral/peripheralActions';
+import { differenceInMilliseconds, format, formatISO, parseISO } from 'date-fns';
 import frLocale from "date-fns/locale/fr";
-import Logger from '../../helpers/Logger';
-import { notificationActions } from '../notification/notificationActions';
+import Logger from "../../helpers/Logger";
+import { clotureActions } from '../cloture/clotureActions';
+import { notificationActions } from "../notification/notificationActions";
 import { peripheralActions } from '../peripheral/peripheralActions';
 import { commandeActionTypes } from './commandeActionTypes';
 import { commandeServices } from './commandeServices';
@@ -72,9 +67,6 @@ function persistTicketsRestaurants(liste) {
     );
   };
 }
-
-
-
 
 /**
  * Recupere la commande à partir de son ID
@@ -303,14 +295,11 @@ function standByCommande(payload, needNumero) {
       const { parametres } = state.parametresReducer;
       const { numero } = state.commandeReducer;
 
-      const {parametres} = state.parametresReducer;
-      const {numero} = state.commandeReducer;
-  
       const newnumero = await numeroActions._getNumero(parametres, numero);
       payload.numero = newnumero;
 
-      dispatch({type: numeroActionTypes.GET_NUMERO, numero: newnumero});
-      if (parametres.options.role==="secondary") {
+      dispatch({ type: numeroActionTypes.GET_NUMERO, numero: newnumero });
+      if (parametres.options.role === "secondary") {
         dispatch(numeroActions.setNewNumero(newnumero.value));
       } else {
         dispatch(numeroActions.setNewNumero());
@@ -362,13 +351,10 @@ function livraisonCommande(payload, needNumero) {
       const { parametres } = state.parametresReducer;
       const { numero } = state.commandeReducer;
 
-      const {parametres} = state.parametresReducer;
-      const {numero} = state.commandeReducer;
-  
       const newnumero = await numeroActions._getNumero(parametres, numero);
 
-      dispatch({type: numeroActionTypes.GET_NUMERO, numero: newnumero});
-      if (parametres.options.role==="secondary") {
+      dispatch({ type: numeroActionTypes.GET_NUMERO, numero: newnumero });
+      if (parametres.options.role === "secondary") {
         dispatch(numeroActions.setNewNumero(newnumero.value));
       } else {
         dispatch(numeroActions.setNewNumero());
@@ -850,9 +836,7 @@ function setSyncedCommands(payload) {
 
 function setCommandeFromOrder(provider, payload) {
   return async (dispatch, getState) => {
-
-
-    logger.log('setCommmandeFromOrder()');
+    logger.log("setCommmandeFromOrder()");
 
     const state = getState();
 
@@ -864,15 +848,14 @@ function setCommandeFromOrder(provider, payload) {
       caisse_encaissement: {id: -1, nom:'UberEats', type:'UberEats'},
       reglements: [{moyen: 'uber', reglementId: new Date().getTime(), valeur: payload.payment.charges.sub_total.amount/100}]
     };
-    
-    const {numero} = getState().commandeReducer;
-    const {parametres} = getState().parametresReducer;
+
+    const { numero } = getState().commandeReducer;
+    const { parametres } = getState().parametresReducer;
     const newnumero = await numeroActions._getNumero(parametres, numero);
 
-    logger.log('new numero', newnumero);
-    dispatch({type: numeroActionTypes.GET_NUMERO, numero: newnumero});
+    logger.log("new numero", newnumero);
+    dispatch({ type: numeroActionTypes.GET_NUMERO, numero: newnumero });
     dispatch(numeroActions.setNewNumero());
-
 
     // logger.log(data);
     const commande = commandeServices.setCommandeFromOrder(
@@ -903,7 +886,6 @@ function setCommandeFromOrder(provider, payload) {
     };
 
     // dispatch(numeroActions.takeNumero());
-
 
 
     commandeServices.saveCommande(commande, state.catalogueReducer).then(
@@ -937,10 +919,8 @@ function setCommandeFromOrder(provider, payload) {
   };
 }
 
-
 function setCommandeFromAPI(payload) {
   return async (dispatch, getState) => {
-
     const state = getState();
     let { data } = payload;
 
@@ -959,17 +939,21 @@ function setCommandeFromAPI(payload) {
       };
     }
 
-    const {numero} = getState().commandeReducer;
-    const {parametres} = getState().parametresReducer;
+    const { numero } = getState().commandeReducer;
+    const { parametres } = getState().parametresReducer;
     const newnumero = await numeroActions._getNumero(parametres, numero);
 
-    logger.log('new numero', newnumero);
-    dispatch({type: numeroActionTypes.GET_NUMERO, numero: newnumero});
+    logger.log("new numero", newnumero);
+    dispatch({ type: numeroActionTypes.GET_NUMERO, numero: newnumero });
     dispatch(numeroActions.setNewNumero());
 
     logger.log(data);
-    const commande = commandeServices.setCommandeFromAPI(data, state.catalogueReducer, state.parametresReducer.parametres, newnumero);
-
+    const commande = commandeServices.setCommandeFromAPI(
+      data,
+      state.catalogueReducer,
+      state.parametresReducer.parametres,
+      newnumero
+    );
 
     const numtosend =
       commande.numero.hex === true
@@ -1016,9 +1000,7 @@ function setCommandeFromAPI(payload) {
   };
 }
 
-
-
-/** 
+/**
  * ajout / modif de commandes depuis la synchro
  */
 function setCommandeFromSync(commande) {

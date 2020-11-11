@@ -1238,7 +1238,6 @@ function getCommandesToSync(limit=null) {
 }
 
 
-
 const _newCommandeId = () => {
     // let __d = new Date();
     // return __d.getTime().toString();

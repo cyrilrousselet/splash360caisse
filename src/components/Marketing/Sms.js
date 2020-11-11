@@ -1,4 +1,5 @@
 import React from "react";
+import { commandeServices } from "../../services/commande/commandeServices";
 
 class Sms extends React.Component {
   constructor(props) {
@@ -7,16 +8,20 @@ class Sms extends React.Component {
   }
 
   componentDidMount() {
-    this.props.loadProducts();
+    // this.props.loadProducts();
   }
 
   addProduct() {
-    const id = Math.floor(Math.random() * 100);
-    this.props.createProduct({
-      id,
-      name: `Product ${id}`,
-      price: Math.floor(Math.random() * 10),
+    commandeServices.getCommandesToSync().then((res) => {
+      console.log("Commandes to sync: ", res);
     });
+
+    // const id = Math.floor(Math.random() * 100);
+    // this.props.createProduct({
+    //   id,
+    //   name: `Product ${id}`,
+    //   price: Math.floor(Math.random() * 10),
+    // });
   }
 
   render() {
