@@ -66,7 +66,6 @@ class LocalizedUtils extends DateFnsUtils {
 
 function CanalChart(props) {
   const { data } = props;
-  console.log("Canal data ", data);
 
   let i = 0;
   const max = Object.values(data).sort((a, b) => b - a);

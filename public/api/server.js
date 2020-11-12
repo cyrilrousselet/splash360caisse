@@ -587,7 +587,7 @@ const actions = {
 
   // émission de la synchro du primary en direction des secondaries
   syncDispatchToSecondaries: (req, res) => {
-    const { db, emitter } = req.payload;
+    const { db, data, emitter } = req.payload;
 
     // on envoie la synchro à tous les secondaries,
     // sauf celui qui est à l'origine de la synchro
