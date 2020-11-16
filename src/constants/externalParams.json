@@ -16,8 +16,16 @@
       "url": "https://api.uber.com/v1/eats/orders/{order_id}/deny_pos_order",
       "scope": "eats.order"
     },
+    "restaurant": {
+      "url": "https://api.uber.com/v1/eats/store/{store_id}/status",
+      "scope": "eats.store.status.write"
+    },
     "pos": {
       "url": "https://api.uber.com/v1/eats/stores/{store_id}/pos_data",
+      "scope": "eats.store"
+    },
+    "updateitem": {
+      "url": "https://api.uber.com/v2/eats/stores/{store_id}/menus/items/{item_id}",
       "scope": "eats.store"
     }
   },

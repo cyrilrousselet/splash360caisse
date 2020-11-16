@@ -4,7 +4,6 @@ import Dashboard from '../components/Dashboard';
 import { modulesList } from '../constants/modules';
 import { commandeActions } from '../services/commande/commandeActions';
 import { clotureActions } from '../services/cloture/clotureActions';
-import { getPeriode } from '../services/cloture/clotureReducer';
 import { getCommandesList } from '../services/commande/commandesListReducer';
 import history from '../helpers/history';
 import paths from './../constants/routes.json';
@@ -71,7 +70,9 @@ const mapStateToProps = (state) => {
     username: state.authentication.user.nom,
     userid: state.authentication.user.id,
     commandeslist: getCommandesList(state),
-    periode: getPeriode(state),
+    today_ca: state.clotureReducer.today_ca,
+    today_numtickets: state.clotureReducer.today_numtickets,
+   // periode: getPeriode(state),
     points: null, //200,
     modules: getModulesFromDroits(state.authentication.user.droits),
     devise: ' €',
@@ -108,7 +109,7 @@ const mapDispatchToProps = (dispatch) => {
     getCommandesList: commandeActions.getCommandesList,
     getAllActive: catalogueActions.getAllActive,
     getParametres: parametresActions.getAll,
-    getCurrentPeriode: clotureActions.getCurrentPeriode,
+    getTodayCa: clotureActions.getTodayCa,
     getAvoirsList: marketingActions.getAvoirsList,
     deleteCurrentCommande: commandeActions.deleteCurrentCommande,
     getCommande: commandeActions.getCommande

@@ -1,6 +1,7 @@
 import { commandeActionTypes } from './commandeActionTypes';
 import { numeroActionTypes } from './numeroActionTypes';
 import { commandeServices } from './commandeServices';
+import { clotureActions } from '../cloture/clotureActions';
 import { numeroActions } from './numeroActions';
 import { differenceInMilliseconds, parseISO, format, formatISO } from 'date-fns';
 import { peripheralActions } from '../peripheral/peripheralActions';
@@ -21,7 +22,10 @@ function getCommandesList(params={}) {
 
     commandeServices.getCommandesList(params)
     .then(
-        data => { dispatch({ type: commandeActionTypes.GET_ALLCOMMANDES_SUCCESS, ...data }) }
+        data => { 
+          dispatch({ type: commandeActionTypes.GET_ALLCOMMANDES_SUCCESS, ...data }) 
+          dispatch(clotureActions.getTodayCa());
+        }
     )
     .catch(
       error => { dispatch({ type: commandeActionTypes.GET_ALLCOMMANDES_FAILURE, error: error.toString() }) }
@@ -176,6 +180,8 @@ function validateCommande(payload) {
       //  const commande = commandeServices.getNewCommande({operator:{id: user.id, nom: user.nom}, caisse: caisse});
         dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS, commande:{}});
         dispatch(notificationActions.syncDispatch('commande',confirm));
+
+        dispatch(clotureActions.getTodayCa());
 
         const cmdtosync = {
           ...confirm,
@@ -780,6 +786,7 @@ function setCommandeFromOrder(provider, payload) {
         };
 
         dispatch(notificationActions.syncCommandes([cmdtosync]));
+        dispatch(clotureActions.getTodayCa());
       //  dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
       },
       error => {
@@ -835,6 +842,7 @@ function setCommandeFromAPI(payload) {
         dispatch(getCommandesList());
         dispatch(notificationActions.syncDispatch('commande',confirm));
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
+        dispatch(clotureActions.getTodayCa());
 
         
         if (confirm.status==="confirmed") {
@@ -894,6 +902,7 @@ function setCommandeFromSync(commande) {
             };
             
             dispatch(notificationActions.syncCommandes([cmdtosync]));
+            dispatch(clotureActions.getTodayCa());
           }
         }
         dispatch(getCommandesList());

@@ -1,6 +1,6 @@
 import {emit} from 'eiphop';
 
-import { startOfDay, startOfToday, isAfter, isBefore, parseJSON } from 'date-fns';
+import { startOfDay, startOfToday, endOfYesterday, isAfter, isBefore, parseJSON, differenceInMinutes, sub } from 'date-fns';
 
 import Logger from '../../helpers/Logger';
 const logger = new Logger();
@@ -12,10 +12,47 @@ export const clotureServices = {
   getClotureById,
   getCloturesList,
   setSyncedClotures,
-  getCloturesToSync
+  getCloturesToSync,
+  getTodayCa
 };
 
 
+function getTodayCa(heure_fin, commandeslist) {
+
+  // fin de la période précédente
+  const now = new Date();
+  const hfin_ar = heure_fin.split(':');
+  const hfin = parseInt(hfin_ar[0]);
+  const mfin = parseInt(hfin_ar[1]);
+  let lastperiode_end = endOfYesterday();
+
+  // si l'heure actuelle est > à l'heure de fin, la fin de la période précédente était ce matin
+  if (differenceInMinutes(now, now.setHours(hfin,mfin))>0) {
+    lastperiode_end = now.setHours(hfin,mfin);
+  } else {
+    lastperiode_end = sub(now, {hours: 24}).setHours(hfin,mfin);
+  }
+
+  let ca = 0;
+  let numtickets = 0;
+
+  if (commandeslist) {
+
+    Object.values(commandeslist).forEach(cmd => {
+      if (cmd.status === "confirmed") {
+        const __start = new Date(cmd.start);
+        if (__start>lastperiode_end) {
+          ca += cmd.total;
+          numtickets++;
+        }
+      }
+    });
+
+  }
+
+
+  return {ca, numtickets};
+}
 
 
 function getCurrentPeriode(commandes, catalogue, params) {

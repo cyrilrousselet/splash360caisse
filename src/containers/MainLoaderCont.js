@@ -45,6 +45,7 @@ const mapDispatchToProps = (dispatch) => {
     getCommandesList: commandeActions.getCommandesList,
     getCloturesList: clotureActions.getCloturesList,
     getCurrentPeriode: clotureActions.getCurrentPeriode,
+    getTodayCa: clotureActions.getTodayCa,
     initSSE: notificationActions.initSSE,
     setPOS: notificationActions.setPOS,
     initSync: notificationActions.initSync,

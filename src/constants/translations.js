@@ -980,7 +980,8 @@ const data = {
                             uber: {
                                 titre: 'UberEats',
                                 store_id: 'Identifiant (UUID) :',
-                                pos_integration_enabled: 'Point de vente activé',
+                                pos_integration_enabled: 'POS activé',
+                                restaurant_online: 'Restaurant online',
                                 auto_accept_order: 'Acceptation auto. des commandes',
                                 alerte: {
                                     enable_noid: {

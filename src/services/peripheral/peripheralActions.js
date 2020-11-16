@@ -430,6 +430,7 @@ function printCommandeTicket(quelstickets, cmd) {
         comment: __cmt ? __cmt.texte : '',
         timestamp: 1,
         status: 0,
+        commande_status: cmd.status,
         endTime: '',
         careTime: '',
         items: [],

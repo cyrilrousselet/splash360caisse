@@ -16,7 +16,8 @@ const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({
     getAll: parametresActions.getAll,
     updateValeur: parametresActions.update,
-    setPOS: notificationActions.setPOS
+    setPOS: notificationActions.setPOS,
+    setRestaurantOnline: notificationActions.setRestaurantOnline
   },dispatch);
 }
 

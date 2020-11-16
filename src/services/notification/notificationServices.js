@@ -11,6 +11,8 @@ export const notificationServices = {
   acceptOrder,
   getOrder,
   setPOS,
+  setRestaurantOnline,
+  updateProduitUber,
   initSSE,
   connectToPrimary,
   disconnectFromPrimary,
@@ -30,7 +32,7 @@ async function getDatabase(params) {
 
   const __splashToken = await getSplashToken(params);
 
-  console.log('notifSrv.getDatabase()',__splashToken);
+  logger.log('notifSrv.getDatabase()',__splashToken);
 
   if (__splashToken.splash_token.access_token) {
     var __url = externalParams.synchro.getdb;
@@ -39,10 +41,10 @@ async function getDatabase(params) {
 }
 
 async function syncCommandes(params) {
-  console.log('notifSrv.syncCommandes()','init');
+  logger.log('notifSrv.syncCommandes()','init');
   const __splashToken = await getSplashToken(params);
   
-  console.log('notifSrv.syncCommandes()',__splashToken);
+  logger.log('notifSrv.syncCommandes()',__splashToken);
   
   if (__splashToken.splash_token.access_token) {
     var __url = externalParams.synchro.syncCommandes;
@@ -50,10 +52,10 @@ async function syncCommandes(params) {
   }
 }
 async function syncClotures(params) {
-  console.log('notifSrv.syncClotures()','init');
+  logger.log('notifSrv.syncClotures()','init');
   const __splashToken = await getSplashToken(params);
 
-  console.log('notifSrv.syncClotures()',__splashToken);
+  logger.log('notifSrv.syncClotures()',__splashToken);
 
   if (__splashToken.splash_token.access_token) {
     var __url = externalParams.synchro.syncClotures;
@@ -75,7 +77,7 @@ async function getSplashToken(params) {
     
     if (provider==='uber') {
 
-      if (!['getorder','acceptorder','denyorder', 'pos'].includes(task)) reject(`invalid task '${task}' for Uber API`);
+      if (!['getorder','acceptorder','denyorder', 'pos', 'restaurant', 'updateitem'].includes(task)) reject(`invalid task '${task}' for Uber API`);
 
       const credentials = {
         client: {
@@ -87,13 +89,13 @@ async function getSplashToken(params) {
         }
       };
 
-      console.log('credentials', credentials);
+      logger.log('credentials', credentials);
       
       const tokenConfig = {
         scope: externalParams.uber[task].scope
       };
 
-      console.log('tokenConfig', tokenConfig);
+      logger.log('tokenConfig', tokenConfig);
 
       const uberOAuth2 = create(credentials);
 
@@ -103,12 +105,12 @@ async function getSplashToken(params) {
         
      //   localStorage.setItem('uber_token', JSON.stringify(accessToken.token));
      
-        console.log('token',accessToken);
+        logger.log('token',accessToken);
 
         resolve(accessToken.token);
         
       } catch (error) {
-        console.log('Access token error', error.message);
+        logger.log('Access token error', error.message);
         reject(error.message);
       }
     }
@@ -193,6 +195,28 @@ async function setPOS(provider, data) {
   if (__updatePOStoken.access_token) {
     var __url = externalParams[provider].pos.url.replace('{store_id}', data.store_id);
     return emit('updateUberPOS', {url: __url, access_token: __updatePOStoken.access_token, integration: data.integration});
+  }
+}
+  
+
+async function setRestaurantOnline(provider, data) {
+
+  logger.log('NSrv.setRestaurantOnline()');
+  const __updateRestaurantToken = await getToken(provider, 'restaurant');
+
+  if (__updateRestaurantToken.access_token) {
+    var __url = externalParams[provider].restaurant.url.replace('{store_id}', data.store_id);
+    return emit('updateUberRestaurant', {url: __url, access_token: __updateRestaurantToken.access_token, online: data.online});
+  }
+}
+
+async function updateProduitUber(provider, data) {
+  logger.log('NSrv.updateProduitUber()');
+  const __updateProduitToken = await getToken(provider, 'updateitem');
+
+  if (__updateProduitToken.access_token) {
+    var __url = externalParams[provider].updateitem.url.replace('{store_id}', data.store_id).replace('{item_id}', data.item_id);
+    return emit('updateUberItem', {url: __url, access_token: __updateProduitToken.access_token, properties: data.properties});
   }
 }
 

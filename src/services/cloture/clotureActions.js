@@ -107,6 +107,21 @@ function getCurrentPeriode(params={}) {
   }
 }
 
+function getTodayCa() {
+  return (dispatch, getState) => {
+
+    const state = getState();
+    const {heure_fin} = state.parametresReducer.parametres.entreprise;
+    const {commandeslist} = state.commandesListReducer;
+
+    const {ca, numtickets} = clotureServices.getTodayCa(heure_fin, commandeslist);
+
+    dispatch({type: clotureActionTypes.GET_TODAY_CA, ca, numtickets})
+
+  }
+}
+
+
 function loadCloture(clotureId) {
   
 }
@@ -174,5 +189,6 @@ export const clotureActions = {
   loadCloture,
   makeCloture,
   getCloturesList,
-  setSyncedClotures
+  setSyncedClotures,
+  getTodayCa
 };

@@ -14,6 +14,7 @@ class CommandesCanaux extends React.Component {
       uuid:null
     };
     this.updatePOS = this.updatePOS.bind(this);
+    this.updateRestaurantOnline = this.updateRestaurantOnline.bind(this);
     this.updateUUID = this.updateUUID.bind(this);
   }
 
@@ -25,7 +26,26 @@ class CommandesCanaux extends React.Component {
         cle: 'pos_integration_enabled',
         valeur: value
       });
-      setPOS();
+      setPOS(value);
+    } else {
+      Swal.fire({
+        title: strings.modules.parametres.submodules.commandes.canaux.uber.alerte.enable_noid.titre,
+        text: strings.modules.parametres.submodules.commandes.canaux.uber.alerte.enable_noid.texte,
+        showCancelButton: false,
+        focusConfirm: true
+      });
+    }
+  }
+
+  updateRestaurantOnline(value) {
+    const { data, updateValeur, setRestaurantOnline} = this.props;
+    if (data.store_id) {
+      updateValeur({
+        domaine: 'commandes',
+        cle: 'restaurant_online',
+        valeur: value
+      });
+      setRestaurantOnline(value);
     } else {
       Swal.fire({
         title: strings.modules.parametres.submodules.commandes.canaux.uber.alerte.enable_noid.titre,
@@ -61,7 +81,7 @@ class CommandesCanaux extends React.Component {
             cle: 'pos_integration_enabled',
             valeur: false
           });
-          setPOS();
+          setPOS(false);
         }
       });
     } else {
@@ -70,7 +90,7 @@ class CommandesCanaux extends React.Component {
         cle: 'store_id',
         valeur: value
       });
-      setPOS();
+      setPOS(data.pos_integration_enabled);
     }
   }
 
@@ -108,6 +128,17 @@ class CommandesCanaux extends React.Component {
               this.updatePOS(isChecked)
             } } 
             label={ strings.modules.parametres.submodules.commandes.canaux.uber.pos_integration_enabled }
+          />
+
+          <SwitchCheckbox 
+            isChecked={ data.hasOwnProperty('restaurant_online') && data.restaurant_online } 
+            labelLeft={ false } 
+            key={`restaurant_online`}
+            name={ `restaurant_online` } 
+            onChange={ (name, isChecked)=>{
+              this.updateRestaurantOnline(isChecked)
+            } } 
+            label={ strings.modules.parametres.submodules.commandes.canaux.uber.restaurant_online }
           />
 
           <SwitchCheckbox 

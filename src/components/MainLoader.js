@@ -93,6 +93,7 @@ class MainLoader extends React.Component {
       if (paramLoaded===true && sseInit===true && catLoaded===true && cmdLoaded===true && 
           cloLoaded===false) {
         this.props.getCloturesList();
+        this.props.getTodayCa();
         this.props.getCurrentPeriode();
       }
       if (paramLoaded===true && sseInit===true && catLoaded===true && cmdLoaded===true && cloLoaded===true) {

@@ -3,7 +3,7 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../constants/translations';
 import LargeButton from './common/LargeButton';
 import PropTypes from 'prop-types';
-import LoadingSpinner from './common/LoadingSpinner';
+// import LoadingSpinner from './common/LoadingSpinner';
 import { Fab } from '@material-ui/core';
 import ConnectIcon from './common/icon/ConnectIcon';
 import ErrorBoundary from './common/ErrorBoundary';
@@ -15,12 +15,14 @@ const DISABLED_MODULES = ['stocks'];
 
 class Dashboard extends Component {
 
+
+
   componentDidMount() {
   //  console.log('Dashboard.componentDidMount()');
     this.props.getCommandesList();
     // this.props.getAllActive();
     this.props.getParametres();
-    this.props.getCurrentPeriode();
+    this.props.getTodayCa();
     this.props.getAvoirsList();
     // this.props.deleteCurrentCommande();
     this.props.getCommande();
@@ -50,12 +52,11 @@ class Dashboard extends Component {
 
   render() {
 
-    const { cashname, username, modules, devise, userLogout, onClickModule, periode } = this.props;
-    const { ca, numtickets } = periode;
-  
-    if (ca===undefined || ca===null) {
-      return <LoadingSpinner className="Dashboard-loader" />;
-    }
+    const { cashname, username, modules, devise, userLogout, onClickModule, today_ca, today_numtickets } = this.props;
+
+    // if (today_ca===undefined || ca===null) {
+    //   return <LoadingSpinner className="Dashboard-loader" />;
+    // }
 
 
     
@@ -81,8 +82,8 @@ class Dashboard extends Component {
           </div>
         )}
         </div>
-        { modules.indexOf('statistiques')>-1 && ( <div className="tickets">{ strings.dashboard.ticketsnum }<span>{ numtickets }</span></div> )}
-        { modules.indexOf('statistiques')>-1 && ( <div className="ca">{ strings.dashboard.ca }<span className={ ca_eval }>{ ca.toFixed(2).replace(/\./g,',') }{ devise }</span></div> )}
+        { modules.indexOf('statistiques')>-1 && ( <div className="tickets">{ strings.dashboard.ticketsnum }<span>{ today_numtickets }</span></div> )}
+        { modules.indexOf('statistiques')>-1 && ( <div className="ca">{ strings.dashboard.ca }<span className={ ca_eval }>{ today_ca.toFixed(2).replace(/\./g,',') }{ devise }</span></div> )}
       </div>
       </ErrorBoundary>
     );

@@ -38,15 +38,35 @@ function initSSE() {
   }
 }
 
-function setPOS() {
+function setPOS(value) {
   return (dispatch, getState) => {
     const { store_id, pos_integration_enabled } = getState().parametresReducer.parametres.commandes;
 
     if (store_id && (undefined!==pos_integration_enabled)) {
-      notificationServices.setPOS('uber', {store_id: store_id, integration: pos_integration_enabled})
+      notificationServices.setPOS('uber', {store_id: store_id, integration: value})
                           .then(
-                            success => dispatch({type: notificationActionTypes.SET_POS, integration: pos_integration_enabled}),
+                            success => dispatch({type: notificationActionTypes.SET_POS, integration: value}),
                             error => console.log('POS integration error')
+                          )
+    } else {
+      logger.log('store_id unknown');
+    }
+
+  }
+}
+
+function setRestaurantOnline(value) {
+  return (dispatch, getState) => {
+    const { store_id, restaurant_online } = getState().parametresReducer.parametres.commandes;
+
+
+    logger.log('setRestaurantOnline', value, `avant: ${restaurant_online}`);
+
+    if (store_id && (undefined!==restaurant_online)) {
+      notificationServices.setRestaurantOnline('uber', {store_id: store_id, online: value})
+                          .then(
+                            success => dispatch({type: notificationActionTypes.SET_RESTAURANT_ONLINE, online: value}),
+                            error => logger.log('Uber Restaurant online error')
                           )
     } else {
       logger.log('store_id unknown');
@@ -95,6 +115,22 @@ function syncDispatch(db,data,emitter=null) {
         logger.log('syncDispatch (secondary)', result);
       })
     }
+
+
+    // update Produit / Ingredient sur UberEats
+    const { store_id } = getState().parametresReducer.parametres.commandes;
+
+    if (store_id && (['ingredient','produit']).includes(db)) {
+
+      let prix = db==='ingredient' ? data.supplement : data.prix;
+      let centimes = Math.round(Number(prix)*100);
+
+      const update_data = {store_id: store_id, item_id: data.custom_id, properties: {active: data.active, price: centimes}};
+
+      notificationServices.updateProduitUber('uber', update_data);
+      
+    }
+
   }
 }
 
@@ -455,6 +491,7 @@ function syncClotures(clotures) {
 export const notificationActions = {
   initSSE,
   setPOS,
+  setRestaurantOnline,
   getToken,
   treatment,
   denyOrder,

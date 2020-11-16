@@ -4,7 +4,9 @@ const initialState = {
   loading: false,
   error: null,
   periode: {},
-  clotures: {}
+  clotures: {},
+  today_ca: 0,
+  today_numtickets: 0
 }
 
 export function clotureReducer(state = initialState, action) {
@@ -29,6 +31,12 @@ export function clotureReducer(state = initialState, action) {
         loading: false,
         clotures: action.clotureslist
       };
+    case clotureActionTypes.GET_TODAY_CA:
+      return {
+        ...state,
+        today_ca: action.ca,
+        today_numtickets: action.numtickets
+      }
     default:
       return state;
   }

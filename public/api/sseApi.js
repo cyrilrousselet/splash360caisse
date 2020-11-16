@@ -136,6 +136,44 @@ const actions = {
 
   },
 
+  updateUberRestaurant: (req, res) => {
+
+    const { url, access_token, online } = req.payload;
+
+    var __updateObject = {
+      status: online ? "ONLINE" : "PAUSED"
+    };
+
+    let __confirmation = [];
+
+    const __request = net.request({
+      url: url,
+      method: 'post'
+    });
+    __request.setHeader('Authorization','Bearer '+access_token)
+    __request.setHeader('Access-Control-Allow-Origin', '*')
+    __request.setHeader('Content-Type', 'application/json');
+
+    __request.write(JSON.stringify(__updateObject));
+
+    __request.on('response', (response) => {
+      log.info(`updateUberRestaurant STATUS: ${response.statusCode}`);
+      log.info(`updateUberRestaurant HEADERS: ${JSON.stringify(response.headers)}`);
+      response.on('data', (chunk) => {
+        __confirmation.push(chunk);
+        log.info(`updateUberRestaurant BODY: ${chunk}`)
+      });
+      response.on('end', () => {
+        log.info('updateUberRestaurant: end');
+        // res.send({confirm: JSON.parse(__confirmation.join(''))});
+        res.send({confirm: true});
+      });
+    });
+
+    __request.end();
+
+  },
+
   updateUberPOS: (req, res) => {
 
     const { url, access_token, integration } = req.payload;
@@ -144,6 +182,8 @@ const actions = {
       pos_integration_enabled: integration,
       order_release_enabled: true
     };
+
+    log.info('updateUberPOS payload : ', __updateObject);
 
     let __confirmation = [];
 
@@ -166,6 +206,56 @@ const actions = {
       });
       response.on('end', () => {
         log.info('updateUberPOS: end');
+        // res.send({confirm: JSON.parse(__confirmation.join(''))});
+        res.send({confirm: true});
+      });
+    });
+
+    __request.end();
+
+  },
+
+  updateUberItem: (req, res) => {
+
+    const { url, access_token, properties } = req.payload;
+
+    let __suspend_date = properties.active ? new Date('1970-01-01') : new Date('2100-01-01');
+
+    var __updateObject = {
+      "suspension_info": {
+        "suspension": {
+          "suspend_until": __suspend_date.getTime(),
+          "reason": null
+        }
+      },
+      "price_info": {
+        "price": properties.price
+      }
+    };
+
+    log.info('updateUberItem payload : ', __updateObject);
+
+    let __confirmation = [];
+
+    const __request = net.request({
+      url: url,
+      method: 'post'
+    });
+    __request.setHeader('Authorization','Bearer '+access_token)
+    __request.setHeader('Access-Control-Allow-Origin', '*')
+    __request.setHeader('Content-Type', 'application/json');
+
+    __request.write(JSON.stringify(__updateObject));
+
+    __request.on('response', (response) => {
+      log.info(`updateUberItem STATUS: ${response.statusCode}`);
+      log.info(`updateUberItem HEADERS: ${JSON.stringify(response.headers)}`);
+      response.on('data', (chunk) => {
+        __confirmation.push(chunk);
+        log.info(`updateUberItem BODY: ${chunk}`)
+      });
+      response.on('end', () => {
+        log.info('updateUberItem: end');
         // res.send({confirm: JSON.parse(__confirmation.join(''))});
         res.send({confirm: true});
       });
