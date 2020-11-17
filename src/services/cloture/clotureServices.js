@@ -40,8 +40,9 @@ function getTodayCa(heure_fin, commandeslist) {
 
     Object.values(commandeslist).forEach(cmd => {
       if (cmd.status === "confirmed") {
-        const __start = new Date(cmd.start);
-        if (__start>lastperiode_end) {
+        // const __start = new Date(cmd.start);
+        // if (__start>lastperiode_end) {
+        if (cmd.createdAt>lastperiode_end) {
           ca += cmd.total;
           numtickets++;
         }

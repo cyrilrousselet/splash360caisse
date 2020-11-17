@@ -109,39 +109,42 @@ function setChrono(payload) {
     logger.log('setChrono', payload);
 
     const cmd = await commandeServices.getCommandeById(ticketId)
-    
-    const commande = cmd._cmd;
 
-    const careDatetime = new Date(careTime);
-    const endDatetime = new Date(endTime);
+    if (cmd) {
+      
+      const commande = cmd._cmd;
 
-    // si la commande a déjà été synchronisée avec le Backend
-    let cmdToSync = {};
-    if (commande.hasOwnProperty('sync')) {
-      cmdToSync = {
-          id: commande.id,
-          careTime: formatISO(careDatetime),
-          endTime: formatISO(endDatetime),
-          productionTime: Math.round(differenceInMilliseconds(endDatetime, careDatetime)/10)/100,
-          waitTime: Math.round(differenceInMilliseconds(careDatetime, parseISO(commande.end))/10)/100,
-          status: commande.status,
-          updatedAt: formatISO(new Date())
-      };
+      const careDatetime = new Date(careTime);
+      const endDatetime = new Date(endTime);
+
+      // si la commande a déjà été synchronisée avec le Backend
+      let cmdToSync = {};
+      if (commande.hasOwnProperty('sync')) {
+        cmdToSync = {
+            id: commande.id,
+            careTime: formatISO(careDatetime),
+            endTime: formatISO(endDatetime),
+            productionTime: Math.round(differenceInMilliseconds(endDatetime, careDatetime)/10)/100,
+            waitTime: Math.round(differenceInMilliseconds(careDatetime, parseISO(commande.end))/10)/100,
+            status: commande.status,
+            updatedAt: formatISO(new Date())
+        };
+      }
+      // sinon,
+      else {
+        cmdToSync = {
+            ...commande,
+            careTime: formatISO(careDatetime),
+            endTime: formatISO(endDatetime),
+            productionTime: Math.round(differenceInMilliseconds(endDatetime, careDatetime)/10)/100,
+            waitTime: Math.round(differenceInMilliseconds(careDatetime, parseISO(commande.end))/10)/100,
+            updatedAt: formatISO(new Date())
+        };
+      }
+
+      dispatch(notificationActions.syncCommandes([cmdToSync]));
+
     }
-    // sinon,
-    else {
-      cmdToSync = {
-          ...commande,
-          careTime: formatISO(careDatetime),
-          endTime: formatISO(endDatetime),
-          productionTime: Math.round(differenceInMilliseconds(endDatetime, careDatetime)/10)/100,
-          waitTime: Math.round(differenceInMilliseconds(careDatetime, parseISO(commande.end))/10)/100,
-          updatedAt: formatISO(new Date())
-      };
-    }
-
-    dispatch(notificationActions.syncCommandes([cmdToSync]));
-
   }
 }
 
@@ -737,10 +740,10 @@ function setCommandeFromOrder(provider, payload) {
 
     let data = {
       ...payload,
-      operator: {id:-1, nom:'UberEats'},
-      caisse: {id: -1, nom:'UberEats'},
-      operator_encaissement: {id:-1, nom:'UberEats'}, 
-      caisse_encaissement: {id: -1, nom:'UberEats'},
+      operator: {id:-1, nom:'UberEats', type:'UberEats'},
+      caisse: {id: -1, nom:'UberEats', type:'UberEats'},
+      operator_encaissement: {id:-1, nom:'UberEats', type:'UberEats'}, 
+      caisse_encaissement: {id: -1, nom:'UberEats', type:'UberEats'},
       reglements: [{moyen: 'uber', reglementId: new Date().getTime(), valeur: payload.payment.charges.sub_total.amount/100}]
     };
     
@@ -758,6 +761,8 @@ function setCommandeFromOrder(provider, payload) {
 
     const cmd = {
       ...commande, 
+      start: formatISO(new Date()),
+      end: formatISO(new Date()),
       uber: {
         display_id: payload.display_id, 
         date: format(parseISO(payload.estimated_ready_for_pickup_at), 'd MMM yyyy à HH:mm', frLocale),
