@@ -1044,33 +1044,37 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
       }
 
       // ajout des ingrédients (personnalisation)
-      itm.selected_modifier_groups.forEach(mod => {
-        mod.selected_items.forEach(ing => {
-          
-          // infos de l'ingrédient issues du catalogue
-          const ingredient = catalogueReducer.ingredients[ing.id];
-          
-          logger.log(ing.id, ingredient);
-          
-          if (ingredient) {
+      if (itm.selected_modifier_groups) {
+        
+        itm.selected_modifier_groups.forEach(mod => {
+          mod.selected_items.forEach(ing => {
+            
+            // infos de l'ingrédient issues du catalogue
+            const ingredient = catalogueReducer.ingredients[ing.id];
+            
+            logger.log(ing.id, ingredient);
+            
+            if (ingredient) {
 
-            logger.log('steps', steps);
+              logger.log('steps', steps);
 
-            const ingredient_step = steps.find(st => {
-              let __istype = false;
-              st.regles.forEach(str => {
-                logger.log(str.type, ingredient.type);
-                if (str.type===ingredient.type) __istype = true;
+              const ingredient_step = steps.find(st => {
+                let __istype = false;
+                st.regles.forEach(str => {
+                  logger.log(str.type, ingredient.type);
+                  if (str.type===ingredient.type) __istype = true;
+                });
+                return __istype;
               });
-              return __istype;
-            });
 
-           item.ingredients.push({ingredient: ing.id, type: ingredient.type, qte: ing.quantity, prix: Number(ing.price.unit_price.amount/100), nom: ingredient.nom, fromStep:ingredient_step.step_id});
-            // item.ingredients.push({ingredient: ing.id, type: ingredient.type, qte: ing.quantity, prix: Number(ing.price.unit_price.amount/100), nom: ingredient.nom });
-          }
+            item.ingredients.push({ingredient: ing.id, type: ingredient.type, qte: ing.quantity, prix: Number(ing.price.unit_price.amount/100), nom: ingredient.nom, fromStep:ingredient_step.step_id});
+              // item.ingredients.push({ingredient: ing.id, type: ingredient.type, qte: ing.quantity, prix: Number(ing.price.unit_price.amount/100), nom: ingredient.nom });
+            }
 
+          });
         });
-      });
+
+      }
 
       if (catalogueReducer.steps[item.produitid]) {  
         item.ingredients = _ventilationIngredientsSteps(item, catalogueReducer.steps[item.produitid]);
