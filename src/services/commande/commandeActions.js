@@ -759,17 +759,7 @@ function setCommandeFromOrder(provider, payload) {
    // logger.log(data);
     const commande = commandeServices.setCommandeFromOrder(data, state.catalogueReducer, state.parametresReducer.parametres, state.commandeReducer.numero);
 
-    const cmd = {
-      ...commande, 
-      start: formatISO(new Date()),
-      end: formatISO(new Date()),
-      uber: {
-        display_id: payload.display_id, 
-        date: format(parseISO(payload.estimated_ready_for_pickup_at), 'd MMM yyyy à HH:mm', frLocale),
-        heure: format(parseISO(payload.estimated_ready_for_pickup_at), 'HH:mm', frLocale),
-        eater: payload.eater
-      }
-    };
+    
 
     // dispatch(numeroActions.takeNumero());
 
@@ -789,7 +779,19 @@ function setCommandeFromOrder(provider, payload) {
           updatedAt: formatISO(confirm.updatedAt)
         };
 
-        dispatch(peripheralActions.printCommandeTicket('all_uber', confirm));
+        const cmd = {
+          ...confirm, 
+          start: formatISO(new Date()),
+          end: formatISO(new Date()),
+          uber: {
+            display_id: payload.display_id, 
+            date: format(parseISO(payload.estimated_ready_for_pickup_at), 'd MMM yyyy à HH:mm', frLocale),
+            heure: format(parseISO(payload.estimated_ready_for_pickup_at), 'HH:mm', frLocale),
+            eater: payload.eater
+          }
+        };
+
+        dispatch(peripheralActions.printCommandeTicket('all_uber', cmd));
 
         dispatch(notificationActions.syncCommandes([cmdtosync]));
         dispatch(clotureActions.getTodayCa());
