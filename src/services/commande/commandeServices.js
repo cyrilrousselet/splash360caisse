@@ -1232,7 +1232,7 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
           // Ajout commentaires ingredients
           if (ing.comments && ing.comments.length) {
             ing.comments.forEach((comment) => {
-              const commentText = itm.comments.join(", ");
+              const commentText = ing.comments.join(", ");
 
               commande.comments.push({
                 comment_id: _newCommentId(),
