@@ -13,7 +13,7 @@
       "scope": "eats.order"
     },
     "denyorder": {
-      "url": "https://api.uber.com/v1/eats/orders/{order_id}/deny_pos_order",
+      "url": "https://api.uber.com/v1/eats/orders/{order_id}/cancel",
       "scope": "eats.order"
     },
     "restaurant": {
