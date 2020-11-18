@@ -1,5 +1,6 @@
 import {emit} from 'eiphop';
 
+import LodashId from 'lodash-id';
 import Logger from '../../helpers/Logger';
 
 
@@ -72,10 +73,8 @@ function persistTable(table) {
 
 
 const _newSalleId = () => {
-  let __d = new Date();
-  return __d.getTime().toString();
+  return LodashId.createId();
 }
 const _newTableId = () => {
-  let __d = new Date();
-  return __d.getTime().toString();
+  return LodashId.createId();
 }

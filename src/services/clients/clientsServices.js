@@ -1,5 +1,8 @@
 import {emit} from 'eiphop';
 import canonicalizeString from '@pelevesque/canonicalize-string';
+import LodashId from 'lodash-id';
+import Logger from '../../helpers/Logger';
+const logger = new Logger();
 
 export const clientsServices = {
   getClientsList,
@@ -34,7 +37,7 @@ function createClient(payload) {
     inscription: new Date().getTime()
   }
 
-  console.log('CltSv.createClient()', client);
+  logger.log('CltSv.createClient()', client);
 
   return emit('dbClientPersist', {client:client});
 }
@@ -54,6 +57,7 @@ function deleteClient(client_id) {
 
 
 const _newClientId = () => {
-  let __d = new Date();
-  return 'clt'+__d.getTime().toString();
+  // let __d = new Date();
+  // return 'clt'+__d.getTime().toString();
+  return 'clt'+LodashId.createId();
 }

@@ -2,6 +2,7 @@ import {emit} from 'eiphop';
 
 import { startOfDay, startOfToday, endOfYesterday, isAfter, isBefore, parseJSON, differenceInMinutes, sub } from 'date-fns';
 
+import LodashId from 'lodash-id';
 import Logger from '../../helpers/Logger';
 const logger = new Logger();
 
@@ -467,8 +468,7 @@ function getCloturesToSync(limit=null) {
 
 
 const _newClotureId = () => {
-  let __d = new Date();
-  return 'clo'+__d.getTime().toString();
+  return 'clo'+LodashId.createId();
 }
 function getClotureById(id) {
   return emit('dbClotureGetCloture', {clotureId: id});

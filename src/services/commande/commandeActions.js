@@ -774,7 +774,6 @@ function setCommandeFromOrder(provider, payload) {
     // dispatch(numeroActions.takeNumero());
 
 
-    dispatch(peripheralActions.printCommandeTicket('all_uber', cmd));
 
     commandeServices.saveCommande(commande, state.catalogueReducer)
     .then(
@@ -789,6 +788,8 @@ function setCommandeFromOrder(provider, payload) {
           createdAt: formatISO(confirm.createdAt),
           updatedAt: formatISO(confirm.updatedAt)
         };
+
+        dispatch(peripheralActions.printCommandeTicket('all_uber', confirm));
 
         dispatch(notificationActions.syncCommandes([cmdtosync]));
         dispatch(clotureActions.getTodayCa());

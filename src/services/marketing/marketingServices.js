@@ -1,5 +1,6 @@
 import {emit} from 'eiphop';
 import {add} from 'date-fns';
+import LodashId from 'lodash-id';
 
 export const marketingServices = {
   getAvoirsList,
@@ -50,6 +51,5 @@ function deleteAvoir(avoir_id) {
 
 
 const _newAvoirId = () => {
-  let __d = new Date();
-  return 'avr'+__d.getTime().toString();
+  return 'avr'+LodashId.createId();
 }

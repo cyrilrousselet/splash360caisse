@@ -2,6 +2,7 @@ import {emit} from 'eiphop';
 
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
+import LodashId from 'lodash-id';
 import Logger from '../../helpers/Logger';
 const strings = new LocalizedStrings(data);
 const logger = new Logger();
@@ -1239,28 +1240,34 @@ function getCommandesToSync(limit=null) {
 
 
 const _newCommandeId = () => {
-    let __d = new Date();
-    return __d.getTime().toString();
+    // let __d = new Date();
+    // return __d.getTime().toString();
+  return LodashId.createId();
 }
 const _newReglementId = () => {
-    let __d = new Date();
-    return __d.getTime().toString();
+    // let __d = new Date();
+    // return __d.getTime().toString();
+  return LodashId.createId();
 }
 const _newRenduId = () => {
-    let __d = new Date();
-    return __d.getTime().toString();
+    // let __d = new Date();
+    // return __d.getTime().toString();
+  return LodashId.createId();
 }
 const _newCommandeItemId = () => {
-    let __d = new Date();
-    return __d.getTime().toString();
+    // let __d = new Date();
+    // return __d.getTime().toString();
+  return LodashId.createId();
 }
 const _newCommentId = () => {
-    let __d = new Date();
-    return __d.getTime().toString();
+    // let __d = new Date();
+    // return __d.getTime().toString();
+  return LodashId.createId();
 }
 const _newModificateurId = () => {
-    let __d = new Date();
-    return __d.getTime().toString();
+    // let __d = new Date();
+    // return __d.getTime().toString();
+  return LodashId.createId();
 }
 
 

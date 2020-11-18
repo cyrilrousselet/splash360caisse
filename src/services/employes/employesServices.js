@@ -1,4 +1,5 @@
 import {emit} from 'eiphop';
+import LodashId from 'lodash-id';
 
 export const employesServices = {
   getPointagesList,
@@ -89,14 +90,11 @@ function deleteTimeadjust(adjust_id) {
 }
 
 const _newPointageId = () => {
-  let __d = new Date();
-  return 'clock'+__d.getTime().toString();
+  return 'clock'+LodashId.createId();
 }
 const _newTimeadjustId = () => {
-  let __d = new Date();
-  return 'clockADJ'+__d.getTime().toString();
+  return 'clockADJ'+LodashId.createId();
 }
 const _newShiftId = () => {
-  let __d = new Date();
-  return 'shift'+__d.getTime().toString();
+  return 'shift'+LodashId.createId();
 }
