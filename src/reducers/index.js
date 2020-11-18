@@ -1,7 +1,6 @@
 // @flow
 import { connectRouter } from "connected-react-router";
 import { combineReducers } from "redux";
-import { productReducer } from "../services/product/productReducer";
 import { catalogueReducer } from "./../services/catalogue/catalogueReducer";
 import { clientsReducer } from "./../services/clients/clientsReducer";
 import { clotureReducer } from "./../services/cloture/clotureReducer";
@@ -32,6 +31,5 @@ export default function createRootReducer(history) {
     tableReducer,
     clientsReducer,
     authentication,
-    productReducer,
   });
 }

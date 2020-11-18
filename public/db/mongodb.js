@@ -9,7 +9,7 @@ async function connect() {
     poolSize: 10,
   };
 
-  const db = mongoose.connect("mongodb://localhost/youtill", mongooseOpts);
+  const db = mongoose.connect("mongodb://localhost/splash", mongooseOpts);
 
   mongoose.connection.on("error", function () {
     console.error("Canot connect to mongo: ", error);
