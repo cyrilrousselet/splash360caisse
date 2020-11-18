@@ -1,13 +1,12 @@
-import { differenceInMilliseconds, format, formatISO, parseISO } from 'date-fns';
-import frLocale from "date-fns/locale/fr";
+import { differenceInMilliseconds, formatISO, parseISO } from "date-fns";
 import Logger from "../../helpers/Logger";
-import { clotureActions } from '../cloture/clotureActions';
+import { clotureActions } from "../cloture/clotureActions";
 import { notificationActions } from "../notification/notificationActions";
-import { peripheralActions } from '../peripheral/peripheralActions';
-import { commandeActionTypes } from './commandeActionTypes';
-import { commandeServices } from './commandeServices';
-import { numeroActions } from './numeroActions';
-import { numeroActionTypes } from './numeroActionTypes';
+import { peripheralActions } from "../peripheral/peripheralActions";
+import { commandeActionTypes } from "./commandeActionTypes";
+import { commandeServices } from "./commandeServices";
+import { numeroActions } from "./numeroActions";
+import { numeroActionTypes } from "./numeroActionTypes";
 // import { notificationServices } from '../notification/notificationServices';
 
 const logger = new Logger();
@@ -18,17 +17,22 @@ function getCommandesList(params = {}) {
   return (dispatch) => {
     dispatch({ type: commandeActionTypes.GET_ALLCOMMANDES_REQUEST });
 
-    commandeServices.getCommandesList(params)
-    .then(
-        data => { 
-          dispatch({ type: commandeActionTypes.GET_ALLCOMMANDES_SUCCESS, ...data }) 
-          dispatch(clotureActions.getTodayCa());
-        }
-    )
-    .catch(
-      error => { dispatch({ type: commandeActionTypes.GET_ALLCOMMANDES_FAILURE, error: error.toString() }) }
-    );
-  }
+    commandeServices
+      .getCommandesList(params)
+      .then((data) => {
+        dispatch({
+          type: commandeActionTypes.GET_ALLCOMMANDES_SUCCESS,
+          ...data,
+        });
+        dispatch(clotureActions.getTodayCa());
+      })
+      .catch((error) => {
+        dispatch({
+          type: commandeActionTypes.GET_ALLCOMMANDES_FAILURE,
+          error: error.toString(),
+        });
+      });
+  };
 }
 
 function getAllTicketsRestaurant() {
@@ -123,10 +127,7 @@ function setChrono(payload) {
 
     const cmd = await commandeServices.getCommandeById(ticketId);
 
-    const cmd = await commandeServices.getCommandeById(ticketId)
-
     if (cmd) {
-      
       const commande = cmd._cmd;
 
       const careDatetime = new Date(careTime);
@@ -134,33 +135,46 @@ function setChrono(payload) {
 
       // si la commande a déjà été synchronisée avec le Backend
       let cmdToSync = {};
-      if (commande.hasOwnProperty('sync')) {
+      if (commande.hasOwnProperty("sync")) {
         cmdToSync = {
-            id: commande.id,
-            careTime: formatISO(careDatetime),
-            endTime: formatISO(endDatetime),
-            productionTime: Math.round(differenceInMilliseconds(endDatetime, careDatetime)/10)/100,
-            waitTime: Math.round(differenceInMilliseconds(careDatetime, parseISO(commande.end))/10)/100,
-            status: commande.status,
-            updatedAt: formatISO(new Date())
+          id: commande.id,
+          careTime: formatISO(careDatetime),
+          endTime: formatISO(endDatetime),
+          productionTime:
+            Math.round(
+              differenceInMilliseconds(endDatetime, careDatetime) / 10
+            ) / 100,
+          waitTime:
+            Math.round(
+              differenceInMilliseconds(careDatetime, parseISO(commande.end)) /
+                10
+            ) / 100,
+          status: commande.status,
+          updatedAt: formatISO(new Date()),
         };
       }
       // sinon,
       else {
         cmdToSync = {
-            ...commande,
-            careTime: formatISO(careDatetime),
-            endTime: formatISO(endDatetime),
-            productionTime: Math.round(differenceInMilliseconds(endDatetime, careDatetime)/10)/100,
-            waitTime: Math.round(differenceInMilliseconds(careDatetime, parseISO(commande.end))/10)/100,
-            updatedAt: formatISO(new Date())
+          ...commande,
+          careTime: formatISO(careDatetime),
+          endTime: formatISO(endDatetime),
+          productionTime:
+            Math.round(
+              differenceInMilliseconds(endDatetime, careDatetime) / 10
+            ) / 100,
+          waitTime:
+            Math.round(
+              differenceInMilliseconds(careDatetime, parseISO(commande.end)) /
+                10
+            ) / 100,
+          updatedAt: formatISO(new Date()),
         };
       }
 
       dispatch(notificationActions.syncCommandes([cmdToSync]));
-
     }
-  }
+  };
 }
 
 // payload = commande à sauvegarder
@@ -842,11 +856,17 @@ function setCommandeFromOrder(provider, payload) {
 
     let data = {
       ...payload,
-      operator: {id:-1, nom:'UberEats', type:'UberEats'},
-      caisse: {id: -1, nom:'UberEats', type:'UberEats'},
-      operator_encaissement: {id:-1, nom:'UberEats', type:'UberEats'}, 
-      caisse_encaissement: {id: -1, nom:'UberEats', type:'UberEats'},
-      reglements: [{moyen: 'uber', reglementId: new Date().getTime(), valeur: payload.payment.charges.sub_total.amount/100}]
+      operator: { id: -1, nom: "UberEats", type: "UberEats" },
+      caisse: { id: -1, nom: "UberEats", type: "UberEats" },
+      operator_encaissement: { id: -1, nom: "UberEats", type: "UberEats" },
+      caisse_encaissement: { id: -1, nom: "UberEats", type: "UberEats" },
+      reglements: [
+        {
+          moyen: "uber",
+          reglementId: new Date().getTime(),
+          valeur: payload.payment.charges.sub_total.amount / 100,
+        },
+      ],
     };
 
     const { numero } = getState().commandeReducer;
@@ -865,28 +885,7 @@ function setCommandeFromOrder(provider, payload) {
       state.commandeReducer.numero
     );
 
-    const cmd = {
-      ...commande, 
-      start: formatISO(new Date()),
-      end: formatISO(new Date()),
-      uber: {
-        display_id: payload.display_id,
-        date: format(
-          parseISO(payload.estimated_ready_for_pickup_at),
-          "d MMM yyyy à HH:mm",
-          frLocale
-        ),
-        heure: format(
-          parseISO(payload.estimated_ready_for_pickup_at),
-          "HH:mm",
-          frLocale
-        ),
-        eater: payload.eater,
-      },
-    };
-
     // dispatch(numeroActions.takeNumero());
-
 
     commandeServices.saveCommande(commande, state.catalogueReducer).then(
       (confirm) => {
@@ -901,11 +900,11 @@ function setCommandeFromOrder(provider, payload) {
           updatedAt: formatISO(confirm.updatedAt),
         };
 
-        dispatch(peripheralActions.printCommandeTicket('all_uber', confirm));
+        dispatch(peripheralActions.printCommandeTicket("all_uber", confirm));
 
         dispatch(notificationActions.syncCommandes([cmdtosync]));
         dispatch(clotureActions.getTodayCa());
-      //  dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
+        //  dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
       },
       (error) => {
         logger.log(error);

@@ -1,21 +1,18 @@
 // import LoadingSpinner from './common/LoadingSpinner';
-import { Fab } from '@material-ui/core';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import LocalizedStrings from 'react-localization';
-import { data } from '../constants/translations';
-import ErrorBoundary from './common/ErrorBoundary';
-import ConnectIcon from './common/icon/ConnectIcon';
-import LargeButton from './common/LargeButton';
+import { Fab } from "@material-ui/core";
+import PropTypes from "prop-types";
+import React, { Component } from "react";
+import LocalizedStrings from "react-localization";
+import { data } from "../constants/translations";
+import ErrorBoundary from "./common/ErrorBoundary";
+import ConnectIcon from "./common/icon/ConnectIcon";
+import LargeButton from "./common/LargeButton";
 
 let strings = new LocalizedStrings(data);
 
 const DISABLED_MODULES = ["stocks"];
 
 class Dashboard extends Component {
-
-
-
   componentDidMount() {
     //  console.log('Dashboard.componentDidMount()');
     this.props.getCommandesList();
@@ -48,8 +45,16 @@ class Dashboard extends Component {
   // }
 
   render() {
-
-    const { cashname, username, modules, devise, userLogout, onClickModule, today_ca, today_numtickets } = this.props;
+    const {
+      cashname,
+      username,
+      modules,
+      devise,
+      userLogout,
+      onClickModule,
+      today_ca,
+      today_numtickets,
+    } = this.props;
 
     // if (today_ca===undefined || ca===null) {
     //   return <LoadingSpinner className="Dashboard-loader" />;
@@ -93,26 +98,23 @@ class Dashboard extends Component {
           {modules.indexOf("statistiques") > -1 && (
             <div className="tickets">
               {strings.dashboard.ticketsnum}
-              <span>{numtickets}</span>
+              <span>{today_numtickets}</span>
             </div>
           )}
           {modules.indexOf("statistiques") > -1 && (
             <div className="ca">
               {strings.dashboard.ca}
               <span className={ca_eval}>
-                {ca.toFixed(2).replace(/\./g, ",")}
+                {today_ca.toFixed(2).replace(/\./g, ",")}
                 {devise}
               </span>
             </div>
           )}
-        { modules.indexOf('statistiques')>-1 && ( <div className="tickets">{ strings.dashboard.ticketsnum }<span>{ today_numtickets }</span></div> )}
-        { modules.indexOf('statistiques')>-1 && ( <div className="ca">{ strings.dashboard.ca }<span className={ ca_eval }>{ today_ca.toFixed(2).replace(/\./g,',') }{ devise }</span></div> )}
-      </div>
+        </div>
       </ErrorBoundary>
     );
   }
 }
-
 Dashboard.propTypes = {
   cashname: PropTypes.string.isRequired,
   username: PropTypes.string.isRequired,
