@@ -1,35 +1,35 @@
 // @flow
-import { combineReducers } from 'redux';
-import { connectRouter } from 'connected-react-router';
-import { userReducer } from './../services/user/userReducer';
-import { catalogueReducer } from './../services/catalogue/catalogueReducer';
-import { commandeReducer } from './../services/commande/commandeReducer';
-import { commandesListReducer } from './../services/commande/commandesListReducer';
-import { peripheralReducer } from './../services/peripheral/peripheralReducer';
-import { parametresReducer } from './../services/parametres/parametresReducer';
-import { clotureReducer } from './../services/cloture/clotureReducer';
-import { employesReducer } from './../services/employes/employesReducer';
-import { marketingReducer } from './../services/marketing/marketingReducer';
-import { notificationReducer } from './../services/notification/notificationReducer';
-import { tableReducer } from './../services/table/tableReducer';
-import { clientsReducer } from './../services/clients/clientsReducer';
-import { authentication } from './authenticationReducer';
+import { connectRouter } from "connected-react-router";
+import { combineReducers } from "redux";
+import { catalogueReducer } from "./../services/catalogue/catalogueReducer";
+import { clientsReducer } from "./../services/clients/clientsReducer";
+import { clotureReducer } from "./../services/cloture/clotureReducer";
+import { commandeReducer } from "./../services/commande/commandeReducer";
+import { commandesListReducer } from "./../services/commande/commandesListReducer";
+import { employesReducer } from "./../services/employes/employesReducer";
+import { marketingReducer } from "./../services/marketing/marketingReducer";
+import { notificationReducer } from "./../services/notification/notificationReducer";
+import { parametresReducer } from "./../services/parametres/parametresReducer";
+import { peripheralReducer } from "./../services/peripheral/peripheralReducer";
+import { tableReducer } from "./../services/table/tableReducer";
+import { userReducer } from "./../services/user/userReducer";
+import { authentication } from "./authenticationReducer";
 
 export default function createRootReducer(history) {
-    return combineReducers({
-        router: connectRouter(history),
-        userReducer,
-        catalogueReducer,
-        commandeReducer,
-        commandesListReducer,
-        peripheralReducer,
-        parametresReducer,
-        clotureReducer,
-        employesReducer,
-        marketingReducer,
-        notificationReducer,
-        tableReducer,
-        clientsReducer,
-        authentication
-    });
+  return combineReducers({
+    router: connectRouter(history),
+    userReducer,
+    catalogueReducer,
+    commandeReducer,
+    commandesListReducer,
+    peripheralReducer,
+    parametresReducer,
+    clotureReducer,
+    employesReducer,
+    marketingReducer,
+    notificationReducer,
+    tableReducer,
+    clientsReducer,
+    authentication,
+  });
 }

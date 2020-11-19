@@ -1,20 +1,16 @@
-import React from 'react';
-import TopZone from '../../containers/TopZone';
-import Navigation from '../common/Navigation.js';
-import { Switch, Route, Redirect } from 'react-router-dom';
-import { PrivateRoute } from '../common/PrivateRoute';
-import paths from '../../constants/routes';
-import { marketSubmodulesList } from '../../constants/modules';
+import React from "react";
+import LocalizedStrings from "react-localization";
+import { Redirect, Route, Switch } from "react-router-dom";
+import { marketSubmodulesList } from "../../constants/modules";
+import paths from "../../constants/routes";
+import { data } from "../../constants/translations";
+import MarketingSmsCont from "../../containers/MarketingSmsCont";
+import TopZone from "../../containers/TopZone";
+import Navigation from "../common/Navigation.js";
+import { PrivateRoute } from "../common/PrivateRoute";
+import MarketingAvoirsCont from "./../../containers/MarketingAvoirsCont";
 
-import MarketingAvoirsCont from './../../containers/MarketingAvoirsCont';
-// import Promotions from './Promotions';
-// import Newsletter from './Newsletter';
-import Sms from './Sms';
-
-import {data} from '../../constants/translations';
-import LocalizedStrings from 'react-localization';
 let strings = new LocalizedStrings(data);
-
 
 class Marketing extends React.Component {
   render() {
@@ -24,14 +20,27 @@ class Marketing extends React.Component {
       <div className="Marketing container">
         <TopZone />
         <div className="MainZone">
-          <Navigation submodules={ marketSubmodulesList } titre={ strings.modules.marketing.nom } strings={ strings.modules.marketing.submodules } path_prefix={ 'MARKET' } onClickSubmodule={ onClickSubModule } />
-          
+          <Navigation
+            submodules={marketSubmodulesList}
+            titre={strings.modules.marketing.nom}
+            strings={strings.modules.marketing.submodules}
+            path_prefix={"MARKET"}
+            onClickSubmodule={onClickSubModule}
+          />
+
           <Switch>
-            <PrivateRoute path={ paths.MARKET_AVOIRS } component={ MarketingAvoirsCont } />
+            <PrivateRoute
+              path={paths.MARKET_AVOIRS}
+              component={MarketingAvoirsCont}
+            />
             {/* <PrivateRoute exact path={ paths.MARKET_NEWSLETTER } component={ Newsletter } />
             <PrivateRoute path={ paths.MARKET_PROMOTIONS } component={ Promotions } /> */}
-            <PrivateRoute exact path={ paths.MARKET_SMS } component={ Sms } />
-            <Route path={ paths.MARKETING }>
+            <PrivateRoute
+              exact
+              path={paths.MARKET_SMS}
+              component={MarketingSmsCont}
+            />
+            <Route path={paths.MARKETING}>
               {/* <Redirect to={{ pathname: paths.MARKET_PROMOTIONS }} /> */}
               <Redirect to={{ pathname: paths.MARKET_PROMOTIONS }} />
             </Route>
@@ -40,6 +49,6 @@ class Marketing extends React.Component {
       </div>
     );
   }
-};
+}
 
 export default Marketing;

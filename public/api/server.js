@@ -1,25 +1,22 @@
-const express = require('express');
+const express = require("express");
 const api_server = express();
 const sync_server = express();
-const log = require('electron-log');
-const cors = require('cors');
-const {net} = require('electron');
+const log = require("electron-log");
+const cors = require("cors");
+const { net } = require("electron");
 
-const http = require('http').Server(sync_server);
-const io = require('socket.io')(http);
-const ioclient = require('socket.io-client');
-const { lowerFirst, difference, differenceBy, intersection } = require('lodash');
+const http = require("http").Server(sync_server);
+const io = require("socket.io")(http);
+const ioclient = require("socket.io-client");
+const { difference, intersection } = require("lodash");
 
-
-const dbCatalogueApi = require('./dbCatalogueApi.js');
-const dbClientsApi = require('./dbClientsApi.js');
-const dbCloturesApi = require('./dbCloturesApi.js');
-const dbCommandesApi = require('./dbCommandesApi.js');
-const dbEmployesApi = require('./dbEmployesApi.js');
-const dbMarketingApi = require('./dbMarketingApi.js');
-const dbUsersApi = require('./dbUsersApi.js');
-
-
+const dbCatalogueApi = require("./dbCatalogueApi.js");
+const dbClientsApi = require("./dbClientsApi.js");
+const dbCloturesApi = require("./dbCloturesApi.js");
+const dbCommandesApi = require("./dbCommandesApi.js");
+const dbEmployesApi = require("./dbEmployesApi.js");
+const dbMarketingApi = require("./dbMarketingApi.js");
+const dbUsersApi = require("./dbUsersApi.js");
 
 const connectedSecondaries = {};
 const connectedTerminals = {};
@@ -32,39 +29,30 @@ const API_PORT = 3300;
 const SYNC_PORT = 3340;
 
 const SYNCHRO_TREATMENT = {
-  'commande': 'setCommandeSync',
-  'archivecommandes': 'archiveCommandesSync',
-  'client': 'setClientSync',
-  'ticketrestaurant': 'setTicketRestaurantSync',
-  'pointage': 'setPointageSync',
-  'avoir': 'setAvoirSync',
-  'deleteavoir': 'deleteAvoirSync',
-  'timeadjust': 'setTimeadjustSync',
-  'cloture': 'setClotureSync',
-  'user': 'setUserSync',
-  'produit': 'setProduitSync',
-  'groupe': 'setGroupeSync',
-  'ingredient': 'setIngredientSync',
-  'type': 'setIngredientTypeSync',
-  'setsyncedcommandes': 'setSynchedCommandesSync'
-}
-
-const allowedOrigins = [
-  'http://127.0.0.1',
-  'http://localhost',
-  'http://192.168.1.185'
-  //'*'
-];
+  commande: "setCommandeSync",
+  archivecommandes: "archiveCommandesSync",
+  client: "setClientSync",
+  ticketrestaurant: "setTicketRestaurantSync",
+  pointage: "setPointageSync",
+  avoir: "setAvoirSync",
+  deleteavoir: "deleteAvoirSync",
+  timeadjust: "setTimeadjustSync",
+  cloture: "setClotureSync",
+  user: "setUserSync",
+  produit: "setProduitSync",
+  groupe: "setGroupeSync",
+  ingredient: "setIngredientSync",
+  type: "setIngredientTypeSync",
+  setsyncedcommandes: "setSynchedCommandesSync",
+};
 
 let responses = [];
 
 const server = {
   init: (wcont) => {
-
-    log.info('server.init()');
+    log.info("server.init()");
 
     webContents = wcont;
-
 
     // xpr.use(cors({
     //   origin: function(origin, callback){
@@ -79,85 +67,79 @@ const server = {
     //     return callback(null, true);
     //   }
     // }));
-    api_server.use(cors({origin: "*"}));
+    api_server.disable("x-powered-by");
+    api_server.use(cors({ origin: "*" }));
 
-    api_server.use(express.urlencoded({extended: false})).use(express.json());
-    api_server.get('/', (req,res) => {
-      log.info('GET : '+req.query.fui);
+    api_server.use(express.urlencoded({ extended: false })).use(express.json());
+    api_server.get("/", (req, res) => {
+      log.info("GET : " + req.query.fui);
       let __d = new Date();
-      res.json({status:'success', commandeid: 'c'+__d.getTime().toString()});
+      res.json({
+        status: "success",
+        commandeid: "c" + __d.getTime().toString(),
+      });
     });
-    api_server.post('/', (req,res) => {
-      log.info('POST : '+req.body.data);
+    api_server.post("/", (req, res) => {
+      log.info("POST : " + req.body.data);
       let __d = new Date();
-      res.json({status:'success', commandeid: 'c'+__d.getTime().toString()});
+      res.json({
+        status: "success",
+        commandeid: "c" + __d.getTime().toString(),
+      });
     });
     // ajout de commande depuis les bornes
-    api_server.post('/setcommande', (req,res) => {
-      log.info('POST setcommande', req.body.data);
-      
+    api_server.post("/setcommande", (req, res) => {
+      log.info("POST setcommande", req.body.data);
+
       const response_id = responses.push(res) - 1;
-      wcont.send('setCommande', {data: req.body.data, response: response_id});
+      wcont.send("setCommande", { data: req.body.data, response: response_id });
     });
 
-    api_server.post('/getnumero', (req,res) => {
-      log.info('POST getnumero');
+    api_server.post("/getnumero", (req, res) => {
+      log.info("POST getnumero");
       const response_id = responses.push(res) - 1;
-      wcont.send('getNumero', {response: response_id});
+      wcont.send("getNumero", { response: response_id });
     });
-    
 
     // SYNCHRO secondary -> primary
-    api_server.post('/synchro', (req, res) => {
-    
-      const {db, data, emitter} = req.body;
-      log.info('POST synchro', req.body);
-      log.info('POST db', req.body['db'], `from ${emitter.nom}`);
+    api_server.post("/synchro", (req, res) => {
+      const { db, data, emitter } = req.body;
+      log.info("POST synchro", req.body);
+      log.info("POST db", req.body["db"], `from ${emitter.nom}`);
 
       const response_id = responses.push(res) - 1;
 
       synchroTreatment(db, data, emitter, response_id);
-
     });
 
-    api_server.post('/chrono', (req, res) => {
-      log.info('POST chrono', req.body);
-      
-      wcont.send('chrono', {commande: req.body});
-      res.json({status:'success'});
+    api_server.post("/chrono", (req, res) => {
+      log.info("POST chrono", req.body);
+
+      wcont.send("chrono", { commande: req.body });
+      res.json({ status: "success" });
     });
-
-
 
     api_server.listen(API_PORT, () => {
-      log.info( `api_server listening on *:${API_PORT}` );
-    })
+      log.info(`api_server listening on *:${API_PORT}`);
+    });
+  },
+};
 
-  }
-}
+const synchroTreatment = (db, data, emitter = null, response = null) => {
+  log.info("synchroTreatment()", db, emitter);
 
-
-const synchroTreatment = (db, data, emitter=null, response=null) => {
-
-  log.info('synchroTreatment()', db, emitter);
-
-  if (webContents!==null) {
-
+  if (webContents !== null) {
     if (SYNCHRO_TREATMENT.hasOwnProperty(db)) {
-      webContents.send(SYNCHRO_TREATMENT[db], {data, emitter, response});
+      webContents.send(SYNCHRO_TREATMENT[db], { data, emitter, response });
     } else {
-      log.error('webContents null (server non initialisé)');
+      log.error("webContents null (server non initialisé)");
     }
+  } else {
+    log.error("webContents null (server non initialisé)");
   }
-  else {
-    log.error('webContents null (server non initialisé)');
-  }
-
-}
-
+};
 
 const welcomeTreatment = async () => {
-
   const catalogue_sum = await dbCatalogueApi.dbCatalogueSummary();
   const clients_sum = await dbClientsApi.dbClientsSummary();
   const clotures_sum = await dbCloturesApi.dbCloturesSummary();
@@ -167,71 +149,66 @@ const welcomeTreatment = async () => {
   const users_sum = await dbUsersApi.dbUsersSummary();
 
   return {
-    ...catalogue_sum, 
+    ...catalogue_sum,
     ...clients_sum,
     ...clotures_sum,
     ...commandes_sum,
     ...employes_sum,
     ...marketing_sum,
-    ...users_sum
+    ...users_sum,
   };
-
-}
+};
 
 /**
- * Compare les listes des entités 
+ * Compare les listes des entités
  * et définit une liste d'items à importer et une liste d'items à exporter
- * 
+ *
  * @param {*} primarySum liste des tables et des entités {id, updatedAt} de la caisse principale
  * @param {*} secondarySum liste des tables et des entités {id, updatedAt} de la caisse secondaire
  */
 const getImportExport = (primarySum, secondarySum) => {
-
-
   const prmkeys = Object.keys(primarySum);
   const seckeys = Object.keys(secondarySum);
 
   // récup des clés (noms des tables) pour chaque summary
-  const indbkeys = difference(prmkeys,seckeys);
+  const indbkeys = difference(prmkeys, seckeys);
   const outdbkeys = difference(seckeys, prmkeys);
   const comdbkeys = intersection(seckeys, prmkeys);
 
   // liste des tables à importer
   let in_db = {};
   // ajout des tables inexistantes à importer
-  indbkeys.forEach(k => {
+  indbkeys.forEach((k) => {
     Object.defineProperty(in_db, k, {
       value: primarySum[k],
       enumerable: true,
       writable: false,
-      configurable: false
-    })
-  })
-  
+      configurable: false,
+    });
+  });
 
   // liste des tables à exporter
   let out_db = {};
   // ajout des tables inexistantes à exporter
-  outdbkeys.forEach(k => {
+  outdbkeys.forEach((k) => {
     Object.defineProperty(out_db, k, {
       value: secondarySum[k],
       enumerable: true,
       writable: false,
-      configurable: false
-    })
+      configurable: false,
+    });
   });
 
   // ajout des tables existantes aux deux listes ('à importer' et 'à exporter')
-  comdbkeys.forEach(k => {
-
+  comdbkeys.forEach((k) => {
     const incom = [];
-    const outcom = []; 
+    const outcom = [];
 
     // pour chaque table en commun, on récupère les différences
 
     // dans la liste de la caisse 'primary'
-    primarySum[k].forEach(nty => {
-      const found = secondarySum[k].find(snty => snty.id == nty.id);
+    primarySum[k].forEach((nty) => {
+      const found = secondarySum[k].find((snty) => snty.id == nty.id);
       // si un item a été trouvé
       if (found) {
         // si l'item a été mis à jour
@@ -239,9 +216,9 @@ const getImportExport = (primarySum, secondarySum) => {
           // si l'item correspondant a été mis à jour
           if (found.updatedAt) {
             // si l'item est plus récent il doit être importé
-            if (nty.updatedAt>found.updatedAt) {
+            if (nty.updatedAt > found.updatedAt) {
               incom.push(nty);
-            } 
+            }
             // si l'item correspondant est plus récent il doit être exporté
             else {
               outcom.push(found);
@@ -261,18 +238,16 @@ const getImportExport = (primarySum, secondarySum) => {
             outcom.push(found);
           }
         }
-      } 
+      }
       // s'il n'a pas été trouvé il doit être importé
       else {
         incom.push(nty);
       }
-
     });
 
-
     // dans la liste de la caisse 'secondary'
-    secondarySum[k].forEach(nty => {
-      const found = primarySum[k].find(pnty => pnty.id == nty.id);
+    secondarySum[k].forEach((nty) => {
+      const found = primarySum[k].find((pnty) => pnty.id == nty.id);
       // si aucun item ne correspond, il doit être exporté
       if (!found) {
         outcom.push(nty);
@@ -280,105 +255,100 @@ const getImportExport = (primarySum, secondarySum) => {
     });
 
     // s'il y a des items à importer, on ajoute la table
-    if (incom.length>0) {
+    if (incom.length > 0) {
       Object.defineProperty(in_db, k, {
-        value:incom,
+        value: incom,
         enumerable: true,
         writable: true,
-        configurable: false
+        configurable: false,
       });
     }
-
 
     // s'il y a des items à exporter, on ajoute la table
-    if (outcom.length>0) {
+    if (outcom.length > 0) {
       Object.defineProperty(out_db, k, {
-        value:outcom,
+        value: outcom,
         enumerable: true,
         writable: true,
-        configurable: false
+        configurable: false,
       });
     }
-
-  }); 
+  });
 
   return { importation: in_db, exportation: out_db };
-
-}
+};
 
 const actions = {
-
   // renvoie le ticketId et le numero de la commande synchronisée par une borne
   sendTicketId: (req, res) => {
-
     const { ticketId, numero, response } = req.payload;
-   // log.info(response);
-    responses[response].json({status:'success', commandeid: ticketId, numero: numero});
-    
-    log.info('ticketID : '+ticketId+' numero: '+numero);
+    // log.info(response);
+    responses[response].json({
+      status: "success",
+      commandeid: ticketId,
+      numero: numero,
+    });
 
-    res.send({msg: 'ticketID sent'});
+    log.info("ticketID : " + ticketId + " numero: " + numero);
+
+    res.send({ msg: "ticketID sent" });
   },
 
   // renvoie le numero de commande demandé par une caisse 'secondary'
   sendNumeroCommande: (req, res) => {
-
     const { numero, response } = req.payload;
 
-    responses[response].json({status:'success', numero: numero});
-    
-    log.info('numero: ', numero);
+    responses[response].json({ status: "success", numero: numero });
 
-    res.send({msg: 'numero sent'});
+    log.info("numero: ", numero);
+
+    res.send({ msg: "numero sent" });
   },
 
   // demande un numero de commande à la caisse 'primary'
   askNumero: (req, res) => {
-
     const { url } = req.payload;
 
     let __confirmation = [];
 
-    log.info('askNumero', req.payload);
+    log.info("askNumero", req.payload);
 
     const __request = net.request({
-      url: url+':'+API_PORT+'/getnumero',
-      method: 'post'
+      url: url + ":" + API_PORT + "/getnumero",
+      method: "post",
     });
     // __request.setHeader('Authorization','Bearer '+access_token)
-    __request.setHeader('Access-Control-Allow-Origin', '*')
-    __request.setHeader('Content-Type', 'application/json');
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/json");
 
-    
     // __request.write(JSON.stringify({db, data, emitter}));
-    
-    __request.on('response', (response) => {
-      
+
+    __request.on("response", (response) => {
       log.info(`askNumero() to ${url}, status:`, response.statusCode);
       //   log.info(`acceptUberOrder STATUS: ${response.statusCode}`);
       //   log.info(`acceptUberOrder HEADERS: ${JSON.stringify(response.headers)}`);
-      response.on('data', (chunk) => {
+      response.on("data", (chunk) => {
         __confirmation.push(chunk);
-        log.info(`askNumero BODY: ${chunk}`)
+        log.info(`askNumero BODY: ${chunk}`);
       });
-      response.on('end', () => {
-        log.info('askNumero: end');
-        const result = JSON.parse(__confirmation.join(''));
-        res.send({numero: result.numero});
+      response.on("end", () => {
+        log.info("askNumero: end");
+        const result = JSON.parse(__confirmation.join(""));
+        res.send({ numero: result.numero });
       });
     });
 
     __request.end();
-
-
   },
 
   // confirme la bonne réception des synchro s/m
   syncConfirm: (req, res) => {
     const { confirm, response } = req.payload;
-    if (response!==null) {
-      responses[response].json({status:('ok'===confirm)?'success':'error'});
-      res.send({msg: 'sync confirm sent'});
+    if (response !== null) {
+      responses[response].json({
+        status: "ok" === confirm ? "success" : "error",
+      });
+      res.send({ msg: "sync confirm sent" });
     }
   },
 
@@ -386,23 +356,25 @@ const actions = {
   syncConnectToPrimary: (req, res) => {
     const { url, caisse } = req.payload;
 
-    log.info('syncConnectToPrimary', req.payload);
+    log.info("syncConnectToPrimary", req.payload);
 
     // socket = ioclient(url, {transports: ['websocket']});
-    socket = ioclient(url+':'+SYNC_PORT);
-    socket.on('connect', () => {
-      socket.emit('register',caisse);
+    socket = ioclient(url + ":" + SYNC_PORT);
+    socket.on("connect", () => {
+      socket.emit("register", caisse);
     });
 
-  //  log.info('socket', socket);
+    //  log.info('socket', socket);
 
-
-    socket.on('welcome', async (primarySum) => {
-      log.info('on welcome');
+    socket.on("welcome", async (primarySum) => {
+      log.info("on welcome");
 
       const secondarySum = await welcomeTreatment();
 
-      const { importation, exportation } = getImportExport(primarySum, secondarySum);
+      const { importation, exportation } = getImportExport(
+        primarySum,
+        secondarySum
+      );
 
       // const prmkeys = Object.keys(primarySum);
       // const seckeys = Object.keys(secondarySum);
@@ -411,7 +383,7 @@ const actions = {
       // const indbkeys = difference(prmkeys,seckeys);
       // const outdbkeys = difference(seckeys, prmkeys);
       // const comdbkeys = intersection(seckeys, prmkeys);
-    
+
       // // liste des tables à importer
       // let in_db = {};
       // // ajout des tables inexistantes à importer
@@ -423,7 +395,6 @@ const actions = {
       //     configurable: false
       //   })
       // })
-      
 
       // // liste des tables à exporter
       // let out_db = {};
@@ -441,7 +412,7 @@ const actions = {
       // comdbkeys.forEach(k => {
 
       //   const incom = [];
-      //   const outcom = []; 
+      //   const outcom = [];
 
       //   // pour chaque table en commun, on récupère les différences
 
@@ -457,7 +428,7 @@ const actions = {
       //           // si l'item est plus récent il doit être importé
       //           if (nty.updatedAt>found.updatedAt) {
       //             incom.push(nty);
-      //           } 
+      //           }
       //           // si l'item correspondant est plus récent il doit être exporté
       //           else {
       //             outcom.push(found);
@@ -477,14 +448,13 @@ const actions = {
       //           outcom.push(found);
       //         }
       //       }
-      //     } 
+      //     }
       //     // s'il n'a pas été trouvé il doit être importé
       //     else {
       //       incom.push(nty);
       //     }
 
       //   });
-
 
       //   // dans la liste de la caisse 'secondary'
       //   secondarySum[k].forEach(nty => {
@@ -505,7 +475,6 @@ const actions = {
       //     });
       //   }
 
-
       //   // s'il y a des items à exporter, on ajoute la table
       //   if (outcom.length>0) {
       //     Object.defineProperty(out_db, k, {
@@ -516,183 +485,182 @@ const actions = {
       //     });
       //   }
 
-      // }); 
+      // });
 
-
-      log.info('import:', importation);
-      log.info('export:', exportation);
-
+      log.info("import:", importation);
+      log.info("export:", exportation);
     });
 
-    
     // écouteur de synchro de la part du primary
-    socket.on('sync', payload => {
-      log.info('on sync', payload);
+    socket.on("sync", (payload) => {
+      log.info("on sync", payload);
 
       synchroTreatment(payload.db, payload.data);
-
     });
-    res.send({msg:'connection sent to primary'})
+    res.send({ msg: "connection sent to primary" });
   },
 
   // déconnexion du primary
   syncDisconnectFromPrimary: (req, res) => {
     if (socket) socket.disconnect();
-    res.send({msg:'disconnected from primary'});
+    res.send({ msg: "disconnected from primary" });
   },
 
   // lancement du webservice (si la caisse est "primary")
   syncStartPrimary: (req, res) => {
+    log.info("Start sync service oon primary ...");
+    sync_server.use(cors({ origin: "*" }));
 
-
-    sync_server.use(cors({origin: "*"}));
-
-    io.on('connection', (sock) => {
-      
-      log.info(`${Object.keys(connectedSecondaries).length} socket(s) connected. New id : `, sock.id);
+    io.on("connection", (sock) => {
+      log.info(
+        `${
+          Object.keys(connectedSecondaries).length
+        } socket(s) connected. New id : `,
+        sock.id
+      );
       // on signale l'initialisation de la communication descendante (entre le primary et le secondary)
-      io.to(sock.id).emit('sync',{type:'syncinit'});
+      io.to(sock.id).emit("sync", { type: "syncinit" });
 
       // écouteur d'événement 'register' :
       // le secondary envoie son identité afin que le primary la stocke dans un objet
-      sock.on('register', async (data) => {
-        log.info('secondary register', data);
+      sock.on("register", async (data) => {
+        log.info("secondary register", data);
 
         Object.defineProperty(connectedSecondaries, sock.id, {
           value: data,
           writable: false,
           enumerable: true,
-          configurable: true
+          configurable: true,
         });
 
         const summary = await welcomeTreatment();
-        io.to(sock.id).emit('welcome', summary);
-        
+        io.to(sock.id).emit("welcome", summary);
       });
 
       // écouteur d'événement 'registerterminal' :
       // la borne envoie son identité afin que la caisse la stocke dans un objet
-      sock.on('registerterminal', async (data) => {
-        log.info('borne register', data);
+      sock.on("registerterminal", async (data) => {
+        log.info("borne register", data);
 
         Object.defineProperty(connectedTerminals, sock.id, {
           value: data,
           writable: false,
           enumerable: true,
-          configurable: true
+          configurable: true,
         });
 
-      //  const summary = await welcomeTreatment();
-        io.to(sock.id).emit('welcome');
-        
+        //  const summary = await welcomeTreatment();
+        io.to(sock.id).emit("welcome");
       });
 
-      sock.on('sync', (action)=>{
-        
-        log.info('sync', action);
-     //   io.to(sock).emit('connect');
-      })
-    
+      sock.on("sync", (action) => {
+        log.info("sync", action);
+        //   io.to(sock).emit('connect');
+      });
 
       // à la déconnexion du secondary, on le supprime de l'objet de référence
-      sock.on('disconnect', (reason) => {
-        if (reason === 'io server disconnect') {
+      sock.on("disconnect", (reason) => {
+        if (reason === "io server disconnect") {
           // the disconnection was initiated by the server, you need to reconnect manually
           sock.connect();
-        } 
+        }
         // else the socket will automatically try to reconnect
-        Object.entries(connectedSecondaries).forEach(([sockid, device]) => {
+        Object.entries(connectedSecondaries).forEach(([sockid]) => {
           // console.log("device", device)
           try {
             if (sockid == sock.id) {
               // console.log("socket", socket.id)
               delete connectedSecondaries[sockid];
             }
-          } catch(error) {
-            log.info('sync disconnect error', error.message);
+          } catch (error) {
+            log.info("sync disconnect error", error.message);
           }
-        })
+        });
       });
-
-
-
     });
 
-    http.listen(SYNC_PORT, function(){
-      log.info( `sync_server listening on *:${SYNC_PORT}` );
-      res.send({msg:'primary waits for secondaries'});
+    http.listen(SYNC_PORT, function () {
+      log.info(`sync_server listening on *:${SYNC_PORT}`);
+      res.send({ msg: "primary waits for secondaries" });
     });
-
   },
 
   // émission de la synchro du primary en direction des secondaries
-  syncDispatchToSecondaries: (req,res) => {
+  syncDispatchToSecondaries: (req, res) => {
     const { db, data, emitter } = req.payload;
 
-    // on envoie la synchro à tous les secondaries, 
+    // on envoie la synchro à tous les secondaries,
     // sauf celui qui est à l'origine de la synchro
     Object.entries(connectedSecondaries).forEach(([sockid, secondary]) => {
-      if (emitter!==secondary.id) io.to(sockid).emit('sync', req.payload);
+      if (emitter !== secondary.id) io.to(sockid).emit("sync", req.payload);
     });
 
-    // s'il s'agit d'une synchro de produit ou d'ingrédient, on envoie la synchro à toutees les bornes, 
+    // s'il s'agit d'une synchro de produit ou d'ingrédient, on envoie la synchro à toutees les bornes,
     // sauf celui qui est à l'origine de la synchro
-    if ((['ingredient','produit']).includes(db)) {
-      let prix = db==='ingredient' ? data.supplement : data.prix;
-      let centimes = Math.round(Number(prix)*100);
+    if (["ingredient", "produit"].includes(db)) {
+      let prix = db === "ingredient" ? data.supplement : data.prix;
+      let centimes = Math.round(Number(prix) * 100);
       log.info(`Prix du produit : ${centimes} centimes`);
       Object.entries(connectedTerminals).forEach(([sockid, secondary]) => {
-        io.to(sockid).emit('updateproduit', {id: data.custom_id, active: data.active, prix: centimes});
+        io.to(sockid).emit("updateproduit", {
+          id: data.custom_id,
+          active: data.active,
+          prix: centimes,
+        });
       });
     }
-      
-      log.info(`syncDispatchToSecondaries() [${db}] to ${Object.keys(connectedSecondaries).length} secondaries and ${Object.keys(connectedTerminals).length} terminals`);
-    res.send({msg:`sync to ${Object.keys(connectedSecondaries).length} secondaries and ${Object.keys(connectedTerminals).length} terminals`});
+
+    log.info(
+      `syncDispatchToSecondaries() [${db}] to ${
+        Object.keys(connectedSecondaries).length
+      } secondaries and ${Object.keys(connectedTerminals).length} terminals`
+    );
+    res.send({
+      msg: `sync to ${
+        Object.keys(connectedSecondaries).length
+      } secondaries and ${Object.keys(connectedTerminals).length} terminals`,
+    });
   },
 
-  syncDispatchToPrimary: (req,res) => {
-
+  syncDispatchToPrimary: (req, res) => {
     const { db, data, emitter, url } = req.payload;
 
-    log.info('syncDispatchToPrimary', req.payload);
+    log.info("syncDispatchToPrimary", req.payload);
 
     const __request = net.request({
-      url: url+':'+API_PORT+'/synchro',
-      method: 'post'
+      url: url + ":" + API_PORT + "/synchro",
+      method: "post",
     });
     // __request.setHeader('Authorization','Bearer '+access_token)
-    __request.setHeader('Access-Control-Allow-Origin', '*')
-    __request.setHeader('Content-Type', 'application/json');
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/json");
 
-    
-    __request.write(JSON.stringify({db, data, emitter}));
+    __request.write(JSON.stringify({ db, data, emitter }));
 
-    __request.on('response', (response) => {
-
-      log.info(`syncDispatchToPrimary() [${db}] to ${url}, status:`, response.statusCode);
-      res.send({msg:`synchro ${db} to primary`});
-    //   log.info(`acceptUberOrder STATUS: ${response.statusCode}`);
-    //   log.info(`acceptUberOrder HEADERS: ${JSON.stringify(response.headers)}`);
-      response.on('data', (chunk) => {
-    //     __confirmation.push(chunk);
-    //     log.info(`acceptUberOrder BODY: ${chunk}`)
+    __request.on("response", (response) => {
+      log.info(
+        `syncDispatchToPrimary() [${db}] to ${url}, status:`,
+        response.statusCode
+      );
+      res.send({ msg: `synchro ${db} to primary` });
+      //   log.info(`acceptUberOrder STATUS: ${response.statusCode}`);
+      //   log.info(`acceptUberOrder HEADERS: ${JSON.stringify(response.headers)}`);
+      response.on("data", () => {
+        //     __confirmation.push(chunk);
+        //     log.info(`acceptUberOrder BODY: ${chunk}`)
       });
-      response.on('end', () => {
-    //     log.info('acceptUberOrder: end');
-    //     // res.send({confirm: JSON.parse(__confirmation.join(''))});
-    //     res.send({confirm: true});
+      response.on("end", () => {
+        //     log.info('acceptUberOrder: end');
+        //     // res.send({confirm: JSON.parse(__confirmation.join(''))});
+        //     res.send({confirm: true});
       });
     });
 
     __request.end();
-
-  }
-
+  },
 };
 
-
-    
 module.exports = {
   ...server,
-  ...actions
+  ...actions,
 };

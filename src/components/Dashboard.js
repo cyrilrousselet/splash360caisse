@@ -1,24 +1,20 @@
-import React, { Component } from 'react';
-import LocalizedStrings from 'react-localization';
-import {data} from '../constants/translations';
-import LargeButton from './common/LargeButton';
-import PropTypes from 'prop-types';
 // import LoadingSpinner from './common/LoadingSpinner';
-import { Fab } from '@material-ui/core';
-import ConnectIcon from './common/icon/ConnectIcon';
-import ErrorBoundary from './common/ErrorBoundary';
+import { Fab } from "@material-ui/core";
+import PropTypes from "prop-types";
+import React, { Component } from "react";
+import LocalizedStrings from "react-localization";
+import { data } from "../constants/translations";
+import ErrorBoundary from "./common/ErrorBoundary";
+import ConnectIcon from "./common/icon/ConnectIcon";
+import LargeButton from "./common/LargeButton";
 
 let strings = new LocalizedStrings(data);
 
-
-const DISABLED_MODULES = ['stocks'];
+const DISABLED_MODULES = ["stocks"];
 
 class Dashboard extends Component {
-
-
-
   componentDidMount() {
-  //  console.log('Dashboard.componentDidMount()');
+    //  console.log('Dashboard.componentDidMount()');
     this.props.getCommandesList();
     // this.props.getAllActive();
     this.props.getParametres();
@@ -27,7 +23,6 @@ class Dashboard extends Component {
     // this.props.deleteCurrentCommande();
     this.props.getCommande();
   }
-
 
   // calculeCA(){
 
@@ -49,46 +44,77 @@ class Dashboard extends Component {
   //   return {chiffredaffaires: __ca, ca_eval:'good', ticketsNum: __tickets};
   // }
 
-
   render() {
-
-    const { cashname, username, modules, devise, userLogout, onClickModule, today_ca, today_numtickets } = this.props;
+    const {
+      cashname,
+      username,
+      modules,
+      devise,
+      userLogout,
+      onClickModule,
+      today_ca,
+      today_numtickets,
+    } = this.props;
 
     // if (today_ca===undefined || ca===null) {
     //   return <LoadingSpinner className="Dashboard-loader" />;
     // }
 
-
-    
     const ca_eval = "good";
 
-  //  console.log(ca);
+    //  console.log(ca);
 
     return (
       <ErrorBoundary>
-      <div className="Dashboard">
-        <div className="topzone">
-          <div className="cashName">{ cashname }</div>
-          <div className="userName" 
-          >{ username }</div>
-          <Fab aria-label="disconnect" size="small" className="disconnect-button" onClick={userLogout}>
-            <ConnectIcon />
-          </Fab>
-        </div>
-        <div className="modules">
-        {modules.map((module, i) =>
-          <div className="module-item" key={ i }>
-            <LargeButton identifier={ module.toUpperCase() } disabled={DISABLED_MODULES.indexOf(module)>-1} elementclass={ module } icon={ true } text={ strings.modules[module].nom } onClick={(value) => { onClickModule(value) }}></LargeButton>
+        <div className="Dashboard">
+          <div className="topzone">
+            <div className="cashName">{cashname}</div>
+            <div className="userName">{username}</div>
+            <Fab
+              aria-label="disconnect"
+              size="small"
+              className="disconnect-button"
+              onClick={userLogout}
+            >
+              <ConnectIcon />
+            </Fab>
           </div>
-        )}
+          <div className="modules">
+            {modules.map((module, i) => (
+              <div className="module-item" key={i}>
+                <LargeButton
+                  identifier={module.toUpperCase()}
+                  disabled={DISABLED_MODULES.indexOf(module) > -1}
+                  elementclass={module}
+                  icon={true}
+                  text={strings.modules[module].nom}
+                  onClick={(value) => {
+                    onClickModule(value);
+                  }}
+                ></LargeButton>
+              </div>
+            ))}
+          </div>
+          {modules.indexOf("statistiques") > -1 && (
+            <div className="tickets">
+              {strings.dashboard.ticketsnum}
+              <span>{today_numtickets}</span>
+            </div>
+          )}
+          {modules.indexOf("statistiques") > -1 && (
+            <div className="ca">
+              {strings.dashboard.ca}
+              <span className={ca_eval}>
+                {today_ca.toFixed(2).replace(/\./g, ",")}
+                {devise}
+              </span>
+            </div>
+          )}
         </div>
-        { modules.indexOf('statistiques')>-1 && ( <div className="tickets">{ strings.dashboard.ticketsnum }<span>{ today_numtickets }</span></div> )}
-        { modules.indexOf('statistiques')>-1 && ( <div className="ca">{ strings.dashboard.ca }<span className={ ca_eval }>{ today_ca.toFixed(2).replace(/\./g,',') }{ devise }</span></div> )}
-      </div>
       </ErrorBoundary>
     );
   }
-};
+}
 Dashboard.propTypes = {
   cashname: PropTypes.string.isRequired,
   username: PropTypes.string.isRequired,
@@ -100,7 +126,7 @@ Dashboard.propTypes = {
   getCurrentPeriode: PropTypes.func.isRequired,
   commandeslist: PropTypes.object,
   loading: PropTypes.bool,
-  error: PropTypes.object
-}
+  error: PropTypes.object,
+};
 
 export default Dashboard;

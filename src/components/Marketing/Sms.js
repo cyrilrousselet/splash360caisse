@@ -1,13 +1,9 @@
-import React from 'react';
+import React from "react";
 
 class Sms extends React.Component {
- render() {
-  return (
-   <div className="Sms subcontent">
-    <p>Liste des Sms</p>
-   </div>
-  );
- }
-};
+  render() {
+    return <div className="Sms subcontent"></div>;
+  }
+}
 
 export default Sms;
