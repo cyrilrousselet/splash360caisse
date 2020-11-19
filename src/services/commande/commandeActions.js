@@ -1,4 +1,4 @@
-import { differenceInMilliseconds, formatISO, parseISO } from "date-fns";
+import { differenceInMilliseconds, formatISO, parseISO, format } from "date-fns";
 import Logger from "../../helpers/Logger";
 import { clotureActions } from "../cloture/clotureActions";
 import { notificationActions } from "../notification/notificationActions";
@@ -7,6 +7,7 @@ import { commandeActionTypes } from "./commandeActionTypes";
 import { commandeServices } from "./commandeServices";
 import { numeroActions } from "./numeroActions";
 import { numeroActionTypes } from "./numeroActionTypes";
+import frLocale from "date-fns/locale/fr";
 // import { notificationServices } from '../notification/notificationServices';
 
 const logger = new Logger();
