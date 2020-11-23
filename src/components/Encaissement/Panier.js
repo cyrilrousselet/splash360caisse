@@ -5,6 +5,7 @@ import StdButton from '../common/StdButton';
 
 import { List, ListItem, Fab, Modal, TextField, ListItemText, ListItemIcon, ListItemSecondaryAction, Badge } from '@material-ui/core';
 import Swal from 'sweetalert2';
+import _ from 'lodash';
 
 import PlusIcon from '../common/icon/PlusIcon';
 import DiscountIcon from '../common/icon/DiscountIcon';
@@ -1151,7 +1152,7 @@ class Panier extends React.Component {
       <div className={ `Panier ${open && 'reglement-ouvert'}` }>
         <div className="header">
           {/* <div className="ticketId">{ (this.interval==0?'X':'√')+strings.modules.encaissement.panier.ticket_no+' '+ticketId }</div> */}
-          <div className="ticketId">{ strings.modules.encaissement.panier.ticket_no+' '+ticketId }</div>
+          <div className="ticketId">{ strings.modules.encaissement.panier.ticket_no+' '+_.last(ticketId.split('-')) }</div>
           <div className="ticketComment"></div>
           {gestion_bippers && (<Badge className="bipper" badgeContent={bipper} max={999} color="primary">
               <BellIcon className={`ico-bipper ${((bipper!==null && bipper!==undefined)?'bipper-set':'')}`} onClick={this.openBippers} />

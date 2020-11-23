@@ -1,4 +1,4 @@
-import { sub, differenceInMinutes, isBefore, endOfYesterday, parseISO } from 'date-fns';
+import { sub, isBefore, endOfYesterday, parseISO } from 'date-fns';
 import Logger from '../../helpers/Logger';
 
 const logger = new Logger();
@@ -24,13 +24,15 @@ function setNumero(parametres, numero) {
     // *** définition de la fin de la période précédente
     // fin de la période précédente
     const now = new Date();
+    const hnow_min = (now.getHours() * 60) + now.getMinutes();
+
     const hfin_ar = heure_fin.split(':');
     const hfin = parseInt(hfin_ar[0]);
     const mfin = parseInt(hfin_ar[1]);
     let lastperiode_end = endOfYesterday();
 
     // si l'heure actuelle est > à l'heure de fin, la fin de la période précédente était ce matin
-    if (differenceInMinutes(now, now.setHours(hfin,mfin))>0) {
+    if (hnow_min - hfin_min > 0) {
       lastperiode_end = now.setHours(hfin,mfin);
     } else {
       lastperiode_end = sub(now, {hours: 24}).setHours(hfin,mfin);

@@ -1,6 +1,6 @@
 import {emit} from 'eiphop';
 
-import { startOfDay, startOfToday, endOfYesterday, isAfter, isBefore, parseJSON, differenceInMinutes, sub } from 'date-fns';
+import { startOfDay, startOfToday, endOfYesterday, isAfter, formatISO, isBefore, parseJSON, sub } from 'date-fns';
 
 import LodashId from 'lodash-id';
 import Logger from '../../helpers/Logger';
@@ -22,13 +22,16 @@ function getTodayCa(heure_fin, commandeslist) {
 
   // fin de la période précédente
   const now = new Date();
+  const hnow_min = (now.getHours() * 60) + now.getMinutes();
+  
   const hfin_ar = heure_fin.split(':');
   const hfin = parseInt(hfin_ar[0]);
   const mfin = parseInt(hfin_ar[1]);
+  const hfin_min = (hfin * 60) + mfin;
   let lastperiode_end = endOfYesterday();
 
   // si l'heure actuelle est > à l'heure de fin, la fin de la période précédente était ce matin
-  if (differenceInMinutes(now, now.setHours(hfin,mfin))>0) {
+  if (hnow_min - hfin_min > 0) {
     lastperiode_end = now.setHours(hfin,mfin);
   } else {
     lastperiode_end = sub(now, {hours: 24}).setHours(hfin,mfin);
