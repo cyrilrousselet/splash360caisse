@@ -41,6 +41,8 @@ import PaymentIcon from './common/icon/PaymentIcon';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from './common/icon/EditIcon';
 
+import { decodetable } from '../constants/decodetable';
+
 import Logger from '../helpers/Logger';
 
 const logger = new Logger();
@@ -293,52 +295,22 @@ class ListeCommandes extends React.Component {
   }
 
   send_to_search(value) {
+    logger.log('send_to_search',value);
     this.setState({searchval: value});
   }
 
   decodeQRCode(value) {
 
-    let decode_table = {
-      win: {
-        'à': 0,
-        '&': 1,
-        'é': 2,
-        '"': 3,
-        "'" : 4,
-        '(' : 5,
-        '-' : 6,
-        'è' : 7,
-        '_' : 8,
-        'ç' : 9
-      },
-      darwin: {
-        'à': 0,
-        '&': 1,
-        'é': 2,
-        '"': 3,
-        "'" : 4,
-        '(' : 5,
-        '§' : 6,
-        'è' : 7,
-        '!' : 8,
-        'ç' : 9
-      }
-    };
-    if (!isNaN(parseInt(value))) {
-      this.send_to_search(value);
-      return;
-    }
-
     const platform = process.platform==='darwin' ? 'darwin' : 'win';
 
     let decoded = '';
     for (let caractere of value) {
-      if (!decode_table[platform].hasOwnProperty(caractere)) {
+      if (!decodetable[platform].hasOwnProperty(caractere)) {
         continue;
       }
-      decoded += decode_table[platform][caractere];
+      decoded += decodetable[platform][caractere];
     }
-    if (!isNaN(parseInt(decoded))) {
+    if (String(decoded).length>0) {
       this.send_to_search(decoded);
     }
     return false;

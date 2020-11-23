@@ -1,6 +1,6 @@
 import {emit} from 'eiphop';
 
-import { startOfDay, startOfToday, endOfYesterday, isAfter, formatISO, isBefore, parseJSON, sub } from 'date-fns';
+import { startOfDay, startOfToday, endOfYesterday, isAfter, isBefore, parseJSON, sub } from 'date-fns';
 
 import LodashId from 'lodash-id';
 import Logger from '../../helpers/Logger';
