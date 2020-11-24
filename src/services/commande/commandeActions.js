@@ -875,7 +875,7 @@ function setCommandeFromOrder(provider, payload) {
     const newnumero = await numeroActions._getNumero(parametres, numero);
 
     logger.log("new numero", newnumero);
-    dispatch({ type: numeroActionTypes.GET_NUMERO, numero: newnumero });
+    // dispatch({ type: numeroActionTypes.GET_NUMERO, numero: newnumero });
     dispatch(numeroActions.setNewNumero());
 
     // logger.log(data);
@@ -956,7 +956,7 @@ function setCommandeFromAPI(payload) {
     const newnumero = await numeroActions._getNumero(parametres, numero);
 
     logger.log("new numero", newnumero);
-    dispatch({ type: numeroActionTypes.GET_NUMERO, numero: newnumero });
+    // dispatch({ type: numeroActionTypes.GET_NUMERO, numero: newnumero });
     dispatch(numeroActions.setNewNumero());
 
     logger.log(data);

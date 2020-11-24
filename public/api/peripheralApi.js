@@ -235,7 +235,7 @@ function _spoolManager(job=null) {
           // on récupère le premier job de la liste
           const firstJobi = printSpool.shift();
           // et on exécute le job
-          firstJobi.action(firstJobi.imprimante, firstJobi.template, firstJobi.contenu);
+          if (firstJobi) firstJobi.action(firstJobi.imprimante, firstJobi.template, firstJobi.contenu);
 
           // si la liste d'attente est vide
           if (printSpool.length===0) {

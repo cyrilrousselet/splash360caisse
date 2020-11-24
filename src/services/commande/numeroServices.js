@@ -29,6 +29,7 @@ function setNumero(parametres, numero) {
     const hfin_ar = heure_fin.split(':');
     const hfin = parseInt(hfin_ar[0]);
     const mfin = parseInt(hfin_ar[1]);
+    const hfin_min = (hfin * 60) + mfin;
     let lastperiode_end = endOfYesterday();
 
     // si l'heure actuelle est > à l'heure de fin, la fin de la période précédente était ce matin
