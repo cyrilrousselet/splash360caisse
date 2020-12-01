@@ -476,7 +476,7 @@ class Cloture extends React.Component {
                   />
                 </div>
                 <div className="zone-selecteur">
-                  <MuiPickersUtilsProvider
+                  {/* <MuiPickersUtilsProvider
                     utils={LocalizedUtils}
                     locale={frLocale}
                   >
@@ -516,7 +516,7 @@ class Cloture extends React.Component {
                         cancelLabel={strings.general.dialog.cancel}
                       />
                     </div>
-                  </MuiPickersUtilsProvider>
+                  </MuiPickersUtilsProvider> */}
                   <div className="label">
                     {strings.modules.cloture.selection.caisse}
                   </div>

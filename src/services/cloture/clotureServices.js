@@ -97,7 +97,8 @@ function getCurrentPeriode(commandes, catalogue, params) {
       if (cmd.status==='deleted') __valid = false;
 
       // si on ne récupère que les cmd non archivées (cas du Z)
-      if (params.extract==='z' && cmd.archived!==undefined) __valid = false;
+      // if (params.extract==='z' && cmd.archived!==undefined) __valid = false;
+      if (cmd.archived!==undefined && cmd.archived!==null) __valid = false;
       if (__valid) numvalid++;
 
       // si une liste de vendeurs est fournie

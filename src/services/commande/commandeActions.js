@@ -883,7 +883,7 @@ function setCommandeFromOrder(provider, payload) {
       data,
       state.catalogueReducer,
       state.parametresReducer.parametres,
-      state.commandeReducer.numero
+      newnumero
     );
 
     // dispatch(numeroActions.takeNumero());

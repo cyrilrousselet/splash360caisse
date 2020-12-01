@@ -260,7 +260,11 @@ const actions = {
   denyUberOrder: (req, res) => {
     const { url, access_token } = req.payload;
 
-    var __denyObject = { reason: { explanation: "Erreur de commande" } };
+    var __denyObject = { 
+      reason: 'RESTAURANT_TOO_BUSY',
+      details: '',
+      cancelling_party: 'MERCHANT'
+    };
 
     let __confirmation = [];
 
