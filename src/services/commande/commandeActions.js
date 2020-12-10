@@ -36,6 +36,10 @@ function getCommandesList(params = {}) {
   };
 }
 
+function getTodayCommandesList() {
+  
+}
+
 function getAllTicketsRestaurant() {
   return (dispatch) => {
     dispatch({ type: commandeActionTypes.GETALL_TICKETSRESTAU_REQUEST });

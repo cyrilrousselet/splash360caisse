@@ -1,9 +1,9 @@
-import DateFnsUtils from "@date-io/date-fns";
+// import DateFnsUtils from "@date-io/date-fns";
 import { FormControl, MenuItem, Select } from "@material-ui/core";
-import {
-  KeyboardDatePicker,
-  MuiPickersUtilsProvider,
-} from "@material-ui/pickers";
+// import {
+//   KeyboardDatePicker,
+//   MuiPickersUtilsProvider,
+// } from "@material-ui/pickers";
 import {
   endOfDay,
   endOfToday,
@@ -31,11 +31,11 @@ import Comptage from "./Comptage";
 const logger = new Logger();
 let strings = new LocalizedStrings(data);
 
-class LocalizedUtils extends DateFnsUtils {
-  getDatePickerHeaderText(date) {
-    return format(date, "d MMM yyyy", { locale: this.locale });
-  }
-}
+// class LocalizedUtils extends DateFnsUtils {
+//   getDatePickerHeaderText(date) {
+//     return format(date, "d MMM yyyy", { locale: this.locale });
+//   }
+// }
 
 class Cloture extends React.Component {
   constructor(props) {
