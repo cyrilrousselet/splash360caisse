@@ -13,6 +13,7 @@ export function commandesListReducer(state = initialState, action) {
   switch (action.type) {
     case commandeActionTypes.GET_ALLCOMMANDES_REQUEST:
     case commandeActionTypes.GETALL_TICKETSRESTAU_REQUEST:
+    case commandeActionTypes.GET_COMMANDESLIST_REQUEST:
       return {
         ...state,
         loading: true,
@@ -20,6 +21,7 @@ export function commandesListReducer(state = initialState, action) {
       };
 
     case commandeActionTypes.GET_ALLCOMMANDES_SUCCESS:
+    case commandeActionTypes.GET_COMMANDESLIST_SUCCESS:
       return {
         ...state,
         loading: false,
@@ -28,10 +30,11 @@ export function commandesListReducer(state = initialState, action) {
       };
 
     case commandeActionTypes.GET_ALLCOMMANDES_FAILURE:
+    case commandeActionTypes.GET_COMMANDESLIST_FAILURE:
       return {
         ...state,
         loading: false,
-        error: action.error
+        error: action.error.message
       };
     
     case commandeActionTypes.GETALL_TICKETSRESTAU_SUCCESS:

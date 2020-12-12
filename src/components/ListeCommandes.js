@@ -10,7 +10,7 @@ import history from '../helpers/history';
 import paths from './../constants/routes.json';
 
 import 'date-fns';
-import { format, compareAsc, compareDesc, startOfToday, endOfToday, startOfDay, endOfDay } from "date-fns";
+import { format, compareAsc, compareDesc } from "date-fns";
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
@@ -42,6 +42,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from './common/icon/EditIcon';
 
 import { decodetable } from '../constants/decodetable';
+import { dateBounds } from '../helpers/toolbox';
 
 import Logger from '../helpers/Logger';
 
@@ -188,23 +189,12 @@ function ImpressionTicketPopin(props) {
 }
 
 
+
 class ListeCommandes extends React.Component {
   
   
   constructor(props) {
     super(props);
-    this.state = {
-      startDate: startOfToday(),
-      endDate: endOfToday(),
-      openTab: 0,
-      reglementOpen: false,
-      commandeId: null,
-      printOpen: false,
-      searchval:'',
-      inputfocus: true,
-      keyboardOpen: false,
-      livreurOpen: false
-    };
     this.setSelectedDate = this.setSelectedDate.bind(this);
     this.handleChangeTab = this.handleChangeTab.bind(this);
     this.encaissementHandle = this.encaissementHandle.bind(this);
@@ -220,6 +210,23 @@ class ListeCommandes extends React.Component {
     this.deleteCommande = this.deleteCommande.bind(this);
     this.openLivreurs = this.openLivreurs.bind(this);
     this.closeLivreurs = this.closeLivreurs.bind(this);
+    this.getBoundedCommandesList = this.getBoundedCommandesList.bind(this);
+
+    const {heure_fin} = props;
+    const __todayBounds = dateBounds(new Date(), heure_fin);
+
+    this.state = {
+      startDate: __todayBounds.debut,
+      endDate: __todayBounds.fin,
+      openTab: 0,
+      reglementOpen: false,
+      commandeId: null,
+      printOpen: false,
+      searchval:'',
+      inputfocus: true,
+      keyboardOpen: false,
+      livreurOpen: false
+    };
   }
   
   lock = false;
@@ -227,20 +234,48 @@ class ListeCommandes extends React.Component {
   
   componentDidMount() {
     logger.log('ListeCommandes.componentDidMount()');
-    this.props.getCommandesList();
+    this.getBoundedCommandesList();
     this.props.getAllActive();
     this.props.getClientsList();
     this.props.getUsers();
   }
 
+  
+
+  getBoundedCommandesList(start, end) {
+
+    const {startDate, endDate} = this.state;
+
+    this.props.getCommandesList({
+      $and: [
+        {createdAt: { $gt: start || startDate } }, 
+        {createdAt: { $lte: end || endDate } }
+      ]});
+  }
+
   setSelectedDate(bound,date) {
     const { startDate, endDate } = this.state;
+    const {heure_fin} = this.props;
+    const __bd = dateBounds(date, heure_fin);
+    
+    let d = startDate;
+    let f = endDate;
+
     if (bound==='start') {
-      this.setState({startDate:(date<=endDate)?startOfDay(date):endDate});
+      d = (date<=endDate)?__bd.debut:endDate;
+      this.setState({startDate: d});
     }
     if (bound==='end') {
-      this.setState({endDate:(date>=startDate)?endOfDay(date):startDate});
+      f = (date>=startDate)?__bd.fin:startDate;
+      this.setState({endDate:f});
     }
+
+    console.log(
+      'setSelectedDate('+bound+')', 
+      '('+format(d, "dd/MM/yyyy HH:mm")+' -> '+format(f, "dd/MM/yyyy HH:mm")+')'
+    );
+
+    this.getBoundedCommandesList(d,f);
   }
 
   
@@ -438,7 +473,7 @@ class ListeCommandes extends React.Component {
               margin="normal"
               value={ startDate }
               format="d MMM yyyy"
-              onChange={date => { this.setSelectedDate('start', date) }}
+              onChange={date => { this.setSelectedDate('start', date.setHours(12,0)) }}
               KeyboardButtonProps={{ 'aria-label': 'change date' }}
               clearLabel={ strings.general.dialog.clear }
               cancelLabel={ strings.general.dialog.cancel }
@@ -449,7 +484,7 @@ class ListeCommandes extends React.Component {
               margin="normal"
               value={ endDate }
               format="d MMM yyyy"
-              onChange={date => { this.setSelectedDate('end', date) }}
+              onChange={date => { this.setSelectedDate('end', date.setHours(12,0)) }}
               KeyboardButtonProps={{ 'aria-label': 'change date' }}
               clearLabel={ strings.general.dialog.clear }
               cancelLabel={ strings.general.dialog.cancel }

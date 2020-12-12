@@ -7,14 +7,10 @@ import {
 import "date-fns";
 import {
   compareAsc,
-  endOfDay,
   endOfMonth,
-  endOfToday,
   endOfWeek,
   format,
-  startOfDay,
   startOfMonth,
-  startOfToday,
   startOfWeek,
 } from "date-fns";
 import frLocale from "date-fns/locale/fr";
@@ -25,6 +21,7 @@ import { data } from "../constants/translations";
 import TopZone from "../containers/TopZone";
 import LoadingSpinner from "./common/LoadingSpinner";
 import StdButton from "./common/StdButton";
+import {dateBounds} from "./../helpers/toolbox";
 
 let strings = new LocalizedStrings(data);
 
@@ -180,54 +177,102 @@ function ModeChart(props) {
 class Statistiques extends React.Component {
   constructor(props) {
     super(props);
+    // this.shouldComponentRender = this.shouldComponentRender.bind(this);
+    
+    this.getBoundedCommandesList = this.getBoundedCommandesList.bind(this);
+
+    const {heure_fin} = props;
+    const __todayBounds = dateBounds(new Date(), heure_fin);
+
     this.state = {
       openTab: 0,
-      startDate: startOfToday(),
-      endDate: endOfToday(),
+      startDate: __todayBounds.debut,
+      endDate: __todayBounds.fin,
     };
-    // this.shouldComponentRender = this.shouldComponentRender.bind(this);
   }
 
   componentDidMount() {
     console.log("Statistiques.componentDidMount()");
-    this.props.getCommandesList();
+    this.getBoundedCommandesList();
     this.props.getAllActive();
   }
 
+
+  getBoundedCommandesList(start, end) {
+
+    const {startDate, endDate} = this.state;
+
+    this.props.getCommandesList({
+      $and: [
+        {createdAt: { $gt: start || startDate } }, 
+        {createdAt: { $lte: end || endDate } }
+      ]});
+  }
+
+
+
   setSelectedDate(bound, date) {
     const { startDate, endDate } = this.state;
-    if (bound === "start") {
-      this.setState({
-        startDate: date <= endDate ? startOfDay(date) : endDate,
-      });
+    const {heure_fin} = this.props;
+
+    const __bd = dateBounds(date.setHours(12,0), heure_fin);
+
+    let d = startDate;
+    let f = endDate;
+
+    if (bound==='start') {
+      d = ( date <= endDate ) ? __bd.debut : endDate;
+      this.setState({ startDate: d });
     }
-    if (bound === "end") {
-      this.setState({
-        endDate: date >= startDate ? endOfDay(date) : startDate,
-      });
+    if (bound==='end') {
+      f = ( date >= startDate ) ? __bd.fin : startDate;
+      this.setState({ endDate: f });
     }
+
+    console.log(
+      'setSelectedDate('+bound+')', 
+      '('+format(d, "dd/MM/yyyy HH:mm")+' -> '+format(f, "dd/MM/yyyy HH:mm")+')'
+    );
+
+    this.getBoundedCommandesList(d,f);
+
   }
 
   datesShortcut(short) {
-    let startDate, endDate;
+    const {heure_fin} = this.props;
+    let startDate, endDate, startBound, endBound;
+
     switch (short) {
       case "jour":
-        startDate = startOfToday();
-        endDate = endOfToday();
+        startBound = dateBounds(new Date(), heure_fin);
+        startDate = startBound.debut;
+        endDate = startBound.fin;
         break;
       case "semaine":
-        startDate = startOfWeek(new Date(), { weekStartsOn: 1 });
-        endDate = endOfWeek(new Date(), { weekStartsOn: 1 });
+        startBound = dateBounds(startOfWeek(new Date(), { weekStartsOn: 1 }).setHours(12,0), heure_fin);
+        endBound = dateBounds(endOfWeek(new Date(), { weekStartsOn: 1 }).setHours(12,0), heure_fin);
+        startDate = startBound.debut;
+        endDate = endBound.fin;
         break;
       case "mois":
-        startDate = startOfMonth(new Date());
-        endDate = endOfMonth(new Date());
+        startBound = dateBounds(startOfMonth(new Date()).setHours(12,0), heure_fin);
+        endBound = dateBounds(endOfMonth(new Date()).setHours(12,0), heure_fin);
+        startDate = startBound.debut;
+        endDate = endBound.fin;
         break;
       default:
-        startDate = startOfToday();
-        endDate = endOfToday();
+        startBound = dateBounds(new Date(), heure_fin);
+        startDate = startBound.debut;
+        endDate = startBound.fin;
     }
+
+    console.log(
+      'datesShortcut('+short+')', 
+      '('+format(new Date(startDate), "dd/MM/yyyy HH:mm")+' -> '+format(new Date(endDate), "dd/MM/yyyy HH:mm")+')'
+    );
+
     this.setState({ startDate: startDate, endDate: endDate });
+    this.getBoundedCommandesList(startDate, endDate);
   }
 
   render() {

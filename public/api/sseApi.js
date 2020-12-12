@@ -89,7 +89,9 @@ const actions = {
         res.send(__ord);
       });
     });
-    __request.on("error", (error) => {
+
+    __request.on('error', (error) => {
+      log.error('getUberOrder ERROR', error);
       res.error(error);
     });
 
@@ -127,6 +129,11 @@ const actions = {
       });
     });
 
+    __request.on('error', (error) => {
+      log.error('acceptUberOrder ERROR', error);
+      res.error(error);
+    });
+
     __request.end();
   },
 
@@ -162,6 +169,11 @@ const actions = {
         // res.send({confirm: JSON.parse(__confirmation.join(''))});
         res.send({confirm: true});
       });
+    });
+
+    __request.on('error', (error) => {
+      log.error('updateUberRestaurant ERROR', error);
+      res.error(error);
     });
 
     __request.end();
@@ -202,6 +214,11 @@ const actions = {
         // res.send({confirm: JSON.parse(__confirmation.join(''))});
         res.send({ confirm: true });
       });
+    });
+
+    __request.on('error', (error) => {
+      log.error('updateUberPOS ERROR', error);
+      res.error(error);
     });
 
     __request.end();
@@ -253,6 +270,11 @@ const actions = {
       });
     });
 
+    __request.on('error', (error) => {
+      log.error('updateUberItem ERROR', error);
+      res.error(error);
+    });
+
     __request.end();
 
   },
@@ -292,6 +314,11 @@ const actions = {
       });
     });
 
+    __request.on('error', (error) => {
+      log.error('denyUberOrder ERROR', error);
+      res.error(error);
+    });
+
     __request.end();
   },
 
@@ -320,6 +347,11 @@ const actions = {
         res.send({ splash_token: JSON.parse(__confirmation.join("")) });
         // res.send({confirm: true});
       });
+    });
+
+    __request.on('error', (error) => {
+      log.error('getSplashToken ERROR', error);
+      res.error(error);
     });
 
     __request.end();
@@ -359,6 +391,11 @@ const actions = {
         res.send(__db);
         // res.send({confirm: true});
       });
+    });
+
+    __request.on('error', (error) => {
+      log.error('getDatabase ERROR', error);
+      res.error(error);
     });
 
     __request.end();
@@ -403,6 +440,11 @@ const actions = {
       });
     });
 
+    __request.on('error', (error) => {
+      log.error('syncCommandesBO ERROR', error);
+      res.error(error);
+    });
+
     __request.end();
   },
 
@@ -443,6 +485,11 @@ const actions = {
         //        res.send({confirm: JSON.parse(__syncedClotures.join(''))});
         // res.send({confirm: true});
       });
+    });
+
+    __request.on('error', (error) => {
+      log.error('syncCloturesBO ERROR', error);
+      res.error(error);
     });
 
     __request.end();

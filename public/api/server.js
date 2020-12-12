@@ -338,6 +338,11 @@ const actions = {
       });
     });
 
+    __request.on('error', (error) => {
+      log.error('askNumero ERROR', error);
+      res.error(error);
+    });
+
     __request.end();
   },
 
@@ -654,6 +659,11 @@ const actions = {
         //     // res.send({confirm: JSON.parse(__confirmation.join(''))});
         //     res.send({confirm: true});
       });
+    });
+
+    __request.on('error', (error) => {
+      log.error('syncDispatchToPrimary ERROR', error);
+      res.error(error);
     });
 
     __request.end();

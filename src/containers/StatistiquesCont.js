@@ -12,6 +12,7 @@ const mapStateToProps = (state) => {
     loading: getCommandesListLoading(state),
     error: getCommandesListError(state),
     commandeslist: getCommandesList(state),
+    heure_fin: (state.parametresReducer.parametres.entreprise && state.parametresReducer.parametres.entreprise.heure_fin) || '05:00',
     canaux: state.parametresReducer.parametres.options.canaux || []
   }
 }
@@ -19,7 +20,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   const bound = bindActionCreators({
       getAllActive: catalogueActions.getAllActive,
-      getCommandesList: commandeActions.getCommandesList
+      getCommandesList: commandeActions.getCommandesList,
   }, dispatch);
   return {
     ...bound

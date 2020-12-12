@@ -1,4 +1,5 @@
-import { sub, isBefore, endOfYesterday, parseISO } from 'date-fns';
+import { isBefore, parseISO } from 'date-fns';
+import { dateBounds } from '../../helpers/toolbox';
 import Logger from '../../helpers/Logger';
 
 const logger = new Logger();
@@ -21,23 +22,9 @@ function setNumero(parametres, numero) {
   // si un numéro est défini
   if (null!==numero && numero.hasOwnProperty('updated')) {
 
-    // *** définition de la fin de la période précédente
-    // fin de la période précédente
-    const now = new Date();
-    const hnow_min = (now.getHours() * 60) + now.getMinutes();
-
-    const hfin_ar = heure_fin.split(':');
-    const hfin = parseInt(hfin_ar[0]);
-    const mfin = parseInt(hfin_ar[1]);
-    const hfin_min = (hfin * 60) + mfin;
-    let lastperiode_end = endOfYesterday();
-
-    // si l'heure actuelle est > à l'heure de fin, la fin de la période précédente était ce matin
-    if (hnow_min - hfin_min > 0) {
-      lastperiode_end = now.setHours(hfin,mfin);
-    } else {
-      lastperiode_end = sub(now, {hours: 24}).setHours(hfin,mfin);
-    }
+    // // *** définition de la fin de la période précédente
+    const __periode = dateBounds(new Date(), heure_fin);
+    const lastperiode_end = __periode.debut;
     
 
     // si la dernière numérotation date d'un service précédent,

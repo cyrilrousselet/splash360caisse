@@ -1,7 +1,7 @@
 import {emit} from 'eiphop';
 
-import { startOfDay, startOfToday, endOfYesterday, isAfter, isBefore, parseJSON, sub } from 'date-fns';
-
+import { startOfDay, startOfToday, isAfter, isBefore } from 'date-fns';
+import { dateBounds } from '../../helpers/toolbox';
 import LodashId from 'lodash-id';
 import Logger from '../../helpers/Logger';
 const logger = new Logger();
@@ -11,6 +11,7 @@ export const clotureServices = {
   makeCloture,
   saveCloture,
   getClotureById,
+  getLast,
   getCloturesList,
   setSyncedClotures,
   getCloturesToSync,
@@ -21,21 +22,8 @@ export const clotureServices = {
 function getTodayCa(heure_fin, commandeslist) {
 
   // fin de la période précédente
-  const now = new Date();
-  const hnow_min = (now.getHours() * 60) + now.getMinutes();
-  
-  const hfin_ar = heure_fin.split(':');
-  const hfin = parseInt(hfin_ar[0]);
-  const mfin = parseInt(hfin_ar[1]);
-  const hfin_min = (hfin * 60) + mfin;
-  let lastperiode_end = endOfYesterday();
-
-  // si l'heure actuelle est > à l'heure de fin, la fin de la période précédente était ce matin
-  if (hnow_min - hfin_min > 0) {
-    lastperiode_end = now.setHours(hfin,mfin);
-  } else {
-    lastperiode_end = sub(now, {hours: 24}).setHours(hfin,mfin);
-  }
+  const __periode_bounds = dateBounds(new Date(), heure_fin);
+  const lastperiode_end = __periode_bounds.debut;
 
   let ca = 0;
   let numtickets = 0;
@@ -113,14 +101,14 @@ function getCurrentPeriode(commandes, catalogue, params) {
         
 
       // periode
-      let createdAt = parseJSON(cmd.createdAt);
+ //     let createdAt = parseJSON(cmd.createdAt);
  //     if (params.extract==='x') {
  //       if (isAfter(createdAt, params.fin) || isBefore(createdAt, params.debut)) __valid = false;
  //     } 
  //     else if (params.extract==='z') {
       // --- /!\ on récupère aussi les commandes non clôturées des périodes précédentes (pour n'en laisser aucune)
       // (donc on invalide uniquement les commandes ultérieures)
-        if (isAfter(createdAt, params.fin)) __valid = false;
+      //  if (isAfter(createdAt, params.fin)) __valid = false;
  //     }
 
       if (__valid && cmd.status!=='confirmed') __numStandby++;
@@ -470,13 +458,19 @@ function getCloturesToSync(limit=null) {
 }
 
 
-
-const _newClotureId = () => {
-  return 'clo'+LodashId.createId();
-}
+function getLast() {
+  return emit('dbClotureGetLast',{});
+} 
 function getClotureById(id) {
   return emit('dbClotureGetCloture', {clotureId: id});
 }
 function getCloturesList(params) {
   return emit('dbClotureGetAll', params);
+}
+
+
+
+
+const _newClotureId = () => {
+  return 'clo'+LodashId.createId();
 }

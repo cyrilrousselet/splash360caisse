@@ -75,8 +75,17 @@ class Cloture extends React.Component {
   }
 
   componentDidMount() {
-    const { getCurrentPeriode, getCloturesList } = this.props;
-    // getCommandesList();
+    const { getCurrentPeriode, getLastCloture, getCommandesList } = this.props;
+    getCommandesList({
+      $and: [
+        { archived: undefined },
+        { status: { $ne: "deleted" } },
+        { $or: [
+          { centre_revenu: undefined },
+          { centre_revenu: 'restaurant' }
+        ]}
+      ]
+    });
     //parametres :
     let params = {};
     const {
@@ -92,7 +101,7 @@ class Cloture extends React.Component {
     params["debut"] = startDate;
     params["fin"] = endDate;
     getCurrentPeriode(params);
-    getCloturesList();
+    getLastCloture();
     //    getParametres();
   }
 
@@ -339,6 +348,7 @@ class Cloture extends React.Component {
       params["caisses"] = [selection_caisse];
     if (selection_operator.id !== "allope")
       params["vendeurs"] = [selection_operator];
+
     const periode_z = clotureServices.getCurrentPeriode(
       listeCommandes,
       catalogue,
@@ -419,7 +429,7 @@ class Cloture extends React.Component {
         <div className="MainZone">
           <div className="clo-gauche">
             <div className="blocgauche">
-              <div class="blocgauche-wrapper">
+              <div className="blocgauche-wrapper">
                 <div className="zone-lastcloture">
                   <div className="titre">
                     {strings.modules.cloture.derniere.titre}
@@ -476,47 +486,6 @@ class Cloture extends React.Component {
                   />
                 </div>
                 <div className="zone-selecteur">
-                  {/* <MuiPickersUtilsProvider
-                    utils={LocalizedUtils}
-                    locale={frLocale}
-                  >
-                    <div className="label-inline">
-                      <div className="label">
-                        {strings.modules.cloture.selection.debut}
-                      </div>
-                      <KeyboardDatePicker
-                        className="datepicker"
-                        id="debutdatepicker"
-                        margin="normal"
-                        value={params.debut}
-                        format="d MMM yyyy"
-                        onChange={(date) => {
-                          this.setSelectedDate("start", date);
-                        }}
-                        KeyboardButtonProps={{ "aria-label": "change date" }}
-                        clearLabel={strings.general.dialog.clear}
-                        cancelLabel={strings.general.dialog.cancel}
-                      />
-                    </div>
-                    <div className="label-inline">
-                      <div className="label">
-                        {strings.modules.cloture.selection.fin}
-                      </div>
-                      <KeyboardDatePicker
-                        className="datepicker"
-                        id="findatepicker"
-                        margin="normal"
-                        value={params.fin}
-                        format="d MMM yyyy"
-                        onChange={(date) => {
-                          this.setSelectedDate("end", date);
-                        }}
-                        KeyboardButtonProps={{ "aria-label": "change date" }}
-                        clearLabel={strings.general.dialog.clear}
-                        cancelLabel={strings.general.dialog.cancel}
-                      />
-                    </div>
-                  </MuiPickersUtilsProvider> */}
                   <div className="label">
                     {strings.modules.cloture.selection.caisse}
                   </div>

@@ -8,7 +8,7 @@ import history from '../../helpers/history';
 import paths from './../../constants/routes.json';
 
 import 'date-fns';
-import { format, compareAsc, startOfToday, endOfToday, startOfDay, endOfDay, isAfter, isBefore, differenceInMinutes } from "date-fns";
+import { format, compareAsc, startOfToday, startOfDay, isAfter, isBefore, differenceInMinutes } from "date-fns";
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
@@ -28,7 +28,7 @@ import { Modal, Fab } from '@material-ui/core';
 import CloseIcon from '../common/icon/CloseIcon';
 
 import Logger from '../../helpers/Logger';
-import {devise} from '../../helpers/toolbox';
+import {devise, dateBounds} from '../../helpers/toolbox';
 
 const logger = new Logger();
 
@@ -278,34 +278,67 @@ class ListeClotures extends React.Component {
   
   constructor(props) {
     super(props);
-    this.state = {
-      startDate: startOfToday(),
-      endDate: endOfToday(),
-      cloture: null,
-      clotureId: null,
-      clotureOpen: false
-    };
     this.setSelectedDate = this.setSelectedDate.bind(this);
     this.openCloture = this.openCloture.bind(this);
     this.openClotureId = this.openClotureId.bind(this);
     this.closeCloture = this.closeCloture.bind(this);
     this.printCloture = this.printCloture.bind(this);
     this.printClotureId = this.printClotureId.bind(this);
+    this.getBoundedClotureList = this.getBoundedClotureList.bind(this);
+
+    const {heure_fin} = props;
+    const __todayBounds = dateBounds(new Date(), heure_fin);
+
+    this.state = {
+      startDate: __todayBounds.debut,
+      endDate: __todayBounds.fin,
+      cloture: null,
+      clotureId: null,
+      clotureOpen: false
+    };
   }
     
   componentDidMount() {
     logger.log('ListeClotures.componentDidMount()');
-    this.props.getCloturesList();
+    this.getBoundedClotureList();
+  }
+
+  getBoundedClotureList(start, end) {
+
+    const {startDate, endDate} = this.state;
+
+    this.props.getCloturesList({
+      $and: [
+        { 'periode.debut': { $gte: start || startDate } }, 
+        { 'periode.fin': { $lte: end || endDate } }
+      ]});
   }
 
   setSelectedDate(bound,date) {
+
     const { startDate, endDate } = this.state;
+    const {heure_fin} = this.props;
+    const __bd = dateBounds(date, heure_fin);
+    
+    let d = startDate;
+    let f = endDate;
+
     if (bound==='start') {
-      this.setState({startDate:(date<=endDate)?startOfDay(date):endDate});
+      d = (date<=endDate)?__bd.debut:endDate;
+      this.setState({startDate: d});
     }
     if (bound==='end') {
-      this.setState({endDate:(date>=startDate)?endOfDay(date):startDate});
+      f = (date>=startDate)?__bd.fin:startDate;
+      this.setState({endDate:f});
     }
+
+    console.log(
+      'setSelectedDate('+bound+')', 
+      '('+format(d, "dd/MM/yyyy HH:mm")+' -> '+format(f, "dd/MM/yyyy HH:mm")+')'
+    );
+
+    this.getBoundedClotureList(d,f);
+
   }
 
   openCloture(cloture) {

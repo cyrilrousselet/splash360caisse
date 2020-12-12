@@ -42,7 +42,7 @@ const mapDispatchToProps = (dispatch) => {
   const bound = bindActionCreators({
     getParametres: parametresActions.getAll,
     getCatalogue: catalogueActions.getAllActive,
-    getCommandesList: commandeActions.getCommandesList,
+    getTodayCommandesList: commandeActions.getTodayCommandesList,
     getCloturesList: clotureActions.getCloturesList,
     getCurrentPeriode: clotureActions.getCurrentPeriode,
     getTodayCa: clotureActions.getTodayCa,

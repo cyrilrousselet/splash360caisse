@@ -4,6 +4,7 @@ import Cloture from '../components/Cloture';
 import { clotureActions } from '../services/cloture/clotureActions';
 import { peripheralActions } from '../services/peripheral/peripheralActions';
 import { getPeriode } from '../services/cloture/clotureReducer';
+import { commandeActions } from '../services/commande/commandeActions';
 
 // import {data} from '../constants/translations';
 // import LocalizedStrings from 'react-localization';
@@ -22,9 +23,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   const bound = bindActionCreators({
-    // getCommandesList: commandeActions.getCommandesList,
+    getCommandesList: commandeActions.getCommandesList,
     // getParametres: parametresActions.getAll,
-    getCloturesList: clotureActions.getCloturesList,
+    getLastCloture: clotureActions.getLast,
     getCurrentPeriode: clotureActions.getCurrentPeriode,
     printPeriodeX: peripheralActions.printPeriodeX,
     printLastCloture: peripheralActions.printCloture,

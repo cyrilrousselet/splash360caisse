@@ -7,11 +7,23 @@ const { uuid } = require("uuidv4");
 
 const actions = {
   dbClotureGetAll: async (req, res) => {
-    log.info("dbClotureGetAll() in API");
 
-    const proxies = await _getAll();
+    const { payload } = req;
+    log.info("dbClotureGetAll() in API", req);
 
+    let proxies = {};
+
+    if (Object.entries(payload).length > 0) {
+      const _rawdata = await _findCloture(payload);
+      proxies = _parseCloture(_rawdata);
+    } else {
+      proxies = await _getAll();
+    }
     //  log.info(proxies);
+    res.send(proxies);
+  },
+  dbClotureGetLast: async (req, res) => {
+    const proxies = await _getLast();
     res.send(proxies);
   },
   dbClotureGetCloture: async (req, res) => {
@@ -67,10 +79,19 @@ const actions = {
   },
 };
 
+async function _getLast() {
+  const mongo = await connect();
+  const __rawdata = await ClotureModel.find().sort({createdAt: -1}).limit(1);
+  await mongo.disconnect();
+  return _parseCloture(__rawdata);
+  //return _cloture; 
+}
+
 async function _getAll() {
   const __rawdata = await _findCloture();
   return _parseCloture(__rawdata);
 }
+
 
 /**
  * Get clotures data from DB

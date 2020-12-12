@@ -149,6 +149,8 @@ async function _getCommandesToSync(limit = null) {
     ],
   };
 
+  log.info('getcmd2sync crit', criteria);
+
   let _cmd;
 
   if (limit && limit > 0) {
@@ -178,10 +180,21 @@ async function _getCommandesToSync(limit = null) {
 
 async function _getCommandes(criteriae = {}) {
   log.info("CmdAPI._getCommandes()", criteriae);
+
   const mongo = await connect();
-  const _cmd = (await CommandeModel.find(criteriae)).values();
+ 
+  let __criteriae = criteriae;
+  if (criteriae.hasOwnProperty('where')) {
+    __criteriae = { $where: criteriae.where };
+  }
+  log.info('criteriae', __criteriae);
+  // const _rawdata = (await CommandeModel.find(__criteriae)).values();
+  const _rawdata = await CommandeModel.find( criteriae ).exec();
+ 
+  log.info('_getCommandes', _rawdata);
+ 
   await mongo.disconnect();
-  return { _cmd };
+  return  _parseCommandes(_rawdata);
 }
 
 /**

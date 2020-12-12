@@ -8,6 +8,7 @@ import { commandeServices } from "./commandeServices";
 import { numeroActions } from "./numeroActions";
 import { numeroActionTypes } from "./numeroActionTypes";
 import frLocale from "date-fns/locale/fr";
+import { dateBounds } from "../../helpers/toolbox";
 // import { notificationServices } from '../notification/notificationServices';
 
 const logger = new Logger();
@@ -16,20 +17,20 @@ function getCommandesList(params = {}) {
   logger.log("CmdA.getCommandesList()");
 
   return (dispatch) => {
-    dispatch({ type: commandeActionTypes.GET_ALLCOMMANDES_REQUEST });
+    dispatch({ type: commandeActionTypes.GET_COMMANDESLIST_REQUEST, params:params });
 
     commandeServices
       .getCommandesList(params)
       .then((data) => {
         dispatch({
-          type: commandeActionTypes.GET_ALLCOMMANDES_SUCCESS,
+          type: commandeActionTypes.GET_COMMANDESLIST_SUCCESS,
           ...data,
         });
         dispatch(clotureActions.getTodayCa());
       })
       .catch((error) => {
         dispatch({
-          type: commandeActionTypes.GET_ALLCOMMANDES_FAILURE,
+          type: commandeActionTypes.GET_COMMANDESLIST_FAILURE,
           error: error.toString(),
         });
       });
@@ -37,7 +38,17 @@ function getCommandesList(params = {}) {
 }
 
 function getTodayCommandesList() {
-  
+  return (dispatch, getState) => {
+    logger.log("CmdA.getTodayCommandesList()");
+    const { heure_fin } = getState().parametresReducer.parametres.entreprise;
+
+    // *** définition de la fin de la période précédente
+    const __periode_bounds = dateBounds(new Date(), heure_fin);
+    const lastperiode_end = __periode_bounds.debut;
+
+    dispatch(getCommandesList({createdAt: { $gt: lastperiode_end } }));
+
+  }
 }
 
 function getAllTicketsRestaurant() {
@@ -272,7 +283,7 @@ function validateCommande(payload) {
         //        logger.log('commande.createdAt', payload.createdAt);
         // s'il y a un numéro de commande, c'est qu'on encaisse une commande déjà réglée
         // donc on met à jour la liste des commande
-        if (payload.createdAt) dispatch(getCommandesList());
+        if (payload.createdAt) dispatch(getTodayCommandesList());
       },
       (error) => {
         logger.log(error);
@@ -641,7 +652,7 @@ function deleteCommande(payload) {
 
           dispatch(notificationActions.syncCommandes([cmdtosync]));
 
-          dispatch(getCommandesList());
+          dispatch(getTodayCommandesList());
         },
         (error) =>
           dispatch({
@@ -679,7 +690,7 @@ function setLivreur(payload) {
             livreur: livreur,
           })
         );
-        dispatch(getCommandesList());
+        dispatch(getTodayCommandesList());
       },
       (error) =>
         dispatch({
@@ -819,7 +830,7 @@ function archiveCommands(payload) {
             clotureId,
           })
         );
-        dispatch(getCommandesList());
+        dispatch(getTodayCommandesList());
       },
       (error) => {
         dispatch({
@@ -894,7 +905,7 @@ function setCommandeFromOrder(provider, payload) {
 
     commandeServices.saveCommande(commande, state.catalogueReducer).then(
       (confirm) => {
-        dispatch(getCommandesList());
+        dispatch(getTodayCommandesList());
         dispatch(notificationActions.syncDispatch("commande", confirm));
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
 
@@ -988,7 +999,7 @@ function setCommandeFromAPI(payload) {
 
     commandeServices.saveCommande(commande, state.catalogueReducer).then(
       (confirm) => {
-        dispatch(getCommandesList());
+        dispatch(getTodayCommandesList());
         dispatch(notificationActions.syncDispatch("commande", confirm));
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
         dispatch(clotureActions.getTodayCa());
@@ -1053,7 +1064,7 @@ function setCommandeFromSync(commande) {
             dispatch(clotureActions.getTodayCa());
           }
         }
-        dispatch(getCommandesList());
+        dispatch(getTodayCommandesList());
       },
       (error) => {
         dispatch({
@@ -1098,7 +1109,7 @@ function archiveCommandesFromSync(payload) {
             )
           );
         }
-        dispatch(getCommandesList());
+        dispatch(getTodayCommandesList());
       },
       (error) => {
         dispatch({
@@ -1169,6 +1180,7 @@ function setTicketRestaurantFromSync(ticketrestaurant) {
 
 export const commandeActions = {
   getCommandesList,
+  getTodayCommandesList,
   // setNewNumero,
   // resetNumero,
   getCommande,

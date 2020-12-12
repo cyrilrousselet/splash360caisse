@@ -87,7 +87,7 @@ class MainLoader extends React.Component {
       }
       if (paramLoaded===true && sseInit===true && catLoaded===true && 
           cmdLoaded===false && cmdLoading===false) {
-        this.props.getCommandesList();
+        this.props.getTodayCommandesList();
         this.props.loadNumero();
       }
       if (paramLoaded===true && sseInit===true && catLoaded===true && cmdLoaded===true && 
@@ -174,7 +174,7 @@ class MainLoader extends React.Component {
       }
       if (paramLoaded===true && sseInit===true && catLoaded===true && 
           cmdLoaded===false && cmdLoading===false) {
-        this.props.getCommandesList();
+        this.props.getTodayCommandesList();
         this.props.loadNumero();
       }
       if (paramLoaded===true && sseInit===true && catLoaded===true && cmdLoaded===true && 

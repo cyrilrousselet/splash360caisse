@@ -15,9 +15,9 @@ const DISABLED_MODULES = ["stocks"];
 class Dashboard extends Component {
   componentDidMount() {
     //  console.log('Dashboard.componentDidMount()');
-    this.props.getCommandesList();
     // this.props.getAllActive();
     this.props.getParametres();
+    this.props.getTodayCommandesList();
     this.props.getTodayCa();
     this.props.getAvoirsList();
     // this.props.deleteCurrentCommande();
@@ -120,7 +120,7 @@ Dashboard.propTypes = {
   username: PropTypes.string.isRequired,
   points: PropTypes.number,
   modules: PropTypes.arrayOf(PropTypes.string).isRequired,
-  getCommandesList: PropTypes.func,
+  getTodayCommandesList: PropTypes.func,
   getAllActive: PropTypes.func.isRequired,
   getParametres: PropTypes.func.isRequired,
   getCurrentPeriode: PropTypes.func,

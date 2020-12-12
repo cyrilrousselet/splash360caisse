@@ -106,7 +106,7 @@ const userLogout = () => {
 
 const mapDispatchToProps = (dispatch) => {
   const binded = bindActionCreators({
-    getCommandesList: commandeActions.getCommandesList,
+    getTodayCommandesList: commandeActions.getTodayCommandesList,
     getAllActive: catalogueActions.getAllActive,
     getParametres: parametresActions.getAll,
     getTodayCa: clotureActions.getTodayCa,
