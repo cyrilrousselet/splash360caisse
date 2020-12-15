@@ -103,17 +103,18 @@ function syncDispatch(db,data,emitter=null) {
   return (dispatch, getState) => {
     const { options } = getState().parametresReducer.parametres;
 
-    const __data = {...data, _id:null, __v:null};
+    delete data._id;
+    delete data.__v;
 
-    console.log('NAct.syncDispatch()', db, __data);
+    console.log('NAct.syncDispatch()', db, data);
     if (options.role==='primary') {
-      notificationServices.syncDispatch(db, __data, emitter)
+      notificationServices.syncDispatch(db, data, emitter)
       .then(result => {
         logger.log('syncDispatch (primary)', result);
       })
     }
     else if (options.role==='secondary') {
-      notificationServices.syncPrimary(db, __data, options.caisse, options.primary)
+      notificationServices.syncPrimary(db, data, options.caisse, options.primary)
       .then(result => {
         logger.log('syncDispatch (secondary)', result);
       })
@@ -125,10 +126,10 @@ function syncDispatch(db,data,emitter=null) {
 
     if (store_id && (['ingredient','produit']).includes(db)) {
 
-      let prix = db==='ingredient' ? __data.supplement : __data.prix;
+      let prix = db==='ingredient' ? data.supplement : data.prix;
       let centimes = Math.round(Number(prix)*100);
 
-      const update_data = {store_id: store_id, item_id: __data.custom_id, properties: {active: __data.active, price: centimes}};
+      const update_data = {store_id: store_id, item_id: data.custom_id, properties: {active: data.active, price: centimes}};
 
       notificationServices.updateProduitUber('uber', update_data);
       
