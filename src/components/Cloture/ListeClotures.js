@@ -309,9 +309,10 @@ class ListeClotures extends React.Component {
 
     this.props.getCloturesList({
       $and: [
-        { 'periode.debut': { $gte: start || startDate } }, 
-        { 'periode.fin': { $lte: end || endDate } }
+        {createdAt: { $gt: start || startDate } }, 
+        {createdAt: { $lte: end || endDate } }
       ]});
+
   }
 
   setSelectedDate(bound,date) {

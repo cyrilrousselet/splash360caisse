@@ -30,9 +30,23 @@ function getLast() {
   }
 }
 
+function getBoundedClotures(params={}) {
+  return dispatch => {
+    dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_REQUEST, criterias:params });
+
+    return clotureServices.getBoundedClotures(params)
+    .then(
+        data => { dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_SUCCESS, ...data }) }
+    )
+    .catch(
+      error => { dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_FAILURE, error: error.toString() }) }
+    );
+  }
+}
+
 function getCloturesList(params={}) {
 
-  return dispatch => {
+  return (dispatch) => {
     dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_REQUEST, criterias:params });
 
     return clotureServices.getCloturesList(params)
@@ -218,6 +232,7 @@ export const clotureActions = {
   loadCloture,
   makeCloture,
   getCloturesList,
+  getBoundedClotures,
   setSyncedClotures,
   getTodayCa
 };

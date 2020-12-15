@@ -22,6 +22,11 @@ const actions = {
     //  log.info(proxies);
     res.send(proxies);
   },
+  dbClotureGetBoundedClotures: async (req, res) => {
+    const { payload } = req;
+    const proxies = await _findBoundedClotures(payload.start, payload.end);
+    res.send(proxies);
+  },
   dbClotureGetLast: async (req, res) => {
     const proxies = await _getLast();
     res.send(proxies);
@@ -91,6 +96,52 @@ async function _getAll() {
   const __rawdata = await _findCloture();
   return _parseCloture(__rawdata);
 }
+
+async function _findBoundedClotures(start, end) {
+  const mongo = await connect();
+
+// const query = [
+//   {'$addFields': {
+//       'periodedebut': {
+//         '$dateFromString': {
+//           'dateString': {
+//             '$substr': ['$periode.debut', 0, {'$add': [{'$strLenCP': '$periode.debut'}, -1]}]
+//           }
+//         }
+//       }
+//     }
+//   }, 
+//   {'$addFields': {
+//       'periodefin': {
+//         '$dateFromString': {
+//           'dateString': {
+//             '$substr': ['$periode.fin', 0, {'$add': [{'$strLenCP': '$periode.fin'}, -1]}]
+//           }
+//         }
+//       }
+//     }
+//   },
+//   {'$match': {
+//       '$and': [
+//         {'periodedebut': {'$gte': new Date(start)}}, 
+//         {'periodefin': {'$lte': new Date(end) }}
+//       ]
+//     }
+//   }
+// ];
+
+  //  log.info(query);
+    // const __rawdata = await ClotureModel.aggregate(query).exec();
+    const __rawdata = await ClotureModel.find({
+      $and: [
+        {createdAt: { $gte: start } }, 
+        {createdAt: { $lte: end } }
+      ]
+    }).exec();
+    await mongo.disconnect();
+    return _parseCloture(__rawdata);
+}
+
 
 
 /**

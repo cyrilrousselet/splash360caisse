@@ -15,7 +15,8 @@ export const clotureServices = {
   getCloturesList,
   setSyncedClotures,
   getCloturesToSync,
-  getTodayCa
+  getTodayCa,
+  getBoundedClotures
 };
 
 
@@ -466,6 +467,9 @@ function getClotureById(id) {
 }
 function getCloturesList(params) {
   return emit('dbClotureGetAll', params);
+}
+function getBoundedClotures(params) {
+  return emit('dbClotureGetBoundedClotures', params);
 }
 
 
