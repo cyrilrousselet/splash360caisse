@@ -32,6 +32,11 @@ export const paramSubmodulesList = [
   //   'options'
 ];
 
+export const clotureSubmodulesList = [
+  'cloture',
+  'tresor'
+];
+
 export const marketSubmodulesList = [
   // 'promotions',
   // 'newsletter',

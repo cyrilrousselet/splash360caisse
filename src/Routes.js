@@ -9,7 +9,7 @@ import LoginCont from './containers/LoginCont';
 import ParametresCont from './containers/ParametresCont';
 import Encaissement from './components/Encaissement';
 import MarketingCont from './containers/MarketingCont';
-import ClotureCont from './containers/ClotureCont';
+import ClotureHomeCont from './containers/ClotureHomeCont';
 import ListeCloturesCont from './containers/ListeCloturesCont';
 import EmployesCont from './containers/EmployesCont';
 import DepensesCont from './containers/DepensesCont';
@@ -19,6 +19,7 @@ import StatistiquesCont from './containers/StatistiquesCont';
 import MenuCont from './containers/MenuCont';
 import ClientsCont from './containers/ClientsCont';
 import MainLoaderCont from './containers/MainLoaderCont';
+import TresorerieCont from './containers/TresorerieCont';
 
 export default () => (
   <App>
@@ -31,8 +32,9 @@ export default () => (
       <PrivateRoute path={ paths.EMPLOYES } component={EmployesCont} />
       <PrivateRoute path={ paths.DEPENSES } component={DepensesCont} />
       <PrivateRoute path={ paths.LISTECOMMANDES } component={ListeCommandesCont} />
-      <PrivateRoute path={ paths.CLOTURE } component={ClotureCont} />
+      <PrivateRoute path={ paths.CLOTURE } component={ClotureHomeCont} />
       <PrivateRoute path={ paths.LISTECLOTURES } component={ListeCloturesCont} />
+      <PrivateRoute exact path={ paths.CLOTURE_TRESOR } component={TresorerieCont} />
       <PrivateRoute path={ paths.STOCKS } component={StocksCont} />
       <PrivateRoute path={ paths.STATISTIQUES } component={StatistiquesCont} />
       <PrivateRoute path={ paths.MENU } component={MenuCont} />

@@ -12,6 +12,7 @@ import { notificationReducer } from "./../services/notification/notificationRedu
 import { parametresReducer } from "./../services/parametres/parametresReducer";
 import { peripheralReducer } from "./../services/peripheral/peripheralReducer";
 import { tableReducer } from "./../services/table/tableReducer";
+import { tresorReducer } from './../services/tresorerie/tresorReducer';
 import { userReducer } from "./../services/user/userReducer";
 import { authentication } from "./authenticationReducer";
 
@@ -29,6 +30,7 @@ export default function createRootReducer(history) {
     marketingReducer,
     notificationReducer,
     tableReducer,
+    tresorReducer,
     clientsReducer,
     authentication,
   });

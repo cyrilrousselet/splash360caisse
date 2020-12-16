@@ -578,6 +578,22 @@ const data = {
                     }
                 }
             },
+            tresor: {
+                nom: 'Trésorerie',
+                dates: {
+                    start: "Liste des mouvements du ",
+                    end: " au "
+                },
+                liste: {
+                    id: "Id",
+                    date: "Date",
+                    origine: "Origine",
+                    destination: "Dest.",
+                    debit: "Débit",
+                    credit: "Crédit",
+                    type: "Type"
+                }
+            },
             listeclotures: {
                 nom: "Liste Clotures",
                 dates: {
@@ -777,6 +793,7 @@ const data = {
                                 menu: "Accès Menu",
                                 menu_prix: "Menu Modif Prix",
                                 cloture: "Accès Clôture",
+                                tresor: "Mouvements Trésorerie",
                                 marketing: "Accès Marketing",
                                 depenses: "Accès Dépenses",
                                 employes: "Accès Employés",
@@ -803,6 +820,7 @@ const data = {
                                 menu: "Accès Menu",
                                 menu_prix: "Menu Modif Prix",
                                 cloture: "Accès Clôture",
+                                tresor: "Mouvements Tréso.",
                                 marketing: "Accès Marketing",
                                 depenses: "Accès Dépenses",
                                 employes: "Accès Employés",
