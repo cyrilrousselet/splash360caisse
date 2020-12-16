@@ -22,7 +22,9 @@ class LabelledField extends React.Component {
 
   handleKeyup(event) {
     if (event.keyCode===13) {
-      this.props.onSubmit(this.props.name, event.target.value);
+      if (this.props.onSubmit) {
+        this.props.onSubmit(this.props.name, event.target.value);
+      }
     }
   }
   
