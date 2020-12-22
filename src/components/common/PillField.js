@@ -25,7 +25,8 @@ class PillField extends Component {
     return(
       <div className={ `PillField ${this.props.className}` }>
         { this.props.charNum && (<div className="placeholder num" data-num={this.props.charNum}>{ placeholder }</div> ) }
-        <input type={ this.props.type } value={ this.props.value } readOnly />
+        { !this.props.static && (<input type={ this.props.type } value={ this.props.value } readOnly /> )}
+        { this.props.static && (<div className="field">{ this.props.value }</div> )}
         <div className={ `innerButton btn-${this.props.innerButton}` } onClick={() => { this.props.innerButtonHandler() }}></div>
       </div>
     );

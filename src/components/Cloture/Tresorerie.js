@@ -20,12 +20,14 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import {devise} from '../../helpers/toolbox';
 
 
 import StdButton from '../common/StdButton';
-// import { Modal, Fab } from '@material-ui/core';
-// import CloseIcon from '../common/icon/CloseIcon';
 // import PageviewIcon from '@material-ui/icons/Pageview';
+
+import MouvementPopin from './MouvementPopin';
+import { dateBounds } from '../../helpers/toolbox';
 
 import Logger from '../../helpers/Logger';
 // import {devise} from '../../helpers/toolbox';
@@ -45,16 +47,43 @@ class LocalizedUtils extends DateFnsUtils {
 
 
 function TableMouvements(props) {
-  const { liste, id, openMouvementId } = props;
+  const { liste, id, openMouvementId, caisses } = props;
 
 
-
+  let _mouvements = [];
   if (liste) {
+    _mouvements = Object.values(liste).map((m) => m);
 
-    Object.values(liste).sort((a,b) => {
+    _mouvements.sort((a,b) => {
       let da = new Date(a.createdAt), db = new Date(b.createdAt);
       return compareAsc(da, db);
     });
+  }
+
+  const _getNomCaisse = (id) => {
+    const csh = caisses.find((c) => c.uniqid === id);
+    if (csh) {
+      return csh.nom;
+    } else {
+      return id;
+    }
+  }
+
+  let _prevSolde = 0;
+
+  const _calculeSolde = (mvt) => {
+
+    if (mvt.type==="ouverture") {
+      _prevSolde = mvt.montant;
+    } else {
+      _prevSolde += mvt.credit;
+      _prevSolde -= mvt.debit;
+    }
+    return _prevSolde;
+  }
+
+  const _hasEcart = (mvt) => {
+    return (mvt.type==="ouverture" && (mvt.credit>0 || mvt.debit>0));
   }
 
   return (
@@ -62,25 +91,27 @@ function TableMouvements(props) {
       <Table size="small" key={id} aria-label="a dense table" stickyHeader>
         <TableHead>
           <TableRow>
-            <TableCell key={`${id}-hd-id`} className="liste-id">{ strings.modules.tresor.liste.id }</TableCell>
+            {/* <TableCell key={`${id}-hd-id`} className="liste-id">{ strings.modules.tresor.liste.id }</TableCell> */}
             <TableCell key={`${id}-hd-date`} className="liste-date">{ strings.modules.tresor.liste.date }</TableCell>
             <TableCell key={`${id}-hd-origine`} className="liste-origine">{ strings.modules.tresor.liste.origine }</TableCell>
             <TableCell key={`${id}-hd-destination`} className="liste-destination">{ strings.modules.tresor.liste.destination }</TableCell>
             <TableCell key={`${id}-hd-debit`} className="liste-debit">{ strings.modules.tresor.liste.debit }</TableCell>
             <TableCell key={`${id}-hd-credit`} className="liste-credit">{ strings.modules.tresor.liste.credit }</TableCell>
+            <TableCell key={`${id}-hd-montant`} className="liste-montant">{ strings.modules.tresor.liste.montant }</TableCell>
             <TableCell key={`${id}-hd-type`} className="liste-type">{ strings.modules.tresor.liste.type }</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {Object.values(liste).map((row, i) => (
-            <TableRow key={row.id} className={ `${(i%2)?'odd':'even'}` } onClick={ () => { openMouvementId(row.tresorId)} }>
-              <TableCell key={`${row.id}-id`} className="liste-id">{ row.tresorId }</TableCell>
-              <TableCell key={`${row.id}-date`} className="liste-debut">{ format(new Date(row.createdAt), "d MMM yyyy à HH:mm", { locale: frLocale }) }</TableCell>
-              <TableCell key={`${row.id}-origine`} className="liste-fin">{ row.origine }</TableCell>
-              <TableCell key={`${row.id}-destination`} className="liste-ht">{ row.destination }</TableCell>
-              <TableCell key={`${row.id}-debit`} className="liste-ventes">{ `${row.debit} €` }</TableCell>
-              <TableCell key={`${row.id}-credit`} className="liste-nombre">{ `${row.credit} €` }</TableCell>
-              <TableCell key={`${row.id}-type`} className="liste-actions">{ row.type }</TableCell>
+          {_mouvements.map((row, i) => (
+            <TableRow key={row.id} className={ `${(i%2)?'odd':'even'} type-${row.type} ${_hasEcart(row) && 'ecart'}` } onClick={ () => { openMouvementId(row.tresorId)} }>
+              {/* <TableCell key={`${row.id}-id`} className="liste-id">{ row.tresorId }</TableCell> */}
+              <TableCell key={`${row.id}-date`} className="liste-date">{ format(new Date(row.createdAt), "d MMM yyyy à HH:mm", { locale: frLocale }) }</TableCell>
+              <TableCell key={`${row.id}-origine`} className="liste-origine">{ ((["cloture","sortie"]).includes(row.type))? _getNomCaisse(row.origine) : row.origine }</TableCell>
+              <TableCell key={`${row.id}-destination`} className="liste-destination">{ ((["ouverture","entree"]).includes(row.type))? _getNomCaisse(row.destination) : row.destination }</TableCell>
+              <TableCell key={`${row.id}-debit`} className="liste-debit">{ (row.type==="ouverture") ? (row.debit>0 ? `- ${devise(row.debit/100)} €` : '') : `- ${devise(row.debit/100)} €` }</TableCell>
+              <TableCell key={`${row.id}-credit`} className="liste-credit">{ (row.type==="ouverture") ? (row.credit>0 ? `+ ${devise(row.credit/100)} €` : '') : `+ ${devise(row.credit/100)} €` }</TableCell>
+              <TableCell key={`${row.id}-montant`} className="liste-montant">{ `${devise(_calculeSolde(row)/100)} €` }</TableCell>
+              <TableCell key={`${row.id}-type`} className="liste-type">{ strings.modules.tresor.types[row.type] }</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -90,44 +121,100 @@ function TableMouvements(props) {
 } 
 
 
-
-
-
 class Tresorerie extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      mouvement: null,
-      mouvementId: null
-    }
-    this.openMouvement = this.openMouvement.bind(this);
+    this.newMouvement = this.newMouvement.bind(this);
     this.openMouvementId = this.openMouvementId.bind(this);
+    this.closeMouvement = this.closeMouvement.bind(this);
+    this.saveMouvement = this.saveMouvement.bind(this);
+    this.setSelectedDate = this.setSelectedDate.bind(this);
+    this.getBoundedMouvementsList = this.getBoundedMouvementsList.bind(this);
+
+    const {heure_fin} = props;
+    const __todayBounds = dateBounds(new Date(), heure_fin);
+
+    this.state = {
+      startDate: __todayBounds.debut,
+      endDate: __todayBounds.fin,
+      mouvement: null,
+      mouvementType: null,
+      mouvementOpen: false,
+    }
   }
 
-  openMouvement(mouvement) {
-    this.setState({mouvement: mouvement, mouvementOpen: true});
+  componentDidMount() {
+    logger.log('Tresorerie.componentDidMount()');
+    const {caisse, getLastOuvertureAndAfter} = this.props;
+    getLastOuvertureAndAfter(caisse.uniqid);
+  }
+
+
+
+  getBoundedMouvementsList(start, end) {
+
+    const {startDate, endDate} = this.state;
+
+    this.props.getTresors({
+      $and: [
+        {createdAt: { $gt: start || startDate } }, 
+        {createdAt: { $lte: end || endDate } }
+      ]});
+  }
+
+  setSelectedDate(bound,date) {
+    const { startDate, endDate } = this.state;
+    const {heure_fin} = this.props;
+    const __bd = dateBounds(date, heure_fin);
+    
+    let d = startDate;
+    let f = endDate;
+
+    if (bound==='start') {
+      d = (date<=endDate)?__bd.debut:endDate;
+      this.setState({startDate: d});
+    }
+    if (bound==='end') {
+      f = (date>=startDate)?__bd.fin:startDate;
+      this.setState({endDate:f});
+    }
+
+    console.log(
+      'setSelectedDate('+bound+')', 
+      '('+format(d, "dd/MM/yyyy HH:mm")+' -> '+format(f, "dd/MM/yyyy HH:mm")+')'
+    );
+
+    this.getBoundedMouvementsList(d,f);
+  }
+
+
+  newMouvement(type) {
+    this.setState({mouvement: null, mouvementOpen: true, mouvementType: type});
   }
   openMouvementId(mvtid) {
     const mouvement = this.props.mouvements[mvtid];
     if (mouvement) {
-      this.setState({mouvementId: mvtid, mouvement: mouvement, mouvementOpen: true});
+      this.setState({mouvement: mouvement, mouvementOpen: true, mouvementType: 'view'});
     } else {
       logger.error('Tresorerie.openMouvementId()', `mouvement mouvementId=${mvtid} inconnue`);
     }
   }
 
-  closeCloture() {
-    this.setState({clotureId: null, cloture:null, clotureOpen: false});
+  closeMouvement() {
+    this.setState({mouvement: null, mouvementOpen: false, mouvementType: null});
   }
 
+  saveMouvement(mouvement) {
+    this.props.addTresor(mouvement);
+    this.closeMouvement();
+  }
 
 
   render() {
 
-    logger.log('tresorerie');
-
-    const { mouvements } = this.props;
+    const { mouvements, caisses } = this.props;
+    const { mouvement, mouvementOpen, mouvementType } = this.state;
     const startDate = new Date();
     const endDate = new Date();
 
@@ -163,10 +250,26 @@ class Tresorerie extends React.Component {
                   />
               </MuiPickersUtilsProvider>
             </div>
-            {/* <StdButton identifier="btnsynthese" elementclass="btnsynthese" key="btnsynthese" text={ strings.modules.listeclotures.actions.synthese } onClick={ () => { this.getSynthese(clotures) }} /> */}
+            <StdButton identifier="btnentree" elementclass="btnentree" key="btnentree" text={ strings.modules.tresor.actions.entree } onClick={ () => { this.newMouvement('entree') }} />
+            <StdButton identifier="btnsortie" elementclass="btnsortie" key="btnsortie" text={ strings.modules.tresor.actions.sortie } onClick={ () => { this.newMouvement('sortie') }} />
           </div>
-          <TableMouvements className="liste-mouvements" id="liste-mouvements" openMouvementId={ this.openMouvementId } liste={mouvements} />
+          <TableMouvements 
+            className="liste-mouvements" 
+            id="liste-mouvements" 
+            openMouvementId={ this.openMouvementId } 
+            liste={mouvements}
+            caisses={ caisses } 
+          />
         </div>
+        <MouvementPopin 
+          open={ mouvementOpen } 
+          type={ mouvementType } 
+          mouvement={ mouvement } 
+          caisse={ null }
+          caisses={ caisses }
+          closeHandler={ this.closeMouvement }
+          saveMouvement={ this.saveMouvement }
+        />
       </div>
     );
   }

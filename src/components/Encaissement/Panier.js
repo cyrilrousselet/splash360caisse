@@ -27,6 +27,7 @@ import CommentRemoveIcon from '../common/icon/CommentRemoveIcon';
 import NumberKeyboard from '../common/NumberKeyboard';
 
 import { decodetable } from '../../constants/decodetable';
+import MouvementPopin from '../Cloture/MouvementPopin';
 
 let strings = new LocalizedStrings(data);
 const logger = new Logger();
@@ -89,6 +90,7 @@ class BipperModal extends React.Component {
     const { bipperId } = this.state;
 
     const bipperVal = bipperId!==null ? bipperId : ((bipper!==null && bipper!==undefined ) ? bipper : '');
+
 
     return (
       <Modal
@@ -456,7 +458,9 @@ class Panier extends React.Component {
       actualInput: null,
       inputValue: '',
       tablesOpen: false,
-      bippersOpen: false
+      bippersOpen: false,
+      ouvertureOpen: false,
+      lastCloture: null
     }
     this.setSelectedIndex = this.setSelectedIndex.bind(this);
     this.setSelectedIngredient = this.setSelectedIngredient.bind(this);
@@ -485,6 +489,11 @@ class Panier extends React.Component {
     this.closeBippers = this.closeBippers.bind(this);
     this.selectBipper = this.selectBipper.bind(this);
 
+    this.testOuverture = this.testOuverture.bind(this);
+    this.openOuverture = this.openOuverture.bind(this);
+    this.closeOuverture = this.closeOuverture.bind(this);
+    this.addOuverture = this.addOuverture.bind(this);
+
   }
 
   lock = false;
@@ -497,7 +506,9 @@ class Panier extends React.Component {
     getParametres();    
     getClientsList();
     getSallesList();
+    this.testOuverture();
     this.listewrapper.scrollTop = this.listewrapper.scrollHeight;
+    
   }
   componentDidUpdate() {
     const { items } = this.props.commande;
@@ -552,6 +563,53 @@ class Panier extends React.Component {
 
     // liste panier se cale en bas (sur le dernier produit ajouté)
     this.listewrapper.scrollTop = this.listewrapper.scrollHeight;
+  }
+
+
+  /**
+   * S
+   */
+  testOuverture() {
+    const {getLastClotureAndAfter, parametres} = this.props;
+
+    if (parametres.financier.fonddecaisse_activation) {
+      
+      const { caisse } = parametres.options;
+
+      getLastClotureAndAfter({caisseId:caisse.uniqid}).then(
+        result => {
+          logger.log('Panier.testOuverture()', result);
+
+          if (result && result.hasOwnProperty('cloture') && result.cloture!==null) {
+            if (result.hasOwnProperty('ouverture') && result.ouverture) {
+              logger.log('IL Y A UNE CLOTURE et une ouverture');
+            } else {
+              logger.log('IL Y A UNE CLOTURE et PAS D’OUVERTURE -> POPIN');
+              this.setState({ lastCloture: result.cloture });
+              this.openOuverture();
+            }
+          } else if (!result.ouverture) {
+            logger.log('IL N’Y A PAS DE CLOTURE et PAS D’OUVERTURE -> POPIN');
+            this.openOuverture();
+          }
+        }
+      );
+    }
+  }
+
+  openOuverture() {
+    this.setState({ ouvertureOpen: true });
+  }
+
+  closeOuverture() {
+    this.setState({ ouvertureOpen: false });
+  }
+  addOuverture(payload) {
+
+    logger.log('addOuverture', payload);
+
+    this.props.addTresor(payload);
+    this.closeOuverture();
   }
 
   setSelectedIndex(index) {
@@ -867,7 +925,10 @@ class Panier extends React.Component {
             parametres, 
             deleteComment,
             deleteDiscount,
-            clients } = this.props;
+            clients,
+            caisse, 
+            // caisses,
+           } = this.props;
 
     const { comments, modificateurs, items, ticketId, mode, client, bipper } = this.props.commande;
     
@@ -876,7 +937,10 @@ class Panier extends React.Component {
            discountOpen, discountId, discountItemId, discountIngredientId,
            ficheClientOpen,
            clavierOpen,
-           bippersOpen } = this.state;
+           bippersOpen,
+           ouvertureOpen,
+           lastCloture,
+          } = this.state;
 
     // récup du texte en fonction de l'id du commentaire (s'il est défini)
     let commentTexte = (commentId!==null) ? comments.find(cmt=>cmt.comment_id===commentId).texte : '';
@@ -1274,6 +1338,16 @@ class Panier extends React.Component {
           bipper={bipper}
           />
         <FicheClientCont open={ficheClientOpen} clavierOpen={ clavierOpen } client={commandeClient} mode={commandeClient?'fiche':'recherche'} contexte="encaissement" closeHandler={this.closeFicheClient} selectClient={this.selectClient} />
+
+        <MouvementPopin 
+          open={ ouvertureOpen } 
+          type={ "ouverture" } 
+          mouvement={ lastCloture && {lastMontant:lastCloture.montant, lastCreatedAt:lastCloture.createdAt} } 
+          caisse={ caisse }
+          caisses={ [] }
+          closeHandler={ this.closeOuverture }
+          saveMouvement={ this.addOuverture }
+        />
       </div>
     );
   }

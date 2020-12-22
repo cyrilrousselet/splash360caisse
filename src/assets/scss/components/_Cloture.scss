@@ -1,4 +1,55 @@
+
+.CloturesHome {
+
+  .CloturesHome-sommaire {
+
+    .titre {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-family: $f_blk;
+      color: $noir;
+      font-size: 20px;    padding-bottom: 50px;
+
+
+      .LargeButton {
+
+        background-color: #FE485F;
+        .LargeButton-icon {
+            background-image: url('./../../images/ico_cloture.svg');
+        }
+     }
+
+    }
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+    align-items: flex-start;
+    height: 100%;
+  }
+
+
+  .sommaire-item {
+    text-align: center;
+    width: 30%;
+    padding: 5px 0;
+    .LargeButton {
+      background-color: $primary;
+      .LargeButton-text {
+        color: $noir;
+      }
+    }
+  }
+
+}
+
 .Cloture {
+  &.container {
+    height: 100%;
+  }
   .contimage {
     width: 100%;
     height: auto;
@@ -10,6 +61,8 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    height: 100%;
+    padding: 0;
   }
 
   .clo-gauche,
@@ -826,3 +879,6 @@
     user-select: none;
   }
 }
+
+
+@import './Tresorerie';

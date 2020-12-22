@@ -13,6 +13,7 @@ const hydration = {
   clients: [],
   ticketsrestau: [],
   clotures: [],
+  tresorerie: [],
   users: [],
   pointages: [],
   shifts: [],

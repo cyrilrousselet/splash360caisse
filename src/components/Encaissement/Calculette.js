@@ -14,7 +14,7 @@ class Calculette extends React.Component {
 
     return (
       <div className="Calculette">
-        <PillField type="text" innerButton="delete" charNum={ false } decimal={ 2 } value={ total.toFixed(2).replace('.',',') } innerButtonHandler={deleteHandler} />
+        <PillField type="text" innerButton="delete" static={ true } charNum={ false } decimal={ 2 } value={ total.toFixed(2).replace('.',',') } innerButtonHandler={deleteHandler} />
         {/* <PillField type="text" innerButton="delete" charNum={ false } decimal={ 2 } value={ total } innerButtonHandler={deleteHandler} /> */}
         <div className="keyboard">
             { boutons.map((btn, i) => {

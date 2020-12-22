@@ -8,6 +8,8 @@ const logger = new Logger();
 export const tresorServices = {
   createTresor,
   getTresors,
+  getLastOuvertureAndAfter,
+  getLastClotureAndAfter,
   persistTresor
 };
 
@@ -22,6 +24,7 @@ function createTresor(params) {
     destination: params.destination,
     credit: params.credit,
     debit: params.debit,
+    montant: params.montant,
     type: params.type,
     detail: params.detail
   }
@@ -29,11 +32,29 @@ function createTresor(params) {
 
 function getTresors(params) {
   logger.log('getTresors()',params);
-  return emit( "dbTresorerieGetTresor", params );
+  return emit( "dbTresorerieGet", params );
 }
 
+/**
+ * Retourne la liste de la dernière ouverture et des mouvements suivants
+ * ou bien la liste des mouvements du jour si aucune ouverture n'est trouvée
+ * pour une caisse donnée
+ * 
+ * @param {caisseId, createdAt} params 
+ */
+function getLastOuvertureAndAfter(params) {
+  logger.log('getLastOuvertureAndAfter()', params);
+  return emit( "dbTresorerieLastOuvertureAndAfter", params );
+}
+
+function getLastClotureAndAfter(params) {
+  logger.log('getLastClotureAndAfter', params);
+  return emit( "dbTresorerieLastClotureAndAfter", params );
+}
+
+
 function persistTresor(tresor) {
-  return emit( "dbTresoreriePersistTresor", { tresor: tresor } );
+  return emit( "dbTresoreriePersist", { tresor: tresor } );
 }
 
 function _getTresorId() {

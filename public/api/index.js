@@ -12,6 +12,7 @@ const dbMarketingApi = require("./dbMarketingApi.js");
 const dbUsersApi = require("./dbUsersApi.js");
 const dbClientsApi = require("./dbClientsApi.js");
 const dbTableApi = require("./dbTableApi.js");
+const dbTresorerieApi = require("./dbTresorerieApi.js");
 
 const peripheralApi = require("./peripheralApi.js");
 const server = require("./server.js");
@@ -32,6 +33,7 @@ setupMainHandler(
     ...dbClientsApi,
     ...dbTableApi,
     ...peripheralApi,
+    ...dbTresorerieApi,
     ...server,
     ...sse,
     ...kds,

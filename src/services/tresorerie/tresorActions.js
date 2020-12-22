@@ -1,5 +1,6 @@
 import { tresorActionTypes } from "./tresorActionTypes";
 import { tresorServices } from "./tresorServices";
+import { dateBounds } from "../../helpers/toolbox";
 
 import { notificationActions } from '../notification/notificationActions';
 
@@ -18,16 +19,12 @@ function addTresor(payload) {
 
     const params = {
       ...payload,
-      user: { 
-        id: user.id,
-        nom: user.nom,
-        user_id: user.user_id
-      }
+      user: user.user_id
     };
 
     const tresor = tresorServices.createTresor(params);
 
-    tresorServices.saveTresor(tresor).then(
+    tresorServices.persistTresor(tresor).then(
       data => {
         dispatch({
           type: tresorActionTypes.ADD_SUCCESS,
@@ -44,6 +41,46 @@ function addTresor(payload) {
 
 
 
+function getLastOuvertureAndAfter(caisseId) {
+  return (dispatch, getState) => {
+
+    logger.log("TrsA.getLastOuvertureAndAfter()");
+    const { heure_fin } = getState().parametresReducer.parametres.entreprise;
+
+    // *** définition de la fin de la période précédente
+    const __periode_bounds = dateBounds(new Date(), heure_fin);
+
+    dispatch({
+      type: tresorActionTypes.GET_LASTOUVERTUREANDAFTER_REQUEST,
+      params: {
+        createdAt: __periode_bounds.debut,
+        caisseId: caisseId
+      }
+    });
+
+    tresorServices.getLastOuvertureAndAfter({
+      createdAt: __periode_bounds.debut,
+      caisseId: caisseId
+    }).then(
+      data => { 
+        dispatch({ 
+          type: tresorActionTypes.GET_LASTOUVERTUREANDAFTER_SUCCESS, 
+          ...data
+        }); 
+      },
+    )
+    .catch(
+      error => { 
+        dispatch({ type: tresorActionTypes.GET_LASTOUVERTUREANDAFTER_FAILURE, error: error.toString() }) }
+    );
+
+
+  }
+}
+
+
+
+
 function getTresors(params={}) {
 
   return dispatch => {
@@ -53,7 +90,7 @@ function getTresors(params={}) {
       data => { 
         dispatch({ 
           type: tresorActionTypes.GET_SUCCESS, 
-          tresors: data
+          ...data
         }); 
       },
     )
@@ -71,7 +108,7 @@ function updateTresor(payload) {
 
     dispatch({ type: tresorActionTypes.UPDATE_REQUEST });
 
-    tresorServices.saveTresor(payload).then(
+    tresorServices.persistTresor(payload).then(
 
       data => {
  
@@ -114,6 +151,7 @@ function setTresorFromSync(tresor) {
 
 export const tresorActions = {
   addTresor,
+  getLastOuvertureAndAfter,
   getTresors,
   updateTresor,
   setTresorFromSync

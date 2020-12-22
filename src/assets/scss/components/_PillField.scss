@@ -6,7 +6,8 @@
     padding-right: 20px;
     background: $blanc-fonce;
     border-radius: 25px;
-    input {
+    input,
+    .field {
         background-color: transparent;
         height: 50px;
         margin-top: -50px;
@@ -19,6 +20,9 @@
         letter-spacing: 0.4em;
         width: 150px;
         position: relative;
+        line-height: 50px;
+        display: inline-block;
+      //  text-align: right;
         &:focus {
             outline: none;
         }

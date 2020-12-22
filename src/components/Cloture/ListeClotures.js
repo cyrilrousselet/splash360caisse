@@ -241,7 +241,7 @@ function TableClotures(props) {
       <Table size="small" key={id} aria-label="a dense table" stickyHeader>
         <TableHead>
           <TableRow>
-            <TableCell key={`${id}-hd-id`} className="liste-id">{ strings.modules.listeclotures.liste.id }</TableCell>
+            <TableCell key={`${id}-hd-date`} className="liste-date">{ strings.modules.listeclotures.liste.date }</TableCell>
             <TableCell key={`${id}-hd-debut`} className="liste-debut">{ strings.modules.listeclotures.liste.debut }</TableCell>
             <TableCell key={`${id}-hd-fin`} className="liste-fin">{ strings.modules.listeclotures.liste.fin }</TableCell>
             <TableCell key={`${id}-hd-ht`} className="liste-ht">{ strings.modules.listeclotures.liste.ht }</TableCell>
@@ -253,7 +253,7 @@ function TableClotures(props) {
         <TableBody>
           {liste.map((row, i) => (
             <TableRow key={row.id} className={ `${(i%2)?'odd':'even'}` }>
-              <TableCell key={`${row.id}-id`} className="liste-id">{ row.cloture.clotureId }</TableCell>
+              <TableCell key={`${row.id}-date`} className="liste-date">{ format(new Date(row.date), "d MMM yyyy à HH:mm", { locale: frLocale }) }</TableCell>
               <TableCell key={`${row.id}-debut`} className="liste-debut">{ format(new Date(row.cloture.debut), "d MMM yyyy à HH:mm", { locale: frLocale }) }</TableCell>
               <TableCell key={`${row.id}-fin`} className="liste-fin">{ format(new Date(row.cloture.fin), "d MMM yyyy à HH:mm", { locale: frLocale }) }</TableCell>
               <TableCell key={`${row.id}-ht`} className="liste-ht">{ `${row.cloture.ht} €` }</TableCell>
@@ -547,6 +547,7 @@ class ListeClotures extends React.Component {
           
           clotures.push({
             id:key,
+            date: value.createdAt,
             cloture: {
               clotureId: value.clotureId,
               debut: value.periode.debut,

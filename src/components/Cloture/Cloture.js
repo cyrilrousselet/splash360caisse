@@ -11,6 +11,7 @@ import {
   parseJSON,
   startOfDay,
   startOfToday,
+  compareAsc
 } from "date-fns";
 import frLocale from "date-fns/locale/fr";
 import React from "react";
@@ -18,7 +19,6 @@ import LocalizedStrings from "react-localization";
 import Swal from "sweetalert2";
 import paths from "../../constants/routes";
 import { data } from "../../constants/translations";
-import TopZone from "../../containers/TopZone";
 import history from "../../helpers/history";
 import Logger from "../../helpers/Logger";
 import NumberKeyboard from "../common/NumberKeyboard";
@@ -72,10 +72,11 @@ class Cloture extends React.Component {
     this.prepareCloture = this.prepareCloture.bind(this);
     this.printLastCloture = this.printLastCloture.bind(this);
     this.setSelectedDate = this.setSelectedDate.bind(this);
+    this.calculeFondDeCaisse = this.calculeFondDeCaisse.bind(this);
   }
 
   componentDidMount() {
-    const { getCurrentPeriode, getLastCloture, getCommandesList } = this.props;
+    const { caisse, getCurrentPeriode, getLastCloture, getCommandesList, getLastOuvertureAndAfter } = this.props;
     getCommandesList({
       $and: [
         { archived: undefined },
@@ -86,6 +87,8 @@ class Cloture extends React.Component {
         ]}
       ]
     });
+    getLastOuvertureAndAfter(caisse.uniqid);
+
     //parametres :
     let params = {};
     const {
@@ -273,9 +276,23 @@ class Cloture extends React.Component {
         cancelButtonText: strings.general.dialog.cancel,
         buttonsStyling: false,
       }).then((result) => {
+        this.props.addTresor({
+          type: "cloture",
+          origine: this.props.caisse.uniqid,
+          destination: "Coffre",
+          debit: prelevement*100,
+          credit: 0
+        });
         this.props.makeCloture(params);
       });
     } else {
+      this.props.addTresor({
+        type: "cloture",
+        origine: this.props.caisse.uniqid,
+        destination: "Coffre",
+        debit: prelevement*100,
+        credit: 0
+      });
       this.props.makeCloture(params);
     }
   }
@@ -303,6 +320,33 @@ class Cloture extends React.Component {
     return format(parseJSON(date), dateFormat);
   };
 
+  calculeFondDeCaisse() {
+
+    const { mouvements } = this.props;
+
+    let fdc = 0;
+    let _mouvements = [];
+    if (mouvements) {
+      _mouvements = Object.values(mouvements).map((m) => m);
+
+      _mouvements.sort((a,b) => {
+        let da = new Date(a.createdAt), db = new Date(b.createdAt);
+        return compareAsc(da, db);
+      });
+    
+      _mouvements.forEach(mvt => {
+        if (mvt.type==="ouverture") {
+          fdc = mvt.montant;
+        } else {
+          fdc += mvt.credit;
+          fdc -= mvt.debit;
+        }
+      });
+    }
+
+    return fdc / 100;
+  }
+
   render() {
     const {
       periode,
@@ -327,11 +371,13 @@ class Cloture extends React.Component {
       endDate,
     } = this.state;
 
+    const fonddecaisse = this.calculeFondDeCaisse();
+
     let params = {
       user: periode.editeur,
       caisses: [],
       vendeurs: [],
-      fdcaisse: fonddecaissetheo,
+      fdcaisse: fonddecaisse,
       debut: startDate,
       fin: endDate,
       extract: "z",
@@ -425,7 +471,7 @@ class Cloture extends React.Component {
 
     return (
       <div className="Cloture container">
-        <TopZone />
+        {/* <TopZone /> */}
         <div className="MainZone">
           <div className="clo-gauche">
             <div className="blocgauche">

@@ -16,11 +16,12 @@ export function tresorReducer(state = initialState, action) {
 
 
     case tresorActionTypes.GET_SUCCESS:
+    case tresorActionTypes.GET_LASTOUVERTUREANDAFTER_SUCCESS:
       return {
         ...state,
         loading: false,
         error: null,
-        tresors: action.tresors
+        tresors: action.tresorslist
       };
 
 

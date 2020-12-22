@@ -581,7 +581,7 @@ const data = {
             tresor: {
                 nom: 'Trésorerie',
                 dates: {
-                    start: "Liste des mouvements du ",
+                    start: "Mouvements du ",
                     end: " au "
                 },
                 liste: {
@@ -591,7 +591,57 @@ const data = {
                     destination: "Dest.",
                     debit: "Débit",
                     credit: "Crédit",
+                    montant: "Solde",
                     type: "Type"
+                },
+                types: {
+                    entree: "Entrée",
+                    sortie: "Prélèvement",
+                    ouverture: "Ouv. Caisse",
+                    cloture: "Prélèv. Clôture"
+                },
+                actions: {
+                    entree: "Entrée",
+                    sortie: "Prélèvement",
+                    ouverture: "Ouverture de caisse",
+                    cloture: "Prélèvement en clôture",
+                },
+                popin: {
+                    view: {
+                        titre: "Mouvement",
+                        origine: "Origine",
+                        destination: "Destination",
+                        debit: "Débit",
+                        credit: "Crédit",
+                        montant: "Nouveau montant"
+                    },
+                    entree: {
+                        titre: "Nouvelle Entrée",
+                        caisse: "Destination :",
+                        external: "Origine :",
+                        montant: "Crédit :"
+                    },
+                    sortie: {
+                        titre: "Nouveau Prélèvement",
+                        caisse: "Origine :",
+                        external: "Destination :",
+                        montant: "Débit :",
+                    },
+                    cloture: {
+                        titre: "Prélèvement en clôture",
+                        caisse: "Origine",
+                        external: "Destination",
+                        montant: "Débit :",
+                    },
+                    ouverture: {
+                        titre: "Ouverture de caisse",
+                        montant: "Montant en caisse",
+                        caisse: "Destination :",
+                        external: "Origine :",
+                        precedent: "Montant après la dernière clôture :",
+                        none: "Aucune clôture enregistrée"
+                    },
+                    motif: "Motif :"
                 }
             },
             listeclotures: {
@@ -602,6 +652,7 @@ const data = {
                 },
                 liste: {
                     id: "Id",
+                    date: "Date",
                     debut: "Première cmd",
                     fin: "Dernière cmd",
                     ht: "Total HT",

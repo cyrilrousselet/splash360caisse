@@ -14,10 +14,23 @@ import paths from './../constants/routes.json';
 import { clientsActions } from '../services/clients/clientsActions';
 import { tableActions } from '../services/table/tableActions';
 import { numeroActions } from '../services/commande/numeroActions';
+import { tresorServices } from '../services/tresorerie/tresorServices';
+import { tresorActions } from '../services/tresorerie/tresorActions';
+
 
 const gotoListeCommandes = () => {
   history.push(paths.LISTECOMMANDES);
 }
+
+
+// const getCaisses = (state) => {
+//   const {stations} = state.parametresReducer.parametres.options;
+//   if (stations) {
+//     return stations.filter( (st) => st.origine.toLowerCase() === "caisse" );
+//   }
+//   return null;
+// }
+
 
 const mapStateToProps = (state) => {
   return {
@@ -27,7 +40,9 @@ const mapStateToProps = (state) => {
     error: getCommandeError(state),
     steps: getSteps(state),
     parametres: getParametres(state),
-    clients: state.clientsReducer.clients
+    clients: state.clientsReducer.clients,
+    caisse: state.parametresReducer.parametres.options.caisse,
+ //   caisses: getCaisses(state),
   };
 }
 
@@ -52,11 +67,13 @@ const mapDispatchToProps = (dispatch) => {
     updateDiscount: commandeActions.updateDiscount,
     deleteDiscount: commandeActions.deleteDiscount,
     getClientsList: clientsActions.getClientsList,
-    getSallesList: tableActions.getSallesList
+    getSallesList: tableActions.getSallesList,
+    addTresor: tresorActions.addTresor,
   }, dispatch);
   return {
     ...bound,
-    gotoListeCommandes: gotoListeCommandes
+    gotoListeCommandes: gotoListeCommandes,
+    getLastClotureAndAfter: tresorServices.getLastClotureAndAfter
   };
 }
 
