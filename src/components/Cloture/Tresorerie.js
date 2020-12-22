@@ -47,7 +47,8 @@ class LocalizedUtils extends DateFnsUtils {
 
 
 function TableMouvements(props) {
-  const { liste, id, openMouvementId, caisses } = props;
+  // const { liste, id, openMouvementId, caisses } = props;
+  const { liste, id, caisses } = props;
 
 
   let _mouvements = [];
@@ -103,7 +104,7 @@ function TableMouvements(props) {
         </TableHead>
         <TableBody>
           {_mouvements.map((row, i) => (
-            <TableRow key={row.id} className={ `${(i%2)?'odd':'even'} type-${row.type} ${_hasEcart(row) && 'ecart'}` } onClick={ () => { openMouvementId(row.tresorId)} }>
+            <TableRow key={row.id} className={ `${(i%2)?'odd':'even'} type-${row.type} ${_hasEcart(row) && 'ecart'}` } >
               {/* <TableCell key={`${row.id}-id`} className="liste-id">{ row.tresorId }</TableCell> */}
               <TableCell key={`${row.id}-date`} className="liste-date">{ format(new Date(row.createdAt), "d MMM yyyy à HH:mm", { locale: frLocale }) }</TableCell>
               <TableCell key={`${row.id}-origine`} className="liste-origine">{ ((["cloture","sortie"]).includes(row.type))? _getNomCaisse(row.origine) : row.origine }</TableCell>
@@ -126,7 +127,7 @@ class Tresorerie extends React.Component {
   constructor(props) {
     super(props);
     this.newMouvement = this.newMouvement.bind(this);
-    this.openMouvementId = this.openMouvementId.bind(this);
+    // this.openMouvementId = this.openMouvementId.bind(this);
     this.closeMouvement = this.closeMouvement.bind(this);
     this.saveMouvement = this.saveMouvement.bind(this);
     this.setSelectedDate = this.setSelectedDate.bind(this);
@@ -192,14 +193,14 @@ class Tresorerie extends React.Component {
   newMouvement(type) {
     this.setState({mouvement: null, mouvementOpen: true, mouvementType: type});
   }
-  openMouvementId(mvtid) {
-    const mouvement = this.props.mouvements[mvtid];
-    if (mouvement) {
-      this.setState({mouvement: mouvement, mouvementOpen: true, mouvementType: 'view'});
-    } else {
-      logger.error('Tresorerie.openMouvementId()', `mouvement mouvementId=${mvtid} inconnue`);
-    }
-  }
+  // openMouvementId(mvtid) {
+  //   const mouvement = this.props.mouvements[mvtid];
+  //   if (mouvement) {
+  //     this.setState({mouvement: mouvement, mouvementOpen: true, mouvementType: 'view'});
+  //   } else {
+  //     logger.error('Tresorerie.openMouvementId()', `mouvement mouvementId=${mvtid} inconnue`);
+  //   }
+  // }
 
   closeMouvement() {
     this.setState({mouvement: null, mouvementOpen: false, mouvementType: null});
@@ -256,7 +257,7 @@ class Tresorerie extends React.Component {
           <TableMouvements 
             className="liste-mouvements" 
             id="liste-mouvements" 
-            openMouvementId={ this.openMouvementId } 
+            // openMouvementId={ this.openMouvementId } 
             liste={mouvements}
             caisses={ caisses } 
           />

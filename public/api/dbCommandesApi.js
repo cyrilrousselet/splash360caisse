@@ -163,7 +163,7 @@ async function _getCommandesToSync(limit = null) {
   _cmd = _cmd.map((c) => ({ ...c._doc, _id: undefined, __v: undefined }));
 
   // log.info("Commandes: ", JSON.stringify(_cmd));
-  await mongo.disconnect();
+  // await mongo.disconnect();
 
   const ids = _cmd.map((c) => c.ticketId);
 
@@ -191,9 +191,9 @@ async function _getCommandes(criteriae = {}) {
   // const _rawdata = (await CommandeModel.find(__criteriae)).values();
   const _rawdata = await CommandeModel.find( criteriae ).exec();
  
-  log.info('_getCommandes', _rawdata);
+//  log.info('_getCommandes', _rawdata);
  
-  await mongo.disconnect();
+  // await mongo.disconnect();
   return  _parseCommandes(_rawdata);
 }
 
@@ -204,7 +204,7 @@ async function _findCommande(criteriae = {}) {
   log.info(criteriae);
   const mongo = await connect();
   const _cmd = await CommandeModel.find(criteriae).exec();
-  await mongo.disconnect();
+  // await mongo.disconnect();
   return _cmd;
 }
 
@@ -230,7 +230,7 @@ async function _persistCommande(payload) {
     _cmd = _cmd._doc;
   }
 
-  await mongo.disconnect();
+  // await mongo.disconnect();
   return _cmd;
 }
 
@@ -259,7 +259,7 @@ async function _deleteCommande(ticketId, motif) {
     _cmd = _cmds[0]._doc;
   }
 
-  await mongo.disconnect();
+  // await mongo.disconnect();
   return _cmd;
 }
 
@@ -291,7 +291,6 @@ async function _setSynced(ids, datetime) {
   }
 
   const __datetime = new Date(datetime).getTime();
-  log.info("datetime", __datetime);
 
   const _cmd = await _findCommande({ id: { $in: ids } });
 
@@ -303,7 +302,7 @@ async function _setSynced(ids, datetime) {
 
     delete doc._id;
     await CommandeModel.update({ ticketId: doc.ticketId }, doc).exec();
-    log.info("Commande synced: ", doc);
+  //  log.info("Commande synced: ", doc);
   });
 
   return _cmd != null;
@@ -403,7 +402,7 @@ async function _insertTicketRestau(payload) {
     .get("ticketsrestau")
     .insert(__ins)
     .write();
-  log.info("new tr", _tr);
+  // log.info("new tr", _tr);
   return _tr;
 }
 

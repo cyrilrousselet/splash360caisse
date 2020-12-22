@@ -513,7 +513,7 @@ const actions = {
 
   // lancement du webservice (si la caisse est "primary")
   syncStartPrimary: (req, res) => {
-    log.info("Start sync service oon primary ...");
+    log.info("Start sync service on primary ...");
     sync_server.use(cors({ origin: "*" }));
 
     io.on("connection", (sock) => {

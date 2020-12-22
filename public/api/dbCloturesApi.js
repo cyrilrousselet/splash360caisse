@@ -87,7 +87,7 @@ const actions = {
 async function _getLast() {
   const mongo = await connect();
   const __rawdata = await ClotureModel.find().sort({createdAt: -1}).limit(1);
-  await mongo.disconnect();
+  // await mongo.disconnect();
   return _parseCloture(__rawdata);
   //return _cloture; 
 }
@@ -138,7 +138,7 @@ async function _findBoundedClotures(start, end) {
         {createdAt: { $lte: end } }
       ]
     }).exec();
-    await mongo.disconnect();
+    // await mongo.disconnect();
     return _parseCloture(__rawdata);
 }
 
@@ -151,7 +151,7 @@ async function _findCloture(criteriae = {}) {
   log.info(criteriae);
   const mongo = await connect();
   const _cloture = await ClotureModel.find(criteriae).exec();
-  await mongo.disconnect();
+  // await mongo.disconnect();
   return _cloture;
 }
 
@@ -176,7 +176,7 @@ async function _persistCloture(payload) {
     _clo = await ClotureModel.create(__ins);
   }
 
-  await mongo.disconnect();
+  // await mongo.disconnect();
   return _clo;
 }
 
@@ -209,7 +209,7 @@ async function _getCloturesToSync(limit = null) {
     __v: undefined,
   }));
 
-  await mongo.disconnect();
+  // await mongo.disconnect();
   return { clotures };
 }
 

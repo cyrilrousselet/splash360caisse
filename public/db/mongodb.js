@@ -1,4 +1,7 @@
 const mongoose = require("mongoose");
+const log = require("electron-log");
+
+let db = null;
 
 async function connect() {
   const mongooseOpts = {
@@ -6,16 +9,27 @@ async function connect() {
     autoReconnect: true,
     reconnectTries: Number.MAX_VALUE,
     reconnectInterval: 1000,
+    // useUnifiedTopology: true,
     poolSize: 10,
   };
 
-  const db = mongoose.connect("mongodb://localhost/splash", mongooseOpts);
-
+  log.info('cnx', mongoose.connection!==null);
+  
+  if (db===null) {
+    db = mongoose.connect("mongodb://localhost/splash", mongooseOpts);
+  } else {
+    return db;
+  }
+  
   mongoose.connection.on("error", function () {
-    console.error("Canot connect to mongo: ", error);
+    console.error("Cannot connect to mongo: ", error);
   });
 
-  return db;
+  mongoose.connection.on("connected", function() {
+    return db;
+  });
+
+  // return db;
 }
 
 module.exports = connect;

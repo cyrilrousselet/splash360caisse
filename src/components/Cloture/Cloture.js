@@ -354,7 +354,7 @@ class Cloture extends React.Component {
       printPeriodeX,
       listeCommandes,
       catalogue,
-      fonddecaissetheo,
+     // fonddecaissetheo,
     } = this.props;
 
     const {
@@ -783,10 +783,10 @@ class Cloture extends React.Component {
                   </div>
                 </div>
 
-                <div key={`fonddecaisse-theo`} className="valeur-input">
+                {/* <div key={`fonddecaisse-theo`} className="valeur-input">
                   <label>{strings.modules.cloture.fondcaisse_default}</label>
                   <div className="input">{`${devise(fonddecaissetheo)} €`}</div>
-                </div>
+                </div> */}
 
                 <div
                   className="prelevementField editable"

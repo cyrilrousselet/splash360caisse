@@ -138,7 +138,7 @@ async function _findTresors(criteriae = {}) {
   log.info(criteriae);
   const mongo = await connect();
   const _tresor = await TresorModel.find(criteriae).sort({createdAt: 1}).exec();
-  await mongo.disconnect();
+ // await mongo.disconnect();
   return _tresor;
 }
 
@@ -149,7 +149,7 @@ async function _findLastOuverture(caisseId) {
     type: "ouverture",
     destination: caisseId 
   }).sort({createdAt: -1}).limit(1);
-  await mongo.disconnect();
+  // await mongo.disconnect();
   return _lastOuverture;
 }
 
@@ -159,7 +159,7 @@ async function _findLastCloture(caisseId) {
     type: "cloture",
     origin: caisseId
   }).sort({createdAt: -1}).limit(1);
-  await mongo.disconnect();
+  // await mongo.disconnect();
   return _lastCloture;
 }
 
@@ -196,7 +196,7 @@ async function _persistTresor(payload) {
     _trs = await TresorModel.create(__ins);
   }
 
-  await mongo.disconnect();
+  // await mongo.disconnect();
   return _trs;
 }
 

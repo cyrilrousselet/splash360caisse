@@ -8,7 +8,7 @@ import history from '../../helpers/history';
 import paths from './../../constants/routes.json';
 
 import 'date-fns';
-import { format, compareAsc, startOfToday, startOfDay, isAfter, isBefore, differenceInMinutes } from "date-fns";
+import { format, compareAsc, startOfToday, startOfDay, isAfter, isBefore, differenceInMinutes, startOfMonth } from "date-fns";
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from "date-fns/locale/fr";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
@@ -287,10 +287,11 @@ class ListeClotures extends React.Component {
     this.getBoundedClotureList = this.getBoundedClotureList.bind(this);
 
     const {heure_fin} = props;
+    const __startmonthBounds = dateBounds(startOfMonth(new Date()), heure_fin);
     const __todayBounds = dateBounds(new Date(), heure_fin);
 
     this.state = {
-      startDate: __todayBounds.debut,
+      startDate: __startmonthBounds.debut,
       endDate: __todayBounds.fin,
       cloture: null,
       clotureId: null,
