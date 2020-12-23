@@ -46,8 +46,11 @@ const actions = {
     }
     const _lastc = await _findLastCloture(payload.caisseId);
 
+    log.info('dbTresorerieLastClotureAndAfter C=', _lastc);
+
     // s'il y a une cloture, on cherche s'il y a une ouverture APRÈS
     if (_lastc.length>0) {
+      log.info('--- il y a une cloture ---');
       proxies.cloture = _lastc[0]._doc;
       const _clotureCreatedAt = _lastc[0]._doc.createdAt;
 
@@ -63,7 +66,12 @@ const actions = {
     } 
     // s'il n'y a pas de cloture, on cherche s'il y a une ouverture
     else {
+      log.info('--- il n’y a pas de cloture ---');
       const _lasto = await _findLastOuverture(payload.caisseId);
+
+
+      log.info('dbTresorerieLastClotureAndAfter O=', _lasto);
+
       proxies.ouverture =_lasto.length>0;
       res.send(proxies);
     }
@@ -157,7 +165,7 @@ async function _findLastCloture(caisseId) {
   const mongo = await connect();
   const _lastCloture = await TresorModel.find({
     type: "cloture",
-    origin: caisseId
+    origine: caisseId
   }).sort({createdAt: -1}).limit(1);
   // await mongo.disconnect();
   return _lastCloture;

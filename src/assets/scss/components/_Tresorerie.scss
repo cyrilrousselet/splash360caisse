@@ -264,6 +264,7 @@
     .liste-montant {
       font-style: italic;
     }
+    .type-cloture .liste-montant,
     .type-ouverture .liste-montant {
       font-style: normal;
       font-family: $f_blk;

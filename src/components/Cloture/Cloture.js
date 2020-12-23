@@ -242,7 +242,7 @@ class Cloture extends React.Component {
     this.setState({ keyboardOpen: false, [activeField]: newval });
   }
 
-  prepareCloture(prelevement, comptagemanuel) {
+  prepareCloture(prelevement, comptagemanuel, newfdcaisse) {
     const {
       selection_operator,
       selection_caisse,
@@ -281,7 +281,8 @@ class Cloture extends React.Component {
           origine: this.props.caisse.uniqid,
           destination: "Coffre",
           debit: prelevement*100,
-          credit: 0
+          credit: 0,
+          montant: newfdcaisse*100,
         });
         this.props.makeCloture(params);
       });
@@ -291,7 +292,8 @@ class Cloture extends React.Component {
         origine: this.props.caisse.uniqid,
         destination: "Coffre",
         debit: prelevement*100,
-        credit: 0
+        credit: 0,
+        montant: newfdcaisse*100,
       });
       this.props.makeCloture(params);
     }
@@ -838,7 +840,8 @@ class Cloture extends React.Component {
               onClick={() => {
                 this.prepareCloture(
                   Number(prelevement_fv.replace(",", ".")),
-                  comptage_total
+                  comptage_total,
+                  Number(fdcaisse_new.replace(",", "."))
                 );
               }}
             />

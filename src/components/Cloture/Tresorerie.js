@@ -74,7 +74,7 @@ function TableMouvements(props) {
 
   const _calculeSolde = (mvt) => {
 
-    if (mvt.type==="ouverture") {
+    if ((["ouverture","cloture"]).includes(mvt.type)) {
       _prevSolde = mvt.montant;
     } else {
       _prevSolde += mvt.credit;

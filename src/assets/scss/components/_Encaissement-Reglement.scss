@@ -68,8 +68,9 @@
                 min-width: 170px;
                 border-radius: 20px;
                 padding-left: 15px;
-                padding-right: 15px;
-                input {
+                padding-right: 10px;
+                input,
+                .field {
                     letter-spacing: 0.1em;
                     font-size: 22px;
                     height: 40px;
