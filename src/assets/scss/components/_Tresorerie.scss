@@ -547,6 +547,9 @@
     }
     .zone-precedent {
     
+      padding-top: 40px;
+      padding-bottom: 10px;
+
       text-align: center;
       .label {
         padding-bottom: 10px;
@@ -559,7 +562,12 @@
         font-family: $f_blk;
         font-size: 24px;
         color: $gris;
-        padding-top: 20px;
+        padding-top: 10px;
+      }
+    }
+    &.type-ouverture {
+      .zone-gauche {
+        justify-content: flex-start;
       }
     }
 
@@ -586,6 +594,7 @@
 
       .field {
         text-align: right;
+        letter-spacing: 0.1em;
       }
       .PillField {
         width: 100%;
@@ -630,4 +639,9 @@
     }
   }
  
+}
+.mouvementPopinAlert {
+  .swal2-actions {
+    justify-content: space-around;
+  }
 }

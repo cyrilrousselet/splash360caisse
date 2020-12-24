@@ -73,6 +73,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     ...bound,
     gotoListeCommandes: gotoListeCommandes,
+    getLastMouvement: tresorServices.getLastMouvement,
     getLastClotureAndAfter: tresorServices.getLastClotureAndAfter
   };
 }

@@ -4,6 +4,7 @@ import Tresorerie from '../components/Cloture/Tresorerie';
 import history from './../helpers/history';
 import paths from './../constants/routes.json';
 import { tresorActions } from '../services/tresorerie/tresorActions';
+import { tresorServices } from '../services/tresorerie/tresorServices';
 
 const getCaisses = (state) => {
   const {stations} = state.parametresReducer.parametres.options;
@@ -34,6 +35,7 @@ const mapDispatchToProps = (dispatch) => {
   }, dispatch);
   return {
     ...bound,
+    getLastMouvement: tresorServices.getLastMouvement,
     onClickSubModule: text => history.push(paths[text])
   }
 }

@@ -70,18 +70,18 @@ function TableMouvements(props) {
     }
   }
 
-  let _prevSolde = 0;
+  // let _prevSolde = 0;
 
-  const _calculeSolde = (mvt) => {
+  // const _calculeSolde = (mvt) => {
 
-    if ((["ouverture","cloture"]).includes(mvt.type)) {
-      _prevSolde = mvt.montant;
-    } else {
-      _prevSolde += mvt.credit;
-      _prevSolde -= mvt.debit;
-    }
-    return _prevSolde;
-  }
+  //   if ((["ouverture","cloture"]).includes(mvt.type)) {
+  //     _prevSolde = mvt.solde;
+  //   } else {
+  //     _prevSolde += mvt.credit;
+  //     _prevSolde -= mvt.debit;
+  //   }
+  //   return _prevSolde;
+  // }
 
   const _hasEcart = (mvt) => {
     return (mvt.type==="ouverture" && (mvt.credit>0 || mvt.debit>0));
@@ -111,7 +111,7 @@ function TableMouvements(props) {
               <TableCell key={`${row.id}-destination`} className="liste-destination">{ ((["ouverture","entree"]).includes(row.type))? _getNomCaisse(row.destination) : row.destination }</TableCell>
               <TableCell key={`${row.id}-debit`} className="liste-debit">{ (row.type==="ouverture") ? (row.debit>0 ? `- ${devise(row.debit/100)} €` : '') : `- ${devise(row.debit/100)} €` }</TableCell>
               <TableCell key={`${row.id}-credit`} className="liste-credit">{ (row.type==="ouverture") ? (row.credit>0 ? `+ ${devise(row.credit/100)} €` : '') : `+ ${devise(row.credit/100)} €` }</TableCell>
-              <TableCell key={`${row.id}-montant`} className="liste-montant">{ `${devise(_calculeSolde(row)/100)} €` }</TableCell>
+              <TableCell key={`${row.id}-montant`} className="liste-montant">{ `${devise(row.solde/100)} €` }</TableCell>
               <TableCell key={`${row.id}-type`} className="liste-type">{ strings.modules.tresor.types[row.type] }</TableCell>
             </TableRow>
           ))}
@@ -207,9 +207,22 @@ class Tresorerie extends React.Component {
   }
 
   saveMouvement(mouvement) {
-    this.props.addTresor(mouvement);
-    this.closeMouvement();
+    const __csh = (["entree", "ouverture"]).includes(mouvement.type) ? mouvement.destination : mouvement.origine;
+    this.props.getLastMouvement(__csh)
+              .then(__lastmvt => {
+                const __lastsolde = __lastmvt ? __lastmvt.lastmouvement.solde : 0;
+                console.log('saveMouvement lastSolde: ',__lastsolde);
+                const __newsolde = 
+                (["entree", "sortie"]).includes(mouvement.type) 
+                ? __lastsolde + mouvement.credit - mouvement.debit 
+                : mouvement.solde;
+                console.log('saveMouvement newSolde: ',__newsolde);
+                this.props.addTresor({...mouvement, solde: __newsolde});
+                this.closeMouvement();
+              });
   }
+
+
 
 
   render() {

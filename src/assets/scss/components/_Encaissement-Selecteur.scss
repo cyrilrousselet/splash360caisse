@@ -1,9 +1,15 @@
 
-    .Selecteur {
+    .Selecteur,
+    .selecteur-wait {
         display: inline-block;
         position: relative;
         height: 100%;
         width: calc(100% - 315px);
+    }
+    .selecteur-wait {
+        
+        background-color: $blanc;
+        border-radius: 15px;
     }
     .TabBar {
         width: 215px;

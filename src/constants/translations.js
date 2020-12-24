@@ -638,8 +638,12 @@ const data = {
                         montant: "Montant en caisse",
                         caisse: "Destination :",
                         external: "Origine :",
-                        precedent: "Montant après la dernière clôture :",
-                        none: "Aucune clôture enregistrée"
+                        precedent: "Fond de caisse après le dernier mouvement :",
+                        none: "Aucune clôture enregistrée",
+                        alerte: {
+                            titre: "Écart de solde",
+                            texte: "Vous vous apprêtez à enregistrer<br />UN FOND DE CAISSE DIFFÉRENT<br />sans saisir de motif.<br /><br />VOULEZ-VOUS ENREGISTRER MALGRÉ TOUT ?"
+                        }
                     },
                     motif: "Motif :"
                 }

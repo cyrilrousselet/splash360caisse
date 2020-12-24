@@ -79,8 +79,6 @@ function getLastOuvertureAndAfter(caisseId) {
 }
 
 
-
-
 function getTresors(params={}) {
 
   return dispatch => {

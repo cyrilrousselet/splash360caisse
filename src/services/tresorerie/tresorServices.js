@@ -10,6 +10,7 @@ export const tresorServices = {
   getTresors,
   getLastOuvertureAndAfter,
   getLastClotureAndAfter,
+  getLastMouvement,
   persistTresor
 };
 
@@ -24,7 +25,7 @@ function createTresor(params) {
     destination: params.destination,
     credit: params.credit,
     debit: params.debit,
-    montant: params.montant,
+    solde: params.solde,
     type: params.type,
     detail: params.detail
   }
@@ -52,6 +53,9 @@ function getLastClotureAndAfter(params) {
   return emit( "dbTresorerieLastClotureAndAfter", params );
 }
 
+function getLastMouvement(caisseId) {
+  return emit( "dbTresorerieGetLastMouvement", {caisseId: caisseId} );
+}
 
 function persistTresor(tresor) {
   return emit( "dbTresoreriePersist", { tresor: tresor } );

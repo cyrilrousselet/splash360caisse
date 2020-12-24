@@ -10,8 +10,7 @@ import {
   format,
   parseJSON,
   startOfDay,
-  startOfToday,
-  compareAsc
+  startOfToday
 } from "date-fns";
 import frLocale from "date-fns/locale/fr";
 import React from "react";
@@ -54,6 +53,7 @@ class Cloture extends React.Component {
       prelevement: 0,
       startDate: startOfToday(),
       endDate: endOfToday(),
+      fonddecaisse: 0
     };
     this.shouldComponentRender = this.shouldComponentRender.bind(this);
     this.openComptage = this.openComptage.bind(this);
@@ -72,11 +72,10 @@ class Cloture extends React.Component {
     this.prepareCloture = this.prepareCloture.bind(this);
     this.printLastCloture = this.printLastCloture.bind(this);
     this.setSelectedDate = this.setSelectedDate.bind(this);
-    this.calculeFondDeCaisse = this.calculeFondDeCaisse.bind(this);
   }
 
   componentDidMount() {
-    const { caisse, getCurrentPeriode, getLastCloture, getCommandesList, getLastOuvertureAndAfter } = this.props;
+    const { caisse, getCurrentPeriode, getLastCloture, getCommandesList, getLastMouvement } = this.props;
     getCommandesList({
       $and: [
         { archived: undefined },
@@ -87,7 +86,10 @@ class Cloture extends React.Component {
         ]}
       ]
     });
-    getLastOuvertureAndAfter(caisse.uniqid);
+    getLastMouvement(caisse.uniqid).then(__lastmvt => {
+      const __lastsolde = __lastmvt ? __lastmvt.lastmouvement.solde : 0;
+      this.setState({fonddecaisse: __lastsolde/100});
+    });
 
     //parametres :
     let params = {};
@@ -282,7 +284,7 @@ class Cloture extends React.Component {
           destination: "Coffre",
           debit: prelevement*100,
           credit: 0,
-          montant: newfdcaisse*100,
+          solde: newfdcaisse*100,
         });
         this.props.makeCloture(params);
       });
@@ -293,7 +295,7 @@ class Cloture extends React.Component {
         destination: "Coffre",
         debit: prelevement*100,
         credit: 0,
-        montant: newfdcaisse*100,
+        solde: newfdcaisse*100,
       });
       this.props.makeCloture(params);
     }
@@ -322,32 +324,6 @@ class Cloture extends React.Component {
     return format(parseJSON(date), dateFormat);
   };
 
-  calculeFondDeCaisse() {
-
-    const { mouvements } = this.props;
-
-    let fdc = 0;
-    let _mouvements = [];
-    if (mouvements) {
-      _mouvements = Object.values(mouvements).map((m) => m);
-
-      _mouvements.sort((a,b) => {
-        let da = new Date(a.createdAt), db = new Date(b.createdAt);
-        return compareAsc(da, db);
-      });
-    
-      _mouvements.forEach(mvt => {
-        if (mvt.type==="ouverture") {
-          fdc = mvt.montant;
-        } else {
-          fdc += mvt.credit;
-          fdc -= mvt.debit;
-        }
-      });
-    }
-
-    return fdc / 100;
-  }
 
   render() {
     const {
@@ -371,9 +347,8 @@ class Cloture extends React.Component {
       fieldvalue,
       startDate,
       endDate,
+      fonddecaisse,
     } = this.state;
-
-    const fonddecaisse = this.calculeFondDeCaisse();
 
     let params = {
       user: periode.editeur,

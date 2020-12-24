@@ -23,6 +23,12 @@ const actions = {
     res.send(confirm._doc);
   },
 
+  dbTresorerieGetLastMouvement: async (req, res) => {
+    const { payload } = req;
+     const last = await _getLastMouvement(payload.caisseId)
+     res.send({lastmouvement: last});
+  },
+
   dbTresorerieSetSynced: async (req, res) => {
     const { payload } = req;
     log.info(
@@ -150,6 +156,18 @@ async function _findTresors(criteriae = {}) {
   return _tresor;
 }
 
+
+async function _getLastMouvement(caisseId) {
+  const mongo = await connect();
+  const _lastMvt = await TresorModel.find({
+    $or: [
+      {destination: caisseId},
+      {origine: caisseId}
+    ]
+  }).sort({createdAt: -1}).limit(1);
+
+  return (_lastMvt.length>0) ? _lastMvt[0]._doc : null;
+}
 
 async function _findLastOuverture(caisseId) {
   const mongo = await connect();

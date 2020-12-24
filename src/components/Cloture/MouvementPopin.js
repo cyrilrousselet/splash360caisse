@@ -3,7 +3,7 @@ import React from 'react';
 import CloseIcon from '../common/icon/CloseIcon';
 import StdButton from '../common/StdButton';
 
-
+import Swal from 'sweetalert2';
 
 
 import LocalizedStrings from 'react-localization';
@@ -11,8 +11,6 @@ import {data} from '../../constants/translations';
 import Logger from '../../helpers/Logger';
 import Calculette from '../Encaissement/Calculette';
 import {devise} from '../../helpers/toolbox';
-import { format } from 'date-fns';
-import frLocale from "date-fns/locale/fr";
 
 const logger = new Logger();
 
@@ -42,7 +40,7 @@ class MouvementPopin extends React.Component {
     this._motifChangeHandler = this._motifChangeHandler.bind(this);
   }
 
-  _saveMouvement() {
+  _saveMouvement(_motif) {
     const {mouvement, type, saveMouvement, caisse} = this.props;
     const { 
       origine,
@@ -53,7 +51,7 @@ class MouvementPopin extends React.Component {
 
     let _debit = type==="entree" ? 0 : montant*100;
     let _credit = type==="entree" ? montant*100 : 0;
-    let _montant = type==="ouverture" ? montant*100 : null;
+    let _solde = type==="ouverture" ? montant*100 : null;
     let _origine;
     let _destination = type==="entree" ? destination.uniqid : destination;
 
@@ -65,13 +63,13 @@ class MouvementPopin extends React.Component {
           _debit = 0;
         } else {
           _credit = 0;
-          _debit = _ecart;
+          _debit = -_ecart;
         }
       } else {
         _credit = 0;
         _debit = 0;
       }
-      _montant = montant * 100;
+      _solde = montant * 100;
 
       _origine = origine;
       _destination = caisse.uniqid;
@@ -88,7 +86,7 @@ class MouvementPopin extends React.Component {
       destination: _destination,
       debit: _debit,
       credit: _credit,
-      montant: _montant,
+      solde: _solde,
       type: type,
       detail: motif
     });
@@ -221,7 +219,19 @@ class MouvementPopin extends React.Component {
                   </div>
                 
                 </div>
-                {(type!=='ouverture') && (
+                {(type==="ouverture" && mouvement) && (
+                  <div className="zone-precedent">
+                  <div className="label">{ strings.modules.tresor.popin.ouverture.precedent }</div>
+                  {/* <div className="date">{ mouvement.createdAt && format(new Date(mouvement.lastCreatedAt), "d MMM yyyy à HH:mm", { locale: frLocale }) }</div> */}
+                  <div className="montant">{ `${devise(mouvement.lastMontant/100)} €` }</div>
+                  </div>
+                )}
+                {(type==="ouverture" && mouvement===null) && (
+                  <div className="zone-precedent">
+                  <div className="montant">{ strings.modules.tresor.popin.ouverture.none }</div>
+                  </div>
+                )}
+                {/* {(type!=='ouverture') && ( */}
                 <div className="zone-motif">
                   <div className="form-group">
                     <div className="label">{ strings.modules.tresor.popin.motif }</div>
@@ -239,19 +249,7 @@ class MouvementPopin extends React.Component {
                     </div>
                   </div>
                 </div>
-                )}
-                {(type==="ouverture" && mouvement) && (
-                  <div className="zone-precedent">
-                  <div className="label">{ strings.modules.tresor.popin.ouverture.precedent }</div>
-                  <div className="date">{ mouvement.createdAt && format(new Date(mouvement.lastCreatedAt), "d MMM yyyy à HH:mm", { locale: frLocale }) }</div>
-                  <div className="montant">{ `${devise(mouvement.lastMontant/100)} €` }</div>
-                  </div>
-                )}
-                {(type==="ouverture" && mouvement===null) && (
-                  <div className="zone-precedent">
-                  <div className="montant">{ strings.modules.tresor.popin.ouverture.none }</div>
-                  </div>
-                )}
+                {/* )} */}
               </div>
               <div className={ `zone-montant ${ _ecart && 'ecart' }`}>
                 <div className="label">{ type && strings.modules.tresor.popin[type].montant }</div>
@@ -268,7 +266,41 @@ class MouvementPopin extends React.Component {
                 <StdButton identifier="none" elementclass="btncancel" icon={ false } noStroke={true} text={ strings.general.dialog.cancel } onClick={ closeHandler } />
                )}
               { (type !== "view") && ( 
-               <StdButton identifier="none" elementclass="btnsave" icon={ false } noStroke={true} text={ strings.general.dialog.save } onClick={() => { this._saveMouvement() }} />
+               <StdButton 
+                identifier="none" 
+                elementclass="btnsave" 
+                icon={ false } 
+                noStroke={true} 
+                text={ strings.general.dialog.save } 
+                onClick={() => { 
+                  if (type === "ouverture") {
+                    if ((mouvement.lastMontant/100) !== montant && motif==="") {
+                      Swal.fire({
+                        title: strings.modules.tresor.popin.ouverture.alerte.titre,
+                        html: strings.modules.tresor.popin.ouverture.alerte.texte,
+                        focusConfirm: true,
+                        showCancelButton: true,
+                        customClass: {
+                          container: 'mouvementPopinAlert'
+                        },
+                        cancelButtonText: strings.general.dialog.cancel,
+                        confirmButtonText: strings.general.dialog.save,
+                        buttonsStyling: false,
+                        reverseButtons: true,
+                      }).then((result)=> {
+                        console.log('alerte', result)
+                        if (result.isConfirmed) {
+                          this._saveMouvement();
+                        }
+                      });
+                    } else {
+                      this._saveMouvement();
+                    }
+                  } else {
+                    this._saveMouvement();
+                  }
+                }} 
+              />
               )}
               { (type === "view") && (
                 <StdButton identifier="none" elementclass="btnclose" icon={ false } noStroke={true} text={ strings.general.dialog.ok } onClick={ closeHandler } />

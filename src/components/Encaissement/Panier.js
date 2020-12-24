@@ -460,7 +460,7 @@ class Panier extends React.Component {
       tablesOpen: false,
       bippersOpen: false,
       ouvertureOpen: false,
-      lastCloture: null
+      lastMouvement: null
     }
     this.setSelectedIndex = this.setSelectedIndex.bind(this);
     this.setSelectedIngredient = this.setSelectedIngredient.bind(this);
@@ -570,7 +570,7 @@ class Panier extends React.Component {
    * S
    */
   testOuverture() {
-    const {getLastClotureAndAfter, parametres} = this.props;
+    const {getLastClotureAndAfter, parametres, unlockEncaissement} = this.props;
 
     if (parametres.financier.fonddecaisse_activation) {
       
@@ -583,26 +583,43 @@ class Panier extends React.Component {
           if (result && result.hasOwnProperty('cloture') && result.cloture!==null) {
             if (result.hasOwnProperty('ouverture') && result.ouverture) {
               logger.log('IL Y A UNE CLOTURE et une ouverture');
+              unlockEncaissement();
             } else {
               logger.log('IL Y A UNE CLOTURE et PAS D’OUVERTURE -> POPIN');
-              this.setState({ lastCloture: result.cloture });
               this.openOuverture();
             }
           } else if (!result.ouverture) {
             logger.log('IL N’Y A PAS DE CLOTURE et PAS D’OUVERTURE -> POPIN');
             this.openOuverture();
+          } else {
+            unlockEncaissement();
           }
         }
       );
     }
   }
 
+
+
   openOuverture() {
-    this.setState({ ouvertureOpen: true });
+    const {getLastMouvement, parametres} = this.props;
+    const { caisse } = parametres.options;
+
+    getLastMouvement(caisse.uniqid).then(__lastmvt => {
+      this.setState({
+        lastMouvement: __lastmvt.lastmouvement, 
+        ouvertureOpen: true,
+        inputfocus: false
+      });
+    });
   }
 
   closeOuverture() {
-    this.setState({ ouvertureOpen: false });
+    this.props.unlockEncaissement();
+    this.setState({ 
+      ouvertureOpen: false,
+      inputfocus: true
+    });
   }
   addOuverture(payload) {
 
@@ -939,7 +956,7 @@ class Panier extends React.Component {
            clavierOpen,
            bippersOpen,
            ouvertureOpen,
-           lastCloture,
+           lastMouvement,
           } = this.state;
 
     // récup du texte en fonction de l'id du commentaire (s'il est défini)
@@ -1342,7 +1359,7 @@ class Panier extends React.Component {
         <MouvementPopin 
           open={ ouvertureOpen } 
           type={ "ouverture" } 
-          mouvement={ lastCloture && {lastMontant:lastCloture.montant, lastCreatedAt:lastCloture.createdAt} } 
+          mouvement={ lastMouvement && {lastMontant:lastMouvement.solde, lastCreatedAt:lastMouvement.createdAt} } 
           caisse={ caisse }
           caisses={ [] }
           closeHandler={ this.closeOuverture }

@@ -22,13 +22,15 @@ class Encaissement extends React.Component {
       personnalisationStep: -1,
       personnalisationPreviousStep: -1,
       personnalisationNextStep: -1,
-      commandeItemToPersonnalize: null
+      commandeItemToPersonnalize: null,
+      lockEncaissement: true,
     };
     this.openReglement = this.openReglement.bind(this);
     this.closeReglement = this.closeReglement.bind(this);
     this.openPersonnalisation = this.openPersonnalisation.bind(this);
     this.closePersonnalisation = this.closePersonnalisation.bind(this);
     this.validatePersonnalisation = this.validatePersonnalisation.bind(this);
+    this.unlockEncaissement = this.unlockEncaissement.bind(this);
   }
 
   openReglement() {
@@ -47,7 +49,7 @@ class Encaissement extends React.Component {
       personnalisationValide: stepvalidated,
       personnalisationStatus: itemstatus,
       commandeItemToPersonnalize: itemid,
-      personnalisationReview: from==='item' ? itemid : null
+      personnalisationReview: from==='item' ? itemid : null,
     });
   }
   closePersonnalisation(from='unknown') {
@@ -66,16 +68,22 @@ class Encaissement extends React.Component {
   // validatePersonnalisation(validstep, from='unknown') {
   //   this.setState({personnalisationValide:validstep});
   // }  
+  unlockEncaissement() {
+    logger.log('Enc.unlockEncaissement()');
+    this.setState({lockEncaissement: false});
+  }
 
  render () {
 
-  logger.log('encaissement state', this.state.personnalisationReview);
+  // logger.log('encaissement state', this.state.personnalisationReview);
+  logger.log('encaissement lock', this.state.lockEncaissement);
 
     return (
       <div className="Encaissement container">
         <TopZone />
         <div className="MainZone">
-          <SelecteurCont />
+          { this.state.lockEncaissement && (<div className="selecteur-wait"></div>) }
+          { !this.state.lockEncaissement && (<SelecteurCont />) }
           <PanierCont 
             openReglement={ this.openReglement } 
             closeReglement={ this.closeReglement } 
@@ -84,6 +92,7 @@ class Encaissement extends React.Component {
             allowInput={ !this.state.reglementOpen }
          //   validatePersonnalisation={ this.validatePersonnalisation }
             open={ this.state.reglementOpen } 
+            unlockEncaissement={ this.unlockEncaissement }
             forcePersonnalisationItem={this.state.personnalisationReview}
             itemToPersonnalize={ this.state.commandeItemToPersonnalize } 
           />

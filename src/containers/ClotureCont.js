@@ -6,6 +6,7 @@ import { peripheralActions } from '../services/peripheral/peripheralActions';
 import { getPeriode } from '../services/cloture/clotureReducer';
 import { commandeActions } from '../services/commande/commandeActions';
 import { tresorActions } from '../services/tresorerie/tresorActions';
+import { tresorServices } from '../services/tresorerie/tresorServices';
 
 // import {data} from '../constants/translations';
 // import LocalizedStrings from 'react-localization';
@@ -45,7 +46,8 @@ const mapDispatchToProps = (dispatch) => {
     addTresor: tresorActions.addTresor,
   }, dispatch);
   return {
-    ...bound    
+    ...bound,
+    getLastMouvement: tresorServices.getLastMouvement,    
   };
 }
 

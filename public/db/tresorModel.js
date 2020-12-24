@@ -15,7 +15,7 @@ const TresorSchema = mongoose.Schema(
     destination: String,
     credit: Number,
     debit: Number,
-    montant: Number,
+    solde: Number,
     type: String,
     detail: String
   },
