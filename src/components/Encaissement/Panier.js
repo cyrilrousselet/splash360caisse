@@ -572,6 +572,8 @@ class Panier extends React.Component {
   testOuverture() {
     const {getLastClotureAndAfter, parametres, unlockEncaissement} = this.props;
 
+    // si la prise en compte du fond de caisse est activé
+    // on teste s'il faut ouvrir ou non la caisse (déclaration fd de caisse)
     if (parametres.financier.fonddecaisse_activation) {
       
       const { caisse } = parametres.options;
@@ -596,6 +598,11 @@ class Panier extends React.Component {
           }
         }
       );
+    }
+    // si la prise en charge du fond de caisse n'est pas activé,
+    // on ouvre directement l'encaissement
+    else {
+      unlockEncaissement();
     }
   }
 

@@ -1,16 +1,14 @@
 // import DateFnsUtils from "@date-io/date-fns";
-import { FormControl, MenuItem, Select } from "@material-ui/core";
+import { Fab, FormControl, MenuItem, Modal, Select } from "@material-ui/core";
 // import {
 //   KeyboardDatePicker,
 //   MuiPickersUtilsProvider,
 // } from "@material-ui/pickers";
 import {
   endOfDay,
-  endOfToday,
   format,
   parseJSON,
   startOfDay,
-  startOfToday
 } from "date-fns";
 import frLocale from "date-fns/locale/fr";
 import React from "react";
@@ -20,12 +18,18 @@ import paths from "../../constants/routes";
 import { data } from "../../constants/translations";
 import history from "../../helpers/history";
 import Logger from "../../helpers/Logger";
+import CarteIcon from "../common/icon/CarteIcon";
+import ChequeIcon from "../common/icon/ChequeIcon";
+import CloseIcon from "../common/icon/CloseIcon";
+import EspecesIcon from "../common/icon/EspecesIcon";
+import QRCodeIcon from "../common/icon/QRCodeIcon";
+import TicketIcon from "../common/icon/TicketIcon";
 import NumberKeyboard from "../common/NumberKeyboard";
 import StdButton from "../common/StdButton";
 import { devise } from "./../../helpers/toolbox";
 import { clotureServices } from "./../../services/cloture/clotureServices";
 import LoadingSpinner from "./../common/LoadingSpinner";
-import Comptage from "./Comptage";
+// import Comptage from "./Comptage";
 
 const logger = new Logger();
 let strings = new LocalizedStrings(data);
@@ -36,77 +40,139 @@ let strings = new LocalizedStrings(data);
 //   }
 // }
 
+
+const MotifModal = ({open, closeHandler, setMotif, fieldname}) => {
+
+  const liste = ["retrait", "erreur encaissement", "à rattraper", "trop perçu", "inconnu"];
+
+  return (
+    <Modal open={open}>
+      <div className="MotifModal">
+        <div className="Modal-container">
+          <div className="header">
+            <div className="title">{ strings.modules.cloture.comptage.motif.titre }</div>
+          </div>
+          <div className="body">
+            <div className="liste-wrapper">
+              { liste.map( item => (<div className="motif-item" key={ item.replace(' ','') } onClick={()=>{ setMotif(fieldname, item) }}>{ item }</div>) )}
+              <div className="motif-item delete" key={ `delete` } onClick={()=>{ setMotif(fieldname, null) }}>{ strings.modules.cloture.comptage.motif.delete }</div>
+            </div>
+          </div>
+        </div>
+        <Fab aria-label="close" size="small" className="close-button" onClick={ closeHandler }>
+          <CloseIcon />
+        </Fab>
+      </div>
+    </Modal>
+  );
+}
+
+
+
 class Cloture extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      comptageOpen: false,
       comptcaisseOpen: false,
       comptage: null,
-      selection_operator: { id: "allope", nom: "Toutes les caisses" },
-      selection_caisse: { id: "allcash", nom: "Toutes les caisses" },
+      selection_operator: { id: "allope", nom: "Tous les vendeurs" },
+      selection_caisse: props.caisse,
       keyboardOpen: false,
       fieldvalue: "",
       activeField: null,
-      saisie_prelevement: "0",
-      saisie_comptage: "",
+      saisie_prelevement: null,
       prelevement: 0,
-      startDate: startOfToday(),
-      endDate: endOfToday(),
-      fonddecaisse: 0
+      fonddecaisse: 0,
+
+      motifOpen: false,
+      motifField: null,
+
+      saisie_carte: '0',
+      saisie_ticket: '0',
+      saisie_cheque: '0',
+      saisie_especes: '0',
+      saisie_avoir: '0',
+
+      ecart_avoir: null,
+      counttoolOpen: false,
+      counttrtoolOpen: false,
+      numbersOnly: false,
     };
     this.shouldComponentRender = this.shouldComponentRender.bind(this);
-    this.openComptage = this.openComptage.bind(this);
-    this.closeComptage = this.closeComptage.bind(this);
     this.openComptcaisse = this.openComptcaisse.bind(this);
     this.closeComptcaisse = this.closeComptcaisse.bind(this);
     this.getListeVendeurs = this.getListeVendeurs.bind(this);
-    this.getListeCaisses = this.getListeCaisses.bind(this);
     this.selectCaisse = this.selectCaisse.bind(this);
     this.selectVendeur = this.selectVendeur.bind(this);
     this.validComptage = this.validComptage.bind(this);
-    this.openCommandesListe = this.openCommandesListe.bind(this);
     this.startSaisie = this.startSaisie.bind(this);
     this.keyboardButtonHandler = this.keyboardButtonHandler.bind(this);
     this.closeKeyboard = this.closeKeyboard.bind(this);
     this.prepareCloture = this.prepareCloture.bind(this);
-    this.printLastCloture = this.printLastCloture.bind(this);
     this.setSelectedDate = this.setSelectedDate.bind(this);
+
+    this.openMotifModal = this.openMotifModal.bind(this);
+    this.closeMotifModal = this.closeMotifModal.bind(this);
+    this.setMotif = this.setMotif.bind(this);
+
+    this.openCountTool = this.openCountTool.bind(this);
+    this.closeCountTool = this.closeCountTool.bind(this);
+    this.validateCountTool = this.validateCountTool.bind(this);
+    this.openCountTRTool = this.openCountTRTool.bind(this);
+    this.closeCountTRTool = this.closeCountTRTool.bind(this);
+    this.validateCountTRTool = this.validateCountTRTool.bind(this);
+    this.checkComptage = this.checkComptage.bind(this);
+    this.getEcarts = this.getEcarts.bind(this);
   }
 
   componentDidMount() {
-    const { caisse, getCurrentPeriode, getLastCloture, getCommandesList, getLastMouvement } = this.props;
+    const { 
+      caisse, 
+      getCurrentPeriode, 
+      getCommandesList, 
+      getLastMouvement, 
+      fonddecaisse_activation,
+    } = this.props;
+    
     getCommandesList({
       $and: [
-        { archived: undefined },
+        { archived: {"$exists": false} },
         { status: { $ne: "deleted" } },
         { $or: [
-          { centre_revenu: undefined },
-          { centre_revenu: 'restaurant' }
+          { "caisse_encaissement.id": caisse.id },
+          { $and: [
+            { "caisse.id": caisse.id },
+            { status: { $in: ["standby", "a_encaisser"]} }
+          ]},
+        ]},
+        { $or: [
+          { centre_revenu: {"$exists": false} },
+          { centre_revenu: "restaurant" }
         ]}
       ]
     });
-    getLastMouvement(caisse.uniqid).then(__lastmvt => {
-      const __lastsolde = __lastmvt ? __lastmvt.lastmouvement.solde : 0;
-      this.setState({fonddecaisse: __lastsolde/100});
-    });
+    // si la gestion du fond de caisse est activée, on récupère le solde au dernier mouvement de trésorerie.
+    if (fonddecaisse_activation) {
+      getLastMouvement(caisse.uniqid).then(__lastmvt => {
+        const __lastsolde = (__lastmvt && __lastmvt.hasOwnProperty('lastmouvement')) ? __lastmvt.lastmouvement.solde : 0;
+        // logger.log('Clo.getLastMouvement() solde:', __lastmvt, __lastsolde);
+        this.setState({fonddecaisse: __lastsolde/100});
+      });
+    }
 
     //parametres :
     let params = {};
     const {
       selection_caisse,
       selection_operator,
-      startDate,
-      endDate,
     } = this.state;
+
     if (selection_caisse.id !== "allcash")
-      params["caisses"] = [selection_caisse];
+      params["caisse"] = selection_caisse;
     if (selection_operator.id !== "allope")
-      params["vendeurs"] = [selection_operator];
-    params["debut"] = startDate;
-    params["fin"] = endDate;
+      params["vendeur"] = selection_operator;
+
     getCurrentPeriode(params);
-    getLastCloture();
     //    getParametres();
   }
 
@@ -116,33 +182,44 @@ class Cloture extends React.Component {
     return true;
   }
 
-  openComptage(periode_z) {
-    if (periode_z.standby > 0) {
+  testStandbyCommandes(periode_z) {
+    // s'il y a des commandes non confirmées ("standby" et "a_encaisser")
+    if (periode_z.standby > 0 ) {
       Swal.fire({
         title: strings.modules.cloture.alerte.standby.titre,
         text: strings.modules.cloture.alerte.standby.texte,
         focusConfirm: true,
-        showCancelButton: true,
-        customClass: "standbycommandes",
+        showCancelButton: false,
+        customClass: {
+          container: "standbycommandes"
+        },
         confirmButtonText: "OK",
-        cancelButtonText: strings.general.dialog.cancel,
         buttonsStyling: false,
       }).then((result) => {
-        this.setState({ comptageOpen: true, comptcaisseOpen: false });
+        if (result.isConfirmed) {
+          history.push(paths.LISTECOMMANDES);
+        }
       });
-    } else {
-      this.setState({ comptageOpen: true, comptcaisseOpen: false });
+      return false;
     }
+    return true;
   }
-  closeComptage() {
-    this.setState({ comptageOpen: false });
+
+  openMotifModal(field) {
+    this.setState({ motifOpen: true, motifField: field});
+  }
+  closeMotifModal() {
+    this.setState({ motifOpen: false, motifField: null });
+  }
+  setMotif(field, value) {
+    this.setState({ motifOpen: false, motifField: null, [field]: value })
   }
 
   openComptcaisse() {
-    this.setState({ comptageOpen: false, comptcaisseOpen: true });
+    this.setState({ comptcaisseOpen: true });
   }
   closeComptcaisse() {
-    this.setState({ comptcaisseOpen: false, comptageOpen: true });
+    this.setState({ comptcaisseOpen: false });
   }
 
   getListeVendeurs() {
@@ -160,33 +237,20 @@ class Cloture extends React.Component {
     });
     return operators;
   }
-  getListeCaisses() {
-    const { listeCommandes } = this.props;
-    let caisses = {
-      allcash: {
-        id: "allcash",
-        nom: strings.modules.cloture.selection.caisse_all,
-      },
-    };
-    Object.entries(listeCommandes).forEach(([id, commande]) => {
-      if (!caisses.hasOwnProperty(commande.caisse.id)) {
-        caisses[commande.caisse.id] = commande.caisse;
-      }
-    });
-    return caisses;
-  }
+
 
   selectCaisse(event) {
-    const caisses = this.getListeCaisses();
+    
+    const { caisses } = this.props;
 
-    const selection = caisses[event.target.value];
+    const selection = caisses.find((c) => c.uniqid === event.target.value);
     this.setState({ selection_caisse: selection });
 
     let params = {};
     const { selection_operator } = this.state;
-    params["caisses"] = selection.id === "allcash" ? [] : [selection];
-    if (selection_operator.id !== "allope")
-      params["vendeurs"] = [selection_operator];
+    params["caisse"] = selection;
+    params["vendeur"] = (selection_operator && selection_operator.id === "allope") ? null : selection_operator;
+    
     this.props.getCurrentPeriode(params);
   }
 
@@ -197,98 +261,96 @@ class Cloture extends React.Component {
 
     let params = {};
     const { selection_caisse } = this.state;
-    params["vendeurs"] = selection.id === "allope" ? [] : [selection];
-    if (selection_caisse.id !== "allcash")
-      params["caisses"] = [selection_caisse];
+    params["vendeur"] = selection.id === "allope" ? null : selection;
+    params["caisse"] = selection_caisse;
+    
     this.props.getCurrentPeriode(params);
   }
 
-  validComptage(comptageobject) {
-    logger.log("validComptage()", comptageobject);
-    //    this.setState({comptage: valeur, comptageOpen: false});
-    this.setState({ comptage: comptageobject });
-  }
-  openCommandesListe() {
-    logger.log("openCommandesListe()");
-  }
+  // validComptage(comptageobject) {
+  //   logger.log("validComptage()", comptageobject);
+  //   //    this.setState({comptage: valeur, comptageOpen: false});
+  //   this.setState({ comptage: comptageobject });
+  // }
+
   startSaisie(field) {
     logger.log("startSaisie", field);
-    let comptage = this.state.comptage;
-    if (field === "saisie_comptage") {
-      comptage = null;
-    }
+  //  let comptage = this.state.comptage;
+
     this.setState({
       keyboardOpen: true,
-      comptage: comptage,
+  //    comptage: comptage,
       fieldvalue: this.state[field],
       activeField: field,
     });
+
   }
 
   // action on buttons (fill in passphrase)
   keyboardButtonHandler(text) {
     const { fieldvalue } = this.state;
-    if (text !== "c") {
-      this.setState({ fieldvalue: String(fieldvalue) + text });
+    let newvalue;
+    if (fieldvalue===null || isNaN(String(fieldvalue).replace(",", "."))) {
+      newvalue = (text !== "c") ? text : 0;
     } else {
-      this.setState({ fieldvalue: String(fieldvalue).slice(0, -1) });
+      newvalue =
+      (text !== "c")
+      ? String(fieldvalue) + text
+      : String(fieldvalue).slice(0, -1)
+      ;
     }
+    this.setState({ fieldvalue: newvalue });
+
   }
 
   closeKeyboard() {
     const { fieldvalue, activeField } = this.state;
     const newval =
-      ["saisie_prelevement", "saisie_comptage"].indexOf(activeField) === -1
+      ['saisie_carte','saisie_ticket','saisie_cheque','saisie_especes','saisie_avoir','saisie_prelevement'].indexOf(activeField) === -1
         ? Number(fieldvalue)
-        : fieldvalue.replace(",", ".");
+        : Number(String(fieldvalue).replace(",", "."));
     this.setState({ keyboardOpen: false, [activeField]: newval });
+    this.validComptage(activeField, newval);
   }
 
-  prepareCloture(prelevement, comptagemanuel, newfdcaisse) {
+  prepareCloture(prelevement, newfdcaisse, periode) {
     const {
       selection_operator,
       selection_caisse,
       comptage,
-      startDate,
-      endDate,
+
+      motif_especes,
+      motif_carte,
+      motif_ticket,
+      motif_cheque,
+      motif_avoir
+
     } = this.state;
 
+    const {
+      ecart_especes,
+      ecart_carte,
+      ecart_ticket,
+      ecart_cheque,
+      ecart_avoir
+    } = this.getEcarts(periode);
+    
     let params = {};
     if (selection_caisse.id !== "allcash")
       params["caisses"] = [selection_caisse];
     if (selection_operator.id !== "allope")
       params["vendeurs"] = [selection_operator];
-    params["comptage"] =
-      comptage !== null ? comptage : { total: comptagemanuel };
+    params["comptage"] = comptage;
     params["prelevement"] = prelevement;
-    params["debut"] = startDate;
-    params["fin"] = endDate;
+    params["fdcaisse"] = newfdcaisse;
+    params["ecarts"] = {
+      especes: ecart_especes ? { valeur: ecart_especes, motif: motif_especes} : null,
+      carte: ecart_carte ? { valeur: ecart_carte, motif: motif_carte} : null,
+      ticket: ecart_ticket ? { valeur: ecart_ticket, motif: motif_ticket} : null,
+      cheque: ecart_cheque ? { valeur: ecart_cheque, motif: motif_cheque} : null,
+      avoir: ecart_avoir ? { valeur: ecart_avoir, motif: motif_avoir} : null
+    }
 
-    if (
-      selection_caisse.id !== "allcash" ||
-      selection_operator.id !== "allope"
-    ) {
-      Swal.fire({
-        title: strings.modules.cloture.alerte.partielle.titre,
-        text: strings.modules.cloture.alerte.partielle.texte,
-        focusConfirm: true,
-        showCancelButton: true,
-        customClass: "cloturepartielle",
-        confirmButtonText: "OK",
-        cancelButtonText: strings.general.dialog.cancel,
-        buttonsStyling: false,
-      }).then((result) => {
-        this.props.addTresor({
-          type: "cloture",
-          origine: this.props.caisse.uniqid,
-          destination: "Coffre",
-          debit: prelevement*100,
-          credit: 0,
-          solde: newfdcaisse*100,
-        });
-        this.props.makeCloture(params);
-      });
-    } else {
       this.props.addTresor({
         type: "cloture",
         origine: this.props.caisse.uniqid,
@@ -298,13 +360,10 @@ class Cloture extends React.Component {
         solde: newfdcaisse*100,
       });
       this.props.makeCloture(params);
-    }
+
+
   }
 
-  printLastCloture() {
-    const { clotures, printLastCloture } = this.props;
-    printLastCloture(Object.values(clotures).pop());
-  }
 
   setSelectedDate(bound, date) {
     const { startDate, endDate } = this.state;
@@ -325,21 +384,137 @@ class Cloture extends React.Component {
   };
 
 
+
+  // ! --- méthodes comptage ---
+  openCountTool() {
+    this.setState({counttoolOpen:true});
+  }
+  closeCountTool() {
+    this.setState({counttoolOpen:false});
+  }
+  validateCountTool(valeur) {
+    this.setState({saisie_especes: valeur, counttoolOpen:false});
+  }
+  openCountTRTool() {
+    this.setState({counttrtoolOpen:true});
+  }
+  closeCountTRTool() {
+    this.setState({counttrtoolOpen:false});
+  }
+  validateCountTRTool(valeur) {
+    this.setState({saisie_ticket: valeur, counttrtoolOpen:false});
+  }
+
+  getVentilation(periode) {
+
+    const { ventilation } = periode;
+
+    let especes = 0,
+        carte = 0,
+        ticket = 0,
+        cheque = 0,
+        avoir = 0;
+
+    if (ventilation && ventilation.moyen) {
+      const esp = ventilation.moyen.find(moy=>moy.moyen==='especes');
+      if (esp) especes = esp.valeur;
+      const cb = ventilation.moyen.find(moy=>moy.moyen==='carte');
+      if (cb) carte = cb.valeur;
+      const tr = ventilation.moyen.find(moy=>moy.moyen==='ticket');
+      if (tr) ticket = tr.valeur;
+      const chq = ventilation.moyen.find(moy=>moy.moyen==='cheque');
+      if (chq) cheque = chq.valeur;
+      const avr = ventilation.moyen.find(moy=>moy.moyen==='avoir');
+      if (avr) avoir = avr.valeur;
+    }
+
+    return {especes, carte, ticket, cheque, avoir};
+  }
+
+  validComptage(fieldname, value) {
+
+    console.log('validComptage', fieldname, value);
+
+    if (([
+      "saisie_carte", 
+      "saisie_ticket", 
+      "saisie_cheque", 
+      "saisie_especes", 
+      "saisie_avoir"
+    ]).includes(fieldname)) {
+      
+      const { comptage } = this.state;
+      let __comptage = {...comptage, total:0};
+
+      if (__comptage===null) {
+        __comptage = {
+          especes: 0,
+          carte: 0,
+          ticket: 0,
+          cheque: 0,
+          avoir: 0
+        };
+      }
+
+      const __field = fieldname.substr(7);
+
+      __comptage[__field] =  Number(value);
+      const totalcomptage = Object.values(__comptage).reduce((a,b)=>a+b,0);
+
+      console.log('comptage', __field, __comptage);
+
+      this.setState({comptage: {...__comptage, [__field]: Number(value), total:totalcomptage}});
+
+    }
+  }
+
+  checkComptage(periode) {
+    const ventilation = this.getVentilation(periode);
+    const { comptage } = this.state;
+
+    let __valid = true;
+
+    (['especes', 'carte', 'ticket', 'cheque', 'avoir']).forEach(moyen => {
+      if (ventilation[moyen] > 0) {
+        if (!comptage || 
+           (comptage && !comptage.hasOwnProperty(moyen)) || 
+           ((comptage && comptage[moyen] !== ventilation[moyen]) && !this.state['motif_'+moyen])) __valid = false;
+      } else {
+        if (comptage && comptage.hasOwnProperty(moyen) && comptage[moyen]>0 && !this.state['motif_'+moyen]) __valid = false;
+      }
+    });
+
+    return __valid;
+
+  }
+
+
+  getEcarts(periode) {
+    const ventilation = this.getVentilation(periode);
+    const { comptage } = this.state;
+
+    let __ecarts = {};
+
+    (['especes', 'carte', 'ticket', 'cheque', 'avoir']).forEach(moyen => {
+      if (comptage && comptage[moyen]!== ventilation[moyen]) __ecarts['ecart_'+moyen] = comptage[moyen] - ventilation[moyen];
+    });
+
+    return __ecarts;
+
+  }
+
   render() {
     const {
       periode,
-      clotures,
-      printPeriodeX,
       listeCommandes,
       catalogue,
-     // fonddecaissetheo,
+      caisses,
+      user,
     } = this.props;
 
     const {
       saisie_prelevement,
-      saisie_comptage,
       activeField,
-      comptageOpen,
       comptage,
       selection_caisse,
       selection_operator,
@@ -348,10 +523,32 @@ class Cloture extends React.Component {
       startDate,
       endDate,
       fonddecaisse,
+
+      motifOpen,
+      motifField,
+
+      counttoolOpen,
+      counttrtoolOpen,
+      saisie_carte, 
+      saisie_ticket, 
+      saisie_cheque, 
+      saisie_especes, 
+      saisie_avoir,
+
+      motif_especes,
+      motif_carte,
+      motif_cheque,
+      motif_ticket,
+      motif_avoir,
+
     } = this.state;
 
     let params = {
-      user: periode.editeur,
+      user: {
+        id: user.id,
+        nom: user.nom,
+        user_id: user.user_id,
+      },
       caisses: [],
       vendeurs: [],
       fdcaisse: fonddecaisse,
@@ -365,7 +562,6 @@ class Cloture extends React.Component {
       params.fin = periode.fin;
     }
 
-    // logger.log('listeCommandes', Object.values(listeCommandes).length);
 
     if (selection_caisse.id !== "allcash")
       params["caisses"] = [selection_caisse];
@@ -377,40 +573,45 @@ class Cloture extends React.Component {
       catalogue,
       params
     );
+
+    // logger.log("periode", periode);
+
     // logger.log("periode_z", periode_z);
 
-    const __strimp = strings.modules.cloture.impression;
+    const readyToCloture = this.testStandbyCommandes(periode_z);
 
     const operators = this.getListeVendeurs();
-    const caisses = this.getListeCaisses();
 
-    //  const prelevement_fv = keyboardOpen ? fieldvalue.replace(',','.') : prelevement;
 
     // la valeur doit être une chaîne avec
     const prelevement_fv =
       activeField === "saisie_prelevement"
         ? String(fieldvalue).replace(",", ".")
         : saisie_prelevement;
-    const comptage_fv =
-      activeField === "saisie_comptage"
-        ? String(fieldvalue).replace(",", ".")
-        : saisie_comptage;
 
-    logger.log("fieldvalue", activeField, fieldvalue);
+logger.log('prelevement_fv',prelevement_fv,saisie_prelevement);
+
+    const comptage_fv = comptage ? comptage.total : 0;
+
+    // logger.log("fieldvalue", activeField, fieldvalue);
     logger.log("comptage", comptage);
-    logger.log("prelevement_fv l.258", prelevement_fv);
+    // logger.log("prelevement_fv l.258", prelevement_fv);
 
-    const comptage_total =
-      null !== comptage ? comptage.total : Number(comptage_fv);
-    const fdcaisse_new =
-      null !== comptage
-        ? devise(comptage.total - Number(prelevement_fv.replace(",", ".")))
-        : devise(
-            Number(comptage_fv) - Number(prelevement_fv.replace(",", "."))
-          );
+    // const comptage_total = null !== comptage ? comptage.total : Number(comptage_fv);
 
+    const fdcaisse_new = 
+      prelevement_fv!==null 
+      ? devise(periode_z.periode.fdcaisse + (comptage_fv - Number(String(prelevement_fv).replace(",", "."))))
+      : devise(periode_z.periode.fdcaisse + comptage_fv)
+      ;
+          
+    // logger.log('fdcaisse_new', periode_z.periode.fdcaisse+' + ('+comptage_fv+' - '+Number(prelevement_fv.replace(",", "."))+')');
     // logger.log('operators', operators);
     // logger.log('caisses', caisses);
+
+    if (!readyToCloture) {
+      return <LoadingSpinner />;
+    }
 
     if (!this.shouldComponentRender()) {
       return <LoadingSpinner />;
@@ -420,412 +621,241 @@ class Cloture extends React.Component {
       return <LoadingSpinner />;
     }
 
-    let vndvnt = 0,
-      vndrmb = 0,
-      vndtotal = 0;
-    periode.ventilation.vendeur.forEach((vendeur) => {
-      vndvnt += vendeur.ventes;
-      vndrmb += vendeur.remboursements;
-      vndtotal += vendeur.ventes - vendeur.remboursements;
-    });
 
-    let tvaht = 0,
-      tvamnt = 0,
-      tvattc = 0;
-    periode.ventilation.tva.forEach((tva) => {
-      tvaht += tva.ht;
-      tvamnt += tva.montant;
-      tvattc += tva.ttc;
-    });
+    let saisie_carte_fv = activeField==='saisie_carte' ? String(fieldvalue).replace(',','.') : saisie_carte;
+    let saisie_ticket_fv = activeField==='saisie_ticket' ? String(fieldvalue).replace(',','.') : saisie_ticket;
+    let saisie_cheque_fv = activeField==='saisie_cheque' ? String(fieldvalue).replace(',','.') : saisie_cheque;
+    let saisie_especes_fv = activeField==='saisie_especes' ? String(fieldvalue).replace(',','.') : saisie_especes;
+    let saisie_avoir_fv = activeField==='saisie_avoir' ? String(fieldvalue).replace(',','.') : saisie_avoir;
 
-    let moytotal = 0;
-    periode.ventilation.moyen.forEach((moyen) => {
-      moytotal += moyen.valeur;
-    });
 
-    const lastCloture = Object.values(clotures).pop();
-    console.log("Last cloture: ", lastCloture);
+    const { especes, carte, ticket, cheque, avoir } = this.getVentilation(periode_z.periode);
+    const { ecart_especes, ecart_carte, ecart_ticket, ecart_cheque, ecart_avoir } = this.getEcarts(periode_z.periode);
+
+    let ecart_especes_fv = !ecart_especes ? saisie_especes_fv - especes : ecart_especes;
+    let ecart_carte_fv = !ecart_carte ? saisie_carte_fv - carte : ecart_carte;
+    let ecart_ticket_fv = !ecart_ticket ? saisie_ticket_fv - ticket : ecart_ticket;
+    let ecart_cheque_fv = !ecart_cheque ? saisie_cheque_fv - cheque : ecart_cheque;
+    let ecart_avoir_fv = !ecart_avoir ? saisie_avoir_fv - avoir : ecart_avoir;
+
+
+    const __cannotCloture = (
+      !this.checkComptage(periode_z.periode) ||
+      saisie_prelevement === null ||
+      periode_z.standby > 0 ||
+      periode_z.cmdtoarchive.length === 0
+    );
+
 
     return (
       <div className="Cloture container">
-        {/* <TopZone /> */}
         <div className="MainZone">
-          <div className="clo-gauche">
-            <div className="blocgauche">
-              <div className="blocgauche-wrapper">
-                <div className="zone-lastcloture">
-                  <div className="titre">
-                    {strings.modules.cloture.derniere.titre}
-                  </div>
-                  {lastCloture && (
-                    <div className="itmliste">
-                      <div className="item item-date">
-                        <div className="label">
-                          {strings.modules.cloture.derniere.caption.date}
-                        </div>
-                        <div className="valeur">
-                          {this.formatDate(lastCloture.archived, "dd/MM/yyyy")}
-                        </div>
-                      </div>
-                      <div className="item item-heure">
-                        <div className="label">
-                          {strings.modules.cloture.derniere.caption.heure}
-                        </div>
-                        <div className="valeur">
-                          {this.formatDate(lastCloture.archived, "HH:mm:ss")}
-                        </div>
-                      </div>
-                      <div className="item item-editeur">
-                        <div className="label">
-                          {strings.modules.cloture.derniere.caption.editeur}
-                        </div>
-                        <div className="valeur">{`${lastCloture.periode.editeur.nom} (${lastCloture.periode.editeur.id})`}</div>
-                      </div>
-                    </div>
-                  )}
-                  {lastCloture == null && (
-                    <div className="no-item">
-                      {strings.modules.cloture.derniere.aucune}
-                    </div>
-                  )}
-                  <StdButton
-                    identifier="btnreprint"
-                    elementclass="btnreprint"
-                    key="btnreprint"
-                    text="Ré-imprimer"
-                    disabled={null == lastCloture}
-                    onClick={() => {
-                      this.printLastCloture();
-                    }}
-                  />
-                  <StdButton
-                    identifier="btnliste"
-                    elementclass="btnliste"
-                    key="btnliste"
-                    text="Liste des clôtures"
-                    onClick={() => {
-                      history.push(paths.LISTECLOTURES);
-                    }}
-                  />
-                </div>
-                <div className="zone-selecteur">
-                  <div className="label">
-                    {strings.modules.cloture.selection.caisse}
-                  </div>
-                  <FormControl variant="outlined" className="selecteur-caisse">
-                    <Select
-                      value={selection_caisse.id}
-                      onChange={this.selectCaisse}
-                      className="selecteur selecteur-caisse-select"
-                    >
-                      {Object.values(caisses).map((cash) => (
-                        <MenuItem key={`cashitm${cash.id}`} value={cash.id}>
-                          {cash.nom}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                  <div className="label">
-                    {strings.modules.cloture.selection.vendeur}
-                  </div>
-                  <FormControl variant="outlined" className="selecteur-vendeur">
-                    <Select
-                      value={selection_operator.id}
-                      onChange={this.selectVendeur}
-                      className="selecteur selecteur-vendeur-select"
-                    >
-                      {Object.values(operators).map((ope) => (
-                        <MenuItem key={`opeitm${ope.id}`} value={ope.id}>
-                          {ope.nom}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </div>
-                <StdButton
-                  identifier="btncomptage"
-                  elementclass="btncomptage"
-                  key="btncomptage"
-                  text={
-                    selection_caisse.id !== "allcash" ||
-                    selection_operator.id !== "allope"
-                      ? strings.modules.cloture.selection.comptagebtn_partiel
-                      : strings.modules.cloture.selection.comptagebtn
-                  }
-                  disabled={periode_z.cmdtoarchive.length === 0}
-                  onClick={() => {
-                    this.openComptage(periode_z);
-                  }}
-                />
+          <div className="clo-top">
+            <StdButton identifier="btnretour" elementclass="btnretour" key="btnretour" text={ strings.general.dialog.back } onClick={ () => { history.push(paths.CLOTURE) }} />
+            <div className="zone-selecteur">
+              <div className="label">
+                {strings.modules.cloture.selection.caisse}
+              </div>
+              <FormControl variant="outlined" className="selecteur-caisse">
+                <Select
+                  value={selection_caisse.id}
+                  onChange={this.selectCaisse}
+                  className="selecteur selecteur-caisse-select"
+                >
+                  {Object.values(caisses).map((cash) => (
+                    <MenuItem key={`cashitm${cash.id}`} value={cash.id}>
+                      {cash.nom}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <div className="label">
+                {strings.modules.cloture.selection.vendeur}
+              </div>
+              <FormControl variant="outlined" className="selecteur-vendeur">
+                <Select
+                  value={selection_operator.id}
+                  onChange={this.selectVendeur}
+                  className="selecteur selecteur-vendeur-select"
+                >
+                  {Object.values(operators).map((ope) => (
+                    <MenuItem key={`opeitm${ope.id}`} value={ope.id}>
+                      {ope.nom}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </div>
+            <div className="periode">
+              <div className="titre">{strings.modules.cloture.selection.titre}</div>
+              <div className="dates">
+                { `${strings.modules.cloture.selection.debut} 
+                   ${format(periode.debut, "d MMM yyyy (HH'h'mm)", { locale: frLocale })} 
+                   ${strings.modules.cloture.selection.fin} 
+                   ${ format(periode.fin, "d MMM yyyy (HH'h'mm)", { locale: frLocale })}
+                `}
               </div>
             </div>
-            <StdButton
-              identifier="btnx"
-              elementclass="btnx"
-              key="btnx"
-              text={
-                selection_caisse.id !== "allcash" ||
-                selection_operator.id !== "allope"
-                  ? strings.modules.cloture.print_partiel
-                  : strings.modules.cloture.print_x
-              }
-              onClick={() => {
-                logger.log("printPeriodeX()");
-                printPeriodeX();
-              }}
-            />
           </div>
-          <div className="clo-centre">
-            <div className="bloccentre">
-              <div className="blocwrapper">
-                <div className="periode">
-                  <div className="ttl">{__strimp.periode.titre}</div>
-                  <div className="val">{`${format(
-                    periode.debut,
-                    "dd/MM/yyyy - HH:mm:ss",
-                    { locale: frLocale }
-                  )}  ->  ${format(periode.fin, "dd/MM/yyyy - HH:mm:ss", {
-                    locale: frLocale,
-                  })}`}</div>
-                  <div className="editeur">{`${__strimp.editeur} ${periode.editeur.nom} (${periode.editeur.id})`}</div>
+         
+          <div className="clo-main">
+            <div className="clo-gauche">
+              <div className="clo-gauche-top">
+                <div className="cptitem cptitem-caption">
+                  <div className="balance-label">{ strings.modules.cloture.comptage.captions.balance }</div>
+                  <div className="ecarts-label">{ strings.modules.cloture.comptage.captions.ecarts }</div>
+                  <div className="motif-label">{ strings.modules.cloture.comptage.captions.motif }</div>
                 </div>
-                <div className="sel">
-                  {periode.vendeurs.length > 1 && (
-                    <div className="val">{`${__strimp.vendeurs[1]}${strings.vendeurs_all}`}</div>
-                  )}
-                  {periode.vendeurs.length === 1 && (
-                    <div className="val">{`${__strimp.vendeurs[0]}${periode.vendeurs[0].nom} (${periode.vendeurs[0].id})`}</div>
-                  )}
-                  {periode.caisses.length > 1 && (
-                    <div className="val">{`${__strimp.caisses[1]}${strings.caisses_all}`}</div>
-                  )}
-                  {periode.caisses.length === 1 && (
-                    <div className="val">{`${__strimp.caisses[0]}${periode.caisses[0].nom} (${periode.caisses[0].id})`}</div>
-                  )}
+                <div className={ `cptitem cptitem-esp${(ecart_especes_fv!==0 ? (motif_especes ? ' warning' : ' error') : '')}`}>
+                  <div className="item-label">
+                    <EspecesIcon htmlColor="#ffffff" />
+                    { strings.modules.cloture.comptage.moyens.especes }
+                  </div>
+                  <div className="valeur valeur-static">{ `${devise(especes)} €` }</div>
+                  <div className="valeur valeur-input" onClick={()=>{ this.startSaisie('saisie_especes') }}>
+                    <div className="label">{ strings.modules.cloture.comptage.saisie.caption }</div>
+                    <div className="input">{ `${(saisie_especes_fv ? devise(saisie_especes_fv)+' €' : '')}` }</div>
+                  </div>
+                  <div className="ecart">{ `${ecart_especes_fv>0 ? '+':''} ${devise(ecart_especes_fv)} €` }</div>
+                  {(ecart_especes_fv!==0) && (<div className="motif" onClick={()=>{ this.openMotifModal('motif_especes') }}>{ motif_especes }</div>)}
                 </div>
-                <div className="recap">
-                  <div className="recap-item">
-                    <div className="nom">{__strimp.depenses}</div>
-                    <div className="val">{devise(periode.depenses)}</div>
+                <div className={ `cptitem cptitem-cb${(ecart_carte_fv!==0 ? (motif_carte ? ' warning' : ' error') : '')}` }>
+                  <div className="item-label">
+                    <CarteIcon htmlColor="#ffffff" />
+                    { strings.modules.cloture.comptage.moyens.carte }
                   </div>
-                  <div className="recap-item">
-                    <div className="nom">{__strimp.remboursements}</div>
-                    <div className="val">{devise(periode.remboursements)}</div>
+                  <div className="valeur valeur-static">{ `${devise(carte)} €` }</div>
+                  <div className="valeur valeur-input" onClick={()=>{ this.startSaisie('saisie_carte') }}>
+                    <div className="label">{ strings.modules.cloture.comptage.saisie.caption }</div>
+                    <div className="input">{ `${(saisie_carte_fv ? devise(saisie_carte_fv)+' €' : '')}` }</div>
                   </div>
-                  <div className="recap-item">
-                    <div className="nom">{__strimp.encaissements}</div>
-                    <div className="val">{devise(periode.ventes)}</div>
-                  </div>
-                  <div className="recap-item">
-                    <div className="nom">{__strimp.mtcaisse}</div>
-                    <div className="val">{devise(periode.mtcaisse)}</div>
-                  </div>
+                  <div className="ecart">{ `${ecart_carte_fv>0 ? '+':''} ${devise(ecart_carte_fv)} €` }</div>
+                  {(ecart_carte_fv!==0) && (<div className="motif" onClick={()=>{ this.openMotifModal('motif_carte') }}>{ motif_carte }</div>)}
                 </div>
-                <div className="titre">{__strimp.titre.x}</div>
-                <div className="detail">
-                  <div className="detail-item">
-                    <div className="nom">{__strimp.caption.ventes}</div>
-                    <div className="val">{devise(periode.ventes)}</div>
+                <div className={ `cptitem cptitem-tr${(ecart_ticket_fv!==0 ? (motif_ticket ? ' warning' : ' error') : '')}` }>
+                  <div className="item-label">
+                    <TicketIcon htmlColor="#ffffff" />
+                    { strings.modules.cloture.comptage.moyens.ticket }
                   </div>
-                  <div className="detail-item">
-                    <div className="nom">{__strimp.caption.remboursements}</div>
-                    <div className="val">{`-${devise(
-                      periode.remboursements
-                    )}`}</div>
+                  <div className="valeur valeur-static">{ `${devise(ticket)} €` }</div>
+                  <div className="valeur valeur-input" onClick={()=>{ this.startSaisie('saisie_ticket') }}>
+                    <div className="label">{ strings.modules.cloture.comptage.saisie.caption }</div>
+                    <div className="input">{ `${(saisie_ticket_fv ? devise(saisie_ticket_fv)+' €' : '')}` }</div>
                   </div>
-                  <div className="detail-item pre-filet post-space">
-                    <div className="nom">{__strimp.caption.ca}</div>
-                    <div className="val">{devise(periode.ca)}</div>
-                  </div>
-                  <div className="detail-item total">
-                    <div className="nom">{__strimp.caption.numtickets}</div>
-                    <div className="val">{periode.numtickets}</div>
-                  </div>
-                  <div className="detail-item total">
-                    <div className="nom">{__strimp.caption.ticket_moyen}</div>
-                    <div className="val">{devise(periode.ticket_moyen)}</div>
-                  </div>
+                  <div className="ecart">{ `${ecart_ticket_fv>0 ? '+':''} ${devise(ecart_ticket_fv)} €` }</div>
+                  {(ecart_ticket_fv!==0) && (<div className="motif" onClick={()=>{ this.openMotifModal('motif_ticket') }}>{ motif_ticket }</div>)}
                 </div>
-                <div className="titre">{__strimp.ventilation.vendeur}</div>
-                <div className="ventil intit ventil-vendeur">
-                  <div className="ventil-intit"></div>
-                  <div className="ventil-intit">
-                    {__strimp.caption.vente_short}
+                <div className={ `cptitem cptitem-chq${(ecart_cheque_fv!==0 ? (motif_cheque ? ' warning' : ' error') :'')}` }>
+                  <div className="item-label">
+                    <ChequeIcon htmlColor="#ffffff" />
+                    { strings.modules.cloture.comptage.moyens.cheque }
                   </div>
-                  <div className="ventil-intit">
-                    {__strimp.caption.remboursements_short}
+                  <div className="valeur valeur-static">{ `${devise(cheque)} €` }</div>
+                  <div className="valeur valeur-input" onClick={()=>{ this.startSaisie('saisie_cheque') }}>
+                    <div className="label">{ strings.modules.cloture.comptage.saisie.caption }</div>
+                    <div className="input">{ `${(saisie_cheque_fv ? devise(saisie_cheque_fv)+' €' : '')}` }</div>
                   </div>
-                  <div className="ventil-intit">
-                    {__strimp.caption.ca_short}
-                  </div>
+                  <div className="ecart">{ `${ecart_cheque_fv>0 ? '+':''} ${devise(ecart_cheque_fv)} €` }</div>
+                  {(ecart_cheque_fv!==0) && (<div className="motif" onClick={()=>{ this.openMotifModal('motif_cheque') }}>{ motif_cheque }</div>)}
                 </div>
-                {periode.ventilation.vendeur.map((vendeur) => (
-                  <div
-                    className="ventil ventil-vendeur"
-                    key={`vnd-${vendeur.id}`}
-                  >
-                    <div className="ventil-nom">{`${vendeur.nom} (${vendeur.id})`}</div>
-                    <div className="ventil-val">{devise(vendeur.ventes)}</div>
-                    <div className="ventil-val">{`-${devise(
-                      vendeur.remboursements
-                    )}`}</div>
-                    <div className="ventil-val">
-                      {devise(vendeur.ventes - vendeur.remboursements)}
-                    </div>
+                <div className={ `cptitem cptitem-avr${(ecart_avoir_fv!==0 ? (motif_avoir ? ' warning' : ' error') : '')}` }>
+                  <div className="item-label">
+                    <QRCodeIcon htmlColor="#ffffff" />
+                    { strings.modules.cloture.comptage.moyens.avoir }
                   </div>
-                ))}
-                <div className="ventil ventil-vendeur total">
-                  <div className="ventil-nom">{__strimp.caption.total}</div>
-                  <div className="ventil-val">{devise(vndvnt)}</div>
-                  <div className="ventil-val">{`-${devise(vndrmb)}`}</div>
-                  <div className="ventil-val">{devise(vndtotal)}</div>
-                </div>
-                <div className="titre">{__strimp.ventilation.tva}</div>
-                <div className="ventil intit ventil-tva">
-                  <div className="ventil-intit">{__strimp.caption.type}</div>
-                  <div className="ventil-intit">{__strimp.caption.ht}</div>
-                  <div className="ventil-intit">{__strimp.caption.tva}</div>
-                  <div className="ventil-intit">{__strimp.caption.ttc}</div>
-                </div>
-                {periode.ventilation.tva.map((tva) => (
-                  <div
-                    className="ventil ventil-vendeur"
-                    key={`ventil-${tva.id}`}
-                  >
-                    {/* <div className="ventil-nom">{`${devise(tva.taux*100)}%`}</div> */}
-                    <div className="ventil-nom">{tva.taux}</div>
-                    <div className="ventil-val">{devise(tva.ht)}</div>
-                    <div className="ventil-val">{devise(tva.montant)}</div>
-                    <div className="ventil-val">{devise(tva.ttc)}</div>
+                  <div className="valeur valeur-static">{ `${devise(avoir)} €` }</div>
+                  <div className="valeur valeur-input" onClick={()=>{ this.startSaisie('saisie_avoir') }}>
+                    <div className="label">{ strings.modules.cloture.comptage.saisie.caption }</div>
+                    <div className="input">{ `${(saisie_avoir_fv ? devise(saisie_avoir_fv)+' €' : '')}` }</div>
                   </div>
-                ))}
-                <div className="ventil ventil-vendeur total">
-                  <div className="ventil-nom">{__strimp.caption.total}</div>
-                  <div className="ventil-val">{devise(tvaht)}</div>
-                  <div className="ventil-val">{devise(tvamnt)}</div>
-                  <div className="ventil-val">{devise(tvattc)}</div>
+                  <div className="ecart">{ `${ecart_avoir_fv>0 ? '+':''} ${devise(ecart_avoir_fv)} €` }</div>
+                  {(ecart_avoir_fv!==0) && (<div className="motif" onClick={()=>{ this.openMotifModal('motif_avoir') }}>{ motif_avoir }</div>)}
                 </div>
-                <div className="titre">{__strimp.ventilation.moyen}</div>
-                {periode.ventilation.moyen.map((moyen) => (
-                  <div
-                    className="ventil ventil-vendeur"
-                    key={`ventil-${moyen.moyen}`}
-                  >
-                    <div className="ventil-nom">
-                      {__strimp.caption.moyens[moyen.moyen]}
-                    </div>
-                    <div className="ventil-val">{devise(moyen.valeur)}</div>
-                  </div>
-                ))}
-                <div className="ventil ventil-vendeur total">
-                  <div className="ventil-nom">{__strimp.caption.total}</div>
-                  <div className="ventil-val">{devise(moytotal)}</div>
-                </div>
-              </div>
-            </div>{" "}
-            {/* /.bloccentre */}
-          </div>{" "}
-          {/* /.clo-centre */}
-          <div className="clo-droite">
-            <div className="blocdroite">
-              <div className="droite-top">
-                <div key={`total-fonddecaisse`} className="valeur-input">
-                  <label>{strings.modules.cloture.total_fdcaisse}</label>
+
+              </div>{/* -- /.clo-gauche-top -- */}
+
+              <div className="clo-gauche-btm">
+                <div key={`total-fonddecaisse`} className="total-fdc">
+                  <label>{strings.modules.cloture.comptage.especes.total_fdcaisse}</label>
                   <div className="input">{`${devise(
                     periode_z.periode.fdcaisse
                   )} €`}</div>
                 </div>
-
-                <div key={`total-caisse-theo`} className="valeur-input">
-                  <label>{strings.modules.cloture.total_caisse_theo}</label>
+                <div key={`total-caisse-theo`} className="total-caisse">
+                  <label>{strings.modules.cloture.comptage.especes.total_montant}</label>
                   <div className="input">{`${devise(
-                    periode_z.periode.ca
+                    periode_z.periode.fdcaisse+periode_z.periode.ca
                   )} €`}</div>
                 </div>
+              </div>{/* -- /.clo-gauche-btm -- */}
+            
+            </div>{/* -- /.clo-gauche -- */}
+          
 
-                <div
-                  className="totalcomptageField editable"
-                  onClick={() => {
-                    this.startSaisie("saisie_comptage");
-                  }}
-                >
-                  <div
-                    key={`total-caisse-cmpt`}
-                    className="valeur-input strong"
-                  >
-                    <label>{strings.modules.cloture.total_caisse_cmpt}</label>
-                    <div className="input">{`${
-                      comptage_total ? devise(comptage_total) + " €" : ""
-                    }`}</div>
-                  </div>
-                </div>
+            <div className="clo-droite">
 
-                {/* <div key={`fonddecaisse-theo`} className="valeur-input">
-                  <label>{strings.modules.cloture.fondcaisse_default}</label>
-                  <div className="input">{`${devise(fonddecaissetheo)} €`}</div>
-                </div> */}
+              <div className="clo-droite-top">
+                <StdButton 
+                  identifier="btncomptcaisse" 
+                  elementclass="btncomptcaisse" 
+                  key="btncomptcaisse" 
+                  text={ strings.modules.cloture.comptage.actions.outilcomptage } 
+                  onClick={ this.openCountTool } 
+                />
+                <StdButton 
+                  identifier="btncompttr" 
+                  elementclass="btncompttr" 
+                  key="btncompttr" 
+                  text={ strings.modules.cloture.comptage.actions.outilcomptagetr } 
+                  onClick={ this.openCountTRTool } 
+                />
+              </div>{/* -- /.clo-droite-top -- */}
 
-                <div
-                  className="prelevementField editable"
+              <div className="clo-droite-mid">
+                <div 
+                  key={`prelevement`} 
+                  className="prelevementField"
                   onClick={() => {
                     this.startSaisie("saisie_prelevement");
                   }}
                 >
-                  <div className="valeur-input strong">
+                  <div className="valeur-input editable strong">
                     <label>{strings.modules.cloture.prelevement}</label>
                     <div className="input">{`${
                       prelevement_fv ? devise(prelevement_fv) + " €" : ""
                     }`}</div>
                   </div>
                 </div>
-              </div>
-              <div className="droite-btm">
                 <div key={`fonddecaisse-new`} className="valeur-input">
                   <label>{strings.modules.cloture.fond_de_caisse}</label>
                   <div className="input">{`${fdcaisse_new} €`}</div>
                 </div>
-                {/* <LabelledField 
-                  id={ `fonddecaisse-new` }
-                  key={ `fonddecaisse-new` }
-                  name={ `fonddecaisse_new` }
-                  value={ fdcaisse_new } 
-                  placeholder=''
-                  type='text' 
-                  readOnly={ true } 
-                  label={ strings.modules.cloture.fond_de_caisse }
-                  postvalue='€'
-                /> */}
-              </div>
-            </div>
-            <StdButton
-              identifier="btncloture"
-              elementclass="btncloture"
-              key="btncloture"
-              text={
-                selection_caisse.id !== "allcash" ||
-                selection_operator.id !== "allope"
-                  ? strings.modules.cloture.cloture_partielle
-                  : strings.modules.cloture.cloture_z
-              }
-              disabled={
-                (comptage === null && comptage_fv === "") ||
-                periode_z.standby > 0 ||
-                periode_z.cmdtoarchive.length === 0
-              }
-              onClick={() => {
-                this.prepareCloture(
-                  Number(prelevement_fv.replace(",", ".")),
-                  comptage_total,
-                  Number(fdcaisse_new.replace(",", "."))
-                );
-              }}
-            />
-          </div>
-        </div>
-        <Comptage
+              </div>{/* -- /.clo-droite-mid -- */}
+
+              <div className="clo-droite-btm">
+                <StdButton
+                  identifier="btncloture"
+                  elementclass="btncloture"
+                  key="btncloture"
+                  text={ strings.modules.cloture.cloture_z }
+                  disabled={ __cannotCloture }
+                  onClick={() => {
+                    this.prepareCloture(
+                      Number(prelevement_fv.replace(",", ".")),
+                      Number(fdcaisse_new.replace(",", ".")),
+                      periode_z.periode
+                    );
+                  }}
+                />
+              </div>{/* -- /.clo-droite-btm -- */}
+              
+            </div>{/* -- /.clo-droite -- */}
+          </div>{/* -- /.clo-main -- */}
+        </div>{/* -- /.MainZone -- */}
+      
+        {/* <Comptage
           open={comptageOpen}
           closeComptage={this.closeComptage}
-          openCommandesListe={this.openCommandesListe}
           caisses={caisses}
           operators={operators}
           selection_caisse={selection_caisse}
@@ -834,7 +864,7 @@ class Cloture extends React.Component {
           emission={periode_z.periode.emission}
           commandes={periode_z.cmdtoarchive}
           validComptage={this.validComptage}
-        />
+        /> */}
         <NumberKeyboard
           open={keyboardOpen}
           numbersOnly={false}
@@ -842,15 +872,16 @@ class Cloture extends React.Component {
           inner={true}
           closeHandler={this.closeKeyboard}
         />
+        <MotifModal
+          open={motifOpen}
+          closeHandler={this.closeMotifModal}
+          fieldname={motifField}
+          setMotif={this.setMotif}
+        />
       </div>
     );
   }
 }
 export default Cloture;
 
-Cloture.propTypes = {
-  //   catalogue: PropTypes.array,
-  //   loading: PropTypes.bool,
-  //   error: PropTypes.string,
-  //   getAllActive: PropTypes.func
-};
+

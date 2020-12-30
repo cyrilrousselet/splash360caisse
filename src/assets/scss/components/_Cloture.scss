@@ -59,329 +59,404 @@
 
   .MainZone {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: flex-start;
     height: 100%;
     padding: 0;
   }
 
-  .clo-gauche,
-  .clo-centre,
-  .clo-droite {
-    width: 30%;
-    height: 100%;
-  }
-  .clo-centre {
-    width: 38%;
-    font-family: $f_boo;
-    font-size: 12px;
-    @include font-smoothing(on);
+  .clo-top {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 
-   
+    padding-bottom: 15px;
+
+    .btnretour {
+      flex-grow: unset;
+      flex-shrink: unset;
+      background-color: $gris-bleu;
+      .StdButton-text {
+        text-decoration: underline;
+        color: $blanc;
+      }
+    }
+
+
+    .zone-selecteur {
+      display: flex;
+      flex-direction: row;
+      .selecteur-caisse,
+      .selecteur-vendeur {
+        min-width: 150px;
+        margin: 0 20px 0 10px;
+      }
+      
+      .label {
+        font-family: $f_blk;
+        font-size: 14px;
+        color: $noir;
+        padding: 15px 0 5px;
+      }
+      .selecteur {
+        background-color: $gris-clair;
+        font-family: $f_boo;
+        font-size: 14px;
+        color: $noir;
+        line-height: 0.1em;
+        .MuiOutlinedInput-input {
+          padding: 15px 15px;
+        }
+        .MuiSelect-root {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+      }
+    }
+
+    .periode {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      .titre {
+        font-family: $f_blk;
+        font-size: 20px;
+        color: $noir;
+        width: 100%;
+      }
+      .dates {
+        font-family: $f_med;
+        font-size: 16px;
+        color: $noir;
+      }
+    }
+
   }
 
-  .blocgauche,
-  .bloccentre,
-  .blocdroite {
+  .clo-main {
     background-color:$blanc;
     box-shadow: 0 5px 15px 0 rgba(0,0,0,0.10);
     border-radius: 15px;
     width: 100%;
     height: calc(100% - 60px);
     overflow-y: auto;
+    padding: 10px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
   }
-  .bloccentre {
-    box-shadow: none;
+
+
+  .clo-gauche {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: calc(100% - 240px);
     height: 100%;
-    border: 1px dashed $noir;
-    padding: 20px;
-
-    overflow-y: scroll;
-
-    .wrapper {
-      height: 100%;
-      width: 100%;
-    }
-    .periode {
-      .val {
-        text-align: center;
-      }
-      padding-bottom: 10px;
-    }
-    .sel {
-      padding-bottom: 10px;
-    }
-
-    .recap {
-      .recap-item {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-      }
-      padding-bottom: 10px;
-    }
-
-    .titre {
-      text-align: center;
-      border-top: 1px solid $noir;
-      border-bottom: 1px solid $noir;
-      padding: 5px 0;
-      margin: 10px 0 5px;
-    }
-    .detail {
-      .detail-item {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-
-        &.pre-filet {
-          margin-top: 5px;
-          padding-top: 5px;
-          border-top: 1px solid $noir;
-        }
-        &.post-space {
-          padding-bottom: 10px;
-        }
-        &.total {
-          padding-left: 20px;
-        }
-      }
-    }
-    .ventil {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      .ventil-nom,
-      .ventil-intit:nth-child(1) {
-        width: 30%;
-      }
-      &.total {
-        padding-top: 10px;
-      }
-      &.intit {
-        padding-bottom: 5px;
-      }
-    }
-
+    padding-bottom: 10px;
   }
-  .blocgauche {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .blocgauche-wrapper {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .zone-lastcloture {
-    width: calc(100% - 30px);
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 0;
-    min-height: 220px;
 
-    .titre {
-      text-align: left;
+  .clo-gauche-top,
+  .clo-gauche-btm {
+    width: 100%;
+  }
+
+  .cptitem {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 5px 0;
+
+    .item-label {
       font-family: $f_blk;
-      font-size: 14px;
-      color: $noir;
-      padding-bottom: 10px;
-      width: 100%;
-    }
-    .itmliste {
-      width: 100%;
-      padding-bottom: 10px;
-    }
-    .item {
-      display: flex;
-      flex-direction: row;
+      font-size: 13px;
+      color: $blanc;
+      background-color: $vert;
+      width: 70px;
+      height: 55px;
+      border-radius: 5px 0px 0px 5px;
+      padding: 2px 0px 5px;
+      display: inline-flex;
+      flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      padding: 5px 0;
+      text-align: center;
+      line-height: 0.9em;
+    }
+    &.cptitem-esp .item-label .MuiSvgIcon-root,
+    &.cptitem-chq .item-label .MuiSvgIcon-root {
+      margin-top: 8px;
+    }
+    &.cptitem-avr .item-label .MuiSvgIcon-root {
+      width: 16px;
+    }
+
+    .valeur-static {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: $f_blk;
+      font-size: 18px;
+      width: 100px;
+      height: 55px;
+      color: $vert;
+      border-radius: 0px 5px 5px 0px;
+      box-shadow: inset 0 0 0 3px $vert;
+    }
+
+
+    .valeur-input {
+      width: 140px;
+      margin-left: 10px;
       .label {
-        font-family: $f_boo;
-        font-size: 14px;
-        color: $noir;
+        width: 100%;
+        font-family: $f_blk;
+        font-size: 12px;
+        color: $primary;
+        padding: 0px 5px; 
+        height: 17px;
+        border-radius: 5px 5px 0px 0px;
+        box-shadow: inset 0 0 0 2px $primary;
       }
-      .valeur {
-        font-family: $f_med;
-        font-size: 14px;
-        color: $noir;
+      
+      .input {
+        width: 100%;
+        height: 38px;
+        border-radius: 0px 0px 5px 5px;
+        background-color: $primary;
+        padding: 0 10px;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+
+        font-family: $f_blk;
+        font-size: 18px;
+        color: $blanc;
+        
+        background-image: url('../../images/ico_edit-blanc.svg');
+        background-size: 18px 18px;
+        background-position: 10px center;
+        background-repeat: no-repeat; 
       }
     }
-    .no-item {
-      text-align: center;
+
+    .ecart {
+      height: 55px;
+      width: 100px;
+      font-family: $f_blk;
+      font-size: 15px;
+      display: inline-flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      color: $noir;
+    }
+
+    .motif {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: calc(100% - 430px);
+      height: 55px;
+      border-radius: 5px;
+      background-color: $blanc-fonce;
+      background-image: url('../../images/ico_edit.svg');
+      background-size: 18px 18px;
+      background-position: 10px center;
+      background-repeat: no-repeat; 
+
       font-family: $f_med;
       font-size: 14px;
+      text-transform: uppercase;
       color: $noir;
-
-    } 
-    .btnreprint {
-      width: 200px;
-      // left: 70px;
-      // top: 240px;
-      background-color: $gris-bleu;
     }
-    .btnliste {
-      width: 200px;
-      // left: 70px;
-      // top: 240px;
-      background-color: $gris-bleu;
+
+    &.error {
+      .item-label {
+        background-color: $rouge;
+      }
+      .valeur-static {
+        color: $rouge;
+        box-shadow: inset 0 0 0 2px $rouge;
+      }
+      .valeur-input {
+        .label {
+          color: $rouge;
+          box-shadow: inset 0 0 0 2px $rouge;
+        }
+        .input {
+          background-color: $rouge;
+        }
+      }
+      .ecart {
+        color: $rouge;
+      }
+    }
+    &.warning {
+      .item-label {
+        background-color: $orange;
+      }
+      .valeur-static {
+        color: $orange;
+        box-shadow: inset 0 0 0 2px $orange;
+      }
+      .valeur-input {
+        .label {
+          color: $orange;
+          box-shadow: inset 0 0 0 2px $orange;
+        }
+        .input {
+          background-color: $orange;
+        }
+      }
+      .ecart {
+        color: $orange;
+      }
     }
   }
-  .zone-selecteur {
-    width: calc(100% - 30px);
-    .selecteur-caisse,
-    .selecteur-vendeur {
-      width: 100%;
-    }
-    .label-inline {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
-      align-items: center;
-      .label {
-        width: 70px;
-        padding-top: 5px;
-      }
-    }
-    .datepicker {
-      width: calc(100% - 70px);
-      margin-top: 0;
-      .MuiInputBase-root {
-        font-size: 13px;
-      }
-    }
-    
+  
+  .cptitem-caption {
+    font-family: $f_blk;
+    font-size: 16px;
+    color: $noir;
 
-    .label {
+    .balance-label {
+      width: 320px;
+    }
+    .ecarts-label {
+      width: 100px;
+      text-align: center;
+    }
+    .motif-label {
+      width: 275px;
+    }
+  }
+
+  .total-fdc,
+  .total-caisse {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 5px;
+    label {
+      font-family: $f_med;
+      font-size: 16px;
+      color: $noir;
+      width: 175px;
+    }
+    .input {
       font-family: $f_blk;
-      font-size: 14px;
-      color: $noir;
-      width: 100%;
-      padding: 15px 0 5px;
+      font-size: 22px;
+      color: $primary;
+      width: 135px;
+      text-align: right;
     }
-    .selecteur {
-      background-color: $gris-clair;
-      font-family: $f_boo;
-      font-size: 14px;
-      color: $noir;
-      width: 100%;
-      line-height: 0.1em;
-      .MuiOutlinedInput-input {
-        padding: 15px 15px;
-      }
-    }
+  }
+  .total-caisse {
+    background-image: linear-gradient($noir 0%, $noir 100%);
+    background-repeat: no-repeat;
+    background-size: 320px 1px;
+    background-position: left top;
+    padding-top: 5px;
+  }
+
+
+  .clo-droite {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 230px;
+    height: 100%;
+    padding-top: 30px;
+  }
+  .clo-droite-top,
+  .clo-droite-mid,
+  .clo-droite-btm {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .btncompttr,
+  .btncomptcaisse {
+    width: 100%;
+    background-color: $vert;
   }
   .btncomptage {
-    // position: absolute;
-    width: 235px;
-    // left: 50px;
-    // bottom: 160px;
+    width: 100%;
     background-color: $vert;
     height: 45px;
-    // z-index: 1;
-  }
-  .btnx {
-    position: absolute;
-    width: 235px;
-    left: 50px;
-    bottom: 75px;
-    background-color: $gris-bleu;
-    height: 45px;
-    z-index: 1;
   }
   .btncloture {
-    position: absolute;
-    width: 235px;
-    right: 50px;
-    bottom: 75px;
+    width: 100%;
     background-color: $rouge;
     height: 45px;
-    z-index: 1;
   }
 }
 
-.blocdroite {
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  .droite-top,
-  .droite-btm {
+.clo-droite-mid {
+  .prelevementField {
     width: 100%;
-    .labelledfield {
-      margin-bottom: 10px;
-      label {
-        font-family: $f_boo;
-        font-size: 14px;
-      }
-      .input-wrapper {
-        width: 100%;
-        input {
-          text-align: right;
-        }
-      }
-      &.strong label {
-          font-family: $f_blk;
-      }
-    }
-  }
-  .editable .input {
-    width: 100%;
-    background-image: url('../../images/ico_edit.svg');
-    background-size: 18px 18px;
-    background-position: 10px center;
-    background-repeat: no-repeat;  
   }
   .valeur-input {
     width: 100%;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+    box-shadow: inset 0 0 0 1px $noir;
+    border-radius: 5px;
     label {
-      font-family: $f_boo;
-      font-size: 14px;
+      font-family: $f_blk;
+      font-size: 13px;
       color: $noir;
-    }
-    &.strong {
-      label {
-        font-family: $f_blk;
-      }
-
+      padding: 3px;
     }
     .input {
       width: 100%;
-      height: 30px;
-      border-radius: 5px;
-      background-color: $blanc-fonce;
-      padding: 0 10px;
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
-      align-items: center;
-
-      font-family: $f_boo;
-      font-size: 14px;
-      color: $noir;
-    }
-  }
-  .totalcomptageField {
-    .valeur-input .input {
-      height: 40px;
-      background-color: $primary;
-      color: $blanc;
+      text-align: right;
+      padding-right: 5px;
       font-family: $f_blk;
-      font-size: 16px;
-      background-image: url('../../images/ico_edit-blanc.svg');
+      padding-bottom: 3px;
+    }
+    &.editable {
+      box-shadow: none;
+
+      label {
+        padding: 0;
+      }
+      .input {
+        background-image: url('../../images/ico_edit-blanc.svg');
+        background-size: 18px 18px;
+        background-position: 10px center;
+        background-repeat: no-repeat;  
+        background-color: $primary;
+        color: $blanc;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-end;
+        font-size: 20px;
+        border-radius: 5px;
+        height: 45px;
+      }
     }
   }
 }
+
+
 
 .ClotureComptage,
 .ClotureComptcaisse {
@@ -877,6 +952,71 @@
     top: 120px;
     outline: none;
     user-select: none;
+  }
+}
+
+.MotifModal {
+  
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none;
+  .Modal-container {
+      background-color: $blanc;
+      width: 300px;
+      border-radius: 15px;
+      padding: 0 20px;
+  }
+  .close-button {
+      background-color: $blanc;
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 30px;
+      height: 30px;
+      min-height: 30px;
+  }
+  .header {
+      height: 55px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      .title {
+          font-family: $f_blk;
+          font-size: 18px;
+          color: $noir;
+          text-align: center;
+          text-transform: uppercase;
+      }
+  }
+  .body {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-bottom: 30px;
+    .motif-item {
+      font-family: $f_med;
+      font-size: 14px;
+      text-transform: uppercase;
+      color: $noir;
+      background-color: $gris-clair;
+      width: 250px;
+      height: 35px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 2px;
+      border-radius: 3px;
+      cursor: pointer;
+      &.delete {
+        background-color: $rouge;
+        color: $blanc;
+      }
+    }
   }
 }
 

@@ -475,16 +475,6 @@ const data = {
                     },
                     prelevement: 'PRELEVEMENT EN CLOTURE'
                 },
-                derniere: {
-                    titre: "Dernière Clôture",
-                    caption: {
-                        date: "Date",
-                        heure: "Heure",
-                        editeur: "Éditeur"
-                    },
-                    reprint: "Ré-Imprimer",
-                    aucune: "Aucune clôture enregistrée"
-                },
                 selection: {
                     vendeur: "Vendeur",
                     vendeur_all: "Tous les vendeurs",
@@ -492,26 +482,36 @@ const data = {
                     caisse_all: "Toutes les caisses",
                     comptagebtn: "Comptage",
                     comptagebtn_partiel: "Comptage sélection",
-                    debut: "Début",
-                    fin: "Fin"
+                    titre: "Clôture des commandes",
+                    debut: "du",
+                    fin: "au"
                 },
                 comptage: {
                     titre: "Comptage",
                     moyens: {
-                        carte: "Carte Bleue :",
-                        ticket: "Tickets restau :",
-                        cheque: "Chèques :",
-                        especes: "Espèces :",
-                        avoir: "Avoirs reçus :",
-                        avoir_emis: "Avoirs émis :"
+                        carte: "Carte Bleue\u00A0:",
+                        ticket: 'Tickets restau\u00A0:',
+                        cheque: "Chèques\u00A0:",
+                        especes: "Espèces\u00A0:",
+                        avoir: "Avoirs reçus\u00A0:",
+                        avoir_emis: "Avoirs émis\u00A0:"
+                    },
+                    captions: {
+                        balance: "Balance des transactions",
+                        ecarts: "Écarts",
+                        motif: "Justification"
                     },
                     especes: {
                         titre: ["Balance des transactions","en espèces"],
-                        total_fdcaisse: "Total Fond de caisse :",
+                        total_fdcaisse: "Total Fond de Caisse :",
                         total_especes: "Total Espèces :",
                         total_depenses: "Total Dépenses :",
                         total_rembourse: "Total Remboursé :",
-                        total_montant: "Total montant :"
+                        total_montant: "Total Montant :"
+                    },
+                    motif: {
+                        titre: "Choix d’un motif",
+                        delete: "supprimer"
                     },
                     toutes: {
                         titre: ["Balance des transactions","Autres"],
@@ -519,7 +519,8 @@ const data = {
                         total_recu: "Total reçu :"
                     },
                     saisie: {
-                        titre: "Entrez vos montants comptés"
+                        titre: "Entrez vos montants comptés",
+                        caption: "Montant compté :"
                     },
                     actions: {
                         validation: "Vérification",
@@ -552,10 +553,10 @@ const data = {
                 print_x: "Imprime X Caisse",
                 print_partiel: "Imprime X partiel",
                 total_fdcaisse: "Total fond de caisse",
-                total_caisse_theo: "Total en caisse théorique",
+                total_caisse_theo: "Total montant",
                 total_caisse_cmpt: "Total en caisse compté",
                 fondcaisse_default: "Fond de caisse par défaut",
-                prelevement: "Prélèvement en clôture",
+                prelevement: "Prélèvement espèces en clôture",
                 fond_de_caisse: "Nouveau fond de caisse",
                 cloture_z: "Clôture Z",
                 cloture_partielle: "Clôture partielle Z",
@@ -569,8 +570,8 @@ const data = {
                         texte: "Votre comptage diffère du calcul théorique des recettes pour les valeurs marquées en rouge. Vous devez corriger pour pouvoir clôturer."
                     },
                     standby: {
-                        titre: "Commandes non encaissées",
-                        texte: "Vous ne pouvez pas clôturer tant qu'il reste des commandes non encaissées."
+                        titre: "Commandes non terminées",
+                        texte: "Vous ne pouvez pas clôturer tant qu'il reste des commandes en attente ou non encaissées."
                     },
                     cmdnoncloturees: {
                         titre: "Commandes non clôturées",

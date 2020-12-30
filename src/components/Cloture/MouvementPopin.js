@@ -274,7 +274,7 @@ class MouvementPopin extends React.Component {
                 text={ strings.general.dialog.save } 
                 onClick={() => { 
                   if (type === "ouverture") {
-                    if ((mouvement.lastMontant/100) !== montant && motif==="") {
+                    if ((mouvement && (mouvement.lastMontant/100) !== montant) && motif==="") {
                       Swal.fire({
                         title: strings.modules.tresor.popin.ouverture.alerte.titre,
                         html: strings.modules.tresor.popin.ouverture.alerte.texte,

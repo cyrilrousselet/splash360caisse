@@ -166,6 +166,8 @@ async function _getLastMouvement(caisseId) {
     ]
   }).sort({createdAt: -1}).limit(1);
 
+  log.info('_getLastMouvement', _lastMvt);
+
   return (_lastMvt.length>0) ? _lastMvt[0]._doc : null;
 }
 

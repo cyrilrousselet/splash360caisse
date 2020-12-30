@@ -3,15 +3,15 @@ import { clotureServices } from './clotureServices';
 import { commandeActions } from '../commande/commandeActions';
 import { peripheralActions } from '../peripheral/peripheralActions';
 
-import { differenceInMinutes } from 'date-fns/esm';
+// import { differenceInMinutes } from 'date-fns/esm';
 
-import LocalizedStrings from 'react-localization';
-import {data} from '../../constants/translations';
-import Swal from 'sweetalert2';
+// import LocalizedStrings from 'react-localization';
+// import {data} from '../../constants/translations';
+// import Swal from 'sweetalert2';
 import Logger from '../../helpers/Logger';
 import { commandeServices } from '../commande/commandeServices';
-import { dateBounds } from '../../helpers/toolbox';
-const strings = new LocalizedStrings(data);
+// import { dateBounds } from '../../helpers/toolbox';
+// const strings = new LocalizedStrings(data);
 
 const logger = new Logger();
 
@@ -65,62 +65,65 @@ function getCurrentPeriode(params={}) {
    
     const state = getState();
     const catalogue = state.catalogueReducer;
-    const {financier, entreprise} = state.parametresReducer.parametres;
+    const {financier, options} = state.parametresReducer.parametres;
 
+    const { user } = state.authentication;
 
-    const { heure_fin } = entreprise;
-    const __periode_bounds = dateBounds(new Date(), heure_fin);
-    const periode_start = __periode_bounds.debut;
+  //  const { heure_fin } = entreprise;
+  //  const __periode_bounds = dateBounds(new Date(), heure_fin);
+  //  const periode_start = __periode_bounds.debut;
 
+    const { caisse } = options;
 
     // récup. cmd non clôturées
     const {commandeslist} = await commandeServices.getCommandesList({
       $and: [
-        { archived: undefined },
+        { archived: {"$exists": false} },
         { status: { $ne: "deleted" } },
         { $or: [
-          { centre_revenu: undefined },
-          { centre_revenu: 'restaurant' }
+          { "caisse_encaissement.id": caisse.id },
+          { $and: [
+            { "caisse.id": caisse.id },
+            { status: { $in: ["standby", "a_encaisser"]} }
+          ]},
+        ]},
+        { $or: [
+          { centre_revenu: {"$exists": false} },
+          { centre_revenu: "restaurant" }
         ]}
       ]
     });
     
-    // const cmdopen = Object.values(commandeslist).filter(cmd =>
-    //   (
-    //     (!cmd.hasOwnProperty('archived') || cmd.archived==null) 
-    //     && cmd.status!=='deleted' 
-    //     && (!cmd.hasOwnProperty('centre_revenu') || cmd.centre_revenu==='restaurant')
-    //   )
-    // );
-    // const cmdopen = Object.values(commandeslist).filter(cmd=>((!cmd.hasOwnProperty('archived') || cmd.archived==null) && cmd.status!=='deleted'));
+    
+    // // si les cmd non clôt. proviennent d'une période précédente.
+    // if (commandeslist.length>0) {
+    //   const pastcmdopen = commandeslist.findIndex(oc=>differenceInMinutes(new Date(oc.updatedAt), periode_start)<0);
+    //   logger.log('commandes provenant d’une période précédente', pastcmdopen);
+    //   if (pastcmdopen>-1) {
+    //     dispatch({ type: clotureActionTypes.PREVIOUS_PERIOD_ERROR });
 
-    // logger.log('nbre cmd non archivées', cmdopen.length, '/', Object.values(commandeslist).length);
-
-    // si les cmd non clôt. proviennent d'une période précédente.
-    if (commandeslist.length>0) {
-      const pastcmdopen = commandeslist.findIndex(oc=>differenceInMinutes(new Date(oc.updatedAt), periode_start)<0);
-      logger.log('commandes provenant d’une période précédente', pastcmdopen);
-      if (pastcmdopen>-1) {
-        dispatch({ type: clotureActionTypes.PREVIOUS_PERIOD_ERROR });
-
-        Swal.fire({
-          title: strings.modules.cloture.alerte.cmdnoncloturees.titre,
-          text: strings.modules.cloture.alerte.cmdnoncloturees.texte,
-          focusConfirm: true,
-          showCancelButton: false,
-          customClass: 'differenterror',
-          confirmButtonText: 'OK',
-          buttonsStyling: false 
-        }).then((result)=> {
-       //   history.push(paths.CLOTURE);
-        });
-      }
-    }
+    //     Swal.fire({
+    //       title: strings.modules.cloture.alerte.cmdnoncloturees.titre,
+    //       text: strings.modules.cloture.alerte.cmdnoncloturees.texte,
+    //       focusConfirm: true,
+    //       showCancelButton: false,
+    //       customClass: 'differenterror',
+    //       confirmButtonText: 'OK',
+    //       buttonsStyling: false 
+    //     }).then((result)=> {
+    //    //   history.push(paths.CLOTURE);
+    //     });
+    //   }
+    // }
 
     const default_params =  {
-      user: state.authentication.user,
-      caisses: [], //[{id:0, nom: 'caisse 0'}],
-      vendeurs: [], //[state.authentication.user],
+      user: {
+        id: user.id,
+        nom: user.nom,
+        user_id: user.user_id,
+      },
+      caisse: null, //[{id:0, nom: 'caisse 0'}],
+      vendeur: null, //[state.authentication.user],
       fdcaisse: (financier && financier.fonddecaisse_activation) ? Number(financier.fonddecaisse_montant) : 0,
       // debut: periode_start,
       // fin: periode_end,

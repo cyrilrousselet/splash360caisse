@@ -2,7 +2,6 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux';
 import Cloture from '../components/Cloture/Cloture';
 import { clotureActions } from '../services/cloture/clotureActions';
-import { peripheralActions } from '../services/peripheral/peripheralActions';
 import { getPeriode } from '../services/cloture/clotureReducer';
 import { commandeActions } from '../services/commande/commandeActions';
 import { tresorActions } from '../services/tresorerie/tresorActions';
@@ -25,10 +24,11 @@ const mapStateToProps = (state) => {
     periode: getPeriode(state),
     listeCommandes: state.commandesListReducer.commandeslist,
     catalogue: state.catalogueReducer,
-    clotures: state.clotureReducer.clotures,
     caisse: state.parametresReducer.parametres.options.caisse,
     caisses: getCaisses(state),
+    user: state.authentication.user,
     mouvements: state.tresorReducer.tresors,
+    fonddecaisse_activation: state.parametresReducer.parametres.financier && state.parametresReducer.parametres.financier.fonddecaisse_activation,
     fonddecaissetheo: (state.parametresReducer.parametres.financier && state.parametresReducer.parametres.financier.fonddecaisse_activation) ? state.parametresReducer.parametres.financier.fonddecaisse_montant : 0 
   };
 }
@@ -36,12 +36,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   const bound = bindActionCreators({
     getCommandesList: commandeActions.getCommandesList,
-    // getParametres: parametresActions.getAll,
     getLastOuvertureAndAfter: tresorActions.getLastOuvertureAndAfter,
-    getLastCloture: clotureActions.getLast,
     getCurrentPeriode: clotureActions.getCurrentPeriode,
-    printPeriodeX: peripheralActions.printPeriodeX,
-    printLastCloture: peripheralActions.printCloture,
     makeCloture: clotureActions.makeCloture,
     addTresor: tresorActions.addTresor,
   }, dispatch);

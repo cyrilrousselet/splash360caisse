@@ -68,8 +68,8 @@ function getCurrentPeriode(commandes, catalogue, params) {
      ;
 
 
-  const vendeurs = params.vendeurs.length>0 ? params.vendeurs.map(vnd=>vnd.id) : [];
-  const caisses = params.caisses.length>0 ? params.caisses.map(csh=>csh.id) : [];
+  const vendeur = params.vendeur || null;
+  const caisse = params.caisse || null;
   
 
   // filtrage de la liste des commandes
@@ -90,14 +90,14 @@ function getCurrentPeriode(commandes, catalogue, params) {
       if (cmd.archived!==undefined && cmd.archived!==null) __valid = false;
       if (__valid) numvalid++;
 
-      // si une liste de vendeurs est fournie
-      if (vendeurs.length>0) {
-        if (!cmd.operator_encaissement || (cmd.operator_encaissement && vendeurs.indexOf(cmd.operator_encaissement.id)===-1)) __valid = false;
+      // si un vendeur est précisé
+      if (vendeur) {
+        if (!cmd.operator_encaissement || (cmd.operator_encaissement && vendeur.id !== cmd.operator_encaissement.id)) __valid = false;
       } 
 
-      // si une liste de caisse est fournie
-      if (caisses.length>0) {
-        if (!cmd.caisse_encaissement || (caisses.indexOf(cmd.caisse_encaissement.id)===-1)) __valid = false;
+      // si une caisse est précisée
+      if (caisse) {
+        if (!cmd.caisse_encaissement || (caisse.id !== cmd.caisse_encaissement.id)) __valid = false;
       } 
         
 
@@ -407,8 +407,8 @@ function getCurrentPeriode(commandes, catalogue, params) {
         debut: __start, //startOfToday(),
         fin: __end,   //endOfToday(),
         editeur: params.user,
-        caisses: params.caisses,
-        vendeurs: params.vendeurs,
+        caisse: params.caisse,
+        vendeur: params.vendeur,
         depenses: __dep,
         ventes: __vnt,
         remboursements: __remb,
@@ -421,7 +421,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
         ventilation: __ventil,
         emission: __emission
       },
-      cmdtoarchive: __filtered_cmd,
+      cmdtoarchive: __filtered_cmd.map(c=>c.id),
       standby: __numStandby
     };
 
@@ -443,6 +443,7 @@ function makeCloture(commandes, catalogue, params) {
     cmdtoarchive: [],
     archived: new Date(),
     comptage: params.comptage,
+    ecarts: params.ecarts,
     prelevement: params.prelevement,
     archivedcommandesid: archivedcommandesid
   }
