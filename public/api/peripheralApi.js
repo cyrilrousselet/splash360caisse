@@ -451,7 +451,8 @@ function _launchPrint(template, printer, contenu) {
       _printPeriodeX(printer, contenu.periode, contenu.strings);
     }
     else if ('periode_z' === section) {
-      _printPeriodeZ(printer, contenu.periode, contenu.strings);
+      const __periode = contenu.periode;
+      _printPeriodeZ(printer, {...__periode, ecarts:contenu.ecarts, comptage:contenu.comptage}, contenu.strings);
     }
     else if ('prelevement' === section) {
       _printPrelevement(printer, contenu.prelevement, contenu.strings);
@@ -1402,25 +1403,25 @@ function _printPeriodeZ(printer, data, strings) {
       .tableCustom([{text: strings.editeur+data.editeur.nom, cols:42, align:'LEFT'}])
       .feed(1)
       ;
-    // vendeur(s) :
-    if (data.vendeurs.length>1) {
+    // vendeur :
+    if (data.vendeur) {
+      printer.tableCustom([
+        {text: strings.vendeurs[0]+data.vendeur.nom+' ('+data.vendeur.id+')', cols:42, align:'LEFT'}
+      ]);
+    } else {
       printer.tableCustom([
           {text: strings.vendeurs[1]+strings.vendeurs_all, cols:42, align:'LEFT'}
       ]);
-    } else if (data.vendeurs.length==1){
-      printer.tableCustom([
-        {text: strings.vendeurs[0]+data.vendeurs[0].nom+' ('+data.vendeurs[0].id+')', cols:42, align:'LEFT'}
-      ]);
     }
-    // caisse(s) :
-    if (data.caisses.length>1) {
+    // caisse :
+    if (data.caisse) {
+      printer.tableCustom([
+        {text: strings.caisses[0]+data.caisse.nom+' ('+data.caisse.id+')', cols:42, align:'LEFT'}
+      ]).feed(1);
+      
+    } else {
       printer.tableCustom([
         {text: strings.caisses[1]+strings.caisses_all, cols:42, align:'LEFT'}
-      ])
-      .feed(1);
-    } else if (data.caisses.length==1){
-      printer.tableCustom([
-        {text: strings.caisses[0]+data.caisses[0].nom+' ('+data.caisses[0].id+')', cols:42, align:'LEFT'}
       ]).feed(1);
     }
     // récap montants :
@@ -1595,13 +1596,32 @@ function _printPeriodeZ(printer, data, strings) {
     let moytotal = 0;
 
     data.ventilation.moyen.forEach(moyen => { 
+      let __val = moyen.valeur;
+
+      // on déduit le montant des avoirs émis du total des TR
+      if (moyen.moyen==='ticket') __val -= data.emission;
+
       printer
         .style('NORMAL')
         .tableCustom([
           {text: strings.caption.moyens[moyen.moyen], cols:24, align:'LEFT'},
-          {text: Number(moyen.valeur).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
+          {text: Number(__val).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
         ]);
-        moytotal += moyen.valeur;
+        moytotal += __val;
+
+      // if (data.ecarts.hasOwnProperty(moyen)) {
+      //   printer
+      //     .tableCustom([
+      //       {text: `--- ${strings.caption.ecart.nom}`, cols:10, align:'LEFT'},
+      //       {text: Number(data.ecarts[moyen].valeur).toFixed(2).replace('.',','), cols:28, align:'RIGHT'},
+      //       {text: ' ---', cols:4, align:'RIGHT'}
+      //     ])
+      //     .tableCustom([
+      //       {text: `--- ${strings.caption.ecart.motif}`, cols:10, align:'LEFT'},
+      //       {text: data.ecarts[moyen].motif, cols:28, align:'LEFT'},
+      //       {text: ' ---', cols:4, align:'RIGHT'}
+      //     ]);
+      // }
     });
 
     printer

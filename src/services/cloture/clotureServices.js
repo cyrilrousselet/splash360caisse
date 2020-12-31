@@ -421,7 +421,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
         ventilation: __ventil,
         emission: __emission
       },
-      cmdtoarchive: __filtered_cmd.map(c=>c.id),
+      cmdtoarchive: __filtered_cmd.map(c=>c.ticketId),
       standby: __numStandby
     };
 
@@ -435,7 +435,6 @@ function makeCloture(commandes, catalogue, params) {
   // récup des données
   const { periode, cmdtoarchive } = getCurrentPeriode(commandes, catalogue, params);
 
-  const archivedcommandesid = cmdtoarchive.map(cmd=>cmd.ticketId);
 
   return {
     clotureId: _newClotureId(),
@@ -445,7 +444,7 @@ function makeCloture(commandes, catalogue, params) {
     comptage: params.comptage,
     ecarts: params.ecarts,
     prelevement: params.prelevement,
-    archivedcommandesid: archivedcommandesid
+    archivedcommandesid: cmdtoarchive
   }
 }
 

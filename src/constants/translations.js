@@ -424,6 +424,7 @@ const data = {
                 nom: "Clôture",
                 x: 'X',
                 z: 'Z',
+                processing: "Clôture en cours...",
                 impression: {
                     titre: {
                         x: '< Ticket X Caisse >',
@@ -471,6 +472,11 @@ const data = {
                             cheque: 'CHÈQUE',
                             avoir: 'AVOIR'
                         },
+                        emission: 'AVOIRS ÉMIS',
+                        ecart: {
+                            nom: 'ECART :',
+                            motif: 'MOTIF :'
+                        },
                         total: 'Total'
                     },
                     prelevement: 'PRELEVEMENT EN CLOTURE'
@@ -507,6 +513,7 @@ const data = {
                         total_especes: "Total Espèces :",
                         total_depenses: "Total Dépenses :",
                         total_rembourse: "Total Remboursé :",
+                        total_encaissement: "Total Encaissement :",
                         total_montant: "Total Montant :"
                     },
                     motif: {

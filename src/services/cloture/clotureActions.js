@@ -164,34 +164,43 @@ function makeCloture(params={}) {
    
     const state = getState();
     const catalogue = state.catalogueReducer;
-    const {financier} = state.parametresReducer.parametres;
+    const {financier, options} = state.parametresReducer.parametres;
+    const { user } = state.authentication;
 
   //  console.log(commandeslist);
 
     const default_params =  {
-      user: state.authentication.user,
-      caisses: [],
-      vendeurs: [],
+      user: {id: user.id, nom: user.nom},
+      caisse: options.caisse,
+      vendeur: null,
       fdcaisse: financier.fonddecaisse_activation ? Number(financier.fonddecaisse_montant) : 0,
       // debut: startOfToday(),
       // fin: endOfToday(),
       extract: 'z'
     };
 
+    params = {...default_params, ...params};
+
     // récup. cmd non clôturées
     const {commandeslist} = await commandeServices.getCommandesList({
       $and: [
-        { archived: undefined },
+        { archived: {"$exists": false} },
         { status: { $ne: "deleted" } },
         { $or: [
-          { centre_revenu: undefined },
-          { centre_revenu: 'restaurant' }
+          { "caisse_encaissement.id": params.caisse.id },
+          { $and: [
+            { "caisse.id": params.caisse.id },
+            { status: { $in: ["standby", "a_encaisser"]} }
+          ]},
+        ]},
+        { $or: [
+          { centre_revenu: {"$exists": false} },
+          { centre_revenu: "restaurant" }
         ]}
       ]
     });
 
 
-    params = {...default_params, ...params};
     
     const cloture = clotureServices.makeCloture(commandeslist, catalogue, params)
 

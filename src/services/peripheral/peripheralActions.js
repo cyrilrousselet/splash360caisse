@@ -1353,6 +1353,8 @@ function printCloture(payload={}) {
       },
       periode: __periode,
       prelevement: prelevement,
+      comptage: __periode.comptage,
+      ecarts: __periode.ecarts,
       strings: impression
     };
 

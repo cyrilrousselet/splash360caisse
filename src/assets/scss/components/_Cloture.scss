@@ -65,6 +65,17 @@
     padding: 0;
   }
 
+  .processing {
+    font-family: $f_blk;
+    font-size: 20px;
+    color: $noir;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -100px);
+  }
+
   .clo-top {
     width: 100%;
     display: flex;
@@ -344,6 +355,7 @@
   }
 
   .total-fdc,
+  .total-encaissement,
   .total-caisse {
     display: flex;
     flex-direction: row;
@@ -352,13 +364,13 @@
     margin-top: 5px;
     label {
       font-family: $f_med;
-      font-size: 16px;
+      font-size: 15px;
       color: $noir;
       width: 175px;
     }
     .input {
       font-family: $f_blk;
-      font-size: 22px;
+      font-size: 20px;
       color: $primary;
       width: 135px;
       text-align: right;
