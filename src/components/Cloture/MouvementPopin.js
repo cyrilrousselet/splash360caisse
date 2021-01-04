@@ -135,7 +135,7 @@ class MouvementPopin extends React.Component {
         __t *= 10;
         break;
       default:
-        __t = __t * 10 + value / 100;
+        __t = ((__t * 10) + value) / 100;
     }
     this.setState({ montant: __t, input: __i });
   }
