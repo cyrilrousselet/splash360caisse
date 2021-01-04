@@ -123,6 +123,7 @@ class MouvementPopin extends React.Component {
   _calculetteClick(value) {
     let __t = this.state.montant;
     let __i = true;
+
     switch (value) {
       case "c":
         __t = 0;
@@ -135,7 +136,7 @@ class MouvementPopin extends React.Component {
         __t *= 10;
         break;
       default:
-        __t = ((__t * 10) + value) / 100;
+        __t = (__t * 10) + (value / 100);
     }
     this.setState({ montant: __t, input: __i });
   }
