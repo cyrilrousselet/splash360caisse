@@ -1311,11 +1311,15 @@ function printCloture(payload={}) {
     ];
 
     let periode = {};
+    let comptage = {};
+    let ecarts = {};
     let prelevement = -1;
     if (Object.values(payload).length===0) {
       periode = getState().clotureReducer.periode;
     } else {
       periode = payload.periode;
+      comptage = payload.comptage;
+      ecarts = payload.ecarts;
       prelevement = payload.prelevement;
       template.push('prelevement');
     }
@@ -1353,10 +1357,12 @@ function printCloture(payload={}) {
       },
       periode: __periode,
       prelevement: prelevement,
-      comptage: __periode.comptage,
-      ecarts: __periode.ecarts,
+      comptage: comptage,
+      ecarts: ecarts,
       strings: impression
     };
+
+    logger.log('peripheralActions.printCloture contenu:', contenu);
 
     peripheralServices.printTicket(imprimante, template, contenu)
     .then(

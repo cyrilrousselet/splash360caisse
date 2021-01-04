@@ -163,9 +163,12 @@ class MouvementPopin extends React.Component {
 
     let _ecart = false;
     if (type==="ouverture" && mouvement) {
+
+      
       if ((mouvement.lastMontant/100) !== montant) {
         _ecart = true;
       }
+      logger.log('ecart ouverture ?', mouvement.lastMontant/100, montant, _ecart);
     }
 
     return (

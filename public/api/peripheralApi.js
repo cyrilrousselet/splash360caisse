@@ -1392,6 +1392,8 @@ function _printPrelevement(printer, data, strings) {
 
 function _printPeriodeZ(printer, data, strings) {
 
+  log.info('_printPeriodeZ data', data);
+
   // EN-TÊTE:
     printer
       // .size(1,1)
@@ -1609,19 +1611,19 @@ function _printPeriodeZ(printer, data, strings) {
         ]);
         moytotal += __val;
 
-      // if (data.ecarts.hasOwnProperty(moyen)) {
-      //   printer
-      //     .tableCustom([
-      //       {text: `--- ${strings.caption.ecart.nom}`, cols:10, align:'LEFT'},
-      //       {text: Number(data.ecarts[moyen].valeur).toFixed(2).replace('.',','), cols:28, align:'RIGHT'},
-      //       {text: ' ---', cols:4, align:'RIGHT'}
-      //     ])
-      //     .tableCustom([
-      //       {text: `--- ${strings.caption.ecart.motif}`, cols:10, align:'LEFT'},
-      //       {text: data.ecarts[moyen].motif, cols:28, align:'LEFT'},
-      //       {text: ' ---', cols:4, align:'RIGHT'}
-      //     ]);
-      // }
+      if (data.ecarts.hasOwnProperty(moyen)) {
+        printer
+          .tableCustom([
+            {text: `--- ${strings.caption.ecart.nom}`, cols:10, align:'LEFT'},
+            {text: Number(data.ecarts[moyen].valeur).toFixed(2).replace('.',','), cols:28, align:'RIGHT'},
+            {text: ' ---', cols:4, align:'RIGHT'}
+          ])
+          .tableCustom([
+            {text: `--- ${strings.caption.ecart.motif}`, cols:10, align:'LEFT'},
+            {text: data.ecarts[moyen].motif, cols:28, align:'LEFT'},
+            {text: ' ---', cols:4, align:'RIGHT'}
+          ]);
+      }
     });
 
     printer
