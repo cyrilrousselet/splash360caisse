@@ -48,6 +48,9 @@ function TicketX(props) {
   const __strimp = strings.modules.cloture.impression;
   const { periode, ecarts, comptage } = cloture;
 
+  console.log('ticket X');
+  console.log(cloture);
+
 
   let vndvnt = 0, vndrmb = 0, vndtotal = 0;
   periode.ventilation.vendeur.forEach(vendeur => {
@@ -80,68 +83,68 @@ function TicketX(props) {
 
   <div className="ticket-x">
     <div className="blocwrapper">
-      <div className="periode">
-        <div className="ttl">{ __strimp.periode.titre }</div>
-        <div className="val">{ `${format(new Date(periode.debut), "dd/MM/yyyy - HH:mm:ss", { locale: frLocale })}  ->  ${format(new Date(periode.fin), "dd/MM/yyyy - HH:mm:ss", { locale: frLocale })}` }</div>
-        { periode.editeur && <div className="editeur">{ `${__strimp.editeur} ${periode.editeur.nom} (${periode.editeur.id})` }</div>}
+      <div className="periode" key="periode-hdr">
+        <div className="ttl" key="periode-ttl">{ __strimp.periode.titre }</div>
+        <div className="val" key="periode-val">{ `${format(new Date(periode.debut), "dd/MM/yyyy - HH:mm:ss", { locale: frLocale })}  ->  ${format(new Date(periode.fin), "dd/MM/yyyy - HH:mm:ss", { locale: frLocale })}` }</div>
+        { periode.editeur && <div className="editeur" key="periode-editeur">{ `${__strimp.editeur} ${periode.editeur.nom} (${periode.editeur.id})` }</div>}
       </div>
-      <div className="sel">
-        {(periode.vendeurs.length>1) && (<div className="val">{ `${__strimp.vendeurs[1]}${strings.vendeurs_all}` }</div>)}
-        {(periode.vendeurs.length===1) && (<div className="val">{ `${__strimp.vendeurs[0]}${periode.vendeurs[0].nom} (${periode.vendeurs[0].id})` }</div>)}
-        {(periode.caisses.length>1) && (<div className="val">{ `${__strimp.caisses[1]}${strings.caisses_all}` }</div>)}
-        {(periode.caisses.length===1) && (<div className="val">{ `${__strimp.caisses[0]}${periode.caisses[0].nom} (${periode.caisses[0].id})` }</div>)}
+      <div className="sel" key="sel-hdr">
+        {(periode.vendeurs.length>1) && (<div className="val" key="sel-val1">{ `${__strimp.vendeurs[1]}${strings.vendeurs_all}` }</div>)}
+        {(periode.vendeurs.length===1) && (<div className="val" key="sel-val1">{ `${__strimp.vendeurs[0]}${periode.vendeurs[0].nom} (${periode.vendeurs[0].id})` }</div>)}
+        {(periode.caisses.length>1) && (<div className="val" key="sel-val2">{ `${__strimp.caisses[1]}${strings.caisses_all}` }</div>)}
+        {(periode.caisses.length===1) && (<div className="val" key="sel-val2">{ `${__strimp.caisses[0]}${periode.caisses[0].nom} (${periode.caisses[0].id})` }</div>)}
       </div>
-      <div className="recap">
-        <div className="recap-item">
-          <div className="nom">{ __strimp.depenses }</div>
-          <div className="val">{ devise(periode.depenses) }</div>
+      <div className="recap" key="recap-hdr">
+        <div className="recap-item" key="recap-item-1">
+          <div className="nom" key="recap-item-1-nom">{ __strimp.depenses }</div>
+          <div className="val" key="recap-item-1-val">{ devise(periode.depenses) }</div>
         </div>
-        <div className="recap-item">
-          <div className="nom">{ __strimp.remboursements }</div>
-          <div className="val">{ devise(periode.remboursements) }</div>
+        <div className="recap-item" key="recap-item-2">
+          <div className="nom" key="recap-item-2-nom">{ __strimp.remboursements }</div>
+          <div className="val" key="recap-item-2-val">{ devise(periode.remboursements) }</div>
         </div>
-        <div className="recap-item">
-          <div className="nom">{ __strimp.encaissements }</div>
-          <div className="val">{ devise(periode.ventes) }</div>
+        <div className="recap-item" key="recap-item-3">
+          <div className="nom" key="recap-item-3-nom">{ __strimp.encaissements }</div>
+          <div className="val" key="recap-item-3-val">{ devise(periode.ventes) }</div>
         </div>
-        <div className="recap-item">
-          <div className="nom">{ __strimp.mtcaisse }</div>
-          <div className="val">{ devise(periode.mtcaisse) }</div>
+        <div className="recap-item" key="recap-item-4">
+          <div className="nom" key="recap-item-4-nom">{ __strimp.mtcaisse }</div>
+          <div className="val" key="recap-item-4-val">{ devise(periode.mtcaisse) }</div>
         </div>
       </div>
       <div className="titre">
         { __strimp.titre.x }
       </div>
-      <div className="detail">
-        <div className="detail-item">
-          <div className="nom">{__strimp.caption.ventes}</div>
-          <div className="val">{devise(periode.ventes)}</div>
+      <div className="detail" key="detail-hdr">
+        <div className="detail-item" key="detail-item-1">
+          <div className="nom" key="detail-item-1-nom">{__strimp.caption.ventes}</div>
+          <div className="val" key="detail-item-1-val">{devise(periode.ventes)}</div>
         </div>
-        <div className="detail-item">
-          <div className="nom">{__strimp.caption.remboursements}</div>
-          <div className="val">{`-${devise(periode.remboursements)}`}</div>
+        <div className="detail-item" key="detail-item-2">
+          <div className="nom" key="detail-item-2-nom">{__strimp.caption.remboursements}</div>
+          <div className="val" key="detail-item-2-val">{`-${devise(periode.remboursements)}`}</div>
         </div>
-        <div className="detail-item pre-filet post-space">
-          <div className="nom">{__strimp.caption.ca}</div>
-          <div className="val">{devise(periode.ca)}</div>
+        <div className="detail-item pre-filet post-space" key="detail-item-3">
+          <div className="nom" key="detail-item-3-nom">{__strimp.caption.ca}</div>
+          <div className="val" key="detail-item-3-val">{devise(periode.ca)}</div>
         </div>
-        <div className="detail-item total">
-          <div className="nom">{__strimp.caption.numtickets}</div>
-          <div className="val">{periode.numtickets}</div>
+        <div className="detail-item total" key="detail-item-4">
+          <div className="nom" key="detail-item-4-nom">{__strimp.caption.numtickets}</div>
+          <div className="val" key="detail-item-4-val">{periode.numtickets}</div>
         </div>
-        <div className="detail-item total">
-          <div className="nom">{__strimp.caption.ticket_moyen}</div>
-          <div className="val">{devise(periode.ticket_moyen)}</div>
+        <div className="detail-item total" key="detail-item-5">
+          <div className="nom" key="detail-item-5-nom">{__strimp.caption.ticket_moyen}</div>
+          <div className="val" key="detail-item-5-val">{devise(periode.ticket_moyen)}</div>
         </div>
       </div>
       <div className="titre">
         { __strimp.ventilation.vendeur }
       </div>
       <div className="ventil intit ventil-vendeur">
-        <div className="ventil-intit"></div>
-        <div className="ventil-intit">{__strimp.caption.vente_short}</div>
-        <div className="ventil-intit">{__strimp.caption.remboursements_short}</div>
-        <div className="ventil-intit">{__strimp.caption.ca_short}</div>
+        <div className="ventil-intit" key="ventil-vendeur-intit1"></div>
+        <div className="ventil-intit" key="ventil-vendeur-intit2">{__strimp.caption.vente_short}</div>
+        <div className="ventil-intit" key="ventil-vendeur-intit3">{__strimp.caption.remboursements_short}</div>
+        <div className="ventil-intit" key="ventil-vendeur-intit4">{__strimp.caption.ca_short}</div>
       </div>
       {periode.ventilation.vendeur.map(vendeur => (
         <div className="ventil ventil-vendeur" key={`vnd-${vendeur.id}`}>
@@ -201,7 +204,7 @@ function TicketX(props) {
           <div className="ventil-val">{ (moyen.moyen==='ticket') ? devise(moyen.valeur - Number(periode.emission)) : devise(moyen.valeur) }</div>
           <div className="ventil-val">{ devise(comptage[moyen.moyen]) }</div>
           <div className="ventil-val">{ __moy_ecart===0 ? '' : `${ (Number(__moy_ecart)>0) ? '+' : '' }${ devise(__moy_ecart) }` }</div>
-          {(ecarts && ecarts[moyen.moyen]) &&
+          {(ecarts && ecarts[moyen.moyen] && ecarts[moyen.moyen].motif) &&
           <div className="ventil-ecart-motif">{ `* ${__strimp.caption.ecart.motif} ${ecarts[moyen.moyen].motif} *` }</div>
           }
         </div>
@@ -420,7 +423,7 @@ class ListeClotures extends React.Component {
   }
 
   getSynthese(clotures) {
-    logger.log('getSynthese()', clotures);
+ //   logger.log('getSynthese()', clotures);
 
     if (clotures.length>0) {
 
@@ -438,10 +441,27 @@ class ListeClotures extends React.Component {
          ,__vvnd = []
          ,__vtva = []
          ,__vmoy = []
+         ,__ecarts = {
+            especes: null,
+            carte: null,
+            ticket: null,
+            cheque: null,
+            avoir: null
+         }
+         ,__comptage = {
+            especes: 0,
+            carte: 0,
+            ticket: 0,
+            cheque: 0,
+            avoir: 0
+         }
+         ,__emission = 0
          ;
 
       clotures.forEach(cl => {
-        const periode = this.props.clotureslist[cl.id].periode;
+        const {periode, ecarts, comptage} = this.props.clotureslist[cl.id];
+
+logger.log('ecarts', ecarts);
         
         // récup des dates extrêmes de la liste des clotures
         if ( isBefore(new Date(periode.debut), __start) ) __start = new Date(periode.debut);
@@ -533,6 +553,27 @@ class ListeClotures extends React.Component {
             __vmoy[__mmi] = __mm;
           }
         });
+
+        if (comptage) {
+          Object.entries(comptage).forEach(([moyen,valeur])=> {
+            if (!__comptage.hasOwnProperty(moyen)) {
+              __comptage[moyen] = 0;
+            }
+            __comptage[moyen] += valeur
+          });
+        }
+        if (ecarts) {
+          Object.entries(ecarts).forEach(([moyen,val])=> {
+            if (val) {
+              if (!__ecarts[moyen]) {
+                __ecarts[moyen] = {valeur: 0, motif: ''};
+              }
+              __ecarts[moyen].valeur += val.valeur;
+            }
+          });
+        }
+
+        __emission += periode.emission;
       
       })
       
@@ -553,10 +594,15 @@ class ListeClotures extends React.Component {
           vendeur: __vvnd, 
           tva: __vtva,
           moyen: __vmoy
-        }
+        },
+        emission: __emission
       };
       
-      this.openCloture({periode:synthese});
+      this.openCloture({
+        periode:synthese,
+        ecarts: __ecarts,
+        comptage: __comptage
+      });
 
     }
 
