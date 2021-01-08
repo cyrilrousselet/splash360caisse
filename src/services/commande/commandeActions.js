@@ -268,21 +268,21 @@ function validateCommande(payload) {
                 createdAt: formatISO(c.createdAt),
                 updatedAt: formatISO(c.updatedAt),
                 endTime: formatISO(chr.endTime),
-                careTime: formatISO(chr.careTime.firstCare),
-                productionTime:
-                  Math.round(
+                careTime: chr.careTime.hasOwnProperty('firstCare') ? formatISO(chr.careTime.firstCare) : null,
+                productionTime: chr.careTime.hasOwnProperty('firstCare') ? 
+                  (Math.round(
                     differenceInMilliseconds(
                       chr.endTime,
                       chr.careTime.firstCare
                     ) / 10
-                  ) / 100,
-                waitTime:
-                  Math.round(
+                  ) / 100) : null,
+                waitTime: chr.careTime.hasOwnProperty('firstCare') ?
+                  (Math.round(
                     differenceInMilliseconds(
                       chr.careTime.firstCare,
                       parseISO(c.end)
                     ) / 10
-                  ) / 100,
+                  ) / 100) : null,
               };
             } else {
               return {
