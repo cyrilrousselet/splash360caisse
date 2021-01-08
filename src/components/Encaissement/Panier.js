@@ -578,10 +578,12 @@ class Panier extends React.Component {
       
       const { caisse } = parametres.options;
 
+      logger.time('testOuverture');
       getLastClotureAndAfter({caisseId:caisse.uniqid}).then(
         result => {
           logger.log('Panier.testOuverture()', result);
 
+          logger.timeEnd('testOuverture');
           if (result && result.hasOwnProperty('cloture') && result.cloture!==null) {
             if (result.hasOwnProperty('ouverture') && result.ouverture) {
               logger.log('IL Y A UNE CLOTURE et une ouverture');
