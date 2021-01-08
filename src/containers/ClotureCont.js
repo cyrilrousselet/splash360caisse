@@ -14,7 +14,8 @@ import { tresorServices } from '../services/tresorerie/tresorServices';
 const getCaisses = (state) => {
   const {stations} = state.parametresReducer.parametres.options;
   if (stations) {
-    return stations.filter( (st) => st.origine.toLowerCase() === "caisse" );
+    // return stations.filter( (st) => st.origine.toLowerCase() === "caisse" );
+    return stations;
   }
   return null;
 }

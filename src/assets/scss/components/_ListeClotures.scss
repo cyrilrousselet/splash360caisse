@@ -109,9 +109,9 @@
   }
   tbody {
     .liste-date,
-    .liste-fin,
-    .liste-ventes,
-    .liste-actions {
+    .liste-debut,
+    .liste-ht,
+    .liste-nombre {
       background-color: $blanc-fonce;
     }
     .liste-ht,
@@ -124,21 +124,25 @@
     .MuiTableRow-root.odd {
       
       .liste-date,
-      .liste-fin,
-      .liste-ventes,
-      .liste-actions {
-        background-color: $gris-pale;
-      }
-    }
-    .liste-debut,
-    .liste-ht,
-    .liste-nombre {
-      background-color: $blanc;
-    }
-    .MuiTableRow-root.odd {
       .liste-debut,
       .liste-ht,
       .liste-nombre {
+        background-color: $gris-pale;
+      }
+    } 
+    
+    .liste-station,
+    .liste-fin,
+    .liste-ventes,
+    .liste-actions
+    {
+      background-color: $blanc;
+    }
+    .MuiTableRow-root.odd {
+      .liste-station,
+    .liste-fin,
+    .liste-ventes,
+    .liste-actions {
         background-color: $blanc-fonce;
       }
     }
@@ -275,6 +279,7 @@
       display: flex;
       flex-direction: row;
       justify-content: space-between;
+      flex-wrap: wrap;
       .ventil-nom,
       .ventil-intit:nth-child(1) {
         width: 30%;
@@ -283,6 +288,21 @@
         padding-top: 10px;
       }
       &.intit {
+        padding-bottom: 5px;
+      }
+      &.ventil-moyen {
+        .ventil-intit:not(:nth-child(1)) {
+          width: 23%;
+          text-align: right;
+        }
+        .ventil-val {
+          width: 23%;
+          text-align: right;
+        }
+      }
+      .ventil-ecart-motif {
+        width: 100%;
+        text-align: center;
         padding-bottom: 5px;
       }
     }

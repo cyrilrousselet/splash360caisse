@@ -59,7 +59,17 @@ function getCurrentPeriode(commandes, catalogue, params) {
      ,__ca = 0
      ,__tickets = 0
      ,__mtcaisse = 0
-     ,__ventil = {vendeur:[], tva:[], moyen:[]}
+     ,__ventil = {
+       vendeur:[], 
+       tva:[], 
+       moyen: [
+         {moyen: 'especes', valeur: 0},
+         {moyen: 'carte', valeur: 0},
+         {moyen: 'ticket', valeur: 0},
+         {moyen: 'cheque', valeur: 0},
+         {moyen: 'avoir', valeur: 0},
+        ]
+      }
      ,__numStandby = 0
      ,__fdcaisse_courant = Number(params.fdcaisse)
      ,__emission = 0

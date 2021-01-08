@@ -47,6 +47,15 @@ class Logger {
       console.error(logLineDetails, util.format(...args));
       this.cns.error(formatISO9075(new Date()), logLineDetails+' -', util.format(...args));
     }
+
+    time(testname='') {
+      console.time(testname);
+      this.cns.time(testname);
+    }
+    timeEnd(testname='') {
+      console.timeEnd(testname);
+      this.cns.timeEnd(testname);
+    }
 }
 
 export default Logger;

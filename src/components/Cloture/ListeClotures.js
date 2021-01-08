@@ -46,7 +46,7 @@ class LocalizedUtils extends DateFnsUtils {
 function TicketX(props) {
   const {cloture} = props;
   const __strimp = strings.modules.cloture.impression;
-  const { periode } = cloture;
+  const { periode, ecarts, comptage } = cloture;
 
 
   let vndvnt = 0, vndrmb = 0, vndtotal = 0;
@@ -67,6 +67,12 @@ function TicketX(props) {
   let moytotal = 0;
   periode.ventilation.moyen.forEach(moyen => { 
       moytotal += moyen.valeur;
+  });
+  moytotal -= periode.emission;
+
+  let ecarttotal = 0;
+  Object.values(ecarts).forEach(ecart=> {
+    if (ecart!==null) ecarttotal += ecart.valeur;
   });
 
 
@@ -178,16 +184,44 @@ function TicketX(props) {
       <div className="titre">
         { __strimp.ventilation.moyen }
       </div>
-      {periode.ventilation.moyen.map(moyen => (
-        <div className="ventil ventil-vendeur" key={ `ventil-${moyen.moyen}` }>
+      <div className="ventil intit ventil-moyen">
+        <div className="ventil-intit">{__strimp.caption.moyens_th.moyen}</div>
+        <div className="ventil-intit">{__strimp.caption.moyens_th.theorique}</div>
+        <div className="ventil-intit">{__strimp.caption.moyens_th.comptage}</div>
+        <div className="ventil-intit">{__strimp.caption.moyens_th.ecart}</div>
+      </div>
+      {periode.ventilation.moyen.map(moyen => {
+
+        const __moy_ecart = (ecarts.hasOwnProperty(moyen.moyen) && ecarts[moyen.moyen]!==null) ? ecarts[moyen.moyen].valeur : 0;
+        
+        return (
+        <>
+        <div className="ventil ventil-moyen" key={ `ventil-${moyen.moyen}` }>
           <div className="ventil-nom">{__strimp.caption.moyens[moyen.moyen]}</div>
-          <div className="ventil-val">{devise(moyen.valeur)}</div>
+          <div className="ventil-val">{ (moyen.moyen==='ticket') ? devise(moyen.valeur - Number(periode.emission)) : devise(moyen.valeur) }</div>
+          <div className="ventil-val">{ devise(comptage[moyen.moyen]) }</div>
+          <div className="ventil-val">{ __moy_ecart===0 ? '' : `${ (Number(__moy_ecart)>0) ? '+' : '' }${ devise(__moy_ecart) }` }</div>
+          {(ecarts && ecarts[moyen.moyen]) &&
+          <div className="ventil-ecart-motif">{ `* ${__strimp.caption.ecart.motif} ${ecarts[moyen.moyen].motif} *` }</div>
+          }
         </div>
-      ))}
+        </>
+        )
+      })}
+
+
       <div className="ventil ventil-vendeur total">
         <div className="ventil-nom">{__strimp.caption.total}</div>
         <div className="ventil-val">{devise(moytotal)}</div>
+        <div className="ventil-val">{devise(comptage.total)}</div>
+        <div className="ventil-val">{devise(ecarttotal)}</div>
       </div>
+
+      {(periode.emission>0) && (
+        <div className="titre">
+          { __strimp.caption.emission }{ devise(periode.emission)}
+        </div>
+      )}
     </div>
   </div>
 
@@ -242,6 +276,7 @@ function TableClotures(props) {
         <TableHead>
           <TableRow>
             <TableCell key={`${id}-hd-date`} className="liste-date">{ strings.modules.listeclotures.liste.date }</TableCell>
+            <TableCell key={`${id}-hd-station`} className="liste-station">{ strings.modules.listeclotures.liste.station }</TableCell>
             <TableCell key={`${id}-hd-debut`} className="liste-debut">{ strings.modules.listeclotures.liste.debut }</TableCell>
             <TableCell key={`${id}-hd-fin`} className="liste-fin">{ strings.modules.listeclotures.liste.fin }</TableCell>
             <TableCell key={`${id}-hd-ht`} className="liste-ht">{ strings.modules.listeclotures.liste.ht }</TableCell>
@@ -254,6 +289,7 @@ function TableClotures(props) {
           {liste.map((row, i) => (
             <TableRow key={row.id} className={ `${(i%2)?'odd':'even'}` }>
               <TableCell key={`${row.id}-date`} className="liste-date">{ format(new Date(row.date), "d MMM yyyy à HH:mm", { locale: frLocale }) }</TableCell>
+              <TableCell key={`${row.id}-station`} className="liste-station">{ row.caisse }</TableCell>
               <TableCell key={`${row.id}-debut`} className="liste-debut">{ format(new Date(row.cloture.debut), "d MMM yyyy à HH:mm", { locale: frLocale }) }</TableCell>
               <TableCell key={`${row.id}-fin`} className="liste-fin">{ format(new Date(row.cloture.fin), "d MMM yyyy à HH:mm", { locale: frLocale }) }</TableCell>
               <TableCell key={`${row.id}-ht`} className="liste-ht">{ `${row.cloture.ht} €` }</TableCell>
@@ -376,7 +412,8 @@ class ListeClotures extends React.Component {
       let periode = cloture.periode;
       periode.debut = new Date(periode.debut);
       periode.fin = new Date(periode.fin);
-      this.props.printCloture({periode:periode});
+//      this.props.printCloture({periode:periode});
+      this.props.printCloture(cloture);
     } else {
       logger.error('ListeClotures.printClotureId()', `cloture clotureId=${cloid} inconnue`);
     }
@@ -549,6 +586,7 @@ class ListeClotures extends React.Component {
           clotures.push({
             id:key,
             date: value.createdAt,
+            caisse: value.periode.hasOwnProperty('caisse') ? value.periode.caisse.nom : '',
             cloture: {
               clotureId: value.clotureId,
               debut: value.periode.debut,

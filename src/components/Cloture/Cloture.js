@@ -29,6 +29,7 @@ import StdButton from "../common/StdButton";
 import { devise } from "./../../helpers/toolbox";
 import { clotureServices } from "./../../services/cloture/clotureServices";
 import LoadingSpinner from "./../common/LoadingSpinner";
+import CountTool from "./CountTool";
 // import Comptage from "./Comptage";
 
 const logger = new Logger();
@@ -842,7 +843,7 @@ class Cloture extends React.Component {
 
             <div className="clo-droite">
 
-              <div className="clo-droite-top">
+              {/* <div className="clo-droite-top">
                 <StdButton 
                   identifier="btncomptcaisse" 
                   elementclass="btncomptcaisse" 
@@ -857,7 +858,8 @@ class Cloture extends React.Component {
                   text={ strings.modules.cloture.comptage.actions.outilcomptagetr } 
                   onClick={ this.openCountTRTool } 
                 />
-              </div>{/* -- /.clo-droite-top -- */}
+              </div> */}
+              {/* -- /.clo-droite-top -- */}
 
               <div className="clo-droite-mid">
                 <div 
@@ -901,7 +903,15 @@ class Cloture extends React.Component {
           </div>{/* -- /.clo-main -- */}
         </div>{/* -- /.MainZone -- */}
       
-        {/* <Comptage
+        <CountTool 
+          open={counttoolOpen} 
+          fdcaisse={periode_z.periode.fdcaisse}
+          especes={especes}
+          onValidate={ this.validateCountTool } 
+          closeHandler={this.closeCountTool} 
+        />
+
+        {/* <CountTRTool
           open={comptageOpen}
           closeComptage={this.closeComptage}
           caisses={caisses}

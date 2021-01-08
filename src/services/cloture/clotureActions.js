@@ -19,13 +19,19 @@ const logger = new Logger();
 function getLast() {
   return dispatch => {
     dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_REQUEST, detail:"last" });
-
+    logger.time('ClotureActions.getLast');
     return clotureServices.getLast()
     .then(
-        data => { dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_SUCCESS, ...data }) }
+        data => { 
+          logger.timeEnd('ClotureActions.getLast');
+          dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_SUCCESS, ...data }) 
+        }
     )
     .catch(
-      error => { dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_FAILURE, error: error.toString() }) }
+      error => { 
+        logger.timeEnd('ClotureActions.getLast');
+        dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_FAILURE, error: error.toString() }) 
+      }
     );
   }
 }
@@ -49,12 +55,19 @@ function getCloturesList(params={}) {
   return (dispatch) => {
     dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_REQUEST, criterias:params });
 
+    logger.time('ClotureActions.getCloturesList');
     return clotureServices.getCloturesList(params)
     .then(
-        data => { dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_SUCCESS, ...data }) }
+        data => { 
+          logger.timeEnd('ClotureActions.getCloturesList');
+          dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_SUCCESS, ...data }) 
+        }
     )
     .catch(
-      error => { dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_FAILURE, error: error.toString() }) }
+      error => { 
+        logger.timeEnd('ClotureActions.getCloturesList');
+        dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_FAILURE, error: error.toString() }) 
+      }
     );
   }
 }
@@ -76,6 +89,8 @@ function getCurrentPeriode(params={}) {
     const { caisse } = options;
 
     // récup. cmd non clôturées
+
+    logger.time('ClotureActions.getCurrentPeriode -> getCommandesList()');
     const {commandeslist} = await commandeServices.getCommandesList({
       $and: [
         { archived: {"$exists": false} },
@@ -93,6 +108,8 @@ function getCurrentPeriode(params={}) {
         ]}
       ]
     });
+
+    logger.timeEnd('ClotureActions.getCurrentPeriode -> getCommandesList()');
     
     
     // // si les cmd non clôt. proviennent d'une période précédente.
@@ -135,7 +152,9 @@ function getCurrentPeriode(params={}) {
 
     
 
+    logger.time('ClotureActions.getCurrentPeriode -> service');
     const {periode} = clotureServices.getCurrentPeriode(commandeslist, catalogue, params)
+    logger.timeEnd('ClotureActions.getCurrentPeriode -> service');
     dispatch({ type: clotureActionTypes.GET_CURRENT_PERIODE, periode });
   }
 }
@@ -147,8 +166,9 @@ function getTodayCa() {
     const {heure_fin} = state.parametresReducer.parametres.entreprise;
     const {commandeslist} = state.commandesListReducer;
 
+    logger.time('ClotureActions.getTodayCa');
     const {ca, numtickets} = clotureServices.getTodayCa(heure_fin, commandeslist);
-
+    logger.timeEnd('ClotureActions.getTodayCa');
     dispatch({type: clotureActionTypes.GET_TODAY_CA, ca, numtickets})
 
   }
@@ -170,7 +190,7 @@ function makeCloture(params={}) {
   //  console.log(commandeslist);
 
     const default_params =  {
-      user: {id: user.id, nom: user.nom},
+      user: {id: user.id, nom: user.nom, user_id: user.user_id},
       caisse: options.caisse,
       vendeur: null,
       fdcaisse: financier.fonddecaisse_activation ? Number(financier.fonddecaisse_montant) : 0,
@@ -201,12 +221,14 @@ function makeCloture(params={}) {
     });
 
 
-    
+    logger.time("makeCloture");
     const cloture = clotureServices.makeCloture(commandeslist, catalogue, params)
-
+    logger.timeEnd("makeCloture");
+    logger.time("saveCloture");
     clotureServices.saveCloture(cloture)
       .then(
         data => {
+          logger.timeEnd("saveCloture");
           dispatch(commandeActions.archiveCommands({cmd:cloture.archivedcommandesid, clotureId:cloture.clotureId}));
           dispatch({ type: clotureActionTypes.MAKE_CLOTURE, cloture });
           dispatch(getLast());

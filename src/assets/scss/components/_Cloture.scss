@@ -471,6 +471,7 @@
 
 
 .ClotureComptage,
+.CountTool,
 .ClotureComptcaisse {
   display: inline-block;
   position: absolute;
@@ -778,31 +779,31 @@
 
 .CountTool,
 .CountTRTool {
-  position: absolute;
+  // position: absolute;
 
-  display: none;
-  &.counttool-open,
-  &.counttrtool-open {
-    display: block;
-  }
+  // display: none;
+  // &.counttool-open,
+  // &.counttrtool-open {
+  //   display: block;
+  // }
   
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background-color: $blanc;
-  border-radius: 15px;
-  .tete {
-    height: 50px;
-    line-height: 50px;
-    text-align: center;
-    .titre {
-      font-family: $f_blk;
-      font-size: 16px;
-      color: $noir;
-    }
-  }
-  .corps {
+  // width: 100%;
+  // height: 100%;
+  // top: 0;
+  // left: 0;
+  // background-color: $blanc;
+  // border-radius: 15px;
+  // .tete {
+  //   height: 50px;
+  //   line-height: 50px;
+  //   text-align: center;
+  //   .titre {
+  //     font-family: $f_blk;
+  //     font-size: 16px;
+  //     color: $noir;
+  //   }
+  // }
+  .body {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -880,10 +881,10 @@
       }
     }
   }
-  .pied {
+  .footer {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
+    justify-content: flex-end;
     align-items: center;
     .btnvalidcounttool,
     .btnvalidcounttrtool {

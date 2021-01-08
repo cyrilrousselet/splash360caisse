@@ -224,9 +224,11 @@ function _spoolManager(job=null) {
     // si aucune boucle d'attente n'est déclarée...
     if (waitInterval===null) {
 
+
+
       // ...on déclare un nouvel intervalle
       waitInterval = setInterval(function() {
-        log.info('wait for printer close', printerOpen, '_spoolManager()');
+        log.info('wait for printer close', printerOpen, '_spoolManager()', 'printSpool: '+printSpool.length);
         // si l'imprimante est (enfin) fermée
         if (!printerOpen) {
           log.info('at last, printer closed', printerOpen, '_spoolManager()');
@@ -242,6 +244,17 @@ function _spoolManager(job=null) {
             // on efface l'intervalle (et on met sa valeur à 'null')
             clearInterval(waitInterval);
             waitInterval = null;
+          }
+        } 
+        // si l'imprimante n'est pas fermée (suite à un bug, par ex.)
+        else {
+          // si la liste d'attente est vide
+          if (printSpool.length===0) {
+            // on efface l'intervalle (et on met sa valeur à 'null')
+            clearInterval(waitInterval);
+            waitInterval = null;
+            // et on indique que l'imprimante est fermée
+            printerOpen = false;
           }
         }
       },200);
@@ -296,9 +309,7 @@ function _openDrawer(imprimante, template, contenu) {
         
       setTimeout(() => {
         log.debug('printer.close()', '_openDrawer() 2');
-        printer.close(function() {
-          printerOpen = false;
-        });
+        _closePrinter(printer);
       }, 1000);
     }
   });
@@ -418,15 +429,22 @@ async function _printImage(printer, image) {
 }
 
 
+function _closePrinter(printer) {
+  printer.close(function() {
+    printerOpen = false;
+  });
+}
+function _printErrorHandler(error, methodName, printer) {
+  log.error(`ERREUR IMPRESSION ( ${methodName}() )`, error.message);
+  _closePrinter(printer);
+}
 
 function _launchPrint(template, printer, contenu) {
 
   log.debug('_launchPrint()');
 
   if (template.length==0) {
-    printer.close(function() {
-      printerOpen = false;
-    });
+    _closePrinter(printer);
   }
 
   
@@ -436,47 +454,103 @@ function _launchPrint(template, printer, contenu) {
     log.debug(section);
 
     if ('entreprise' === section) { 
-      _printEntreprise(printer, contenu.entreprise, contenu.strings);
+      try {
+        _printEntreprise(printer, contenu.entreprise, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printEntreprise', printer);
+      }
     }
     else if ('commande' === section) {
-      _printCommande(printer, contenu.commande, contenu.strings.commande);
+      try {
+        _printCommande(printer, contenu.commande, contenu.strings.commande);
+      } catch(e) {
+        _printErrorHandler(e, '_printCommande', printer);
+      }
     }
     else if ('message' === section) {
-      _printMessage(printer, contenu.message, contenu.strings);
+      try {
+        _printMessage(printer, contenu.message, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printMessage', printer);
+      }
     }
     else if ('legal' === section) {
-      _printLegal(printer, contenu.legal, contenu.strings);
+      try {
+        _printLegal(printer, contenu.legal, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printLegal', printer);
+      }
     }
     else if ('periode_x' === section) {
-      _printPeriodeX(printer, contenu.periode, contenu.strings);
+      try {
+        _printPeriodeX(printer, contenu.periode, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printPeriodeX', printer);
+      }
     }
     else if ('periode_z' === section) {
       const __periode = contenu.periode;
-      _printPeriodeZ(printer, {...__periode, ecarts:contenu.ecarts, comptage:contenu.comptage}, contenu.strings);
+   //   try {
+        _printPeriodeZ(printer, {...__periode, ecarts:contenu.ecarts, comptage:contenu.comptage, prelevement:contenu.prelevement}, contenu.strings);
+   //   } catch(e) {
+   //     _printErrorHandler(e, '_printPeriodeZ', printer);
+   //   }
     }
     else if ('prelevement' === section) {
-      _printPrelevement(printer, contenu.prelevement, contenu.strings);
+      try {
+        _printPrelevement(printer, contenu.prelevement, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printPrelevement', printer);
+      }
     }
     else if ('info' === section) {
-      _printInfo(printer, {info: contenu.info, nomticket: contenu.nomticket, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode, client:contenu.detail.client, bipper: contenu.detail.bipper}}, contenu.strings);
+      try {
+        _printInfo(printer, {info: contenu.info, nomticket: contenu.nomticket, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode, client:contenu.detail.client, bipper: contenu.detail.bipper}}, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printInfo', printer);
+      }
     }
     else if ('detail' ===  section) {
-      _printDetail(printer, contenu.detail, contenu.strings);
+      try {
+        _printDetail(printer, contenu.detail, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printDetail', printer);
+      }
     }
     else if ('avoir' ===  section) {
-      _printAvoir(printer, contenu.detail, contenu.strings);
+      try {
+        _printAvoir(printer, contenu.detail, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printAvoir', printer);
+      }
     }
     else if ('qrcode' ===  section) {
-      const pqr = await _printQRCode(printer, contenu.code);
+      try {
+        const pqr = await _printQRCode(printer, contenu.code);
+      } catch(e) {
+        _printErrorHandler(e, '_printQRCode', printer);
+      }
     }
     else if ('uber' ===  section) {
-      const pqr = await _printUber(printer, contenu.uber, contenu.strings.uber);
+      try {
+        const pqr = await _printUber(printer, contenu.uber, contenu.strings.uber);
+      } catch(e) {
+        _printErrorHandler(e, '_printUber', printer);
+      }
     } 
     else if ('recap' === section) {
-      _printRecap(printer, contenu.recap, contenu.strings);
+      try {
+        _printRecap(printer, contenu.recap, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printRecap', printer);
+      }
     } 
     else if ('etiquette' === section) {
-      _printEtiquettes(printer, contenu);
+      try {
+        _printEtiquettes(printer, contenu);
+      } catch(e) {
+        _printErrorHandler(e, '_printEtiquettes', printer);
+      }
     }
     // else if ('logo' === section) {
     //   if (contenu.logo!==null) {
@@ -489,10 +563,7 @@ function _launchPrint(template, printer, contenu) {
       printer.feed(2)
        .cut();
       
-      printer
-       .close(function() {
-         printerOpen = false;
-       });
+      _closePrinter(printer);
     }
   });
 }
@@ -1155,6 +1226,8 @@ function _printCommande(printer, data, strings) {
 
 function _printPeriodeX(printer, data, strings) {
 
+  _printPeriodeZ(printer, data, strings, true);
+/*
   // EN-TÊTE:
     printer
       // .size(1,1)
@@ -1375,8 +1448,8 @@ function _printPeriodeX(printer, data, strings) {
       {text: Number(moytotal).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
     ]);
         
+    */
 }
-
 function _printPrelevement(printer, data, strings) {
   printer
       // .size(1,1)
@@ -1390,7 +1463,7 @@ function _printPrelevement(printer, data, strings) {
 }
 
 
-function _printPeriodeZ(printer, data, strings) {
+function _printPeriodeZ(printer, data, strings, printx=false) {
 
   log.info('_printPeriodeZ data', data);
 
@@ -1452,7 +1525,7 @@ function _printPeriodeZ(printer, data, strings) {
       .drawLine()
       .align('CT')
       .style('B')
-      .text(strings.titre.z)
+      .text(printx ? strings.titre.x : strings.titre.z)
       .drawLine();
     
     // recap :
@@ -1494,7 +1567,9 @@ function _printPeriodeZ(printer, data, strings) {
     printer
       .align('CT')
       .style('B')
-      .text(strings.ventilation.vendeur)
+      .setReverseColors(true)
+      .text(_completeRaw(strings.ventilation.vendeur, "center"))
+      .setReverseColors(false)
       .drawLine();
 
     let vndvnt = 0;
@@ -1538,7 +1613,9 @@ function _printPeriodeZ(printer, data, strings) {
       .drawLine()
       .align('CT')
       .style('B')
-      .text(strings.ventilation.tva)
+      .setReverseColors(true)
+      .text(_completeRaw(strings.ventilation.tva, "center"))
+      .setReverseColors(false)
       .drawLine();
 
     let tvaht = 0;
@@ -1588,51 +1665,105 @@ function _printPeriodeZ(printer, data, strings) {
 
 
     // ventilation par moyen de paiement
+
     printer
       .drawLine()
       .align('CT')
       .style('B')
-      .text(strings.ventilation.moyen)
+      .setReverseColors(true)
+      .text(_completeRaw(strings.ventilation.moyen, "center"))
+      .setReverseColors(false)
       .drawLine();
 
     let moytotal = 0;
+    let ecarttotal = 0;
+
+
+    // en-tête
+    printer
+      .style('NORMAL')
+      .tableCustom([
+        {text: strings.caption.moyens_th.moyen, col:14, align:'LEFT'},
+        {text: strings.caption.moyens_th.theorique, col:10, align:'RIGHT'},
+        {text: strings.caption.moyens_th.comptage, col:10, align:'RIGHT'},
+        {text: strings.caption.moyens_th.ecart, col:8, align:'RIGHT'},
+      ]);
+
 
     data.ventilation.moyen.forEach(moyen => { 
+
+      let __moy = moyen.moyen;
       let __val = moyen.valeur;
 
       // on déduit le montant des avoirs émis du total des TR
       if (moyen.moyen==='ticket') __val -= data.emission;
 
+      const __moy_ecart = (data.ecarts.hasOwnProperty(__moy) && data.ecarts[__moy]!==null) ? data.ecarts[__moy].valeur : 0;
+
+      moytotal += __val;
+      ecarttotal += __moy_ecart;
+
       printer
         .style('NORMAL')
         .tableCustom([
-          {text: strings.caption.moyens[moyen.moyen], cols:24, align:'LEFT'},
-          {text: Number(__val).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
+          {text: strings.caption.moyens[moyen.moyen], col:14, align:'LEFT'},
+          {text: Number(__val).toFixed(2).replace('.',','), col:10, align:'RIGHT'},
+          {text: Number(data.comptage[__moy]).toFixed(2).replace('.',','), col:10, align:'RIGHT'},
+          __moy_ecart===0 ? {text: '', col:8} : {text: `${(Number(__moy_ecart)>0) ? '+':''}${ Number(__moy_ecart).toFixed(2).replace('.',',') }`, cols:8, align:'RIGHT'}
         ]);
-        moytotal += __val;
-
-      if (data.ecarts.hasOwnProperty(moyen)) {
+      if (__moy_ecart!==0) {
         printer
           .tableCustom([
-            {text: `--- ${strings.caption.ecart.nom}`, cols:10, align:'LEFT'},
-            {text: Number(data.ecarts[moyen].valeur).toFixed(2).replace('.',','), cols:28, align:'RIGHT'},
-            {text: ' ---', cols:4, align:'RIGHT'}
+            {text: ` * ${strings.caption.ecart.motif}`, cols:18, align:'LEFT'},
+            {text: data.ecarts[__moy].motif, cols:20, align:'LEFT'},
+            {text: ' *', cols:4, align:'LEFT'}
           ])
-          .tableCustom([
-            {text: `--- ${strings.caption.ecart.motif}`, cols:10, align:'LEFT'},
-            {text: data.ecarts[moyen].motif, cols:28, align:'LEFT'},
-            {text: ' ---', cols:4, align:'RIGHT'}
-          ]);
+          .feed(1);
       }
-    });
+
+   });
+
+    const cpttotal = (data.comptage && data.comptage.hasOwnProperty('total')) ? data.comptage.total: 0;
 
     printer
-    .feed(1)
-    .tableCustom([
-      {text: strings.caption.total, cols:24, align:'LEFT'},
-      {text: Number(moytotal).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
-    ]);
+      .feed(1)
+      .style('NORMAL')
+      .tableCustom([
+        {text: strings.caption.total, col:14, align:'LEFT'},
+        {text: Number(moytotal).toFixed(2).replace('.',','), col:10, align:'RIGHT'},
+        {text: Number(cpttotal).toFixed(2).replace('.',','), col:10, align:'RIGHT'},
+        {text: Number(ecarttotal).toFixed(2).replace('.',','), col:8, align:'RIGHT'},
+      ]);
+
+    // émission d'avoirs
+    if (data.emission>0) {
+      printer
+        .feed(1)
+        .drawLine()
+        .tableCustom([
+          {text: strings.caption.emission, cols:24, align:'LEFT'},
+          {text: Number(data.emission).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
+        ]);
+    }
         
+}
+
+// complete la ligne avec des espaces
+function _completeRaw(string, alignment='left') {
+
+    const __sp = 42 - String(string).length;
+    let __str = "";
+    switch(alignment) {
+      case "center":
+         __str = (new Array(Math.floor(__sp/2)+1)).join(' ') + string + (new Array(Math.floor(__sp/2)+1+(__sp%2))).join(' ');
+         break;
+      case "right":
+         __str = (new Array(__sp+1)).join(' ') + string;
+         break;
+      default:
+        __str = string + (new Array(__sp+1)).join(' ');
+    }
+    return __str;
 }
 
 

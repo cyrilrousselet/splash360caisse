@@ -465,17 +465,23 @@ const data = {
                         vente_short: 'VENTES',
                         remboursements_short: 'REMB.',
                         ca_short: 'CA',
-                        moyens: {
-                            especes: 'ESPECES',
-                            carte: 'CARTE BLEUE',
-                            ticket: 'TICKET RESTAURANT',
-                            cheque: 'CHÈQUE',
-                            avoir: 'AVOIR'
+                        moyens_th: {
+                            moyen: 'MOYEN',
+                            theorique: 'TH.',
+                            comptage: 'CPT.',
+                            ecart: 'ECART'
                         },
-                        emission: 'AVOIRS ÉMIS',
+                        moyens: {
+                            especes: 'Especes',
+                            carte: 'Cartes',
+                            ticket: 'Tickets R.',
+                            cheque: 'Chèques',
+                            avoir: 'Avoirs'
+                        },
+                        emission: 'Avoirs émis : ',
                         ecart: {
                             nom: 'ECART :',
-                            motif: 'MOTIF :'
+                            motif: 'Motif ecart :'
                         },
                         total: 'Total'
                     },
@@ -664,12 +670,13 @@ const data = {
                 },
                 liste: {
                     id: "Id",
+                    station: "Station",
                     date: "Date",
                     debut: "Première cmd",
                     fin: "Dernière cmd",
                     ht: "Total HT",
                     ventes: "Ventes",
-                    nombre: 'Nombre cmd',
+                    nombre: 'Nbr. cmd',
                     actions: "Actions"
                 },
                 view: {

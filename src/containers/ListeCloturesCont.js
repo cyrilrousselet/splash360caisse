@@ -19,7 +19,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   const bound = bindActionCreators({
       getCloturesList: clotureActions.getCloturesList,
-      printCloture: peripheralActions.printPeriodeX
+      printCloture: peripheralActions.printCloture
   }, dispatch);
   return {
     ...bound,

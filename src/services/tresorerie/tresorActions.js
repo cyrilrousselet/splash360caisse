@@ -24,8 +24,10 @@ function addTresor(payload) {
 
     const tresor = tresorServices.createTresor(params);
 
+    logger.time('addTresor');
     tresorServices.persistTresor(tresor).then(
       data => {
+        logger.timeEnd('addTresor');
         dispatch({
           type: tresorActionTypes.ADD_SUCCESS,
           tresor: data
@@ -33,7 +35,10 @@ function addTresor(payload) {
 
         dispatch(notificationActions.syncDispatch('tresorerie', data));
       },
-      error => dispatch({ type: tresorActionTypes.ADD_FAILURE, error: error.toString() })
+      error => { 
+        logger.timeEnd('addTresor');
+        dispatch({ type: tresorActionTypes.ADD_FAILURE, error: error.toString() })
+      }
     );
 
   }
@@ -58,11 +63,14 @@ function getLastOuvertureAndAfter(caisseId) {
       }
     });
 
+    logger.time('getLastOuvertureAndAfter');
     tresorServices.getLastOuvertureAndAfter({
       createdAt: __periode_bounds.debut,
       caisseId: caisseId
     }).then(
       data => { 
+
+        logger.timeEnd('getLastOuvertureAndAfter');
         dispatch({ 
           type: tresorActionTypes.GET_LASTOUVERTUREANDAFTER_SUCCESS, 
           ...data
@@ -71,6 +79,8 @@ function getLastOuvertureAndAfter(caisseId) {
     )
     .catch(
       error => { 
+
+        logger.timeEnd('getLastOuvertureAndAfter');
         dispatch({ type: tresorActionTypes.GET_LASTOUVERTUREANDAFTER_FAILURE, error: error.toString() }) }
     );
 
@@ -84,8 +94,10 @@ function getTresors(params={}) {
   return dispatch => {
     dispatch({type: tresorActionTypes.GET_REQUEST});
 
+    logger.time('getTresors');
     tresorServices.getTresors(params).then(
       data => { 
+        logger.timeEnd('getTresors');
         dispatch({ 
           type: tresorActionTypes.GET_SUCCESS, 
           ...data
@@ -94,7 +106,9 @@ function getTresors(params={}) {
     )
     .catch(
       error => { 
-        dispatch({ type: tresorActionTypes.GET_FAILURE, error: error.toString() }) }
+        logger.timeEnd('getTresors');
+        dispatch({ type: tresorActionTypes.GET_FAILURE, error: error.toString() })
+      }
     );
   }
 }
@@ -106,10 +120,12 @@ function updateTresor(payload) {
 
     dispatch({ type: tresorActionTypes.UPDATE_REQUEST });
 
+    logger.time('persistTresor');
     tresorServices.persistTresor(payload).then(
 
       data => {
  
+        logger.timeEnd('persistTresor');
         dispatch({ 
           type: tresorActionTypes.UPDATE_SUCCESS,
           tresor: data 
@@ -117,7 +133,10 @@ function updateTresor(payload) {
 
         dispatch(notificationActions.syncDispatch('tresorerie', data));
       },
-      error => dispatch({ type: tresorActionTypes.UPDATE_FAILURE, error: error.toString() })
+      error => {
+        logger.timeEnd('persistTresor');
+        dispatch({ type: tresorActionTypes.UPDATE_FAILURE, error: error.toString() })
+      }
     );
   }
 }

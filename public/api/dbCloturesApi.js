@@ -194,7 +194,7 @@ function _parseCloture(_rawdata) {
 async function _getCloturesToSync(limit = null) {
   const mongo = await connect();
   const criteria = {
-    $or: [{ sync: undefined }, { $where: "this.updatedAt > this.sync" }],
+    $or: [{ sync: {$exists: false} }, { $where: "this.updatedAt > this.sync" }],
   };
 
   let clotures =

@@ -144,7 +144,7 @@ async function _getCommandesToSync(limit = null) {
   const mongo = await connect();
   const criteria = {
     $and: [
-      { $or: [{ sync: undefined }, { $where: "this.updatedAt > this.sync" }] },
+      { $or: [{ sync: {$exists: false} }, { $where: "this.updatedAt > this.sync" }] },
       { $or: [{ status: "confirmed" }, { status: "deleted" }] },
     ],
   };
