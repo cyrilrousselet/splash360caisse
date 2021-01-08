@@ -584,6 +584,7 @@ class Panier extends React.Component {
           logger.timeEnd('testOuverture');
           logger.log('Panier.testOuverture()', result);
 
+          logger.timeEnd('testOuverture');
           if (result && result.hasOwnProperty('cloture') && result.cloture!==null) {
             if (result.hasOwnProperty('ouverture') && result.ouverture) {
               logger.log('IL Y A UNE CLOTURE et une ouverture');
