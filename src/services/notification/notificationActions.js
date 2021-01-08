@@ -331,9 +331,9 @@ function initSyncCommandes() {
                         createdAt: formatISO(c.createdAt),
                         updatedAt: formatISO(c.updatedAt),
                         endTime: formatISO(chr.endTime),
-                        careTime: formatISO(chr.careTime.firstCare),
-                        productionTime: Math.round(differenceInMilliseconds(chr.endTime, chr.careTime.firstCare)/10)/100,
-                        waitTime: Math.round(differenceInMilliseconds(chr.careTime.firstCare, parseISO(c.end))/10)/100,
+                        careTime: chr.careTime.hasOwnProperty('firstCare') ? formatISO(chr.careTime.firstCare) : 0,
+                        productionTime: chr.careTime.hasOwnProperty('firstCare') ? Math.round(differenceInMilliseconds(chr.endTime, chr.careTime.firstCare)/10)/100 : null,
+                        waitTime: chr.careTime.hasOwnProperty('firstCare') ? Math.round(differenceInMilliseconds(chr.careTime.firstCare, parseISO(c.end))/10)/100 : null,
                       };
               } else {
                 return {...c,
