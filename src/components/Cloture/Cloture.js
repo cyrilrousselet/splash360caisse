@@ -595,6 +595,11 @@ class Cloture extends React.Component {
     // logger.log('caisses', caisses);
 
     if (processing) {
+
+      setTimeout(function() {
+        history.push(paths.CLOTURE);
+      }, 1500);
+
       return (
       <div className="Cloture container">
         <div className="MainZone">
@@ -654,7 +659,7 @@ class Cloture extends React.Component {
 
 
 //    const comptage_fv = comptage ? comptage.especes : 0;
-    const comptage_fv = _ventilation ? _ventilation.especes : 0;
+    const comptage_fv = _ventilation ? _ventilation.especes + ecart_especes_fv : 0;
 
 
 
