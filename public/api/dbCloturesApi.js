@@ -86,7 +86,7 @@ const actions = {
 
 async function _getLast() {
   const mongo = await connect();
-  const __rawdata = await ClotureModel.find().lean().sort({createdAt: -1}).limit(1);
+  const __rawdata = await ClotureModel.find().sort({createdAt: -1}).limit(1);
   // await mongo.disconnect();
   return _parseCloture(__rawdata);
   //return _cloture; 
@@ -150,7 +150,7 @@ async function _findBoundedClotures(start, end) {
 async function _findCloture(criteriae = {}) {
   log.info(criteriae);
   const mongo = await connect();
-  const _cloture = await ClotureModel.find(criteriae).lean().exec();
+  const _cloture = await ClotureModel.find(criteriae).exec();
   // await mongo.disconnect();
   return _cloture;
 }
@@ -161,7 +161,7 @@ async function _persistCloture(payload) {
   const mongo = await connect();
   let _clo = await ClotureModel.where({ clotureId: payload.clotureId })
     .findOne()
-    .lean()
+    
     .exec();
 
   if (_clo) {
@@ -200,8 +200,8 @@ async function _getCloturesToSync(limit = null) {
 
   let clotures =
     limit !== null && limit > 0
-      ? await ClotureModel.find(criteria).lean().limit(limit).exec()
-      : await ClotureModel.find(criteria).lean().exec();
+      ? await ClotureModel.find(criteria).limit(limit).exec()
+      : await ClotureModel.find(criteria).exec();
 
   // Map document
   clotures = clotures.map((c) => ({

@@ -154,9 +154,9 @@ async function _getCommandesToSync(limit = null) {
   let _cmd;
 
   if (limit && limit > 0) {
-    _cmd = await CommandeModel.find(criteria).lean().limit(limit).exec();
+    _cmd = await CommandeModel.find(criteria).limit(limit).exec();
   } else {
-    _cmd = await CommandeModel.find(criteria).lean().exec();
+    _cmd = await CommandeModel.find(criteria).exec();
   }
 
   // Map document
@@ -189,7 +189,7 @@ async function _getCommandes(criteriae = {}) {
   }
   log.info('criteriae', __criteriae);
   // const _rawdata = (await CommandeModel.find(__criteriae)).values();
-  const _rawdata = await CommandeModel.find( criteriae ).lean().exec();
+  const _rawdata = await CommandeModel.find( criteriae ).exec();
  
 //  log.info('_getCommandes', _rawdata);
  
@@ -203,7 +203,7 @@ async function _getCommandes(criteriae = {}) {
 async function _findCommande(criteriae = {}) {
   log.info(criteriae);
   const mongo = await connect();
-  const _cmd = await CommandeModel.find(criteriae).lean().exec();
+  const _cmd = await CommandeModel.find(criteriae).exec();
   // await mongo.disconnect();
   return _cmd;
 }
@@ -214,7 +214,7 @@ async function _persistCommande(payload) {
   const mongo = await connect();
   let _cmd = await CommandeModel.where({ ticketId: payload.ticketId })
     .findOne()
-    .lean()
+    
     .exec();
 
   if (_cmd) {
