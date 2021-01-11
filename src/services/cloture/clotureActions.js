@@ -10,6 +10,7 @@ import { peripheralActions } from '../peripheral/peripheralActions';
 // import Swal from 'sweetalert2';
 import Logger from '../../helpers/Logger';
 import { commandeServices } from '../commande/commandeServices';
+import { dateBounds } from '../../helpers/toolbox';
 // import { dateBounds } from '../../helpers/toolbox';
 // const strings = new LocalizedStrings(data);
 
@@ -160,15 +161,20 @@ function getCurrentPeriode(params={}) {
 }
 
 function getTodayCa() {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
 
     const state = getState();
     const {heure_fin} = state.parametresReducer.parametres.entreprise;
-    const {commandeslist} = state.commandesListReducer;
+    // const {commandeslist} = state.commandesListReducer;
+    const __periode_bounds = dateBounds(new Date(), heure_fin);
+    const lastperiode_end = __periode_bounds.debut;
+
 
     logger.time('ClotureActions.getTodayCa');
-    const {ca, numtickets} = clotureServices.getTodayCa(heure_fin, commandeslist);
-    logger.timeEnd('ClotureActions.getTodayCa');
+    // const {ca, numtickets} = clotureServices.getTodayCa(heure_fin, commandeslist);
+    const stats = await clotureServices.getTodayCa(lastperiode_end);
+    const {ca, numtickets} = stats;
+    logger.timeEnd('ClotureActions.getTodayCa', stats);
     dispatch({type: clotureActionTypes.GET_TODAY_CA, ca, numtickets})
 
   }

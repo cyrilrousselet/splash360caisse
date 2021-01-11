@@ -500,9 +500,16 @@ class Panier extends React.Component {
   search_tmo = -1;
 
   componentDidMount() {
-    const { getCommande, getParametres, getListeCommandes, getClientsList, commande, getSallesList } = this.props;
+    const { 
+      getCommande, 
+      getParametres, 
+      // getListeCommandes, 
+      getClientsList, 
+      commande, 
+      getSallesList 
+    } = this.props;
     if (!commande.hasOwnProperty('ticketId')) getCommande();
-    getListeCommandes();
+    // getListeCommandes();
     getParametres();    
     getClientsList();
     getSallesList();

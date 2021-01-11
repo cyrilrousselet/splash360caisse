@@ -39,6 +39,33 @@ const actions = {
       res.error("Commande not found or commande is duplicated");
     }
   },
+  dbCommandesGetTodayCa: async (req, res) => {
+    const { payload } = req;
+    log.info("dbCommandesGetTodayCa() in API");
+
+    const stats = await CommandeModel.aggregate([{$match: {
+      $and: [
+      {"createdAt": { $gt: payload.from }},
+      {"status": {$eq: "confirmed"} }
+        ]
+    }}, {$group: {
+      _id: null,
+      ca: {
+        $sum: "$total"
+      },
+      numtickets: {
+        $sum: 1
+      }
+    }}]);
+
+    let response = {ca: 0, numtickets: 0};
+    if (stats.length) {
+      response = stats[0];
+    }
+
+    res.send(response);
+
+  },
   dbCommandePersist: async (req, res) => {
     const { payload } = req;
     log.info("dbCommandePersist() in API");
@@ -228,7 +255,7 @@ async function _persistCommande(payload) {
     const id = await _generateCommandId();
     let __ins = { ...payload, id: id, createdAt: __now, updatedAt: __now };
     _cmd = await CommandeModel.create(__ins);
-    _cmd = _cmd;
+    _cmd = __ins;
   }
 
   // await mongo.disconnect();

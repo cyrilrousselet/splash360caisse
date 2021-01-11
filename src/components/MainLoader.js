@@ -21,7 +21,7 @@ class MainLoader extends React.Component {
       paramLoaded: props.paramLoaded,
       sseInit: props.sseInit,
       catLoaded: props.catLoaded,
-      cmdLoaded: props.cmdLoaded,
+      cmdLoaded: true,
       cloLoaded: props.cloLoaded,
       inspect: false
     };
@@ -87,7 +87,7 @@ class MainLoader extends React.Component {
       }
       if (paramLoaded===true && sseInit===true && catLoaded===true && 
           cmdLoaded===false && cmdLoading===false) {
-        this.props.getTodayCommandesList();
+      //  this.props.getTodayCommandesList();
         this.props.loadNumero();
       }
       if (paramLoaded===true && sseInit===true && catLoaded===true && cmdLoaded===true && 
@@ -125,7 +125,18 @@ class MainLoader extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
   //  logger.log('MainLoader.componentDidUpdate()', this.props);
-    const { paramLoaded, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, sseInit, params, dbupdated, dbgetInit } = this.props;
+    const { 
+      paramLoaded, 
+      catLoaded, 
+      catLoading, 
+      cmdLoaded, 
+      cmdLoading, 
+      cloLoaded, 
+      sseInit, 
+      params, 
+      dbupdated, 
+      dbgetInit 
+    } = this.props;
 
     let first_start = params ? params.first_start : null;
 
@@ -174,7 +185,7 @@ class MainLoader extends React.Component {
       }
       if (paramLoaded===true && sseInit===true && catLoaded===true && 
           cmdLoaded===false && cmdLoading===false) {
-        this.props.getTodayCommandesList();
+      //  this.props.getTodayCommandesList();
         this.props.loadNumero();
       }
       if (paramLoaded===true && sseInit===true && catLoaded===true && cmdLoaded===true && 
@@ -209,7 +220,14 @@ class MainLoader extends React.Component {
   }
 
   render() {
-    const { paramLoaded, catLoaded, cmdLoaded, cloLoaded, sseInit, first_start } = this.state;
+    const { 
+      paramLoaded, 
+      catLoaded, 
+      // cmdLoaded, 
+      cloLoaded, 
+      sseInit, 
+      first_start 
+    } = this.state;
   //  const { paramLoaded, paramLoading, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, cloLoading, sseInit, params, dbupdated } = this.props;
 
   // if (!paramLoaded || !catLoaded || !cmdLoaded || !cloLoaded || !sseInit) this.setState({inspect: true});
@@ -223,7 +241,7 @@ class MainLoader extends React.Component {
           {paramLoaded && <p className="MainLoader-item">Paramètres chargés</p>}
           {sseInit && <p className="MainLoader-item">SSE initialisé</p>}
           {catLoaded && <p className="MainLoader-item">Catalogue chargés</p>}
-          {cmdLoaded && <p className="MainLoader-item">Commandes chargées</p>}
+          {/* {cmdLoaded && <p className="MainLoader-item">Commandes chargées</p>} */}
           {cloLoaded && <p className="MainLoader-item">Clotures chargées</p>}
         </div>
       </div>

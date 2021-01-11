@@ -1,7 +1,7 @@
 import {emit} from 'eiphop';
 
 import { startOfDay, startOfToday, isAfter, isBefore } from 'date-fns';
-import { dateBounds } from '../../helpers/toolbox';
+// import { dateBounds } from '../../helpers/toolbox';
 import LodashId from 'lodash-id';
 import Logger from '../../helpers/Logger';
 const logger = new Logger();
@@ -20,33 +20,41 @@ export const clotureServices = {
 };
 
 
-function getTodayCa(heure_fin, commandeslist) {
+// function getTodayCa(heure_fin, commandeslist) {
 
-  // fin de la période précédente
-  const __periode_bounds = dateBounds(new Date(), heure_fin);
-  const lastperiode_end = __periode_bounds.debut;
+//   // fin de la période précédente
+//   const __periode_bounds = dateBounds(new Date(), heure_fin);
+//   const lastperiode_end = __periode_bounds.debut;
 
-  let ca = 0;
-  let numtickets = 0;
+//   let ca = 0;
+//   let numtickets = 0;
 
-  if (commandeslist) {
+//   if (commandeslist) {
 
-    Object.values(commandeslist).forEach(cmd => {
-      if (cmd.status === "confirmed") {
-        // const __start = new Date(cmd.start);
-        // if (__start>lastperiode_end) {
-        if (cmd.createdAt>lastperiode_end) {
-          ca += cmd.total;
-          numtickets++;
-        }
-      }
-    });
+//     Object.values(commandeslist).forEach(cmd => {
+//       if (cmd.status === "confirmed") {
+//         // const __start = new Date(cmd.start);
+//         // if (__start>lastperiode_end) {
+//         if (cmd.createdAt>lastperiode_end) {
+//           ca += cmd.total;
+//           numtickets++;
+//         }
+//       }
+//     });
 
-  }
+//   }
 
 
-  return {ca, numtickets};
+//   return {ca, numtickets};
+// }
+
+
+
+function getTodayCa(heure_fin) {
+
+return emit('dbCommandesGetTodayCa', {from: heure_fin});
 }
+
 
 
 function getCurrentPeriode(commandes, catalogue, params) {
