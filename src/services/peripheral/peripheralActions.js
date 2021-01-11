@@ -344,6 +344,7 @@ function printCommandeTicket(quelstickets, cmd) {
 
     const state = getState();
 
+    logger.time('printCommandeTicket()');
 
 
    // const cmd = state.commandeReducer.commande;
@@ -1220,11 +1221,14 @@ function printCommandeTicket(quelstickets, cmd) {
 
       if (noarticle) {
         dispatch({ type: peripheralActionTypes.NOPRINT_TICKET, template: template, reason: 'no article' });
+
+        logger.time('printCommandeTicket()');
       } else {
 
         peripheralServices.printTicket(target_imprimantes[0], template, contenu)
         .then(
           response => {
+            logger.time('printCommandeTicket()');
             logger.log(response);
           }
         )
