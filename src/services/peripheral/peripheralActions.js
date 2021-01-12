@@ -1222,13 +1222,13 @@ function printCommandeTicket(quelstickets, cmd) {
       if (noarticle) {
         dispatch({ type: peripheralActionTypes.NOPRINT_TICKET, template: template, reason: 'no article' });
 
-        logger.time('printCommandeTicket()');
+        logger.timeEnd('printCommandeTicket()');
       } else {
 
         peripheralServices.printTicket(target_imprimantes[0], template, contenu)
         .then(
           response => {
-            logger.time('printCommandeTicket()');
+            logger.timeEnd('printCommandeTicket()');
             logger.log(response);
           }
         )
