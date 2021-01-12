@@ -222,6 +222,7 @@ async function _persistTresor(payload) {
     const id = await _generateTresorId();
     let __ins = { ...payload, id: id, createdAt: __now, updatedAt: __now };
     _trs = await TresorModel.create(__ins);
+    _trs = __ins;
   }
 
   // await mongo.disconnect();
