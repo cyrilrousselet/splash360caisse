@@ -226,7 +226,7 @@ function _spoolManager(job=null) {
 
       // ...on déclare un nouvel intervalle
       waitInterval = setInterval(function() {
-        log.info('wait for printer close', printerOpen, '_spoolManager()');
+        log.info('wait for printer close', printerOpen, '_spoolManager()', 'printSpool: '+printSpool.length);
         // si l'imprimante est (enfin) fermée
         if (!printerOpen) {
           log.info('at last, printer closed', printerOpen, '_spoolManager()');
@@ -242,6 +242,8 @@ function _spoolManager(job=null) {
             // on efface l'intervalle (et on met sa valeur à 'null')
             clearInterval(waitInterval);
             waitInterval = null;
+            // et on indique que l'imprimante est fermÃ©e
+            printerOpen = false;
           }
         }
       },200);
@@ -417,6 +419,15 @@ async function _printImage(printer, image) {
 
 }
 
+function _closePrinter(printer) {
+  printer.close(function() {
+    printerOpen = false;
+  });
+}
+function _printErrorHandler(error, methodName, printer) {
+  log.error(`ERREUR IMPRESSION ( ${methodName}() )`, error.message);
+  _closePrinter(printer);
+}
 
 
 function _launchPrint(template, printer, contenu) {
@@ -424,9 +435,7 @@ function _launchPrint(template, printer, contenu) {
   log.debug('_launchPrint()');
 
   if (template.length==0) {
-    printer.close(function() {
-      printerOpen = false;
-    });
+    _closePrinter(printer);
   }
 
   
@@ -436,46 +445,101 @@ function _launchPrint(template, printer, contenu) {
     log.debug(section);
 
     if ('entreprise' === section) { 
-      _printEntreprise(printer, contenu.entreprise, contenu.strings);
-    }
+      try {
+        _printEntreprise(printer, contenu.entreprise, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printEntreprise', printer);
+      }    }
     else if ('commande' === section) {
-      _printCommande(printer, contenu.commande, contenu.strings.commande);
+      try {
+        _printCommande(printer, contenu.commande, contenu.strings.commande);
+      } catch(e) {
+        _printErrorHandler(e, '_printCommande', printer);
+      }
     }
     else if ('message' === section) {
-      _printMessage(printer, contenu.message, contenu.strings);
+      try {
+        _printMessage(printer, contenu.message, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printMessage', printer);
+      }
     }
     else if ('legal' === section) {
-      _printLegal(printer, contenu.legal, contenu.strings);
+      try {
+        _printLegal(printer, contenu.legal, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printLegal', printer);
+      }
     }
     else if ('periode_x' === section) {
-      _printPeriodeX(printer, contenu.periode, contenu.strings);
+      try {
+        _printPeriodeX(printer, contenu.periode, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printPeriodeX', printer);
+      }
     }
     else if ('periode_z' === section) {
-      _printPeriodeZ(printer, contenu.periode, contenu.strings);
+      try {
+        _printPeriodeZ(printer, contenu.periode, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printPeriodeX', printer);
+      }
     }
     else if ('prelevement' === section) {
-      _printPrelevement(printer, contenu.prelevement, contenu.strings);
+      try {
+        _printPrelevement(printer, contenu.prelevement, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printPrelevement', printer);
+      }
     }
     else if ('info' === section) {
-      _printInfo(printer, {info: contenu.info, nomticket: contenu.nomticket, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode, client:contenu.detail.client, bipper: contenu.detail.bipper}}, contenu.strings);
+      try {
+        _printInfo(printer, {info: contenu.info, nomticket: contenu.nomticket, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode, client:contenu.detail.client, bipper: contenu.detail.bipper}}, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printInfo', printer);
+      }
     }
     else if ('detail' ===  section) {
-      _printDetail(printer, contenu.detail, contenu.strings);
+      try {
+        _printDetail(printer, contenu.detail, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printDetail', printer);
+      }
     }
     else if ('avoir' ===  section) {
-      _printAvoir(printer, contenu.detail, contenu.strings);
+      try {
+        _printAvoir(printer, contenu.detail, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printAvoir', printer);
+      }
     }
     else if ('qrcode' ===  section) {
-      const pqr = await _printQRCode(printer, contenu.code);
+      try {
+        const pqr = await _printQRCode(printer, contenu.code);
+      } catch(e) {
+        _printErrorHandler(e, '_printQRCode', printer);
+      }
     }
     else if ('uber' ===  section) {
-      const pqr = await _printUber(printer, contenu.uber, contenu.strings.uber);
+      try {
+        const pqr = await _printUber(printer, contenu.uber, contenu.strings.uber);
+      } catch(e) {
+        _printErrorHandler(e, '_printUber', printer);
+      }
     } 
     else if ('recap' === section) {
-      _printRecap(printer, contenu.recap, contenu.strings);
+      try {
+        _printRecap(printer, contenu.recap, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printRecap', printer);
+      }
     } 
     else if ('etiquette' === section) {
-      _printEtiquettes(printer, contenu);
+      try {
+        _printEtiquettes(printer, contenu);
+      } catch(e) {
+        _printErrorHandler(e, '_printEtiquettes', printer);
+      }
     }
     // else if ('logo' === section) {
     //   if (contenu.logo!==null) {
@@ -488,10 +552,7 @@ function _launchPrint(template, printer, contenu) {
       printer.feed(2)
        .cut();
       
-      printer
-       .close(function() {
-         printerOpen = false;
-       });
+       _closePrinter(printer);
     }
   });
 }

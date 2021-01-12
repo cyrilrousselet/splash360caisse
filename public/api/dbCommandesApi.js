@@ -33,11 +33,38 @@ const actions = {
     const proxies = await _findCommande({ ticketId: payload.ticketId });
     log.info(proxies);
     if (proxies && proxies.length === 1) {
-      const _cmd = proxies[0]._doc;
+      const _cmd = proxies[0];
       res.send({ _cmd });
     } else {
       res.error("Commande not found or commande is duplicated");
     }
+  },
+  dbCommandesGetTodayCa: async (req, res) => {
+    const { payload } = req;
+    log.info("dbCommandesGetTodayCa() in API");
+
+    const stats = await CommandeModel.aggregate([{$match: {
+      $and: [
+      {"createdAt": { $gt: payload.from }},
+      {"status": {$eq: "confirmed"} }
+        ]
+    }}, {$group: {
+      _id: null,
+      ca: {
+        $sum: "$total"
+      },
+      numtickets: {
+        $sum: 1
+      }
+    }}]);
+
+    let response = {ca: 0, numtickets: 0};
+    if (stats.length) {
+      response = stats[0];
+    }
+
+    res.send(response);
+
   },
   dbCommandePersist: async (req, res) => {
     const { payload } = req;
@@ -118,8 +145,8 @@ const actions = {
 
     const _cmd = await _findCommande();
     const _cmdSummary = _cmd.map((c) => ({
-      id: c._doc.ticketId,
-      updatedAt: c._doc.updatedAt,
+      id: c.ticketId,
+      updatedAt: c.updatedAt,
     }));
 
     const _tkr = await (await db.ticketsrestau).get("ticketsrestau").value();
@@ -144,7 +171,7 @@ async function _getCommandesToSync(limit = null) {
   const mongo = await connect();
   const criteria = {
     $and: [
-      { $or: [{ sync: undefined }, { $where: "this.updatedAt > this.sync" }] },
+      { $or: [{ sync: {$exists: false} }, { $where: "this.updatedAt > this.sync" }] },
       { $or: [{ status: "confirmed" }, { status: "deleted" }] },
     ],
   };
@@ -154,16 +181,16 @@ async function _getCommandesToSync(limit = null) {
   let _cmd;
 
   if (limit && limit > 0) {
-    _cmd = await CommandeModel.find(criteria).limit(limit).exec();
+    _cmd = await CommandeModel.find(criteria).lean().limit(limit).exec();
   } else {
-    _cmd = await CommandeModel.find(criteria).exec();
+    _cmd = await CommandeModel.find(criteria).lean().exec();
   }
 
   // Map document
-  _cmd = _cmd.map((c) => ({ ...c._doc, _id: undefined, __v: undefined }));
+  _cmd = _cmd.map((c) => ({ ...c, _id: undefined, __v: undefined }));
 
   // log.info("Commandes: ", JSON.stringify(_cmd));
-  await mongo.disconnect();
+  // await mongo.disconnect();
 
   const ids = _cmd.map((c) => c.ticketId);
 
@@ -189,11 +216,11 @@ async function _getCommandes(criteriae = {}) {
   }
   log.info('criteriae', __criteriae);
   // const _rawdata = (await CommandeModel.find(__criteriae)).values();
-  const _rawdata = await CommandeModel.find( criteriae ).exec();
+  const _rawdata = await CommandeModel.find( criteriae ).lean().exec();
  
-  log.info('_getCommandes', _rawdata);
+//  log.info('_getCommandes', _rawdata);
  
-  await mongo.disconnect();
+  // await mongo.disconnect();
   return  _parseCommandes(_rawdata);
 }
 
@@ -203,8 +230,8 @@ async function _getCommandes(criteriae = {}) {
 async function _findCommande(criteriae = {}) {
   log.info(criteriae);
   const mongo = await connect();
-  const _cmd = await CommandeModel.find(criteriae).exec();
-  await mongo.disconnect();
+  const _cmd = await CommandeModel.find(criteriae).lean().exec();
+  // await mongo.disconnect();
   return _cmd;
 }
 
@@ -214,11 +241,12 @@ async function _persistCommande(payload) {
   const mongo = await connect();
   let _cmd = await CommandeModel.where({ ticketId: payload.ticketId })
     .findOne()
+    .lean()
     .exec();
 
   if (_cmd) {
     log.info("cmd existe, donc on update");
-    _cmd = { ..._cmd._doc, ...payload, updatedAt: __now };
+    _cmd = { ..._cmd, ...payload, updatedAt: __now };
     delete _cmd._id;
     await CommandeModel.update({ ticketId: payload.ticketId }, _cmd).exec();
   } else {
@@ -227,10 +255,10 @@ async function _persistCommande(payload) {
     const id = await _generateCommandId();
     let __ins = { ...payload, id: id, createdAt: __now, updatedAt: __now };
     _cmd = await CommandeModel.create(__ins);
-    _cmd = _cmd._doc;
+    _cmd = __ins;
   }
 
-  await mongo.disconnect();
+  // await mongo.disconnect();
   return _cmd;
 }
 
@@ -238,8 +266,7 @@ function _parseCommandes(_rawdata) {
   const __commandes = {};
 
   _rawdata.forEach((c) => {
-    const __cmd = c._doc;
-    __commandes[__cmd.ticketId] = __cmd;
+    __commandes[c.ticketId] = c;
   });
 
   return { commandeslist: __commandes };
@@ -256,10 +283,10 @@ async function _deleteCommande(ticketId, motif) {
   let _cmd;
   if (_status.ok) {
     const _cmds = await _findCommande({ ticketId: ticketId });
-    _cmd = _cmds[0]._doc;
+    _cmd = _cmds[0];
   }
 
-  await mongo.disconnect();
+  // await mongo.disconnect();
   return _cmd;
 }
 
@@ -273,7 +300,7 @@ async function _setArchived(ids, clotureId) {
   log.info(ids);
   const _cmds = await _findCommande({ ticketId: { $in: ids } });
   _cmds.forEach(async (c) => {
-    const doc = c._doc;
+    const doc = c;
     doc.archived = clotureId;
     doc.updatedAt = __now;
 
@@ -291,19 +318,18 @@ async function _setSynced(ids, datetime) {
   }
 
   const __datetime = new Date(datetime).getTime();
-  log.info("datetime", __datetime);
 
   const _cmd = await _findCommande({ id: { $in: ids } });
 
   _cmd.forEach(async (c) => {
-    const doc = c._doc;
+    const doc = c;
 
     doc.sync = __datetime;
     doc.updatedAt = __datetime;
 
     delete doc._id;
     await CommandeModel.update({ ticketId: doc.ticketId }, doc).exec();
-    log.info("Commande synced: ", doc);
+  //  log.info("Commande synced: ", doc);
   });
 
   return _cmd != null;
@@ -403,7 +429,7 @@ async function _insertTicketRestau(payload) {
     .get("ticketsrestau")
     .insert(__ins)
     .write();
-  log.info("new tr", _tr);
+  // log.info("new tr", _tr);
   return _tr;
 }
 

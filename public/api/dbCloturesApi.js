@@ -35,7 +35,7 @@ const actions = {
     const { payload } = req;
     log.info("dbClotureGetCloture(" + payload.clotureId + ") in API");
     let proxies = await _findCloture({ ticketId: payload.clotureId });
-    proxies = proxies.map((c) => c._doc);
+  //  proxies = proxies.map((c) => c._doc);
 
     log.info(proxies);
     res.send(proxies);
@@ -86,8 +86,8 @@ const actions = {
 
 async function _getLast() {
   const mongo = await connect();
-  const __rawdata = await ClotureModel.find().sort({createdAt: -1}).limit(1);
-  await mongo.disconnect();
+  const __rawdata = await ClotureModel.find().lean().sort({createdAt: -1}).limit(1);
+//  await mongo.disconnect();
   return _parseCloture(__rawdata);
   //return _cloture; 
 }
@@ -137,8 +137,8 @@ async function _findBoundedClotures(start, end) {
         {createdAt: { $gte: start } }, 
         {createdAt: { $lte: end } }
       ]
-    }).exec();
-    await mongo.disconnect();
+    }).lean().exec();
+    // await mongo.disconnect();
     return _parseCloture(__rawdata);
 }
 
@@ -150,8 +150,8 @@ async function _findBoundedClotures(start, end) {
 async function _findCloture(criteriae = {}) {
   log.info(criteriae);
   const mongo = await connect();
-  const _cloture = await ClotureModel.find(criteriae).exec();
-  await mongo.disconnect();
+  const _cloture = await ClotureModel.find(criteriae).lean().exec();
+  // await mongo.disconnect();
   return _cloture;
 }
 
@@ -161,6 +161,7 @@ async function _persistCloture(payload) {
   const mongo = await connect();
   let _clo = await ClotureModel.where({ clotureId: payload.clotureId })
     .findOne()
+    .lean()
     .exec();
 
   if (_clo) {
@@ -176,15 +177,15 @@ async function _persistCloture(payload) {
     _clo = await ClotureModel.create(__ins);
   }
 
-  await mongo.disconnect();
+  // await mongo.disconnect();
   return _clo;
 }
 
 function _parseCloture(_rawdata) {
   let __clotures = {};
   _rawdata.forEach((c) => {
-    const __clo = c._doc;
-    __clotures[__clo.clotureId] = __clo;
+ //   const __clo = c._doc;
+    __clotures[__clo.clotureId] = c;
   });
 
   console.log("Clotures: ", __clotures);
@@ -194,22 +195,22 @@ function _parseCloture(_rawdata) {
 async function _getCloturesToSync(limit = null) {
   const mongo = await connect();
   const criteria = {
-    $or: [{ sync: undefined }, { $where: "this.updatedAt > this.sync" }],
+    $or: [{ sync: {$exists: false}} }, { $where: "this.updatedAt > this.sync" }],
   };
 
   let clotures =
     limit !== null && limit > 0
-      ? await ClotureModel.find(criteria).limit(limit).exec()
-      : await ClotureModel.find(criteria).exec();
+      ? await ClotureModel.find(criteria).lean().limit(limit).exec()
+      : await ClotureModel.find(criteria).lean().exec();
 
   // Map document
   clotures = clotures.map((c) => ({
-    ...c._doc,
+    ...c,
     _id: undefined,
     __v: undefined,
   }));
 
-  await mongo.disconnect();
+  // await mongo.disconnect();
   return { clotures };
 }
 
@@ -225,7 +226,7 @@ async function _setSynced(ids, datetime) {
   const _clotures = await _findCloture({ id: { $in: ids } });
 
   _clotures.forEach(async (c) => {
-    const doc = c._doc;
+    const doc = c;
 
     doc.sync = __datetime;
     doc.updatedAt = __datetime;
@@ -234,8 +235,8 @@ async function _setSynced(ids, datetime) {
     doc.cmdtoarchive = [];
 
     // delete doc._id;
-    // await ClotureModel.update({ id: doc.id }, doc).exec();
-    await c.save();
+    await ClotureModel.update({ id: doc.id }, doc).exec();
+    // await c.save();
     log.info("Commande synced: ", doc);
   });
 
