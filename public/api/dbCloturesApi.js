@@ -184,7 +184,7 @@ async function _persistCloture(payload) {
 function _parseCloture(_rawdata) {
   let __clotures = {};
   _rawdata.forEach((c) => {
- //   const __clo = c._doc;
+    const __clo = c;
     __clotures[__clo.clotureId] = c;
   });
 
@@ -195,7 +195,7 @@ function _parseCloture(_rawdata) {
 async function _getCloturesToSync(limit = null) {
   const mongo = await connect();
   const criteria = {
-    $or: [{ sync: {$exists: false}} }, { $where: "this.updatedAt > this.sync" }],
+    $or: [{ sync: {$exists: false} }, { $where: "this.updatedAt > this.sync" }],
   };
 
   let clotures =
