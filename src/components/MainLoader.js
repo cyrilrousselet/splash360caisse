@@ -31,7 +31,18 @@ class MainLoader extends React.Component {
 
     logger.log('MainLoader.componentDidMount()');
     
-    const { paramLoaded, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, sseInit, params, dbupdated, dbgetInit } = this.props;
+    const { 
+      paramLoaded, 
+      catLoaded, 
+      catLoading, 
+      cmdLoaded, 
+      cmdLoading, 
+      cloLoaded, 
+      sseInit, 
+      params, 
+      dbupdated, 
+      dbgetInit 
+    } = this.props;
 
     let first_start = params ? params.first_start : null;
 
@@ -87,7 +98,7 @@ class MainLoader extends React.Component {
       }
       if (paramLoaded===true && sseInit===true && catLoaded===true && 
           cmdLoaded===false && cmdLoading===false) {
-      //  this.props.getTodayCommandesList();
+     //   this.props.getTodayCommandesList();
         this.props.loadNumero();
       }
       if (paramLoaded===true && sseInit===true && catLoaded===true && cmdLoaded===true && 
