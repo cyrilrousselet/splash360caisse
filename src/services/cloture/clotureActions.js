@@ -76,10 +76,10 @@ function getCurrentPeriode(params={}) {
     // récup. cmd non clôturées
     const {commandeslist} = await commandeServices.getCommandesList({
       $and: [
-        { archived: undefined },
+        { archived: {$exists: false} },
         { status: { $ne: "deleted" } },
         { $or: [
-          { centre_revenu: undefined },
+          { centre_revenu: {$exists: false} },
           { centre_revenu: 'restaurant' }
         ]}
       ]
@@ -184,10 +184,10 @@ function makeCloture(params={}) {
     // récup. cmd non clôturées
     const {commandeslist} = await commandeServices.getCommandesList({
       $and: [
-        { archived: undefined },
+        { archived: {$exists: false} },
         { status: { $ne: "deleted" } },
         { $or: [
-          { centre_revenu: undefined },
+          { centre_revenu: {$exists: false} },
           { centre_revenu: 'restaurant' }
         ]}
       ]
