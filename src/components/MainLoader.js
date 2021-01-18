@@ -77,14 +77,15 @@ class MainLoader extends React.Component {
     if (catLoaded===true && this.state.catLoaded!==catLoaded) {
       this.setState({catLoaded: true});
     }
-    if (cmdLoaded===true && this.state.cmdLoaded!==cmdLoaded) {
-      this.setState({cmdLoaded: true});
-    }
+    // if (cmdLoaded===true && this.state.cmdLoaded!==cmdLoaded) {
+    //   this.setState({cmdLoaded: true});
+    // }
     if (cloLoaded===true && this.state.cloLoaded!==cloLoaded) {
       this.setState({cloLoaded: true});
     }
     if (paramLoaded===true && sseInit===false) {
       first_start = params.first_start;
+      logger.log('sse depuis componentDidMount');
       this.props.initSSE();
       this.props.setPOS();
       this.props.initSync();
@@ -158,11 +159,32 @@ class MainLoader extends React.Component {
       this.props.getParametres();
     }
     // logger.log('paramLoaded', paramLoaded);
-    // logger.log('first_start', first_start);
     // logger.log('sseInit', sseInit);
     // logger.log('catLoaded', catLoaded);
     // logger.log('cmdLoaded', cmdLoaded);
     // logger.log('cloLoaded', cloLoaded);
+
+
+    let changess = [];
+    if (this.state.paramLoaded!==prevState.paramLoaded) changess.push('paramLoaded');
+    if (this.state.sseInit!==prevState.sseInit) changess.push('sseInit');
+    if (this.state.catLoaded!==prevState.catLoaded) changess.push('catLoaded');
+    if (this.state.cmdLoaded!==prevState.cmdLoaded) changess.push('cmdLoaded');
+    if (this.state.cloLoaded!==prevState.cloLoaded) changess.push('cloLoaded');
+
+
+    logger.log('changes state', changess.join(', '));
+
+    let changes = [];
+    if (paramLoaded!==prevProps.paramLoaded) changes.push('paramLoaded');
+    if (sseInit!==prevProps.sseInit) changes.push('sseInit');
+    if (catLoaded!==prevProps.catLoaded) changes.push('catLoaded');
+    if (cmdLoaded!==prevProps.cmdLoaded) changes.push('cmdLoaded');
+    if (cloLoaded!==prevProps.cloLoaded) changes.push('cloLoaded');
+    if (params!==prevProps.params) changes.push('params');
+
+    logger.log('changes props', changes.join(', '));
+
     if (paramLoaded===true && prevProps.paramLoaded!==paramLoaded) {
       this.setState({paramLoaded: true});
     }
@@ -175,14 +197,15 @@ class MainLoader extends React.Component {
     if (catLoaded===true && prevProps.catLoaded!==catLoaded) {
       this.setState({catLoaded: true});
     }
-    if (cmdLoaded===true && prevProps.cmdLoaded!==cmdLoaded) {
-      this.setState({cmdLoaded: true});
-    }
+    // if (cmdLoaded===true && prevProps.cmdLoaded!==cmdLoaded) {
+    //   this.setState({cmdLoaded: true});
+    // }
     if (cloLoaded===true && prevProps.cloLoaded!==cloLoaded) {
       this.setState({cloLoaded: true});
     }
     if (paramLoaded===true && sseInit===false) {
       first_start = params.first_start;
+      logger.log('sse depuis componentDidUpdate');
       this.props.initSSE();
       this.props.setPOS();
       this.props.initSync();

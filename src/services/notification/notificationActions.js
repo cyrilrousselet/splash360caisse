@@ -26,6 +26,8 @@ function initSSE() {
   return (dispatch, getState) => {
     const { restaurant_id } = getState().parametresReducer.parametres.entreprise;
 
+    logger.log('notificationActions.initSSE()');
+
     if (restaurant_id) {
       notificationServices.initSSE(restaurant_id)
       .then(
