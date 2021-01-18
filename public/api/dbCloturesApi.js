@@ -168,7 +168,7 @@ async function _persistCloture(payload) {
     log.info("cloture existe, donc on update");
     _clo = { ..._clo._doc, ...payload, updatedAt: __now };
     delete _clo._id;
-    await ClotureModel.update({ clotureId: payload.clotureId }, _clo).exec();
+    await ClotureModel.updateOne({ clotureId: payload.clotureId }, _clo).exec();
   } else {
     log.info("pas de cmd donc on insert");
     // Create command id
@@ -235,7 +235,7 @@ async function _setSynced(ids, datetime) {
     doc.cmdtoarchive = [];
 
     // delete doc._id;
-    await ClotureModel.update({ id: doc.id }, doc).exec();
+    await ClotureModel.updateOne({ id: doc.id }, doc).exec();
     // await c.save();
     log.info("Commande synced: ", doc);
   });

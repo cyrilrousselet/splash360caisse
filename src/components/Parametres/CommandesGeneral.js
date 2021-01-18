@@ -300,23 +300,43 @@ class CommandesGeneral extends React.Component {
               label={ strings.modules.parametres.submodules.commandes.general.numero.label.hexa } 
             />
           </div>
-          <div className="bipper-wrapper">
-            <div className="subttl">{ strings.modules.parametres.submodules.commandes.general.bippers.nom }</div>
-            <SwitchCheckbox
-              isChecked={ data.active_bippers } 
-              key={`active_bippers`}
-              name={ `active_bippers` } 
-              labelLeft={ true }
-              onChange={ (name, isChecked) => {
-              // this.numerotationHexaUpdate(isChecked);
-                updateValeur({
-                  domaine: 'commandes',
-                  cle: 'active_bippers',
-                  valeur: isChecked
-                })
-              } } 
-              label={ strings.modules.parametres.submodules.commandes.general.bippers.label.activation } 
-            />
+          <div className="ligne-wrapper">
+            <div className="bipper-wrapper">
+              <div className="subttl">{ strings.modules.parametres.submodules.commandes.general.bippers.nom }</div>
+              <SwitchCheckbox
+                isChecked={ data.active_bippers } 
+                key={`active_bippers`}
+                name={ `active_bippers` } 
+                labelLeft={ true }
+                onChange={ (name, isChecked) => {
+                // this.numerotationHexaUpdate(isChecked);
+                  updateValeur({
+                    domaine: 'commandes',
+                    cle: 'active_bippers',
+                    valeur: isChecked
+                  })
+                } } 
+                label={ strings.modules.parametres.submodules.commandes.general.bippers.label.activation } 
+              />
+            </div>
+            <div className="printstandby-wrapper">
+              <div className="subttl">{ strings.modules.parametres.submodules.commandes.general.printstandby.nom }</div>
+              <SwitchCheckbox
+                isChecked={ data.print_standby } 
+                key={`print_standby`}
+                name={ `print_standby` } 
+                labelLeft={ true }
+                onChange={ (name, isChecked) => {
+                // this.numerotationHexaUpdate(isChecked);
+                  updateValeur({
+                    domaine: 'commandes',
+                    cle: 'print_standby',
+                    valeur: isChecked
+                  })
+                } } 
+                label={ strings.modules.parametres.submodules.commandes.general.printstandby.label.activation } 
+              />
+            </div>
           </div>
         </div>
         <EditTypePopin commandtype={commandtype} editOpen={editOpen} closeHandler={this.closeEdit} saveType={this.saveType} />

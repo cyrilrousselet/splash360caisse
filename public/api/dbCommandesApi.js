@@ -248,7 +248,7 @@ async function _persistCommande(payload) {
     log.info("cmd existe, donc on update");
     _cmd = { ..._cmd, ...payload, updatedAt: __now };
     delete _cmd._id;
-    await CommandeModel.update({ ticketId: payload.ticketId }, _cmd).exec();
+    await CommandeModel.updateOne({ ticketId: payload.ticketId }, _cmd).exec();
   } else {
     log.info("pas de cmd donc on insert");
     // Create command id
@@ -304,7 +304,7 @@ async function _setArchived(ids, clotureId) {
     doc.archived = clotureId;
     doc.updatedAt = __now;
 
-    await CommandeModel.update({ ticketId: doc.ticketId }, doc).exec();
+    await CommandeModel.updateOne({ ticketId: doc.ticketId }, doc).exec();
     log.info("Commande archived: ", doc.id);
   });
 
@@ -328,7 +328,7 @@ async function _setSynced(ids, datetime) {
     doc.updatedAt = __datetime;
 
     delete doc._id;
-    await CommandeModel.update({ ticketId: doc.ticketId }, doc).exec();
+    await CommandeModel.updateOne({ ticketId: doc.ticketId }, doc).exec();
   //  log.info("Commande synced: ", doc);
   });
 

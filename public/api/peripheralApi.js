@@ -644,11 +644,23 @@ function _printInfo(printer, data, strings) {
       .size(1,1)
       .text(`--- ${strings.bipper}${data.commande.bipper} ---`);
   }
+  if (data.commande.status==="standby") {
+    printer
+      .size(0,0)
+      .drawLine()
+      .style('B')
+      .setReverseColors(true)
+      .text(_completeRaw(strings.status[data.commande.status], "center"))
+      .setReverseColors(false)
+      .style('NORMAL');
+  }
   printer
     .size(0,1)
     .drawLine()
     .size(0,0);
 }
+
+
 
 
 // détail commande sur le ticket
@@ -1672,6 +1684,25 @@ function _printPeriodeZ(printer, data, strings) {
       {text: Number(moytotal).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
     ]);
         
+}
+
+
+// complete la ligne avec des espaces
+function _completeRaw(string, alignment='left') {
+
+  const __sp = 42 - String(string).length;
+  let __str = "";
+  switch(alignment) {
+    case "center":
+       __str = (new Array(Math.floor(__sp/2)+1)).join(' ') + string + (new Array(Math.floor(__sp/2)+1+(__sp%2))).join(' ');
+       break;
+    case "right":
+       __str = (new Array(__sp+1)).join(' ') + string;
+       break;
+    default:
+      __str = string + (new Array(__sp+1)).join(' ');
+  }
+  return __str;
 }
 
 

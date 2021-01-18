@@ -249,6 +249,21 @@
             left: auto;
             }
         }
+
+        .ligne-wrapper {
+          padding-top: 15px;
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .bipper-wrapper,
+        .printstandby-wrapper {
+          display: inline-flex;
+          flex-direction: column;
+          width: calc(50% - 7px);
+        }
     }
     .CommandesCommentaires {
       position: relative;
