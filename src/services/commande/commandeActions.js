@@ -1001,7 +1001,10 @@ function setCommandeFromAPI(payload) {
       payload.response
     );
 
-    if (commande.status === "confirmed") {
+    // activation de l'impression des tickets pour les commandes en attente
+    const {print_standby} = getState().parametresReducer.parametres.commandes;
+
+    if (commande.status === "confirmed" || print_standby) {
       dispatch(peripheralActions.printCommandeTicket("production", commande));
     }
 
