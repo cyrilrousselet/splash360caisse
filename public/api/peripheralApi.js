@@ -494,7 +494,7 @@ function _launchPrint(template, printer, contenu) {
     }
     else if ('info' === section) {
       try {
-        _printInfo(printer, {info: contenu.info, nomticket: contenu.nomticket, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode, client:contenu.detail.client, bipper: contenu.detail.bipper}}, contenu.strings);
+        _printInfo(printer, {info: contenu.info, nomticket: contenu.nomticket, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode, status:contenu.detail.status, client:contenu.detail.client, bipper: contenu.detail.bipper}}, contenu.strings);
       } catch(e) {
         _printErrorHandler(e, '_printInfo', printer);
       }
@@ -634,7 +634,8 @@ function _printInfo(printer, data, strings) {
     .text(`${strings.creation}${data.info.date} à ${data.info.heure}`)
     // .size(2,2)
     .size(1,1)
-    .text(`*** ${strings.mode[data.commande.mode]} ***`);
+    .text(`*** ${strings.mode[data.commande.mode]} ***`)
+    .size(0,0);
 
   if (data.commande.bipper) {
     printer
@@ -642,15 +643,17 @@ function _printInfo(printer, data, strings) {
       .drawLine()
       .style('NORMAL')
       .size(1,1)
-      .text(`--- ${strings.bipper}${data.commande.bipper} ---`);
+      .text(`--- ${strings.bipper}${data.commande.bipper} ---`)
+      .size(0,0);
   }
   if (data.commande.status==="standby") {
     printer
-      .size(0,0)
       .drawLine()
       .style('B')
+      .size(1,0)
       .setReverseColors(true)
-      .text(_completeRaw(strings.status[data.commande.status], "center"))
+      .text(_completeRaw(String(strings.status[data.commande.status]).toUpperCase(), "center", {width:1}))
+      .size(0,0)
       .setReverseColors(false)
       .style('NORMAL');
   }
@@ -1688,9 +1691,12 @@ function _printPeriodeZ(printer, data, strings) {
 
 
 // complete la ligne avec des espaces
-function _completeRaw(string, alignment='left') {
+function _completeRaw(string, alignment='left', options={}) {
 
-  const __sp = 42 - String(string).length;
+
+  const __width = options.hasOwnProperty('width') ? 42/(options.width+1) : 42;
+
+  const __sp = __width - String(string).length;
   let __str = "";
   switch(alignment) {
     case "center":
