@@ -423,7 +423,7 @@ function printCommandeTicket(quelstickets, cmd) {
 
       let kdsCmd = {
         id: cmdnumero,
-        label_id: cmdnumero,
+        label_id: (quelstickets==='all_uber') ? cmd.uber.display_id : cmdnumero,
         ticket_id: cmd.ticketId,
         origine: __origine,
         name: clt ? `${clt.prenom} ${clt.nom}`: '',
