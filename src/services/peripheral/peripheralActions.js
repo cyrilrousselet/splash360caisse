@@ -816,6 +816,7 @@ function printCommandeTicket(quelstickets, cmd) {
             total: total.toFixed(2),
             tva: cmdTva
           },
+          status: cmd.status,
           mode: cmd.mode,
           bipper: cmd.bipper || null,
           reglements: cmd.reglements,
@@ -972,6 +973,7 @@ function printCommandeTicket(quelstickets, cmd) {
           numero: cmdnumero,
           id: cmd.ticketId,
           mode: cmd.mode,
+          status: cmd.status,
           bipper: cmd.bipper || null,
           date: `${date} à ${heure}`,
           articles: articles,
@@ -1099,6 +1101,7 @@ function printCommandeTicket(quelstickets, cmd) {
           numero: cmdnumero,
           id: cmd.ticketId,
           mode: cmd.mode,
+          status: cmd.status,
           bipper: cmd.bipper || null,
           date: `${date} à ${heure}`,
           articles: articles,

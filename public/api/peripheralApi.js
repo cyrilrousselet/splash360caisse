@@ -244,6 +244,8 @@ function _spoolManager(job=null) {
             // on efface l'intervalle (et on met sa valeur à 'null')
             clearInterval(waitInterval);
             waitInterval = null;
+            // et on indique que l'imprimante est fermÃ©e
+            printerOpen = false;
           }
         } 
         // si l'imprimante n'est pas fermée (suite à un bug, par ex.)
@@ -428,6 +430,15 @@ async function _printImage(printer, image) {
 
 }
 
+function _closePrinter(printer) {
+  printer.close(function() {
+    printerOpen = false;
+  });
+}
+function _printErrorHandler(error, methodName, printer) {
+  log.error(`ERREUR IMPRESSION ( ${methodName}() )`, error.message);
+  _closePrinter(printer);
+}
 
 function _closePrinter(printer) {
   printer.close(function() {
@@ -458,8 +469,12 @@ function _launchPrint(template, printer, contenu) {
         _printEntreprise(printer, contenu.entreprise, contenu.strings);
       } catch(e) {
         _printErrorHandler(e, '_printEntreprise', printer);
+<<<<<<< HEAD
       }
     }
+=======
+      }    }
+>>>>>>> feature/print_standby
     else if ('commande' === section) {
       try {
         _printCommande(printer, contenu.commande, contenu.strings.commande);
@@ -489,12 +504,20 @@ function _launchPrint(template, printer, contenu) {
       }
     }
     else if ('periode_z' === section) {
+<<<<<<< HEAD
       const __periode = contenu.periode;
    //   try {
         _printPeriodeZ(printer, {...__periode, ecarts:contenu.ecarts, comptage:contenu.comptage, prelevement:contenu.prelevement}, contenu.strings);
    //   } catch(e) {
    //     _printErrorHandler(e, '_printPeriodeZ', printer);
    //   }
+=======
+      try {
+        _printPeriodeZ(printer, contenu.periode, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printPeriodeX', printer);
+      }
+>>>>>>> feature/print_standby
     }
     else if ('prelevement' === section) {
       try {
@@ -505,7 +528,11 @@ function _launchPrint(template, printer, contenu) {
     }
     else if ('info' === section) {
       try {
+<<<<<<< HEAD
         _printInfo(printer, {info: contenu.info, nomticket: contenu.nomticket, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode, client:contenu.detail.client, bipper: contenu.detail.bipper}}, contenu.strings);
+=======
+        _printInfo(printer, {info: contenu.info, nomticket: contenu.nomticket, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode, status:contenu.detail.status, client:contenu.detail.client, bipper: contenu.detail.bipper}}, contenu.strings);
+>>>>>>> feature/print_standby
       } catch(e) {
         _printErrorHandler(e, '_printInfo', printer);
       }
@@ -563,7 +590,11 @@ function _launchPrint(template, printer, contenu) {
       printer.feed(2)
        .cut();
       
+<<<<<<< HEAD
       _closePrinter(printer);
+=======
+       _closePrinter(printer);
+>>>>>>> feature/print_standby
     }
   });
 }
@@ -645,7 +676,8 @@ function _printInfo(printer, data, strings) {
     .text(`${strings.creation}${data.info.date} à ${data.info.heure}`)
     // .size(2,2)
     .size(1,1)
-    .text(`*** ${strings.mode[data.commande.mode]} ***`);
+    .text(`*** ${strings.mode[data.commande.mode]} ***`)
+    .size(0,0);
 
   if (data.commande.bipper) {
     printer
@@ -653,13 +685,27 @@ function _printInfo(printer, data, strings) {
       .drawLine()
       .style('NORMAL')
       .size(1,1)
-      .text(`--- ${strings.bipper}${data.commande.bipper} ---`);
+      .text(`--- ${strings.bipper}${data.commande.bipper} ---`)
+      .size(0,0);
+  }
+  if (data.commande.status==="standby") {
+    printer
+      .drawLine()
+      .style('B')
+      .size(1,0)
+      .setReverseColors(true)
+      .text(_completeRaw(String(strings.status[data.commande.status]).toUpperCase(), "center", {width:1}))
+      .size(0,0)
+      .setReverseColors(false)
+      .style('NORMAL');
   }
   printer
     .size(0,1)
     .drawLine()
     .size(0,0);
 }
+
+
 
 
 // détail commande sur le ticket
@@ -1764,6 +1810,28 @@ function _completeRaw(string, alignment='left') {
         __str = string + (new Array(__sp+1)).join(' ');
     }
     return __str;
+}
+
+
+// complete la ligne avec des espaces
+function _completeRaw(string, alignment='left', options={}) {
+
+
+  const __width = options.hasOwnProperty('width') ? 42/(options.width+1) : 42;
+
+  const __sp = __width - String(string).length;
+  let __str = "";
+  switch(alignment) {
+    case "center":
+       __str = (new Array(Math.floor(__sp/2)+1)).join(' ') + string + (new Array(Math.floor(__sp/2)+1+(__sp%2))).join(' ');
+       break;
+    case "right":
+       __str = (new Array(__sp+1)).join(' ') + string;
+       break;
+    default:
+      __str = string + (new Array(__sp+1)).join(' ');
+  }
+  return __str;
 }
 
 

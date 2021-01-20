@@ -1039,6 +1039,12 @@ const data = {
                                 label: {
                                     activation: 'Activation'
                                 }
+                            },
+                            printstandby: {
+                                nom: 'Commandes en attente',
+                                label: {
+                                    activation: 'Imprimer'
+                                }
                             }
                         },
                         commentaires: {
@@ -1229,6 +1235,11 @@ const data = {
                     livraison: 'LIVRAISON',
                     surplace: 'SUR PLACE',
                     emporter: 'A EMPORTER'
+                },
+                status: {
+                    standby: "En attente",
+                    a_encaisser: "À Encaisser",
+                    confirmed: "Terminées"
                 },
                 caption: {
                     quantite: 'QTE',

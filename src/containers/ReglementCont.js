@@ -105,6 +105,7 @@ const mapDispatchToProps = (dispatch) => {
     validateCommande: commandeActions.validateCommandeAndUpdateList,
     printTest: peripheralActions.printTest,
     printTicket: peripheralActions.printTicket,
+    printCommandeTicket: peripheralActions.printCommandeTicket,
     openDrawer: peripheralActions.openDrawer,
     closeDrawer: peripheralActions.closeDrawer,
     persistTicketsRestaurants: commandeActions.persistTicketsRestaurants,

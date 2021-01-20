@@ -200,7 +200,9 @@ function setChrono(payload) {
         };
       }
 
-      dispatch(notificationActions.syncCommandes([cmdToSync]));
+      if (cmdToSync.status==='confirmed') {
+        dispatch(notificationActions.syncCommandes([cmdToSync]));
+      }
     }
   };
 }
@@ -362,12 +364,18 @@ function standByCommande(payload, needNumero) {
     //   payload.numero = getState().commandeReducer.commande.numero;
     // }
 
+    // activation de l'impression des tickets pour les commandes en attente
+    const {print_standby} = getState().parametresReducer.parametres.commandes;
+
     commandeServices.saveCommande(payload, state.catalogueReducer).then(
       (confirm) => {
         dispatch({
           type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS,
           commande: {},
         });
+        if (print_standby) {
+          dispatch(peripheralActions.printCommandeTicket("production", confirm));
+        }
         dispatch(notificationActions.syncDispatch("commande", confirm));
         dispatch(getCommande());
       },
@@ -1017,7 +1025,10 @@ function setCommandeFromAPI(payload) {
       payload.response
     );
 
-    if (commande.status === "confirmed") {
+    // activation de l'impression des tickets pour les commandes en attente
+    const {print_standby} = getState().parametresReducer.parametres.commandes;
+
+    if (commande.status === "confirmed" || print_standby) {
       dispatch(peripheralActions.printCommandeTicket("production", commande));
     }
 

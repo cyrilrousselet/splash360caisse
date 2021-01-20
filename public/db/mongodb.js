@@ -12,7 +12,6 @@ async function connect() {
     // useUnifiedTopology: true,
     poolSize: 10,
   };
-
   log.info('cnx', mongoose.connection!==null);
   
   if (db===null) {
@@ -28,8 +27,15 @@ async function connect() {
   mongoose.connection.on("connected", function() {
     return db;
   });
+  
+  mongoose.connection.on("connected", function() {
+    return db;
+  });
 
+<<<<<<< HEAD
   // return db;
+=======
+>>>>>>> feature/print_standby
 }
 
 module.exports = connect;
