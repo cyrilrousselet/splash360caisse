@@ -469,12 +469,8 @@ function _launchPrint(template, printer, contenu) {
         _printEntreprise(printer, contenu.entreprise, contenu.strings);
       } catch(e) {
         _printErrorHandler(e, '_printEntreprise', printer);
-<<<<<<< HEAD
       }
     }
-=======
-      }    }
->>>>>>> feature/print_standby
     else if ('commande' === section) {
       try {
         _printCommande(printer, contenu.commande, contenu.strings.commande);
@@ -504,20 +500,12 @@ function _launchPrint(template, printer, contenu) {
       }
     }
     else if ('periode_z' === section) {
-<<<<<<< HEAD
       const __periode = contenu.periode;
    //   try {
         _printPeriodeZ(printer, {...__periode, ecarts:contenu.ecarts, comptage:contenu.comptage, prelevement:contenu.prelevement}, contenu.strings);
    //   } catch(e) {
    //     _printErrorHandler(e, '_printPeriodeZ', printer);
    //   }
-=======
-      try {
-        _printPeriodeZ(printer, contenu.periode, contenu.strings);
-      } catch(e) {
-        _printErrorHandler(e, '_printPeriodeX', printer);
-      }
->>>>>>> feature/print_standby
     }
     else if ('prelevement' === section) {
       try {
@@ -528,11 +516,7 @@ function _launchPrint(template, printer, contenu) {
     }
     else if ('info' === section) {
       try {
-<<<<<<< HEAD
-        _printInfo(printer, {info: contenu.info, nomticket: contenu.nomticket, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode, client:contenu.detail.client, bipper: contenu.detail.bipper}}, contenu.strings);
-=======
         _printInfo(printer, {info: contenu.info, nomticket: contenu.nomticket, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode, status:contenu.detail.status, client:contenu.detail.client, bipper: contenu.detail.bipper}}, contenu.strings);
->>>>>>> feature/print_standby
       } catch(e) {
         _printErrorHandler(e, '_printInfo', printer);
       }
@@ -590,11 +574,7 @@ function _launchPrint(template, printer, contenu) {
       printer.feed(2)
        .cut();
       
-<<<<<<< HEAD
       _closePrinter(printer);
-=======
-       _closePrinter(printer);
->>>>>>> feature/print_standby
     }
   });
 }

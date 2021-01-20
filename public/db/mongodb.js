@@ -32,10 +32,6 @@ async function connect() {
     return db;
   });
 
-<<<<<<< HEAD
-  // return db;
-=======
->>>>>>> feature/print_standby
 }
 
 module.exports = connect;
