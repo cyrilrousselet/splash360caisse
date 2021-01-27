@@ -9,6 +9,13 @@ const api = require('./api/index.js');
 const server = require('./api/server.js');
 const sse = require('./api/sseApi.js');
 // const kds = require('./api/kitchenDisplayServer.js');
+const Sentry = require('@sentry/electron');
+const packageJson = require('../package.json');
+    
+    Sentry.init({
+      release: "splash360caisse@" + packageJson.version,
+      dsn: 'https://44cf9ec6a90c43e4a7027cc997b83919@o511169.ingest.sentry.io/5607891',
+    });
 
 let mainWindow;
 let db_users;

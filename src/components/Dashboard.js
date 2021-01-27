@@ -5,6 +5,7 @@ import React, { Component } from "react";
 import LocalizedStrings from "react-localization";
 import { data } from "../constants/translations";
 import ErrorBoundary from "./common/ErrorBoundary";
+// import {ErrorBoundary} from "@sentry/electron";
 import ConnectIcon from "./common/icon/ConnectIcon";
 import LargeButton from "./common/LargeButton";
 
@@ -65,7 +66,7 @@ class Dashboard extends Component {
     //  console.log(ca);
 
     return (
-      <ErrorBoundary>
+      <ErrorBoundary fallback={'Une erreur est survenue.'}>
         <div className="Dashboard">
           <div className="topzone">
             <div className="cashName">{cashname}</div>

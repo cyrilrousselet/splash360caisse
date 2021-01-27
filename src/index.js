@@ -27,6 +27,14 @@ import { marketingActions } from './services/marketing/marketingActions';
 import { userActions } from './services/user/userActions';
 import { employesActions } from './services/employes/employesActions';
 import { catalogueActions } from './services/catalogue/catalogueActions';
+import packageJson from '../package.json';
+
+import * as Sentry from '@sentry/electron';
+
+Sentry.init({ 
+  release: "splash360caisse@" + packageJson.version,
+  dsn: "https://44cf9ec6a90c43e4a7027cc997b83919@o511169.ingest.sentry.io/5607891" 
+});
 
 const logger = new Logger();
 
