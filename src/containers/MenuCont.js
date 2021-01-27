@@ -27,6 +27,7 @@ const mapDispatchToProps = (dispatch) => {
     updateIngredientType: catalogueActions.updateIngredientType,
     getParametres: parametresActions.getAll
   }, dispatch);
+
   return {
     ...bound
   }

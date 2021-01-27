@@ -407,6 +407,9 @@
   .btncomptcaisse {
     width: 100%;
     background-color: $vert;
+    &:hover {
+      background-color: $prdcol_vertfonce !important;
+    }
   }
   .btncomptage {
     width: 100%;
@@ -472,6 +475,7 @@
 
 .ClotureComptage,
 .CountTool,
+.CountTRTool,
 .ClotureComptcaisse {
   display: inline-block;
   position: absolute;
@@ -521,6 +525,9 @@
     background-color: $vert !important;
     .MuiButton-label {
       padding: 0 25px;
+    }
+    &:hover {
+      background-color: $prdcol_vertfonce !important;
     }
   }
   .btncompttr {
@@ -748,6 +755,9 @@
   .MuiButton-label {
     padding: 0 25px;
   }
+  &:hover {
+    background-color: $prdcol_vertfonce !important;
+  }
 }
 .MuiMenuItem-root {
   font-family: $f_boo !important;
@@ -779,30 +789,7 @@
 
 .CountTool,
 .CountTRTool {
-  // position: absolute;
 
-  // display: none;
-  // &.counttool-open,
-  // &.counttrtool-open {
-  //   display: block;
-  // }
-  
-  // width: 100%;
-  // height: 100%;
-  // top: 0;
-  // left: 0;
-  // background-color: $blanc;
-  // border-radius: 15px;
-  // .tete {
-  //   height: 50px;
-  //   line-height: 50px;
-  //   text-align: center;
-  //   .titre {
-  //     font-family: $f_blk;
-  //     font-size: 16px;
-  //     color: $noir;
-  //   }
-  // }
   .body {
     display: flex;
     flex-direction: row;
@@ -811,28 +798,28 @@
     .colonne {
       background-color: $blanc-fonce;
       border-radius: 15px;
-      padding: 30px 60px;
       display: flex;
       flex-direction: column;
-      width: calc(50% - 10px);
+      width: calc(65% - 10px);
       & + .colonne {
         justify-content: space-between;
+        width: calc(35% - 10px);
       }
       .champ {
-        height: 35px;
+        height: 28px;
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         width: 100%;
         &+.champ {
-          margin-top: 10px;
+          margin-top: 5px;
         }
         .nom {
           font-family: $f_boo;
           font-size: 14px;
           color: $noir;
           width: 80px;
-          line-height: 35px;
+          line-height: 28px;
         }
         .field {
           background-color: $blanc;
@@ -843,7 +830,27 @@
           font-family: $f_boo;
           color: $gris;
           font-size:14px;
-          line-height: 35px;
+          line-height: 28px;
+          position: relative;
+          &.active {
+            box-shadow: inset 0 0 0 2px $primary;
+          }
+          &:before {
+            content: '×';
+            display: inline-block;
+            position: absolute;
+            left: -35px;
+            font-family: $f_med;
+            color: $noir;
+          }
+          &:after {
+            content: '=';
+            display: inline-block;
+            position: absolute;
+            right: -35px;
+            font-family: $f_med;
+            color: $noir;
+          }
         }
         .subtotal {
           text-align: right;
@@ -864,10 +871,62 @@
           }
         }
       }
+      .champliste {
+        padding: 15px 60px 15px 80px;
+        background-repeat: no-repeat;
+        background-position: 25px 15px;
+        background-size: 32px 32px;
+        position: relative;
+        &.pieces-blanches {
+          background-image: url('../../images/ico-piecesblanches.svg');
+        }
+        &.pieces-jaunes {
+          background-image: url('../../images/ico-piecesjaunes.svg');
+        }
+        &.pieces-rouges {
+          background-image: url('../../images/ico-piecesrouges.svg');
+        }
+        &.billets {
+          background-image: url('../../images/ico-billets.svg');
+        }
+        & + .champliste:before {
+          content: '';
+          position: absolute;
+          display: block;
+          height: 3px;
+          width: 100%;
+          left: 0;
+          top: 0;
+          background-image: linear-gradient($gris-clair 0%, $gris-clair 100%);
+          background-repeat: no-repeat;
+          background-position: 80px top;
+          background-size: calc(100% - 140px) 2px;
+        }
+        
+      }
+      .counttheorique {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 15px 25px;
+        .ttl {
+          font-family: $f_med;
+          font-size: 14px;
+          color: $noir;
+        }
+        .val {
+          font-family: $f_med;
+          font-size: 14px;
+          color: $noir;
+        }
+      }
       .counttotal {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        align-items: center;
+        padding: 5px 15px;
         .ttl {
           font-family: $f_blk;
           font-size: 16px;
@@ -876,6 +935,23 @@
         .val {
           font-family: $f_blk;
           font-size: 20px;
+          color: $primary;
+        }
+      }
+      .countfdcaisse {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 15px 25px;
+        .ttl {
+          font-family: $f_med;
+          font-size: 16px;
+          color: $noir;
+        }
+        .val {
+          font-family: $f_med;
+          font-size: 16px;
           color: $primary;
         }
       }
@@ -894,9 +970,34 @@
   }
 }
 
+.CountToolKeyboard {
+  position: relative;
+  width: 100%;
+  height: auto;
+  display: flex !important;
+  flex-direction: row;
+  justify-content: center;
+  top: auto;
+  left: auto;
+  background-color: transparent;
+  .NumberKeyboard {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    box-shadow: none;
+    .close-button {
+      display: none;
+    }
+  }
+
+}
+
 .CountTRTool {
-  .corps {
-    height: calc(100% - 105px);
+  .body {
+    height: 500px;
+    position: relative;
+//    height: calc(100% - 105px);
   }
   .MuiTableContainer-root {
     position: relative;
@@ -905,6 +1006,7 @@
   .liste {
     margin-left: 50px;
     width: calc(100% - 100px);
+    height: 100%;
     background-color: $blanc-fonce;
     border-radius: 10px;
     .liste-body {

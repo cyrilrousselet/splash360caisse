@@ -542,8 +542,14 @@ const data = {
                     },
                     counttool: {
                         titre: "Comptage Caisse",
-                        total: "Total :",
-                        bouton: "Valider"
+                        theorique: "Montant théorique en caisse :",
+                        total: "Total compté :",
+                        fdcaisse: "Dont fond de caisse :",
+                        bouton: "Valider",
+                        alerte: {
+                            titre: 'Attention',
+                            texte: 'Le comptage est inférieur au montant du fond de caisse.'
+                        }
                     },
                     counttrtool: {
                         titre: "Comptage Tickets Restaurant",

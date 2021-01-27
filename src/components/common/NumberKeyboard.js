@@ -13,20 +13,35 @@ class NumberKeyboard extends React.Component {
       buttonHandler, 
       closeHandler, 
       open, 
+      disabled,
       numbersOnly, 
       inner, 
-      keyboardOnly 
+      keyboardOnly,
+      className,
+      extraButton,
     } = this.props;
 
     const boutons = [1,2,3,4,5,6,7,8,9,',','0','c'];
     if (numbersOnly) boutons.splice(9,1,'');
+
+    if (extraButton) {
+      if (extraButton.position!==null) {
+        boutons.splice(extraButton.position,extraButton.replace?1:0,extraButton);
+      } else {
+        boutons.push(extraButton);
+      }
+    }
 
 
     const __content = 
         <div className="keyboard">
             { boutons.map((btn, i) => {
             return ((btn!==undefined && btn!=='')
-                ? <PillButton elementclass="btn" text={ `${btn}` } key={ i } onClick={ buttonHandler } />
+                ? (
+                (typeof btn === "object") 
+                  ? <PillButton elementclass="btn" text={ `${btn.text}` } key={ i } onClick={ (text) => { if (!disabled) { btn.handler(text) }} } />
+                  : <PillButton elementclass="btn" text={ `${btn}` } key={ i } onClick={ (text) => { if (!disabled) { buttonHandler(text) }} } />
+                )
                 : <div className="empty" key={ i }></div>
                 );
             })}
@@ -35,7 +50,7 @@ class NumberKeyboard extends React.Component {
 
     if (inner) {
       return (
-        <div className={ `NumberKeyboardContainer${(open ? ' visible' : '')}${(keyboardOnly ? ' keyboard-only' : '')}` }>
+        <div className={ `NumberKeyboardContainer${(open ? ' visible' : '')}${(keyboardOnly ? ' keyboard-only' : '')} ${(className ? className : '' )} ${disabled ? 'disabled' : ''}` }>
           <div className="NumberKeyboard">
             <div className="inner-container">{ __content }</div>
             {!keyboardOnly && (<Fab aria-label="close" size="small" className="close-button" onClick={ closeHandler }>

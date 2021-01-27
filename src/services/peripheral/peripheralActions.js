@@ -422,7 +422,7 @@ function printCommandeTicket(quelstickets, cmd) {
       const __responseurl = options.role==='secondary' ? options.primary : (options.caisse.url || 'http://localhost');
 
       let kdsCmd = {
-        id: cmdnumero,
+        id: cmd.ticketId,
         label_id: (quelstickets==='all_uber') ? cmd.uber.display_id : cmdnumero,
         ticket_id: cmd.ticketId,
         origine: __origine,

@@ -38,7 +38,7 @@
     width: 30px;
     height: 30px;
     min-height: 30px;
-}
+  }
 }
 
 .NumberKeyboardContainer {
@@ -66,5 +66,8 @@
       top: auto;
       left: auto;
     }
+  }
+  &.disabled .NumberKeyboard {
+    opacity: .5;
   }
 }
