@@ -247,6 +247,7 @@ class Cloture extends React.Component {
     
     const { caisses } = this.props;
 
+    
     const selection = caisses.find((c) => c.uniqid === event.target.value);
     this.setState({ selection_caisse: selection });
 
@@ -409,6 +410,7 @@ class Cloture extends React.Component {
     this.setState({counttrtoolOpen:false});
   }
   validateCountTRTool(valeur) {
+    this.validComptage('saisie_ticket', valeur);
     this.setState({saisie_ticket: valeur, counttrtoolOpen:false});
   }
 
@@ -582,13 +584,15 @@ class Cloture extends React.Component {
 
     // logger.log("periode", periode);
 
-    logger.log("periode_z", periode_z);
-    logger.log("periode_z ventil.", periode_z.periode.ventilation);
+  //  logger.log("periode_z", periode_z);
+  //  logger.log("periode_z ventil.", periode_z.periode.ventilation);
 
     const readyToCloture = this.testStandbyCommandes(periode_z);
 
     const operators = this.getListeVendeurs();
 
+
+logger.log('caisses', caisses);
 
           
     // logger.log('fdcaisse_new', periode_z.periode.fdcaisse+' + ('+comptage_fv+' - '+Number(prelevement_fv.replace(",", "."))+')');
@@ -692,12 +696,12 @@ class Cloture extends React.Component {
               </div>
               <FormControl variant="outlined" className="selecteur-caisse">
                 <Select
-                  value={selection_caisse.id}
+                  value={selection_caisse.uniqid}
                   onChange={this.selectCaisse}
                   className="selecteur selecteur-caisse-select"
                 >
                   {Object.values(caisses).map((cash) => (
-                    <MenuItem key={`cashitm${cash.id}`} value={cash.id}>
+                    <MenuItem key={`cashitm${cash.id}`} value={cash.uniqid}>
                       {cash.nom}
                     </MenuItem>
                   ))}
