@@ -5,7 +5,7 @@ import { Provider, ReactReduxContext } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 import { hot } from 'react-hot-loader/root';
 import type { Store } from '../reducers/types';
-import Routes from '../Routes';
+import Routes from './Routes';
 // import LoadingSpinner from '../components/common/LoadingSpinner';
 
 

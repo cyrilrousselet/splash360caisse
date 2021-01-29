@@ -2,7 +2,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
-import Root from './containers/Root';
+import Root from './components/Root';
 import { configureStore } from './store/configureStore';
 import history from './helpers/history';
 import electron from 'electron';
@@ -29,7 +29,7 @@ import { employesActions } from './services/employes/employesActions';
 import { catalogueActions } from './services/catalogue/catalogueActions';
 import packageJson from '../package.json';
 
-import * as Sentry from '@sentry/electron';
+import * as Sentry from '@sentry/react';
 
 Sentry.init({ 
   release: "splash360caisse@" + packageJson.version,

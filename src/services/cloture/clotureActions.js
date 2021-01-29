@@ -175,6 +175,7 @@ function getTodayCa() {
     const stats = await clotureServices.getTodayCa(lastperiode_end);
     const {ca, numtickets} = stats;
     logger.timeEnd('ClotureActions.getTodayCa', stats);
+    // logger.time('clotureActions after getTodayCa');
     dispatch({type: clotureActionTypes.GET_TODAY_CA, ca, numtickets})
 
   }

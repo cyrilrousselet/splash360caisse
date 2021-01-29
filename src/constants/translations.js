@@ -483,7 +483,7 @@ const data = {
                             nom: 'ECART :',
                             motif: 'Motif ecart :'
                         },
-                        total: 'Total'
+                        total: 'Total',
                     },
                     prelevement: 'PRELEVEMENT EN CLOTURE'
                 },

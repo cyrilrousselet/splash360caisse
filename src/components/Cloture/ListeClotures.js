@@ -29,6 +29,7 @@ import CloseIcon from '../common/icon/CloseIcon';
 
 import Logger from '../../helpers/Logger';
 import {devise, dateBounds} from '../../helpers/toolbox';
+import {last} from 'lodash';
 
 const logger = new Logger();
 
@@ -46,7 +47,7 @@ class LocalizedUtils extends DateFnsUtils {
 function TicketX(props) {
   const {cloture} = props;
   const __strimp = strings.modules.cloture.impression;
-  const { periode, ecarts, comptage } = cloture;
+  const { periode, ecarts, comptage, prelevement } = cloture;
 
   console.log('ticket X');
   console.log(cloture);
@@ -225,6 +226,9 @@ function TicketX(props) {
           { __strimp.caption.emission }{ devise(periode.emission)}
         </div>
       )}
+      <div className="titre">
+        { __strimp.prelevement } : { devise(prelevement) }
+      </div>
     </div>
   </div>
 
@@ -425,6 +429,7 @@ class ListeClotures extends React.Component {
   getSynthese(clotures) {
  //   logger.log('getSynthese()', clotures);
 
+
     if (clotures.length>0) {
 
       let __start = startOfToday() 
@@ -438,6 +443,7 @@ class ListeClotures extends React.Component {
          ,__ca = 0
          ,__ntk = 0
          ,__tkm = 0
+         ,__prv = 0
          ,__vvnd = []
          ,__vtva = []
          ,__vmoy = []
@@ -459,9 +465,9 @@ class ListeClotures extends React.Component {
          ;
 
       clotures.forEach(cl => {
-        const {periode, ecarts, comptage} = this.props.clotureslist[cl.id];
+        const {periode, ecarts, comptage, prelevement} = this.props.clotureslist[cl.id];
 
-logger.log('ecarts', ecarts);
+        logger.log('ecarts', ecarts);
         
         // récup des dates extrêmes de la liste des clotures
         if ( isBefore(new Date(periode.debut), __start) ) __start = new Date(periode.debut);
@@ -493,13 +499,16 @@ logger.log('ecarts', ecarts);
         // addition des ventes
         __vnt += periode.ventes;
         // addition des montants caisse
-        __mtc += periode.mtcaisse;
+        // __mtc += periode.mtcaisse;
+        __mtc += periode.ca;
         // addition des chiffres d'affaires
         __ca += periode.ca;
         // addition du nombre de tickets
         __ntk += periode.numtickets;
         // addition des valeurs du ticket moyen
         __tkm += periode.ticket_moyen;
+        // addition des prélèvements
+        __prv += prelevement;
 
         // compilation des ventilations
 
@@ -586,7 +595,7 @@ logger.log('ecarts', ecarts);
         depenses: __dep,
         remboursements: __rmb,
         ventes: __vnt,
-        mtcaisse: __mtc,
+        mtcaisse: __mtc + this.props.clotureslist[last(clotures).id].periode.fdcaisse,
         ca: __ca,
         numtickets: __ntk,
         ticket_moyen: __tkm/clotures.length,
@@ -599,9 +608,10 @@ logger.log('ecarts', ecarts);
       };
       
       this.openCloture({
-        periode:synthese,
+        periode: synthese,
         ecarts: __ecarts,
-        comptage: __comptage
+        comptage: __comptage,
+        prelevement: __prv
       });
 
     }

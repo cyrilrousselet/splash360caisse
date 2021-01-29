@@ -151,7 +151,7 @@ async function _findBoundedClotures(start, end) {
 async function _findCloture(criteriae = {}) {
   log.info(criteriae);
   const mongo = await connect();
-  const _cloture = await ClotureModel.find(criteriae).lean().exec();
+  const _cloture = await ClotureModel.find(criteriae).lean().sort({createdAt: 1}).exec();
   // await mongo.disconnect();
   return _cloture;
 }

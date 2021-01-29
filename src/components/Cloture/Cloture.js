@@ -158,7 +158,7 @@ class Cloture extends React.Component {
     // si la gestion du fond de caisse est activée, on récupère le solde au dernier mouvement de trésorerie.
     if (fonddecaisse_activation) {
       getLastMouvement(caisse.uniqid).then(__lastmvt => {
-        const __lastsolde = (__lastmvt && __lastmvt.hasOwnProperty('lastmouvement')) ? __lastmvt.lastmouvement.solde : 0;
+        const __lastsolde = (__lastmvt && __lastmvt.hasOwnProperty('lastmouvement') && __lastmvt.lastmouvement!==null) ? __lastmvt.lastmouvement.solde : 0;
         // logger.log('Clo.getLastMouvement() solde:', __lastmvt, __lastsolde);
         this.setState({fonddecaisse: __lastsolde/100});
       });

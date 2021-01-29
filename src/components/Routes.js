@@ -1,31 +1,31 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import { PrivateRoute } from './components/common/PrivateRoute';
-import paths from './constants/routes';
+import { PrivateRoute } from './../components/common/PrivateRoute';
+import paths from './../constants/routes';
 
-import App from './containers/App';
-import DashboardCont from './containers/DashboardCont';
-import LoginCont from './containers/LoginCont';
-import ParametresCont from './containers/ParametresCont';
-import Encaissement from './components/Encaissement';
-import MarketingCont from './containers/MarketingCont';
-import ClotureHomeCont from './containers/ClotureHomeCont';
-import ClotureCont from './containers/ClotureCont';
-import ListeCloturesCont from './containers/ListeCloturesCont';
-import EmployesCont from './containers/EmployesCont';
-import DepensesCont from './containers/DepensesCont';
-import ListeCommandesCont from './containers/ListeCommandesCont';
-import StocksCont from './containers/StocksCont';
-import StatistiquesCont from './containers/StatistiquesCont';
-import MenuCont from './containers/MenuCont';
-import ClientsCont from './containers/ClientsCont';
-import MainLoaderCont from './containers/MainLoaderCont';
-import TresorerieCont from './containers/TresorerieCont';
+import App from './App';
+import DashboardCont from './../containers/DashboardCont';
+import LoginCont from './../containers/LoginCont';
+import ParametresCont from './../containers/ParametresCont';
+import Encaissement from './../components/Encaissement';
+import MarketingCont from './../containers/MarketingCont';
+import ClotureHomeCont from './../containers/ClotureHomeCont';
+import ClotureCont from './../containers/ClotureCont';
+import ListeCloturesCont from './../containers/ListeCloturesCont';
+import EmployesCont from './../containers/EmployesCont';
+import DepensesCont from './../containers/DepensesCont';
+import ListeCommandesCont from './../containers/ListeCommandesCont';
+import StocksCont from './../containers/StocksCont';
+import StatistiquesCont from './../containers/StatistiquesCont';
+import MenuCont from './../containers/MenuCont';
+import ClientsCont from './../containers/ClientsCont';
+import MainLoaderCont from './../containers/MainLoaderCont';
+import TresorerieCont from './../containers/TresorerieCont';
 
 export default () => (
   <App>
     <Switch>
-      <PrivateRoute exact path={ paths.MAIN_LOADER } component={MainLoaderCont} />
+      <Route exact path={ paths.MAIN_LOADER } component={MainLoaderCont} />
       <PrivateRoute exact path={ paths.DASHBOARD } component={DashboardCont} />
       <Route path={ paths.LOGIN } component={LoginCont} />
       <PrivateRoute path={ paths.MARKETING } component={MarketingCont} />
