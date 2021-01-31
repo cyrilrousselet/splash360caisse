@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux';
 
-import { commandeActions } from '../services/commande/commandeActions';
+// import { commandeActions } from '../services/commande/commandeActions';
 import { clotureActions } from '../services/cloture/clotureActions';
 import { catalogueActions } from '../services/catalogue/catalogueActions';
 import { parametresActions } from '../services/parametres/parametresActions';
