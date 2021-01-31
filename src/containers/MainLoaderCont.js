@@ -23,13 +23,13 @@ const gotoDashboard = () => {
 
 const mapStateToProps = (state) => {
   return {
-    paramLoading : state.parametresReducer.loading,
+    // paramLoading : state.parametresReducer.loading,
     paramLoaded: Object.entries(state.parametresReducer.parametres).length>0,
-    catLoading : state.catalogueReducer.loading,
+    // catLoading : state.catalogueReducer.loading,
     catLoaded: Object.entries(state.catalogueReducer.catalogue).length>0,
-    cmdLoading: state.commandesListReducer.loading,
-    cmdLoaded: Object.entries(state.commandesListReducer).length>0,
-    cloLoading : state.clotureReducer.loading,
+    // cmdLoading: state.commandesListReducer.loading,
+    // cmdLoaded: Object.entries(state.commandesListReducer).length>0,
+    // cloLoading : state.clotureReducer.loading,
     cloLoaded: Object.entries(state.clotureReducer).length>0,
     sseInit: state.notificationReducer.sseInit,
     params: state.parametresReducer.parametres.options,
@@ -42,7 +42,7 @@ const mapDispatchToProps = (dispatch) => {
   const bound = bindActionCreators({
     getParametres: parametresActions.getAll,
     getCatalogue: catalogueActions.getAllActive,
-    getTodayCommandesList: commandeActions.getTodayCommandesList,
+    // getTodayCommandesList: commandeActions.getTodayCommandesList,
     getCloturesList: clotureActions.getCloturesList,
     getCurrentPeriode: clotureActions.getCurrentPeriode,
     getTodayCa: clotureActions.getTodayCa,
@@ -53,7 +53,7 @@ const mapDispatchToProps = (dispatch) => {
     initSyncCommandes: notificationActions.initSyncCommandes,
     initSyncClotures: notificationActions.initSyncClotures,
     quitApp: peripheralActions.quitApp,
-    loadNumero: commandeActions.loadNumero
+    // loadNumero: commandeActions.loadNumero
   }, dispatch);
   return {
     ...bound,

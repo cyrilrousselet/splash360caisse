@@ -34,9 +34,9 @@ class MainLoader extends React.Component {
     const { 
       paramLoaded, 
       catLoaded, 
-      catLoading, 
-      cmdLoaded, 
-      cmdLoading, 
+      // catLoading, 
+      // cmdLoaded, 
+      // cmdLoading, 
       cloLoaded, 
       sseInit, 
       params, 
@@ -65,24 +65,24 @@ class MainLoader extends React.Component {
     // logger.log('catLoaded', catLoaded);
     // logger.log('cmdLoaded', cmdLoaded);
     // logger.log('cloLoaded', cloLoaded);
-    if (paramLoaded===true && this.state.paramLoaded!==paramLoaded) {
-      this.setState({paramLoaded: true});
-    }
-    if (first_start===true && this.state.first_start!==first_start) {
-      this.setState({first_start: true});
-    }
-    if (sseInit===true && this.state.sseInit!==sseInit) {
-      this.setState({sseInit: true});
-    }
-    if (catLoaded===true && this.state.catLoaded!==catLoaded) {
-      this.setState({catLoaded: true});
-    }
+    // if (paramLoaded===true && this.state.paramLoaded!==paramLoaded) {
+    //   this.setState({paramLoaded: true});
+    // }
+    // if (first_start===true && this.state.first_start!==first_start) {
+    //   this.setState({first_start: true});
+    // }
+    // if (sseInit===true && this.state.sseInit!==sseInit) {
+    //   this.setState({sseInit: true});
+    // }
+    // if (catLoaded===true && this.state.catLoaded!==catLoaded) {
+    //   this.setState({catLoaded: true});
+    // }
     // if (cmdLoaded===true && this.state.cmdLoaded!==cmdLoaded) {
     //   this.setState({cmdLoaded: true});
     // }
-    if (cloLoaded===true && this.state.cloLoaded!==cloLoaded) {
-      this.setState({cloLoaded: true});
-    }
+    // if (cloLoaded===true && this.state.cloLoaded!==cloLoaded) {
+    //   this.setState({cloLoaded: true});
+    // }
     if (paramLoaded===true && sseInit===false) {
       first_start = params.first_start;
       logger.log('sse depuis componentDidMount');
@@ -94,21 +94,20 @@ class MainLoader extends React.Component {
     }
     if (first_start===false) {
       if (paramLoaded===true && sseInit===true && 
-          catLoaded===false && catLoading===false) {
+          catLoaded===false) {
         this.props.getCatalogue();
       }
-      if (paramLoaded===true && sseInit===true && catLoaded===true && 
-          cmdLoaded===false && cmdLoading===false) {
+      if (paramLoaded===true && sseInit===true && catLoaded===true) {
      //   this.props.getTodayCommandesList();
-        this.props.loadNumero();
+        // this.props.loadNumero();
       }
-      if (paramLoaded===true && sseInit===true && catLoaded===true && cmdLoaded===true && 
+      if (paramLoaded===true && sseInit===true && catLoaded===true && 
           cloLoaded===false) {
         this.props.getCloturesList();
         this.props.getTodayCa();
         this.props.getCurrentPeriode();
       }
-      if (paramLoaded===true && sseInit===true && catLoaded===true && cmdLoaded===true && cloLoaded===true) {
+      if (paramLoaded===true && sseInit===true && catLoaded===true && cloLoaded===true) {
         if (readytolaunch && readytolaunch.length===2) {
 
           Swal.fire({
@@ -140,9 +139,9 @@ class MainLoader extends React.Component {
     const { 
       paramLoaded, 
       catLoaded, 
-      catLoading, 
-      cmdLoaded, 
-      cmdLoading, 
+      // catLoading, 
+      // cmdLoaded, 
+      // cmdLoading, 
       cloLoaded, 
       sseInit, 
       params, 
@@ -165,44 +164,39 @@ class MainLoader extends React.Component {
     // logger.log('cloLoaded', cloLoaded);
 
 
-    let changess = [];
-    if (this.state.paramLoaded!==prevState.paramLoaded) changess.push('paramLoaded');
-    if (this.state.sseInit!==prevState.sseInit) changess.push('sseInit');
-    if (this.state.catLoaded!==prevState.catLoaded) changess.push('catLoaded');
-    if (this.state.cmdLoaded!==prevState.cmdLoaded) changess.push('cmdLoaded');
-    if (this.state.cloLoaded!==prevState.cloLoaded) changess.push('cloLoaded');
+    // let changess = [];
+    // if (this.state.paramLoaded!==prevState.paramLoaded) changess.push('paramLoaded');
+    // if (this.state.sseInit!==prevState.sseInit) changess.push('sseInit');
+    // if (this.state.catLoaded!==prevState.catLoaded) changess.push('catLoaded');
+    // if (this.state.cmdLoaded!==prevState.cmdLoaded) changess.push('cmdLoaded');
+    // if (this.state.cloLoaded!==prevState.cloLoaded) changess.push('cloLoaded');
 
 
-    logger.log('changes state', changess.join(', '));
+    // logger.log('changes state', changess.join(', '));
 
-    let changes = [];
-    if (paramLoaded!==prevProps.paramLoaded) changes.push('paramLoaded');
-    if (sseInit!==prevProps.sseInit) changes.push('sseInit');
-    if (catLoaded!==prevProps.catLoaded) changes.push('catLoaded');
-    if (cmdLoaded!==prevProps.cmdLoaded) changes.push('cmdLoaded');
-    if (cloLoaded!==prevProps.cloLoaded) changes.push('cloLoaded');
-    if (params!==prevProps.params) changes.push('params');
+    // let changes = [];
+    // if (paramLoaded!==prevProps.paramLoaded) changes.push('paramLoaded');
+    // if (sseInit!==prevProps.sseInit) changes.push('sseInit');
+    // if (catLoaded!==prevProps.catLoaded) changes.push('catLoaded');
+    // if (cmdLoaded!==prevProps.cmdLoaded) changes.push('cmdLoaded');
+    // if (cloLoaded!==prevProps.cloLoaded) changes.push('cloLoaded');
+    // if (params!==prevProps.params) changes.push('params');
 
-    logger.log('changes props', changes.join(', '));
+    // logger.log('changes props', changes.join(', '));
 
-    if (paramLoaded===true && prevProps.paramLoaded!==paramLoaded) {
-      this.setState({paramLoaded: true});
-    }
-    // if (first_start===true && prevProps.first_start!==first_start) {
-    //   this.setState({first_start: true});
+    // if (paramLoaded===true && prevProps.paramLoaded!==paramLoaded) {
+    //   this.setState({paramLoaded: true});
     // }
-    if (sseInit===true && prevProps.sseInit!==sseInit) {
-      this.setState({sseInit: true});
-    }
-    if (catLoaded===true && prevProps.catLoaded!==catLoaded) {
-      this.setState({catLoaded: true});
-    }
-    // if (cmdLoaded===true && prevProps.cmdLoaded!==cmdLoaded) {
-    //   this.setState({cmdLoaded: true});
+
+    // if (sseInit===true && prevProps.sseInit!==sseInit) {
+    //   this.setState({sseInit: true});
     // }
-    if (cloLoaded===true && prevProps.cloLoaded!==cloLoaded) {
-      this.setState({cloLoaded: true});
-    }
+    // if (catLoaded===true && prevProps.catLoaded!==catLoaded) {
+    //   this.setState({catLoaded: true});
+    // }
+    // if (cloLoaded===true && prevProps.cloLoaded!==cloLoaded) {
+    //   this.setState({cloLoaded: true});
+    // }
     if (paramLoaded===true && sseInit===false) {
       first_start = params.first_start;
       logger.log('sse depuis componentDidUpdate');
@@ -214,20 +208,19 @@ class MainLoader extends React.Component {
     }
     if (first_start===false) {
       if (paramLoaded===true && sseInit===true && 
-          catLoaded===false && catLoading===false) {
+          catLoaded===false) {
         this.props.getCatalogue();
       }
-      if (paramLoaded===true && sseInit===true && catLoaded===true && 
-          cmdLoaded===false && cmdLoading===false) {
+      if (paramLoaded===true && sseInit===true && catLoaded===true) {
       //  this.props.getTodayCommandesList();
-        this.props.loadNumero();
+        // this.props.loadNumero();
       }
-      if (paramLoaded===true && sseInit===true && catLoaded===true && cmdLoaded===true && 
+      if (paramLoaded===true && sseInit===true && catLoaded===true && 
           cloLoaded===false) {
         this.props.getCloturesList();
         this.props.getCurrentPeriode();
       }
-      if (paramLoaded===true && sseInit===true && catLoaded===true && cmdLoaded===true && cloLoaded===true) {
+      if (paramLoaded===true && sseInit===true && catLoaded===true && cloLoaded===true) {
         if (readytolauch && readytolauch.length===2) {
 
           Swal.fire({
@@ -254,18 +247,27 @@ class MainLoader extends React.Component {
   }
 
   render() {
+    // const { 
+    //   paramLoaded, 
+    //   catLoaded, 
+    //   // cmdLoaded, 
+    //   cloLoaded, 
+    //   sseInit, 
+    //   first_start 
+    // } = this.state;
+  //  const { paramLoaded, paramLoading, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, cloLoading, sseInit, params, dbupdated } = this.props;
     const { 
       paramLoaded, 
       catLoaded, 
-      // cmdLoaded, 
-      cloLoaded, 
-      sseInit, 
-      first_start 
-    } = this.state;
-  //  const { paramLoaded, paramLoading, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, cloLoading, sseInit, params, dbupdated } = this.props;
+      cloLoaded,
+      sseInit,
+      // dbgetInit,
+      first_start
+    } = this.props;
 
   // if (!paramLoaded || !catLoaded || !cmdLoaded || !cloLoaded || !sseInit) this.setState({inspect: true});
 
+  // const param_charge = paramLoaded;
 
     return (      
       <div>
