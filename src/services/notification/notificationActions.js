@@ -383,6 +383,16 @@ function syncCommandes(commandes) {
   }
 }
 
+function resync(liste) {
+  return (dispatch) => {
+    notificationServices.resync(liste)
+    .then(
+      response => { logger.log('resync', response) }
+    )
+  }
+}
+
+
 function checkStation() {
   return (dispatch, getState) => {
 
@@ -511,5 +521,6 @@ export const notificationActions = {
   syncCommandes,
   initSyncClotures,
   syncClotures,
-  checkStation
+  checkStation,
+  resync
 };

@@ -136,7 +136,10 @@ class Cloture extends React.Component {
       getCommandesList, 
       getLastMouvement, 
       fonddecaisse_activation,
+      resync
     } = this.props;
+
+    resync(['tresor','commandes']);
     
     getCommandesList({
       $and: [

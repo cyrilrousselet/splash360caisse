@@ -17,6 +17,7 @@ const dbCommandesApi = require("./dbCommandesApi.js");
 const dbEmployesApi = require("./dbEmployesApi.js");
 const dbMarketingApi = require("./dbMarketingApi.js");
 const dbUsersApi = require("./dbUsersApi.js");
+const dbTresorerieApi = require("./dbTresorerieApi.js");
 
 const connectedSecondaries = {};
 const connectedTerminals = {};
@@ -147,6 +148,7 @@ const welcomeTreatment = async () => {
   const employes_sum = await dbEmployesApi.dbEmployesSummary();
   const marketing_sum = await dbMarketingApi.dbMarketingSummary();
   const users_sum = await dbUsersApi.dbUsersSummary();
+  const tresors_sum = await dbTresorerieApi.dbTresorerieSummary();
 
   return {
     ...catalogue_sum,
@@ -156,6 +158,7 @@ const welcomeTreatment = async () => {
     ...employes_sum,
     ...marketing_sum,
     ...users_sum,
+    ...tresors_sum,
   };
 };
 
@@ -357,20 +360,59 @@ const actions = {
     }
   },
 
+  resync: async (req, res) => {
+    const { liste } = req.payload;
+
+    let __summary = {};
+
+    const start = async () => {
+      await asyncForEach(liste, async (entity) => {
+        if ('tresor'===entity) {
+          const tresors_sum = await dbTresorerieApi.dbTresorerieSummary();
+          __summary = {...__summary, ...tresors_sum};
+        }
+        else if ('commandes'===entity) {
+          const commandes_sum = await dbCommandesApi.dbCommandesSummary();
+          __summary = {...__summary, ...commandes_sum};
+        } 
+        else if ('employes'===entity) {
+          const employes_sum = await dbEmployesApi.dbEmployesSummary();
+          __summary = {...__summary, ...employes_sum};
+        } 
+        else if ('marketing'===entity) {
+          const marketing_sum = await dbMarketingApi.dbMarketingSummary();
+          __summary = {...__summary, ...marketing_sum};
+        } 
+        else if ('users'===entity) {
+          const users_sum = await dbUsersApi.dbUsersSummary();
+          __summary = {...__summary, ...users_sum};
+        }
+      }
+    };
+
+    start();
+
+    Object.entries(connectedSecondaries).forEach(([sockid, secondary]) => {
+      io.to(sockid).emit("resync", {summary: __summary, liste: liste});
+    });
+
+    res.send({ msg: "summary envoyé aux secondaries", Object.values(connectedSecondaries) });
+
+  },
+
   // on lance la connexion au "primary" (si la caisse est "secondary")
   syncConnectToPrimary: (req, res) => {
     const { url, caisse } = req.payload;
 
     log.info("syncConnectToPrimary", req.payload);
 
-    // socket = ioclient(url, {transports: ['websocket']});
     socket = ioclient(url + ":" + SYNC_PORT);
     socket.on("connect", () => {
       socket.emit("register", caisse);
     });
 
-    //  log.info('socket', socket);
-
+    // accusé de réception de la connexion de la part du "primary"
+    // avec la liste des summary (éléments à échanger entre les caisses)
     socket.on("welcome", async (primarySum) => {
       log.info("on welcome");
 
@@ -380,117 +422,6 @@ const actions = {
         primarySum,
         secondarySum
       );
-
-      // const prmkeys = Object.keys(primarySum);
-      // const seckeys = Object.keys(secondarySum);
-
-      // // récup des clés (noms des tables) pour chaque summary
-      // const indbkeys = difference(prmkeys,seckeys);
-      // const outdbkeys = difference(seckeys, prmkeys);
-      // const comdbkeys = intersection(seckeys, prmkeys);
-
-      // // liste des tables à importer
-      // let in_db = {};
-      // // ajout des tables inexistantes à importer
-      // indbkeys.forEach(k => {
-      //   Object.defineProperty(in_db, k, {
-      //     value: primarySum[k],
-      //     enumerable: true,
-      //     writable: false,
-      //     configurable: false
-      //   })
-      // })
-
-      // // liste des tables à exporter
-      // let out_db = {};
-      // // ajout des tables inexistantes à exporter
-      // outdbkeys.forEach(k => {
-      //   Object.defineProperty(out_db, k, {
-      //     value: secondarySum[k],
-      //     enumerable: true,
-      //     writable: false,
-      //     configurable: false
-      //   })
-      // });
-
-      // // ajout des tables existantes aux deux listes ('à importer' et 'à exporter')
-      // comdbkeys.forEach(k => {
-
-      //   const incom = [];
-      //   const outcom = [];
-
-      //   // pour chaque table en commun, on récupère les différences
-
-      //   // dans la liste de la caisse 'primary'
-      //   primarySum[k].forEach(nty => {
-      //     const found = secondarySum[k].find(snty => snty.id == nty.id);
-      //     // si un item a été trouvé
-      //     if (found) {
-      //       // si l'item a été mis à jour
-      //       if (nty.updatedAt) {
-      //         // si l'item correspondant a été mis à jour
-      //         if (found.updatedAt) {
-      //           // si l'item est plus récent il doit être importé
-      //           if (nty.updatedAt>found.updatedAt) {
-      //             incom.push(nty);
-      //           }
-      //           // si l'item correspondant est plus récent il doit être exporté
-      //           else {
-      //             outcom.push(found);
-      //           }
-      //         }
-      //         // si l'item correspondant n'a pas été mis à jour
-      //         // l'item doit être importé
-      //         else {
-      //           incom.push(nty);
-      //         }
-      //       }
-      //       // si l'item n'a pas été mis à jour
-      //       else {
-      //         // si l'item correspondant a été mis à jour
-      //         // il doit être exporté
-      //         if (found.updatedAt) {
-      //           outcom.push(found);
-      //         }
-      //       }
-      //     }
-      //     // s'il n'a pas été trouvé il doit être importé
-      //     else {
-      //       incom.push(nty);
-      //     }
-
-      //   });
-
-      //   // dans la liste de la caisse 'secondary'
-      //   secondarySum[k].forEach(nty => {
-      //     const found = primarySum[k].find(pnty => pnty.id == nty.id);
-      //     // si aucun item ne correspond, il doit être exporté
-      //     if (!found) {
-      //       outcom.push(nty);
-      //     }
-      //   });
-
-      //   // s'il y a des items à importer, on ajoute la table
-      //   if (incom.length>0) {
-      //     Object.defineProperty(in_db, k, {
-      //       value:incom,
-      //       enumerable: true,
-      //       writable: true,
-      //       configurable: false
-      //     });
-      //   }
-
-      //   // s'il y a des items à exporter, on ajoute la table
-      //   if (outcom.length>0) {
-      //     Object.defineProperty(out_db, k, {
-      //       value:outcom,
-      //       enumerable: true,
-      //       writable: true,
-      //       configurable: false
-      //     });
-      //   }
-
-      // });
 
       log.info("import:", importation);
       log.info("export:", exportation);
@@ -502,6 +433,17 @@ const actions = {
 
       synchroTreatment(payload.db, payload.data);
     });
+
+    // écouteur de resynchro de la part du primary
+    // (le primary envoie une liste de ses entités
+    // qu'il faut comparer avec celle du secondary)
+    socket.on("resync", (payload) => {
+      const {summary, liste} = payload;
+      log.info('resync', liste, summary);
+
+
+    })
+
     res.send({ msg: "connection sent to primary" });
   },
 
@@ -669,6 +611,14 @@ const actions = {
     __request.end();
   },
 };
+
+
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
+
 
 module.exports = {
   ...server,

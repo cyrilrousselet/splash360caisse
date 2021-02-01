@@ -24,7 +24,8 @@ export const notificationServices = {
   askNumero,
   getDatabase,
   syncCommandes,
-  syncClotures
+  syncClotures,
+  resync
  };
 
 
@@ -61,6 +62,10 @@ async function syncClotures(params) {
     var __url = externalParams.synchro.syncClotures;
     return emit('syncCloturesBO', {url: __url, access_token: __splashToken.splash_token.access_token, clotures: params.clotures});
   }
+}
+
+async function resync(liste) {
+  return emit('resync', {liste:liste});
 }
 
 

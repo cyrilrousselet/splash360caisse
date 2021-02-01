@@ -4,6 +4,7 @@ import Cloture from '../components/Cloture/Cloture';
 import { clotureActions } from '../services/cloture/clotureActions';
 import { getPeriode } from '../services/cloture/clotureReducer';
 import { commandeActions } from '../services/commande/commandeActions';
+import { notificationActions } from '../services/notification/notificationActions';
 import { tresorActions } from '../services/tresorerie/tresorActions';
 import { tresorServices } from '../services/tresorerie/tresorServices';
 
@@ -41,6 +42,7 @@ const mapDispatchToProps = (dispatch) => {
     getCurrentPeriode: clotureActions.getCurrentPeriode,
     makeCloture: clotureActions.makeCloture,
     addTresor: tresorActions.addTresor,
+    resync: notificationActions.resync,
   }, dispatch);
   return {
     ...bound,

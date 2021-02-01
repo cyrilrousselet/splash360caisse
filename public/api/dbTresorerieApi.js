@@ -143,6 +143,19 @@ const actions = {
     }
   },
 
+  dbTresorerieSummary: async () => {
+    
+    const _trs = await _findTresors();
+    const _trsSummary = _trs.map((t) => ({
+      id: t.tresorId,
+      updatedAt: t.updatedAt,
+    }));
+
+    return {
+      tresors: _trsSummary,
+    };
+  },
+
 }
 
 /**
