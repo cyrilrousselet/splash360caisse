@@ -387,7 +387,7 @@ const actions = {
           const users_sum = await dbUsersApi.dbUsersSummary();
           __summary = {...__summary, ...users_sum};
         }
-      }
+      });
     };
 
     start();
@@ -396,7 +396,7 @@ const actions = {
       io.to(sockid).emit("resync", {summary: __summary, liste: liste});
     });
 
-    res.send({ msg: "summary envoyé aux secondaries", Object.values(connectedSecondaries) });
+    res.send({ msg: "summary envoyé aux secondaries num. " + Object.keys(connectedSecondaries).length });
 
   },
 
