@@ -1,5 +1,6 @@
 import { peripheralActionTypes } from './peripheralActionTypes';
 import { peripheralServices } from './peripheralServices';
+import { tresorServices } from '../tresorerie/tresorServices';
 
 import 'date-fns';
 import { format, parseJSON } from "date-fns";
@@ -1309,13 +1310,17 @@ function printPeriodeX(payload={}) {
 }
 
 function printCloture(payload={}) {
-  return (dispatch, getState) => {  
+  return async (dispatch, getState) => {  
     
     // -> template ticket
-    let template = [
-      'entreprise', 
-      'periode_z'
-    ];
+    // let template = [
+    //   'entreprise', 
+    //   'periode_z',
+    //   'mouvements',
+    //   'prelevement'
+    // ];
+
+    const template = templates.cloture;
 
     let periode = {};
     let comptage = {};
@@ -1328,7 +1333,7 @@ function printCloture(payload={}) {
       comptage = payload.comptage;
       ecarts = payload.ecarts;
       prelevement = payload.prelevement;
-      template.push('prelevement');
+     // template.push('prelevement');
     }
 
 
@@ -1336,13 +1341,15 @@ function printCloture(payload={}) {
 
     const { impression } = strings.modules.cloture;
     const { imprimantes, tickets } = getState().peripheralReducer;
-    const { entreprise } = getState().parametresReducer.parametres;
+    const { financier, entreprise } = getState().parametresReducer.parametres;
+
+  
 
     // récup des préf. du ticket et de l'imprimante correspondante
     let ticket = Object.values(tickets).find(tck=>tck.template==='cloture_z');
     let imprimante = Object.values(imprimantes).find(imp=>imp.printer_id===ticket.imprimantes[0]);
 
-    const { debut, fin } = periode;
+    const { debut, fin, caisse } = periode;
     const __debut = format(new Date(debut), "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
     const __fin = format(new Date(fin), "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
 
@@ -1353,6 +1360,10 @@ function printCloture(payload={}) {
 
     const siret = entreprise.siret;
     const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
+
+
+    const { tresorslist } = financier.fonddecaisse_activation ? await tresorServices.getServiceMouvements( {caisseId: caisse.uniqid, debut: new Date(debut).getTime()} ) : {tresorslist: null};
+
 
 
     const contenu = {
@@ -1366,7 +1377,8 @@ function printCloture(payload={}) {
       prelevement: prelevement,
       comptage: comptage,
       ecarts: ecarts,
-      strings: impression
+      strings: impression,
+      mouvements: tresorslist
     };
 
     logger.log('peripheralActions.printCloture contenu:', contenu);

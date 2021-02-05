@@ -345,7 +345,7 @@ class EditTicketPopin extends React.Component {
                 <div className="liste-label">{ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.kds }</div>
                 <div className="liste-liste">
                   <SwitchCheckbox 
-                    isChecked={ kds } 
+                    isChecked={ (kds===null || kds===undefined) ? false : kds } 
                     key={ `select-kds` }
                     name={ `kds` } 
                     className="kds-checkbox"

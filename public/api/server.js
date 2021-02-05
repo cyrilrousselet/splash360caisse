@@ -140,15 +140,27 @@ const synchroTreatment = (db, data, emitter = null, response = null) => {
   }
 };
 
-const welcomeTreatment = async () => {
+const welcomeTreatment = async (station_uniqid, exclusion=false) => {
+
+  // requête pour exclure la station ou pour inclure la station
+  const mongo_query = exclusion 
+  ? {
+      $or:[
+        { localsync: { $exists: false } },
+        { localsync: { $elemMatch: { $ne: station_uniqid } } }
+      ]
+    }
+  : { localsync: { $elemMatch: station_uniqid } }
+  ;
+
   const catalogue_sum = await dbCatalogueApi.dbCatalogueSummary();
   const clients_sum = await dbClientsApi.dbClientsSummary();
-  const clotures_sum = await dbCloturesApi.dbCloturesSummary();
-  const commandes_sum = await dbCommandesApi.dbCommandesSummary();
+  const clotures_sum = await dbCloturesApi.dbCloturesSummary(mongo_query);
+  const commandes_sum = await dbCommandesApi.dbCommandesSummary(mongo_query);
   const employes_sum = await dbEmployesApi.dbEmployesSummary();
   const marketing_sum = await dbMarketingApi.dbMarketingSummary();
   const users_sum = await dbUsersApi.dbUsersSummary();
-  const tresors_sum = await dbTresorerieApi.dbTresorerieSummary();
+  const tresors_sum = await dbTresorerieApi.dbTresorerieSummary(mongo_query);
 
   return {
     ...catalogue_sum,
@@ -416,7 +428,7 @@ const actions = {
     socket.on("welcome", async (primarySum) => {
       log.info("on welcome");
 
-      const secondarySum = await welcomeTreatment();
+      const secondarySum = await welcomeTreatment(caisse.uniqid);
 
       const { importation, exportation } = getImportExport(
         primarySum,
@@ -480,7 +492,7 @@ const actions = {
           configurable: true,
         });
 
-        const summary = await welcomeTreatment();
+        const summary = await welcomeTreatment(data.uniqid, true);
         io.to(sock.id).emit("welcome", summary);
       });
 
@@ -496,7 +508,6 @@ const actions = {
           configurable: true,
         });
 
-        //  const summary = await welcomeTreatment();
         io.to(sock.id).emit("welcome");
       });
 

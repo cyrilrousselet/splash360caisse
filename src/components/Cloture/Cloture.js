@@ -183,6 +183,10 @@ class Cloture extends React.Component {
     //    getParametres();
   }
 
+  componentDidUpdate() {
+    logger.log('update Cloture');
+  }
+
   shouldComponentRender() {
     //  const {loading} = this.props;
     //  if(loading===false) return false;
@@ -604,8 +608,9 @@ logger.log('caisses', caisses);
 
     if (processing) {
 
-      setTimeout(function() {
+      const _redirect = setTimeout(function() {
         history.push(paths.CLOTURE);
+        clearTimeout(_redirect);
       }, 1500);
 
       return (

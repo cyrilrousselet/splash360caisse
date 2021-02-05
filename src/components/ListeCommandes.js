@@ -502,13 +502,13 @@ class ListeCommandes extends React.Component {
             </Tabs>
             <PillField value={searchval} type="text" className="displayId" innerButton={ `${searchval==='' ? 'keyboard' : 'delete'}`} innerButtonHandler={this.searchBtn} />
           </AppBar>
-          <TabPanel key="standby-panel" className="panel" value={openTab} index={0}>
+          <TabPanel className="panel" value={openTab} index={0}>
             <TableCommandes className="standby" id="standby" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } liste={standbylist} />
           </TabPanel>
-          <TabPanel key="a_encaisser-panel" className="panel" value={openTab} index={1}>
+          <TabPanel className="panel" value={openTab} index={1}>
             <TableCommandes className="a_encaisser" id="a_encaisser" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } openLivreurs={ this.openLivreurs } liste={a_encaisserlist} />
           </TabPanel>
-          <TabPanel key="confirmed-panel" className="panel" value={openTab} index={2}>
+          <TabPanel className="panel" value={openTab} index={2}>
             <TableCommandes className="confirmed" id="confirmed" thiscash={thiscash} openReglement={ this.encaissementHandle } openPrint={ this.openPrint } openLivreurs={ this.openLivreurs } liste={confirmedlist} />
           </TabPanel>
         </div>

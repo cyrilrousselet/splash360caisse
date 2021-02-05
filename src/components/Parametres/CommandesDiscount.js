@@ -43,6 +43,7 @@ function DiscountEditModal (props) {
                 {/* <TextField className="edit-input" defaultValue={discount} onChange={updateDiscount} variant="filled" /> */}
                 <LabelledField 
                   className="edit-input"
+                  name="edit-input"
                   type="number"
                   value={Number(String(discount).slice(0,-1))}
                   // option={String(discount).substr(-1,1)}

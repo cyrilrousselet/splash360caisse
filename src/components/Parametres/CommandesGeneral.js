@@ -33,7 +33,7 @@ function TableTypes(props) {
       </TableHead>
       <TableBody>
         {liste.map((row, i) => (
-          <TableRow key={row.id} className={(i%2)?'odd':'even'}>
+          <TableRow key={ `${id}-cmd-${i}`} className={(i%2)?'odd':'even'}>
             <TableCell key={`${i}-nom`} className="liste-nom"><div onClick={ () => { openEdit(i) } }>{ row.nom }</div></TableCell>
             <TableCell key={`${i}-abreviation`} className="liste-identifiant">{ row.identifiant }</TableCell>
             <TableCell key={`${i}-frais`} className="liste-frais">{ row.frais }</TableCell>
@@ -290,7 +290,7 @@ class CommandesGeneral extends React.Component {
               {!num_not_editable && <div className="btn-reset" onClick={()=>{ resetNumero() }}>{ strings.modules.parametres.submodules.commandes.general.numero.label.reset }</div>}
             </div>
             <SwitchCheckbox
-              isChecked={ data.numerotation_hex } 
+              isChecked={ data.numerotation_hex===undefined ? false : data.numerotation_hex } 
               key={`numerotation_hex`}
               name={ `numerotation_hex` } 
               labelLeft={ true }
@@ -304,7 +304,7 @@ class CommandesGeneral extends React.Component {
             <div className="bipper-wrapper">
               <div className="subttl">{ strings.modules.parametres.submodules.commandes.general.bippers.nom }</div>
               <SwitchCheckbox
-                isChecked={ data.active_bippers } 
+                isChecked={ data.active_bippers===undefined ? false : data.active_bippers } 
                 key={`active_bippers`}
                 name={ `active_bippers` } 
                 labelLeft={ true }
@@ -322,7 +322,7 @@ class CommandesGeneral extends React.Component {
             <div className="printstandby-wrapper">
               <div className="subttl">{ strings.modules.parametres.submodules.commandes.general.printstandby.nom }</div>
               <SwitchCheckbox
-                isChecked={ data.print_standby } 
+                isChecked={ data.print_standby===undefined ? false : data.print_standby } 
                 key={`print_standby`}
                 name={ `print_standby` } 
                 labelLeft={ true }

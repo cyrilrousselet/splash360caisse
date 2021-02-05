@@ -143,17 +143,27 @@ const actions = {
   dbCommandesSummary: async () => {
     (await db.ticketsrestau)._.mixin(lodashId);
 
-    const _cmd = await _findCommande();
+    const _cmd = await _findCommande({
+      $or:[
+        {sps: {$exists: false}},
+        {sps: {$eq: false}}
+      ]
+    });
     const _cmdSummary = _cmd.map((c) => ({
       id: c.ticketId,
       updatedAt: c.updatedAt,
     }));
 
-    const _tkr = await (await db.ticketsrestau).get("ticketsrestau").value();
-    const _tkrSummary = _tkr.map((t) => ({
-      id: t.id,
-      updatedAt: t.updatedAt,
-    }));
+    const _tkr = await (await db.ticketsrestau).get("ticketsrestau")
+                                               .find( t => ( (sps === false) || (sps === undefined) ) )
+                                               .value();
+    let _tkrSummary = [];
+    if (_tkr) {
+      _tkr.map((t) => ({
+        id: t.id,
+        updatedAt: t.updatedAt,
+      }));
+    }
 
     return {
       commandes: _cmdSummary,

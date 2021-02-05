@@ -156,7 +156,7 @@ class Reglement extends React.Component {
 
       } else if (this.props.commande.status === "standby") {
         this.props.commande.status = "confirmed";
-        this.props.printTicket("all");
+        //this.props.printTicket("all");
         this.props.printCommandeTicket("all", {...this.props.commande, status:'confirmed'});
       } else {
         logger.log("reglement modif", modif);

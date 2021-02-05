@@ -85,6 +85,55 @@ const actions = {
 
   },
 
+  dbTresorerieGetServiceMouvements: async (req, res) => {
+    const { payload } = req;
+
+    const mongo = await connect();
+    // ouverture correspondant au service
+    const _serviceOuverture = await TresorModel.find({
+      $and: [
+        { type: "ouverture"},
+        { destination: payload.caisseId },
+        { createdAt: { $lt: payload.debut }}
+      ]
+    }).lean().sort({createdAt: -1}).limit(1);
+
+    // première cloture après le service
+    const _serviceCloture = await TresorModel.find({
+      $and: [
+        { type: "cloture"},
+        { origine: payload.caisseId },
+        { createdAt: { $gt: payload.debut }}
+      ]
+    }).lean().sort({createdAt: 1}).limit(1);
+
+
+    log.info('dbTresorerieGetServiceMouvements _serviceOuverture:',_serviceOuverture);
+    log.info('dbTresorerieGetServiceMouvements _serviceCloture:',_serviceCloture);
+
+    // liste des mouvements entre les deux
+    const _ouvertureCreatedAt = _serviceOuverture[0].createdAt;
+    const _clotureCreatedAt = _serviceCloture[0].createdAt;
+    const tresorslist = await _findTresors({
+      $or: [
+        {$and: [
+          {destination: payload.caisseId},
+          {type: 'entree'},
+          {createdAt: { $gt: _ouvertureCreatedAt } },
+          {createdAt: { $lt: _clotureCreatedAt } }
+        ]},
+        {$and: [
+          {origine: payload.caisseId},
+          {type: 'sortie'},
+          {createdAt: { $gt: _ouvertureCreatedAt } },
+          {createdAt: { $lt: _clotureCreatedAt } }
+        ]}
+      ]
+    });
+    
+    res.send({ tresorslist });
+  },
+
   dbTresorerieLastOuvertureAndAfter: async (req, res) => {
     const { payload } = req;
     const _last = await _findLastOuverture(payload.caisseId);
@@ -145,7 +194,13 @@ const actions = {
 
   dbTresorerieSummary: async () => {
     
-    const _trs = await _findTresors();
+    const _trs = await _findTresors({
+      $or:[
+        {sps: {$exists: false}},
+        {sps: {$eq: false}}
+      ]
+    });
+
     const _trsSummary = _trs.map((t) => ({
       id: t.tresorId,
       updatedAt: t.updatedAt,

@@ -507,6 +507,13 @@ function _launchPrint(template, printer, contenu) {
    //     _printErrorHandler(e, '_printPeriodeZ', printer);
    //   }
     }
+    else if ('mouvements' === section) {
+      try {
+        _printMouvements(printer, contenu.mouvements, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printMouvements', printer);
+      }
+    }
     else if ('prelevement' === section) {
       try {
         _printPrelevement(printer, contenu.prelevement, contenu.strings);
@@ -1488,6 +1495,55 @@ function _printPrelevement(printer, data, strings) {
       ]);
 }
 
+function _printMouvements(printer, data, strings) {
+
+  if (data.length>0) {
+    printer
+      .drawLine()
+      .align('CT')
+      .style('B')
+      .setReverseColors(true)
+      .text(_completeRaw(strings.mouvements.titre, "center"))
+      .setReverseColors(false)
+      .drawLine();
+
+    let credit = 0;
+    let debit = 0;
+
+    printer
+      .tableCustom([
+        {text: strings.mouvements.type, cols:16, align:'LEFT'},
+        {text:'', cols:3},
+        {text: strings.mouvements.debit, cols:10, align:'RIGHT'},
+        {text:'', cols:3},
+        {text: strings.mouvements.credit, cols:10, align:'RIGHT'}
+      ]);
+
+    data.forEach(mvt => { 
+      printer
+        .style('NORMAL')
+        .tableCustom([
+          {text: strings.mouvements.types[mvt.type], cols:16, align:'LEFT'},
+          {text:'', cols:3},
+          {text: '- '+Number(mvt.debit/100).toFixed(2).replace('.',','), cols:10, align:'RIGHT'},
+          {text:'', cols:3},
+          {text: '+ '+Number(mvt.credit/100).toFixed(2).replace('.',','), cols:10, align:'RIGHT'}
+        ]);
+        debit += mvt.debit;
+        credit += mvt.credit;
+    });
+
+    printer
+    .feed(1)
+    .tableCustom([
+      {text: strings.mouvements.total, cols:16, align:'LEFT'},
+      {text:'', cols:3},
+      {text: Number(debit/100).toFixed(2).replace('.',','), cols:10, align:'RIGHT'},
+      {text:'', cols:3},
+      {text: Number(credit/100).toFixed(2).replace('.',','), cols:10, align:'RIGHT'}
+    ]);
+  }
+}
 
 function _printPeriodeZ(printer, data, strings, printx=false) {
 

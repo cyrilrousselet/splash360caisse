@@ -10,6 +10,7 @@ export const tresorServices = {
   getTresors,
   getLastOuvertureAndAfter,
   getLastClotureAndAfter,
+  getServiceMouvements,
   getLastMouvement,
   persistTresor
 };
@@ -51,6 +52,11 @@ function getLastOuvertureAndAfter(params) {
 function getLastClotureAndAfter(params) {
   logger.log('getLastClotureAndAfter', params);
   return emit( "dbTresorerieLastClotureAndAfter", params );
+}
+
+function getServiceMouvements(params) {
+  logger.log('getServiceMouvements', params);
+  return emit( "dbTresorerieGetServiceMouvements", params );
 }
 
 function getLastMouvement(caisseId) {

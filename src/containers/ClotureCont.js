@@ -12,13 +12,31 @@ import { tresorServices } from '../services/tresorerie/tresorServices';
 // import LocalizedStrings from 'react-localization';
 // let strings = new LocalizedStrings(data);
 
+
+
 const getCaisses = (state) => {
   const {stations} = state.parametresReducer.parametres.options;
-  if (stations) {
-    // return stations.filter( (st) => st.origine.toLowerCase() === "caisse" );
-    return stations;
+  const {commandeslist} = state.commandesListReducer;
+
+  let caisses = [];
+
+  if (commandeslist) {  
+    Object.entries(commandeslist).forEach(([ticketId, commande]) => {
+      if (caisses.filter(c => c.uniqid===commande.caisse.uniqid).length===0) {
+        caisses.push(commande.caisse);
+      }
+    })
+  } else {
+    caisses = stations;
   }
-  return null;
+
+  return caisses.length>0 ? caisses : null;
+
+  // if (stations) {
+  //   // return stations.filter( (st) => st.origine.toLowerCase() === "caisse" );
+  //   return stations;
+  // }
+  // return null;
 }
 
 const mapStateToProps = (state) => {

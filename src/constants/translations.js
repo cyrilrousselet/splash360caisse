@@ -485,7 +485,20 @@ const data = {
                         },
                         total: 'Total',
                     },
-                    prelevement: 'PRELEVEMENT EN CLOTURE'
+                    prelevement: 'PRELEVEMENT EN CLOTURE',
+                    mouvements: {
+                        titre: 'MOUVEMENTS TRESO.',
+                        type: 'TYPE',
+                        credit: 'CREDIT',
+                        debit: 'DEBIT',
+                        total: 'TOTAL',
+                        types: {
+                            ouverture: 'Ouverture',
+                            entree: 'Entree',
+                            sortie: 'Prelev.',
+                            cloture: 'Cloture'
+                        }
+                    }
                 },
                 selection: {
                     vendeur: "Vendeur",

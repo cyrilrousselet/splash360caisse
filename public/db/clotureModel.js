@@ -62,6 +62,7 @@ const ClotureSchema = mongoose.Schema(
     createdAt: Number,
     updatedAt: Number,
     id: String,
+    localsync: Array,
   },
   { strict: false }
 );

@@ -214,9 +214,9 @@ function makeCloture(params={}) {
         { archived: {"$exists": false} },
         { status: { $ne: "deleted" } },
         { $or: [
-          { "caisse_encaissement.id": params.caisse.id },
+          { "caisse_encaissement.uniqid": params.caisse.uniqid },
           { $and: [
-            { "caisse.id": params.caisse.id },
+            { "caisse.uniqid": params.caisse.uniqid },
             { status: { $in: ["standby", "a_encaisser"]} }
           ]},
         ]},
@@ -227,7 +227,7 @@ function makeCloture(params={}) {
       ]
     });
 
-
+    
     logger.time("makeCloture");
     const cloture = clotureServices.makeCloture(commandeslist, catalogue, params)
     logger.timeEnd("makeCloture");

@@ -4,6 +4,7 @@ import { Console } from 'console';
 import mkdirp from 'mkdirp';
 import {formatISO9075, format} from 'date-fns';
 import util from 'util';
+import isDev from 'electron-is-dev';
 
 const {app} = remote;
 
@@ -25,7 +26,6 @@ const errorOutput = fs.createWriteStream(`${app.getPath('userData')}/logs/${form
 class Logger {
   
     constructor() {
-
         this.cns = new Console(output, errorOutput);
     }
 
@@ -38,23 +38,23 @@ class Logger {
       console.groupCollapsed(util.format(...args));
       console.trace(util.format(...args));
       console.groupEnd();
-      this.cns.log(formatISO9075(new Date()), logLineDetails+' -', util.format(...args));
+      if (isDev) this.cns.log(formatISO9075(new Date()), logLineDetails+' -', util.format(...args));
     }
     
     error(...args) {
       // let logLineDetails = ((new Error().stack).split("at ")[3]).trim();
       let logLineDetails = '';
       console.error(logLineDetails, util.format(...args));
-      this.cns.error(formatISO9075(new Date()), logLineDetails+' -', util.format(...args));
+      if (isDev) this.cns.error(formatISO9075(new Date()), logLineDetails+' -', util.format(...args));
     }
 
     time(testname='') {
       console.time(testname);
-      this.cns.time(testname);
+      if (isDev) this.cns.time(testname);
     }
     timeEnd(testname='') {
       console.timeEnd(testname);
-      this.cns.timeEnd(testname);
+      if (isDev) this.cns.timeEnd(testname);
     }
 }
 

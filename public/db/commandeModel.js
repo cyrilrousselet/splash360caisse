@@ -9,6 +9,7 @@ const CommandeSchema = mongoose.Schema(
     createdAt: Number,
     updatedAt: Number,
     archived: String,
+    localsync: Array,
   },
   { strict: false }
 );

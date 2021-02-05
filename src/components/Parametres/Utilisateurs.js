@@ -355,7 +355,7 @@ class EditUtilisateurPopin extends React.Component {
                   label={ strings.modules.parametres.submodules.utilisateurs.edition.coordonnees }
               />
               <SwitchCheckbox 
-                  isChecked={ livreur } 
+                  isChecked={ (livreur===null || livreur===undefined) ? false : livreur } 
                   key="livreur"
                   name="livreur" 
                   className="livreur"
@@ -449,8 +449,8 @@ export function DroitsPopper(props) {
 
             <ul>
           {
-            getDroits(props.droits).map(drt=>(
-              <li>{ strings.modules.parametres.submodules.utilisateurs.liste.droits_liste[drt] }</li>
+            getDroits(props.droits).map((drt,i)=>(
+              <li key={`droit-${i}`}>{ strings.modules.parametres.submodules.utilisateurs.liste.droits_liste[drt] }</li>
               ))
             }
         </ul>

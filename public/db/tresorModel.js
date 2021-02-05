@@ -17,7 +17,8 @@ const TresorSchema = mongoose.Schema(
     debit: Number,
     solde: Number,
     type: String,
-    detail: String
+    detail: String,
+    localsync: Array,
   },
   { strict: false}
 );

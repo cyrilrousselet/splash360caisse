@@ -5,6 +5,7 @@ import history from './../helpers/history';
 import paths from './../constants/routes.json';
 import { clotureActions } from '../services/cloture/clotureActions';
 import { peripheralActions } from '../services/peripheral/peripheralActions';
+import { tresorServices } from '../services/tresorerie/tresorServices';
 
 
 const mapStateToProps = (state) => {
@@ -12,7 +13,8 @@ const mapStateToProps = (state) => {
       loading: state.clotureReducer.loading,
       error: state.clotureReducer.error,
       heure_fin: (state.parametresReducer.parametres.entreprise && state.parametresReducer.parametres.entreprise.heure_fin) || '05:00',
-      clotureslist: state.clotureReducer.clotures
+      clotureslist: state.clotureReducer.clotures,
+      fonddecaisse_activation: state.parametresReducer.parametres.financier && state.parametresReducer.parametres.financier.fonddecaisse_activation===true
   }
 }
 
@@ -23,7 +25,8 @@ const mapDispatchToProps = (dispatch) => {
   }, dispatch);
   return {
     ...bound,
-    onClickSubModule: text => history.push(paths[text])
+    onClickSubModule: text => history.push(paths[text]),
+    getServiceMouvements: tresorServices.getServiceMouvements
   }
 }
 

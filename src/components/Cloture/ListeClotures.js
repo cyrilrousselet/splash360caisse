@@ -47,7 +47,7 @@ class LocalizedUtils extends DateFnsUtils {
 function TicketX(props) {
   const {cloture} = props;
   const __strimp = strings.modules.cloture.impression;
-  const { periode, ecarts, comptage, prelevement } = cloture;
+  const { periode, ecarts, comptage, prelevement, mouvements } = cloture;
 
   console.log('ticket X');
   console.log(cloture);
@@ -138,10 +138,10 @@ function TicketX(props) {
           <div className="val" key="detail-item-5-val">{devise(periode.ticket_moyen)}</div>
         </div>
       </div>
-      <div className="titre">
+      <div className="titre" key="ventil-vendeur-ttl">
         { __strimp.ventilation.vendeur }
       </div>
-      <div className="ventil intit ventil-vendeur">
+      <div className="ventil intit ventil-vendeur" key="ventil-vendeur-header">
         <div className="ventil-intit" key="ventil-vendeur-intit1"></div>
         <div className="ventil-intit" key="ventil-vendeur-intit2">{__strimp.caption.vente_short}</div>
         <div className="ventil-intit" key="ventil-vendeur-intit3">{__strimp.caption.remboursements_short}</div>
@@ -149,50 +149,50 @@ function TicketX(props) {
       </div>
       {periode.ventilation.vendeur.map(vendeur => (
         <div className="ventil ventil-vendeur" key={`vnd-${vendeur.id}`}>
-          <div className="ventil-nom">{`${vendeur.nom} (${vendeur.id})`}</div>
-          <div className="ventil-val">{devise(vendeur.ventes)}</div>
-          <div className="ventil-val">{`-${devise(vendeur.remboursements)}`}</div>
-          <div className="ventil-val">{devise(vendeur.ventes-vendeur.remboursements)}</div>
+          <div className="ventil-nom" key={`vnd-${vendeur.id}-nom`}>{`${vendeur.nom} (${vendeur.id})`}</div>
+          <div className="ventil-val" key={`vnd-${vendeur.id}-val1`}>{devise(vendeur.ventes)}</div>
+          <div className="ventil-val" key={`vnd-${vendeur.id}-val2`}>{`-${devise(vendeur.remboursements)}`}</div>
+          <div className="ventil-val" key={`vnd-${vendeur.id}-val3`}>{devise(vendeur.ventes-vendeur.remboursements)}</div>
         </div>
       ))}
-      <div className="ventil ventil-vendeur total">
-        <div className="ventil-nom">{__strimp.caption.total}</div>
-        <div className="ventil-val">{devise(vndvnt)}</div>
-        <div className="ventil-val">{`-${devise(vndrmb)}`}</div>
-        <div className="ventil-val">{devise(vndtotal)}</div>
+      <div className="ventil ventil-vendeur total" key="ventil-vendeur-total">
+        <div className="ventil-nom" key="ventil-vendeur-total-nom">{__strimp.caption.total}</div>
+        <div className="ventil-val" key="ventil-vendeur-total-val1">{devise(vndvnt)}</div>
+        <div className="ventil-val" key="ventil-vendeur-total-val2">{`-${devise(vndrmb)}`}</div>
+        <div className="ventil-val" key="ventil-vendeur-total-val3">{devise(vndtotal)}</div>
       </div>
-      <div className="titre">
+      <div className="titre" key="ventil-tva-ttl">
         { __strimp.ventilation.tva }
       </div>
-      <div className="ventil intit ventil-tva">
-        <div className="ventil-intit">{__strimp.caption.type}</div>
-        <div className="ventil-intit">{__strimp.caption.ht}</div>
-        <div className="ventil-intit">{__strimp.caption.tva}</div>
-        <div className="ventil-intit">{__strimp.caption.ttc}</div>
+      <div className="ventil intit ventil-tva" key="ventil-tva-header">
+        <div className="ventil-intit" key="ventil-tva-intit1">{__strimp.caption.type}</div>
+        <div className="ventil-intit" key="ventil-tva-intit2">{__strimp.caption.ht}</div>
+        <div className="ventil-intit" key="ventil-tva-intit3">{__strimp.caption.tva}</div>
+        <div className="ventil-intit" key="ventil-tva-intit4">{__strimp.caption.ttc}</div>
       </div>
       {periode.ventilation.tva.map(tva => (
-        <div className="ventil ventil-vendeur" key={ `ventil-${tva.id}` }>
+        <div className="ventil ventil-vendeur" key={ `ventil-tva-${tva.id}` }>
           {/* <div className="ventil-nom">{`${devise(tva.taux*100)}%`}</div> */}
-          <div className="ventil-nom">{tva.taux}</div>
-          <div className="ventil-val">{devise(tva.ht)}</div>
-          <div className="ventil-val">{devise(tva.montant)}</div>
-          <div className="ventil-val">{devise(tva.ttc)}</div>
+          <div className="ventil-nom" key={`ventil-tva-${tva.id}-nom`}>{tva.taux}</div>
+          <div className="ventil-val" key={`ventil-tva-${tva.id}-val1`}>{devise(tva.ht)}</div>
+          <div className="ventil-val" key={`ventil-tva-${tva.id}-val2`}>{devise(tva.montant)}</div>
+          <div className="ventil-val" key={`ventil-tva-${tva.id}-val3`}>{devise(tva.ttc)}</div>
         </div>
       ))}
-      <div className="ventil ventil-vendeur total">
-        <div className="ventil-nom">{__strimp.caption.total}</div>
-        <div className="ventil-val">{devise(tvaht)}</div>
-        <div className="ventil-val">{devise(tvamnt)}</div>
-        <div className="ventil-val">{devise(tvattc)}</div>
+      <div className="ventil ventil-vendeur total" key="ventil-tva-total">
+        <div className="ventil-nom" key="ventil-tva-total-nom">{__strimp.caption.total}</div>
+        <div className="ventil-val" key="ventil-tva-total-val1">{devise(tvaht)}</div>
+        <div className="ventil-val" key="ventil-tva-total-val2">{devise(tvamnt)}</div>
+        <div className="ventil-val" key="ventil-tva-total-val3">{devise(tvattc)}</div>
       </div>
-      <div className="titre">
+      <div className="titre" key="ventil-moyen-ttl">
         { __strimp.ventilation.moyen }
       </div>
-      <div className="ventil intit ventil-moyen">
-        <div className="ventil-intit">{__strimp.caption.moyens_th.moyen}</div>
-        <div className="ventil-intit">{__strimp.caption.moyens_th.theorique}</div>
-        <div className="ventil-intit">{__strimp.caption.moyens_th.comptage}</div>
-        <div className="ventil-intit">{__strimp.caption.moyens_th.ecart}</div>
+      <div className="ventil intit ventil-moyen" key="ventil-moyen-header">
+        <div className="ventil-intit" key="ventil-moyen-intit1">{__strimp.caption.moyens_th.moyen}</div>
+        <div className="ventil-intit" key="ventil-moyen-intit2">{__strimp.caption.moyens_th.theorique}</div>
+        <div className="ventil-intit" key="ventil-moyen-intit3">{__strimp.caption.moyens_th.comptage}</div>
+        <div className="ventil-intit" key="ventil-moyen-intit4">{__strimp.caption.moyens_th.ecart}</div>
       </div>
       {periode.ventilation.moyen.map(moyen => {
 
@@ -226,6 +226,29 @@ function TicketX(props) {
           { __strimp.caption.emission }{ devise(periode.emission)}
         </div>
       )}
+      { mouvements && (
+      <>
+      <div className="titre">
+        { __strimp.mouvements.titre }
+      </div>
+      <div className="ventil intit ventil-mouvements">
+        <div className="ventil-intit">{__strimp.mouvements.type}</div>
+        <div className="ventil-intit">{__strimp.mouvements.debit}</div>
+        <div className="ventil-intit">{__strimp.mouvements.credit}</div>
+      </div>
+      </>
+      )}
+      { mouvements && mouvements.map(mvt => {
+        return (
+          <>
+          <div className="ventil ventil-mouvement" key={ `ventil-mvt-${mvt.tresorId}` }>
+            <div className="ventil-val">{__strimp.mouvements.types[mvt.type] }</div>
+            <div className="ventil-val">{ (mvt.debit>0) ? `- ${devise(mvt.debit/100)}` : '---' }</div>
+            <div className="ventil-val">{ (mvt.credit>0) ? `+ ${devise(mvt.credit/100)}`: '---' }</div>
+          </div>
+          </>
+        );
+      })}
       <div className="titre">
         { __strimp.prelevement } : { devise(prelevement) }
       </div>
@@ -389,10 +412,16 @@ class ListeClotures extends React.Component {
   openCloture(cloture) {
     this.setState({cloture: cloture, clotureOpen: true});
   }
-  openClotureId(cloid) {
-    const cloture = this.props.clotureslist[cloid];
+  async openClotureId(cloid) {
+    const {fonddecaisse_activation, getServiceMouvements, clotureslist} = this.props;
+    const cloture = clotureslist[cloid];
+
+    console.log('clolist : fonddecaisse_activation',fonddecaisse_activation);
+
+    const { tresorslist } = fonddecaisse_activation ? await getServiceMouvements( {caisseId: cloture.periode.caisse.uniqid, debut: new Date(cloture.periode.debut).getTime()} ) : {tresorslist: null};
+
     if (cloture) {
-      this.setState({clotureId: cloid, cloture: cloture, clotureOpen: true});
+      this.setState({clotureId: cloid, cloture: {...cloture, mouvements: tresorslist}, clotureOpen: true});
   } else {
     logger.error('ListeClotures.openClotureId()', `cloture clotureId=${cloid} inconnue`);
   }
@@ -611,7 +640,8 @@ class ListeClotures extends React.Component {
         periode: synthese,
         ecarts: __ecarts,
         comptage: __comptage,
-        prelevement: __prv
+        prelevement: __prv,
+        mouvements: null
       });
 
     }

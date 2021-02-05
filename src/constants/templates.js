@@ -29,5 +29,11 @@ export const templates = {
   ],
   etiquette: [
     'etiquette'
+  ],
+  cloture: [
+    'entreprise', 
+    'periode_z',
+    'mouvements',
+    'prelevement'
   ]
 };
