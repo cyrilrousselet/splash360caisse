@@ -147,7 +147,7 @@ const welcomeTreatment = async (station_uniqid, exclusion=false) => {
   ? {
       $or:[
         { localsync: { $exists: false } },
-        { localsync: { $elemMatch: { $ne: station_uniqid } } }
+        { localsync: { $ne: station_uniqid } }
       ]
     }
   : { localsync: { $elemMatch: station_uniqid } }
@@ -158,7 +158,7 @@ const welcomeTreatment = async (station_uniqid, exclusion=false) => {
   const catalogue_sum = await dbCatalogueApi.dbCatalogueSummary(ldb_query);
   const clients_sum = await dbClientsApi.dbClientsSummary(ldb_query);
   const clotures_sum = await dbCloturesApi.dbCloturesSummary(mongo_query);
-  const commandes_sum = await dbCommandesApi.dbCommandesSummary(mongo_query);
+  const commandes_sum = await dbCommandesApi.dbCommandesSummary(mongo_query, ldb_query);
   const employes_sum = await dbEmployesApi.dbEmployesSummary(ldb_query);
   const marketing_sum = await dbMarketingApi.dbMarketingSummary(ldb_query);
   const users_sum = await dbUsersApi.dbUsersSummary(ldb_query);
@@ -389,9 +389,10 @@ const actions = {
         const mongo_query = {
           $or:[
             { localsync: { $exists: false } },
-            { localsync: { $elemMatch: { $ne: secondary.uniqid } } }
+            { localsync: { $ne: secondary.uniqid } }
           ]
         };
+        const ldb_query = {stationid:secondary.uniqid, exclusion:true};
 
         const start_secondary = async () => {
           await asyncForEach(liste, async (entity) => {
@@ -404,20 +405,28 @@ const actions = {
               __summary = {...__summary, ...commandes_sum};
             } 
             else if ('clotures'===entity) {
-              const clotures_sum = await dbCloturesApi.dbCommandesSummary(mongo_query);
+              const clotures_sum = await dbCloturesApi.dbCloturesSummary(mongo_query);
               __summary = {...__summary, ...clotures_sum};
             } 
             else if ('employes'===entity) {
-              const employes_sum = await dbEmployesApi.dbEmployesSummary();
+              const employes_sum = await dbEmployesApi.dbEmployesSummary(ldb_query);
               __summary = {...__summary, ...employes_sum};
             } 
             else if ('marketing'===entity) {
-              const marketing_sum = await dbMarketingApi.dbMarketingSummary();
+              const marketing_sum = await dbMarketingApi.dbMarketingSummary(ldb_query);
               __summary = {...__summary, ...marketing_sum};
             } 
             else if ('users'===entity) {
-              const users_sum = await dbUsersApi.dbUsersSummary();
+              const users_sum = await dbUsersApi.dbUsersSummary(ldb_query);
               __summary = {...__summary, ...users_sum};
+            }
+            else if ('catalogue'===entity) {
+              const catalogue_sum = await dbCatalogueApi.dbCatalogueSummary(ldb_query);
+              __summary = {...__summary, ...catalogue_sum};
+            }
+            else if ('clients'===entity) {
+              const clients_sum = await dbClientsApi.dbClientsSummary(ldb_query);
+              __summary = {...__summary, ...clients_sum};
             }
           });
         };
