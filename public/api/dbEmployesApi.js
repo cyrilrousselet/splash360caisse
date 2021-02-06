@@ -94,33 +94,44 @@ const actions = {
     (await db.timeadjusts)._.mixin(lodashId);
     (await db.shifts)._.mixin(lodashId);
 
+    let _pntSummary = [];
+    let _adjSummary = [];
+    let _shfSummary = [];
+
     const _pnt = await (await db.pointages).get('pointages')
                                            .find( t => ( (sps === false) || (sps === undefined) ) )
                                            .value();
-    const _pntSummary = _pnt.map(p => (
-      {
-        id: p.pointage_id,
-        updatedAt: p.updatedAt
-      }
-    ));
+    if (_pnt) {
+      _pntSummary = _pnt.map(p => (
+        {
+          id: p.pointage_id,
+          updatedAt: p.updatedAt
+        }
+      ));
+    }
     const _adj = await (await db.timeadjusts).get('timeadjusts')
                                              .find( t => ( (sps === false) || (sps === undefined) ) )
                                              .value();
-    const _adjSummary = _adj.map(a => (
-      {
-        id: a.adjust_id,
-        updatedAt: a.updatedAt
-      }
-    ));
+    if (_adj) {
+      _adjSummary = _adj.map(a => (
+        {
+          id: a.adjust_id,
+          updatedAt: a.updatedAt
+        }
+      ));
+    }
     const _shf = await (await db.shifts).get('shifts')
                                         .find( t => ( (sps === false) || (sps === undefined) ) )
                                         .value();
-    const _shfSummary = _shf.map(s => (
-      {
-        id: s.shift_id,
-        updatedAt: s.updatedAt
-      }
-    ));
+    
+    if (_shf) {
+      const _shfSummary = _shf.map(s => (
+        {
+          id: s.shift_id,
+          updatedAt: s.updatedAt
+        }
+      ));
+    }
     return {
       pointages: _pntSummary,
       timeadjusts: _adjSummary,

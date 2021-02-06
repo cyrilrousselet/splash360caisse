@@ -53,15 +53,18 @@ const actions = {
 
     (await db.users)._.mixin(lodashId);
 
+    let _usrSummary = [];
     const _usr = await (await db.users).get('users')
                                        .find( t => ( (sps === false) || (sps === undefined) ) )
                                        .value();
-    const _usrSummary = _usr.map(u => (
-      {
-        id: u.user_id,
-        updatedAt: u.updatedAt
-      }
-    ));
+    if (_usr) {
+      _usrSummary = _usr.map(u => (
+        {
+          id: u.user_id,
+          updatedAt: u.updatedAt
+        }
+      ));
+    }
     return {
       users: _usrSummary
     };
