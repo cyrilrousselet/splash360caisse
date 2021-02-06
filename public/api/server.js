@@ -516,7 +516,7 @@ const actions = {
     // écouteur de resynchro de la part du primary
     // (le primary envoie une liste de ses entités
     // qu'il faut comparer avec celle du secondary)
-    socket.on("resync", (payload) => {
+    socket.on("resync", async (payload) => {
       const {summary, liste, primary} = payload;
       log.info('resync', liste, summary, primary);
 
