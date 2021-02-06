@@ -489,9 +489,10 @@ const data = {
                     mouvements: {
                         titre: 'MOUVEMENTS TRESO.',
                         type: 'TYPE',
+                        solde: 'SOLDE',
                         credit: 'CREDIT',
                         debit: 'DEBIT',
-                        total: 'TOTAL',
+                        total: 'Total',
                         types: {
                             ouverture: 'Ouverture',
                             entree: 'Entree',

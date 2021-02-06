@@ -305,6 +305,15 @@
         text-align: center;
         padding-bottom: 5px;
       }
+      &.ventil-mouvement {
+        .ventil-val:nth-child(1) {
+          width: 30%;
+        }
+        .ventil-val:not(:nth-child(1)) {
+          width: 23%;
+          text-align: right;
+        }
+      }
     }
 
   }

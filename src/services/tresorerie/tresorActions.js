@@ -44,7 +44,42 @@ function addTresor(payload) {
   }
 }
 
+function getLastClotureAndAfter(caisseId) {
+  return (dispatch, getState) => {
+    dispatch({type: tresorActionTypes.GET_LASTCLOTUREANDAFTER_REQUEST});
 
+    const {caisse} = getState().parametresReducer.parametres.options;
+  
+    tresorServices.getLastClotureAndAfter({caisseId:caisse.uniqid}).then(
+      result => {
+
+        let __solde = 0, __ouverture;
+        if (result.hasOwnProperty('last') && result.last!==null) {
+          __solde = result.last.solde;
+        }
+
+        if (result && result.hasOwnProperty('cloture') && result.cloture!==null) {
+          if (result.hasOwnProperty('ouverture') && result.ouverture) {
+            logger.log('IL Y A UNE CLOTURE et une ouverture');
+            __ouverture = true;
+          } else {
+            __ouverture = false;
+          }
+        } else if (!result.ouverture) {
+          logger.log('IL N’Y A PAS DE CLOTURE et PAS D’OUVERTURE -> POPIN');
+          __ouverture = false;
+        } else {
+          __ouverture = true;
+        }
+
+        dispatch({type: tresorActionTypes.GET_LASTCLOTUREANDAFTER_SUCCESS, ouverture: __ouverture, solde: __solde})
+      },
+      error => { 
+        dispatch({ type: tresorActionTypes.GET_LASTCLOTUREANDAFTER_FAILURE, error: error.toString() })
+      }
+    );
+  }
+}
 
 function getLastOuvertureAndAfter(caisseId) {
   return (dispatch, getState) => {
@@ -168,6 +203,7 @@ function setTresorFromSync(tresor) {
 
 export const tresorActions = {
   addTresor,
+  getLastClotureAndAfter,
   getLastOuvertureAndAfter,
   getTresors,
   updateTresor,

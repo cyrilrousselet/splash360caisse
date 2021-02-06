@@ -81,7 +81,6 @@ class MouvementPopin extends React.Component {
     saveMouvement({
       ...mouvement,
       lastMontant: null,
-      lastCreatedAt: null,
       origine: _origine,
       destination: _destination,
       debit: _debit,
@@ -123,6 +122,7 @@ class MouvementPopin extends React.Component {
   _calculetteClick(value) {
     let __t = this.state.montant;
     let __i = true;
+    console.log('montant avt', __t);
 
     switch (value) {
       case "c":
@@ -136,8 +136,9 @@ class MouvementPopin extends React.Component {
         __t *= 10;
         break;
       default:
-        __t = (__t * 10) + (value / 100);
+        __t = Number(((__t * 10) + (value / 100)).toFixed(2));
     }
+    console.log('montant', __t, value);
     this.setState({ montant: __t, input: __i });
   }
 
@@ -226,7 +227,6 @@ class MouvementPopin extends React.Component {
                 {(type==="ouverture" && mouvement) && (
                   <div className="zone-precedent">
                   <div className="label">{ strings.modules.tresor.popin.ouverture.precedent }</div>
-                  {/* <div className="date">{ mouvement.createdAt && format(new Date(mouvement.lastCreatedAt), "d MMM yyyy à HH:mm", { locale: frLocale }) }</div> */}
                   <div className="montant">{ `${devise(mouvement.lastMontant/100)} €` }</div>
                   </div>
                 )}

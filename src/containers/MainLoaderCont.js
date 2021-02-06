@@ -11,6 +11,7 @@ import history from '../helpers/history';
 import paths from './../constants/routes.json';
 import MainLoader from '../components/MainLoader';
 import { peripheralActions } from '../services/peripheral/peripheralActions';
+import { tresorActions } from '../services/tresorerie/tresorActions';
 
 
 
@@ -41,6 +42,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   const bound = bindActionCreators({
     getParametres: parametresActions.getAll,
+    getLastClotureAndAfter: tresorActions.getLastClotureAndAfter,
     getCatalogue: catalogueActions.getAllActive,
     // getTodayCommandesList: commandeActions.getTodayCommandesList,
     getCloturesList: clotureActions.getCloturesList,

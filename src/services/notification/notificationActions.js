@@ -384,8 +384,11 @@ function syncCommandes(commandes) {
 }
 
 function resync(liste) {
-  return (dispatch) => {
-    notificationServices.resync(liste)
+  return (dispatch, getState) => {
+
+    const {caisse} = getState().parametresReducer.parametres.options;
+
+    notificationServices.resync(liste, caisse.uniqid)
     .then(
       response => { logger.log('resync', response) }
     )

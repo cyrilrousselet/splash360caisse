@@ -1512,36 +1512,43 @@ function _printMouvements(printer, data, strings) {
 
     printer
       .tableCustom([
-        {text: strings.mouvements.type, cols:16, align:'LEFT'},
+        {text: strings.mouvements.type, cols:9, align:'LEFT'},
         {text:'', cols:3},
-        {text: strings.mouvements.debit, cols:10, align:'RIGHT'},
+        {text: strings.mouvements.debit, cols:8, align:'RIGHT'},
         {text:'', cols:3},
-        {text: strings.mouvements.credit, cols:10, align:'RIGHT'}
+        {text: strings.mouvements.credit, cols:8, align:'RIGHT'},
+        {text:'', cols:3},
+        {text: strings.mouvements.solde, cols:8, align:'RIGHT'}
       ]);
 
     data.forEach(mvt => { 
       printer
         .style('NORMAL')
         .tableCustom([
-          {text: strings.mouvements.types[mvt.type], cols:16, align:'LEFT'},
+          {text: strings.mouvements.types[mvt.type], cols:9, align:'LEFT'},
           {text:'', cols:3},
-          {text: '- '+Number(mvt.debit/100).toFixed(2).replace('.',','), cols:10, align:'RIGHT'},
+          {text: (mvt.debit>0) ? '- '+Number(mvt.debit/100).toFixed(2).replace('.',',') : '---', cols:8, align:'RIGHT'},
           {text:'', cols:3},
-          {text: '+ '+Number(mvt.credit/100).toFixed(2).replace('.',','), cols:10, align:'RIGHT'}
+          {text: (mvt.credit>0) ? '+ '+Number(mvt.credit/100).toFixed(2).replace('.',',') : '---', cols:8, align:'RIGHT'},
+          {text:'', cols:3},
+          {text: Number(mvt.solde/100).toFixed(2).replace('.',','), cols:8, align:'RIGHT'}
         ]);
         debit += mvt.debit;
         credit += mvt.credit;
     });
 
-    printer
-    .feed(1)
-    .tableCustom([
-      {text: strings.mouvements.total, cols:16, align:'LEFT'},
-      {text:'', cols:3},
-      {text: Number(debit/100).toFixed(2).replace('.',','), cols:10, align:'RIGHT'},
-      {text:'', cols:3},
-      {text: Number(credit/100).toFixed(2).replace('.',','), cols:10, align:'RIGHT'}
-    ]);
+    if (debit > 0 || credit >0) {
+      printer
+        .feed(1)
+        .tableCustom([
+          {text: strings.mouvements.total, cols:9, align:'LEFT'},
+          {text:'', cols:3},
+          {text: (debit>0) ? '- '+Number(debit/100).toFixed(2).replace('.',',') : '', cols:8, align:'RIGHT'},
+          {text:'', cols:3},
+          {text: (credit>0) ? '+ '+Number(credit/100).toFixed(2).replace('.',',') : '', cols:8, align:'RIGHT'},
+          {text:'', cols:11}
+        ]);
+    }
   }
 }
 
@@ -1595,10 +1602,10 @@ function _printPeriodeZ(printer, data, strings, printx=false) {
         {text: strings.encaissements, cols:30, align:'LEFT'},
         {text: Number(data.ventes).toFixed(2).replace('.',','), cols:12, align:'RIGHT'}
       ])
-      .tableCustom([
-        {text: strings.mtcaisse, cols:30, align:'LEFT'},
-        {text: Number(data.mtcaisse).toFixed(2).replace('.',','), cols:12, align:'RIGHT'}
-      ])
+      // .tableCustom([
+      //   {text: strings.mtcaisse, cols:30, align:'LEFT'},
+      //   {text: Number(data.mtcaisse).toFixed(2).replace('.',','), cols:12, align:'RIGHT'}
+      // ])
       .feed(1);
 
   // CORPS

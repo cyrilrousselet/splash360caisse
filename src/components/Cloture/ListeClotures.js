@@ -108,10 +108,10 @@ function TicketX(props) {
           <div className="nom" key="recap-item-3-nom">{ __strimp.encaissements }</div>
           <div className="val" key="recap-item-3-val">{ devise(periode.ventes) }</div>
         </div>
-        <div className="recap-item" key="recap-item-4">
+        {/* <div className="recap-item" key="recap-item-4">
           <div className="nom" key="recap-item-4-nom">{ __strimp.mtcaisse }</div>
           <div className="val" key="recap-item-4-val">{ devise(periode.mtcaisse) }</div>
-        </div>
+        </div> */}
       </div>
       <div className="titre">
         { __strimp.titre.x }
@@ -201,12 +201,12 @@ function TicketX(props) {
         return (
         <>
         <div className="ventil ventil-moyen" key={ `ventil-${moyen.moyen}` }>
-          <div className="ventil-nom">{__strimp.caption.moyens[moyen.moyen]}</div>
-          <div className="ventil-val">{ (moyen.moyen==='ticket') ? devise(moyen.valeur - Number(periode.emission)) : devise(moyen.valeur) }</div>
-          <div className="ventil-val">{ devise(comptage[moyen.moyen]) }</div>
-          <div className="ventil-val">{ __moy_ecart===0 ? '' : `${ (Number(__moy_ecart)>0) ? '+' : '' }${ devise(__moy_ecart) }` }</div>
+          <div className="ventil-nom" key={ `ventil-${moyen.moyen}-nom` }>{__strimp.caption.moyens[moyen.moyen]}</div>
+          <div className="ventil-val" key={ `ventil-${moyen.moyen}-val1` }>{ (moyen.moyen==='ticket') ? devise(moyen.valeur - Number(periode.emission)) : devise(moyen.valeur) }</div>
+          <div className="ventil-val" key={ `ventil-${moyen.moyen}-val2` }>{ devise(comptage[moyen.moyen]) }</div>
+          <div className="ventil-val" key={ `ventil-${moyen.moyen}-val3` }>{ __moy_ecart===0 ? '' : `${ (Number(__moy_ecart)>0) ? '+' : '' }${ devise(__moy_ecart) }` }</div>
           {(ecarts && ecarts[moyen.moyen] && ecarts[moyen.moyen].motif) &&
-          <div className="ventil-ecart-motif">{ `* ${__strimp.caption.ecart.motif} ${ecarts[moyen.moyen].motif} *` }</div>
+          <div className="ventil-ecart-motif" key={ `ventil-${moyen.moyen}-motif` }>{ `* ${__strimp.caption.ecart.motif} ${ecarts[moyen.moyen].motif} *` }</div>
           }
         </div>
         </>
@@ -214,27 +214,28 @@ function TicketX(props) {
       })}
 
 
-      <div className="ventil ventil-vendeur total">
-        <div className="ventil-nom">{__strimp.caption.total}</div>
-        <div className="ventil-val">{devise(moytotal)}</div>
-        <div className="ventil-val">{devise(comptage.total)}</div>
-        <div className="ventil-val">{devise(ecarttotal)}</div>
+      <div className="ventil ventil-vendeur total" key="ventil-moyen-total">
+        <div className="ventil-nom" key="ventil-moyen-total-nom">{__strimp.caption.total}</div>
+        <div className="ventil-val" key="ventil-moyen-total-val1">{devise(moytotal)}</div>
+        <div className="ventil-val" key="ventil-moyen-total-val2">{devise(comptage.total)}</div>
+        <div className="ventil-val" key="ventil-moyen-total-val3">{devise(ecarttotal)}</div>
       </div>
 
       {(periode.emission>0) && (
-        <div className="titre">
+        <div className="titre" key="ventil-emission-ttl">
           { __strimp.caption.emission }{ devise(periode.emission)}
         </div>
       )}
       { mouvements && (
       <>
-      <div className="titre">
+      <div className="titre" key="ventil-mouvements-ttl">
         { __strimp.mouvements.titre }
       </div>
-      <div className="ventil intit ventil-mouvements">
-        <div className="ventil-intit">{__strimp.mouvements.type}</div>
-        <div className="ventil-intit">{__strimp.mouvements.debit}</div>
-        <div className="ventil-intit">{__strimp.mouvements.credit}</div>
+      <div className="ventil intit ventil-mouvements" key="ventil-mouvements-header">
+        <div className="ventil-intit" key="ventil-mouvements-intit1">{__strimp.mouvements.type}</div>
+        <div className="ventil-intit" key="ventil-mouvements-intit2">{__strimp.mouvements.debit}</div>
+        <div className="ventil-intit" key="ventil-mouvements-intit3">{__strimp.mouvements.credit}</div>
+        <div className="ventil-intit" key="ventil-mouvements-intit4">{__strimp.mouvements.solde}</div>
       </div>
       </>
       )}
@@ -242,14 +243,15 @@ function TicketX(props) {
         return (
           <>
           <div className="ventil ventil-mouvement" key={ `ventil-mvt-${mvt.tresorId}` }>
-            <div className="ventil-val">{__strimp.mouvements.types[mvt.type] }</div>
-            <div className="ventil-val">{ (mvt.debit>0) ? `- ${devise(mvt.debit/100)}` : '---' }</div>
-            <div className="ventil-val">{ (mvt.credit>0) ? `+ ${devise(mvt.credit/100)}`: '---' }</div>
+            <div className="ventil-val" key={ `ventil-mvt-${mvt.tresorId}-val1` }>{__strimp.mouvements.types[mvt.type] }</div>
+            <div className="ventil-val" key={ `ventil-mvt-${mvt.tresorId}-val2` }>{ (mvt.debit>0) ? `- ${devise(mvt.debit/100)}` : '---' }</div>
+            <div className="ventil-val" key={ `ventil-mvt-${mvt.tresorId}-val3` }>{ (mvt.credit>0) ? `+ ${devise(mvt.credit/100)}`: '---' }</div>
+            <div className="ventil-val" key={ `ventil-mvt-${mvt.tresorId}-val4` }>{ devise(mvt.solde/100) }</div>
           </div>
           </>
         );
       })}
-      <div className="titre">
+      <div className="titre" key="ventil-mouvements-ttl">
         { __strimp.prelevement } : { devise(prelevement) }
       </div>
     </div>

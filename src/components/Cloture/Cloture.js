@@ -598,9 +598,6 @@ class Cloture extends React.Component {
 
     const operators = this.getListeVendeurs();
 
-
-logger.log('caisses', caisses);
-
           
     // logger.log('fdcaisse_new', periode_z.periode.fdcaisse+' + ('+comptage_fv+' - '+Number(prelevement_fv.replace(",", "."))+')');
     // logger.log('operators', operators);
@@ -692,6 +689,7 @@ logger.log('caisses', caisses);
       periode_z.standby > 0 ||
       periode_z.cmdtoarchive.length === 0
     );
+    
 
     return (
       <div className="Cloture container">
@@ -704,11 +702,11 @@ logger.log('caisses', caisses);
               </div>
               <FormControl variant="outlined" className="selecteur-caisse">
                 <Select
-                  value={selection_caisse.uniqid}
+                  value={selection_caisse ? selection_caisse.uniqid : null}
                   onChange={this.selectCaisse}
                   className="selecteur selecteur-caisse-select"
                 >
-                  {Object.values(caisses).map((cash) => (
+                  {caisses && Object.values(caisses).map((cash) => (
                     <MenuItem key={`cashitm${cash.id}`} value={cash.uniqid}>
                       {cash.nom}
                     </MenuItem>

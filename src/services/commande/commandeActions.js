@@ -214,7 +214,7 @@ function validateCommande(payload) {
 
     // payload.status = 'confirmed';
     const catalogueReducer = getState().catalogueReducer;
-    const { caisse } = getState().parametresReducer.parametres.options;
+    const { caisse, role } = getState().parametresReducer.parametres.options;
     const { user } = getState().authentication;
 
     // if (payload.numero==null) {
@@ -254,52 +254,63 @@ function validateCommande(payload) {
         };
 
 
-      logger.time('validateCommande -> getCommandesToSync');
-        commandeServices.getCommandesToSync(10).then((results) => {
+        // si la caisse est une primary, elle s'occupe de la synchro avec le BO
+        if (role==="primary") {
+          logger.time('validateCommande -> getCommandesToSync');
 
-        logger.timeEnd('validateCommande -> getCommandesToSync');
-          const { commandes, chronos } = results;
-          const chrcommandes = commandes.map((c) => {
-            const chr = chronos
-              ? chronos.find((h) => h.ticketId === c.ticketId)
-              : undefined;
-            if (chr !== undefined) {
-              return {
-                ...c,
-                chrono: c.chrono || 0,
-                createdAt: formatISO(c.createdAt),
-                updatedAt: formatISO(c.updatedAt),
-                endTime: formatISO(chr.endTime),
-                careTime: chr.careTime.hasOwnProperty('firstCare') ? formatISO(chr.careTime.firstCare) : null,
-                productionTime: chr.careTime.hasOwnProperty('firstCare') ? 
-                  (Math.round(
-                    differenceInMilliseconds(
-                      chr.endTime,
-                      chr.careTime.firstCare
-                    ) / 10
-                  ) / 100) : null,
-                waitTime: chr.careTime.hasOwnProperty('firstCare') ?
-                  (Math.round(
-                    differenceInMilliseconds(
-                      chr.careTime.firstCare,
-                      parseISO(c.end)
-                    ) / 10
-                  ) / 100) : null,
-              };
-            } else {
-              return {
-                ...c,
-                chrono: c.chrono || 0,
-                createdAt: formatISO(c.createdAt),
-                updatedAt: formatISO(c.updatedAt),
-              };
-            }
+          commandeServices.getCommandesToSync(10).then((results) => {
+
+            logger.timeEnd('validateCommande -> getCommandesToSync');
+
+            const { commandes, chronos } = results;
+
+            // si la nouvelle commande (confirm) est déjà en BDD, on le l'ajoute pas
+            const prevcommandes = commandes.filter((c) => (confirm.ticketId!==c.ticketId) );
+
+            const chrcommandes = prevcommandes.map((c) => {
+              const chr = chronos
+                ? chronos.find((h) => h.ticketId === c.ticketId)
+                : undefined;
+              if (chr !== undefined) {
+
+                return {
+                  ...c,
+                  chrono: c.chrono || 0,
+                  createdAt: formatISO(c.createdAt),
+                  updatedAt: formatISO(c.updatedAt),
+                  endTime: formatISO(chr.endTime),
+                  careTime: chr.careTime.hasOwnProperty('firstCare') ? formatISO(chr.careTime.firstCare) : null,
+                  productionTime: chr.careTime.hasOwnProperty('firstCare') ? 
+                    (Math.round(
+                      differenceInMilliseconds(
+                        chr.endTime,
+                        chr.careTime.firstCare
+                      ) / 10
+                    ) / 100) : null,
+                  waitTime: chr.careTime.hasOwnProperty('firstCare') ?
+                    (Math.round(
+                      differenceInMilliseconds(
+                        chr.careTime.firstCare,
+                        parseISO(c.end)
+                      ) / 10
+                    ) / 100) : null,
+                };
+                
+              } else {
+                return {
+                  ...c,
+                  chrono: c.chrono || 0,
+                  createdAt: formatISO(c.createdAt),
+                  updatedAt: formatISO(c.updatedAt),
+                };
+              }
+            });
+
+            dispatch(
+              notificationActions.syncCommandes([...chrcommandes, cmdtosync])
+            );
           });
-
-          dispatch(
-            notificationActions.syncCommandes([...chrcommandes, cmdtosync])
-          );
-        });
+        }
         // dispatch(setNewNumero());
         //        logger.log('commande.createdAt', payload.createdAt);
         // s'il y a un numéro de commande, c'est qu'on encaisse une commande déjà réglée

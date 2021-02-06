@@ -42,6 +42,8 @@ const mapStateToProps = (state) => {
     parametres: getParametres(state),
     clients: state.clientsReducer.clients,
     caisse: state.parametresReducer.parametres.options.caisse,
+    ouverture: state.tresorReducer.ouverture,
+    solde: state.tresorReducer.solde
  //   caisses: getCaisses(state),
   };
 }

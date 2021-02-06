@@ -68,6 +68,9 @@ const actions = {
         ]
       });
       proxies.ouverture = _after.length>0;
+
+      proxies.last = await _getLastMouvement(payload.caisseId);
+
       res.send(proxies);
     } 
     // s'il n'y a pas de cloture, on cherche s'il y a une ouverture
@@ -79,6 +82,8 @@ const actions = {
       log.info('dbTresorerieLastClotureAndAfter O=', _lasto);
 
       proxies.ouverture =_lasto.length>0;
+      proxies.last = await _getLastMouvement(payload.caisseId);
+
       res.send(proxies);
     }
 
@@ -131,7 +136,7 @@ const actions = {
       ]
     });
     
-    res.send({ tresorslist });
+    res.send({ tresorslist: [_serviceOuverture[0], ...tresorslist] });
   },
 
   dbTresorerieLastOuvertureAndAfter: async (req, res) => {
@@ -192,15 +197,15 @@ const actions = {
     }
   },
 
-  dbTresorerieSummary: async () => {
+  dbTresorerieSummary: async (query) => {
     
-    const _trs = await _findTresors({
-      $or:[
-        {sps: {$exists: false}},
-        {sps: {$eq: false}}
-      ]
-    });
-
+    // const _trs = await _findTresors({
+    //   $or:[
+    //     {sps: {$exists: false}},
+    //     {sps: {$eq: false}}
+    //   ]
+    // });
+    const _trs = await _findTresors(query);
     const _trsSummary = _trs.map((t) => ({
       id: t.tresorId,
       updatedAt: t.updatedAt,

@@ -140,15 +140,16 @@ const actions = {
     res.send(confirm);
   },
 
-  dbCommandesSummary: async () => {
+  dbCommandesSummary: async (query) => {
     (await db.ticketsrestau)._.mixin(lodashId);
 
-    const _cmd = await _findCommande({
-      $or:[
-        {sps: {$exists: false}},
-        {sps: {$eq: false}}
-      ]
-    });
+    // const _cmd = await _findCommande({
+    //   $or:[
+    //     {sps: {$exists: false}},
+    //     {sps: {$eq: false}}
+    //   ]
+    // });
+    const _cmd = await _findCommande(query);
     const _cmdSummary = _cmd.map((c) => ({
       id: c.ticketId,
       updatedAt: c.updatedAt,
@@ -191,9 +192,9 @@ async function _getCommandesToSync(limit = null) {
   let _cmd;
 
   if (limit && limit > 0) {
-    _cmd = await CommandeModel.find(criteria).lean().limit(limit).exec();
+    _cmd = await CommandeModel.find(criteria).sort({createdAt: -1}).lean().limit(limit).exec();
   } else {
-    _cmd = await CommandeModel.find(criteria).lean().exec();
+    _cmd = await CommandeModel.find(criteria).sort({createdAt: -1}).lean().exec();
   }
 
   // Map document

@@ -64,8 +64,8 @@ async function syncClotures(params) {
   }
 }
 
-async function resync(liste) {
-  return emit('resync', {liste:liste});
+async function resync(liste, caisseId) {
+  return emit('resync', {liste:liste, caisseId:caisseId});
 }
 
 

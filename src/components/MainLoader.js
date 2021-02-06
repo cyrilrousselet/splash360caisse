@@ -96,6 +96,7 @@ class MainLoader extends React.Component {
       if (paramLoaded===true && sseInit===true && 
           catLoaded===false) {
         this.props.getCatalogue();
+        this.props.getLastClotureAndAfter();
       }
       if (paramLoaded===true && sseInit===true && catLoaded===true) {
      //   this.props.getTodayCommandesList();
@@ -210,6 +211,7 @@ class MainLoader extends React.Component {
       if (paramLoaded===true && sseInit===true && 
           catLoaded===false) {
         this.props.getCatalogue();
+        this.props.getLastClotureAndAfter();
       }
       if (paramLoaded===true && sseInit===true && catLoaded===true) {
       //  this.props.getTodayCommandesList();

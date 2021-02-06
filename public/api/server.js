@@ -373,40 +373,59 @@ const actions = {
   },
 
   resync: async (req, res) => {
-    const { liste } = req.payload;
+    const { liste, caisseId } = req.payload;
 
-    let __summary = {};
+
 
     const start = async () => {
-      await asyncForEach(liste, async (entity) => {
-        if ('tresor'===entity) {
-          const tresors_sum = await dbTresorerieApi.dbTresorerieSummary();
-          __summary = {...__summary, ...tresors_sum};
-        }
-        else if ('commandes'===entity) {
-          const commandes_sum = await dbCommandesApi.dbCommandesSummary();
-          __summary = {...__summary, ...commandes_sum};
-        } 
-        else if ('employes'===entity) {
-          const employes_sum = await dbEmployesApi.dbEmployesSummary();
-          __summary = {...__summary, ...employes_sum};
-        } 
-        else if ('marketing'===entity) {
-          const marketing_sum = await dbMarketingApi.dbMarketingSummary();
-          __summary = {...__summary, ...marketing_sum};
-        } 
-        else if ('users'===entity) {
-          const users_sum = await dbUsersApi.dbUsersSummary();
-          __summary = {...__summary, ...users_sum};
-        }
+      await asyncForEach(Object.entries(connectedSecondaries), async ([sockid, secondary]) => {
+
+
+
+        let __summary = {};
+
+        const mongo_query = {
+          $or:[
+            { localsync: { $exists: false } },
+            { localsync: { $elemMatch: { $ne: secondary.uniqid } } }
+          ]
+        };
+
+        const start_secondary = async () => {
+          await asyncForEach(liste, async (entity) => {
+            if ('tresor'===entity) {
+              const tresors_sum = await dbTresorerieApi.dbTresorerieSummary(mongo_query);
+              __summary = {...__summary, ...tresors_sum};
+            }
+            else if ('commandes'===entity) {
+              const commandes_sum = await dbCommandesApi.dbCommandesSummary(mongo_query);
+              __summary = {...__summary, ...commandes_sum};
+            } 
+            else if ('clotures'===entity) {
+              const clotures_sum = await dbCloturesApi.dbCommandesSummary(mongo_query);
+              __summary = {...__summary, ...clotures_sum};
+            } 
+            else if ('employes'===entity) {
+              const employes_sum = await dbEmployesApi.dbEmployesSummary();
+              __summary = {...__summary, ...employes_sum};
+            } 
+            else if ('marketing'===entity) {
+              const marketing_sum = await dbMarketingApi.dbMarketingSummary();
+              __summary = {...__summary, ...marketing_sum};
+            } 
+            else if ('users'===entity) {
+              const users_sum = await dbUsersApi.dbUsersSummary();
+              __summary = {...__summary, ...users_sum};
+            }
+          });
+        };
+
+        start_secondary();
+
+        io.to(sockid).emit("resync", {summary: __summary, liste: liste, primary: caisseId});
       });
-    };
-
+    }
     start();
-
-    Object.entries(connectedSecondaries).forEach(([sockid, secondary]) => {
-      io.to(sockid).emit("resync", {summary: __summary, liste: liste});
-    });
 
     res.send({ msg: "summary envoyé aux secondaries num. " + Object.keys(connectedSecondaries).length });
 
