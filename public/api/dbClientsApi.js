@@ -63,7 +63,7 @@ const actions = {
                                          .filter( c => {
                                            return exclusion 
                                              ? (c.localsync === undefined) || !c.localsync.includes(stationid)
-                                             : (c.localsync !== undefined) &&  c.localsync.includes(stationid)
+                                             : (c.localsync === undefined) ||  c.localsync.includes(stationid)
                                              ;
                                          })
                                          .value();

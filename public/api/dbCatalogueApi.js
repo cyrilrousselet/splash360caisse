@@ -151,7 +151,7 @@ const actions = {
                                             .filter( c => {
                                               return exclusion 
                                                 ? (c.localsync === undefined) || !c.localsync.includes(stationid)
-                                                : (c.localsync !== undefined) && c.localsync.includes(stationid)
+                                                : (c.localsync === undefined) ||  c.localsync.includes(stationid)
                                                 ;
                                             })
                                             .value();
@@ -167,7 +167,7 @@ const actions = {
                                          .filter( g => {
                                            return exclusion 
                                              ? (g.localsync === undefined) || !g.localsync.includes(stationid)
-                                             : (g.localsync !== undefined) && g.localsync.includes(stationid)
+                                             : (g.localsync === undefined) ||  g.localsync.includes(stationid)
                                              ;
                                          })
                                          .value();
@@ -183,7 +183,7 @@ const actions = {
                                      .filter( t => {
                                        return exclusion 
                                          ? (t.localsync === undefined) || !t.localsync.includes(stationid)
-                                         : (t.localsync !== undefined) && t.localsync.includes(stationid)
+                                         : (t.localsync === undefined) ||  t.localsync.includes(stationid)
                                          ;
                                      })
                                      .value();
@@ -199,7 +199,7 @@ const actions = {
                                                  .filter( t => {
                                                    return exclusion 
                                                      ? (t.localsync === undefined) || !t.localsync.includes(stationid)
-                                                     : (t.localsync !== undefined) && t.localsync.includes(stationid)
+                                                     : (t.localsync === undefined) ||  t.localsync.includes(stationid)
                                                      ;
                                                  })
                                                  .value();
@@ -215,7 +215,7 @@ const actions = {
                                              .filter( i => {
                                                return exclusion 
                                                  ? (i.localsync === undefined) || !i.localsync.includes(stationid)
-                                                 : (i.localsync !== undefined) &&  i.localsync.includes(stationid)
+                                                 : (i.localsync === undefined) ||  i.localsync.includes(stationid)
                                                  ;
                                              })
                                              .value();
@@ -231,7 +231,7 @@ const actions = {
                                           .filter( p => {
                                             return exclusion 
                                               ? (p.localsync === undefined) || !p.localsync.includes(stationid)
-                                              : (p.localsync !== undefined) &&  p.localsync.includes(stationid)
+                                              : (p.localsync === undefined) ||  p.localsync.includes(stationid)
                                               ;
                                           })
                                           .value();
@@ -247,7 +247,7 @@ const actions = {
                                         .filter( s => {
                                           return exclusion 
                                             ? (s.localsync === undefined) || !s.localsync.includes(stationid)
-                                            : (s.localsync !== undefined) &&  s.localsync.includes(stationid)
+                                            : (s.localsync === undefined) ||  s.localsync.includes(stationid)
                                             ;
                                         })
                                         .value();
