@@ -19,6 +19,28 @@ const dbMarketingApi = require("./dbMarketingApi.js");
 const dbUsersApi = require("./dbUsersApi.js");
 const dbTresorerieApi = require("./dbTresorerieApi.js");
 
+const DATABASES = {
+  'categories': dbCatalogueApi,
+  'groupes': dbCatalogueApi,
+  'tva': dbCatalogueApi,
+  'types': dbCatalogueApi,
+  'ingredients': dbCatalogueApi,
+  'produits': dbCatalogueApi,
+  'steps': dbCatalogueApi,
+  'clotures': dbCloturesApi,
+  'commandes': dbCommandesApi,
+  'ticketsrestau': dbCommandesApi,
+  'users': dbUsersApi,
+  'tresors': dbTresorerieApi,
+  'clients': dbClientsApi,
+  'pointages': dbEmployesApi,
+  'timeadjusts': dbEmployesApi,
+  'shifts': dbEmployesApi,
+  'avoirs': dbMarketingApi,
+  'reglespanier': dbMarketingApi,
+  'reglescatalogue': dbMarketingApi
+}
+
 const connectedSecondaries = {};
 const connectedTerminals = {};
 
@@ -39,6 +61,7 @@ const SYNCHRO_TREATMENT = {
   deleteavoir: "deleteAvoirSync",
   timeadjust: "setTimeadjustSync",
   cloture: "setClotureSync",
+  tresor: "setTresorSync",
   user: "setUserSync",
   produit: "setProduitSync",
   groupe: "setGroupeSync",
@@ -48,6 +71,9 @@ const SYNCHRO_TREATMENT = {
 };
 
 let responses = [];
+
+let _emitter = null;
+let _primaryUrl = null;
 
 const server = {
   init: (wcont) => {
@@ -446,6 +472,11 @@ const actions = {
   syncConnectToPrimary: (req, res) => {
     const { url, caisse } = req.payload;
 
+        
+    _emitter = caisse;
+    _primaryUrl = url;
+
+
     log.info("syncConnectToPrimary", req.payload);
 
     socket = ioclient(url + ":" + SYNC_PORT);
@@ -455,18 +486,24 @@ const actions = {
 
     // accusé de réception de la connexion de la part du "primary"
     // avec la liste des summary (éléments à échanger entre les caisses)
-    socket.on("welcome", async (primarySum) => {
+    socket.on("welcome", async (welcomeData) => {
       log.info("on welcome");
+      const {summary, primary} = welcomeData;
 
       const secondarySum = await welcomeTreatment(caisse.uniqid);
 
       const { importation, exportation } = getImportExport(
-        primarySum,
+        summary,
         secondarySum
       );
 
       log.info("import:", importation);
       log.info("export:", exportation);
+
+      prepareExportationToPrimary(exportation);
+
+      askImportationFromPrimary(importation);
+
     });
 
     // écouteur de synchro de la part du primary
@@ -480,9 +517,20 @@ const actions = {
     // (le primary envoie une liste de ses entités
     // qu'il faut comparer avec celle du secondary)
     socket.on("resync", (payload) => {
-      const {summary, liste} = payload;
-      log.info('resync', liste, summary);
+      const {summary, liste, primary} = payload;
+      log.info('resync', liste, summary, primary);
 
+      const secondarySum = await welcomeTreatment(_emitter.uniqid);
+
+      const { importation, exportation } = getImportExport(
+        summary,
+        secondarySum
+      );
+
+      log.info("resync import:", importation);
+      log.info("resync export:", exportation);
+
+      prepareExportationToPrimary(exportation);
 
     })
 
@@ -499,6 +547,8 @@ const actions = {
   syncStartPrimary: (req, res) => {
     log.info("Start sync service on primary ...");
     sync_server.use(cors({ origin: "*" }));
+
+    const {caisseId} = req.payload;
 
     io.on("connection", (sock) => {
       log.info(
@@ -523,7 +573,7 @@ const actions = {
         });
 
         const summary = await welcomeTreatment(data.uniqid, true);
-        io.to(sock.id).emit("welcome", summary);
+        io.to(sock.id).emit("welcome", {summary: summary, primary: caisseId});
       });
 
       // écouteur d'événement 'registerterminal' :
@@ -631,16 +681,12 @@ const actions = {
         response.statusCode
       );
       res.send({ msg: `synchro ${db} to primary` });
-      //   log.info(`acceptUberOrder STATUS: ${response.statusCode}`);
-      //   log.info(`acceptUberOrder HEADERS: ${JSON.stringify(response.headers)}`);
+
       response.on("data", () => {
-        //     __confirmation.push(chunk);
-        //     log.info(`acceptUberOrder BODY: ${chunk}`)
+
       });
       response.on("end", () => {
-        //     log.info('acceptUberOrder: end');
-        //     // res.send({confirm: JSON.parse(__confirmation.join(''))});
-        //     res.send({confirm: true});
+
       });
     });
 
@@ -653,6 +699,58 @@ const actions = {
   },
 };
 
+
+async function askImportationFromPrimary(importation) {
+
+}
+
+async function prepareExportationToPrimary(exportation) {
+
+  const start = async () => {
+    asyncForEach(Object.entries(exportation), async ([db, items]) => {
+
+      const ids = items.map(i=>i.id);
+      const __data = await DATABASES[db].dbGetItems(db,ids);
+      bulkSyncToPrimary(db, __data);
+    });
+  }
+
+  start();
+
+}
+
+function bulkSyncToPrimary(db, data) {
+
+  const __request = net.request({
+    url: _primaryUrl + ":" + API_PORT + "/synchro",
+    method: "post",
+  });
+  // __request.setHeader('Authorization','Bearer '+access_token)
+  __request.setHeader("Access-Control-Allow-Origin", "*");
+  __request.setHeader("Content-Type", "application/json");
+
+  __request.write(JSON.stringify({ db, data, emitter }));
+
+  __request.on("response", (response) => {
+    log.info(
+      `bulkSyncToPrimary() [${db}] to ${_primaryUrl}, status:`,
+      response.statusCode
+    );
+
+    response.on("data", () => {
+
+    });
+    response.on("end", () => {
+
+    });
+  });
+
+  __request.on('error', (error) => {
+    log.error('bulkSyncToPrimary ERROR', error);
+  });
+
+  __request.end();
+}
 
 async function asyncForEach(array, callback) {
   for (let index = 0; index < array.length; index++) {

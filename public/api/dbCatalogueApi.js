@@ -77,6 +77,54 @@ const actions = {
     res.send(typ);
   },
 
+  dbGetItems: async (itemtype, ids) => {
+    let response = [];
+    if (itemtype==="categories") {
+      (await db.categories)._.mixin(lodashId);
+      response = await (await db.categories).get('categories')
+                                              .filter( c => ids.includes(c.categorie_id) )
+                                              .value();
+    }
+    else if (itemtype==="groupes") {
+      (await db.groupes)._.mixin(lodashId);
+      response = await (await db.groupes).get('groupes')
+                                         .filter( g => ids.includes(g.groupe_id) )
+                                         .value();
+    }
+    else if (itemtype==="tva") {
+      (await db.tva)._.mixin(lodashId);
+      response = await (await db.tva).get('tva')
+                                     .filter( t => ids.includes(t.tva_id) )
+                                     .value();
+    }
+    else if (itemtype==="types") {
+      (await db.types)._.mixin(lodashId);
+      response = await (await db.types).get('types')
+                                       .filter( t => ids.includes(t.type_id) )
+                                       .value();
+    }
+    else if (itemtype==="ingredients") {
+      (await db.ingredients)._.mixin(lodashId);
+      response = await (await db.ingredients).get('ingredients')
+                                             .filter( i => ids.includes(i.ingredient_id) )
+                                             .value();
+    }
+    else if (itemtype==="produits") {
+      (await db.produits)._.mixin(lodashId);
+      response = await (await db.produits).get('produits')
+                                          .filter( p => ids.includes(p.produit_id) )
+                                          .value();
+    }
+    else if (itemtype==="steps") {
+      (await db.steps)._.mixin(lodashId);
+      response = await (await db.steps).get('steps')
+                                       .filter( s => ids.includes(s.step_id) )
+                                       .value();
+    }
+
+    return response;
+  },
+
   dbCatalogueSummary: async (query) => {
 
     (await db.categories)._.mixin(lodashId);

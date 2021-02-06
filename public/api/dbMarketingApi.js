@@ -100,6 +100,29 @@ const actions = {
   },
 
 
+  dbGetItems: async (itemtype, ids) => {
+    let response = [];
+    if (itemtype==="avoirs") {
+      (await db.avoirs)._.mixin(avoirs);
+      response = await (await db.avoirs).get('avoirs')
+                                        .filter( c => ids.includes(c.avoir_id) )
+                                        .value();
+    }
+    else if (itemtype==="reglespanier") {
+      (await db.reglespanier)._.mixin(lodashId);
+      response = await (await db.reglespanier).get('reglespanier')
+                                              .filter( g => ids.includes(g.reglepanier_id) )
+                                              .value();
+    } 
+    else if (itemtype==="reglescatalogue") {
+      (await db.reglescatalogue)._.mixin(lodashId);
+      response = await (await db.reglescatalogue).get('reglescatalogue')
+                                                 .filter( t => ids.includes(t.reglecatalogue_id) )
+                                                 .value();
+    }
+    return response;
+  },
+
   dbMarketingSummary: async (query) => {
 
     (await db.avoirs)._.mixin(lodashId);

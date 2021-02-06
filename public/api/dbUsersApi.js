@@ -49,6 +49,16 @@ const actions = {
     res.send(__usr);
   },
 
+  dbGetItems: async (itemtype, ids) => {
+
+    (await db.users)._.mixin(lodashId);
+    const response = await (await db.users).get('users')
+                                           .filter( c => ids.includes(c.user_id) )
+                                           .value();
+    
+    return response;
+  },
+
   dbUsersSummary: async (query) => {
 
     (await db.users)._.mixin(lodashId);

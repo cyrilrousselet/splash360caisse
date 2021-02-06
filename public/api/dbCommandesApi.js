@@ -140,6 +140,13 @@ const actions = {
     res.send(confirm);
   },
 
+
+  dbGetItems: async (itemtype, ids) => {
+
+    const _cmd = await _findCommande({ticketId: {$in: ids}});
+    return _cmd;
+  },
+
   dbCommandesSummary: async (mongoquery, ldbquery) => {
     (await db.ticketsrestau)._.mixin(lodashId);
 

@@ -17,6 +17,9 @@ function addTresor(payload) {
 
     const user = getState().authentication.user;
 
+    const {caisse} = getState().parametresReducer.parametres.options;
+
+
     const params = {
       ...payload,
       user: user.user_id
@@ -25,7 +28,7 @@ function addTresor(payload) {
     const tresor = tresorServices.createTresor(params);
 
     logger.time('addTresor');
-    tresorServices.persistTresor(tresor).then(
+    tresorServices.persistTresor({...tresor, localsync: [caisse.uniqid]}).then(
       data => {
         logger.timeEnd('addTresor');
         dispatch({
@@ -155,8 +158,11 @@ function updateTresor(payload) {
 
     dispatch({ type: tresorActionTypes.UPDATE_REQUEST });
 
+
+    const {caisse} = getState().parametresReducer.parametres.options;
+
     logger.time('persistTresor');
-    tresorServices.persistTresor(payload).then(
+    tresorServices.persistTresor({...payload, localsync:[caisse.uniqid]}).then(
 
       data => {
  
@@ -178,24 +184,65 @@ function updateTresor(payload) {
 
 
 function setTresorFromSync(tresor) {
-  return dispatch => {
+  return (dispatch, getState) => {
     const { data, emitter, response } = tresor;
-    tresorServices.persistTresor(data)
-    .then(
-      result => {
-        dispatch({ type: tresorActionTypes.SETSYNCED_SUCCESS, result });
 
-        // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
-        // donc inutile de lui renvoyer la synchro
-        // -> si 'response' est null, la synchro ne provient pas de l'API,
-        // donc inutile de confirmer le traitement de la synchro
-        if (emitter!==null && response!==null) {
-          dispatch(notificationActions.syncConfirm(response));
-          dispatch(notificationActions.syncDispatch('tresorerie', result, emitter));
+    const {caisse} = getState().parametresReducer.parametres.options;
+
+    if (Array.isArray(data)) {
+
+      data.forEach(trs => {
+
+        // on ajoute l'id de la caisse à la propriété localsync
+        // et si elle n'existe pas, on crée la propriété
+        const {localsync} = trs;
+        let __lsync = localsync || [];
+        if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
+
+        tresorServices.persistTresor({...trs, localsync:__lsync})
+        .then(
+          result => {
+            dispatch({ type: tresorActionTypes.SETSYNCED_SUCCESS, result });
+
+            // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
+            // donc inutile de lui renvoyer la synchro
+            // -> si 'response' est null, la synchro ne provient pas de l'API,
+            // donc inutile de confirmer le traitement de la synchro
+            if (emitter!==null && response!==null) {
+              dispatch(notificationActions.syncConfirm(response));
+              dispatch(notificationActions.syncDispatch('tresorerie', result, emitter));
+            }
+            dispatch(getTresors());
+          }
+        );
+
+      });
+
+    } else {
+    
+      // on ajoute l'id de la caisse à la propriété localsync
+      // et si elle n'existe pas, on crée la propriété
+      const {localsync} = data;
+      let __lsync = localsync || [];
+      if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
+
+      tresorServices.persistTresor({...data, localsync:__lsync})
+      .then(
+        result => {
+          dispatch({ type: tresorActionTypes.SETSYNCED_SUCCESS, result });
+
+          // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
+          // donc inutile de lui renvoyer la synchro
+          // -> si 'response' est null, la synchro ne provient pas de l'API,
+          // donc inutile de confirmer le traitement de la synchro
+          if (emitter!==null && response!==null) {
+            dispatch(notificationActions.syncConfirm(response));
+            dispatch(notificationActions.syncDispatch('tresorerie', result, emitter));
+          }
+          dispatch(getTresors());
         }
-        dispatch(getTresors());
-      }
-    )
+      );
+    }
   }
 }
 

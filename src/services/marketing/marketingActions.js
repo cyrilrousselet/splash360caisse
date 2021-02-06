@@ -25,12 +25,13 @@ function createAvoir(payload) {
     dispatch({ type: marketingActionTypes.CREATE_AVOIR_REQUEST });
     
     const { user } = getState().authentication;
+    const {caisse} = getState().parametresReducer.parametres.options;
 
     if (!payload.operator_id) {
       payload = {...payload, operator_id: user.user_id};
     }
 
-    marketingServices.createAvoir(payload)
+    marketingServices.createAvoir({...payload, localsync:[caisse.uniqid]})
     .then(
       data => {
         dispatch({ type: marketingActionTypes.CREATE_AVOIR_SUCCESS, ...data });
@@ -46,10 +47,11 @@ function createAvoir(payload) {
 function updateAvoir(payload) {
   return (dispatch, getState) => {
     dispatch({ type: marketingActionTypes.UPDATE_AVOIR_REQUEST });
+    const {caisse} = getState().parametresReducer.parametres.options;
     
 
 //    marketingServices.updateAvoir({...avoir, ...payload})
-    marketingServices.updateAvoir({...payload})
+    marketingServices.updateAvoir({...payload, localsync:[caisse.uniqid]})
     .then(
       data => {
         dispatch({ type: marketingActionTypes.UPDATE_AVOIR_SUCCESS, ...data });
@@ -114,11 +116,20 @@ function getReglesCatalogueList(params={}) {
  * ajout / modif d'avoir depuis la synchro
  */
 function setAvoirFromSync(payload) {
-  return dispatch => {
+  return (dispatch, getState) => {
 
     const {data, emitter, response} = payload;
 
-    marketingServices.updateAvoir(data)
+    // on ajoute l'id de la caisse à la propriété localsync
+    // et si elle n'existe pas, on crée la propriété
+    const {caisse} = getState().parametresReducer.parametres.options;
+    const {localsync} = data;
+    let __lsync = localsync || [];
+    if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
+
+    const __data = {...data, localsync:__lsync};
+
+    marketingServices.updateAvoir(__data)
     .then(
       avoir => {
 
@@ -130,7 +141,7 @@ function setAvoirFromSync(payload) {
         // donc inutile de confirmer le traitement de la synchro
         if (emitter!==null && response!==null) {
           dispatch(notificationActions.syncConfirm(response));
-          dispatch(notificationActions.syncDispatch('avoir', data, emitter));
+          dispatch(notificationActions.syncDispatch('avoir', __data, emitter));
         }
         dispatch(getAvoirsList());
       }

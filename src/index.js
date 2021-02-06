@@ -27,6 +27,8 @@ import { marketingActions } from './services/marketing/marketingActions';
 import { userActions } from './services/user/userActions';
 import { employesActions } from './services/employes/employesActions';
 import { catalogueActions } from './services/catalogue/catalogueActions';
+import { clotureActions } from './services/cloture/clotureActions';
+import { tresorActions } from './services/tresorerie/tresorActions';
 import packageJson from '../package.json';
 
 import * as Sentry from '@sentry/react';
@@ -145,7 +147,12 @@ ipcRenderer.on('setTimeadjustSync', (event, timeadjust) => {
 
 ipcRenderer.on('setClotureSync', (event, cloture) => {
   logger.log('renderer: setClotureSync', cloture);
- // commandeActions.setTicketRestaurantFromSync(ticketrestaurant)(store.dispatch, store.getState);
+  clotureActions.setClotureFromSync(cloture)(store.dispatch, store.getState);
+});
+
+ipcRenderer.on('setTresorSync', (event, tresor) => {
+  logger.log('renderer: setTresorSync', tresor);
+  tresorActions.setTresorFromSync(tresor)(store.dispatch, store.getState);
 });
 
 ipcRenderer.on('setUserSync', (event, user) => {

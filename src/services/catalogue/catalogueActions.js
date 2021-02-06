@@ -71,11 +71,12 @@ function getAll() {
 };
 
 function updateProduit(payload) {
-  // return (dispatch, getState) => {
-  return dispatch => {
+  return (dispatch, getState) => {
+  // return dispatch => {
     dispatch({ type: catalogueActionTypes.UPDATE_PRODUIT_REQUEST});
 
     const {produit_id, update} = payload;
+    const {caisse} = getState().parametresReducer.parametres.options;
 
     // const catalogue = getState().catalogueReducer.catalogue;
     // let produit = {};
@@ -96,7 +97,7 @@ function updateProduit(payload) {
       }
     });
 
-    catalogueServices.updateProduit({produit_id, ...filtered_update})
+    catalogueServices.updateProduit({produit_id, ...filtered_update, localsync:[caisse.uniqid]})
     .then(
       data => {
         dispatch({ type: catalogueActionTypes.UPDATE_PRODUIT_SUCCESS});
@@ -111,12 +112,13 @@ function updateProduit(payload) {
 
 
 function updateIngredient(payload) {
-  // return (dispatch, getState) => {
-  return dispatch => {
+  return (dispatch, getState) => {
+  // return dispatch => {
     dispatch({ type: catalogueActionTypes.UPDATE_INGREDIENT_REQUEST});
 
     const {ingredient_id, update} = payload;
 
+    const {caisse} = getState().parametresReducer.parametres.options;
     // const ingredients = getState().catalogueReducer.ingredients;
     // const ingredient = ingredients[ingredient_id];
 
@@ -129,7 +131,7 @@ function updateIngredient(payload) {
       }
     });
 
-    catalogueServices.updateIngredient({ingredient_id, ...filtered_update})
+    catalogueServices.updateIngredient({ingredient_id, ...filtered_update, localsync:[caisse.uniqid]})
     .then(
       data => {
         dispatch({ type: catalogueActionTypes.UPDATE_INGREDIENT_SUCCESS});
@@ -143,12 +145,13 @@ function updateIngredient(payload) {
 
 
 function updateIngredientType(payload) {
-  // return (dispatch, getState) => {
-  return dispatch => {
+  return (dispatch, getState) => {
+  // return dispatch => {
     dispatch({ type: catalogueActionTypes.UPDATE_TYPE_REQUEST});
 
     const {type_id, update} = payload;
 
+    const {caisse} = getState().parametresReducer.parametres.options;
     // const ingredientTypes = getState().catalogueReducer.ingredientTypes;
     // const type = ingredientTypes[type_id];
 
@@ -161,7 +164,7 @@ function updateIngredientType(payload) {
       }
     });
 
-    catalogueServices.updateIngredientType({type_id, ...filtered_update})
+    catalogueServices.updateIngredientType({type_id, ...filtered_update, localsync:[caisse.uniqid]})
     .then(
       data => {
         dispatch({ type: catalogueActionTypes.UPDATE_TYPE_SUCCESS});
@@ -174,14 +177,15 @@ function updateIngredientType(payload) {
 }
 
 function updateGroupe(payload) {
-  // return (dispatch, getState) => {
-  return dispatch => {
+  return (dispatch, getState) => {
+  // return dispatch => {
     dispatch({ type: catalogueActionTypes.UPDATE_GROUPE_REQUEST});
 
     const {groupe_id, update} = payload;
 
     // const catalogue = getState().catalogueReducer.catalogue;
     // const groupe = catalogue[groupe_id];
+    const {caisse} = getState().parametresReducer.parametres.options;
 
     // filtrage des propriétés à mettre à jour
     // (noprint)
@@ -192,7 +196,7 @@ function updateGroupe(payload) {
       }
     });
 
-    catalogueServices.updateGroupe({...filtered_update, groupe_id})
+    catalogueServices.updateGroupe({...filtered_update, groupe_id, localsync:[caisse.uniqid]})
     .then(
       data => {
         dispatch({ type: catalogueActionTypes.UPDATE_GROUPE_SUCCESS});
@@ -211,11 +215,20 @@ function updateGroupe(payload) {
  * ajout / modif de produit depuis la synchro
  */
 function setProduitFromSync(payload) {
-  return dispatch => {
+  return (dispatch, getState) => {
 
     const {data, emitter, response} = payload;
 
-    catalogueServices.updateProduit(data)
+    // on ajoute l'id de la caisse à la propriété localsync
+    // et si elle n'existe pas, on crée la propriété
+    const {caisse} = getState().parametresReducer.parametres.options;
+    const {localsync} = data;
+    let __lsync = localsync || [];
+    if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
+
+    const __data = {...data, localsync:__lsync}
+
+    catalogueServices.updateProduit(__data)
     .then(
       result => {
         dispatch({ type: catalogueActionTypes.UPDATE_PRODUIT_FROM_SYNC, result });
@@ -226,7 +239,7 @@ function setProduitFromSync(payload) {
         // donc inutile de confirmer le traitement de la synchro
         if (emitter!==null && response!==null) {
           dispatch(notificationActions.syncConfirm(response));
-          dispatch(notificationActions.syncDispatch('produit',data, emitter));
+          dispatch(notificationActions.syncDispatch('produit', __data, emitter));
         }
         dispatch(getAll());
       }
@@ -237,11 +250,20 @@ function setProduitFromSync(payload) {
  * ajout / modif de groupe depuis la synchro
  */
 function setGroupeFromSync(payload) {
-  return dispatch => {
+  return (dispatch, getState) => {
 
     const {data, emitter, response} = payload;
 
-    catalogueServices.updateGroupe(data)
+    // on ajoute l'id de la caisse à la propriété localsync
+    // et si elle n'existe pas, on crée la propriété
+    const {caisse} = getState().parametresReducer.parametres.options;
+    const {localsync} = data;
+    let __lsync = localsync || [];
+    if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
+
+    const __data = {...data, localsync:__lsync}
+
+    catalogueServices.updateGroupe(__data)
     .then(
       result => {
         dispatch({ type: catalogueActionTypes.UPDATE_GROUPE_FROM_SYNC, result });
@@ -252,7 +274,7 @@ function setGroupeFromSync(payload) {
         // donc inutile de confirmer le traitement de la synchro
         if (emitter!==null && response!==null) {
           dispatch(notificationActions.syncConfirm(response));
-          dispatch(notificationActions.syncDispatch('groupe',data, emitter));
+          dispatch(notificationActions.syncDispatch('groupe',__data, emitter));
         }
         dispatch(getAll());
       }
@@ -263,11 +285,20 @@ function setGroupeFromSync(payload) {
  * ajout / modif d'ingrédient depuis la synchro
  */
 function setIngredientFromSync(payload) {
-  return dispatch => {
+  return (dispatch, getState) => {
 
     const {data, emitter, response} = payload;
+    
+    // on ajoute l'id de la caisse à la propriété localsync
+    // et si elle n'existe pas, on crée la propriété
+    const {caisse} = getState().parametresReducer.parametres.options;
+    const {localsync} = data;
+    let __lsync = localsync || [];
+    if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
 
-    catalogueServices.updateIngredient(data)
+    const __data = {...data, localsync:__lsync}
+
+    catalogueServices.updateIngredient(__data)
     .then(
       result => {
         dispatch({ type: catalogueActionTypes.UPDATE_INGREDIENT_FROM_SYNC, result });
@@ -278,7 +309,7 @@ function setIngredientFromSync(payload) {
         // donc inutile de confirmer le traitement de la synchro
         if (emitter!==null && response!==null) {
           dispatch(notificationActions.syncConfirm(response));
-          dispatch(notificationActions.syncDispatch('ingredient',data, emitter));
+          dispatch(notificationActions.syncDispatch('ingredient', __data, emitter));
         }
         dispatch(getAll());
       }
@@ -289,11 +320,20 @@ function setIngredientFromSync(payload) {
  * ajout / modif de type d'ingrédient depuis la synchro
  */
 function setIngredientTypeFromSync(payload) {
-  return dispatch => {
+  return (dispatch, getState) => {
 
     const {data, emitter, response} = payload;
+    
+    // on ajoute l'id de la caisse à la propriété localsync
+    // et si elle n'existe pas, on crée la propriété
+    const {caisse} = getState().parametresReducer.parametres.options;
+    const {localsync} = data;
+    let __lsync = localsync || [];
+    if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
 
-    catalogueServices.updateIngredientType(data)
+    const __data = {...data, localsync:__lsync}
+
+    catalogueServices.updateIngredientType(__data)
     .then(
       result => {
         dispatch({ type: catalogueActionTypes.UPDATE_TYPE_FROM_SYNC, result });
@@ -304,7 +344,7 @@ function setIngredientTypeFromSync(payload) {
         // donc inutile de confirmer le traitement de la synchro
         if (emitter!==null && response!==null) {
           dispatch(notificationActions.syncConfirm(response));
-          dispatch(notificationActions.syncDispatch('type',data, emitter));
+          dispatch(notificationActions.syncDispatch('type', __data, emitter));
         }
         dispatch(getAll());
       }

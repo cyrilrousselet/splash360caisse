@@ -88,6 +88,29 @@ const actions = {
     res.send(confirm);
   },
 
+  dbGetItems: async (itemtype, ids) => {
+    let response = [];
+    if (itemtype==="pointages") {
+      (await db.pointages)._.mixin(pointages);
+      response = await (await db.pointages).get('pointages')
+                                           .filter( c => ids.includes(c.pointage_id) )
+                                           .value();
+    }
+    else if (itemtype==="timeadjusts") {
+      (await db.timeadjusts)._.mixin(lodashId);
+      response = await (await db.timeadjusts).get('timeadjusts')
+                                             .filter( g => ids.includes(g.adjust_id) )
+                                             .value();
+    }
+    else if (itemtype==="shifts") {
+      (await db.tva)._.mixin(lodashId);
+      response = await (await db.shifts).get('shifts')
+                                        .filter( t => ids.includes(t.shift_id) )
+                                        .value();
+    }
+    return response;
+  },
+
   dbEmployesSummary: async (query) => {
 
     (await db.pointages)._.mixin(lodashId);

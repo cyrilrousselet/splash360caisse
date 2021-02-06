@@ -27,8 +27,9 @@ function createClient(payload) {
     
     // const { user } = getState().authentication;
     // payload = {...payload, operator_id: user.user_id};
+    const {caisse} = getState().parametresReducer.parametres.options;
 
-    clientsServices.createClient(payload)
+    clientsServices.createClient({...payload, localsync:[caisse.uniqid]})
     .then(
       data => {
         dispatch({ type: clientsActionTypes.CREATE_SUCCESS, ...data });
@@ -49,7 +50,10 @@ function updateClient(payload) {
     dispatch({ type: clientsActionTypes.UPDATE_REQUEST });
     
 
-    clientsServices.updateClient({...payload})
+    const {caisse} = getState().parametresReducer.parametres.options;
+
+
+    clientsServices.updateClient({...payload, localsync:[caisse.uniqid]})
     .then(
       data => {
         dispatch({ type: clientsActionTypes.UPDATE_SUCCESS, ...data });
@@ -75,11 +79,20 @@ function setClientFromAPI(payload) {
  * ajout / modif de client depuis la synchro
  */
 function setClientFromSync(client) {
-  return dispatch => {
+  return (dispatch, getState) => {
 
     const {data, emitter, response} = client;
+    
+    // on ajoute l'id de la caisse à la propriété localsync
+    // et si elle n'existe pas, on crée la propriété
+    const {caisse} = getState().parametresReducer.parametres.options;
+    const {localsync} = data;
+    let __lsync = localsync || [];
+    if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
 
-    clientsServices.updateClient(data)
+    const __data = {...data, localsync:__lsync}
+
+    clientsServices.updateClient(__data)
     .then(
       result => {
 

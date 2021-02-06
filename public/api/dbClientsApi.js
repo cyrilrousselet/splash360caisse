@@ -40,6 +40,16 @@ const actions = {
     res.send(confirm);
   },
 
+  dbGetItems: async (itemtype, ids) => {
+
+    (await db.clients)._.mixin(lodashId);
+    const response = await (await db.clients).get('clients')
+                                             .filter( c => ids.includes(c.client_id) )
+                                             .value();
+    
+    return response;
+  },
+
   dbClientsSummary: async (query) => {
 
     (await db.clients)._.mixin(lodashId);

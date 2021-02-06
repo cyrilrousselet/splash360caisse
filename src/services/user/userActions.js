@@ -97,6 +97,7 @@ function updateUser(payload) {
     let user = users.find(usr=>usr.user_id===user_id);
 
 
+    const {caisse} = getState().parametresReducer.parametres.options;
 
     // on ne récupère que les propriétés qui ont été mises à jour
     let updated_data = {};
@@ -107,7 +108,7 @@ function updateUser(payload) {
     });
 
     
-    user = {...user, ...updated_data};
+    user = {...user, ...updated_data, localsync: [caisse.uniqid]};
     console.log(user);
     
      userServices.update(user)
@@ -126,14 +127,16 @@ function updateUser(payload) {
 }
 
 function createUser(payload) {
-  return dispatch => {
+  return (dispatch, getState) => {
     dispatch({ type: userActionTypes.CREATE_REQUEST });
+
+    const {caisse} = getState().parametresReducer.parametres.options;
 
     let updated_data = {};
     Object.entries(payload).forEach(([key,value]) => {
       if (value) updated_data[key] = value;
     });
-    const newuser = {...updated_data};
+    const newuser = {...updated_data, localsync: [caisse.uniqid]};
 
      userServices.update(newuser)
       .then(
@@ -181,11 +184,20 @@ function _delete(id) {
  * ajout / modif de user depuis la synchro
  */
 function setUserFromSync(payload) {
-  return dispatch => {
+  return (dispatch, getState) => {
 
     const {data, emitter, response} = payload;
 
-    userServices.update(data)
+    // on ajoute l'id de la caisse à la propriété localsync
+    // et si elle n'existe pas, on crée la propriété
+    const {caisse} = getState().parametresReducer.parametres.options;
+    const {localsync} = data;
+    let __lsync = localsync || [];
+    if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
+
+    const __data = {...data, localsync:__lsync};
+
+    userServices.update(__data)
     .then(
       user => {
 
@@ -197,7 +209,7 @@ function setUserFromSync(payload) {
         // donc inutile de confirmer le traitement de la synchro
         if (emitter!==null && response!==null) {
           dispatch(notificationActions.syncConfirm(response));
-          dispatch(notificationActions.syncDispatch('user', data, emitter));
+          dispatch(notificationActions.syncDispatch('user', __data, emitter));
         }
         dispatch(getAll());
       }

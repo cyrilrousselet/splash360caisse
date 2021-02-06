@@ -56,6 +56,15 @@ const actions = {
     res.send(proxies);
   },
 
+
+
+  dbGetItems: async (itemtype, ids) => {
+
+    const _clo = await _findCloture({clotureId: {$in: ids}});
+    return _clo;
+  },
+
+
   // retourne la liste des id et updatedAt des clotures qui correspondent à la requête
   dbCloturesSummary: async (query) => {
     // const _clo = await _findCloture({

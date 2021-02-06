@@ -197,6 +197,13 @@ const actions = {
     }
   },
 
+
+  dbGetItems: async (itemtype, ids) => {
+
+    const _trs = await _findTresors({tresorId: {$in: ids}});
+    return _trs;
+  },
+
   dbTresorerieSummary: async (query) => {
     
     // const _trs = await _findTresors({

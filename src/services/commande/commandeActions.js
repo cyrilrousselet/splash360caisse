@@ -229,7 +229,7 @@ function validateCommande(payload) {
     payload.operator_encaissement = { id: user.id, nom: user.nom };
     payload.caisse_encaissement = caisse;
 
-    const payloadcopy = { ...payload };
+    const payloadcopy = { ...payload, localsync: [caisse.uniqid] };
     dispatch(getCommande());
 
     logger.time('validateCommande (persist)');
@@ -353,8 +353,8 @@ function standByCommande(payload, needNumero) {
 
     logger.log("standByCommande needNumero", needNumero);
 
+    const { parametres } = state.parametresReducer;
     if (needNumero) {
-      const { parametres } = state.parametresReducer;
       const { numero } = state.commandeReducer;
 
       const newnumero = await numeroActions._getNumero(parametres, numero);
@@ -370,6 +370,8 @@ function standByCommande(payload, needNumero) {
       logger.log("standByCommande nn numero", payload.numero);
     }
     logger.log("standByCommande nn numero", payload.numero);
+
+    payload.localsync = [parametres.options.caisse.uniqid];
 
     // if (payload.numero==null) {
     //   payload.numero = getState().commandeReducer.commande.numero;
@@ -415,8 +417,8 @@ function livraisonCommande(payload, needNumero) {
 
     logger.log("livraisonCommande needNumero", needNumero);
 
+    const { parametres } = state.parametresReducer;
     if (needNumero) {
-      const { parametres } = state.parametresReducer;
       const { numero } = state.commandeReducer;
 
       const newnumero = await numeroActions._getNumero(parametres, numero);
@@ -439,7 +441,7 @@ function livraisonCommande(payload, needNumero) {
     //   payload.numero = getState().commandeReducer.commande.numero;
     // }
 
-    const payloadcopy = { ...payload };
+    const payloadcopy = { ...payload, localsync: [parametres.options.caisse.uniqid] };
     dispatch(peripheralActions.printTicket("all"));
     dispatch(getCommande());
 
@@ -946,7 +948,7 @@ function setCommandeFromOrder(provider, payload) {
 
     // dispatch(numeroActions.takeNumero());
 
-    commandeServices.saveCommande(commande, state.catalogueReducer).then(
+    commandeServices.saveCommande({...commande, localsync: [parametres.options.caisse.uniqid]}, state.catalogueReducer).then(
       (confirm) => {
         dispatch(getTodayCommandesList());
         dispatch(notificationActions.syncDispatch("commande", confirm));
@@ -1037,13 +1039,13 @@ function setCommandeFromAPI(payload) {
     );
 
     // activation de l'impression des tickets pour les commandes en attente
-    const {print_standby} = getState().parametresReducer.parametres.commandes;
+    const {print_standby} = parametres.commandes;
 
     if (commande.status === "confirmed" || print_standby) {
       dispatch(peripheralActions.printCommandeTicket("production", commande));
     }
 
-    commandeServices.saveCommande(commande, state.catalogueReducer).then(
+    commandeServices.saveCommande({...commande, localsync: [parametres.options.caisse.uniqid]}, state.catalogueReducer).then(
       (confirm) => {
         dispatch(getTodayCommandesList());
         dispatch(notificationActions.syncDispatch("commande", confirm));
@@ -1077,49 +1079,117 @@ function setCommandeFromAPI(payload) {
  * ajout / modif de commandes depuis la synchro
  */
 function setCommandeFromSync(commande) {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     const { data, emitter, response } = commande;
 
-    commandeServices.setCommandeFromSync(data).then(
-      (confirm) => {
-        dispatch({
-          type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_SUCCESS,
-          confirm,
-        });
 
-        // -> si 'emitter' est null, la synchro provient de la caisse 'primary',
-        // donc inutile de lui renvoyer la synchro
-        // -> si 'response' est null, la synchro ne provient pas de l'API,
-        // donc inutile de confirmer le traitement de la synchro
-        if (emitter !== null && response !== null) {
-          dispatch(notificationActions.syncConfirm(response));
-          dispatch(notificationActions.syncDispatch("commande", data, emitter));
+    // on ajoute l'id de la caisse à la propriété localsync
+    // et si elle n'existe pas, on crée la propriété
+    const {caisse} = getState().parametresReducer.parametres.options;
 
-          // synchro de la commande avec le BO,
-          // si la commande provient d'une caisse 'secondary'
-          // et s'il s'agit d'une commande confirmée ou supprimée
-          if (confirm.status === "confirmed" || confirm.status === "deleted") {
-            const cmdtosync = {
-              ...confirm,
-              chrono: confirm.chrono || 0,
-              createdAt: formatISO(confirm.createdAt),
-              updatedAt: formatISO(confirm.updatedAt),
-            };
+    if (Array.isArray(data)) {
 
-            dispatch(notificationActions.syncCommandes([cmdtosync]));
-            dispatch(clotureActions.getTodayCa());
+      data.forEach(cmd => {
+
+        const {localsync} = cmd;
+        let __lsync = localsync || [];
+        if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
+  
+        const __data = {...cmd, localsync: __lsync};
+  
+        commandeServices.setCommandeFromSync(__data).then(
+          (confirm) => {
+            dispatch({
+              type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_SUCCESS,
+              confirm,
+            });
+  
+            // -> si 'emitter' est null, la synchro provient de la caisse 'primary',
+            // donc inutile de lui renvoyer la synchro
+            // -> si 'response' est null, la synchro ne provient pas de l'API,
+            // donc inutile de confirmer le traitement de la synchro
+            if (emitter !== null && response !== null) {
+              dispatch(notificationActions.syncConfirm(response));
+              dispatch(notificationActions.syncDispatch("commande", __data, emitter));
+  
+              // synchro de la commande avec le BO,
+              // si la commande provient d'une caisse 'secondary'
+              // et s'il s'agit d'une commande confirmée ou supprimée
+              if (confirm.status === "confirmed" || confirm.status === "deleted") {
+                const cmdtosync = {
+                  ...confirm,
+                  chrono: confirm.chrono || 0,
+                  createdAt: formatISO(confirm.createdAt),
+                  updatedAt: formatISO(confirm.updatedAt),
+                };
+  
+                dispatch(notificationActions.syncCommandes([cmdtosync]));
+                dispatch(clotureActions.getTodayCa());
+              }
+            }
+            dispatch(getTodayCommandesList());
+          },
+          (error) => {
+            dispatch({
+              type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_FAILURE,
+              error: error,
+            });
+            logger.log("sync cmd err", error);
           }
+        );
+
+      });
+
+    } else {
+
+      const {localsync} = data;
+      let __lsync = localsync || [];
+      if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
+
+      const __data = {...data, localsync: __lsync};
+
+      commandeServices.setCommandeFromSync(__data).then(
+        (confirm) => {
+          dispatch({
+            type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_SUCCESS,
+            confirm,
+          });
+
+          // -> si 'emitter' est null, la synchro provient de la caisse 'primary',
+          // donc inutile de lui renvoyer la synchro
+          // -> si 'response' est null, la synchro ne provient pas de l'API,
+          // donc inutile de confirmer le traitement de la synchro
+          if (emitter !== null && response !== null) {
+            dispatch(notificationActions.syncConfirm(response));
+            dispatch(notificationActions.syncDispatch("commande", __data, emitter));
+
+            // synchro de la commande avec le BO,
+            // si la commande provient d'une caisse 'secondary'
+            // et s'il s'agit d'une commande confirmée ou supprimée
+            if (confirm.status === "confirmed" || confirm.status === "deleted") {
+              const cmdtosync = {
+                ...confirm,
+                chrono: confirm.chrono || 0,
+                createdAt: formatISO(confirm.createdAt),
+                updatedAt: formatISO(confirm.updatedAt),
+              };
+
+              dispatch(notificationActions.syncCommandes([cmdtosync]));
+              dispatch(clotureActions.getTodayCa());
+            }
+          }
+          dispatch(getTodayCommandesList());
+        },
+        (error) => {
+          dispatch({
+            type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_FAILURE,
+            error: error,
+          });
+          logger.log("sync cmd err", error);
         }
-        dispatch(getTodayCommandesList());
-      },
-      (error) => {
-        dispatch({
-          type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_FAILURE,
-          error: error,
-        });
-        logger.log("sync cmd err", error);
-      }
-    );
+      );
+      
+    }
   };
 }
 

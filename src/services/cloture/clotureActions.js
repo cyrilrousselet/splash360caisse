@@ -11,6 +11,7 @@ import { peripheralActions } from '../peripheral/peripheralActions';
 import Logger from '../../helpers/Logger';
 import { commandeServices } from '../commande/commandeServices';
 import { dateBounds } from '../../helpers/toolbox';
+import { notificationActions } from '../notification/notificationActions';
 // import { dateBounds } from '../../helpers/toolbox';
 // const strings = new LocalizedStrings(data);
 
@@ -231,8 +232,11 @@ function makeCloture(params={}) {
     logger.time("makeCloture");
     const cloture = clotureServices.makeCloture(commandeslist, catalogue, params)
     logger.timeEnd("makeCloture");
-    logger.time("saveCloture");
-    clotureServices.saveCloture(cloture)
+    logger.time("saveCloture"); 
+
+    const __cloture = {...cloture, localsync: [options.caisse.uniqid]};
+
+    clotureServices.saveCloture(__cloture)
       .then(
         data => {
           logger.timeEnd("saveCloture");
@@ -240,6 +244,7 @@ function makeCloture(params={}) {
           dispatch({ type: clotureActionTypes.MAKE_CLOTURE, cloture });
           dispatch(getLast());
           dispatch(peripheralActions.printCloture(cloture));
+          dispatch(notificationActions.syncDispatch('cloture', __cloture));
         //  dispatch(notificationActions.syncClotures([data]));
         }
       )
@@ -267,6 +272,67 @@ function setSyncedClotures(payload) {
   }
 }
 
+
+function setClotureFromSync(cloture) {
+  return (dispatch, getState) => {
+    const { data, emitter, response } = cloture;
+
+
+    // on ajoute l'id de la caisse à la propriété localsync
+    // et si elle n'existe pas, on crée la propriété
+    const {caisse} = getState().parametresReducer.parametres.options;
+
+    if (Array.isArray(data)) {
+
+      data.forEach(clo => {
+        const {localsync} = clo;
+        let __lsync = localsync || [];
+        if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
+  
+        clotureServices.saveCloture({...clo, localsync:__lsync})
+        .then(
+          result => {
+            dispatch({ type: clotureActionTypes.PERSIST_FROM_SYNC_SUCCESS, result });
+  
+            // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
+            // donc inutile de lui renvoyer la synchro
+            // -> si 'response' est null, la synchro ne provient pas de l'API,
+            // donc inutile de confirmer le traitement de la synchro
+            if (emitter!==null && response!==null) {
+              dispatch(notificationActions.syncConfirm(response));
+              dispatch(notificationActions.syncDispatch('cloture', result, emitter));
+            }
+          }
+        )
+      });
+
+    } else {
+      
+      const {localsync} = data;
+      let __lsync = localsync || [];
+      if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
+
+      clotureServices.saveCloture({...data, localsync:__lsync})
+      .then(
+        result => {
+          dispatch({ type: clotureActionTypes.PERSIST_FROM_SYNC_SUCCESS, result });
+
+          // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
+          // donc inutile de lui renvoyer la synchro
+          // -> si 'response' est null, la synchro ne provient pas de l'API,
+          // donc inutile de confirmer le traitement de la synchro
+          if (emitter!==null && response!==null) {
+            dispatch(notificationActions.syncConfirm(response));
+            dispatch(notificationActions.syncDispatch('cloture', result, emitter));
+          }
+        }
+      )
+
+    }
+  }
+}
+
+
 export const clotureActions = {
   getLast,
   getCurrentPeriode,
@@ -275,5 +341,6 @@ export const clotureActions = {
   getCloturesList,
   getBoundedClotures,
   setSyncedClotures,
+  setClotureFromSync,
   getTodayCa
 };

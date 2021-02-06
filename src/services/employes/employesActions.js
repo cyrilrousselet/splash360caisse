@@ -33,10 +33,12 @@ function getShiftsList(params={}) {
 }
 
 function createShift(payload) {
-  return dispatch => {
+  return (dispatch, getState) => {
     dispatch({ type: employesActionTypes.CREATE_SHIFT_REQUEST });
+
+    const {caisse} = getState().parametresReducer.parametres.options;
     
-    employesServices.createShift(payload)
+    employesServices.createShift({...payload, localsync: [caisse.uniqid]})
     .then(
       data => {
         dispatch({ type: employesActionTypes.CREATE_SHIFT_SUCCESS, ...data });
@@ -53,8 +55,9 @@ function updateShift(payload) {
     
     const { shifts } = getState().employesReducer;
     const shift = shifts.find(sh => sh.shift_id = payload.shift_id);
+    const {caisse} = getState().parametresReducer.parametres.options;
 
-    employesServices.updateShift({...shift, ...payload})
+    employesServices.updateShift({...shift, ...payload, localsync: [caisse.uniqid]})
     .then(
       data => {
         dispatch({ type: employesActionTypes.UPDATE_SHIFT_SUCCESS, ...data });
@@ -98,10 +101,10 @@ function getTimeadjustsList(params={}) {
 }
 
 function createTimeadjust(payload) {
-  return dispatch => {
+  return (dispatch, getState) => {
     dispatch({ type: employesActionTypes.CREATE_TIMEADJUST_REQUEST });
-    
-    employesServices.createTimeadjust(payload)
+    const {caisse} = getState().parametresReducer.parametres.options;
+    employesServices.createTimeadjust({...payload, localsync:[caisse.uniqid]})
     .then(
       data => {
         dispatch({ type: employesActionTypes.CREATE_TIMEADJUST_SUCCESS, ...data });
@@ -118,8 +121,9 @@ function updateTimeadjust(payload) {
     
     const { timeajusts } = getState().employesReducer;
     const timeajust = timeajusts.find(ta => ta.adjust_id = payload.adjust_id);
+    const {caisse} = getState().parametresReducer.parametres.options;
 
-    employesServices.updateTimeadjust({...timeajust, ...payload})
+    employesServices.updateTimeadjust({...timeajust, ...payload, localsync:[caisse.uniqid]})
     .then(
       data => {
         dispatch({ type: employesActionTypes.UPDATE_TIMEADJUST_SUCCESS, ...data });
@@ -149,11 +153,13 @@ function deleteTimeadjust(payload) {
 
 function setClockIn(payload) {
 
-  return dispatch => {
+  return (dispatch, getState) => {
 
     dispatch({ type: employesActionTypes.CLOCKIN_REQUEST });
 
-    employesServices.newPointage(payload)
+    const {caisse} = getState().parametresReducer.parametres.options;
+
+    employesServices.newPointage({...payload, localsync:[caisse.uniqid]})
     .then(
       data => {
         dispatch({type: employesActionTypes.CLOCKIN_SUCCESS, ...data});
@@ -173,9 +179,11 @@ function setClockOut(payload) {
     const { time, pointage_id } = payload;
     dispatch({ type: employesActionTypes.CLOCKOUT_REQUEST });
 
+    const {caisse} = getState().parametresReducer.parametres.options;
+
     const pointage = getState().employesReducer.pointages.find(p => p.pointage_id===pointage_id);
 
-    employesServices.updatePointage({...pointage, clockout: time, status: 'closed'})
+    employesServices.updatePointage({...pointage, clockout: time, status: 'closed', localsync:[caisse.uniqid]})
     .then(
       data => {
         dispatch({type: employesActionTypes.CLOCKOUT_SUCCESS, ...data});
@@ -189,11 +197,20 @@ function setClockOut(payload) {
 }
 
 function setPointageFromSync(payload) {
-  return dispatch => {
+  return (dispatch,getState) => {
 
     const {data, emitter, response} = payload;
+    
+    // on ajoute l'id de la caisse à la propriété localsync
+    // et si elle n'existe pas, on crée la propriété
+    const {caisse} = getState().parametresReducer.parametres.options;
+    const {localsync} = data;
+    let __lsync = localsync || [];
+    if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
 
-    employesServices.updatePointage(data)
+    const __data = {...data, localsync:__lsync};
+
+    employesServices.updatePointage(__data)
     .then(
       pointage => {
 
@@ -205,7 +222,7 @@ function setPointageFromSync(payload) {
         // donc inutile de confirmer le traitement de la synchro
         if (emitter!==null && response!==null) {
           dispatch(notificationActions.syncConfirm(response));
-          dispatch(notificationActions.syncDispatch('pointage', data, emitter));
+          dispatch(notificationActions.syncDispatch('pointage', __data, emitter));
         }
         dispatch(getPointagesList());
       }
