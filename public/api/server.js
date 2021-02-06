@@ -150,7 +150,7 @@ const welcomeTreatment = async (station_uniqid, exclusion=false) => {
         { localsync: { $ne: station_uniqid } }
       ]
     }
-  : { localsync: { $elemMatch: station_uniqid } }
+  : { localsync: { $eq: station_uniqid } }
   ;
 
   const ldb_query = {stationid:station_uniqid, exclusion:exclusion};
