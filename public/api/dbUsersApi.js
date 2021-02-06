@@ -49,13 +49,20 @@ const actions = {
     res.send(__usr);
   },
 
-  dbUsersSummary: async () => {
+  dbUsersSummary: async (query) => {
 
     (await db.users)._.mixin(lodashId);
 
+    const {stationid, exclusion} = query;
+
     let _usrSummary = [];
     const _usr = await (await db.users).get('users')
-                                       .find( t => ( (sps === false) || (sps === undefined) ) )
+                                       .filter( u => {
+                                         return exclusion 
+                                           ? (u.localsync === undefined) || !u.localsync.includes(stationid)
+                                           : (u.localsync !== undefined) &&  u.localsync.includes(stationid)
+                                           ;
+                                       })
                                        .value();
     if (_usr) {
       _usrSummary = _usr.map(u => (

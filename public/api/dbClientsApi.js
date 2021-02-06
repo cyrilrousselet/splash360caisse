@@ -40,17 +40,31 @@ const actions = {
     res.send(confirm);
   },
 
-  dbClientsSummary: async () => {
+  dbClientsSummary: async (query) => {
 
     (await db.clients)._.mixin(lodashId);
 
-    const _clt = await (await db.clients).get('clients').value();
-    const _cltSummary = _clt.map(c => (
-      {
-        id: c.client_id,
-        updatedAt: c.updatedAt
-      }
-    ));
+
+    const {stationid, exclusion} = query;
+
+    let _cltSummary = [];
+
+    const _clt = await (await db.clients).get('clients')
+                                         .filter( c => {
+                                           return exclusion 
+                                             ? (c.localsync === undefined) || !c.localsync.includes(stationid)
+                                             : (c.localsync !== undefined) &&  c.localsync.includes(stationid)
+                                             ;
+                                         })
+                                         .value();
+    if (_clt) {
+      _cltSummary = _clt.map(c => (
+        {
+          id: c.client_id,
+          updatedAt: c.updatedAt
+        }
+      ));
+    }
     return {
       clients: _cltSummary
     };

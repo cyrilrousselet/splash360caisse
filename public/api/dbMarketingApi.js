@@ -100,18 +100,25 @@ const actions = {
   },
 
 
-  dbMarketingSummary: async () => {
+  dbMarketingSummary: async (query) => {
 
     (await db.avoirs)._.mixin(lodashId);
     (await db.reglespanier)._.mixin(lodashId);
     (await db.reglescatalogue)._.mixin(lodashId);
+
+    const {stationid, exclusion} = query;
 
     let _avrSummary = [];
     let _rpnSummary = [];
     let _rctSummary = [];
 
     const _avr = await (await db.avoirs).get('avoirs')
-                                        .find( t => ( (sps === false) || (sps === undefined) ) )
+                                        .filter( a => {
+                                          return exclusion 
+                                            ? (a.localsync === undefined) || !a.localsync.includes(stationid)
+                                            : (a.localsync !== undefined) &&  a.localsync.includes(stationid)
+                                            ;
+                                        })
                                         .value();
     if (_avr) {
       _avrSummary = _avr.map(a => (
@@ -122,7 +129,12 @@ const actions = {
       ));
     }
     const _rpn = await (await db.reglespanier).get('reglespanier')
-                                              .find( t => ( (sps === false) || (sps === undefined) ) )
+                                              .filter( p => {
+                                                return exclusion 
+                                                  ? (p.localsync === undefined) || !p.localsync.includes(stationid)
+                                                  : (p.localsync !== undefined) &&  p.localsync.includes(stationid)
+                                                  ;
+                                              })
                                               .value();
     if (_rpn) {
       _rpnSummary = _rpn.map(r => (
@@ -133,7 +145,12 @@ const actions = {
       ));
     }
     const _rct = await (await db.reglescatalogue).get('reglescatalogue')
-                                                 .find( t => ( (sps === false) || (sps === undefined) ) )
+                                                 .filter( c => {
+                                                   return exclusion 
+                                                     ? (c.localsync === undefined) || !c.localsync.includes(stationid)
+                                                     : (c.localsync !== undefined) && c.localsync.includes(stationid)
+                                                     ;
+                                                 })
                                                  .value();
     if (_rct) {
       _rctSummary = _rct.map(r => (

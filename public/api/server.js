@@ -153,13 +153,15 @@ const welcomeTreatment = async (station_uniqid, exclusion=false) => {
   : { localsync: { $elemMatch: station_uniqid } }
   ;
 
-  const catalogue_sum = await dbCatalogueApi.dbCatalogueSummary();
-  const clients_sum = await dbClientsApi.dbClientsSummary();
+  const ldb_query = {stationid:station_uniqid, exclusion:exclusion};
+
+  const catalogue_sum = await dbCatalogueApi.dbCatalogueSummary(ldb_query);
+  const clients_sum = await dbClientsApi.dbClientsSummary(ldb_query);
   const clotures_sum = await dbCloturesApi.dbCloturesSummary(mongo_query);
   const commandes_sum = await dbCommandesApi.dbCommandesSummary(mongo_query);
-  const employes_sum = await dbEmployesApi.dbEmployesSummary();
-  const marketing_sum = await dbMarketingApi.dbMarketingSummary();
-  const users_sum = await dbUsersApi.dbUsersSummary();
+  const employes_sum = await dbEmployesApi.dbEmployesSummary(ldb_query);
+  const marketing_sum = await dbMarketingApi.dbMarketingSummary(ldb_query);
+  const users_sum = await dbUsersApi.dbUsersSummary(ldb_query);
   const tresors_sum = await dbTresorerieApi.dbTresorerieSummary(mongo_query);
 
   return {
