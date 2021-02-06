@@ -432,7 +432,7 @@ const actions = {
               __summary = {...__summary, ...tresors_sum};
             }
             else if ('commandes'===entity) {
-              const commandes_sum = await dbCommandesApi.dbCommandesSummary(mongo_query);
+              const commandes_sum = await dbCommandesApi.dbCommandesSummary(mongo_query, ldb_query);
               __summary = {...__summary, ...commandes_sum};
             } 
             else if ('clotures'===entity) {
