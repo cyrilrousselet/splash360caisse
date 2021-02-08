@@ -22,7 +22,7 @@ import ClientsCont from './../containers/ClientsCont';
 import MainLoaderCont from './../containers/MainLoaderCont';
 import TresorerieCont from './../containers/TresorerieCont';
 
-export default () => (
+const Routes = () => (
   <App>
     <Switch>
       <Route exact path={ paths.MAIN_LOADER } component={MainLoaderCont} />
@@ -46,3 +46,4 @@ export default () => (
     </Switch>
   </App>
 );
+export default Routes;
