@@ -417,7 +417,7 @@ class Menu extends React.Component {
       }
     });
 
-    logger.log(prdlist);
+  logger.log(inglist);
 
   const a11yProps = (index) => {
     return {

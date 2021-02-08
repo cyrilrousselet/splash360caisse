@@ -34,6 +34,7 @@
     "getdb": "https://api.splash360.fr/api/export/database",
     "syncCommandes": "https://api.splash360.fr/api/import/commandes",
     "syncClotures": "https://api.splash360.fr/api/import/clotures",
-    "getStatus": "https://api.splash360.fr/api/licence/station/%STATIONID%/%UUID%"
+    "getStatus": "https://api.splash360.fr/api/licence/station/%STATIONID%/%UUID%",
+    "confirmCommande": "https://api.splash360.fr/api/import/confirmcommande"
   }
 }

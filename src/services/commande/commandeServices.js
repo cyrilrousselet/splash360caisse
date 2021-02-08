@@ -40,7 +40,7 @@ export const commandeServices = {
 
 function getNewCommande(params) {
   return {
-    ticketId: _newCommandeId(),
+    ticketId: params.ticketId || _newCommandeId(),
     numero: null,
     operator: { id: params.operator.id, nom: params.operator.nom },
     caisse: params.caisse,

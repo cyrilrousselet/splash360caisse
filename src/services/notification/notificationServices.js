@@ -25,6 +25,7 @@ export const notificationServices = {
   getDatabase,
   syncCommandes,
   syncClotures,
+  confirmCommande,
   resync
  };
 
@@ -61,6 +62,17 @@ async function syncClotures(params) {
   if (__splashToken.splash_token.access_token) {
     var __url = externalParams.synchro.syncClotures;
     return emit('syncCloturesBO', {url: __url, access_token: __splashToken.splash_token.access_token, clotures: params.clotures});
+  }
+}
+async function confirmCommande(params) {
+  logger.log('notifSrv.confirmCommandes()','init');
+  const __splashToken = await getSplashToken(params);
+  
+  logger.log('notifSrv.confirmCommandes()',__splashToken);
+  
+  if (__splashToken.splash_token.access_token) {
+    var __url = externalParams.synchro.confirmCommande + params.ticketId;
+    return emit('syncCommandesBO', {url: __url, access_token: __splashToken.splash_token.access_token, numero: params.numero});
   }
 }
 
@@ -185,10 +197,25 @@ async function acceptOrder(provider, order) {
 
 async function getOrder(provider, data) {
 
-  const __getOrdertoken = await getToken(provider, 'getorder');
+  if (provider==='clickandcollect') {
 
-  if (__getOrdertoken.access_token) {
-    return emit('getUberOrder', {url: data.href, access_token: __getOrdertoken.access_token});
+    
+    const __splashToken = await getSplashToken(data.params);
+
+    logger.log('notifSrv.getOrder()',__splashToken);
+
+    if (__splashToken.splash_token.access_token) {
+      var __url = data.href;
+      return emit('getCommande', {url: __url, access_token: __splashToken.splash_token.access_token});
+    } 
+
+  } else {
+ 
+    const __getOrdertoken = await getToken(provider, 'getorder');
+    
+    if (__getOrdertoken.access_token) {
+      return emit('getUberOrder', {url: data.href, access_token: __getOrdertoken.access_token});
+    }
   }
 }
   

@@ -401,6 +401,50 @@ const actions = {
     __request.end();
   },
 
+  getCommande: (req, res) => {
+    const { url, access_token } = req.payload;
+    let __commande = [];
+
+    const __request = net.request({
+      url: url,
+      method: "get",
+    });
+    __request.setHeader("Authorization", "Bearer " + access_token);
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/json");
+
+    __request.on("response", (response) => {
+      log.info(`getCommande STATUS: ${response.statusCode}`);
+      log.info(`getCommande HEADERS: ${JSON.stringify(response.headers)}`);
+      response.on("data", (chunk) => {
+        __commande.push(chunk);
+        log.info(`getCommande BODY: ${chunk}`);
+      });
+      response.on("end", () => {
+        log.info("getCommande: end");
+
+        let __cmd = {};
+        try {
+          __cmd = { commande: JSON.parse(__commande.join("")) };
+        } catch (e) {
+          __cmd = { error: e.message };
+          log.error("JSON error", e);
+        }
+
+        res.send(__cmd);
+
+      });
+    });
+
+    __request.on('error', (error) => {
+      log.error('getCommande ERROR', error);
+      res.error(error);
+    });
+
+    __request.end();
+
+  },
+
   syncCommandesBO: (req, res) => {
     const { url, access_token, commandes } = req.payload;
 

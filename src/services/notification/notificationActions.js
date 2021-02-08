@@ -185,6 +185,23 @@ function treatment(data) {
         error => logger.log('Token error', error)
       );
     }
+    else if (data.eventType==='newcommande') {
+
+      const { entreprise } = getState().parametresReducer.parametres; 
+
+      dispatch({ type: notificationActionTypes.GET_NOTIFICATION, notif: data.eventType });
+
+      notificationServices.getOrder( 'clickandcollect', {...data, id: entreprise.restaurant_id, secret: entreprise.restaurant_secret} )
+      .then(
+        response => {
+
+          dispatch(commandeActions.setCommandeFromAPI( {...response, provider:'clickandcollect'} ))
+
+        },
+        error => logger.log('C&C getCommande Error')
+      )
+
+    }
   } 
 }
 
@@ -203,6 +220,19 @@ function denyOrder(provider, order) {
   return dispatch => {
     dispatch({ type: notificationActionTypes.DENY_ORDER, id: order.id });
     notificationServices.denyOrder(provider, order);
+  }
+}
+
+function confirmCommande(payload) {
+  return (dispatch, getState) => {
+    const { entreprise } = getState().parametresReducer.parametres; 
+
+    notificationServices.confirmCommande({
+      id: entreprise.restaurant_id,
+      secret: entreprise.restaurant_secret,
+      ticketId: payload.ticketId,
+      numero: payload.numero
+    });
   }
 }
 
@@ -520,6 +550,7 @@ export const notificationActions = {
   sendNumero,
   getNewNumero,
   getDatabase,
+  confirmCommande,
   initSyncCommandes,
   syncCommandes,
   initSyncClotures,

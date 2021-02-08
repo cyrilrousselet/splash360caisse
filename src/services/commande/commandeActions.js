@@ -9,7 +9,6 @@ import { numeroActions } from "./numeroActions";
 import { numeroActionTypes } from "./numeroActionTypes";
 import frLocale from "date-fns/locale/fr";
 import { dateBounds } from "../../helpers/toolbox";
-// import { notificationServices } from '../notification/notificationServices';
 
 const logger = new Logger();
 
@@ -178,6 +177,7 @@ function setChrono(payload) {
                 10
             ) / 100,
           status: commande.status,
+          createdAt: formatISO(commande.createdAt),
           updatedAt: formatISO(new Date()),
         };
       }
@@ -196,6 +196,7 @@ function setChrono(payload) {
               differenceInMilliseconds(careDatetime, parseISO(commande.end)) /
                 10
             ) / 100,
+          createdAt: formatISO(commande.createdAt),
           updatedAt: formatISO(new Date()),
         };
       }
@@ -996,19 +997,22 @@ function setCommandeFromAPI(payload) {
     const state = getState();
     let { data } = payload;
 
-    if (data.status === "confirmed") {
-      data = {
-        ...data,
-        operator_encaissement: data.operator,
-        caisse_encaissement: data.caisse,
-        reglements: data.reglements || [
-          {
-            moyen: "carte",
-            reglementId: new Date().getTime(),
-            valeur: data.total,
-          },
-        ],
-      };
+    if (data.provider!=="clickandcollect") {
+    
+      if (data.status === "confirmed") {
+        data = {
+          ...data,
+          operator_encaissement: data.operator,
+          caisse_encaissement: data.caisse,
+          reglements: data.reglements || [
+            {
+              moyen: "carte",
+              reglementId: new Date().getTime(),
+              valeur: data.total,
+            },
+          ],
+        };
+      }
     }
 
     const { numero } = getState().commandeReducer;
@@ -1027,16 +1031,25 @@ function setCommandeFromAPI(payload) {
       newnumero
     );
 
-    const numtosend =
-      commande.numero.hex === true
-        ? commande.numero.value.toString(16)
-        : commande.numero.value;
+    // si la commande vient du Click & Collect
+    if (data.provider==="clickandcollect") {
+      notificationActions.confirmCommande({ticketId: data.ticket_id, numero: commande.numero});
+    } 
+    // sinon la commande vient de la borne
+    else {
+      
 
-    commandeServices.sendTicketId(
-      commande.ticketId,
-      numtosend,
-      payload.response
-    );
+      const numtosend =
+        commande.numero.hex === true
+          ? commande.numero.value.toString(16)
+          : commande.numero.value;
+
+      commandeServices.sendTicketId(
+        commande.ticketId,
+        numtosend,
+        payload.response
+      );
+    }
 
     // activation de l'impression des tickets pour les commandes en attente
     const {print_standby} = parametres.commandes;
