@@ -445,6 +445,51 @@ const actions = {
 
   },
 
+  confirmCommandesBO: (req, res) => {
+    const { url, access_token, numero } = req.payload;
+
+    let __confNumero = [];
+
+    const __request = net.request({
+      url: url,
+      method: "post",
+    });
+    __request.setHeader("Authorization", "Bearer " + access_token);
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/json");
+
+    const data = JSON.stringify({ numero: numero });
+    log.info("Sync numero commande req data: ", data);
+    __request.write(data);
+
+    __request.on("response", (response) => {
+      response.on("data", (chunk) => {
+        __confNumero.push(chunk);
+        log.info(`confirmCommandesBO BODY: ${chunk}`);
+      });
+      response.on("end", () => {
+        log.info("confirmCommandesBO: end");
+
+        let __conf = {};
+        try {
+          __conf = { confirm: JSON.parse(__confNumero.join("")) };
+        } catch (e) {
+          __conf = { error: e.message };
+          log.error("JSON error", e);
+        }
+
+        res.send(__conf);
+      });
+    });
+
+    __request.on('error', (error) => {
+      log.error('confirmCommandesBO ERROR', error);
+      res.error(error);
+    });
+
+    __request.end();
+  },
+
   syncCommandesBO: (req, res) => {
     const { url, access_token, commandes } = req.payload;
 

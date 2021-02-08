@@ -997,8 +997,15 @@ function setCommandeFromAPI(payload) {
     const state = getState();
     let { data } = payload;
 
-    if (data.provider!=="clickandcollect") {
-    
+    if (data.provider==="clickandcollect") {
+      const datacommande = data.commande;
+      data = {
+        ...datacommande,
+        provider: data.provider,
+        operator: {id:'clickandcollect', nom:'clickandcollect'},
+        caisse: {id:'clickandcollect', nom:'clickandcollect'}
+      };
+    } else {
       if (data.status === "confirmed") {
         data = {
           ...data,
@@ -1031,9 +1038,12 @@ function setCommandeFromAPI(payload) {
       newnumero
     );
 
+    console.warn('data.provider',data.provider);
+
     // si la commande vient du Click & Collect
     if (data.provider==="clickandcollect") {
-      notificationActions.confirmCommande({ticketId: data.ticket_id, numero: commande.numero});
+      console.log('donc on envoie le numero de cmd au BO');
+      dispatch(notificationActions.confirmCommande({ticketId: data.ticket_id, numero: commande.numero}));
     } 
     // sinon la commande vient de la borne
     else {

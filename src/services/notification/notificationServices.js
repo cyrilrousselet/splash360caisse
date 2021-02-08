@@ -65,14 +65,14 @@ async function syncClotures(params) {
   }
 }
 async function confirmCommande(params) {
-  logger.log('notifSrv.confirmCommandes()','init');
+  logger.log('notifSrv.confirmCommande()','init');
   const __splashToken = await getSplashToken(params);
   
-  logger.log('notifSrv.confirmCommandes()',__splashToken);
+  logger.log('notifSrv.confirmCommande()',__splashToken);
   
   if (__splashToken.splash_token.access_token) {
-    var __url = externalParams.synchro.confirmCommande + params.ticketId;
-    return emit('syncCommandesBO', {url: __url, access_token: __splashToken.splash_token.access_token, numero: params.numero});
+    var __url = externalParams.synchro.confirmCommande.replace('{ticket_id}', params.ticketId);
+    return emit('confirmCommandesBO', {url: __url, access_token: __splashToken.splash_token.access_token, numero: params.numero});
   }
 }
 
@@ -197,10 +197,12 @@ async function acceptOrder(provider, order) {
 
 async function getOrder(provider, data) {
 
+  logger.log('notifSrv.getOrder()', `provider: ${provider}`, data);
+
   if (provider==='clickandcollect') {
 
     
-    const __splashToken = await getSplashToken(data.params);
+    const __splashToken = await getSplashToken(data);
 
     logger.log('notifSrv.getOrder()',__splashToken);
 

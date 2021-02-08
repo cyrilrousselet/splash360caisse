@@ -194,11 +194,9 @@ function treatment(data) {
       notificationServices.getOrder( 'clickandcollect', {...data, id: entreprise.restaurant_id, secret: entreprise.restaurant_secret} )
       .then(
         response => {
-
-          dispatch(commandeActions.setCommandeFromAPI( {...response, provider:'clickandcollect'} ))
-
-        },
-        error => logger.log('C&C getCommande Error')
+          dispatch(commandeActions.setCommandeFromAPI( {data:{...response, provider:'clickandcollect'}} ))
+        }
+      //   error => logger.log('C&C getCommande Error')
       )
 
     }
@@ -226,6 +224,8 @@ function denyOrder(provider, order) {
 function confirmCommande(payload) {
   return (dispatch, getState) => {
     const { entreprise } = getState().parametresReducer.parametres; 
+
+    logger.log('notAct.confirmCommande()');
 
     notificationServices.confirmCommande({
       id: entreprise.restaurant_id,
