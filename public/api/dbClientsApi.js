@@ -21,6 +21,17 @@ const actions = {
     log.info(proxies);
     res.send(proxies);
   },
+
+  dbClientsFindClient: async (req, res) => {
+
+    const {payload} = req;
+    log.info("dbClientsFindClient("+payload+") in API");
+    (await db.clients)._.mixin(lodashId);
+    const proxies = await _findClient(payload);
+    log.info("dbClientsFindClient", proxies);
+    res.send(proxies);
+  },
+
   dbClientPersist: async (req,res) => {
       const {payload} = req;
       log.info("dbClientPersist() in API");
@@ -100,6 +111,14 @@ async function _findClient(criteriae={}) {
   if ("client_id" in criteriae) {
     _clt = await (await db.clients).get('clients')
                                    .find(criteriae)
+                                   .value();
+  } else if ("telephone" in criteriae) {
+    _clt = await (await db.clients).get('clients')
+                                   .find((c) => (
+                                      (criteriae.telephone!=="" && (c.telephone===criteriae.telephone || c.telephone2===criteriae.telephone)) ||  
+                                      (criteriae.telephone2!=="" && (c.telephone===criteriae.telephone2 || c.telephone2===criteriae.telephone2)) || 
+                                      (criteriae.email!=="" && (String(c.email).toLowerCase()===String(criteriae.email).toLowerCase()))
+                                   ))
                                    .value();
   } else {
     _clt = await (await db.clients).get('clients')

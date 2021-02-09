@@ -9,6 +9,9 @@ import { numeroActions } from "./numeroActions";
 import { numeroActionTypes } from "./numeroActionTypes";
 import frLocale from "date-fns/locale/fr";
 import { dateBounds } from "../../helpers/toolbox";
+import { clientsServices } from "../clients/clientsServices";
+import LodashId from "lodash-id";
+import { clientsActionTypes } from "../clients/clientsActionTypes";
 
 const logger = new Logger();
 
@@ -1005,6 +1008,9 @@ function setCommandeFromAPI(payload) {
         operator: {id:'clickandcollect', nom:'clickandcollect'},
         caisse: {id:'clickandcollect', nom:'clickandcollect'}
       };
+      if (data.reglements) {
+        data.reglements = data.reglements.map(r => ({...r, reglementId: LodashId.createId()}) );
+      }
     } else {
       if (data.status === "confirmed") {
         data = {
@@ -1014,7 +1020,7 @@ function setCommandeFromAPI(payload) {
           reglements: data.reglements || [
             {
               moyen: "carte",
-              reglementId: new Date().getTime(),
+              reglementId: LodashId.createId(),
               valeur: data.total,
             },
           ],
@@ -1025,6 +1031,35 @@ function setCommandeFromAPI(payload) {
     const { numero } = getState().commandeReducer;
     const { parametres } = getState().parametresReducer;
     const newnumero = await numeroActions._getNumero(parametres, numero);
+
+
+    // si un client est renseigné
+    if (data.client) {
+
+      let client = null; 
+
+      // on le cherche dans la base
+      if (data.client.telephone || data.client.telephone2 || data.client.email) {
+
+        client = await clientsServices.findClient({
+          telephone: data.client.telephone,
+          telephone2: data.client.telephone2,
+          email: data.client.email
+        });
+        if (client._clt) dispatch({type: clientsActionTypes.FIND_CLIENT, client: client._clt});
+      }
+
+      // s'il n'existe pas on crée sa fiche
+      if (client._clt===null || client._clt===undefined) {
+        client._clt = await clientsServices.createClient(data.client);
+        if (client._clt) dispatch({type: clientsActionTypes.CREATE_SUCCESS, client: client._clt});
+      }
+
+      // et on l'ajoute à la commande
+      logger.log('cmdAct->API client', client);
+      data.client = {nom: client._clt.nom, prenom: client._clt.prenom, client_id: client._clt.client_id};
+      
+    }
 
     logger.log("new numero", newnumero);
     // dispatch({ type: numeroActionTypes.GET_NUMERO, numero: newnumero });
@@ -1064,8 +1099,12 @@ function setCommandeFromAPI(payload) {
     // activation de l'impression des tickets pour les commandes en attente
     const {print_standby} = parametres.commandes;
 
-    if (commande.status === "confirmed" || print_standby) {
-      dispatch(peripheralActions.printCommandeTicket("production", commande));
+    if (data.provider==="clickandcollect") {
+      dispatch(peripheralActions.printCommandeTicket((commande.status === "confirmed") ? "all" : "production", commande));
+    } else {
+      if (commande.status === "confirmed" || print_standby) {
+        dispatch(peripheralActions.printCommandeTicket("production", commande));
+      }
     }
 
     commandeServices.saveCommande({...commande, localsync: [parametres.options.caisse.uniqid]}, state.catalogueReducer).then(

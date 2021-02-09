@@ -6,6 +6,8 @@ const logger = new Logger();
 
 export const clientsServices = {
   getClientsList,
+  getClient,
+  findClient,
   createClient,
   updateClient,
   deleteClient
@@ -16,6 +18,14 @@ function getClientsList(params) {
   return emit('dbClientsGetAll', params);
 }
 
+function getClient(params) {
+  return emit('dbClientsGetClient', params);
+}
+
+function findClient(params) {
+  return emit('dbClientsFindClient', params);
+}
+  
 
 function createClient(payload) {
   const client = {

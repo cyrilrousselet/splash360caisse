@@ -49,7 +49,7 @@ function getNewCommande(params) {
     caisse_encaissement: params.caisse_encaissement || null,
     centre_revenu: "restaurant",
     items: [],
-    client: null,
+    client: params.client ? params.client : null,
     reglements: params.reglements || [],
     modificateurs: [],
     rendus: [],

@@ -113,7 +113,7 @@ function TicketX(props) {
           <div className="val" key="recap-item-4-val">{ devise(periode.mtcaisse) }</div>
         </div> */}
       </div>
-      <div className="titre">
+      <div className="titre" key="detail-ttl">
         { __strimp.titre.x }
       </div>
       <div className="detail" key="detail-hdr">
@@ -226,7 +226,7 @@ function TicketX(props) {
           { __strimp.caption.emission }{ devise(periode.emission)}
         </div>
       )}
-      { mouvements && (
+      { (mouvements && mouvements[0]!==null) && (
       <>
       <div className="titre" key="ventil-mouvements-ttl">
         { __strimp.mouvements.titre }
@@ -239,7 +239,7 @@ function TicketX(props) {
       </div>
       </>
       )}
-      { mouvements && mouvements.map(mvt => {
+      { (mouvements && mouvements[0]!==null) && mouvements.map(mvt => {
         return (
           <>
           <div className="ventil ventil-mouvement" key={ `ventil-mvt-${mvt.tresorId}` }>

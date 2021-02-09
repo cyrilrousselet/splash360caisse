@@ -279,7 +279,11 @@ async function _persistCommande(payload) {
     log.info("pas de cmd donc on insert");
     // Create command id
     const id = await _generateCommandId();
-    let __ins = { ...payload, id: id, createdAt: __now, updatedAt: __now };
+
+    const __createdAt = payload.createdAt ? payload.createdAt : __now;
+    const __updatedAt = payload.updatedAt ? payload.updatedAt : __now;
+
+    let __ins = { ...payload, id: id, createdAt: __createdAt, updatedAt: __updatedAt };
     _cmd = await CommandeModel.create(__ins);
     _cmd = __ins;
   }

@@ -113,30 +113,36 @@ const actions = {
     }).lean().sort({createdAt: 1}).limit(1);
 
 
-    log.info('dbTresorerieGetServiceMouvements _serviceOuverture:',_serviceOuverture);
-    log.info('dbTresorerieGetServiceMouvements _serviceCloture:',_serviceCloture);
+    // log.info('dbTresorerieGetServiceMouvements _serviceOuverture:',_serviceOuverture);
+    // log.info('dbTresorerieGetServiceMouvements _serviceCloture:',_serviceCloture);
 
     // liste des mouvements entre les deux
-    const _ouvertureCreatedAt = _serviceOuverture[0].createdAt;
-    const _clotureCreatedAt = _serviceCloture[0].createdAt;
-    const tresorslist = await _findTresors({
-      $or: [
-        {$and: [
-          {destination: payload.caisseId},
-          {type: 'entree'},
-          {createdAt: { $gt: _ouvertureCreatedAt } },
-          {createdAt: { $lt: _clotureCreatedAt } }
-        ]},
-        {$and: [
-          {origine: payload.caisseId},
-          {type: 'sortie'},
-          {createdAt: { $gt: _ouvertureCreatedAt } },
-          {createdAt: { $lt: _clotureCreatedAt } }
-        ]}
-      ]
-    });
+    let _tresorslist = [];
+    let ouverture = null;
+    if (_serviceOuverture.length>0 && _serviceCloture.length>0) {
+      
+      ouverture = _serviceOuverture[0];
+      const _ouvertureCreatedAt = ouverture.createdAt;
+      const _clotureCreatedAt = _serviceCloture[0].createdAt;
+      _tresorslist = await _findTresors({
+        $or: [
+          {$and: [
+            {destination: payload.caisseId},
+            {type: 'entree'},
+            {createdAt: { $gt: _ouvertureCreatedAt } },
+            {createdAt: { $lt: _clotureCreatedAt } }
+          ]},
+          {$and: [
+            {origine: payload.caisseId},
+            {type: 'sortie'},
+            {createdAt: { $gt: _ouvertureCreatedAt } },
+            {createdAt: { $lt: _clotureCreatedAt } }
+          ]}
+        ]
+      });
+    }
     
-    res.send({ tresorslist: [_serviceOuverture[0], ...tresorslist] });
+    res.send({ tresorslist: [ouverture, ..._tresorslist] });
   },
 
   dbTresorerieLastOuvertureAndAfter: async (req, res) => {

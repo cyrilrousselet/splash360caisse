@@ -1497,7 +1497,7 @@ function _printPrelevement(printer, data, strings) {
 
 function _printMouvements(printer, data, strings) {
 
-  if (data.length>0) {
+  if (data!==null && data.length>0) {
     printer
       .drawLine()
       .align('CT')
