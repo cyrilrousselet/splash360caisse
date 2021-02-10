@@ -402,7 +402,6 @@ function printCommandeTicket(quelstickets, cmd) {
     const recapTickets = _getRecap(ticketsListe.filter(t => 'partiel' === t.template), cmd, catalogue, types, ingredients);
 
     logger.log('ticketsListe', ticketsListe);
-    logger.log('clients', clients);
 
     // y a-t-il KDS d'activé pour un des ticket de la liste ?
     const withKds = ticketsKDS.length>0;

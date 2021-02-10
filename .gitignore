@@ -21,8 +21,6 @@
 .env.test.local
 .env.production.local
 
-/public/dev/dbhydration.js
-
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

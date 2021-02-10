@@ -222,7 +222,7 @@ class FicheClient extends React.Component {
       inscription
     } = this.getValeurs();
 
-    const liste = clients.filter(c=>(!c.bloque));
+    const liste = clients.filter(c=>( (!c.hasOwnProperty('bloque')) || (!c.bloque) ));
 
     const { focusInput, search } = this.state;
 
