@@ -17,13 +17,13 @@ Une fois le dépôt cloné, dans le dossier du projet :
 
 ## Consignes de commit
 
-Pour chaque commit sur la branche `master` qui sera destiné à être compilé, on met à jour le numéro de version dans `package.json > version`.
-
-Le numéro est composé comme suit : "0.1.YYJJJHHMM"
-- _YY_: année sur deux chiffres
-- _JJJ_: numéro du jour sur trois chiffres (5 février : '036')
-- _HH_: heure sur deux chiffres
-- _MM_: minutes sur deux chiffres
+Pour chaque commit sur la branche `master` qui sera destiné à être compilé, on met à jour le numéro de version dans `package.json > version`.<br />
+<br />
+Le numéro est composé comme suit : "0.1.YYJJJHHMM"<br />
+* __YY__: année sur deux chiffres
+* __JJJ__: numéro du jour sur trois chiffres _(5 février : '036')_
+* __HH__: heure sur deux chiffres
+* __MM__: minutes sur deux chiffres
 
 ## Étapes de compilation
 
@@ -33,6 +33,6 @@ Le numéro est composé comme suit : "0.1.YYJJJHHMM"
 
 ### Crée le package dans le dossier /dist/
 
-Sur MacOS : `yarn electron-pack-mac`
-Sur Windows : `yarn electron-pack-win`
-Sur Linux : `yarn electron-pack-lin`
+Sur MacOS : `yarn electron-pack-mac`<br />
+Sur Windows : `yarn electron-pack-win`<br />
+Sur Linux : `yarn electron-pack-lin`<br />
