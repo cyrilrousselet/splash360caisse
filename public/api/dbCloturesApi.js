@@ -65,22 +65,12 @@ const actions = {
   },
 
 
-  // retourne la liste des id et updatedAt des clotures qui correspondent à la requête
   dbCloturesSummary: async (query) => {
-    // const _clo = await _findCloture({
-    //   $or:[
-    //     { localsync: { $exists: false } },
-    //     { localsync: { $elemMatch: { $ne: stationid } } }
-    //   ]
-    // });
+
     const _clo = await _findCloture(query);
-    const _cloSummary = _clo.map((c) => ({
-      id: c.clotureId,
-      updatedAt: c.updatedAt,
-    }));
 
     return {
-      clotures: _cloSummary,
+      clotures: _clo,
     };
   },
 

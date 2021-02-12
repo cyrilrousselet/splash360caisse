@@ -137,16 +137,6 @@ const actions = {
 
     const {stationid, exclusion} = query;
 
-
-
-    let _catSummary = [];
-    let _grpSummary = [];
-    let _tvaSummary = [];
-    let _typSummary = [];
-    let _ingSummary = [];
-    let _prdSummary = [];
-    let _stpSummary = [];
-
     const _cat = await (await db.categories).get('categories')
                                             .filter( c => {
                                               return exclusion 
@@ -155,14 +145,7 @@ const actions = {
                                                 ;
                                             })
                                             .value();
-    if (_cat) {
-      _catSummary = _cat.map(c => (
-        {
-          id: c.categorie_id,
-          updatedAt: c.updatedAt
-        }
-      ));
-    }
+
     const _grp = await (await db.groupes).get('groupes')
                                          .filter( g => {
                                            return exclusion 
@@ -171,14 +154,7 @@ const actions = {
                                              ;
                                          })
                                          .value();
-    if (_grp) {
-      _grpSummary = _grp.map(g => (
-        {
-          id: g.groupe_id,
-          updatedAt: g.updatedAt
-        }
-      ));
-    }
+
     const _tva = await (await db.tva).get('tva')
                                      .filter( t => {
                                        return exclusion 
@@ -187,14 +163,7 @@ const actions = {
                                          ;
                                      })
                                      .value();
-    if (_tva) {
-      _tvaSummary = _tva.map(t => (
-        {
-          id: t.tva_id,
-          updatedAt: t.updatedAt
-        }
-        ));
-    }
+
     const _typ = await (await db.ingredienttypes).get('types')
                                                  .filter( t => {
                                                    return exclusion 
@@ -203,14 +172,7 @@ const actions = {
                                                      ;
                                                  })
                                                  .value();
-    if (_typ) {
-      _typSummary = _typ.map(t => (
-        {
-          id: t.type_id,
-          updatedAt: t.updatedAt
-        }
-        ));
-    }
+
     const _ing = await (await db.ingredients).get('ingredients')
                                              .filter( i => {
                                                return exclusion 
@@ -219,14 +181,7 @@ const actions = {
                                                  ;
                                              })
                                              .value();
-    if (_ing) {
-      _ingSummary = _ing.map(i => (
-        {
-          id: i.ingredient_id,
-          updatedAt: i.updatedAt
-        }
-        ));
-    }
+
     const _prd = await (await db.produits).get('produits')
                                           .filter( p => {
                                             return exclusion 
@@ -235,14 +190,7 @@ const actions = {
                                               ;
                                           })
                                           .value();
-    if (_prd) {
-      _prdSummary = _prd.map(p => (
-        {
-          id: p.produit_id,
-          updatedAt: p.updatedAt
-        }
-        ));
-    }
+
     const _stp = await (await db.steps).get('steps')
                                         .filter( s => {
                                           return exclusion 
@@ -251,22 +199,15 @@ const actions = {
                                             ;
                                         })
                                         .value();
-    if (_stp) {
-      _stpSummary = _stp.map(s => (
-        {
-          id: s.step_id,
-          updatedAt: s.updatedAt
-        }
-        ));
-    }
+
     return {
-      categories: _catSummary,
-      groupes: _grpSummary,
-      tva: _tvaSummary,
-      types: _typSummary,
-      ingredients: _ingSummary,
-      produits: _prdSummary,
-      steps: _stpSummary
+      categories: _cat,
+      groupes: _grp,
+      tva: _tva,
+      types: _typ,
+      ingredients: _ing,
+      produits: _prd,
+      steps: _stp
     };
   }
 }

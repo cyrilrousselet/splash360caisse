@@ -131,10 +131,6 @@ const actions = {
 
     const {stationid, exclusion} = query;
 
-    let _avrSummary = [];
-    let _rpnSummary = [];
-    let _rctSummary = [];
-
     const _avr = await (await db.avoirs).get('avoirs')
                                         .filter( a => {
                                           return exclusion 
@@ -143,14 +139,7 @@ const actions = {
                                             ;
                                         })
                                         .value();
-    if (_avr) {
-      _avrSummary = _avr.map(a => (
-        {
-          id: a.avoir_id,
-          updatedAt: a.updatedAt
-        }
-      ));
-    }
+
     const _rpn = await (await db.reglespanier).get('reglespanier')
                                               .filter( p => {
                                                 return exclusion 
@@ -159,14 +148,7 @@ const actions = {
                                                   ;
                                               })
                                               .value();
-    if (_rpn) {
-      _rpnSummary = _rpn.map(r => (
-        {
-          id: r.reglepanier_id,
-          updatedAt: r.updatedAt
-        }
-      ));
-    }
+
     const _rct = await (await db.reglescatalogue).get('reglescatalogue')
                                                  .filter( c => {
                                                    return exclusion 
@@ -175,18 +157,11 @@ const actions = {
                                                      ;
                                                  })
                                                  .value();
-    if (_rct) {
-      _rctSummary = _rct.map(r => (
-        {
-          id: r.reglecatalogue_id,
-          updatedAt: r.updatedAt
-        }
-      ));
-    }
+
     return {
-      avoirs: _avrSummary,
-      reglespanier: _rpnSummary,
-      reglescatalogue: _rctSummary
+      avoirs: _avr,
+      reglespanier: _rpn,
+      reglescatalogue: _rct
     };
   }
 

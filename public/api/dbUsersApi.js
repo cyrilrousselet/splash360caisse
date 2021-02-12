@@ -65,7 +65,6 @@ const actions = {
 
     const {stationid, exclusion} = query;
 
-    let _usrSummary = [];
     const _usr = await (await db.users).get('users')
                                        .filter( u => {
                                          return exclusion 
@@ -74,16 +73,8 @@ const actions = {
                                            ;
                                        })
                                        .value();
-    if (_usr) {
-      _usrSummary = _usr.map(u => (
-        {
-          id: u.user_id,
-          updatedAt: u.updatedAt
-        }
-      ));
-    }
     return {
-      users: _usrSummary
+      users: _usr
     };
   }
 }

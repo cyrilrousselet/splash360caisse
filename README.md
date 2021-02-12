@@ -34,6 +34,6 @@ Le numéro est composé comme suit : `0.1.YYJJJHHMM`<br>
 
 ### Crée le package dans le dossier /dist/
 
-Sur MacOS : `> yarn electron-pack-mac`<br>
-Sur Windows : `> yarn electron-pack-win`<br>
-Sur Linux : `> yarn electron-pack-lin`<br>
+Sur MacOS : `> yarn electron-pack-mac` <br>
+Sur Windows : `> yarn electron-pack-win` <br>
+Sur Linux : `> yarn electron-pack-lin` <br>

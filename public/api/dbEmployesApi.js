@@ -119,10 +119,6 @@ const actions = {
 
     const {stationid, exclusion} = query;
 
-    let _pntSummary = [];
-    let _adjSummary = [];
-    let _shfSummary = [];
-
     const _pnt = await (await db.pointages).get('pointages')
                                            .filter( p => {
                                              return exclusion 
@@ -131,14 +127,7 @@ const actions = {
                                                ;
                                            })
                                            .value();
-    if (_pnt) {
-      _pntSummary = _pnt.map(p => (
-        {
-          id: p.pointage_id,
-          updatedAt: p.updatedAt
-        }
-      ));
-    }
+
     const _adj = await (await db.timeadjusts).get('timeadjusts')
                                               .filter( t => {
                                                 return exclusion 
@@ -147,14 +136,7 @@ const actions = {
                                                   ;
                                               })
                                               .value();
-    if (_adj) {
-      _adjSummary = _adj.map(a => (
-        {
-          id: a.adjust_id,
-          updatedAt: a.updatedAt
-        }
-      ));
-    }
+
     const _shf = await (await db.shifts).get('shifts')
                                         .filter( s => {
                                           return exclusion 
@@ -164,18 +146,11 @@ const actions = {
                                         })
                                         .value();
     
-    if (_shf) {
-      const _shfSummary = _shf.map(s => (
-        {
-          id: s.shift_id,
-          updatedAt: s.updatedAt
-        }
-      ));
-    }
+
     return {
-      pointages: _pntSummary,
-      timeadjusts: _adjSummary,
-      shifts: _shfSummary
+      pointages: _pnt,
+      timeadjusts: _adj,
+      shifts: _shf
     };
   }
 

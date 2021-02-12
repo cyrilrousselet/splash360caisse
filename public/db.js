@@ -14,10 +14,9 @@ const FileAsync = require('lowdb/adapters/FileAsync');
 const hydration = require(`./dev/dbhydration.js`);
 
 const {categories, groupes, tva, types, ingredients, produits, steps} = hydration;
-const {commandes, clients, ticketsrestau} = hydration;
+const {clients, ticketsrestau} = hydration;
 const {parametres, imprimantes, tickets} = hydration;
 const {users} = hydration;
-const {clotures, tresorerie} = hydration;
 const {pointages, shifts, timeadjusts} = hydration;
 const {avoirs, reglescatalogue, reglespanier} = hydration;
 const {salles, tables} = hydration;
@@ -52,14 +51,12 @@ const db = {
  ingredients: dbFactory('ingredients.json', {ingredients: ingredients}),
  produits: dbFactory('produits.json', {produits: produits}),
  steps: dbFactory('steps.json', {steps: steps}),
- commandes: dbFactory('commandes.json', {commandes: commandes}),
  clients: dbFactory('clients.json', {clients: clients}),
  ticketsrestau: dbFactory('ticketsrestau.json', {ticketsrestau: ticketsrestau}),
  imprimantes: dbFactory('imprimantes.json', {imprimantes: imprimantes}),
  tickets: dbFactory('tickets.json', {tickets: tickets}),
  parametres: dbFactory('parametres.json', {parametres: parametres}),
  users: dbFactory('users.json', {users: users}),
- clotures: dbFactory('clotures.json', {clotures: clotures}),
  pointages: dbFactory('pointages.json', {pointages: pointages}),
  shifts: dbFactory('shifts.json', {shifts: shifts}),
  timeadjusts: dbFactory('timeadjusts.json', {timeadjusts: timeadjusts}),
@@ -67,9 +64,6 @@ const db = {
  reglescatalogue: dbFactory('reglescatalogue.json', {reglescatalogue: reglescatalogue}),
  reglespanier: dbFactory('reglespanier.json', {reglespanier: reglespanier}),
  tables: dbFactory('tables.json', {salles: salles, tables: tables}),
-//  pendingOrders: dbFactory('pendingOrders.json',{pendingOrders:[]}),
-//  finishedOrders: dbFactory('finishedOrders.json',{finishedOrders:[]}),
-//  caredOrdersSalle: dbFactory('caredOrdersSalle.json',{caredOrdersSalle:[]}),
  cmdchrono: dbFactory('cmdchrono.json',{cmdchrono:[]}),
 };
 

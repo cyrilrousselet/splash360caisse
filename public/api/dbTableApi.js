@@ -63,6 +63,25 @@ const actions = {
     const confirm = await _deleteTable(payload.tableId);
 
     res.send(confirm);
+  },
+
+  dbTableSummary: async (query) => {
+
+    (await db.tables)._.mixin(lodashId);
+    const {stationid, exclusion} = query;
+
+    const _sal = await (await db.tables).get('salles')
+                                        .filter( c => {
+                                          return exclusion 
+                                            ? (c.localsync === undefined) || !c.localsync.includes(stationid)
+                                            : (c.localsync === undefined) ||  c.localsync.includes(stationid)
+                                            ;
+                                        })
+                                        .value();
+
+    return {
+      salles: _sal
+    };
   }
 };
 

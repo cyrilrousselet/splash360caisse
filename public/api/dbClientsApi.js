@@ -64,11 +64,7 @@ const actions = {
   dbClientsSummary: async (query) => {
 
     (await db.clients)._.mixin(lodashId);
-
-
     const {stationid, exclusion} = query;
-
-    let _cltSummary = [];
 
     const _clt = await (await db.clients).get('clients')
                                          .filter( c => {
@@ -78,16 +74,9 @@ const actions = {
                                              ;
                                          })
                                          .value();
-    if (_clt) {
-      _cltSummary = _clt.map(c => (
-        {
-          id: c.client_id,
-          updatedAt: c.updatedAt
-        }
-      ));
-    }
+
     return {
-      clients: _cltSummary
+      clients: _clt
     };
   }
 

@@ -16,6 +16,7 @@ const dbCloturesApi = require("./dbCloturesApi.js");
 const dbCommandesApi = require("./dbCommandesApi.js");
 const dbEmployesApi = require("./dbEmployesApi.js");
 const dbMarketingApi = require("./dbMarketingApi.js");
+const dbTableApi = require("./dbTableApi.js");
 const dbUsersApi = require("./dbUsersApi.js");
 const dbTresorerieApi = require("./dbTresorerieApi.js");
 
@@ -81,19 +82,6 @@ const server = {
 
     webContents = wcont;
 
-    // xpr.use(cors({
-    //   origin: function(origin, callback){
-    //     // allow requests with no origin
-    //     // (like mobile apps or curl requests)
-    //     if(!origin) return callback(null, true);
-    //     if(allowedOrigins.indexOf(origin) === -1){
-    //       var msg = 'The CORS policy for this site does not ' +
-    //                 'allow access from the specified Origin.';
-    //       return callback(new Error(msg), false);
-    //     }
-    //     return callback(null, true);
-    //   }
-    // }));
     api_server.disable("x-powered-by");
     api_server.use(cors({ origin: "*" }));
 
@@ -121,7 +109,7 @@ const server = {
       const response_id = responses.push(res) - 1;
       wcont.send("setCommande", { data: req.body.data, response: response_id });
     });
-
+    // demande de nouveau numero de commande de la part des secondaries
     api_server.post("/getnumero", (req, res) => {
       log.info("POST getnumero");
       const response_id = responses.push(res) - 1;
@@ -139,6 +127,7 @@ const server = {
       synchroTreatment(db, data, emitter, response_id);
     });
 
+    // mise à jour des temps de production de la part du serveur KDS
     api_server.post("/chrono", (req, res) => {
       log.info("POST chrono", req.body);
 
@@ -184,14 +173,46 @@ const welcomeTreatment = async (station_uniqid, exclusion=false) => {
   }
   ;
 
+  // requêtes spéciale pour les commandes
+  // (on ne synchronise pas les commandes archivées)
+  const mongocmd_query = exclusion
+  ? {
+      $and: [
+        { 
+          archived: { $exists: false }
+        },
+        {
+          $or:[
+            { localsync: { $exists: false } },
+            { localsync: { $ne: station_uniqid } }
+          ]
+        }
+      ]
+    }
+: {
+    $and: [
+      { 
+        archived: { $exists: false }
+      },
+      {
+        $or:[
+          { localsync: { $exists: false } },
+          { localsync: { $eq: station_uniqid } }
+        ]
+      }
+    ]
+  }
+;
+
   const ldb_query = {stationid:station_uniqid, exclusion:exclusion};
 
   const catalogue_sum = await dbCatalogueApi.dbCatalogueSummary(ldb_query);
   const clients_sum = await dbClientsApi.dbClientsSummary(ldb_query);
   const clotures_sum = await dbCloturesApi.dbCloturesSummary(mongo_query);
-  const commandes_sum = await dbCommandesApi.dbCommandesSummary(mongo_query, ldb_query);
+  const commandes_sum = await dbCommandesApi.dbCommandesSummary(mongocmd_query, ldb_query);
   const employes_sum = await dbEmployesApi.dbEmployesSummary(ldb_query);
   const marketing_sum = await dbMarketingApi.dbMarketingSummary(ldb_query);
+  const table_sum = await dbTableApi.dbTableSummary(ldb_query);
   const users_sum = await dbUsersApi.dbUsersSummary(ldb_query);
   const tresors_sum = await dbTresorerieApi.dbTresorerieSummary(mongo_query);
 
@@ -202,6 +223,7 @@ const welcomeTreatment = async (station_uniqid, exclusion=false) => {
     ...commandes_sum,
     ...employes_sum,
     ...marketing_sum,
+    ...table_sum,
     ...users_sum,
     ...tresors_sum,
   };
@@ -394,7 +416,7 @@ const actions = {
     __request.end();
   },
 
-  // confirme la bonne réception des synchro s/m
+  // confirme la bonne réception des synchro s/p
   syncConfirm: (req, res) => {
     const { confirm, response } = req.payload;
     if (response !== null) {
@@ -495,19 +517,11 @@ const actions = {
       log.info("on welcome");
       const {summary, primary} = welcomeData;
 
-      const secondarySum = await welcomeTreatment(caisse.uniqid);
+      const secondarySum = await welcomeTreatment(primary);
 
-      const { importation, exportation } = getImportExport(
-        summary,
-        secondarySum
-      );
+      log.info("import:", secondarySum);
 
-      log.info("import:", importation);
-      log.info("export:", exportation);
-
-      prepareExportationToPrimary(exportation);
-
-      askImportationFromPrimary(importation);
+      prepareExportationToPrimary(primary);
 
     });
 
@@ -525,17 +539,11 @@ const actions = {
       const {summary, liste, primary} = payload;
       log.info('resync', liste, summary, primary);
 
-      const secondarySum = await welcomeTreatment(_emitter.uniqid);
+      const secondaryUpdate = await welcomeTreatment(_emitter.uniqid);
 
-      const { importation, exportation } = getImportExport(
-        summary,
-        secondarySum
-      );
+      log.info("resync export:", secondaryUpdate);
 
-      log.info("resync import:", importation);
-      log.info("resync export:", exportation);
-
-      prepareExportationToPrimary(exportation);
+      prepareExportationToPrimary(primary);
 
     })
 
@@ -577,8 +585,8 @@ const actions = {
           configurable: true,
         });
 
-        const summary = await welcomeTreatment(data.uniqid, true);
-        io.to(sock.id).emit("welcome", {summary: summary, primary: caisseId});
+        const update = await welcomeTreatment(data.uniqid, true);
+        io.to(sock.id).emit("welcome", {update: update, primary: caisseId});
       });
 
       // écouteur d'événement 'registerterminal' :
@@ -704,10 +712,6 @@ const actions = {
   },
 };
 
-
-async function askImportationFromPrimary(importation) {
-
-}
 
 async function prepareExportationToPrimary(exportation) {
 

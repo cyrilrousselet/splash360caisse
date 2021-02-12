@@ -150,20 +150,9 @@ const actions = {
   dbCommandesSummary: async (mongoquery, ldbquery) => {
     (await db.ticketsrestau)._.mixin(lodashId);
 
-    // const _cmd = await _findCommande({
-    //   $or:[
-    //     {sps: {$exists: false}},
-    //     {sps: {$eq: false}}
-    //   ]
-    // });
-
     const {stationid, exclusion} = ldbquery;
 
     const _cmd = await _findCommande(mongoquery);
-    const _cmdSummary = _cmd.map((c) => ({
-      id: c.ticketId,
-      updatedAt: c.updatedAt,
-    }));
 
     const _tkr = await (await db.ticketsrestau).get("ticketsrestau")
                                                .filter( t => {
@@ -173,17 +162,10 @@ const actions = {
                                                    ;
                                                })
                                                .value();
-    let _tkrSummary = [];
-    if (_tkr) {
-      _tkr.map((t) => ({
-        id: t.id,
-        updatedAt: t.updatedAt,
-      }));
-    }
 
     return {
-      commandes: _cmdSummary,
-      ticketsrestau: _tkrSummary,
+      commandes: _cmd,
+      ticketsrestau: _tkr,
     };
   },
 };

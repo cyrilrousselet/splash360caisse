@@ -211,21 +211,9 @@ const actions = {
   },
 
   dbTresorerieSummary: async (query) => {
-    
-    // const _trs = await _findTresors({
-    //   $or:[
-    //     {sps: {$exists: false}},
-    //     {sps: {$eq: false}}
-    //   ]
-    // });
     const _trs = await _findTresors(query);
-    const _trsSummary = _trs.map((t) => ({
-      id: t.tresorId,
-      updatedAt: t.updatedAt,
-    }));
-
     return {
-      tresors: _trsSummary,
+      tresors: _trs,
     };
   },
 
