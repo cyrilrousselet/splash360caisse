@@ -259,14 +259,26 @@ function getToken(provider, task) {
  * 
  * @param {*} response  identifiant de l'objet response de la requête
  */
-function syncConfirm(response) {
+function syncConfirm(response, data=null) {
   return (dispatch, getState) => {
 
-    const { options } = getState().parametresReducer.parametres;
-    if (options.role==='primary') {      
-      notificationServices.syncConfirm(response)
+    // const { options } = getState().parametresReducer.parametres;
+  //  if (options.role==='primary') {      
+      notificationServices.syncConfirm(response, data)
       .then(
         confirm => { logger.log('notificationAction','synchro confirm sent')}
+      );
+   // }
+  }
+}
+
+function syncConfirmToPrimary(data) {
+  return (dispatch, getState) => {
+    const { options } = getState().parametresReducer.parametres;
+    if (options.role==='secondary') {
+      notificationServices.syncConfirmToPrimary(options.primary, data)
+      .then(
+        confirm => { logger.log('notificationAction','synchro confirm sent to primary')}
       );
     }
   }
@@ -547,6 +559,7 @@ export const notificationActions = {
   initSync,
   syncDispatch,
   syncConfirm,
+  syncConfirmToPrimary,
   sendNumero,
   getNewNumero,
   getDatabase,

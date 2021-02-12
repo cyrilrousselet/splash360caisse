@@ -20,6 +20,7 @@ export const notificationServices = {
   syncDispatch,
   syncPrimary,
   syncConfirm,
+  syncConfirmToPrimary,
   sendNumero,
   askNumero,
   getDatabase,
@@ -160,9 +161,14 @@ function syncDispatch(db, data, emitter) {
 function syncPrimary(db, data, emitter, url) {
   return emit('syncDispatchToPrimary', {db, data, emitter, url});
 }
-function syncConfirm(response) {
+function syncConfirm(response, data) {
   if (response!==null) {
-    return emit('syncConfirm', {response});
+    return emit('syncConfirm', {response:response, data:data});
+  }
+}
+function syncConfirmToPrimary(url, data) {
+  if (url!==null) {
+    return emit('syncConfirmToPrimary', {url:url, data:data});
   }
 }
 

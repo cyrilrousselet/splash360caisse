@@ -393,13 +393,50 @@ const actions = {
 
   // confirme la bonne réception des synchro s/p
   syncConfirm: (req, res) => {
-    const { confirm, response } = req.payload;
+    const { confirm, response, data } = req.payload;
     if (response !== null) {
-      responses[response].json({
-        status: "ok" === confirm ? "success" : "error",
-      });
+      responses[response].json(data);
       res.send({ msg: "sync confirm sent" });
     }
+  },
+
+  // confirme la bonne réception des synchro p/s
+  syncConfirmToPrimary: (req, res) => {
+    const {url, data} = req.payload;
+
+    log.info("syncConfirmToPrimary", req.payload);
+
+    const __request = net.request({
+      url: url + ":" + API_PORT + "/synchroconfirm",
+      method: "post",
+    });
+    // __request.setHeader('Authorization','Bearer '+access_token)
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/json");
+
+    __request.write(JSON.stringify(data));
+
+    __request.on("response", (response) => {
+      log.info(
+        `syncConfirmToPrimary() to ${url}, status:`,
+        response.statusCode
+      );
+      res.send({ msg: `syncConfirmToPrimary to primary` });
+
+      response.on("data", () => {
+
+      });
+      response.on("end", () => {
+
+      });
+    });
+
+    __request.on('error', (error) => {
+      log.error('syncConfirmToPrimary ERROR', error);
+      res.error(error);
+    });
+
+    __request.end();
   },
 
   resync: async (req, res) => {

@@ -8,7 +8,7 @@ import { commandeServices } from "./commandeServices";
 import { numeroActions } from "./numeroActions";
 import { numeroActionTypes } from "./numeroActionTypes";
 import frLocale from "date-fns/locale/fr";
-import { dateBounds } from "../../helpers/toolbox";
+import { dateBounds, asyncForEach } from "../../helpers/toolbox";
 import { clientsServices } from "../clients/clientsServices";
 import LodashId from "lodash-id";
 import { clientsActionTypes } from "../clients/clientsActionTypes";
@@ -1141,7 +1141,7 @@ function setCommandeFromAPI(payload) {
  * ajout / modif de commandes depuis la synchro
  */
 function setCommandeFromSync(commande) {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const { data, emitter, response } = commande;
 
 
@@ -1149,9 +1149,14 @@ function setCommandeFromSync(commande) {
     // et si elle n'existe pas, on crée la propriété
     const {caisse} = getState().parametresReducer.parametres.options;
 
+    // s'il s'agit de plusieurs commandes (data est un Array)
     if (Array.isArray(data)) {
 
-      data.forEach(cmd => {
+
+      let commandesIds = [];
+      let cmdNum = 0;
+
+      const __syncCmd = await asyncForEach(data, async (cmd) => {
 
         const {localsync} = cmd;
         let __lsync = localsync || [];
@@ -1159,48 +1164,69 @@ function setCommandeFromSync(commande) {
   
         const __data = {...cmd, localsync: __lsync};
   
-        commandeServices.setCommandeFromSync(__data).then(
-          (confirm) => {
-            dispatch({
-              type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_SUCCESS,
-              confirm,
-            });
-  
-            // -> si 'emitter' est null, la synchro provient de la caisse 'primary',
-            // donc inutile de lui renvoyer la synchro
-            // -> si 'response' est null, la synchro ne provient pas de l'API,
-            // donc inutile de confirmer le traitement de la synchro
-            if (emitter !== null && response !== null) {
-              dispatch(notificationActions.syncConfirm(response));
-              dispatch(notificationActions.syncDispatch("commande", __data, emitter));
-  
-              // synchro de la commande avec le BO,
-              // si la commande provient d'une caisse 'secondary'
-              // et s'il s'agit d'une commande confirmée ou supprimée
-              if (confirm.status === "confirmed" || confirm.status === "deleted") {
-                const cmdtosync = {
-                  ...confirm,
-                  chrono: confirm.chrono || 0,
-                  createdAt: formatISO(confirm.createdAt),
-                  updatedAt: formatISO(confirm.updatedAt),
-                };
-  
-                dispatch(notificationActions.syncCommandes([cmdtosync]));
-                dispatch(clotureActions.getTodayCa());
-              }
-            }
-            dispatch(getTodayCommandesList());
-          },
-          (error) => {
-            dispatch({
-              type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_FAILURE,
-              error: error,
-            });
-            logger.log("sync cmd err", error);
+        let commandeconfirm = null;
+
+        try {
+
+          commandeconfirm = await commandeServices.setCommandeFromSync(__data);
+          
+          dispatch({
+            type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_SUCCESS,
+            commandeconfirm,
+          });
+          cmdNum++;
+          commandesIds.push(commandeconfirm.ticketId);
+
+        } catch(err) {
+          dispatch({
+            type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_FAILURE,
+            error: err,
+          });
+          logger.log("sync cmd err", err);
+          
+        }
+
+        console.log('num',`${cmdNum}/${data.length}`);
+        console.log('commandesIds',commandesIds);
+
+        if (cmdNum===data.length) {
+          
+          // confirmation du traitement de la synchro
+          if (response !== null) {
+            dispatch(notificationActions.syncConfirm(response, {db:"commande", ids:commandesIds, from:caisse.uniqid}));
+          } 
+          // -> si 'response' est null, la synchro ne provient pas de l'API,
+          // il s'agit d'une synchro d'entretien commandée par la caisse 'primary'
+          else {
+            dispatch(notificationActions.syncConfirmToPrimary({db:"commande", ids:commandesIds, from:caisse.uniqid}));
           }
-        );
+
+          // -> si 'emitter' est null, la synchro provient de la caisse 'primary',
+          // donc inutile de lui renvoyer la synchro
+          if (emitter !== null) {
+            dispatch(notificationActions.syncDispatch("commande", __data, emitter));
+
+            // synchro de la commande avec le BO,
+            // si la commande provient d'une caisse 'secondary'
+            // et s'il s'agit d'une commande confirmée ou supprimée
+            if (commandeconfirm.status === "confirmed" || commandeconfirm.status === "deleted") {
+              const cmdtosync = {
+                ...commandeconfirm,
+                chrono: commandeconfirm.chrono || 0,
+                createdAt: formatISO(commandeconfirm.createdAt),
+                updatedAt: formatISO(commandeconfirm.updatedAt),
+              };
+
+              dispatch(notificationActions.syncCommandes([cmdtosync]));
+              dispatch(clotureActions.getTodayCa());
+            }
+          }
+          dispatch(getTodayCommandesList());
+        }
 
       });
+
+      __syncCmd();
 
     } else {
 
