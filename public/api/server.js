@@ -130,7 +130,7 @@ const server = {
     // SYNCHRO CONFIRM secondary -> primary
     api_server.post("/synchroconfirm", (req, res) => {
       const { db, from, ids } = req.body;
-      log.info("POST synchro", req.body);
+      log.info("POST synchroconfirm", req.body);
       log.info("POST db", db, `from ${from}`);
 
       res.json({status: "success"});
