@@ -5,8 +5,6 @@ const connect = require("../db/mongodb");
 const CommandeModel = require("../db/commandeModel");
 const { uuid } = require("uuidv4");
 
-const { asyncForEach } = require('../../src/helpers/toolbox');
-
 const actions = {
   dbCommandeGetAll: async (req, res) => {
     const { payload } = req;
@@ -406,7 +404,7 @@ async function _findTicketRestau(criteriae = {}) {
   return { _tr };
 }
 
-async function asyncForEachl(array, callback) {
+async function asyncForEach(array, callback) {
   for (let index = 0; index < array.length; index++) {
     await callback(array[index], index, array);
   }
