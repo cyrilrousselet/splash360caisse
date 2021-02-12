@@ -529,9 +529,11 @@ const actions = {
       log.info("on welcome");
       const {summary, primary} = welcomeData;
 
+      log.info("primary summary:", summary);
+
       const secondarySum = await welcomeTreatment(primary);
 
-      log.info("import:", secondarySum);
+      // log.info("import:", secondarySum);
 
       prepareExportationToPrimary(primary);
 
