@@ -148,7 +148,7 @@ const actions = {
                                                  .value();
 
     return {
-      avoirs: _avr,
+      setAvoirSync: _avr,
       reglespanier: _rpn,
       reglescatalogue: _rct
     };

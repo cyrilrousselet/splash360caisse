@@ -213,7 +213,7 @@ const actions = {
   dbTresorerieSummary: async (query) => {
     const _trs = await _findTresors(query);
     return {
-      tresors: _trs,
+      setTresorSync: _trs,
     };
   },
 

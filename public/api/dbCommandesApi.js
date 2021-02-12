@@ -159,8 +159,8 @@ const actions = {
                                                .value();
 
     return {
-      commandes: _cmd,
-      ticketsrestau: _tkr,
+      setCommandeSync: _cmd,
+      setTicketRestaurantSync: _tkr,
     };
   },
 };

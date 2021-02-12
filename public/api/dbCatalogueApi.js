@@ -180,11 +180,11 @@ const actions = {
 
     return {
       categories: _cat,
-      groupes: _grp,
+      setGroupeSync: _grp,
       tva: _tva,
-      types: _typ,
-      ingredients: _ing,
-      produits: _prd,
+      setIngredientTypeSync: _typ,
+      setIngredientSync: _ing,
+      setProduitSync: _prd,
       steps: _stp
     };
   }

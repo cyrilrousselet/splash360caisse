@@ -192,15 +192,15 @@ const welcomeTreatment = async (station_uniqid) => {
   const tresors_sum = await dbTresorerieApi.dbTresorerieSummary(mongo_query);
 
   return {
-    ...catalogue_sum,
-    ...clients_sum,
-    ...clotures_sum,
+    // ...catalogue_sum,
+    // ...clients_sum,
+    // ...clotures_sum,
     ...commandes_sum,
-    ...employes_sum,
-    ...marketing_sum,
-    ...table_sum,
-    ...users_sum,
-    ...tresors_sum,
+    // ...employes_sum,
+    // ...marketing_sum,
+    // ...table_sum,
+    // ...users_sum,
+    // ...tresors_sum,
   };
 };
 

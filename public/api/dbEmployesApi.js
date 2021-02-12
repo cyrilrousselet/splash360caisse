@@ -137,7 +137,7 @@ const actions = {
     
 
     return {
-      pointages: _pnt,
+      setPointageSync: _pnt,
       timeadjusts: _adj,
       shifts: _shf
     };

@@ -70,7 +70,7 @@ const actions = {
                                        })
                                        .value();
     return {
-      users: _usr
+      setUserSync: _usr
     };
   }
 }
