@@ -199,7 +199,7 @@ async function _persistCloture(payload) {
     // Create command id
     const id = await _generateClotureId();
     let __ins = { ...payload, id: id, createdAt: __now, updatedAt: __now };
-    _clo = await ClotureModel.create(__ins);
+    _clo = await ClotureModel.create(__ins).lean();
   }
 
   // await mongo.disconnect();
