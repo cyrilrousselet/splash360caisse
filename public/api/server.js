@@ -529,13 +529,17 @@ const actions = {
       log.info("on welcome");
       const {update, primary} = welcomeData;
 
-      log.info("primary summary:", update);
+      // log.info("primary update:", update);
+
+      Object.entries(update).forEach(([db,data])=>{
+        synchroTreatment(db, data);
+      });
 
       const secondarySum = await welcomeTreatment(primary);
 
       // log.info("import:", secondarySum);
 
-      prepareExportationToPrimary(primary);
+      prepareExportationToPrimary(secondarySum);
 
     });
 
@@ -742,7 +746,7 @@ async function prepareExportationToPrimary(exportation) {
     });
   }
 
-  start();
+ // start();
 
 }
 
