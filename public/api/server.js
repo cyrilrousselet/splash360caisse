@@ -148,48 +148,26 @@ const synchroTreatment = (db, data, emitter = null, response = null) => {
     if (SYNCHRO_TREATMENT.hasOwnProperty(db)) {
       webContents.send(SYNCHRO_TREATMENT[db], { data, emitter, response });
     } else {
-      log.error("webContents null (server non initialisé)");
+      log.error("SynchroTreatment error (db '"+db+"' inconnue)");
     }
   } else {
     log.error("webContents null (server non initialisé)");
   }
 };
 
-const welcomeTreatment = async (station_uniqid, exclusion=false) => {
+const welcomeTreatment = async (station_uniqid) => {
 
   // requête pour exclure la station ou pour inclure la station
-  const mongo_query = exclusion 
-  ? {
-      $or:[
-        { localsync: { $exists: false } },
-        { localsync: { $ne: station_uniqid } }
-      ]
-    }
-  : {
+  const mongo_query = {
     $or:[
       { localsync: { $exists: false } },
-      { localsync: { $eq: station_uniqid } }
+      { localsync: { $ne: station_uniqid } }
     ]
-  }
-  ;
+  };
 
   // requêtes spéciale pour les commandes
   // (on ne synchronise pas les commandes archivées)
-  const mongocmd_query = exclusion
-  ? {
-      $and: [
-        { 
-          archived: { $exists: false }
-        },
-        {
-          $or:[
-            { localsync: { $exists: false } },
-            { localsync: { $ne: station_uniqid } }
-          ]
-        }
-      ]
-    }
-: {
+  const mongocmd_query = {
     $and: [
       { 
         archived: { $exists: false }
@@ -197,23 +175,20 @@ const welcomeTreatment = async (station_uniqid, exclusion=false) => {
       {
         $or:[
           { localsync: { $exists: false } },
-          { localsync: { $eq: station_uniqid } }
+          { localsync: { $ne: station_uniqid } }
         ]
       }
     ]
-  }
-;
+  };
 
-  const ldb_query = {stationid:station_uniqid, exclusion:exclusion};
-
-  const catalogue_sum = await dbCatalogueApi.dbCatalogueSummary(ldb_query);
-  const clients_sum = await dbClientsApi.dbClientsSummary(ldb_query);
+  const catalogue_sum = await dbCatalogueApi.dbCatalogueSummary(station_uniqid);
+  const clients_sum = await dbClientsApi.dbClientsSummary(station_uniqid);
   const clotures_sum = await dbCloturesApi.dbCloturesSummary(mongo_query);
-  const commandes_sum = await dbCommandesApi.dbCommandesSummary(mongocmd_query, ldb_query);
-  const employes_sum = await dbEmployesApi.dbEmployesSummary(ldb_query);
-  const marketing_sum = await dbMarketingApi.dbMarketingSummary(ldb_query);
-  const table_sum = await dbTableApi.dbTableSummary(ldb_query);
-  const users_sum = await dbUsersApi.dbUsersSummary(ldb_query);
+  const commandes_sum = await dbCommandesApi.dbCommandesSummary(mongocmd_query, station_uniqid);
+  const employes_sum = await dbEmployesApi.dbEmployesSummary(station_uniqid);
+  const marketing_sum = await dbMarketingApi.dbMarketingSummary(station_uniqid);
+  const table_sum = await dbTableApi.dbTableSummary(station_uniqid);
+  const users_sum = await dbUsersApi.dbUsersSummary(station_uniqid);
   const tresors_sum = await dbTresorerieApi.dbTresorerieSummary(mongo_query);
 
   return {
@@ -528,8 +503,12 @@ const actions = {
     // écouteur de synchro de la part du primary
     socket.on("sync", (payload) => {
       log.info("on sync", payload);
-
-      synchroTreatment(payload.db, payload.data);
+      const {db, data, type} = payload;
+      if (type==='sync') {
+        synchroTreatment(payload.db, payload.data);
+      } else {
+        log.info('initialisaiton de la synchronisation P->S');
+      }
     });
 
     // écouteur de resynchro de la part du primary
@@ -585,7 +564,7 @@ const actions = {
           configurable: true,
         });
 
-        const update = await welcomeTreatment(data.uniqid, true);
+        const update = await welcomeTreatment(data.uniqid);
         io.to(sock.id).emit("welcome", {update: update, primary: caisseId});
       });
 
@@ -643,7 +622,7 @@ const actions = {
     // on envoie la synchro à tous les secondaries,
     // sauf celui qui est à l'origine de la synchro
     Object.entries(connectedSecondaries).forEach(([sockid, secondary]) => {
-      if (emitter !== secondary.id) io.to(sockid).emit("sync", req.payload);
+      if (emitter !== secondary.id) io.to(sockid).emit("sync", {...req.payload, type:'sync'});
     });
 
     // s'il s'agit d'une synchro de produit ou d'ingrédient, on envoie la synchro à toutees les bornes,

@@ -147,19 +147,14 @@ const actions = {
     return _cmd;
   },
 
-  dbCommandesSummary: async (mongoquery, ldbquery) => {
+  dbCommandesSummary: async (mongoquery, stationid) => {
     (await db.ticketsrestau)._.mixin(lodashId);
-
-    const {stationid, exclusion} = ldbquery;
 
     const _cmd = await _findCommande(mongoquery);
 
     const _tkr = await (await db.ticketsrestau).get("ticketsrestau")
                                                .filter( t => {
-                                                 return exclusion 
-                                                   ? (t.localsync === undefined) || !t.localsync.includes(stationid)
-                                                   : (t.localsync !== undefined) && t.localsync.includes(stationid)
-                                                   ;
+                                                 return (t.localsync === undefined) || !t.localsync.includes(stationid);
                                                })
                                                .value();
 
@@ -236,7 +231,7 @@ async function _getCommandes(criteriae = {}) {
  * Get commandes data from DB
  */
 async function _findCommande(criteriae = {}) {
-  log.info(criteriae);
+ // log.info(criteriae);
   const mongo = await connect();
   const _cmd = await CommandeModel.find(criteriae).lean().exec();
   // await mongo.disconnect();

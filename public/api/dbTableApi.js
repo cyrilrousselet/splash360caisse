@@ -65,17 +65,13 @@ const actions = {
     res.send(confirm);
   },
 
-  dbTableSummary: async (query) => {
+  dbTableSummary: async (stationid) => {
 
     (await db.tables)._.mixin(lodashId);
-    const {stationid, exclusion} = query;
 
     const _sal = await (await db.tables).get('salles')
                                         .filter( c => {
-                                          return exclusion 
-                                            ? (c.localsync === undefined) || !c.localsync.includes(stationid)
-                                            : (c.localsync === undefined) ||  c.localsync.includes(stationid)
-                                            ;
+                                          return (c.localsync === undefined) || !c.localsync.includes(stationid);
                                         })
                                         .value();
 

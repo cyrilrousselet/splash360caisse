@@ -125,7 +125,7 @@ const actions = {
     return response;
   },
 
-  dbCatalogueSummary: async (query) => {
+  dbCatalogueSummary: async (stationid) => {
 
     (await db.categories)._.mixin(lodashId);
     (await db.groupes)._.mixin(lodashId);
@@ -135,68 +135,46 @@ const actions = {
     (await db.produits)._.mixin(lodashId);
     (await db.steps)._.mixin(lodashId);
 
-    const {stationid, exclusion} = query;
 
     const _cat = await (await db.categories).get('categories')
                                             .filter( c => {
-                                              return exclusion 
-                                                ? (c.localsync === undefined) || !c.localsync.includes(stationid)
-                                                : (c.localsync === undefined) ||  c.localsync.includes(stationid)
-                                                ;
+                                              return (c.localsync === undefined) || !c.localsync.includes(stationid);
                                             })
                                             .value();
 
     const _grp = await (await db.groupes).get('groupes')
                                          .filter( g => {
-                                           return exclusion 
-                                             ? (g.localsync === undefined) || !g.localsync.includes(stationid)
-                                             : (g.localsync === undefined) ||  g.localsync.includes(stationid)
-                                             ;
+                                           return (g.localsync === undefined) || !g.localsync.includes(stationid);
                                          })
                                          .value();
 
     const _tva = await (await db.tva).get('tva')
                                      .filter( t => {
-                                       return exclusion 
-                                         ? (t.localsync === undefined) || !t.localsync.includes(stationid)
-                                         : (t.localsync === undefined) ||  t.localsync.includes(stationid)
-                                         ;
+                                       return (t.localsync === undefined) || !t.localsync.includes(stationid);
                                      })
                                      .value();
 
     const _typ = await (await db.ingredienttypes).get('types')
                                                  .filter( t => {
-                                                   return exclusion 
-                                                     ? (t.localsync === undefined) || !t.localsync.includes(stationid)
-                                                     : (t.localsync === undefined) ||  t.localsync.includes(stationid)
-                                                     ;
+                                                   return (t.localsync === undefined) || !t.localsync.includes(stationid);
                                                  })
                                                  .value();
 
     const _ing = await (await db.ingredients).get('ingredients')
                                              .filter( i => {
-                                               return exclusion 
-                                                 ? (i.localsync === undefined) || !i.localsync.includes(stationid)
-                                                 : (i.localsync === undefined) ||  i.localsync.includes(stationid)
-                                                 ;
+                                               return (i.localsync === undefined) || !i.localsync.includes(stationid);
                                              })
                                              .value();
 
     const _prd = await (await db.produits).get('produits')
                                           .filter( p => {
-                                            return exclusion 
-                                              ? (p.localsync === undefined) || !p.localsync.includes(stationid)
-                                              : (p.localsync === undefined) ||  p.localsync.includes(stationid)
-                                              ;
+                                            return (p.localsync === undefined) || !p.localsync.includes(stationid);
                                           })
                                           .value();
 
     const _stp = await (await db.steps).get('steps')
                                         .filter( s => {
-                                          return exclusion 
-                                            ? (s.localsync === undefined) || !s.localsync.includes(stationid)
-                                            : (s.localsync === undefined) ||  s.localsync.includes(stationid)
-                                            ;
+                                          return (s.localsync === undefined) || !s.localsync.includes(stationid);
                                         })
                                         .value();
 

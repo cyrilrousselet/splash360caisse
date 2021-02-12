@@ -123,38 +123,27 @@ const actions = {
     return response;
   },
 
-  dbMarketingSummary: async (query) => {
+  dbMarketingSummary: async (stationid) => {
 
     (await db.avoirs)._.mixin(lodashId);
     (await db.reglespanier)._.mixin(lodashId);
     (await db.reglescatalogue)._.mixin(lodashId);
 
-    const {stationid, exclusion} = query;
-
     const _avr = await (await db.avoirs).get('avoirs')
                                         .filter( a => {
-                                          return exclusion 
-                                            ? (a.localsync === undefined) || !a.localsync.includes(stationid)
-                                            : (a.localsync !== undefined) &&  a.localsync.includes(stationid)
-                                            ;
+                                          return (a.localsync === undefined) || !a.localsync.includes(stationid);
                                         })
                                         .value();
 
     const _rpn = await (await db.reglespanier).get('reglespanier')
                                               .filter( p => {
-                                                return exclusion 
-                                                  ? (p.localsync === undefined) || !p.localsync.includes(stationid)
-                                                  : (p.localsync !== undefined) &&  p.localsync.includes(stationid)
-                                                  ;
+                                                return (p.localsync === undefined) || !p.localsync.includes(stationid);
                                               })
                                               .value();
 
     const _rct = await (await db.reglescatalogue).get('reglescatalogue')
                                                  .filter( c => {
-                                                   return exclusion 
-                                                     ? (c.localsync === undefined) || !c.localsync.includes(stationid)
-                                                     : (c.localsync !== undefined) && c.localsync.includes(stationid)
-                                                     ;
+                                                   return (c.localsync === undefined) || !c.localsync.includes(stationid);
                                                  })
                                                  .value();
 

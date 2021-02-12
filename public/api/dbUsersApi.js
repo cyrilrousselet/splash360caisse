@@ -59,18 +59,14 @@ const actions = {
     return response;
   },
 
-  dbUsersSummary: async (query) => {
+  dbUsersSummary: async (stationid) => {
 
     (await db.users)._.mixin(lodashId);
 
-    const {stationid, exclusion} = query;
 
     const _usr = await (await db.users).get('users')
                                        .filter( u => {
-                                         return exclusion 
-                                           ? (u.localsync === undefined) || !u.localsync.includes(stationid)
-                                           : (u.localsync !== undefined) &&  u.localsync.includes(stationid)
-                                           ;
+                                         return (u.localsync === undefined) || !u.localsync.includes(stationid);
                                        })
                                        .value();
     return {
