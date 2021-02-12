@@ -76,7 +76,7 @@ const actions = {
                                         .value();
 
     return {
-      salles: _sal
+      salle: _sal
     };
   }
 };

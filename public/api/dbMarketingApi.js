@@ -148,9 +148,9 @@ const actions = {
                                                  .value();
 
     return {
-      setAvoirSync: _avr,
-      reglespanier: _rpn,
-      reglescatalogue: _rct
+      avoir: _avr,
+      reglepanier: _rpn,
+      reglecatalogue: _rct
     };
   }
 

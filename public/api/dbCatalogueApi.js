@@ -179,13 +179,13 @@ const actions = {
                                         .value();
 
     return {
-      categories: _cat,
-      setGroupeSync: _grp,
+      categorie: _cat,
+      groupe: _grp,
       tva: _tva,
-      setIngredientTypeSync: _typ,
-      setIngredientSync: _ing,
-      setProduitSync: _prd,
-      steps: _stp
+      type: _typ,
+      ingredient: _ing,
+      produit: _prd,
+      step: _stp
     };
   }
 }

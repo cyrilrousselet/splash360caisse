@@ -72,7 +72,7 @@ const actions = {
                                          .value();
 
     return {
-      setClientSync: _clt
+      client: _clt
     };
   }
 

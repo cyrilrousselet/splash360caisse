@@ -70,7 +70,7 @@ const actions = {
     const _clo = await _findCloture(query);
 
     return {
-      setClotureSync: _clo,
+      cloture: _clo,
     };
   },
 
