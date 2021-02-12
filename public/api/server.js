@@ -779,7 +779,7 @@ const actions = {
 
 async function prepareExportationToPrimary(exportation) {
 
-  Object.entries(exportation).forEach([db, items]) => {
+  Object.entries(exportation).forEach(([db, items]) => {
       bulkSyncToPrimary(db, __data);
   });
   
