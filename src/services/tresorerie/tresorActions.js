@@ -230,13 +230,13 @@ function setTresorFromSync(tresor) {
             // -> si 'response' est null, la synchro ne provient pas de l'API,
             // il s'agit d'une synchro d'entretien commandée par la caisse "primary"
             else {
-              dispatch(notificationActions.syncConfirmToPrimary({db:"tresors", ids:mouvementsIds, from:caisse.uniqid}));
+              dispatch(notificationActions.syncConfirmToPrimary({db:"tresor", ids:mouvementsIds, from:caisse.uniqid}));
             }
 
             // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
             // donc inutile de lui renvoyer la synchro
             if (emitter!==null) {
-              dispatch(notificationActions.syncDispatch('tresorerie', tresorconfirm, emitter));
+              dispatch(notificationActions.syncDispatch('tresor', tresorconfirm, emitter));
             }
             dispatch(getTresors());
           }

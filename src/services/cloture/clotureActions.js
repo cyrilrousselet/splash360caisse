@@ -321,7 +321,7 @@ function setClotureFromSync(cloture) {
             // -> si 'response' est null, la synchro ne provient pas de l'API,
             // il s'agit d'une synchro d'entretien commandée par la caisse 'primary'
             else {
-              dispatch(notificationActions.syncConfirmToPrimary({db:"clotures", ids:cloturesIds, from:caisse.uniqid}));
+              dispatch(notificationActions.syncConfirmToPrimary({db:"cloture", ids:cloturesIds, from:caisse.uniqid}));
             }
 
             // -> si 'emitter' est null, la synchro provient de la caisse 'primary',

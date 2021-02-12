@@ -21,25 +21,25 @@ const dbUsersApi = require("./dbUsersApi.js");
 const dbTresorerieApi = require("./dbTresorerieApi.js");
 
 const DATABASES = {
-  'categories': dbCatalogueApi,
-  'groupes': dbCatalogueApi,
+  'categorie': dbCatalogueApi,
+  'groupe': dbCatalogueApi,
   'tva': dbCatalogueApi,
-  'types': dbCatalogueApi,
-  'ingredients': dbCatalogueApi,
-  'produits': dbCatalogueApi,
-  'steps': dbCatalogueApi,
-  'clotures': dbCloturesApi,
-  'commandes': dbCommandesApi,
-  'ticketsrestau': dbCommandesApi,
-  'users': dbUsersApi,
-  'tresors': dbTresorerieApi,
-  'clients': dbClientsApi,
-  'pointages': dbEmployesApi,
-  'timeadjusts': dbEmployesApi,
-  'shifts': dbEmployesApi,
-  'avoirs': dbMarketingApi,
-  'reglespanier': dbMarketingApi,
-  'reglescatalogue': dbMarketingApi
+  'type': dbCatalogueApi,
+  'ingredient': dbCatalogueApi,
+  'produit': dbCatalogueApi,
+  'step': dbCatalogueApi,
+  'cloture': dbCloturesApi,
+  'commande': dbCommandesApi,
+  'ticketrestaurant': dbCommandesApi,
+  'user': dbUsersApi,
+  'tresor': dbTresorerieApi,
+  'client': dbClientsApi,
+  'pointage': dbEmployesApi,
+  'timeadjust': dbEmployesApi,
+  'shift': dbEmployesApi,
+  'avoir': dbMarketingApi,
+  'reglepanier': dbMarketingApi,
+  'reglecatalogue': dbMarketingApi
 }
 
 const connectedSecondaries = {};
