@@ -216,7 +216,7 @@ function setTresorFromSync(tresor) {
             mouvementsIds.push(tresorconfirm.tresorId);
 
           } catch (err) {
-            dispatch({ type: tresorActionTypes.TRESORERIE_SETSYNCED_FAILURE, error: err });
+            dispatch({ type: tresorActionTypes.SETSYNCED_FAILURE, error: err });
             logger.log('sync trs err', err);
           }
 

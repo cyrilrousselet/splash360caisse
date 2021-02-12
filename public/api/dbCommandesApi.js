@@ -45,9 +45,10 @@ const actions = {
 
     const stats = await CommandeModel.aggregate([{$match: {
       $and: [
-      {"createdAt": { $gt: payload.from }},
-      {"status": {$eq: "confirmed"} }
-        ]
+        {"createdAt": { $gt: payload.from }},
+        {"status": {$eq: "confirmed"} },
+        {"archived": {$exists: false}}
+      ]
     }}, {$group: {
       _id: null,
       ca: {
