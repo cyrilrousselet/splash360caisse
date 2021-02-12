@@ -187,7 +187,12 @@ const actions = {
       produit: _prd,
       step: _stp
     };
-  }
+  },
+
+  syncConfirm: async (db, ids, from) => {
+    const _n = await _addLocalSync(db,ids,from);
+    return _n;
+  },
 }
 
 
@@ -196,6 +201,60 @@ async function _getAll() {
   let __rawdata = await _findCatalogue();
   
   return _parseCatalogue(__rawdata);
+}
+
+async function _addLocalSync(db, ids, store_id) {
+
+  if (db==='categories') {
+    const _cat = await (await db.categories)
+      .get("categories")
+      .filter(s => ( ids.includes(s.categorie_id) && !s.localsync.includes(store_id)) )
+      .assign({localsync: [...localsync, store_id]})
+      .write();
+  }
+  else if (db==='groupes') {
+    const _grp = await (await db.ingredienttypes)
+      .get("ingredienttypes")
+      .filter(s => ( ids.includes(s.type_id) && !s.localsync.includes(store_id)) )
+      .assign({localsync: [...localsync, store_id]})
+      .write();
+  }
+  else if (db==='types') {
+    const _igt = await (await db.groupes)
+      .get("groupes")
+      .filter(s => ( ids.includes(s.groupe_id) && !s.localsync.includes(store_id)) )
+      .assign({localsync: [...localsync, store_id]})
+      .write();
+  }
+  else if (db==='ingredients') {
+    const _ing = await (await db.ingredients)
+      .get("ingredients")
+      .filter(s => ( ids.includes(s.ingredient_id) && !s.localsync.includes(store_id)) )
+      .assign({localsync: [...localsync, store_id]})
+      .write();
+  }
+  else if (db==='produits') {
+    const _prd = await (await db.produits)
+      .get("produits")
+      .filter(s => ( ids.includes(s.produit_id) && !s.localsync.includes(store_id)) )
+      .assign({localsync: [...localsync, store_id]})
+      .write();
+  }
+  else if (db==='tva') {
+    const _tva = await (await db.tva)
+      .get("tva")
+      .filter(s => ( ids.includes(s.tva_id) && !s.localsync.includes(store_id)) )
+      .assign({localsync: [...localsync, store_id]})
+      .write();
+  }
+  else if (db==='steps') {
+    const _stp = await (await db.steps)
+      .get("steps")
+      .filter(s => ( ids.includes(s.step_id) && !s.localsync.includes(store_id)) )
+      .assign({localsync: [...localsync, store_id]})
+      .write();
+  }
+  return ids.length;
 }
 
 

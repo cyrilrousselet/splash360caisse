@@ -10,7 +10,7 @@ import { peripheralActions } from '../peripheral/peripheralActions';
 // import Swal from 'sweetalert2';
 import Logger from '../../helpers/Logger';
 import { commandeServices } from '../commande/commandeServices';
-import { dateBounds } from '../../helpers/toolbox';
+import { dateBounds, asyncForEach } from '../../helpers/toolbox';
 import { notificationActions } from '../notification/notificationActions';
 // import { dateBounds } from '../../helpers/toolbox';
 // const strings = new LocalizedStrings(data);
@@ -284,27 +284,57 @@ function setClotureFromSync(cloture) {
 
     if (Array.isArray(data)) {
 
-      data.forEach(clo => {
-        const {localsync} = clo;
-        let __lsync = localsync || [];
-        if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
-  
-        clotureServices.saveCloture({...clo, localsync:__lsync})
-        .then(
-          result => {
-            dispatch({ type: clotureActionTypes.PERSIST_FROM_SYNC_SUCCESS, result });
-  
+      let cloturesIds = [];
+      let cloNum = 0;
+
+      const __syncClo = async () => {
+        await asyncForEach(data, async (clo) => {
+
+          const {localsync} = clo;
+          let __lsync = localsync || [];
+          if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
+    
+          let clotureConfirm = null;
+          
+          try {
+            clotureConfirm = await clotureServices.saveCloture({...clo, localsync:__lsync});
+            
+            dispatch({ type: clotureActionTypes.PERSIST_FROM_SYNC_SUCCESS, clotureConfirm });
+            cloNum++;
+            cloturesIds.push(clotureConfirm.clotureId);
+
+          } catch(err) {
+            dispatch({ type: clotureActionTypes.PERSIST_FROM_SYNC_FAILURE, error: err });
+            logger.log('sync clo err', err);
+          }
+
+          if (cloNum===data.length) {
             // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
             // donc inutile de lui renvoyer la synchro
             // -> si 'response' est null, la synchro ne provient pas de l'API,
             // donc inutile de confirmer le traitement de la synchro
-            if (emitter!==null && response!==null) {
-              dispatch(notificationActions.syncConfirm(response));
-              dispatch(notificationActions.syncDispatch('cloture', result, emitter));
+                        // confirmation du traitement de la synchro
+
+            if (response!==null) {
+              dispatch(notificationActions.syncConfirm(response, {db:"cloture", ids:cloturesIds, from:caisse.uniqid}));
             }
+            // -> si 'response' est null, la synchro ne provient pas de l'API,
+            // il s'agit d'une synchro d'entretien commandée par la caisse 'primary'
+            else {
+              dispatch(notificationActions.syncConfirmToPrimary({db:"clotures", ids:cloturesIds, from:caisse.uniqid}));
+            }
+
+            // -> si 'emitter' est null, la synchro provient de la caisse 'primary',
+            // donc inutile de lui renvoyer la synchro
+            if (emitter!==null) {
+              dispatch(notificationActions.syncDispatch('cloture', clotureConfirm, emitter));
+            }
+            
           }
-        )
-      });
+        }); 
+      }
+
+      __syncClo();
 
     } else {
       

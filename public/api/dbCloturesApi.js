@@ -74,6 +74,11 @@ const actions = {
     };
   },
 
+  syncConfirm: async (db, ids, from) => {
+    const _n = await _addCloturesLocalSync(ids,from);
+    return _n;
+  },
+
   dbClotureSetSynced: async (req, res) => {
     const { payload } = req;
     log.info(
@@ -102,6 +107,18 @@ async function _getAll() {
   const __rawdata = await _findCloture();
   log.info('getall', __rawdata);
   return _parseCloture(__rawdata);
+}
+
+async function _addCloturesLocalSync(ids, store_id) {
+  const mongo = await connect();
+
+  const _cmds = await ClotureModel.updateMany(
+    {clotureId: {$in: ids}, localsync: { $ne: store_id }},
+    {$push: {localsync: store_id}}
+  );
+
+  return _cmds.n;
+
 }
 
 async function _findBoundedClotures(start, end) {

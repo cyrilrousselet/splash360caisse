@@ -218,13 +218,13 @@ const welcomeTreatment = async (station_uniqid) => {
   return {
     // ...catalogue_sum,
     // ...clients_sum,
-    // ...clotures_sum,
+    ...clotures_sum,
     ...commandes_sum,
     // ...employes_sum,
     // ...marketing_sum,
     // ...table_sum,
     // ...users_sum,
-    // ...tresors_sum,
+    ...tresors_sum,
   };
 };
 
@@ -417,7 +417,7 @@ const actions = {
 
   // confirme la bonne réception des synchro s/p
   syncConfirm: (req, res) => {
-    const { confirm, response, data } = req.payload;
+    const { response, data } = req.payload;
     if (response !== null) {
       responses[response].json(data);
       res.send({ msg: "sync confirm sent" });
@@ -560,11 +560,11 @@ const actions = {
         synchroTreatment(db, data);
       });
 
-      const secondarySum = await welcomeTreatment(primary);
+      const secondaryUpdate = await welcomeTreatment(primary);
 
-      // log.info("import:", secondarySum);
+      // log.info("import:", secondaryUpdate);
 
-      prepareExportationToPrimary(secondarySum);
+      prepareExportationToPrimary(secondaryUpdate);
 
     });
 
@@ -583,14 +583,18 @@ const actions = {
     // (le primary envoie une liste de ses entités
     // qu'il faut comparer avec celle du secondary)
     socket.on("resync", async (payload) => {
-      const {summary, liste, primary} = payload;
-      log.info('resync', liste, summary, primary);
+      const {update, liste, primary} = payload;
 
-      const secondaryUpdate = await welcomeTreatment(_emitter.uniqid);
+      Object.entries(update).forEach(([db,data])=>{
+        log.info('resync: ', db, data);
+        synchroTreatment(db, data);
+      });
+
+      const secondaryUpdate = await welcomeTreatment(primary);
 
       log.info("resync export:", secondaryUpdate);
 
-      prepareExportationToPrimary(primary);
+      prepareExportationToPrimary(secondaryUpdate);
 
     })
 
@@ -729,24 +733,37 @@ const actions = {
       url: url + ":" + API_PORT + "/synchro",
       method: "post",
     });
-    // __request.setHeader('Authorization','Bearer '+access_token)
+
+    let __syncedData = [];
+
     __request.setHeader("Access-Control-Allow-Origin", "*");
     __request.setHeader("Content-Type", "application/json");
 
     __request.write(JSON.stringify({ db, data, emitter }));
 
     __request.on("response", (response) => {
-      log.info(
-        `syncDispatchToPrimary() [${db}] to ${url}, status:`,
-        response.statusCode
-      );
       res.send({ msg: `synchro ${db} to primary` });
 
-      response.on("data", () => {
-
+      response.on("data", (chunk) => {
+        __syncedData.push(chunk);
+        log.info(`bulkSyncToPrimary BODY: ${chunk}`);
       });
       response.on("end", () => {
-
+        log.info("bulkSyncToPrimary: end");
+  
+        let __conf = {};
+        try {
+          __conf = JSON.parse(__syncedData.join(""));
+  
+          const {db, ids, from} = __conf;
+          synchroConfirm(db, ids, from);
+  
+        } catch (e) {
+          __conf = { error: e.message };
+          log.error("JSON error", e);
+        }
+  
+  
       });
     });
 
@@ -762,17 +779,10 @@ const actions = {
 
 async function prepareExportationToPrimary(exportation) {
 
-  const start = async () => {
-    asyncForEach(Object.entries(exportation), async ([db, items]) => {
-
-      const ids = items.map(i=>i.id);
-      const __data = await DATABASES[db].dbGetItems(db,ids);
+  Object.entries(exportation).forEach([db, items]) => {
       bulkSyncToPrimary(db, __data);
-    });
-  }
-
- // start();
-
+  });
+  
 }
 
 function bulkSyncToPrimary(db, data) {
@@ -781,22 +791,34 @@ function bulkSyncToPrimary(db, data) {
     url: _primaryUrl + ":" + API_PORT + "/synchro",
     method: "post",
   });
-  // __request.setHeader('Authorization','Bearer '+access_token)
+
+  let __syncedData = [];
+
   __request.setHeader("Access-Control-Allow-Origin", "*");
   __request.setHeader("Content-Type", "application/json");
 
   __request.write(JSON.stringify({ db, data, emitter:_emitter }));
 
   __request.on("response", (response) => {
-    log.info(
-      `bulkSyncToPrimary() [${db}] to ${_primaryUrl}, status:`,
-      response.statusCode
-    );
-
-    response.on("data", () => {
-
+    response.on("data", (chunk) => {
+      __syncedData.push(chunk);
+      log.info(`bulkSyncToPrimary BODY: ${chunk}`);
     });
     response.on("end", () => {
+      log.info("bulkSyncToPrimary: end");
+
+      let __conf = {};
+      try {
+        __conf = JSON.parse(__syncedData.join(""));
+
+        const {db, ids, from} = __conf;
+        synchroConfirm(db, ids, from);
+
+      } catch (e) {
+        __conf = { error: e.message };
+        log.error("JSON error", e);
+      }
+
 
     });
   });

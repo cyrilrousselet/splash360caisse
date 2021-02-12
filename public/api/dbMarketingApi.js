@@ -152,11 +152,41 @@ const actions = {
       reglepanier: _rpn,
       reglecatalogue: _rct
     };
-  }
+  },
+
+  syncConfirm: async (db, ids, from) => {
+    const _n = await _addLocalSync(ids,from);
+    return _n;
+  },
 
 }
 
 
+async function _addLocalSync(db, ids, store_id) {
+
+  if (db==="avoirs") {
+    let _shf = await (await db.avoirs)
+              .get("avoirs")
+              .filter(t => ( ids.includes(t.avoir_id) && !t.localsync.includes(store_id)) )
+              .assign({localsync: [...localsync, store_id]})
+              .write();
+  } 
+  else if (db==="reglespanier") {
+    let _adj = await (await db.reglespanier)
+              .get("reglespanier")
+              .filter(t => ( ids.includes(t.reglepanier_id) && !t.localsync.includes(store_id)) )
+              .assign({localsync: [...localsync, store_id]})
+              .write();
+  } 
+  else if (db==="reglescatalogue") {
+    let _pnt = await (await db.poinreglescataloguetages)
+              .get("reglescatalogue")
+              .filter(t => ( ids.includes(t.reglecatalogue_id) && !t.localsync.includes(store_id)) )
+              .assign({localsync: [...localsync, store_id]})
+              .write();
+  } 
+  return ids.length;
+}
 
 async function _getAllAvoir() {
   

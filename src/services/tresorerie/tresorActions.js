@@ -1,6 +1,6 @@
 import { tresorActionTypes } from "./tresorActionTypes";
 import { tresorServices } from "./tresorServices";
-import { dateBounds } from "../../helpers/toolbox";
+import { dateBounds, asyncForEach } from "../../helpers/toolbox";
 
 import { notificationActions } from '../notification/notificationActions';
 
@@ -191,32 +191,61 @@ function setTresorFromSync(tresor) {
 
     if (Array.isArray(data)) {
 
-      data.forEach(trs => {
 
-        // on ajoute l'id de la caisse à la propriété localsync
-        // et si elle n'existe pas, on crée la propriété
-        const {localsync} = trs;
-        let __lsync = localsync || [];
-        if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
+      let mouvementsIds = [];
+      let trsNum = 0;
 
-        tresorServices.persistTresor({...trs, localsync:__lsync})
-        .then(
-          result => {
-            dispatch({ type: tresorActionTypes.SETSYNCED_SUCCESS, result });
+      const __syncTrs = async () => {
+        await asyncForEach(data, async (trs) => {
+
+          // on ajoute l'id de la caisse à la propriété localsync
+          // et si elle n'existe pas, on crée la propriété
+          const {localsync} = trs;
+          let __lsync = localsync || [];
+          if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
+
+          let tresorconfirm = null;
+
+          
+          try {
+
+            tresorconfirm = await tresorServices.persistTresor({...trs, localsync:__lsync});
+          
+            dispatch({ type: tresorActionTypes.SETSYNCED_SUCCESS, tresorconfirm });
+            trsNum++;
+            mouvementsIds.push(tresorconfirm.tresorId);
+
+          } catch (err) {
+            dispatch({ type: tresorActionTypes.TRESORERIE_SETSYNCED_FAILURE, error: err });
+            logger.log('sync trs err', err);
+          }
+
+
+          if (trsNum===data.length) {
+            
+            // confirmation du traitement de la synchro
+            if (response!==null) {
+              dispatch(notificationActions.syncConfirm(response, {db:"tresor", ids:mouvementsIds, from:caisse.uniqid}));
+            }
+            // -> si 'response' est null, la synchro ne provient pas de l'API,
+            // il s'agit d'une synchro d'entretien commandée par la caisse "primary"
+            else {
+              dispatch(notificationActions.syncConfirmToPrimary({db:"tresors", ids:mouvementsIds, from:caisse.uniqid}));
+            }
 
             // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
             // donc inutile de lui renvoyer la synchro
-            // -> si 'response' est null, la synchro ne provient pas de l'API,
-            // donc inutile de confirmer le traitement de la synchro
-            if (emitter!==null && response!==null) {
-              dispatch(notificationActions.syncConfirm(response));
-              dispatch(notificationActions.syncDispatch('tresorerie', result, emitter));
+            if (emitter!==null) {
+              dispatch(notificationActions.syncDispatch('tresorerie', tresorconfirm, emitter));
             }
             dispatch(getTresors());
           }
-        );
 
-      });
+        }); 
+
+      }
+
+      __syncTrs();
 
     } else {
     

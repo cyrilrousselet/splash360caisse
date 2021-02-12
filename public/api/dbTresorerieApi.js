@@ -217,6 +217,11 @@ const actions = {
     };
   },
 
+  syncConfirm: async (db, ids, from) => {
+    const _n = await _addMouvementsLocalSync(ids,from);
+    return _n;
+  },
+
 }
 
 /**
@@ -243,6 +248,20 @@ async function _getLastMouvement(caisseId) {
   log.info('_getLastMouvement', _lastMvt);
 
   return (_lastMvt.length>0) ? _lastMvt[0] : null;
+}
+
+
+
+async function _addMouvementsLocalSync(ids, store_id) {
+  const mongo = await connect();
+
+  const _trs = await TresorModel.updateMany(
+    {tresorId: {$in: ids}, localsync: { $ne: store_id }},
+    {$push: {localsync: store_id}}
+  );
+
+  return _trs.n;
+
 }
 
 async function _findLastOuverture(caisseId) {

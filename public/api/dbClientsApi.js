@@ -74,7 +74,12 @@ const actions = {
     return {
       client: _clt
     };
-  }
+  },
+
+  syncConfirm: async (db, ids, from) => {
+    const _n = await _addLocalSync(ids,from);
+    return _n;
+  },
 
 }
 
@@ -84,6 +89,17 @@ async function _getAllClients() {
   
   const __rawdata = await _findClient();
   return _parseClient(__rawdata);
+}
+
+async function _addLocalSync(ids, store_id) {
+
+  let _clt = await (await db.clients)
+            .get("clients")
+            .filter(t => ( ids.includes(t.client_id) && !t.localsync.includes(store_id)) )
+            .assign({localsync: [...localsync, store_id]})
+            .write();
+
+  return ids.length;
 }
 
 

@@ -1187,8 +1187,8 @@ function setCommandeFromSync(commande) {
             
           }
 
-          console.log('num',`${cmdNum}/${data.length}`);
-          console.log('commandesIds',commandesIds);
+          // console.log('num',`${cmdNum}/${data.length}`);
+          // console.log('commandesIds',commandesIds);
 
           if (cmdNum===data.length) {
             

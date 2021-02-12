@@ -141,10 +141,42 @@ const actions = {
       timeadjust: _adj,
       shift: _shf
     };
-  }
+  },
+
+  syncConfirm: async (db, ids, from) => {
+    const _n = await _addLocalSync(db,ids,from);
+    return _n;
+  },
 
 }
 
+
+
+async function _addLocalSync(db, ids, store_id) {
+
+  if (db==="shifts") {
+    let _shf = await (await db.shifts)
+              .get("shifts")
+              .filter(t => ( ids.includes(t.shift_id) && !t.localsync.includes(store_id)) )
+              .assign({localsync: [...localsync, store_id]})
+              .write();
+  } 
+  else if (db==="timeadjusts") {
+    let _adj = await (await db.timeadjusts)
+              .get("timeadjusts")
+              .filter(t => ( ids.includes(t.adjust_id) && !t.localsync.includes(store_id)) )
+              .assign({localsync: [...localsync, store_id]})
+              .write();
+  } 
+  else if (db==="pointages") {
+    let _pnt = await (await db.pointages)
+              .get("pointages")
+              .filter(t => ( ids.includes(t.pointage_id) && !t.localsync.includes(store_id)) )
+              .assign({localsync: [...localsync, store_id]})
+              .write();
+  } 
+  return ids.length;
+}
 
 
 async function _getAllPointages() {

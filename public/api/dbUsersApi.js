@@ -72,7 +72,12 @@ const actions = {
     return {
       user: _usr
     };
-  }
+  },
+
+  syncConfirm: async (db, ids, from) => {
+    const _n = await _addLocalSync(ids,from);
+    return _n;
+  },
 }
 
 
@@ -82,6 +87,16 @@ async function _hasUsers() {
   return __users>0;
 }
 
+async function _addLocalSync(ids, store_id) {
+
+  let _clt = await (await db.users)
+            .get("users")
+            .filter(t => ( ids.includes(t.user_id) && !t.localsync.includes(store_id)) )
+            .assign({localsync: [...localsync, store_id]})
+            .write();
+
+  return ids.length;
+}
 
 async function _getAll() {
   
