@@ -527,9 +527,9 @@ const actions = {
     // avec la liste des summary (éléments à échanger entre les caisses)
     socket.on("welcome", async (welcomeData) => {
       log.info("on welcome");
-      const {summary, primary} = welcomeData;
+      const {update, primary} = welcomeData;
 
-      log.info("primary summary:", summary);
+      log.info("primary summary:", update);
 
       const secondarySum = await welcomeTreatment(primary);
 
