@@ -127,6 +127,17 @@ const server = {
       synchroTreatment(db, data, emitter, response_id);
     });
 
+    // SYNCHRO CONFIRM secondary -> primary
+    api_server.post("/synchroconfirm", (req, res) => {
+      const { db, from, ids } = req.body;
+      log.info("POST synchro", req.body);
+      log.info("POST db", db, `from ${from}`);
+
+      res.json({status: "success"});
+
+      synchroConfirm(db, ids, from);
+    });
+
     // mise à jour des temps de production de la part du serveur KDS
     api_server.post("/chrono", (req, res) => {
       log.info("POST chrono", req.body);
@@ -140,6 +151,19 @@ const server = {
     });
   },
 };
+
+const synchroConfirm = (db, ids, from) => {
+  log.info("synchroConfirm()", db, from);
+
+  if (DATABASES.hasOwnProperty(db)) {
+    
+    DATABASES[db].syncConfirm(db, ids, from);
+
+  } else {
+    log.error("synchroConfirm error (db '"+db+"' inconnue)");
+  }
+  
+}
 
 const synchroTreatment = (db, data, emitter = null, response = null) => {
   log.info("synchroTreatment()", db, emitter);

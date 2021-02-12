@@ -1199,7 +1199,7 @@ function setCommandeFromSync(commande) {
             // -> si 'response' est null, la synchro ne provient pas de l'API,
             // il s'agit d'une synchro d'entretien commandée par la caisse 'primary'
             else {
-              dispatch(notificationActions.syncConfirmToPrimary({db:"commande", ids:commandesIds, from:caisse.uniqid}));
+              dispatch(notificationActions.syncConfirmToPrimary({db:"commandes", ids:commandesIds, from:caisse.uniqid}));
             }
 
             // -> si 'emitter' est null, la synchro provient de la caisse 'primary',

@@ -5,6 +5,8 @@ const connect = require("../db/mongodb");
 const CommandeModel = require("../db/commandeModel");
 const { uuid } = require("uuidv4");
 
+const { asyncForEach } = require('../../src/helpers/toolbox');
+
 const actions = {
   dbCommandeGetAll: async (req, res) => {
     const { payload } = req;
@@ -163,6 +165,20 @@ const actions = {
       ticketrestaurant: _tkr,
     };
   },
+
+  syncConfirm: async (db, ids, from) => {
+
+    let _n = 0;
+    if (db=='ticketsrestau') {
+
+    } else {
+      _n = await _addCommandesLocalSync(ids,from);
+    }
+
+    return _n;
+
+
+  }
 };
 
 async function _getAll() {
@@ -236,6 +252,29 @@ async function _findCommande(criteriae = {}) {
   const _cmd = await CommandeModel.find(criteriae).lean().exec();
   // await mongo.disconnect();
   return _cmd;
+}
+
+async function _addCommandesLocalSync(ids, store_id) {
+  const mongo = await connect();
+
+  const _cmds = await CommandeModel.updateMany(
+    {ticketId: {$in: ids}, localsync: { $ne: store_id }},
+    {$push: {localsync: store_id}}
+  );
+
+  return _cmds.n;
+
+}
+
+async function _addTicketsLocalSync(ids, store_id) {
+
+  let _tr = await (await db.paramticketsrestauetres)
+            .get("ticketsrestau")
+            .filter(t => ( ids.includes(t.ticketrestau_id) && !t.localsync.includes(store_id)) )
+            .assign({localsync: [...localsync, store_id]})
+            .write();
+
+  return ids.length;
 }
 
 async function _persistCommande(payload) {
@@ -367,7 +406,7 @@ async function _findTicketRestau(criteriae = {}) {
   return { _tr };
 }
 
-async function asyncForEach(array, callback) {
+async function asyncForEachl(array, callback) {
   for (let index = 0; index < array.length; index++) {
     await callback(array[index], index, array);
   }
