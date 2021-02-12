@@ -532,6 +532,7 @@ const actions = {
       // log.info("primary update:", update);
 
       Object.entries(update).forEach(([db,data])=>{
+        log.info('welcome: ', db, data);
         synchroTreatment(db, data);
       });
 
