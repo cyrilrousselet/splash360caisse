@@ -1230,7 +1230,9 @@ function setCommandeFromSync(commande) {
 
       __syncCmd();
 
-    } else {
+    } 
+    // dans le cas d'une synchro de commande seule
+    else {
 
       const {localsync} = data;
       let __lsync = localsync || [];
@@ -1238,46 +1240,57 @@ function setCommandeFromSync(commande) {
 
       const __data = {...data, localsync: __lsync};
 
-      commandeServices.setCommandeFromSync(__data).then(
-        (confirm) => {
-          dispatch({
-            type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_SUCCESS,
-            confirm,
-          });
 
-          // -> si 'emitter' est null, la synchro provient de la caisse 'primary',
-          // donc inutile de lui renvoyer la synchro
-          // -> si 'response' est null, la synchro ne provient pas de l'API,
-          // donc inutile de confirmer le traitement de la synchro
-          if (emitter !== null && response !== null) {
-            dispatch(notificationActions.syncConfirm(response));
-            dispatch(notificationActions.syncDispatch("commande", __data, emitter));
+      let commandeconfirm = null;
 
-            // synchro de la commande avec le BO,
-            // si la commande provient d'une caisse 'secondary'
-            // et s'il s'agit d'une commande confirmée ou supprimée
-            if (confirm.status === "confirmed" || confirm.status === "deleted") {
-              const cmdtosync = {
-                ...confirm,
-                chrono: confirm.chrono || 0,
-                createdAt: formatISO(confirm.createdAt),
-                updatedAt: formatISO(confirm.updatedAt),
-              };
+      try {
+        commandeconfirm = await commandeServices.setCommandeFromSync(__data);
+        
+        dispatch({
+          type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_SUCCESS,
+          commandeconfirm,
+        });
 
-              dispatch(notificationActions.syncCommandes([cmdtosync]));
-              dispatch(clotureActions.getTodayCa());
-            }
-          }
-          dispatch(getTodayCommandesList());
-        },
-        (error) => {
-          dispatch({
-            type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_FAILURE,
-            error: error,
-          });
-          logger.log("sync cmd err", error);
+        // confirmation du traitement de la synchro
+        if (response !== null) {
+          dispatch(notificationActions.syncConfirm(response, {db:"commande", ids:[commandeconfirm.ticketId], from:caisse.uniqid}));
+        } 
+        // -> si 'response' est null, la synchro ne provient pas de l'API,
+        // il s'agit d'une synchro d'entretien commandée par la caisse 'primary'
+        else {
+          dispatch(notificationActions.syncConfirmToPrimary({db:"commande", ids:[commandeconfirm.ticketId], from:caisse.uniqid}));
         }
-      );
+
+        // -> si 'emitter' est null, la synchro provient de la caisse 'primary',
+        // donc inutile de lui renvoyer la synchro
+        if (emitter !== null) {
+          dispatch(notificationActions.syncDispatch("commande", __data, emitter));
+
+          // synchro de la commande avec le BO,
+          // si la commande provient d'une caisse 'secondary'
+          // et s'il s'agit d'une commande confirmée ou supprimée
+          if (commandeconfirm.status === "confirmed" || commandeconfirm.status === "deleted") {
+            const cmdtosync = {
+              ...commandeconfirm,
+              chrono: commandeconfirm.chrono || 0,
+              createdAt: formatISO(commandeconfirm.createdAt),
+              updatedAt: formatISO(commandeconfirm.updatedAt),
+            };
+
+            dispatch(notificationActions.syncCommandes([cmdtosync]));
+            dispatch(clotureActions.getTodayCa());
+          }
+        }
+        dispatch(getTodayCommandesList());
+      }
+      catch (error) {
+        dispatch({
+          type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_FAILURE,
+          error: error,
+        });
+        logger.log("sync cmd err", error);
+      }
+      
       
     }
   };

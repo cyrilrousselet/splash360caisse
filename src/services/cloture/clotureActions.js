@@ -274,7 +274,7 @@ function setSyncedClotures(payload) {
 
 
 function setClotureFromSync(cloture) {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const { data, emitter, response } = cloture;
 
 
@@ -282,6 +282,7 @@ function setClotureFromSync(cloture) {
     // et si elle n'existe pas, on crée la propriété
     const {caisse} = getState().parametresReducer.parametres.options;
 
+    // s'il s'agit de plusieurs clotures à persister
     if (Array.isArray(data)) {
 
       let cloturesIds = [];
@@ -309,12 +310,8 @@ function setClotureFromSync(cloture) {
           }
 
           if (cloNum===data.length) {
-            // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
-            // donc inutile de lui renvoyer la synchro
-            // -> si 'response' est null, la synchro ne provient pas de l'API,
-            // donc inutile de confirmer le traitement de la synchro
-                        // confirmation du traitement de la synchro
-
+            
+            // confirmation du traitement de la synchro
             if (response!==null) {
               dispatch(notificationActions.syncConfirm(response, {db:"cloture", ids:cloturesIds, from:caisse.uniqid}));
             }
@@ -336,27 +333,40 @@ function setClotureFromSync(cloture) {
 
       __syncClo();
 
-    } else {
+    } 
+    // s'il s'agit d'une seule cloture
+    else {
       
       const {localsync} = data;
       let __lsync = localsync || [];
       if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
 
-      clotureServices.saveCloture({...data, localsync:__lsync})
-      .then(
-        result => {
-          dispatch({ type: clotureActionTypes.PERSIST_FROM_SYNC_SUCCESS, result });
+      let clotureConfirm = null;
 
-          // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
-          // donc inutile de lui renvoyer la synchro
-          // -> si 'response' est null, la synchro ne provient pas de l'API,
-          // donc inutile de confirmer le traitement de la synchro
-          if (emitter!==null && response!==null) {
-            dispatch(notificationActions.syncConfirm(response));
-            dispatch(notificationActions.syncDispatch('cloture', result, emitter));
-          }
+      try {
+
+        clotureConfirm = await clotureServices.saveCloture({...data, localsync:__lsync});
+      
+        // confirmation du traitement de la synchro
+        if (response!==null) {
+          dispatch(notificationActions.syncConfirm(response, {db:"cloture", ids:[clotureConfirm.clotureId], from:caisse.uniqid}));
         }
-      )
+        // -> si 'response' est null, la synchro ne provient pas de l'API,
+        // il s'agit d'une synchro d'entretien commandée par la caisse 'primary'
+        else {
+          dispatch(notificationActions.syncConfirmToPrimary({db:"cloture", ids:[clotureConfirm.clotureId], from:caisse.uniqid}));
+        }
+
+        // -> si 'emitter' est null, la synchro provient de la caisse 'primary',
+        // donc inutile de lui renvoyer la synchro
+        if (emitter!==null) {
+          dispatch(notificationActions.syncDispatch('cloture', clotureConfirm, emitter));
+        }
+
+      } catch(err) {
+        dispatch({ type: clotureActionTypes.PERSIST_FROM_SYNC_FAILURE, error: err });
+        logger.log('sync clo err', err);
+      }
 
     }
   }
