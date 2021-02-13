@@ -466,11 +466,11 @@ const actions = {
   resync: async (req, res) => {
     const { liste, caisseId } = req.payload;
 
+    let listeNum = 0;
 
 
     const start = async () => {
       await asyncForEach(Object.entries(connectedSecondaries), async ([sockid, secondary]) => {
-
 
 
         let __summary = {};
@@ -488,41 +488,54 @@ const actions = {
             if ('tresor'===entity) {
               const tresors_sum = await dbTresorerieApi.dbTresorerieSummary(mongo_query);
               __summary = {...__summary, ...tresors_sum};
+              listeNum++;
             }
             else if ('commandes'===entity) {
               const commandes_sum = await dbCommandesApi.dbCommandesSummary(mongo_query, ldb_query);
               __summary = {...__summary, ...commandes_sum};
+              listeNum++;
             } 
             else if ('clotures'===entity) {
               const clotures_sum = await dbCloturesApi.dbCloturesSummary(mongo_query);
               __summary = {...__summary, ...clotures_sum};
+              listeNum++;
             } 
             else if ('employes'===entity) {
               const employes_sum = await dbEmployesApi.dbEmployesSummary(ldb_query);
               __summary = {...__summary, ...employes_sum};
+              listeNum++;
             } 
             else if ('marketing'===entity) {
               const marketing_sum = await dbMarketingApi.dbMarketingSummary(ldb_query);
               __summary = {...__summary, ...marketing_sum};
+              listeNum++;
             } 
             else if ('users'===entity) {
               const users_sum = await dbUsersApi.dbUsersSummary(ldb_query);
               __summary = {...__summary, ...users_sum};
+              listeNum++;
             }
             else if ('catalogue'===entity) {
               const catalogue_sum = await dbCatalogueApi.dbCatalogueSummary(ldb_query);
               __summary = {...__summary, ...catalogue_sum};
+              listeNum++;
             }
             else if ('clients'===entity) {
               const clients_sum = await dbClientsApi.dbClientsSummary(ldb_query);
               __summary = {...__summary, ...clients_sum};
+              listeNum++;
             }
+
+            if (listeNum===liste.length) {
+              log.info('resync', __summary, secondary.uniqid);
+              io.to(sockid).emit("resync", {summary: __summary, liste: liste, primary: caisseId});
+            }
+
           });
         };
 
         start_secondary();
 
-        io.to(sockid).emit("resync", {summary: __summary, liste: liste, primary: caisseId});
       });
     }
     start();
