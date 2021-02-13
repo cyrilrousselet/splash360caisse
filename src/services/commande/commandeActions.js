@@ -995,6 +995,7 @@ function setCommandeFromOrder(provider, payload) {
   };
 }
 
+
 function setCommandeFromAPI(payload) {
   return async (dispatch, getState) => {
     const state = getState();
@@ -1135,6 +1136,20 @@ function setCommandeFromAPI(payload) {
     );
     return commande.ticketId;
   };
+}
+
+function getCommandesCaisses() {
+  return async (dispatch) => {
+    dispatch({ type: commandeActionTypes.GET_COMMANDES_CAISSES_REQUEST });
+
+    try {
+      const caisses = await commandeServices.getCommandesCaisses();
+      dispatch({ type: commandeActionTypes.GET_COMMANDES_CAISSES_SUCCESS, caisses});
+    } catch (err) {
+      dispatch({ type: commandeActionTypes.GET_COMMANDES_CAISSES_FAILURE, error: err });
+    }
+
+  }
 }
 
 /**
@@ -1419,6 +1434,7 @@ export const commandeActions = {
   updateCommande,
   deleteCommande,
   setLivreur,
+  getCommandesCaisses,
   // setProductionChrono,
   addReglement,
   removeReglement,

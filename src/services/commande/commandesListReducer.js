@@ -4,7 +4,8 @@ const initialState = {
   loading: false,
   error: null,
   commandeslist: {},
-  ticketsrestau: []
+  ticketsrestau: [],
+  caisses: []
 }
 
 
@@ -14,6 +15,7 @@ export function commandesListReducer(state = initialState, action) {
     case commandeActionTypes.GET_ALLCOMMANDES_REQUEST:
     case commandeActionTypes.GETALL_TICKETSRESTAU_REQUEST:
     case commandeActionTypes.GET_COMMANDESLIST_REQUEST:
+    case commandeActionTypes.GET_COMMANDES_CAISSES_REQUEST:
       return {
         ...state,
         loading: true,
@@ -28,9 +30,17 @@ export function commandesListReducer(state = initialState, action) {
         error: null,
         commandeslist: action.commandeslist
       };
+    
+    case commandeActionTypes.GET_COMMANDES_CAISSES_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        caisses: action.caisses
+      }
 
     case commandeActionTypes.GET_ALLCOMMANDES_FAILURE:
     case commandeActionTypes.GET_COMMANDESLIST_FAILURE:
+    case commandeActionTypes.GET_COMMANDES_CAISSES_FAILURE:
       return {
         ...state,
         loading: false,

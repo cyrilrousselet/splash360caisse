@@ -21,6 +21,31 @@ const actions = {
     // log.info(proxies);
     res.send(proxies);
   },
+  dbCommandesGetCaisses: async (req, res) => {
+
+    let proxies = await _getCommandes({
+      $and: [
+        { archived: {"$exists": false} },
+        { status: { $ne: "deleted" } },
+        { $or: [
+          { centre_revenu: {"$exists": false} },
+          { centre_revenu: "restaurant" }
+        ]}
+      ]
+    });
+
+    let caisses = [];
+    if (proxies.commandeslist) {  
+      Object.entries(proxies.commandeslist).forEach(([ticketId, commande]) => {
+        if (caisses.filter(c => c.uniqid===commande.caisse.uniqid).length===0) {
+          caisses.push(commande.caisse);
+        }
+      })
+    }
+    res.send(caisses);
+
+  },
+
   dbCommandeGetToSync: async (req, res) => {
     const { payload } = req;
     const limit = payload.limit;

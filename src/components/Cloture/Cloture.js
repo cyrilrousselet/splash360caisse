@@ -136,10 +136,13 @@ class Cloture extends React.Component {
       getCommandesList, 
       getLastMouvement, 
       fonddecaisse_activation,
-      resync
+      resync,
+      getCommandesCaisses
     } = this.props;
 
     resync(['tresor','commandes']);
+
+    getCommandesCaisses();
     
     getCommandesList({
       $and: [
@@ -263,7 +266,25 @@ class Cloture extends React.Component {
     params["caisse"] = selection;
     params["vendeur"] = (selection_operator && selection_operator.id === "allope") ? null : selection_operator;
     
-    this.props.getCurrentPeriode(params);
+    this.props.getCommandesList({
+      $and: [
+        { archived: {"$exists": false} },
+        { status: { $ne: "deleted" } },
+        { $or: [
+          { "caisse_encaissement.id": selection.id },
+          { $and: [
+            { "caisse.id": selection.id },
+            { status: { $in: ["standby", "a_encaisser"]} }
+          ]},
+        ]},
+        { $or: [
+          { centre_revenu: {"$exists": false} },
+          { centre_revenu: "restaurant" }
+        ]}
+      ]
+    });
+
+    // this.props.getCurrentPeriode(params);
   }
 
   selectVendeur(event) {
@@ -601,7 +622,7 @@ class Cloture extends React.Component {
           
     // logger.log('fdcaisse_new', periode_z.periode.fdcaisse+' + ('+comptage_fv+' - '+Number(prelevement_fv.replace(",", "."))+')');
     // logger.log('operators', operators);
-    // logger.log('caisses', caisses);
+     logger.log('******* caisses', caisses);
 
     if (processing) {
 

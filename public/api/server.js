@@ -170,7 +170,7 @@ const synchroTreatment = (db, data, emitter = null, response = null) => {
 
   if (webContents !== null) {
     if (SYNCHRO_TREATMENT.hasOwnProperty(db)) {
-      webContents.send(SYNCHRO_TREATMENT[db], { data, emitter, response });
+      if (data && data.length>0) webContents.send(SYNCHRO_TREATMENT[db], { data, emitter, response });
     } else {
       log.error("SynchroTreatment error (db '"+db+"' inconnue)");
     }
@@ -793,7 +793,7 @@ const actions = {
 async function prepareExportationToPrimary(exportation) {
 
   Object.entries(exportation).forEach(([db, items]) => {
-      bulkSyncToPrimary(db, items);
+    if (items) bulkSyncToPrimary(db, items);
   });
   
 }

@@ -12,6 +12,7 @@ export const commandeServices = {
   getCommandeById,
   getCommandesList,
   //  getNewNumero,
+  getCommandesCaisses,
   addProduit,
   updateProduit,
   addReglement,
@@ -86,6 +87,9 @@ function persistTicketsRestaurants(liste) {
   return emit("dbTicketsRestauPersist", { payload: trliste });
 }
 
+function getCommandesCaisses() {
+  return emit('dbCommandesGetCaisses',{});
+}
 
 function addProduit(payload, tva, items, steps) {
   const { produitid, nom, prix, composition, customizable } = payload;

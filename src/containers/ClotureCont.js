@@ -14,38 +14,14 @@ import { tresorServices } from '../services/tresorerie/tresorServices';
 
 
 
-const getCaisses = (state) => {
-  const {stations} = state.parametresReducer.parametres.options;
-  const {commandeslist} = state.commandesListReducer;
-
-  let caisses = [];
-
-  if (commandeslist) {  
-    Object.entries(commandeslist).forEach(([ticketId, commande]) => {
-      if (caisses.filter(c => c.uniqid===commande.caisse.uniqid).length===0) {
-        caisses.push(commande.caisse);
-      }
-    })
-  } else {
-    caisses = stations;
-  }
-
-  return caisses.length>0 ? caisses : null;
-
-  // if (stations) {
-  //   // return stations.filter( (st) => st.origine.toLowerCase() === "caisse" );
-  //   return stations;
-  // }
-  // return null;
-}
-
 const mapStateToProps = (state) => {
   return {
     periode: getPeriode(state),
     listeCommandes: state.commandesListReducer.commandeslist,
     catalogue: state.catalogueReducer,
     caisse: state.parametresReducer.parametres.options.caisse,
-    caisses: getCaisses(state),
+    caisses: state.commandesListReducer.caisses,
+    stations: state.parametresReducer.parametres.options,
     user: state.authentication.user,
     mouvements: state.tresorReducer.tresors,
     fonddecaisse_activation: state.parametresReducer.parametres.financier && state.parametresReducer.parametres.financier.fonddecaisse_activation,
@@ -61,10 +37,12 @@ const mapDispatchToProps = (dispatch) => {
     makeCloture: clotureActions.makeCloture,
     addTresor: tresorActions.addTresor,
     resync: notificationActions.resync,
+    getCommandesCaisses: commandeActions.getCommandesCaisses
   }, dispatch);
   return {
     ...bound,
-    getLastMouvement: tresorServices.getLastMouvement,    
+    getLastMouvement: tresorServices.getLastMouvement, 
+    // getCommandesCaisses: commandeServices.getCommandesCaisses   
   };
 }
 
