@@ -528,7 +528,7 @@ const actions = {
 
             if (listeNum===liste.length) {
               log.info('resync', __summary, secondary.uniqid);
-              io.to(sockid).emit("resync", {summary: __summary, liste: liste, primary: caisseId});
+              io.to(sockid).emit("resync", {update: __summary, liste: liste, primary: caisseId});
             }
 
           });
