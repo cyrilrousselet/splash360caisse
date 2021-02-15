@@ -170,7 +170,11 @@ const synchroTreatment = (db, data, emitter = null, response = null) => {
 
   if (webContents !== null) {
     if (SYNCHRO_TREATMENT.hasOwnProperty(db)) {
-      if (data && data.length>0) webContents.send(SYNCHRO_TREATMENT[db], { data, emitter, response });
+      if (data && data.length>0) {
+        webContents.send(SYNCHRO_TREATMENT[db], { data, emitter, response });
+      } else {
+        log.info('synchroTreatment, empty data', data);
+      }
     } else {
       log.error("SynchroTreatment error (db '"+db+"' inconnue)");
     }
