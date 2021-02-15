@@ -1234,10 +1234,10 @@ function setCommandeFromSync(commande) {
                 };
 
                 dispatch(notificationActions.syncCommandes([cmdtosync]));
-                dispatch(clotureActions.getTodayCa());
               }
             }
             dispatch(getTodayCommandesList());
+            dispatch(clotureActions.getTodayCa());
           }
 
         });
@@ -1293,10 +1293,10 @@ function setCommandeFromSync(commande) {
             };
 
             dispatch(notificationActions.syncCommandes([cmdtosync]));
-            dispatch(clotureActions.getTodayCa());
           }
         }
         dispatch(getTodayCommandesList());
+        dispatch(clotureActions.getTodayCa());
       }
       catch (error) {
         dispatch({
