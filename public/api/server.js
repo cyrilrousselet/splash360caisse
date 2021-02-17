@@ -455,7 +455,6 @@ const actions = {
         `syncConfirmToPrimary() to ${url}, status:`,
         response.statusCode
       );
-      res.send({ msg: `syncConfirmToPrimary to primary` });
 
       response.on("data", (chunk) => {
         __confirmation.push(chunk);
@@ -463,6 +462,7 @@ const actions = {
       });
       response.on("end", () => {
         log.info("syncConfirmToPrimary: end", JSON.parse(__confirmation.join("")));
+        res.send({ msg: `syncConfirmToPrimary to primary` });
       });
     });
 
