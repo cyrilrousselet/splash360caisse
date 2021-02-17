@@ -2,6 +2,8 @@ import { FormControl, Modal, Select, MenuItem, Fab, TextField } from '@material-
 import React from 'react';
 import CloseIcon from '../common/icon/CloseIcon';
 import StdButton from '../common/StdButton';
+import history from '../../helpers/history';
+import paths from './../../constants/routes.json';
 
 import Swal from 'sweetalert2';
 
@@ -150,6 +152,7 @@ class MouvementPopin extends React.Component {
      this.setState({motif:String(event.target.value).toUpperCase()});
    }
 
+
   render() {
 
     const { mouvement, type, caisse, caisses, open, closeHandler } = this.props;
@@ -268,6 +271,9 @@ class MouvementPopin extends React.Component {
               <div className={ `ftr-cont ftr-${type}`}>
               { (type !== "view" && type!=="ouverture") && (
                 <StdButton identifier="none" elementclass="btncancel" icon={ false } noStroke={true} text={ strings.general.dialog.cancel } onClick={ closeHandler } />
+               )}
+               { (type==="ouverture") && (
+                <StdButton identifier="none" elementclass="btncancel" icon={ false } noStroke={true} text={ strings.general.dialog.cancel } onClick={ () => {  history.push(paths.DASHBOARD) } } />
                )}
               { (type !== "view") && ( 
                <StdButton 

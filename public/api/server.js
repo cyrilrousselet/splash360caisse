@@ -438,6 +438,8 @@ const actions = {
 
     log.info("syncConfirmToPrimary", req.payload);
 
+    let __confirmation = [];
+
     const __request = net.request({
       url: url + ":" + API_PORT + "/synchroconfirm",
       method: "post",
@@ -455,11 +457,12 @@ const actions = {
       );
       res.send({ msg: `syncConfirmToPrimary to primary` });
 
-      response.on("data", () => {
-
+      response.on("data", (chunk) => {
+        __confirmation.push(chunk);
+        log.info(`syncConfirmToPrimary BODY: ${chunk}`);
       });
       response.on("end", () => {
-
+        log.info("syncConfirmToPrimary: end", JSON.parse(__confirmation.join("")));
       });
     });
 

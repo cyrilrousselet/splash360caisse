@@ -619,9 +619,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      &.ftr-ouverture {
-        justify-content: flex-end;
-      }
+      // &.ftr-ouverture {
+      //   justify-content: flex-end;
+      // }
     }
     .btncancel {
         background-color:$gris;
