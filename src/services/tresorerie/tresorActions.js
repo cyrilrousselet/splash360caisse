@@ -230,14 +230,12 @@ function setTresorFromSync(tresor) {
             tresorconfirm = await tresorServices.persistTresor({...trs, localsync:__lsync});
           
 
-            if (tresorconfirm.destination===caisse.uniqid) {
-              let __isOuverture = null;
-              if (tresorconfirm.type==="cloture") __isOuverture = false;
+            if (tresorconfirm.type==="cloture" && tresorconfirm.origine===caisse.uniqid) {
 
               dispatch({ 
                 type: tresorActionTypes.ADD_SUCCESS, 
                 tresor: tresorconfirm,
-                ouverture: __isOuverture
+                ouverture: false
                });
 
             }
@@ -294,15 +292,12 @@ function setTresorFromSync(tresor) {
         tresorconfirm = await tresorServices.persistTresor({...data, localsync:__lsync});
 
 
-        if (tresorconfirm.destination===caisse.uniqid) {
-          let __isOuverture = null;
-          if (tresorconfirm.type==="ouverture") __isOuverture = true;
-          if (tresorconfirm.type==="cloture") __isOuverture = false;
+        if (tresorconfirm.type==="cloture" && tresorconfirm.origine===caisse.uniqid) {
 
           dispatch({ 
             type: tresorActionTypes.ADD_SUCCESS, 
             tresor: tresorconfirm,
-            ouverture: __isOuverture
+            ouverture: false
            });
 
         }
