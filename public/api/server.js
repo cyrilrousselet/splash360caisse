@@ -428,7 +428,7 @@ const actions = {
     const { response, data } = req.payload;
     if (response !== null) {
       responses[response].json(data);
-      res.send({ msg: "sync confirm sent" });
+      res.send({ msg: "sync confirm sent", donnees: data });
     }
   },
 
@@ -770,10 +770,10 @@ const actions = {
 
       response.on("data", (chunk) => {
         __syncedData.push(chunk);
-        log.info(`bulkSyncToPrimary BODY: ${chunk}`);
+        log.info(`syncDispatchToPrimary BODY: ${chunk}`);
       });
       response.on("end", () => {
-        log.info("bulkSyncToPrimary: end");
+        log.info("syncDispatchToPrimary: end");
   
         let __conf = {};
         try {
@@ -784,7 +784,7 @@ const actions = {
   
         } catch (e) {
           __conf = { error: e.message };
-          log.error("JSON error", e);
+          log.error("syncDispatchToPrimary JSON error", e);
         }
   
   
