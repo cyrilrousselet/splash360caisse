@@ -1014,6 +1014,10 @@ function setCommandeFromAPI(payload) {
       }
     } else {
       if (data.status === "confirmed") {
+
+        if (!data.operator.hasOwnProperty('uniqid')) data.operator.uniqid = data.operator.id;
+        if (!data.caisse.hasOwnProperty('uniqid')) data.caisse.uniqid = data.caisse.id;
+
         data = {
           ...data,
           operator_encaissement: data.operator,
@@ -1406,11 +1410,10 @@ function setTicketRestaurantFromSync(ticketrestaurant) {
     
           const __data = {...tr, localsync: __lsync};
     
-          let trconfirm = null;
 
           try {
 
-            trconfirm = await commandeServices.persistSingleTicketRestaurant(__data);
+            await commandeServices.persistSingleTicketRestaurant(__data);
 
             dispatch({
               type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_SUCCESS,
@@ -1463,11 +1466,10 @@ function setTicketRestaurantFromSync(ticketrestaurant) {
 
       const __data = {...data, localsync: __lsync};
 
-      let trconfirm = null;
 
       try {
 
-        trconfirm = await commandeServices.persistSingleTicketRestaurant(__data);
+        await commandeServices.persistSingleTicketRestaurant(__data);
 
         dispatch({
           type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_SUCCESS,
