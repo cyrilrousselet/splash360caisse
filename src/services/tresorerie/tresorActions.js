@@ -230,8 +230,8 @@ function setTresorFromSync(tresor) {
             tresorconfirm = await tresorServices.persistTresor({...trs, localsync:__lsync});
           
 
-            let __isOuverture = null;
             if (tresorconfirm.destination===caisse.uniqid) {
+              let __isOuverture = null;
               if (tresorconfirm.type==="ouverture") __isOuverture = true;
               if (tresorconfirm.type==="cloture") __isOuverture = false;
 
@@ -270,7 +270,8 @@ function setTresorFromSync(tresor) {
             if (emitter!==null) {
               dispatch(notificationActions.syncDispatch('tresor', tresorconfirm, emitter));
             }
-            dispatch(getTresors());
+            // dispatch(getTresors());
+            dispatch(getLastOuvertureAndAfter(caisse.uniqid));
           }
 
         }); 
@@ -293,6 +294,20 @@ function setTresorFromSync(tresor) {
       try {
         tresorconfirm = await tresorServices.persistTresor({...data, localsync:__lsync});
 
+
+        if (tresorconfirm.destination===caisse.uniqid) {
+          let __isOuverture = null;
+          if (tresorconfirm.type==="ouverture") __isOuverture = true;
+          if (tresorconfirm.type==="cloture") __isOuverture = false;
+
+          dispatch({ 
+            type: tresorActionTypes.ADD_SUCCESS, 
+            tresor: tresorconfirm,
+            ouverture: __isOuverture
+           });
+
+        }
+
         dispatch({ type: tresorActionTypes.SETSYNCED_SUCCESS, tresorconfirm });
 
         // confirmation du traitement de la synchro
@@ -310,7 +325,7 @@ function setTresorFromSync(tresor) {
         if (emitter!==null) {
           dispatch(notificationActions.syncDispatch('tresor', tresorconfirm, emitter));
         }
-        dispatch(getTresors());
+        dispatch(getLastOuvertureAndAfter(caisse.uniqid));
       
       } catch (err) {
         dispatch({ type: tresorActionTypes.SETSYNCED_FAILURE, error: err });
