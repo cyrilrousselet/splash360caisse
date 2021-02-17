@@ -72,7 +72,7 @@ const actions = {
       $and: [
         {"createdAt": { $gt: payload.from }},
         {"status": {$eq: "confirmed"} },
-        {"archived": {$exists: false}}
+        // {"archived": {$exists: false}}
       ]
     }}, {$group: {
       _id: null,
