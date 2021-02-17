@@ -160,8 +160,8 @@ function setChrono(payload) {
     if (cmd) {
       const commande = cmd._cmd;
 
-      const careDatetime = new Date(careTime);
       const endDatetime = new Date(endTime);
+      const careDatetime = careTime ? new Date(careTime) : endDatetime;
 
       // si la commande a déjà été synchronisée avec le Backend
       let cmdToSync = {};
