@@ -160,8 +160,8 @@ function setChrono(payload) {
     if (cmd) {
       const commande = cmd._cmd;
 
-      const careDatetime = new Date(careTime);
       const endDatetime = new Date(endTime);
+      const careDatetime = careTime ? new Date(careTime) : endDatetime;
 
       // si la commande a déjà été synchronisée avec le Backend
       let cmdToSync = {};
@@ -1014,6 +1014,10 @@ function setCommandeFromAPI(payload) {
       }
     } else {
       if (data.status === "confirmed") {
+
+        if (!data.operator.hasOwnProperty('uniqid')) data.operator.uniqid = data.operator.id;
+        if (!data.caisse.hasOwnProperty('uniqid')) data.caisse.uniqid = data.caisse.id;
+
         data = {
           ...data,
           operator_encaissement: data.operator,
@@ -1234,10 +1238,10 @@ function setCommandeFromSync(commande) {
                 };
 
                 dispatch(notificationActions.syncCommandes([cmdtosync]));
-                dispatch(clotureActions.getTodayCa());
               }
             }
             dispatch(getTodayCommandesList());
+            dispatch(clotureActions.getTodayCa());
           }
 
         });
@@ -1293,10 +1297,10 @@ function setCommandeFromSync(commande) {
             };
 
             dispatch(notificationActions.syncCommandes([cmdtosync]));
-            dispatch(clotureActions.getTodayCa());
           }
         }
         dispatch(getTodayCommandesList());
+        dispatch(clotureActions.getTodayCa());
       }
       catch (error) {
         dispatch({
@@ -1378,37 +1382,123 @@ function setSyncedCommandsFromSync(payload) {
  * ajout de TR depuis la synchro
  */
 function setTicketRestaurantFromSync(ticketrestaurant) {
-  return (dispatch) => {
+  return async (dispatch, getState) => {
     dispatch({
       type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_REQUEST,
     });
 
     const { data, emitter, response } = ticketrestaurant;
 
-    commandeServices.persistTicketsRestaurants(data).then(
-      (result) => {
+    // on ajoute l'id de la caisse à la propriété localsync
+    // et si elle n'existe pas, on crée la propriété
+    const {caisse} = getState().parametresReducer.parametres.options;
+    
+    // s'il s'agit de plusieurs TR (data est un Array)
+    if (Array.isArray(data)) {
+
+
+      let trIds = [];
+      let trNum = 0;
+
+      const __syncTR = async () => {
+        await asyncForEach(data, async (tr) => {
+          
+
+          const {localsync} = tr;
+          let __lsync = localsync || [];
+          if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
+    
+          const __data = {...tr, localsync: __lsync};
+    
+
+          try {
+
+            await commandeServices.persistSingleTicketRestaurant(__data);
+
+            dispatch({
+              type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_SUCCESS,
+              ticketrestau: __data
+            });
+            trNum++;
+            trIds.push(__data.id);
+
+          } catch (err) {
+            dispatch({
+              type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_FAILURE,
+              error: err,
+            });
+            logger.log("sync tr err", err);
+          }
+
+          if (trNum===data.length) {
+            
+            
+            // confirmation du traitement de la synchro
+            if (response !== null) {
+              dispatch(notificationActions.syncConfirm(response, {db:"ticketrestaurant", ids:trIds, from:caisse.uniqid}));
+            } 
+            // -> si 'response' est null, la synchro ne provient pas de l'API,
+            // il s'agit d'une synchro d'entretien commandée par la caisse 'primary'
+            else {
+              dispatch(notificationActions.syncConfirmToPrimary({db:"ticketrestaurant", ids:trIds, from:caisse.uniqid}));
+            }
+
+            // -> si 'emitter' est null, la synchro provient de la caisse 'primary',
+            // donc inutile de lui renvoyer la synchro
+            if (emitter !== null) {
+              dispatch(notificationActions.syncDispatch("ticketrestaurant", __data, emitter));
+            }
+            
+          }
+
+        });
+      }
+
+      __syncTR();
+    
+    } 
+    // dans le cas d'une synchro de TR seul
+    else {
+      
+      const {localsync} = data;
+      let __lsync = localsync || [];
+      if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
+
+      const __data = {...data, localsync: __lsync};
+
+
+      try {
+
+        await commandeServices.persistSingleTicketRestaurant(__data);
+
         dispatch({
           type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_SUCCESS,
+          ticketrestau: __data
         });
-        dispatch(getAllTicketsRestaurant());
+        
+        // confirmation du traitement de la synchro
+        if (response !== null) {
+          dispatch(notificationActions.syncConfirm(response, {db:"ticketrestaurant", ids:[__data.id], from:caisse.uniqid}));
+        } 
+        // -> si 'response' est null, la synchro ne provient pas de l'API,
+        // il s'agit d'une synchro d'entretien commandée par la caisse 'primary'
+        else {
+          dispatch(notificationActions.syncConfirmToPrimary({db:"ticketrestaurant", ids:[__data.id], from:caisse.uniqid}));
+        }
 
         // -> si 'emitter' est null, la synchro provient de la caisse 'primary',
         // donc inutile de lui renvoyer la synchro
-        // -> si 'response' est null, la synchro ne provient pas de l'API,
-        // donc inutile de confirmer le traitement de la synchro
-        if (emitter !== null && response !== null) {
-          dispatch(notificationActions.syncConfirm(response));
-          dispatch(
-            notificationActions.syncDispatch("ticketrestaurant", data, emitter)
-          );
+        if (emitter !== null) {
+          dispatch(notificationActions.syncDispatch("ticketrestaurant", __data, emitter));
         }
-      },
-      (error) =>
-        dispatch({
-          type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_FAILURE,
-          error: error,
-        })
-    );
+      } catch (error) {
+          dispatch({
+            type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_FAILURE,
+            error: error,
+          });
+          logger.log("sync tr err", error);
+      }
+    }
   };
 }
 

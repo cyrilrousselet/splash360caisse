@@ -47,6 +47,15 @@ export function commandesListReducer(state = initialState, action) {
         error: action.error.message
       };
     
+    case commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_SUCCESS:
+      let __tr = state.ticketsrestau;
+      return {
+        ...state,
+        loading: false,
+        error: null,
+        ticketsrestau: [...__tr, action.ticketrestau]
+      }
+
     case commandeActionTypes.GETALL_TICKETSRESTAU_SUCCESS:
       return {
         ...state,

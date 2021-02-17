@@ -36,7 +36,7 @@ function addTresor(payload) {
           tresor: data
         });
 
-        dispatch(notificationActions.syncDispatch('tresorerie', data));
+        dispatch(notificationActions.syncDispatch('tresor', data));
       },
       error => { 
         logger.timeEnd('addTresor');
@@ -172,7 +172,7 @@ function updateTresor(payload) {
           tresor: data 
         });
 
-        dispatch(notificationActions.syncDispatch('tresorerie', data));
+        dispatch(notificationActions.syncDispatch('tresor', data));
       },
       error => {
         logger.timeEnd('persistTresor');

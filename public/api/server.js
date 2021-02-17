@@ -170,7 +170,15 @@ const synchroTreatment = (db, data, emitter = null, response = null) => {
 
   if (webContents !== null) {
     if (SYNCHRO_TREATMENT.hasOwnProperty(db)) {
-      if (data && data.length>0) webContents.send(SYNCHRO_TREATMENT[db], { data, emitter, response });
+      if (data!==null) {
+        if (Array.isArray(data) && data.length==0) {
+          log.info('synchroTreatment, empty array data', data);
+        } else {
+          webContents.send(SYNCHRO_TREATMENT[db], { data, emitter, response });
+        }
+      } else {
+        log.info('synchroTreatment, empty data', data);
+      }
     } else {
       log.error("SynchroTreatment error (db '"+db+"' inconnue)");
     }
@@ -430,6 +438,8 @@ const actions = {
 
     log.info("syncConfirmToPrimary", req.payload);
 
+    let __confirmation = [];
+
     const __request = net.request({
       url: url + ":" + API_PORT + "/synchroconfirm",
       method: "post",
@@ -445,13 +455,14 @@ const actions = {
         `syncConfirmToPrimary() to ${url}, status:`,
         response.statusCode
       );
-      res.send({ msg: `syncConfirmToPrimary to primary` });
 
-      response.on("data", () => {
-
+      response.on("data", (chunk) => {
+        __confirmation.push(chunk);
+        log.info(`syncConfirmToPrimary BODY: ${chunk}`);
       });
       response.on("end", () => {
-
+        log.info("syncConfirmToPrimary: end", JSON.parse(__confirmation.join("")));
+        res.send({ msg: `syncConfirmToPrimary to primary` });
       });
     });
 
@@ -814,7 +825,9 @@ function bulkSyncToPrimary(db, data) {
 
   __request.on("response", (response) => {
     response.on("data", (chunk) => {
-      __syncedData.push(chunk);
+      if (chunk) {
+        __syncedData.push(chunk);
+      }
       log.info(`bulkSyncToPrimary BODY: ${chunk}`);
     });
     response.on("end", () => {
@@ -829,7 +842,7 @@ function bulkSyncToPrimary(db, data) {
 
       } catch (e) {
         __conf = { error: e.message };
-        log.error("JSON error", e);
+        log.error("Erreur de JSON", e);
       }
 
 

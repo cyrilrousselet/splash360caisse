@@ -37,6 +37,7 @@ export const commandeServices = {
   getCommandesToSync,
   getAllTicketsRestaurant,
   persistTicketsRestaurants,
+  persistSingleTicketRestaurant,
 };
 
 function getNewCommande(params) {
@@ -85,6 +86,10 @@ function persistTicketsRestaurants(liste) {
     return { id: trid, valeur: __trValue, valid: __trValid };
   });
   return emit("dbTicketsRestauPersist", { payload: trliste });
+}
+
+function persistSingleTicketRestaurant(tr) {
+  return emit("dbTicketsRestauPersist", {payload: tr});
 }
 
 function getCommandesCaisses() {

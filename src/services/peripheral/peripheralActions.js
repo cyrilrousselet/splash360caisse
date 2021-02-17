@@ -1343,7 +1343,6 @@ function printCloture(payload={}) {
     const { imprimantes, tickets } = getState().peripheralReducer;
     const { financier, entreprise } = getState().parametresReducer.parametres;
 
-  
 
     // récup des préf. du ticket et de l'imprimante correspondante
     let ticket = Object.values(tickets).find(tck=>tck.template==='cloture_z');
@@ -1361,7 +1360,7 @@ function printCloture(payload={}) {
     const siret = entreprise.siret;
     const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
 
-
+    
     const { tresorslist } = financier.fonddecaisse_activation ? await tresorServices.getServiceMouvements( {caisseId: caisse.uniqid, debut: new Date(debut).getTime()} ) : {tresorslist: null};
 
 
