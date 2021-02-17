@@ -232,7 +232,6 @@ function setTresorFromSync(tresor) {
 
             if (tresorconfirm.destination===caisse.uniqid) {
               let __isOuverture = null;
-              if (tresorconfirm.type==="ouverture") __isOuverture = true;
               if (tresorconfirm.type==="cloture") __isOuverture = false;
 
               dispatch({ 
