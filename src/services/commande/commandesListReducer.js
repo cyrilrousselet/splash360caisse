@@ -53,7 +53,7 @@ export function commandesListReducer(state = initialState, action) {
         ...state,
         loading: false,
         error: null,
-        ticketsrestau: [...__tr, action.trconfirm]
+        ticketsrestau: [...__tr, action.ticketrestau]
       }
 
     case commandeActionTypes.GETALL_TICKETSRESTAU_SUCCESS:

@@ -1414,7 +1414,7 @@ function setTicketRestaurantFromSync(ticketrestaurant) {
 
             dispatch({
               type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_SUCCESS,
-              __data
+              ticketrestau: __data
             });
             trNum++;
             trIds.push(__data.id);
@@ -1471,7 +1471,7 @@ function setTicketRestaurantFromSync(ticketrestaurant) {
 
         dispatch({
           type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_SUCCESS,
-          __data
+          ticketrestau: __data
         });
         
         // confirmation du traitement de la synchro
