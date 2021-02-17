@@ -31,9 +31,18 @@ function addTresor(payload) {
     tresorServices.persistTresor({...tresor, localsync: [caisse.uniqid]}).then(
       data => {
         logger.timeEnd('addTresor');
+
+        let __isOuverture = null;
+        if (data.destination===caisse.uniqid) {
+          if (data.type==="ouverture") __isOuverture = true;
+          if (data.type==="cloture") __isOuverture = false;
+        }
+
+
         dispatch({
           type: tresorActionTypes.ADD_SUCCESS,
-          tresor: data
+          tresor: data,
+          ouverture: __isOuverture
         });
 
         dispatch(notificationActions.syncDispatch('tresor', data));
@@ -165,11 +174,19 @@ function updateTresor(payload) {
     tresorServices.persistTresor({...payload, localsync:[caisse.uniqid]}).then(
 
       data => {
+
+
+        let __isOuverture = null;
+        if (data.destination===caisse.uniqid) {
+          if (data.type==="ouverture") __isOuverture = true;
+          if (data.type==="cloture") __isOuverture = false;
+        }
  
         logger.timeEnd('persistTresor');
         dispatch({ 
           type: tresorActionTypes.UPDATE_SUCCESS,
-          tresor: data 
+          tresor: data,
+          ouverture: __isOuverture
         });
 
         dispatch(notificationActions.syncDispatch('tresor', data));
@@ -212,6 +229,20 @@ function setTresorFromSync(tresor) {
 
             tresorconfirm = await tresorServices.persistTresor({...trs, localsync:__lsync});
           
+
+            let __isOuverture = null;
+            if (tresorconfirm.destination===caisse.uniqid) {
+              if (tresorconfirm.type==="ouverture") __isOuverture = true;
+              if (tresorconfirm.type==="cloture") __isOuverture = false;
+
+              dispatch({ 
+                type: tresorActionTypes.ADD_SUCCESS, 
+                tresor: tresorconfirm,
+                ouverture: __isOuverture
+               });
+
+            }
+
             dispatch({ type: tresorActionTypes.SETSYNCED_SUCCESS, tresorconfirm });
             trsNum++;
             mouvementsIds.push(tresorconfirm.tresorId);

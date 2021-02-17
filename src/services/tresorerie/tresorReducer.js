@@ -41,10 +41,8 @@ export function tresorReducer(state = initialState, action) {
       
       tresor = action.tresor;
       
-      if (tresor.type==="cloture") {
-        __ouv = false;
-      } else if (tresor.type==="ouverture") {
-        __ouv = true;
+      if (action.ouverture!==null) {
+        __ouv = action.ouverture;
       }
 
       return {
