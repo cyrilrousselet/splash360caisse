@@ -398,7 +398,7 @@ class Cloture extends React.Component {
 
       this.props.addTresor({
         type: "cloture",
-        origine: this.props.caisse.uniqid,
+        origine: selection_caisse.uniqid,
         destination: "Coffre",
         debit: prelevement*100,
         credit: 0,

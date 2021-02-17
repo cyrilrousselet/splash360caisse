@@ -803,6 +803,8 @@ const actions = {
 
 async function prepareExportationToPrimary(exportation) {
 
+  log.info('prepareExportationToPrimary E:', Object.entries(exportation).length);
+
   Object.entries(exportation).forEach(([db, items]) => {
     if (items) bulkSyncToPrimary(db, items);
   });
