@@ -147,11 +147,11 @@ const actions = {
   },
   dbTicketsRestauGetOne: async (req, res) => {
     const { payload } = req;
-    log.info("dbTicketsRestauGetOne(" + payload.ticketrestau_id + ") in API");
+    log.info("dbTicketsRestauGetOne(" + payload.id + ") in API");
 
     (await db.ticketsrestau)._.mixin(lodashId);
     const proxies = await _findTicketRestau({
-      ticketrestau_id: payload.ticketrestau_id,
+      id: payload.id,
     });
 
     res.send(proxies);
@@ -294,7 +294,7 @@ async function _addTicketsLocalSync(ids, store_id) {
 
   let _tr = await (await db.paramticketsrestauetres)
             .get("ticketsrestau")
-            .filter(t => ( ids.includes(t.ticketrestau_id) && !t.localsync.includes(store_id)) )
+            .filter(t => ( ids.includes(t.id) && !t.localsync.includes(store_id)) )
             .assign({localsync: [...localsync, store_id]})
             .write();
 
@@ -419,11 +419,10 @@ async function _getAllTicketsRestau() {
 async function _findTicketRestau(criteriae = {}) {
   log.info(criteriae);
   let _tr = [];
-  if ("ticketrestau_id" in criteriae) {
-    _tr = await (await db.ticketsrestau)
-      .get("ticketsrestau")
-      .find(criteriae)
-      .value();
+  if ("id" in criteriae) {
+    _tr = await (await db.ticketsrestau).get("ticketsrestau")
+                                        .find(criteriae)
+                                        .value();
   } else {
     _tr = await (await db.ticketsrestau).get("ticketsrestau").value();
   }
@@ -447,42 +446,46 @@ async function _persistTicketRestau(payload) {
 
     const start = async () => {
       await asyncForEach(payload, async (obj) => {
-        let _tr = await (await db.ticketsrestau)
-          .get("ticketsrestau")
-          .find({ ticketrestau_id: payload.ticketrestau_id })
-          .value();
+        let _tr = await (await db.ticketsrestau).get("ticketsrestau")
+                                                .find({ id: payload.id })
+                                                .value();
 
         if (_tr) {
           log.info("_tr existe, donc on update");
           let __upd = { ..._tr, ...obj, updatedAt: __now };
-          _tr = await (await db.paramticketsrestauetres)
-            .get("ticketsrestau")
-            .find({ ticketrestau_id: payload.ticketrestau_id })
-            .assign(__upd)
-            .write();
+          _tr = await (await db.paramticketsrestauetres).get("ticketsrestau")
+                                                        .find({ id: payload.id })
+                                                        .assign(__upd)
+                                                        .write();
           if (_tr != null) count++;
+
         } else {
+
           _tr = await _insertTicketRestau(obj);
           if (_tr != null) count++;
+
         }
       });
       return count == payload.length;
     };
     start();
+  
   } else {
-    let _tr_o = await (await db.ticketsrestau)
-      .get("ticketsrestau")
-      .find({ ticketrestau_id: payload.ticketrestau_id })
-      .value();
+
+    let _tr_o = await (await db.ticketsrestau).get("ticketsrestau")
+                                              .find({ id: payload.id })
+                                              .value();
+
     if (_tr_o) {
       log.info("_tr_o existe, donc on update");
       let __upd = { ..._tr_o, ...payload, updatedAt: __now };
-      _tr_o = await (await db.ticketsrestau)
-        .get("ticketsrestau")
-        .find({ ticketrestau_id: payload.ticketrestau_id })
-        .assign(__upd)
-        .write();
+  
+      _tr_o = await (await db.ticketsrestau).get("ticketsrestau")
+                                            .find({ id: payload.id })
+                                            .assign(__upd)
+                                            .write();
     } else {
+
       log.info("pas de _tr donc on insert");
       _tr_o = _insertTicketRestau(payload);
     }
@@ -495,10 +498,9 @@ async function _insertTicketRestau(payload) {
   log.info("_insertTicketRestau()");
   const __now = new Date().getTime();
   const __ins = { ...payload, createdAt: __now, updatedAt: __now };
-  const _tr = await (await db.ticketsrestau)
-    .get("ticketsrestau")
-    .insert(__ins)
-    .write();
+  const _tr = await (await db.ticketsrestau).get("ticketsrestau")
+                                            .insert(__ins)
+                                            .write();
   // log.info("new tr", _tr);
   return _tr;
 }

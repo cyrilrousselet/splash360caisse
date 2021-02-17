@@ -89,7 +89,7 @@ function persistTicketsRestaurants(liste) {
 }
 
 function persistSingleTicketRestaurant(tr) {
-  return emit("dbTicketsRestauPersist", {payload: [tr]});
+  return emit("dbTicketsRestauPersist", {payload: tr});
 }
 
 function getCommandesCaisses() {

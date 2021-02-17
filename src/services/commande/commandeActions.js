@@ -1414,10 +1414,10 @@ function setTicketRestaurantFromSync(ticketrestaurant) {
 
             dispatch({
               type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_SUCCESS,
-              trconfirm
+              __data
             });
             trNum++;
-            trIds.push(trconfirm.id);
+            trIds.push(__data.id);
 
           } catch (err) {
             dispatch({
@@ -1471,17 +1471,17 @@ function setTicketRestaurantFromSync(ticketrestaurant) {
 
         dispatch({
           type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_SUCCESS,
-          trconfirm
+          __data
         });
         
         // confirmation du traitement de la synchro
         if (response !== null) {
-          dispatch(notificationActions.syncConfirm(response, {db:"ticketrestaurant", ids:[trconfirm.id], from:caisse.uniqid}));
+          dispatch(notificationActions.syncConfirm(response, {db:"ticketrestaurant", ids:[__data.id], from:caisse.uniqid}));
         } 
         // -> si 'response' est null, la synchro ne provient pas de l'API,
         // il s'agit d'une synchro d'entretien commandée par la caisse 'primary'
         else {
-          dispatch(notificationActions.syncConfirmToPrimary({db:"ticketrestaurant", ids:[trconfirm.id], from:caisse.uniqid}));
+          dispatch(notificationActions.syncConfirmToPrimary({db:"ticketrestaurant", ids:[__data.id], from:caisse.uniqid}));
         }
 
         // -> si 'emitter' est null, la synchro provient de la caisse 'primary',
