@@ -1410,7 +1410,7 @@ function setTicketRestaurantFromSync(ticketrestaurant) {
 
           try {
 
-            trconfirm = await commandeServices.persistTicketsRestaurants(__data);
+            trconfirm = await commandeServices.persistSingleTicketRestaurant(__data);
 
             dispatch({
               type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_SUCCESS,
@@ -1467,7 +1467,7 @@ function setTicketRestaurantFromSync(ticketrestaurant) {
 
       try {
 
-        trconfirm = await commandeServices.persistTicketsRestaurants(__data);
+        trconfirm = await commandeServices.persistSingleTicketRestaurant(__data);
 
         dispatch({
           type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_SUCCESS,
