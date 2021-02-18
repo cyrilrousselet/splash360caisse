@@ -156,11 +156,13 @@ class MouvementPopin extends React.Component {
   render() {
 
     const { mouvement, type, caisse, caisses, open, closeHandler } = this.props;
-    const { montant, motif } = this.state;
+    const { montant, motif , destination, origine} = this.state;
     
     const _caisse = mouvement && (type==="entree" ? mouvement.destination : mouvement.origine);
     const _external = mouvement && (type==="entree" ? mouvement.origine : mouvement.destination);
 
+
+    const _disableValidation = destination===null || origine===null;
 
     if (!type) {
       return false;
@@ -280,6 +282,7 @@ class MouvementPopin extends React.Component {
                 identifier="none" 
                 elementclass="btnsave" 
                 icon={ false } 
+                disabled={ _disableValidation }
                 noStroke={true} 
                 text={ strings.general.dialog.save } 
                 onClick={() => { 

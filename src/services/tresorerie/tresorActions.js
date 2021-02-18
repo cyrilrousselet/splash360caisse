@@ -1,10 +1,12 @@
 import { tresorActionTypes } from "./tresorActionTypes";
 import { tresorServices } from "./tresorServices";
 import { dateBounds, asyncForEach } from "../../helpers/toolbox";
+import { isBefore } from "date-fns";
 
 import { notificationActions } from '../notification/notificationActions';
 
 import Logger from '../../helpers/Logger';
+import { commandeServices } from "../commande/commandeServices";
 const logger = new Logger();
 
 
@@ -33,9 +35,12 @@ function addTresor(payload) {
         logger.timeEnd('addTresor');
 
         let __isOuverture = null;
-        if (data.destination===caisse.uniqid) {
-          if (data.type==="ouverture") __isOuverture = true;
-          if (data.type==="cloture") __isOuverture = false;
+        
+        if (data.type==="ouverture") {
+          if (data.destination===caisse.uniqid) __isOuverture = true;
+        }
+        if (data.type==="cloture") {
+          if (data.origine===caisse.uniqid) __isOuverture = false;
         }
 
 
@@ -60,29 +65,77 @@ function checkFinDeService() {
   return async (dispatch, getState) => {
 
     const {caisse} = getState().parametresReducer.parametres.options;
+
     dispatch({type: tresorActionTypes.CHECK_FINDESERVICE_REQUEST});
 
     try {
       const __reponse = await tresorServices.getLastClotureAndAfter({caisseId:caisse.uniqid}); 
 
-      let __ouverture;
+      console.log('CFS', __reponse);
+
+      let __ouverture = false;
       if (__reponse && __reponse.hasOwnProperty('cloture') && __reponse.cloture!==null) {
         if (__reponse.hasOwnProperty('ouverture') && __reponse.ouverture) {
-          __ouverture = true;
-        } else {
-          __ouverture = false;
+          
+          // s'il y a une ouverture depuis la dernière cloture :
+          // cette cloture date-t-elle d'un précédent service ?
+          if (isBefore(new Date(__reponse.ouverture_mvt.createdAt), new Date().setHours(5,0))) {
+
+              // y a-t-il des commandes non cloturées ?
+              const currentCmd = await commandeServices.getCommandesList({$and: [
+                { archived: {"$exists": false} },
+                { status: { $eq: "confirmed" } },
+                { $or: [
+                  { "caisse_encaissement.id": caisse.id },
+                  { $and: [
+                    { "caisse.id": caisse.id },
+                    { status: { $in: ["standby", "a_encaisser"]} }
+                  ]},
+                ]}
+              ]});
+
+              // s'il y a des commandes non cloturées : on bloque.
+              if (Object.values(currentCmd.commandeslist).length>0) {
+                __ouverture = true;
+              }
+          }
         }
-      } else if (!__reponse.ouverture) {
-        __ouverture = false;
       } else {
-        __ouverture = true;
+        console.log('pas de cloture');
+        if (__reponse.hasOwnProperty('ouverture') && __reponse.ouverture) {
+          console.log(new Date(__reponse.ouverture_mvt.createdAt), new Date().setHours(5,0));
+          if (isBefore(new Date(__reponse.ouverture_mvt.createdAt), new Date().setHours(5,0))) {
+            console.log('la cloture est avant le servide d’aujourd’hui');
+
+            // y a-t-il des commandes non cloturées ?
+            const currentCmd = await commandeServices.getCommandesList({$and: [
+              { archived: {"$exists": false} },
+              { status: { $eq: "confirmed" } },
+              { $or: [
+                { "caisse_encaissement.id": caisse.id },
+                { $and: [
+                  { "caisse.id": caisse.id },
+                  { status: { $in: ["standby", "a_encaisser"]} }
+                ]},
+              ]}
+            ]});
+
+            // s'il y a des commandes non cloturées : on bloque.
+            if (Object.values(currentCmd.commandeslist).length>0) {
+              __ouverture = true;
+            }
+
+          }
+        }
       }
 
       if (__ouverture===true) {
 
         dispatch({ type: tresorActionTypes.CHECK_FINDESERVICE_SUCCESS, blocage: true });
         
-      }
+      } else {
+
+        dispatch({ type: tresorActionTypes.CHECK_FINDESERVICE_SUCCESS, blocage: false });}
       
     } catch (error) {
       logger.log('TrsAct.checkFinDeService() ERROR', error);

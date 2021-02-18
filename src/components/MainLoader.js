@@ -3,12 +3,15 @@ import React from 'react';
 import LoadingSpinner from './common/LoadingSpinner';
 import Logger from '../helpers/Logger';
 import Swal from 'sweetalert2';
+import schedule from 'node-schedule';
 
 const logger = new Logger();
 
 
+
 class MainLoader extends React.Component {
   
+  _findeservice_job = null;
 
   constructor(props) {
     super(props);
@@ -41,9 +44,17 @@ class MainLoader extends React.Component {
       sseInit, 
       params, 
       dbupdated, 
-      dbgetInit 
+      dbgetInit,
+      checkFinDeService
     } = this.props;
 
+    if (this._findeservice_job===null) {  
+      this._findeservice_job = schedule.scheduleJob('0 30 5 * * *', () => {
+        checkFinDeService();
+      });
+    } 
+
+      
     let first_start = params ? params.first_start : null;
 
     let readytolaunch = dbupdated || null;
@@ -90,7 +101,10 @@ class MainLoader extends React.Component {
       this.props.setPOS();
       this.props.initSync();
       logger.log('first_start',first_start);
-     if (first_start===true && dbgetInit===false) this.props.getDatabase();
+
+      checkFinDeService();
+  
+      if (first_start===true && dbgetInit===false) this.props.getDatabase();
     }
     if (first_start===false) {
       if (paramLoaded===true && sseInit===true && 
@@ -204,6 +218,9 @@ class MainLoader extends React.Component {
       this.props.initSSE();
       this.props.setPOS();
       this.props.initSync();
+      
+      this.props.checkFinDeService();
+
       logger.log('first_start',first_start);
      if (first_start===true && dbgetInit===false) this.props.getDatabase();
     }
