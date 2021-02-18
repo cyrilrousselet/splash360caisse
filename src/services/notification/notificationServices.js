@@ -88,8 +88,8 @@ async function getSplashToken(params) {
 } 
 
 async function getUberToken(params) {
-  const url = externalParams.uber.oAuth.replace('%ID%', params.id).replace('%PWD%', params.secret).replace('%SCOPE%', params.scope);
-  return emit('getUberToken', {params:url});
+  // const url = externalParams.uber.oAuth.replace('%ID%', params.id).replace('%PWD%', params.secret).replace('%SCOPE%', params.scope);
+  return emit('getUberToken', {params});
 } 
 
 
@@ -189,6 +189,7 @@ async function denyOrder(provider, order) {
 
   // const __denyOrdertoken = await getToken(provider, 'acceptorder');
   const __denyOrdertoken = await getUberToken({
+    url: externalParams.uber.oAuth,
     id: externalParams[provider].clientid,
     secret: externalParams[provider].secret,
     scope: externalParams[provider].denyorder.scope
@@ -207,6 +208,7 @@ async function acceptOrder(provider, order) {
 
   // const __acceptOrdertoken = await getToken(provider, 'acceptorder');
   const __acceptOrdertoken = await getUberToken({
+    url: externalParams.uber.oAuth,
     id: externalParams[provider].clientid,
     secret: externalParams[provider].secret,
     scope: externalParams[provider].acceptorder.scope
@@ -241,6 +243,7 @@ async function getOrder(provider, data) {
     // const __getOrdertoken = await getToken(provider, 'getorder');
 
     const __getOrdertoken = await getUberToken({
+      url: externalParams.uber.oAuth,
       id: externalParams[provider].clientid,
       secret: externalParams[provider].secret,
       scope: externalParams[provider].getorder.scope
@@ -259,6 +262,7 @@ async function setPOS(provider, data) {
 
   // const __updatePOStoken = await getToken(provider, 'pos');
   const __updatePOStoken = await getUberToken({
+    url: externalParams.uber.oAuth,
     id: externalParams[provider].clientid,
     secret: externalParams[provider].secret,
     scope: externalParams[provider].pos.scope
@@ -279,6 +283,7 @@ async function setRestaurantOnline(provider, data) {
   // const __updateRestaurantToken = await getToken(provider, 'restaurant');
 
   const __updateRestaurantToken = await getUberToken({
+    url: externalParams.uber.oAuth,
     id: externalParams[provider].clientid,
     secret: externalParams[provider].secret,
     scope: externalParams[provider].restaurant.scope
@@ -297,6 +302,7 @@ async function updateProduitUber(provider, data) {
   // const __updateProduitToken = await getToken(provider, 'updateitem');
 
   const __updateProduitToken = await getUberToken({
+    url: externalParams.uber.oAuth,
     id: externalParams[provider].clientid,
     secret: externalParams[provider].secret,
     scope: externalParams[provider].updateitem.scope

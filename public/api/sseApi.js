@@ -329,7 +329,7 @@ const actions = {
 
     const __request = net.request({
       url: params,
-      method: "get",
+      method: "post",
     });
     //  __request.setHeader('Authorization','Bearer '+access_token)
     __request.setHeader("Access-Control-Allow-Origin", "*");
@@ -360,15 +360,28 @@ const actions = {
   getSplashToken: (req, res) => {
     const { params } = req.payload;
 
+    const {url, id, secret, scope} = params;
+
     let __confirmation = [];
 
     const __request = net.request({
-      url: params,
+      url: url,
       method: "get",
     });
     //  __request.setHeader('Authorization','Bearer '+access_token)
     __request.setHeader("Access-Control-Allow-Origin", "*");
     __request.setHeader("Content-Type", "application/json");
+
+
+
+    const data = JSON.stringify({ 
+      id: id,
+      secret: secret,
+      scope: scope,
+      grant_type: 'client_credentials'
+     });
+    log.info("Sync commandes req data: ", data);
+    __request.write(data);
 
     __request.on("response", (response) => {
       log.info(`getSplashToken STATUS: ${response.statusCode}`);
