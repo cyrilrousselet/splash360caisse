@@ -339,8 +339,8 @@ const actions = {
 
 
     const data = JSON.stringify({ 
-      id: id,
-      secret: secret,
+      client_id: id,
+      client_secret: secret,
       scope: scope,
       grant_type: 'client_credentials'
      });
