@@ -329,45 +329,80 @@ const actions = {
 
     let __confirmation = [];
 
-    const __request = net.request({
+    
+
+    // __request.setHeader("Access-Control-Allow-Origin", "*");
+    // // __request.setHeader("Content-Type", "application/json");
+    // __request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+
+
+    // const data = JSON.stringify({ 
+    //   client_id: id,
+    //   client_secret: secret,
+    //   scope: scope,
+    //   grant_type: 'client_credentials'
+    //  });
+
+    // __request.write(data);
+    
+
+    var __options = {
       url: url,
-      method: "post",
+      method: 'POST',
+      headers: { 
+        "Access-Control-Allow-Origin": "*",
+        'Content-Type' : 'application/x-www-form-urlencoded' 
+      },
+      form: {
+        client_id: id,
+        client_secret: secret,
+        scope: scope,
+        grant_type: 'client_credentials' 
+      }
+    };
+    
+    request(__options, (err, response, body) => {
+      if (error) {
+        
+        log.error('getUberToken ERROR', error);
+        res.error(error);
+
+      } else {
+        
+        log.info("getUberToken: success");
+        res.send({ token: JSON.parse(body) });
+
+      }
     });
 
-    __request.setHeader("Access-Control-Allow-Origin", "*");
-    __request.setHeader("Content-Type", "application/json");
+      // const __request = net.request();
+
+    // // const __request = net.request({
+    // //   url: url,
+    // //   method: "post",
+    // // });
 
 
-    const data = JSON.stringify({ 
-      client_id: id,
-      client_secret: secret,
-      scope: scope,
-      grant_type: 'client_credentials'
-     });
+    // __request.on("response", (response) => {
+    //   log.info(`getSplashToken STATUS: ${response.statusCode}`);
+    //   log.info(`getSplashToken HEADERS: ${JSON.stringify(response.headers)}`);
+    //   response.on("data", (chunk) => {
+    //     __confirmation.push(chunk);
+    //     log.info(`getSplashToken BODY: ${chunk}`);
+    //   });
+    //   response.on("end", () => {
+    //     log.info("getSplashToken: end");
+    //     res.send({ token: JSON.parse(__confirmation.join("")) });
+    //     // res.send({confirm: true});
+    //   });
+    // });
 
-    __request.write(data);
+    // __request.on('error', (error) => {
+    //   log.error('getSplashToken ERROR', error);
+    //   res.error(error);
+    // });
 
-
-    __request.on("response", (response) => {
-      log.info(`getSplashToken STATUS: ${response.statusCode}`);
-      log.info(`getSplashToken HEADERS: ${JSON.stringify(response.headers)}`);
-      response.on("data", (chunk) => {
-        __confirmation.push(chunk);
-        log.info(`getSplashToken BODY: ${chunk}`);
-      });
-      response.on("end", () => {
-        log.info("getSplashToken: end");
-        res.send({ token: JSON.parse(__confirmation.join("")) });
-        // res.send({confirm: true});
-      });
-    });
-
-    __request.on('error', (error) => {
-      log.error('getSplashToken ERROR', error);
-      res.error(error);
-    });
-
-    __request.end();
+    // __request.end();
   },
 
   getSplashToken: (req, res) => {
