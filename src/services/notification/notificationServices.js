@@ -87,6 +87,11 @@ async function getSplashToken(params) {
   return emit('getSplashToken', {params:url});
 } 
 
+async function getUberToken(params) {
+  const url = externalParams.uber.oAuth.replace('%ID%', params.id).replace('%PWD%', params.secret).replace('%SCOPE%', params.scope);
+  return emit('getUberToken', {params:url});
+} 
+
 
  async function getToken(provider, task) {
 
@@ -182,7 +187,14 @@ function sendNumero(numero, response) {
 
 async function denyOrder(provider, order) {
 
-  const __denyOrdertoken = await getToken(provider, 'acceptorder');
+  // const __denyOrdertoken = await getToken(provider, 'acceptorder');
+  const __denyOrdertoken = await getUberToken({
+    id: externalParams[provider].clientid
+    secret: externalParams[provider].secret,
+    scope: externalParams[provider].denyorder.scope
+  });
+
+  logger.log('denyOrder token :',__denyOrdertoken);
 
   if (__denyOrdertoken.access_token) {
     var __url = externalParams[provider].denyorder.url.replace('{order_id}', order.id);
@@ -193,7 +205,14 @@ async function denyOrder(provider, order) {
 
 async function acceptOrder(provider, order) {
 
-  const __acceptOrdertoken = await getToken(provider, 'acceptorder');
+  // const __acceptOrdertoken = await getToken(provider, 'acceptorder');
+  const __acceptOrdertoken = await getUberToken({
+    id: externalParams[provider].clientid
+    secret: externalParams[provider].secret,
+    scope: externalParams[provider].acceptorder.scope
+  });
+
+  logger.log('acceptOrder token :',__acceptOrdertoken);
 
   if (__acceptOrdertoken.access_token) {
     var __url = externalParams[provider].acceptorder.url.replace('{order_id}', order.id);
@@ -219,7 +238,15 @@ async function getOrder(provider, data) {
 
   } else {
  
-    const __getOrdertoken = await getToken(provider, 'getorder');
+    // const __getOrdertoken = await getToken(provider, 'getorder');
+
+    const __getOrdertoken = await getUberToken({
+      id: externalParams[provider].clientid
+      secret: externalParams[provider].secret,
+      scope: externalParams[provider].getorder.scope
+    });
+  
+    logger.log('getOrder token :',__getOrdertoken);
     
     if (__getOrdertoken.access_token) {
       return emit('getUberOrder', {url: data.href, access_token: __getOrdertoken.access_token});
@@ -230,7 +257,14 @@ async function getOrder(provider, data) {
 
 async function setPOS(provider, data) {
 
-  const __updatePOStoken = await getToken(provider, 'pos');
+  // const __updatePOStoken = await getToken(provider, 'pos');
+  const __updatePOStoken = await getUberToken({
+    id: externalParams[provider].clientid
+    secret: externalParams[provider].secret,
+    scope: externalParams[provider].pos.scope
+  });
+
+  logger.log('setPOS token :',__updatePOStoken);
 
   if (__updatePOStoken.access_token) {
     var __url = externalParams[provider].pos.url.replace('{store_id}', data.store_id);
@@ -242,7 +276,15 @@ async function setPOS(provider, data) {
 async function setRestaurantOnline(provider, data) {
 
   logger.log('NSrv.setRestaurantOnline()');
-  const __updateRestaurantToken = await getToken(provider, 'restaurant');
+  // const __updateRestaurantToken = await getToken(provider, 'restaurant');
+
+  const __updateRestaurantToken = await getUberToken({
+    id: externalParams[provider].clientid
+    secret: externalParams[provider].secret,
+    scope: externalParams[provider].restaurant.scope
+  });
+
+  logger.log('setRestaurantOnline token :',__updateRestaurantToken);
 
   if (__updateRestaurantToken.access_token) {
     var __url = externalParams[provider].restaurant.url.replace('{store_id}', data.store_id);
@@ -252,7 +294,15 @@ async function setRestaurantOnline(provider, data) {
 
 async function updateProduitUber(provider, data) {
   logger.log('NSrv.updateProduitUber()');
-  const __updateProduitToken = await getToken(provider, 'updateitem');
+  // const __updateProduitToken = await getToken(provider, 'updateitem');
+
+  const __updateProduitToken = await getUberToken({
+    id: externalParams[provider].clientid
+    secret: externalParams[provider].secret,
+    scope: externalParams[provider].updateitem.scope
+  });
+
+  logger.log('updateProduitUber token :',__updateProduitToken);
 
   if (__updateProduitToken.access_token) {
     var __url = externalParams[provider].updateitem.url.replace('{store_id}', data.store_id).replace('{item_id}', data.item_id);

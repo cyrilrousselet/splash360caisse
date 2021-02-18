@@ -1,7 +1,8 @@
 {
   "notification": "http://api.splash360.fr:3030/.well-known/mercure?topic=",
   "uber": {
-    "oAuth": "https://login.uber.com/oauth/v2/token",
+    "oAuth_deprecated": "https://login.uber.com/oauth/v2/token",
+    "oAuth": "https://login.uber.com/oauth/v2/token?id=%ID%&secret=%PWD%&grant_type=client_credentials&scope=%SCOPE%",
     "clientid": "8OpdkXvG_D1IAb9J94Mf8srgdY2CXYif",
     "secret": "fzik-B4lYFDJXuIwhoj0aULsW4-0EvWWJOsEms68",
     "getorder": {

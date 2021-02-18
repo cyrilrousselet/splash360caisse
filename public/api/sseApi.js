@@ -322,6 +322,41 @@ const actions = {
     __request.end();
   },
 
+  getUberToken: (req, res) => {
+    const { params } = req.payload;
+
+    let __confirmation = [];
+
+    const __request = net.request({
+      url: params,
+      method: "get",
+    });
+    //  __request.setHeader('Authorization','Bearer '+access_token)
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/json");
+
+    __request.on("response", (response) => {
+      log.info(`getSplashToken STATUS: ${response.statusCode}`);
+      log.info(`getSplashToken HEADERS: ${JSON.stringify(response.headers)}`);
+      response.on("data", (chunk) => {
+        __confirmation.push(chunk);
+        log.info(`getSplashToken BODY: ${chunk}`);
+      });
+      response.on("end", () => {
+        log.info("getSplashToken: end");
+        res.send({ token: JSON.parse(__confirmation.join("")) });
+        // res.send({confirm: true});
+      });
+    });
+
+    __request.on('error', (error) => {
+      log.error('getSplashToken ERROR', error);
+      res.error(error);
+    });
+
+    __request.end();
+  },
+
   getSplashToken: (req, res) => {
     const { params } = req.payload;
 

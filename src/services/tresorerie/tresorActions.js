@@ -56,6 +56,44 @@ function addTresor(payload) {
   }
 }
 
+function checkFinDeService() {
+  return async (dispatch, getState) => {
+
+    const {caisse} = getState().parametresReducer.parametres.options;
+    dispatch({type: tresorActionTypes.CHECK_FINDESERVICE_REQUEST});
+
+    try {
+      const __reponse = await tresorServices.getLastClotureAndAfter({caisseId:caisse.uniqid}); 
+
+      let __ouverture;
+      if (__reponse && __reponse.hasOwnProperty('cloture') && __reponse.cloture!==null) {
+        if (__reponse.hasOwnProperty('ouverture') && __reponse.ouverture) {
+          __ouverture = true;
+        } else {
+          __ouverture = false;
+        }
+      } else if (!__reponse.ouverture) {
+        __ouverture = false;
+      } else {
+        __ouverture = true;
+      }
+
+      if (__ouverture===true) {
+
+        dispatch({ type: tresorActionTypes.CHECK_FINDESERVICE_SUCCESS, blocage: true });
+        
+      }
+      
+    } catch (error) {
+      logger.log('TrsAct.checkFinDeService() ERROR', error);
+      dispatch({ type: tresorActionTypes.CHECK_FINDESERVICE_FAILURE, error })
+    }
+
+
+  }
+}
+
+
 function getLastClotureAndAfter(caisseId) {
   return (dispatch, getState) => {
     dispatch({type: tresorActionTypes.GET_LASTCLOTUREANDAFTER_REQUEST});
@@ -334,6 +372,7 @@ function setTresorFromSync(tresor) {
 
 export const tresorActions = {
   addTresor,
+  checkFinDeService,
   getLastClotureAndAfter,
   getLastOuvertureAndAfter,
   getTresors,

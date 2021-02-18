@@ -710,6 +710,8 @@ class Panier extends React.Component {
   }
 
 
+  // TODO : faire une requête plutôt que charger la liste des commandes
+  // pbm : latence de l'encaissement si on met à jour la liste des commandes
   send_to_search(value) {
     logger.log('send_to_search',value);
     const {commandeslist } = this.props;

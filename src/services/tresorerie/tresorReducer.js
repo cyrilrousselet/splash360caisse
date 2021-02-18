@@ -4,6 +4,7 @@ const initialState = {
   loading: false,
   error: null,
   tresors: {},
+  blocage: false,
   ouverture: false,
   solde: 0
 }
@@ -16,6 +17,12 @@ export function tresorReducer(state = initialState, action) {
   let __ouv = state.ouverture;
 
   switch (action.type) {
+
+    case tresorActionTypes.CHECK_FINDESERVICE_SUCCESS:
+      return {
+        ...state,
+        blocage: action.blocage
+      }
 
 
     case tresorActionTypes.GET_SUCCESS:
@@ -49,7 +56,8 @@ export function tresorReducer(state = initialState, action) {
         ...state,
         tresors: {...tresors, [tresor.tresorId]:tresor},
         solde: tresor.solde,
-        ouverture: __ouv
+        ouverture: __ouv,
+        blocage: tresor.type==="cloture" ? false : state.blocage
       };
 
     default:
