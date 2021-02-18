@@ -361,7 +361,7 @@ const actions = {
       }
     };
     
-    request(__options, (err, response, body) => {
+    net.request(__options, (err, response, body) => {
       if (error) {
         
         log.error('getUberToken ERROR', error);
