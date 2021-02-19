@@ -326,9 +326,6 @@ const actions = {
     const { params } = req.payload;
 
     const {url, id, secret, scope} = params;
-
-    let __confirmation = [];
-
     
 
     // __request.setHeader("Access-Control-Allow-Origin", "*");
@@ -361,6 +358,10 @@ const actions = {
       }
     };
     
+
+    log.info('getUberToken options', __options);
+
+
     net.request(__options, (err, response, body) => {
       if (error) {
         

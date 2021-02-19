@@ -88,6 +88,7 @@ async function getSplashToken(params) {
 } 
 
 async function getUberToken(params) {
+  logger.log('getUberToken', params);
   // const url = externalParams.uber.oAuth.replace('%ID%', params.id).replace('%PWD%', params.secret).replace('%SCOPE%', params.scope);
   return emit('getUberToken', {params});
 } 
@@ -241,6 +242,7 @@ async function getOrder(provider, data) {
   } else {
  
     // const __getOrdertoken = await getToken(provider, 'getorder');
+    logger.log('getOrder '+provider);
 
     const __getOrdertoken = await getUberToken({
       url: externalParams.uber.oAuth,
