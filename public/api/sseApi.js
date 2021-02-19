@@ -357,7 +357,7 @@ const actions = {
 
         let __conf = {};
         try {
-          __conf = { token: JSON.parse(__token.join("")) };
+          __conf = JSON.parse(__token.join(""));
         } catch (e) {
           __conf = { error: e.message };
           log.error("JSON error", e);
