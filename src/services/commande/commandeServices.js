@@ -1033,7 +1033,7 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
           catalogueReducer.steps[item.produitid]
         );
       }
-      item.prix = Number(itm.price.total_price.amount / 100);
+      item.prix = Number((itm.price.total_price.amount / itm.quantity ) / 100);
       commande.items.push(item);
     }
   });
