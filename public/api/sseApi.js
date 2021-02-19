@@ -328,82 +328,51 @@ const actions = {
     const {url, id, secret, scope} = params;
     
 
-    // __request.setHeader("Access-Control-Allow-Origin", "*");
-    // // __request.setHeader("Content-Type", "application/json");
-    // __request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+    let __token = [];
 
-
-    // const data = JSON.stringify({ 
-    //   client_id: id,
-    //   client_secret: secret,
-    //   scope: scope,
-    //   grant_type: 'client_credentials'
-    //  });
-
-    // __request.write(data);
-    
-
-    var __options = {
+    const __request = net.request({
       url: url,
-      method: 'POST',
-      headers: { 
-        "Access-Control-Allow-Origin": "*",
-        'Content-Type' : 'application/x-www-form-urlencoded' 
-      },
-      form: {
-        client_id: id,
-        client_secret: secret,
-        scope: scope,
-        grant_type: 'client_credentials' 
-      }
-    };
-    
+      method: "post",
+    });
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
-    log.info('getUberToken options', __options);
+    const form = encodeURI({
+      client_id: id,
+      client_secret: secret,
+      scope: scope,
+      grant_type: 'client_credentials' 
+    });
+    log.info("getUberToken form: ", form);
+    __request.write(form);
 
+    __request.on("response", (response) => {
+      response.on("data", (chunk) => {
+        __token.push(chunk);
+        log.info(`getUberToken BODY: ${chunk}`);
+      });
+      response.on("end", () => {
+        log.info("getUberToken: end");
 
-    net.request(__options, (err, response, body) => {
-      if (error) {
-        
-        log.error('getUberToken ERROR', error);
-        res.error(error);
+        let __conf = {};
+        try {
+          __conf = { token: JSON.parse(__token.join("")) };
+        } catch (e) {
+          __conf = { error: e.message };
+          log.error("JSON error", e);
+        }
 
-      } else {
-        
-        log.info("getUberToken: success");
-        res.send({ token: JSON.parse(body) });
-
-      }
+        res.send(__conf);
+      });
     });
 
-      // const __request = net.request();
+    __request.on('error', (error) => {
+      log.error('getUberToken ERROR', error);
+      res.error(error);
+    });
 
-    // // const __request = net.request({
-    // //   url: url,
-    // //   method: "post",
-    // // });
+    __request.end();
 
-
-    // __request.on("response", (response) => {
-    //   log.info(`getSplashToken STATUS: ${response.statusCode}`);
-    //   log.info(`getSplashToken HEADERS: ${JSON.stringify(response.headers)}`);
-    //   response.on("data", (chunk) => {
-    //     __confirmation.push(chunk);
-    //     log.info(`getSplashToken BODY: ${chunk}`);
-    //   });
-    //   response.on("end", () => {
-    //     log.info("getSplashToken: end");
-    //     res.send({ token: JSON.parse(__confirmation.join("")) });
-    //     // res.send({confirm: true});
-    //   });
-    // });
-
-    // __request.on('error', (error) => {
-    //   log.error('getSplashToken ERROR', error);
-    //   res.error(error);
-    // });
-
-    // __request.end();
   },
 
   getSplashToken: (req, res) => {
