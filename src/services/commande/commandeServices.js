@@ -1065,7 +1065,7 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
         addModificateur({
           item: null,
           ingredient: null,
-          valeur: - Number(promo.promo_discount_value) / 100
+          valeur: `${(- Number(promo.promo_discount_value / 100))}€`
         })
       );
 
@@ -1083,6 +1083,9 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
   // );
 
   commande.total = Number(data.payment.charges.sub_total.amount / 100);
+  if (data.payment.hasOwnProperty('promotions')) {
+    commande.total = Number(data.payment.charges.sub_total_promo_applied.amount / 100);
+  }
   return commande;
 }
 
