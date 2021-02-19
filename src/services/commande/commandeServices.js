@@ -1056,6 +1056,23 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
     );
   }
 
+  // ajout des promotions
+  if (data.payment.hasOwnProperty('promotions') && data.payment.promotions.promotions) {
+
+    data.payment.promotions.promotions.forEach(promo => {
+
+      commande.modificateurs.push(
+        addModificateur({
+          item: null,
+          ingredient: null,
+          valeur: - Number(promo.promo_discount_value) / 100
+        })
+      );
+
+    });
+
+  }
+
   // // ajout des charges :
   // commande.modificateurs.push(
   //   addModificateur({
