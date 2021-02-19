@@ -2,6 +2,7 @@ const EventSource = require("eventsource");
 const log = require("electron-log");
 const { net } = require("electron");
 const { machineId, machineIdSync } = require("node-machine-id");
+const qs = require('qs');
 
 // const externalUrls = require('../../src/constants/externalUrls.json');
 
@@ -337,7 +338,7 @@ const actions = {
     __request.setHeader("Access-Control-Allow-Origin", "*");
     __request.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
-    const form = encodeURI({
+    const form = qs.stringify({
       client_id: id,
       client_secret: secret,
       scope: scope,
