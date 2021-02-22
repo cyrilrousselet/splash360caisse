@@ -1108,6 +1108,8 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
     produits = [...produits, ...value.produits];
   });
 
+  commande.comments = data.comments;
+
   data.items.forEach((itm) => {
     // infos du produit issues du catalogue
     const prd = produits.find((p) => p.id === itm.produitid);

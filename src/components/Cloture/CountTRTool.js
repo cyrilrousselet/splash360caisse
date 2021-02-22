@@ -101,11 +101,19 @@ class CountTRTool extends React.Component {
     console.log('parseTR()', value);
 
     const __value = String(value);
+    let __trValid, __trValue;
 
-    const __trValue = Number(__value.substr(11,5)) / 100;
-    const __trValid = Number(__value.substr(16,2));
+    if (__value.length!==24) {
+      error = "format";
+    }
+    else {
 
-    if (liste.find(tr=>tr.id===__value)) error = 'yet';
+      __trValue = Number(__value.substr(11,5)) / 100;
+      __trValid = Number(__value.substr(16,2));
+      
+      if (liste.find(tr=>tr.id===__value)) error = 'yet';
+    }
+      
  // on supprime le test de valididé (certains TR n'ont pas de date limite)
  //   if (__trValid<__now) error = 'deprecated';
 
@@ -117,7 +125,7 @@ class CountTRTool extends React.Component {
       if (this.refs.listeBody) this.refs.listeBody.scrollTop = this.refs.listeBody.scrollHeight;
 
     } else {
-      if (error==='deprecated') {
+      // if (error==='deprecated') {
         Swal.fire({
           type: 'warning',
           title: strings.modules.cloture.comptage.counttrtool.erreur[error].titre,
@@ -126,7 +134,7 @@ class CountTRTool extends React.Component {
           focusCancel: false,
           focusConfirm: true
         });
-      }
+      // }
     }
 
     console.log('tr', __trValue, __trValid);
