@@ -1108,7 +1108,8 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
     produits = [...produits, ...value.produits];
   });
 
-  commande.comments = data.comments;
+  commande.comments = [];
+  if (data.hasOwnProperty('comments')) commande.comments = data.comments;
 
   data.items.forEach((itm) => {
     // infos du produit issues du catalogue
