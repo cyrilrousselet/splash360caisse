@@ -5,7 +5,7 @@ const initialState = {
   sseInit: false,
   getdbInit: false,
   getdbLoaded: false,
-  stack: false
+  stack: []
 }
 
 export function notificationReducer(state = initialState, action) {
