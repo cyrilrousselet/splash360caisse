@@ -486,19 +486,38 @@ function addProduit(payload) {
     const tva = state.catalogueReducer.tva[payload.tva_id];
     const steps = state.catalogueReducer.steps[payload.produitid];
 
-    const composition = Object.entries(payload.composition).map(
-      ([ingid, qte]) => ({
-        ingredient: ingid,
-        qte: qte,
-        type: state.catalogueReducer.ingredients[ingid].type,
-        tva:
-          state.catalogueReducer.tva[
-            state.catalogueReducer.ingredients[ingid].tva_id
-          ],
-        prix: Number(state.catalogueReducer.ingredients[ingid].supplement),
-        nom: state.catalogueReducer.ingredients[ingid].nom,
-        fromStep: null,
-      })
+    // const composition = Object.entries(payload.composition).map(
+    //   ([ingid, qte]) => ({
+    //     ingredient: ingid,
+    //     qte: qte,
+    //     type: state.catalogueReducer.ingredients[ingid].type,
+    //     tva:
+    //       state.catalogueReducer.tva[
+    //         state.catalogueReducer.ingredients[ingid].tva_id
+    //       ],
+    //     prix: Number(state.catalogueReducer.ingredients[ingid].supplement),
+    //     nom: state.catalogueReducer.ingredients[ingid].nom,
+    //     fromStep: null,
+    //   })
+
+
+      const composition = payload.compo.map(
+        (comping) => {
+          const [ingid, qte] = Object.entries(comping)[0];
+          return {
+            ingredient: ingid,
+            qte: qte,
+            type: state.catalogueReducer.ingredients[ingid].type,
+            tva:
+              state.catalogueReducer.tva[
+                state.catalogueReducer.ingredients[ingid].tva_id
+              ],
+            prix: Number(state.catalogueReducer.ingredients[ingid].supplement),
+            nom: state.catalogueReducer.ingredients[ingid].nom,
+            fromStep: null,
+          }
+        });
+
 
       /*
 
@@ -510,7 +529,6 @@ function addProduit(payload) {
       fromStep:step.step_id,
       tva: tva
         */
-    );
     payload = { ...payload, composition };
 
     const { commandeItem, mode } = commandeServices.addProduit(
