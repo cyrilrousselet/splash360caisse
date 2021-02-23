@@ -34,7 +34,7 @@ class Notifier extends React.Component {
     //   }
     // ];
 
-    logger.log('notifier L', stack.length);
+    logger.log('notifier stack', stack);
 
     return (
       <>
