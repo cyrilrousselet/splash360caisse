@@ -52,8 +52,8 @@ class Notifier extends React.Component {
             variant="filled"
             action= {
               <>
-                <Button onClick={() => { denyOrder(order) }}>{ strings.general.dialog.deny }</Button>
-                <Button onClick={() => { acceptOrder(order) }}>{ strings.general.dialog.accept }</Button>
+                <Button onClick={() => { denyOrder('uber',order) }}>{ strings.general.dialog.deny }</Button>
+                <Button onClick={() => { acceptOrder('uber',order) }}>{ strings.general.dialog.accept }</Button>
               </>
             }
           >
