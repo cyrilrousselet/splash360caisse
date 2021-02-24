@@ -104,6 +104,9 @@
         font-size: 14px;
         color: $noir;
         @include font-smoothing(on);
+        &.disabled {
+          opacity: .5;
+        }
       }
       .liste-liste {
         padding: 15px;
@@ -118,6 +121,12 @@
           width: auto;
         }
       }
+    }
+    .kds {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
     }
   }
   .footer{

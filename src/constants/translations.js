@@ -1004,7 +1004,8 @@ const data = {
                                     nom: 'Nom',
                                     type: 'Template',
                                     parametre: 'Imprimé par',
-                                    kds: 'KitchenDisplay'
+                                    kds: 'KitchenDisplay',
+                                    indirect: 'Via Kds'
                                 },
                                 edition: {
                                     new: 'Nouveau ticket',
@@ -1021,7 +1022,9 @@ const data = {
                                     },
                                     imprimantes: 'Imprimé par...',
                                     kds: 'KitchenDisplay',
-                                    kds_active: 'Activé'
+                                    kds_active: 'Activé',
+                                    indirect: 'Impression indirecte',
+                                    indirect_active: 'via KitchenDisplay'
                                 }
                             }
                         },

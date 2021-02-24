@@ -100,7 +100,7 @@ class MouvementPopin extends React.Component {
 
     const selcaisse = caisses.find( (c) => c.uniqid===event.target.value )
 
-    if (type === "entree") {
+    if (type === "entree" || type === "ouverture") {
       this.setState({destination: selcaisse});
     } else {
       this.setState({origine: selcaisse});
@@ -113,7 +113,7 @@ class MouvementPopin extends React.Component {
     const {type} = this.props;
 
 
-    if (type === "entree") {
+    if (type === "entree" || type === "ouverture") {
       this.setState({origine: event.target.value});
     } else {
       this.setState({destination: event.target.value});
@@ -161,8 +161,13 @@ class MouvementPopin extends React.Component {
     const _caisse = mouvement && (type==="entree" ? mouvement.destination : mouvement.origine);
     const _external = mouvement && (type==="entree" ? mouvement.origine : mouvement.destination);
 
+    let _destination = destination;
+    
+    if (type==="ouverture" && caisse) _destination = caisse;
+    
+    console.log('type dest/orig', type, _destination, origine);
 
-    const _disableValidation = destination===null || origine===null;
+    const _disableValidation = _destination===null || origine===null;
 
     if (!type) {
       return false;
