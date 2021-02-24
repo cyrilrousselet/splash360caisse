@@ -7,6 +7,7 @@ import { configureStore } from './store/configureStore';
 import history from './helpers/history';
 import electron from 'electron';
 import {ipcRenderer} from 'electron';
+import isDev from 'electron-is-dev';
 
 import {setupFrontendListener} from 'eiphop';
 
@@ -33,10 +34,14 @@ import packageJson from '../package.json';
 
 import * as Sentry from '@sentry/react';
 
-Sentry.init({ 
-  release: "splash360caisse@" + packageJson.version,
-  dsn: "https://44cf9ec6a90c43e4a7027cc997b83919@o511169.ingest.sentry.io/5607891" 
-});
+if (!isDev) {
+  Sentry.init({ 
+    release: "splash360caisse@" + packageJson.version,
+    dsn: "https://44cf9ec6a90c43e4a7027cc997b83919@o511169.ingest.sentry.io/5607891" 
+  });
+} else {
+  console.info('mode DEV')
+}
 
 const logger = new Logger();
 

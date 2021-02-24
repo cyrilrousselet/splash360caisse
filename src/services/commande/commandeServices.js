@@ -966,7 +966,7 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
         produitid: itm.id,
         nom: prd.nom,
         //        prix: itm.quantity*Number(prd.prix),
-        prix: itm.quantity * Number(itm.price.unit_price.amount / 100),
+        prix: Number(itm.price.unit_price.amount / 100),
         pu: Number(itm.price.unit_price.amount / 100),
         tva: { ...catalogueReducer.tva[prd.tva_id] },
         composition: complist,
@@ -1033,7 +1033,7 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
           catalogueReducer.steps[item.produitid]
         );
       }
-      item.prix = Number(itm.price.total_price.amount / 100);
+      item.prix = Number((itm.price.total_price.amount / itm.quantity ) / 100);
       commande.items.push(item);
     }
   });
@@ -1056,6 +1056,23 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
     );
   }
 
+  // ajout des promotions
+  if (data.payment.hasOwnProperty('promotions') && data.payment.promotions.promotions) {
+
+    data.payment.promotions.promotions.forEach(promo => {
+
+      commande.modificateurs.push(
+        addModificateur({
+          item: null,
+          ingredient: null,
+          valeur: `${(- Number(promo.promo_discount_value / 100))}€`
+        })
+      );
+
+    });
+
+  }
+
   // // ajout des charges :
   // commande.modificateurs.push(
   //   addModificateur({
@@ -1066,6 +1083,9 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
   // );
 
   commande.total = Number(data.payment.charges.sub_total.amount / 100);
+  if (data.payment.hasOwnProperty('promotions')) {
+    commande.total = Number(data.payment.charges.sub_total_promo_applied.amount / 100);
+  }
   return commande;
 }
 
@@ -1087,6 +1107,9 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
   Object.values(catalogueReducer.catalogue).forEach((value) => {
     produits = [...produits, ...value.produits];
   });
+
+  commande.comments = [];
+  if (data.hasOwnProperty('comments')) commande.comments = data.comments;
 
   data.items.forEach((itm) => {
     // infos du produit issues du catalogue

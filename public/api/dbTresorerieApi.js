@@ -68,6 +68,9 @@ const actions = {
         ]
       });
       proxies.ouverture = _after.length>0;
+      if (_after.length>0) {
+        proxies.ouverture_mvt = _after[0];
+      }
 
       proxies.last = await _getLastMouvement(payload.caisseId);
 

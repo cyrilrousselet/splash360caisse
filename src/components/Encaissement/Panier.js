@@ -26,6 +26,9 @@ import Logger from '../../helpers/Logger';
 import CommentRemoveIcon from '../common/icon/CommentRemoveIcon';
 import NumberKeyboard from '../common/NumberKeyboard';
 
+import history from '../../helpers/history';
+import paths from './../../constants/routes.json';
+
 import { decodetable } from '../../constants/decodetable';
 import MouvementPopin from '../Cloture/MouvementPopin';
 
@@ -710,6 +713,8 @@ class Panier extends React.Component {
   }
 
 
+  // TODO : faire une requête plutôt que charger la liste des commandes
+  // pbm : latence de l'encaissement si on met à jour la liste des commandes
   send_to_search(value) {
     logger.log('send_to_search',value);
     const {commandeslist } = this.props;
@@ -935,6 +940,7 @@ class Panier extends React.Component {
             deleteDiscount,
             clients,
             caisse, 
+            blocage_encaissement,
             // caisses,
            } = this.props;
 
@@ -1191,6 +1197,15 @@ class Panier extends React.Component {
     }
 
     const modif_panier = getPanierDiscount();
+
+
+    // si la caisse se met en blocage,
+    // on redirige immédiatement vers le Dashboard 
+    // (avec le bouton 'encaissement' grisé)
+    if (blocage_encaissement) {
+      history.push(paths.DASHBOARD);
+    }
+
  
     return (
       <div className={ `Panier ${open && 'reglement-ouvert'}` }>

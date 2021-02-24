@@ -76,7 +76,8 @@ const mapStateToProps = (state) => {
     points: null, //200,
     modules: getModulesFromDroits(state.authentication.user.droits),
     devise: ' €',
-    caisse: 0
+    caisse: 0,
+    blocage_encaissement: state.tresorReducer.blocage,
   }
 }
 

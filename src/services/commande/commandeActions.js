@@ -486,19 +486,38 @@ function addProduit(payload) {
     const tva = state.catalogueReducer.tva[payload.tva_id];
     const steps = state.catalogueReducer.steps[payload.produitid];
 
-    const composition = Object.entries(payload.composition).map(
-      ([ingid, qte]) => ({
-        ingredient: ingid,
-        qte: qte,
-        type: state.catalogueReducer.ingredients[ingid].type,
-        tva:
-          state.catalogueReducer.tva[
-            state.catalogueReducer.ingredients[ingid].tva_id
-          ],
-        prix: Number(state.catalogueReducer.ingredients[ingid].supplement),
-        nom: state.catalogueReducer.ingredients[ingid].nom,
-        fromStep: null,
-      })
+    // const composition = Object.entries(payload.composition).map(
+    //   ([ingid, qte]) => ({
+    //     ingredient: ingid,
+    //     qte: qte,
+    //     type: state.catalogueReducer.ingredients[ingid].type,
+    //     tva:
+    //       state.catalogueReducer.tva[
+    //         state.catalogueReducer.ingredients[ingid].tva_id
+    //       ],
+    //     prix: Number(state.catalogueReducer.ingredients[ingid].supplement),
+    //     nom: state.catalogueReducer.ingredients[ingid].nom,
+    //     fromStep: null,
+    //   })
+
+
+      const composition = payload.compo.map(
+        (comping) => {
+          const [ingid, qte] = Object.entries(comping)[0];
+          return {
+            ingredient: ingid,
+            qte: qte,
+            type: state.catalogueReducer.ingredients[ingid].type,
+            tva:
+              state.catalogueReducer.tva[
+                state.catalogueReducer.ingredients[ingid].tva_id
+              ],
+            prix: Number(state.catalogueReducer.ingredients[ingid].supplement),
+            nom: state.catalogueReducer.ingredients[ingid].nom,
+            fromStep: null,
+          }
+        });
+
 
       /*
 
@@ -510,7 +529,6 @@ function addProduit(payload) {
       fromStep:step.step_id,
       tva: tva
         */
-    );
     payload = { ...payload, composition };
 
     const { commandeItem, mode } = commandeServices.addProduit(
@@ -919,6 +937,13 @@ function setCommandeFromOrder(provider, payload) {
 
     const state = getState();
 
+    // définition du montant du réglement à partir du sous-total
+    let __valeur = payload.payment.charges.sub_total.amount / 100;
+    // s'il y a une promo, réglement à partir du sous-total après promo
+    if (payload.payment.hasOwnProperty('promotions')) {
+      __valeur = payload.payment.charges.sub_total_promo_applied.amount / 100;
+    }
+
     let data = {
       ...payload,
       operator: { id: -1, nom: "UberEats", type: "UberEats" },
@@ -929,7 +954,7 @@ function setCommandeFromOrder(provider, payload) {
         {
           moyen: "uber",
           reglementId: new Date().getTime(),
-          valeur: payload.payment.charges.sub_total.amount / 100,
+          valeur: __valeur,
         },
       ],
     };

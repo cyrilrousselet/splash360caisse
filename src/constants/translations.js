@@ -206,6 +206,10 @@ const data = {
                             deprecated: {
                                 titre: 'Erreur Ticket Restaurant',
                                 texte: 'Le Ticket Restaurant est périmé.'
+                            },
+                            format: {
+                                titre: 'Erreur Ticket Restaurant',
+                                texte: 'Le code du Ticket Restaurant est erroné.'
                             }
                         },
                         avoir: {

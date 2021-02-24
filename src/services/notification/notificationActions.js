@@ -6,21 +6,21 @@ import { commandeServices } from '../commande/commandeServices';
 import { clotureActions } from '../cloture/clotureActions';
 import { clotureServices } from '../cloture/clotureServices';
 
-import LocalizedStrings from 'react-localization';
-import {data} from '../../constants/translations';
+// import LocalizedStrings from 'react-localization';
+// import {data} from '../../constants/translations';
 import Swal from 'sweetalert2';
-import { format, formatISO, differenceInMilliseconds, parseISO } from 'date-fns';
+import { formatISO, differenceInMilliseconds, parseISO } from 'date-fns';
 // import DateFnsUtils from '@date-io/date-fns';
-import frLocale from "date-fns/locale/fr";
-import Logger from '../../helpers/Logger';
+// import frLocale from "date-fns/locale/fr";
+ import Logger from '../../helpers/Logger';
 import { commandeActionTypes } from '../commande/commandeActionTypes';
 // import { catalogueActionTypes } from '../catalogue/catalogueActionTypes';
 import { catalogueActions } from '../catalogue/catalogueActions';
 import { parametresActions } from '../parametres/parametresActions';
 import { parametresActionTypes } from '../parametres/parametresActionTypes';
 import { peripheralActions } from '../peripheral/peripheralActions';
-const strings = new LocalizedStrings(data);
-const logger = new Logger();
+// const strings = new LocalizedStrings(data);
+ const logger = new Logger();
 
 function initSSE() {
   return (dispatch, getState) => {
@@ -159,25 +159,29 @@ function treatment(data) {
           else {
 
             logger.log('ORDER:', reponse.order);
+
+
+            dispatch({ type: notificationActionTypes.ADD_TO_STACK, cmdcandidate: reponse.order });
+
             
-            Swal.fire({
-              title: strings.notification.accept.uber.titre,
-              html: strings.notification.accept.uber.texte+'<br />'+strings.notification.accept.uber.detail.replace('%NUMERO%',reponse.order.display_id).replace('%DATEHEURE%', format(new Date(reponse.order.estimated_ready_for_pickup_at), "d MMM yyyy à HH:mm", { locale: frLocale })),
-              focusConfirm: true,
-              showCancelButton: true,
-              customClass: 'ubernotification',
-              allowOutsideClick: false,
-              allowEscapeKey: false,
-              confirmButtonText: strings.general.dialog.accept,
-              cancelButtonText: strings.general.dialog.deny,
-              buttonsStyling: false 
-            }).then((result)=> {
-              if (result.value===true) {
-                dispatch(acceptOrder('uber', reponse.order));
-               } else {
-                 dispatch(denyOrder('uber', reponse.order));
-              }
-            });
+            // Swal.fire({
+            //   title: strings.notification.accept.uber.titre,
+            //   html: strings.notification.accept.uber.texte+'<br />'+strings.notification.accept.uber.detail.replace('%NUMERO%',reponse.order.display_id).replace('%DATEHEURE%', format(new Date(reponse.order.estimated_ready_for_pickup_at), "d MMM yyyy à HH:mm", { locale: frLocale })),
+            //   focusConfirm: true,
+            //   showCancelButton: true,
+            //   customClass: 'ubernotification',
+            //   allowOutsideClick: false,
+            //   allowEscapeKey: false,
+            //   confirmButtonText: strings.general.dialog.accept,
+            //   cancelButtonText: strings.general.dialog.deny,
+            //   buttonsStyling: false 
+            // }).then((result)=> {
+            //   if (result.value===true) {
+            //     dispatch(acceptOrder('uber', reponse.order));
+            //    } else {
+            //      dispatch(denyOrder('uber', reponse.order));
+            //   }
+            // });
 
           }
           
@@ -209,7 +213,10 @@ function acceptOrder(provider, order) {
     dispatch({ type: notificationActionTypes.ACCEPT_ORDER, id: order.display_id });
     notificationServices.acceptOrder(provider, order)
                         .then(
-                          confirm => dispatch(commandeActions.setCommandeFromOrder(provider, order)),
+                          confirm => {
+                            dispatch(commandeActions.setCommandeFromOrder(provider, order));
+                            dispatch({ type: notificationActionTypes.REMOVE_FROM_STACK, cmdcandidateid: order.id });
+                          },
                           error => dispatch({type: notificationActionTypes.ORDER_ERROR, error: error})
                         )
   }
@@ -217,6 +224,7 @@ function acceptOrder(provider, order) {
 function denyOrder(provider, order) {
   return dispatch => {
     dispatch({ type: notificationActionTypes.DENY_ORDER, id: order.id });
+    dispatch({ type: notificationActionTypes.REMOVE_FROM_STACK, cmdcandidateid: order.id });
     notificationServices.denyOrder(provider, order);
   }
 }
@@ -556,6 +564,7 @@ export const notificationActions = {
   getToken,
   treatment,
   denyOrder,
+  acceptOrder,
   initSync,
   syncDispatch,
   syncConfirm,

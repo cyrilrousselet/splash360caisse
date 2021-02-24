@@ -2,6 +2,7 @@ const EventSource = require("eventsource");
 const log = require("electron-log");
 const { net } = require("electron");
 const { machineId, machineIdSync } = require("node-machine-id");
+const qs = require('qs');
 
 // const externalUrls = require('../../src/constants/externalUrls.json');
 
@@ -320,6 +321,59 @@ const actions = {
     });
 
     __request.end();
+  },
+
+  getUberToken: (req, res) => {
+    const { params } = req.payload;
+
+    const {url, id, secret, scope} = params;
+    
+
+    let __token = [];
+
+    const __request = net.request({
+      url: url,
+      method: "post",
+    });
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    const form = qs.stringify({
+      client_id: id,
+      client_secret: secret,
+      scope: scope,
+      grant_type: 'client_credentials' 
+    });
+    log.info("getUberToken form: ", form);
+    __request.write(form);
+
+    __request.on("response", (response) => {
+      response.on("data", (chunk) => {
+        __token.push(chunk);
+        log.info(`getUberToken BODY: ${chunk}`);
+      });
+      response.on("end", () => {
+        log.info("getUberToken: end");
+
+        let __conf = {};
+        try {
+          __conf = JSON.parse(__token.join(""));
+        } catch (e) {
+          __conf = { error: e.message };
+          log.error("JSON error", e);
+        }
+
+        res.send(__conf);
+      });
+    });
+
+    __request.on('error', (error) => {
+      log.error('getUberToken ERROR', error);
+      res.error(error);
+    });
+
+    __request.end();
+
   },
 
   getSplashToken: (req, res) => {

@@ -255,11 +255,10 @@ class Cloture extends React.Component {
 
   selectCaisse(event) {
     
-    const { caisses } = this.props;
+    const { caisses, fonddecaisse_activation } = this.props;
 
     
     const selection = caisses.find((c) => c.uniqid === event.target.value);
-    this.setState({ selection_caisse: selection });
 
     let params = {};
     const { selection_operator } = this.state;
@@ -283,6 +282,17 @@ class Cloture extends React.Component {
         ]}
       ]
     });
+
+    // si la gestion du fond de caisse est activée, on récupère le solde au dernier mouvement de trésorerie.
+    if (fonddecaisse_activation) {
+      this.props.getLastMouvement(selection.uniqid).then(__lastmvt => {
+        const __lastsolde = (__lastmvt && __lastmvt.hasOwnProperty('lastmouvement') && __lastmvt.lastmouvement!==null) ? __lastmvt.lastmouvement.solde : 0;
+        // logger.log('Clo.getLastMouvement() solde:', __lastmvt, __lastsolde);
+        this.setState({ selection_caisse: selection, fonddecaisse: __lastsolde/100 });
+      });
+    } else {
+      this.setState({ selection_caisse: selection });
+    }
 
     // this.props.getCurrentPeriode(params);
   }
@@ -388,7 +398,7 @@ class Cloture extends React.Component {
 
       this.props.addTresor({
         type: "cloture",
-        origine: this.props.caisse.uniqid,
+        origine: selection_caisse.uniqid,
         destination: "Coffre",
         debit: prelevement*100,
         credit: 0,

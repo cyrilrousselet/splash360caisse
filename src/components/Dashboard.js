@@ -59,11 +59,18 @@ class Dashboard extends Component {
       onClickModule,
       today_ca,
       today_numtickets,
+      blocage_encaissement,
     } = this.props;
 
     // if (today_ca===undefined || ca===null) {
     //   return <LoadingSpinner className="Dashboard-loader" />;
     // }
+
+    
+    let modules_bloques = [...DISABLED_MODULES];
+    if (blocage_encaissement===true) {
+      modules_bloques.push('encaissement');
+    }
 
     const ca_eval = "good";
 
@@ -91,7 +98,7 @@ class Dashboard extends Component {
               <div className="module-item" key={i}>
                 <LargeButton
                   identifier={module.toUpperCase()}
-                  disabled={DISABLED_MODULES.indexOf(module) > -1}
+                  disabled={modules_bloques.indexOf(module) > -1}
                   elementclass={module}
                   icon={true}
                   text={strings.modules[module].nom}

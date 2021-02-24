@@ -1,10 +1,12 @@
 import { tresorActionTypes } from "./tresorActionTypes";
 import { tresorServices } from "./tresorServices";
 import { dateBounds, asyncForEach } from "../../helpers/toolbox";
+import { isBefore } from "date-fns";
 
 import { notificationActions } from '../notification/notificationActions';
 
 import Logger from '../../helpers/Logger';
+import { commandeServices } from "../commande/commandeServices";
 const logger = new Logger();
 
 
@@ -31,9 +33,21 @@ function addTresor(payload) {
     tresorServices.persistTresor({...tresor, localsync: [caisse.uniqid]}).then(
       data => {
         logger.timeEnd('addTresor');
+
+        let __isOuverture = null;
+        
+        if (data.type==="ouverture") {
+          if (data.destination===caisse.uniqid) __isOuverture = true;
+        }
+        if (data.type==="cloture") {
+          if (data.origine===caisse.uniqid) __isOuverture = false;
+        }
+
+
         dispatch({
           type: tresorActionTypes.ADD_SUCCESS,
-          tresor: data
+          tresor: data,
+          ouverture: __isOuverture
         });
 
         dispatch(notificationActions.syncDispatch('tresor', data));
@@ -46,6 +60,92 @@ function addTresor(payload) {
 
   }
 }
+
+function checkFinDeService() {
+  return async (dispatch, getState) => {
+
+    const {caisse} = getState().parametresReducer.parametres.options;
+
+    dispatch({type: tresorActionTypes.CHECK_FINDESERVICE_REQUEST});
+
+    try {
+      const __reponse = await tresorServices.getLastClotureAndAfter({caisseId:caisse.uniqid}); 
+
+      console.log('CFS', __reponse);
+
+      let __ouverture = false;
+      if (__reponse && __reponse.hasOwnProperty('cloture') && __reponse.cloture!==null) {
+        if (__reponse.hasOwnProperty('ouverture') && __reponse.ouverture) {
+          
+          // s'il y a une ouverture depuis la dernière cloture :
+          // cette cloture date-t-elle d'un précédent service ?
+          if (isBefore(new Date(__reponse.ouverture_mvt.createdAt), new Date().setHours(5,0))) {
+
+              // y a-t-il des commandes non cloturées ?
+              const currentCmd = await commandeServices.getCommandesList({$and: [
+                { archived: {"$exists": false} },
+                { status: { $eq: "confirmed" } },
+                { $or: [
+                  { "caisse_encaissement.id": caisse.id },
+                  { $and: [
+                    { "caisse.id": caisse.id },
+                    { status: { $in: ["standby", "a_encaisser"]} }
+                  ]},
+                ]}
+              ]});
+
+              // s'il y a des commandes non cloturées : on bloque.
+              if (Object.values(currentCmd.commandeslist).length>0) {
+                __ouverture = true;
+              }
+          }
+        }
+      } else {
+        console.log('pas de cloture');
+        if (__reponse.hasOwnProperty('ouverture') && __reponse.ouverture) {
+          console.log(new Date(__reponse.ouverture_mvt.createdAt), new Date().setHours(5,0));
+          if (isBefore(new Date(__reponse.ouverture_mvt.createdAt), new Date().setHours(5,0))) {
+            console.log('la cloture est avant le servide d’aujourd’hui');
+
+            // y a-t-il des commandes non cloturées ?
+            const currentCmd = await commandeServices.getCommandesList({$and: [
+              { archived: {"$exists": false} },
+              { status: { $eq: "confirmed" } },
+              { $or: [
+                { "caisse_encaissement.id": caisse.id },
+                { $and: [
+                  { "caisse.id": caisse.id },
+                  { status: { $in: ["standby", "a_encaisser"]} }
+                ]},
+              ]}
+            ]});
+
+            // s'il y a des commandes non cloturées : on bloque.
+            if (Object.values(currentCmd.commandeslist).length>0) {
+              __ouverture = true;
+            }
+
+          }
+        }
+      }
+
+      if (__ouverture===true) {
+
+        dispatch({ type: tresorActionTypes.CHECK_FINDESERVICE_SUCCESS, blocage: true });
+        
+      } else {
+
+        dispatch({ type: tresorActionTypes.CHECK_FINDESERVICE_SUCCESS, blocage: false });}
+      
+    } catch (error) {
+      logger.log('TrsAct.checkFinDeService() ERROR', error);
+      dispatch({ type: tresorActionTypes.CHECK_FINDESERVICE_FAILURE, error })
+    }
+
+
+  }
+}
+
 
 function getLastClotureAndAfter(caisseId) {
   return (dispatch, getState) => {
@@ -165,11 +265,19 @@ function updateTresor(payload) {
     tresorServices.persistTresor({...payload, localsync:[caisse.uniqid]}).then(
 
       data => {
+
+
+        let __isOuverture = null;
+        if (data.destination===caisse.uniqid) {
+          if (data.type==="ouverture") __isOuverture = true;
+          if (data.type==="cloture") __isOuverture = false;
+        }
  
         logger.timeEnd('persistTresor');
         dispatch({ 
           type: tresorActionTypes.UPDATE_SUCCESS,
-          tresor: data 
+          tresor: data,
+          ouverture: __isOuverture
         });
 
         dispatch(notificationActions.syncDispatch('tresor', data));
@@ -212,6 +320,17 @@ function setTresorFromSync(tresor) {
 
             tresorconfirm = await tresorServices.persistTresor({...trs, localsync:__lsync});
           
+
+            if (tresorconfirm.type==="cloture" && tresorconfirm.origine===caisse.uniqid) {
+
+              dispatch({ 
+                type: tresorActionTypes.ADD_SUCCESS, 
+                tresor: tresorconfirm,
+                ouverture: false
+               });
+
+            }
+
             dispatch({ type: tresorActionTypes.SETSYNCED_SUCCESS, tresorconfirm });
             trsNum++;
             mouvementsIds.push(tresorconfirm.tresorId);
@@ -239,7 +358,8 @@ function setTresorFromSync(tresor) {
             if (emitter!==null) {
               dispatch(notificationActions.syncDispatch('tresor', tresorconfirm, emitter));
             }
-            dispatch(getTresors());
+            // dispatch(getTresors());
+            dispatch(getLastOuvertureAndAfter(caisse.uniqid));
           }
 
         }); 
@@ -262,6 +382,17 @@ function setTresorFromSync(tresor) {
       try {
         tresorconfirm = await tresorServices.persistTresor({...data, localsync:__lsync});
 
+
+        if (tresorconfirm.type==="cloture" && tresorconfirm.origine===caisse.uniqid) {
+
+          dispatch({ 
+            type: tresorActionTypes.ADD_SUCCESS, 
+            tresor: tresorconfirm,
+            ouverture: false
+           });
+
+        }
+
         dispatch({ type: tresorActionTypes.SETSYNCED_SUCCESS, tresorconfirm });
 
         // confirmation du traitement de la synchro
@@ -279,7 +410,7 @@ function setTresorFromSync(tresor) {
         if (emitter!==null) {
           dispatch(notificationActions.syncDispatch('tresor', tresorconfirm, emitter));
         }
-        dispatch(getTresors());
+        dispatch(getLastOuvertureAndAfter(caisse.uniqid));
       
       } catch (err) {
         dispatch({ type: tresorActionTypes.SETSYNCED_FAILURE, error: err });
@@ -294,6 +425,7 @@ function setTresorFromSync(tresor) {
 
 export const tresorActions = {
   addTresor,
+  checkFinDeService,
   getLastClotureAndAfter,
   getLastOuvertureAndAfter,
   getTresors,
