@@ -33,6 +33,7 @@ import { tresorActions } from './services/tresorerie/tresorActions';
 import packageJson from '../package.json';
 
 import * as Sentry from '@sentry/react';
+import { peripheralActions } from './services/peripheral/peripheralActions';
 
 if (!isDev) {
   Sentry.init({ 
@@ -168,6 +169,11 @@ ipcRenderer.on('setUserSync', (event, user) => {
 ipcRenderer.on('chrono', (event, commande) => {
   logger.log('renderer: chrono', commande);
   commandeActions.setChrono(commande)(store.dispatch, store.getState);
+});
+
+ipcRenderer.on('printticket', (event, print) => {
+  logger.log('renderer: printticket', print);
+  peripheralActions.printTicketFromAPI(print)(store.dispatch, store.getState);
 });
 
 // log.transports.file.level = 'info';
