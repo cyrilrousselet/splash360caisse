@@ -924,7 +924,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
       else if (ticket.template==="partiel") {
         
         // -> template ticket
-        template = templates.partiel;
+        template = (ticket.hasOwnProperty('variante')) ? templates.partiel[ticket.variante] : templates.partiel[1];
 
         let __comment = null;
         let articles = [];
@@ -932,6 +932,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
           let articleIngredients = [];
           let ingredientsAsProducts = [];
+          let ingredientTypes = [];
 
 
           const inglist = [...article.composition, ...article.ingredients];
@@ -967,6 +968,16 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
 
             if (!__noprint) {
+
+              if (ingredientTypes.findIndex(t=>t.id===ing.type)===-1) {
+                ingredientTypes.push({
+                  id: ing.type, 
+                  nom: types[ing.type].nom,
+                  hilite: (types[ing.type].hasOwnProperty('hilite')) ? types[ing.type].hilite : false,
+                  ingredients: [],
+                });
+              }
+
               if (ingredients[ing.ingredient].asproduct) {
                 ingredientsAsProducts.push({
                     qte: ing.qte * article.quantite,
@@ -978,6 +989,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
                 articleIngredients.push({
                   qte: ing.qte * article.quantite,
                   nom: removeDiacritics(ing.nom),
+                  type: ing.type,
                   weight: __ingweight,
                   comment: __comment ? removeDiacritics(__comment.texte) : ''
                 });
@@ -986,6 +998,14 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           });
 
           articleIngredients.sort((a,b)=>a.weight-b.weight);
+
+
+          articleIngredients.forEach(ing => {
+            let __tidx = ingredientTypes.findIndex(it=>it.id===ing.type);
+            ingredientTypes[__tidx].ingredients.push(ing);
+          })
+
+
 
           // commentaire pour l'article :
           __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
@@ -1008,6 +1028,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               qte: article.quantite,
               nom: removeDiacritics(article.nom),
               ingredients: articleIngredients,
+              types: ingredientTypes,
               comment: __comment ? removeDiacritics(__comment.texte) : ''
             });        
           }
@@ -1044,7 +1065,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           },
           nomticket: ticket.nom,
           detail: cmdpartiel,
-          strings: strings.tickets.production
+          strings: strings.tickets.production,
+          logo: logo,
         }
 
 
@@ -1053,7 +1075,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
         
         noarticle = false;
 
-        template = templates.principal;
+        template = (ticket.hasOwnProperty('variante')) ? templates.principal[ticket.variante] : templates.principal[1];
 
         let __comment = null;
         let articles = [];
@@ -1061,6 +1083,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
           let articleIngredients = [];
           let ingredientsAsProducts = [];
+          let ingredientTypes = [];
 
        //   article.ingredients.forEach(ing => {
           const inglist = [...article.composition, ...article.ingredients];
@@ -1096,6 +1119,17 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient);
 
             if (!__noprint) {
+
+
+              if (ingredientTypes.findIndex(t=>t.id===ing.type)===-1) {
+                ingredientTypes.push({
+                  id: ing.type, 
+                  nom: types[ing.type].nom,
+                  hilite: (types[ing.type].hasOwnProperty('hilite')) ? types[ing.type].hilite : false,
+                  ingredients: [],
+                });
+              }
+
               if (ingredients[ing.ingredient].asproduct) {
                 ingredientsAsProducts.push({
                     qte: ing.qte * article.quantite,
@@ -1108,6 +1142,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
                   qte: ing.qte * article.quantite,
                   nom: removeDiacritics(ing.nom),
                   weight: __ingweight,
+                  type: ing.type,
                   comment: __comment ? removeDiacritics(__comment.texte) : ''
                 });
               }
@@ -1115,6 +1150,12 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           });
 
           articleIngredients.sort((a,b)=>a.weight-b.weight);
+
+
+          articleIngredients.forEach(ing => {
+            let __tidx = ingredientTypes.findIndex(it=>it.id===ing.type);
+            ingredientTypes[__tidx].ingredients.push(ing);
+          })
 
           // commentaire pour l'article :
           __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
@@ -1138,6 +1179,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               qte: article.quantite,
               nom: removeDiacritics(article.nom),
               ingredients: articleIngredients,
+              types: ingredientTypes,
               comment: __comment ? removeDiacritics(__comment.texte) : ''
             });     
           } 
@@ -1175,7 +1217,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           nomticket: ticket.nom,
           detail: cmdprincipal,
           strings: strings.tickets.production,
-          recap: recapTickets
+          recap: recapTickets,
+          logo: logo,
         }
 
       }
@@ -1276,6 +1319,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
         };
 
       }
+
 
       if (noarticle) {
         dispatch({ type: peripheralActionTypes.NOPRINT_TICKET, template: template, reason: 'no article' });

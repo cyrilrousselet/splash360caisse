@@ -2,6 +2,7 @@ const log = require('electron-log');
 const electron = require('electron');
 const { app } = electron;
 const escpos = require('escpos');
+const Printer = require('../utils/printer')
 escpos.USB = require('escpos-usb');
 escpos.Network = require('escpos-network');
 escpos.SerialPort = require('escpos-serialport');
@@ -158,7 +159,7 @@ const actions = {
   printTest: (req,res) => {
     const device = new escpos.USB();
     const options = {};
-    const printer = new escpos.Printer(device, options);
+    const printer = new Printer(device, options);
 
     const { payload } = req;
     const msg = payload.msg!=='' ? payload.msg : 'rien';
@@ -183,7 +184,7 @@ const actions = {
 
           printer
             .feed(1)
-            .size(1,1)
+            .fontSize('4square')
             .text('Test impression :')
             .text('-> '+msg+' <-')
             .drawLine()
@@ -297,7 +298,7 @@ function _openDrawer(imprimante, template, contenu) {
     device = new escpos.SerialPort(imprimante.param);
   }
   
-  const printer = new escpos.Printer(device);
+  const printer = new Printer(device);
 
   device.open(function(error) {
     if (error) {
@@ -323,7 +324,10 @@ function _doPrintTicket(imprimante, template, contenu) {
 
   // déclaration de l'imprimante
   let device;
-  const options = {encoding: imprimante.encoding, width:42};
+  const options = {
+    encoding: imprimante.encoding, 
+    width:42
+  };
   let printer;
   try {
     
@@ -344,7 +348,7 @@ function _doPrintTicket(imprimante, template, contenu) {
     }
     
     // const options = {encoding: imprimante.encoding};
-    printer = new escpos.Printer(device, options);
+    printer = new Printer(device, options);
     
   } catch(e) {
     log.error(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`, e.message);
@@ -432,6 +436,7 @@ async function _printImage(printer, image) {
 
 function _closePrinter(printer) {
   printer.close(function() {
+    log.info('---> Printer closed');
     printerOpen = false;
   });
 }
@@ -528,11 +533,25 @@ function _launchPrint(template, printer, contenu) {
         _printErrorHandler(e, '_printInfo', printer);
       }
     }
+    else if ('info2' === section) {
+      try {
+        _printInfo2(printer, {info: contenu.info, nomticket: contenu.nomticket, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode, status:contenu.detail.status, client:contenu.detail.client, bipper: contenu.detail.bipper}}, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printInfo2', printer);
+      }
+    }
     else if ('detail' ===  section) {
       try {
         _printDetail(printer, contenu.detail, contenu.strings);
       } catch(e) {
         _printErrorHandler(e, '_printDetail', printer);
+      }
+    }
+    else if ('detail2' ===  section) {
+      try {
+        _printDetail2(printer, contenu.detail, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printDetail2', printer);
       }
     }
     else if ('avoir' ===  section) {
@@ -563,6 +582,20 @@ function _launchPrint(template, printer, contenu) {
         _printErrorHandler(e, '_printRecap', printer);
       }
     } 
+    else if ('recap2' === section) {
+      try {
+        _printRecap2(printer, contenu.recap, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printRecap2', printer);
+      }
+    } 
+    else if ('prodfooter2' === section) {
+      try {
+        const __ppf = await _printProdfooter2(printer, {id: contenu.detail.id, info: contenu.info, logo: contenu.logo}, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printProdfooter2', printer);
+      }
+    }
     else if ('etiquette' === section) {
       try {
         _printEtiquettes(printer, contenu);
@@ -599,7 +632,7 @@ function _printEtiquettes(printer, data) {
     .font('A')
     .align('CT')
     .style('B')
-    .size(0,0)
+    .fontSize('normal')
     .tableCustom([
       {text:'#'+data.numero, align:'LEFT', cols:6, style:'B'},
       {text:'', cols:3},
@@ -607,7 +640,7 @@ function _printEtiquettes(printer, data) {
       {text:'', cols:2},
       {text:data.date, align:'RIGHT', cols:21, style:'NORMAL'}
     ])
-    .size(1,1)
+    .fontSize('4square')
     .tableCustom([
       {text: art.nom, align:'LEFT', cols:42, style:'B'}
     ])
@@ -630,24 +663,24 @@ function _printInfo(printer, data, strings) {
     .align('CT')
     .style('B')
     // .size(1,2)
-    .size(0,1)
+    .fontSize('2height')
     .text(data.nomticket)
-    // .size(1,1)
-    .size(0,0)
+    // .fontSize('4square')
+    .fontSize('normal')
     .drawLine()
     .style('B')
     // .size(2,2)
-    .size(1,1)
+    .fontSize('4square')
     .text(`#${data.commande.numero}`)
-    // .size(1,1);
-    .size(0,0);
+    // .fontSize('4square');
+    .fontSize('normal');
 
   if (data.commande.client!==null) {
 
     printer
       .font('A')
-      // .size(1,1)
-      .size(0,0)
+      // .fontSize('4square')
+      .fontSize('normal')
       .feed(1)
       .style('NORMAL')
       .tableCustom([
@@ -662,45 +695,148 @@ function _printInfo(printer, data, strings) {
     .text(`${strings.numero}${data.commande.id}`)
     .text(`${strings.creation}${data.info.date} à ${data.info.heure}`)
     // .size(2,2)
-    .size(1,1)
+    .fontSize('4square')
     .text(`*** ${strings.mode[data.commande.mode]} ***`)
-    .size(0,0);
+    .fontSize('normal');
 
   if (data.commande.bipper) {
     printer
-      .size(0,0)
+      .fontSize('normal')
       .drawLine()
       .style('NORMAL')
-      .size(1,1)
+      .fontSize('4square')
       .text(`--- ${strings.bipper}${data.commande.bipper} ---`)
-      .size(0,0);
+      .fontSize('normal');
   }
   if (data.commande.status==="standby") {
     printer
       .drawLine()
       .style('B')
-      .size(1,0)
+      .fontSize('2width')
       .setReverseColors(true)
-      .text(_completeRaw(String(strings.status[data.commande.status]).toUpperCase(), "center", {width:1}))
-      .size(0,0)
+      .text(printer._completeRaw(String(strings.status[data.commande.status]).toUpperCase(), "center", {width:21}))
+      .fontSize('normal')
       .setReverseColors(false)
       .style('NORMAL');
   }
   printer
-    .size(0,1)
+    .fontSize('2height')
     .drawLine()
-    .size(0,0);
+    .fontSize('normal');
 }
 
 
+
+// informations commande sur le ticket (V2)
+function _printInfo2(printer, data, strings) {
+
+  // "attachez-moi"
+  printer
+    .lineSpace(0)
+    .setReverseColors(false)
+    .font('A')
+    .fontSize('normal')
+    .style('B')
+    .frame(strings.attach, '#')
+    .feed(2)
+    ;
+
+  // mode de commande
+  printer
+    .align('CT')
+    .setReverseColors(true)
+    .fontSize('2width')
+    .text(printer._completeRaw((new Array(strings.mode[data.commande.mode].length+1)).join(' '), 'center', {width:strings.mode[data.commande.mode].length+4}))
+    .fontSize('4square')
+    .text(printer._completeRaw(strings.mode[data.commande.mode], 'center', {width:strings.mode[data.commande.mode].length+4}))
+    .fontSize('2width')
+    .text(printer._completeRaw((new Array(strings.mode[data.commande.mode].length+1)).join(' '), 'center', {width:strings.mode[data.commande.mode].length+4}))
+    .setReverseColors(false)
+    .fontSize('normal')
+    .feed(2)
+    ;
+    
+  // numéro de commande
+  printer
+    .style('A')
+    .fontSize('normal')
+    .drawLine('=')
+    .style('B')
+    .fontSize('4square')
+    .tableCustom([
+      {text: strings.commande, cols: 10, align:'LEFT'},
+      {text: `No ${data.commande.numero}`, cols: 11, align:'RIGHT'},
+    ])
+    .style('A')
+    .fontSize('normal')
+    .drawLine('=')
+    .feed(1)
+    ;
+    
+  // infos client
+  if (data.commande.client!==null) {
+
+    printer
+      .font('A')
+      .fontSize('normal')
+      .feed(1)
+      .style('NORMAL')
+      .tableCustom([
+        {text: `${strings.client.titre} ${data.commande.client.prenom} ${data.commande.client.nom}`, cols:42, align:'CENTER'}
+      ])
+      .feed(1)
+      ;
+  }
+
+  // nom du ticket
+  printer
+    .fontSize('normal')
+    .setReverseColors(true)
+    .tableCustom([
+      {text: data.nomticket, cols: strings.mode[data.commande.mode].length+4, align:'CENTER'}
+    ])
+    .setReverseColors(false)
+    .feed(1)
+    ;
+
+
+  if (data.commande.bipper) {
+    printer
+      .fontSize('normal')
+      .drawLine()
+      .style('NORMAL')
+      .fontSize('4square')
+      .text(`--- ${strings.bipper}${data.commande.bipper} ---`)
+      .fontSize('normal')
+      ;
+  }
+
+  // status de la commande
+  if (data.commande.status==="standby") {
+    printer
+      .drawLine()
+      .style('B')
+      .fontSize('2width')
+      .setReverseColors(true)
+      .text(printer._completeRaw(String(strings.status[data.commande.status]).toUpperCase(), "center", {width:21}))
+      .fontSize('normal')
+      .setReverseColors(false)
+      .style('NORMAL');
+  }
+  printer
+    .fontSize('normal')
+    .drawLine('=')
+    .fontSize('normal')
+    ;
+}
 
 
 // détail commande sur le ticket
 function _printDetail(printer, data, strings) {
   printer
     .align('CT')
-    // .size(1,1)
-    .size(0,0)
+    // .fontSize('4square')
+    .fontSize('normal')
     .style('B')
     .tableCustom([
       {text:'', cols:3},
@@ -777,7 +913,118 @@ function _printDetail(printer, data, strings) {
     .drawLine()
     .align('CT')
     // .size(1,2)
-    .size(0,1)
+    .fontSize('2height')
+    .text(`${strings.caption.num_articles}${numarticles}`);
+
+}
+
+// détail commande sur le ticket V2
+function _printDetail2(printer, data, strings) {
+
+
+
+  if (data.comment!=='') {
+    printer.style('B').tableCustom([
+      {text:'', cols:3},
+      {text: '* ', cols:2, align:'RIGHT'},
+      {text: data.comment, cols:32, align:'LEFT'},
+      {text: ' *', cols:2, align:'RIGHT'},
+      {text:'', cols:3}
+    ]);
+    printer.drawLine();
+  }
+
+
+  printer.fontSize('2height');
+
+  let numarticles = 0;
+  data.articles.forEach((article) => {
+    printer
+      .fontSize('2height')
+      .style('B')
+      .tableCustom([
+        {text: article.qte, cols:3, align:'RIGHT'},
+        {text:' x ', cols:3},
+        {text: article.nom, cols:36, align:'LEFT'},
+      ])
+      .fontSize('normal')
+      .feed(1)
+      ;
+      
+
+    // commentaire sur le produit
+    if (article.comment!=='') {
+      printer.fontSize('normal');
+      printer.style('B').tableCustom([
+        {text:'', cols:3},
+        {text: '* ', cols:2, align:'RIGHT'},
+        {text: article.comment, cols:32, align:'LEFT'},
+        {text: ' *', cols:2, align:'RIGHT'},
+        {text:'', cols:3}
+      ]);
+    }
+
+    // liste des ingredients
+    let numingredients = 0;
+    if (article.ingredients.length>0) {
+
+      
+
+      article.types.forEach(type => {
+        
+        printer
+          .fontSize('2height')
+          .tableCustom([
+            {text:'', cols:5},
+            {text: type.nom, style:'BU', cols:37, align:'LEFT'},
+          ]);
+
+          if (type.hilite) {
+            printer.setReverseColors(true);
+          }
+      
+        type.ingredients.forEach((ingredient) => {
+          printer.style('NORMAL').tableCustom([
+            {text:'', cols:5},
+            {text: ingredient.qte, cols:3, align:'RIGHT'},
+            {text:' x ', cols:3},
+            {text: '  '+ingredient.nom, cols:31, align:'LEFT'},
+          ]);
+
+          if (ingredient.comment!=='') {
+
+            printer
+              .fontSize('normal')
+              .style('B')
+              .tableCustom([
+                {text:'', cols:3},
+                {text: '* ', cols:2, align:'RIGHT'},
+                {text: ingredient.comment, cols:32, align:'LEFT'},
+                {text: ' *', cols:2, align:'RIGHT'},
+                {text:'', cols:3}
+              ]);
+          }
+        });
+        printer.setReverseColors(false);
+        printer.fontSize('normal').feed(1);
+
+      })
+
+
+    }
+
+    printer.fontSize('normal').feed(1);
+    printer.drawLine('=')
+    printer.feed(1);
+
+    numarticles += numingredients>0 ? numingredients : article.qte;
+  });
+  
+  printer
+    .drawLine()
+    .align('CT')
+    // .size(1,2)
+    .fontSize('2height')
     .text(`${strings.caption.num_articles}${numarticles}`);
 
 }
@@ -786,26 +1033,66 @@ function _printDetail(printer, data, strings) {
 function _printRecap(printer, recap, strings) {
 
   printer
-    // .size(1,1)
-    .size(0,0)
+    // .fontSize('4square')
+    .fontSize('normal')
     .drawLine()
     ;
   recap.forEach(ticket => {
     printer
       // .size(1,2)
-      .size(0,1)
+      .fontSize('2height')
       .text(`- ${ticket.nom} : ${ticket.num} ${strings.caption.articles}`);
   });
 
 
 }
 
+// récap des autres tickets V2
+function _printRecap2(printer, recap, strings) {
+
+  printer
+    // .fontSize('4square')
+    .fontSize('normal')
+    .drawLine()
+    ;
+  recap.forEach(ticket => {
+    printer
+      // .size(1,2)
+      .fontSize('2height')
+      .text(`- ${ticket.nom} : ${ticket.num} ${strings.caption.articles}`);
+  });
+
+
+}
+
+// footer des tickets de prod
+async function _printProdfooter2(printer, data, strings) {
+
+  printer
+    .fontSize('normal')
+    .drawLine("=")
+    .align('CT')
+    .text(`${strings.numero}${data.id}`)
+    .feed(1)
+    .text(`${data.info.date} à ${data.info.heure}`)
+    .feed(1)
+    ;
+  
+  log.info('logo',data.logo);
+  
+  if (data.logo) {
+    const pixels = await getPixelsAsync(getLogoImg(data.logo));
+    const image = new escpos.Image(pixels);
+    const printImage = await _printImage(printer, image);
+  }
+}
+
 // informations Company
 function _printEntreprise(printer, data, strings) {
     printer
       .font('A')
-      // .size(1,1)
-      .size(0,0)
+      // .fontSize('4square')
+      .fontSize('normal')
       .feed(1)
       .align('CT')
     ;
@@ -827,31 +1114,31 @@ function _printEntreprise(printer, data, strings) {
 function _printAvoir(printer, data, strings) {
 
   printer
-    // .size(1,1)
-    .size(0,0)
+    // .fontSize('4square')
+    .fontSize('normal')
     .drawLine()
     .font('A')
     .align('CT')
     .style('B')
     // .size(1,2)
-    .size(0,1)
+    .fontSize('2height')
     .text(strings.nom)
-    // .size(1,1)
-    .size(0,0)
+    // .fontSize('4square')
+    .fontSize('normal')
     .drawLine()
   ;
 
   printer
     .style('NORMAL')
     // .size(1,2)
-    .size(0,1)
+    .fontSize('2height')
     .tableCustom([
       {text: strings.montant, cols:25, align:'LEFT'},
       {text:'', cols:2},
       {text: '  '+data.valeur, cols:15, align:'RIGHT'}
     ])
-    // .size(1,1)
-    .size(0,0)
+    // .fontSize('4square')
+    .fontSize('normal')
     .tableCustom([
       {text: strings.validite, cols:15, align:'LEFT'},
       {text:'', cols:2},
@@ -893,8 +1180,8 @@ async function _printQRCode(printer, code) {
   const printQRimage = await _printImage(printer, image);
 
   printer
-    // .size(1,1)
-    .size(0,0)
+    // .fontSize('4square')
+    .fontSize('normal')
     .font('A')
     .align('CT')
     .text(code)
@@ -926,11 +1213,11 @@ function _printCommande(printer, data, strings) {
     .drawLine()
     .style('B')
     // .size(2,2)
-    .size(1,1)
+    .fontSize('4square')
     .text(`#${data.numero}`)
     .font('A')
-    // .size(1,1)
-    .size(0,0)
+    // .fontSize('4square')
+    .fontSize('normal')
     .style('NORMAL')
     .text(data.id)
     .text(data.date)
@@ -941,11 +1228,11 @@ function _printCommande(printer, data, strings) {
     .feed(1)
     .style('B')
     // .size(2,2)
-    .size(1,1)
+    .fontSize('4square')
     .text(`*** ${strings.mode[data.mode]} ***`)
     .font('A')
-    // .size(1,1)
-    .size(0,0)
+    // .fontSize('4square')
+    .fontSize('normal')
     .style('NORMAL')
     .drawLine()
     ;
@@ -953,11 +1240,11 @@ function _printCommande(printer, data, strings) {
 
   if (data.bipper) {
     printer
-      .size(1,1)
+      .fontSize('4square')
       .text(`--- ${strings.bipper}${data.bipper} ---`)
-      .size(0,1)
+      .fontSize('2height')
       .drawLine()
-      .size(0,0);
+      .fontSize('normal');
   }
 
 
@@ -970,8 +1257,8 @@ function _printCommande(printer, data, strings) {
       {text:'', cols:3}
     ]);
     printer.font('A')
-          // .size(1,1)
-          .size(0,0)
+          // .fontSize('4square')
+          .fontSize('normal')
           .style('NORMAL')
           .drawLine();
   }
@@ -979,8 +1266,8 @@ function _printCommande(printer, data, strings) {
   if (data.client!==null) {
 
     printer.font('A')
-          // .size(1,1)
-          .size(0,0)
+          // .fontSize('4square')
+          .fontSize('normal')
           .style('NORMAL')
           .tableCustom([
             {text: `${strings.client.titre} ${data.client.prenom} ${data.client.nom}`, cols:42, align:'LEFT'}
@@ -1097,13 +1384,13 @@ function _printCommande(printer, data, strings) {
     printer
       .drawLine()
       .align('CT')
-      // .size(1,1)
-      .size(0,0)
+      // .fontSize('4square')
+      .fontSize('normal')
       .tableCustom([
         {text: `${strings.detail.sous_total}   ${_subtotal.toFixed(2).toString().replace('.',',')}`, cols:42, align:'right'}
       ])
-      // .size(1,1)
-      .size(0,0)
+      // .fontSize('4square')
+      .fontSize('normal')
       .drawLine();
 
       const ispc = String(data.modificateur.valeur).substr(-1,1)==='%';
@@ -1120,27 +1407,27 @@ function _printCommande(printer, data, strings) {
         
       printer
         .align('CT')
-        // .size(1,1)
-        .size(0,0)
+        // .fontSize('4square')
+        .fontSize('normal')
         .tableCustom([
           {text: strings.modificateur.discount_panier, cols:22, align:'LEFT'},
           {text: '-'+modval, cols:10, align:'RIGHT'},
           {text: '-'+montant, cols:10, align:'RIGHT'}
         ])
-        .size(0,0)
+        .fontSize('normal')
       }
       else {
 
       printer
       .align('CT')
-      // .size(1,1)
-      .size(0,0)
+      // .fontSize('4square')
+      .fontSize('normal')
       .tableCustom([
         {text: strings.modificateur.discount_panier, cols:22, align:'LEFT'},
         {text: '', cols:10, align:'RIGHT'},
         {text: '-'+modval, cols:10, align:'RIGHT'}
       ])
-      .size(0,0)
+      .fontSize('normal')
       }
   }
 
@@ -1149,12 +1436,12 @@ function _printCommande(printer, data, strings) {
     .drawLine()
     .align('CT')
     // .size(1,2)
-    .size(0,1)
+    .fontSize('2height')
     .tableCustom([
       {text: `${strings.detail.total_ttc}   ${data.total.total.replace('.',',')}`, cols:42, align:'RIGHT'}
     ])
-    // .size(1,1)
-    .size(0,0)
+    // .fontSize('4square')
+    .fontSize('normal')
     .drawLine();
 
   printer
@@ -1225,12 +1512,12 @@ function _printCommande(printer, data, strings) {
       .align('CT')
       .drawLine()
       // .size(1,2)
-      .size(0,1)
+      .fontSize('2height')
       .tableCustom([
         {text: `${strings.reglements.a_regler}   ${data.total.total.replace('.',',')}`, cols:42, align:'CENTER'}
       ])
-      // .size(1,1);
-      .size(0,0);
+      // .fontSize('4square');
+      .fontSize('normal');
   }
 
   // rendu monnaie
@@ -1263,8 +1550,8 @@ function _printPeriodeX(printer, data, strings) {
 /*
   // EN-TÊTE:
     printer
-      // .size(1,1)
-      .size(0,0)
+      // .fontSize('4square')
+      .fontSize('normal')
       .drawLine()
       .align('CT')
       .tableCustom([{text: strings.periode.titre, cols:42, align:'LEFT'}])
@@ -1485,8 +1772,8 @@ function _printPeriodeX(printer, data, strings) {
 }
 function _printPrelevement(printer, data, strings) {
   printer
-      // .size(1,1)
-      .size(0,0)
+      // .fontSize('4square')
+      .fontSize('normal')
       .drawLine()
       .align('CT')
       .tableCustom([
@@ -1503,7 +1790,7 @@ function _printMouvements(printer, data, strings) {
       .align('CT')
       .style('B')
       .setReverseColors(true)
-      .text(_completeRaw(strings.mouvements.titre, "center"))
+      .text(printer._completeRaw(strings.mouvements.titre, "center"))
       .setReverseColors(false)
       .drawLine();
 
@@ -1558,8 +1845,8 @@ function _printPeriodeZ(printer, data, strings, printx=false) {
 
   // EN-TÊTE:
     printer
-      // .size(1,1)
-      .size(0,0)
+      // .fontSize('4square')
+      .fontSize('normal')
       .drawLine()
       .align('CT')
       .tableCustom([{text: strings.periode.titre, cols:42, align:'LEFT'}])
@@ -1657,7 +1944,7 @@ function _printPeriodeZ(printer, data, strings, printx=false) {
       .align('CT')
       .style('B')
       .setReverseColors(true)
-      .text(_completeRaw(strings.ventilation.vendeur, "center"))
+      .text(printer._completeRaw(strings.ventilation.vendeur, "center"))
       .setReverseColors(false)
       .drawLine();
 
@@ -1703,7 +1990,7 @@ function _printPeriodeZ(printer, data, strings, printx=false) {
       .align('CT')
       .style('B')
       .setReverseColors(true)
-      .text(_completeRaw(strings.ventilation.tva, "center"))
+      .text(printer._completeRaw(strings.ventilation.tva, "center"))
       .setReverseColors(false)
       .drawLine();
 
@@ -1760,7 +2047,7 @@ function _printPeriodeZ(printer, data, strings, printx=false) {
       .align('CT')
       .style('B')
       .setReverseColors(true)
-      .text(_completeRaw(strings.ventilation.moyen, "center"))
+      .text(printer._completeRaw(strings.ventilation.moyen, "center"))
       .setReverseColors(false)
       .drawLine();
 
@@ -1837,72 +2124,55 @@ function _printPeriodeZ(printer, data, strings, printx=false) {
         
 }
 
-// complete la ligne avec des espaces
-function _completeRaw(string, alignment='left') {
-
-    const __sp = 42 - String(string).length;
-    let __str = "";
-    switch(alignment) {
-      case "center":
-         __str = (new Array(Math.floor(__sp/2)+1)).join(' ') + string + (new Array(Math.floor(__sp/2)+1+(__sp%2))).join(' ');
-         break;
-      case "right":
-         __str = (new Array(__sp+1)).join(' ') + string;
-         break;
-      default:
-        __str = string + (new Array(__sp+1)).join(' ');
-    }
-    return __str;
-}
 
 
-// complete la ligne avec des espaces
-function _completeRaw(string, alignment='left', options={}) {
+// // complete la ligne avec des espaces
+// function _completeRaw(string, alignment='left', options={}) {
 
 
-  const __width = options.hasOwnProperty('width') ? 42/(options.width+1) : 42;
+//   const __width = options.hasOwnProperty('width') ? 42/(options.width+1) : 42;
 
-  const __sp = __width - String(string).length;
-  let __str = "";
-  switch(alignment) {
-    case "center":
-       __str = (new Array(Math.floor(__sp/2)+1)).join(' ') + string + (new Array(Math.floor(__sp/2)+1+(__sp%2))).join(' ');
-       break;
-    case "right":
-       __str = (new Array(__sp+1)).join(' ') + string;
-       break;
-    default:
-      __str = string + (new Array(__sp+1)).join(' ');
-  }
-  return __str;
-}
+//   const __sp = __width - String(string).length;
+//   let __str = "";
+//   switch(alignment) {
+//     case "center":
+//        __str = (new Array(Math.floor(__sp/2)+1)).join(' ') + string + (new Array(Math.floor(__sp/2)+1+(__sp%2))).join(' ');
+//        break;
+//     case "right":
+//        __str = (new Array(__sp+1)).join(' ') + string;
+//        break;
+//     default:
+//       __str = string + (new Array(__sp+1)).join(' ');
+//   }
+//   return __str;
+// }
 
 
 function _printUber(printer, data, strings) {
   printer
-    // .size(1,1)
-    .size(0,0)
+    // .fontSize('4square')
+    .fontSize('normal')
     .drawLine()
     .align('CT')
     .style('B')
     // .size(2,2)
-    .size(1,1)
+    .fontSize('4square')
     .text(strings.titre)
     .text('#'+data.display_id)
     .font('A')
-    // .size(1,1)
-    .size(0,0)
+    // .fontSize('4square')
+    .fontSize('normal')
     .style('NORMAL')
     .feed(1)
     .text(`${strings.client} ${data.eater.first_name} ${data.eater.last_name}` )
-    // .size(1,1)
-    .size(0,0)
+    // .fontSize('4square')
+    .fontSize('normal')
     .drawLine()
     // .size(2,2)
-    .size(1,1)
+    .fontSize('4square')
     .text(strings.texte + data.heure)
-    // .size(1,1);
-    .size(0,0);
+    // .fontSize('4square');
+    .fontSize('normal');
 }
 
 // message

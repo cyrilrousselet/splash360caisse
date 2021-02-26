@@ -208,6 +208,7 @@ class EditTicketPopin extends React.Component {
       imprimantes: null,
       kds: null,
       indirect: null,
+      variante: 1
     }
 
     this.updateValue = this.updateValue.bind(this);
@@ -224,7 +225,8 @@ class EditTicketPopin extends React.Component {
       template: this.props.ticket && this.props.ticket.template,
       imprimantes: this.props.ticket && this.props.ticket.imprimantes,
       kds: this.props.ticket && this.props.ticket.kds,
-      indirect: this.props.ticket && this.props.ticket.indirect
+      indirect: this.props.ticket && this.props.ticket.indirect,
+      variante: this.props.ticket && this.props.ticket.variante,
     }
     console.log('componentDidMount', st);
     this.setState(st);
@@ -248,7 +250,7 @@ class EditTicketPopin extends React.Component {
   }
 
   getValues() {
-    const { ticket_id, nom, template, imprimantes, kds, indirect } = this.props.ticket || {ticket_id:null, nom:null, template:null, imprimantes:[], kds:null, indirect:null};
+    const { ticket_id, nom, template, imprimantes, kds, indirect, variante } = this.props.ticket || {ticket_id:null, nom:null, template:null, imprimantes:[], kds:null, indirect:null, variante:1};
     
     const sticket_id = this.state.ticket_id;
     const snom = this.state.nom;
@@ -256,6 +258,7 @@ class EditTicketPopin extends React.Component {
     const simprimantes = this.state.imprimantes;
     const skds = this.state.kds;
     const sindirect = this.state.indirect;
+    const svariante = this.state.variante;
     
     return {
       ticket_id: sticket_id || ticket_id,
@@ -264,6 +267,7 @@ class EditTicketPopin extends React.Component {
       imprimantes: simprimantes || imprimantes,
       kds: skds==null ? kds : skds,
       indirect: sindirect==null ? indirect : sindirect,
+      variante: svariante==null ? variante : svariante
     };
   }
 
@@ -276,6 +280,7 @@ class EditTicketPopin extends React.Component {
       imprimantes: null,
       kds: null,
       indirect: null,
+      variante: 1
     }
     this.setState(st);
   }
@@ -294,7 +299,7 @@ class EditTicketPopin extends React.Component {
   render() {
 
     const { ticket, editOpen, closeHandler, allprinters } = this.props;
-    const { ticket_id, nom, template, imprimantes, kds, indirect } = this.getValues();
+    const { ticket_id, nom, template, imprimantes, kds, indirect, variante } = this.getValues();
 
     const incomplete = !nom || template===null;
 
@@ -329,6 +334,20 @@ class EditTicketPopin extends React.Component {
                     ))}
                 </Select>
               </FormControl>
+              {(template && (["partiel","principal"]).includes(template)) && (
+                <div className="template-variante">
+                <SwitchCheckbox 
+                    isChecked={ (variante===null || variante===undefined) ? false : variante===2 } 
+                    key={ `tpl-variante` }
+                    name={ `variante` } 
+                    className="tpl-variante"
+                    small={ true }
+                    labelLeft={ false }
+                    onChange={ (name,checked) => { this.updateValue({[name]: checked?2:1}) }} 
+                    label={ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.template_variante } 
+                    />
+              </div>
+              )}
               <div className="imprimantes-liste">
                 <div className="liste-label">{ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.imprimantes }</div>
                 <div className="liste-liste">

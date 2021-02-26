@@ -81,7 +81,7 @@
   }
 
   .MuiTypography-root {
-    height: 100%;
+    // height: 100%;
     background-color: $blanc;
     border-radius: 15px 0 15px 15px;
   }
@@ -105,9 +105,18 @@
   .cont-title {
     font-family: $f_hea;
   }
+  .cont-print {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-content: center;
+  }
   .cont-print .MuiFormControlLabel-label {
     font-size:13px;
     font-family: $f_med;
+  }
+  .cont-print .type-hilite {
+    margin-right: 30px;
   }
   .panel-liste {
     width: 100%;
