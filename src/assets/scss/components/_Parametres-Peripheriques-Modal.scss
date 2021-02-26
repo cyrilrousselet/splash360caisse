@@ -94,6 +94,7 @@
       }
     }
     .imprimantes-liste,
+    .template-variante,
     .kds {
       padding-top: 15px;
       width: 100%;
@@ -121,6 +122,12 @@
           width: auto;
         }
       }
+    }
+    .template-variante {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
     }
     .kds {
       display: flex;

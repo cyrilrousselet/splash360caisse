@@ -10,6 +10,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LensIcon from '@material-ui/icons/Lens';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import {devise} from '../helpers/toolbox';
 import { withStyles } from '@material-ui/core/styles';
 import StdButton from './common/StdButton';
@@ -394,7 +396,7 @@ class Menu extends React.Component {
 
  render() {
 
-  const { catalogue, categories, ingredients, ingredientTypes, tickets, clavier } = this.props;
+  const { catalogue, categories, ingredients, ingredientTypes, tickets, clavier, updateIngredientType } = this.props;
   const { openTab, categorie, itemId, editItem, editOpen, editType } = this.state;
 
   const defCat = categorie || categories[0].categorie_id;
@@ -452,10 +454,10 @@ class Menu extends React.Component {
               </Tabs>
             </AppBar>
             <TabPanel key={ `panel-produits` } className="panel" value={openTab} index={0}>
-              <MenuListe key="liste-produits" data={prdlist} type="produits" openEdit={this.editProduit} tickets={tickList} changeDispo={this.changeDispoProduit} changeNoPrint={this.changeNoPrintGroupe} editOpen={this.openEdit} />
+              <MenuListe key="liste-produits" data={prdlist} type="produits" openEdit={this.editProduit} tickets={tickList} changeDispo={this.changeDispoProduit} changeNoPrint={this.changeNoPrintGroupe} editOpen={this.openEdit} updateType={null} />
             </TabPanel>
             <TabPanel key={ `panel-ingredients` } className="panel" value={openTab} index={1}>
-              <MenuListe  key="liste-ingredients" data={inglist} type="ingredients" openEdit={this.editIngredient} tickets={tickList} changeDispo={this.changeDispoIngredient} changeNoPrint={this.changeNoPrintType} editOpen={this.openEdit} />
+              <MenuListe  key="liste-ingredients" data={inglist} type="ingredients" openEdit={this.editIngredient} tickets={tickList} changeDispo={this.changeDispoIngredient} changeNoPrint={this.changeNoPrintType} editOpen={this.openEdit} updateType={updateIngredientType} />
             </TabPanel>
           </div>
       </div>
@@ -525,7 +527,7 @@ const IOSSwitch = withStyles((theme) => ({
 
 function MenuListe(props) {
 
-  const {data, type, changeDispo, tickets, changeNoPrint, editOpen} = props;
+  const {data, type, changeDispo, tickets, changeNoPrint, editOpen, updateType} = props;
 
   const mliste = data.map((cont,i) => (
     <Accordion key={`panel${i}`}>
@@ -539,6 +541,25 @@ function MenuListe(props) {
             <Typography className="cont-title">{ cont.nom }</Typography>
           </div>
           <div className="cont-print">
+            {(type==="ingredients") && (
+            <div className="type-hilite">
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    icon={<RadioButtonUncheckedIcon htmlColor="#1EA9DF" fontSize="small" />}
+                    checkedIcon={<CheckCircleIcon  htmlColor="#1EA9DF" fontSize="small" />}
+                    checked={(!cont.hasOwnProperty('hilite') || cont.hilite===null) ? false : cont.hilite}
+                    onClick={(e)=>{ e.stopPropagation();}}
+                    onChange={(e) => { updateType({type_id:cont.id, update:{hilite: !cont.hilite}}) }}
+                    name="hilite"
+                    color="primary"
+                  />
+                }
+                label={strings.modules.menu.hilite}
+                key={cont.id}
+              />
+            </div>
+            )}
             {tickets.map(tck=>
               <FormControlLabel
               control={

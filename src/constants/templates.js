@@ -14,13 +14,30 @@ export const templates = {
     'legal'
   ],
   partiel: [
-    'info', 
-    'detail'
+    [],
+    [
+      'info', 
+      'detail'
+    ],
+    [
+      'info2', 
+      'detail2',
+      'prodfooter2'
+    ],
   ],
   principal: [
-    'info', 
-    'detail',
-    'recap'
+    [],
+    [
+      'info', 
+      'detail',
+      'recap'
+    ],
+    [
+      'info2', 
+      'detail2',
+      'recap2',
+      'prodfooter2'
+    ],
   ],
   avoir: [
     'entreprise',

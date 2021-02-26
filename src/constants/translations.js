@@ -743,6 +743,7 @@ const data = {
                 catalogue: "Catalogue",
                 produits: "Produits",
                 ingredients: "Ingrédients",
+                hilite: "Surligner",
                 edit: {
                     ingredient: {
                         titre: 'Édition d’ingrédient',
@@ -1020,6 +1021,8 @@ const data = {
                                         //  cloture_x: 'X de caisse',
                                         //  cloture_z: 'Ticket de clôture'
                                     },
+                                    template_variante: 'Variante du template de prod.',
+                                    template_variante_val: 'Activée',
                                     imprimantes: 'Imprimé par...',
                                     kds: 'KitchenDisplay',
                                     kds_active: 'Activé',
@@ -1258,6 +1261,8 @@ const data = {
                 numero: 'Cmd no ',
                 creation: 'Creee le ',
                 bipper: 'BIPPER #',
+                attach: 'ATTACHEZ MOI',
+                commande: 'CMDE',
                 mode: {
                     livraison: 'LIVRAISON',
                     surplace: 'SUR PLACE',
