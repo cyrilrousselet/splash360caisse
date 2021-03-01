@@ -613,6 +613,10 @@ const data = {
                     cmdnoncloturees: {
                         titre: "Commandes non clôturées",
                         texte: "Vous devez clôturer les commandes des jours précédents avant de commencer un nouveau service."
+                    },
+                    prelevement: {
+                        titre: "Erreur de prélèvement",
+                        texte: "Vous ne pouvez pas prélever plus que le contenu de la caisse."
                     }
                 }
             },
