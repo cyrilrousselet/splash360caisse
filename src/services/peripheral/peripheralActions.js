@@ -536,7 +536,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
     const state = getState();
 
-    logger.time('printCommandeTicket()');
+    // logger.time('printCommandeTicket()');
 
 
    // const cmd = state.commandeReducer.commande;
@@ -1324,13 +1324,13 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
       if (noarticle) {
         dispatch({ type: peripheralActionTypes.NOPRINT_TICKET, template: template, reason: 'no article' });
 
-        logger.timeEnd('printCommandeTicket()');
+        // logger.timeEnd('printCommandeTicket()');
       } else {
 
         peripheralServices.printTicket(target_imprimantes[0], template, contenu)
         .then(
           response => {
-            logger.timeEnd('printCommandeTicket()');
+            // logger.timeEnd('printCommandeTicket()');
             logger.log(response);
           }
         )

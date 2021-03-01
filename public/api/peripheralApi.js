@@ -738,12 +738,14 @@ function _printInfo2(printer, data, strings) {
     .fontSize('normal')
     .style('B')
     .frame(strings.attach, '#')
+    .lineSpace(1)
     .feed(2)
     ;
 
   // mode de commande
   printer
     .align('CT')
+    .lineSpace(0)
     .setReverseColors(true)
     .fontSize('2width')
     .text(printer._completeRaw((new Array(strings.mode[data.commande.mode].length+1)).join(' '), 'center', {width:strings.mode[data.commande.mode].length+4}))
@@ -752,6 +754,7 @@ function _printInfo2(printer, data, strings) {
     .fontSize('2width')
     .text(printer._completeRaw((new Array(strings.mode[data.commande.mode].length+1)).join(' '), 'center', {width:strings.mode[data.commande.mode].length+4}))
     .setReverseColors(false)
+    .lineSpace(1)
     .fontSize('normal')
     .feed(2)
     ;
@@ -924,14 +927,21 @@ function _printDetail2(printer, data, strings) {
 
 
   if (data.comment!=='') {
-    printer.style('B').tableCustom([
-      {text:'', cols:3},
-      {text: '* ', cols:2, align:'RIGHT'},
-      {text: data.comment, cols:32, align:'LEFT'},
-      {text: ' *', cols:2, align:'RIGHT'},
-      {text:'', cols:3}
-    ]);
-    printer.drawLine();
+    printer
+      // .fontSize('normal')
+      .fontSize('2height')
+      .feed(1)
+      .style('B')
+      .tableCustom([
+        {text:'', cols:3},
+        {text: '* ', cols:2, align:'RIGHT'},
+        {text: data.comment, cols:32, align:'LEFT'},
+        {text: ' *', cols:2, align:'RIGHT'},
+        {text:'', cols:3}
+      ])
+      .feed(1)
+      .drawLine();
+      ;
   }
 
 
@@ -954,14 +964,19 @@ function _printDetail2(printer, data, strings) {
 
     // commentaire sur le produit
     if (article.comment!=='') {
-      printer.fontSize('normal');
-      printer.style('B').tableCustom([
-        {text:'', cols:3},
-        {text: '* ', cols:2, align:'RIGHT'},
-        {text: article.comment, cols:32, align:'LEFT'},
-        {text: ' *', cols:2, align:'RIGHT'},
-        {text:'', cols:3}
-      ]);
+      printer
+        // .fontSize('normal')
+        .fontSize('2height')
+        .style('B')
+        .tableCustom([
+          {text:'', cols:3},
+          {text: '* ', cols:2, align:'RIGHT'},
+          {text: article.comment, cols:32, align:'LEFT'},
+          {text: ' *', cols:2, align:'RIGHT'},
+          {text:'', cols:3}
+        ])
+        .feed(1)
+        ;
     }
 
     // liste des ingredients
@@ -984,25 +999,30 @@ function _printDetail2(printer, data, strings) {
           }
       
         type.ingredients.forEach((ingredient) => {
-          printer.style('NORMAL').tableCustom([
-            {text:'', cols:5},
-            {text: ingredient.qte, cols:3, align:'RIGHT'},
-            {text:' x ', cols:3},
-            {text: '  '+ingredient.nom, cols:31, align:'LEFT'},
-          ]);
+          printer
+            .fontSize('2height')
+            .style('NORMAL')
+            .tableCustom([
+              {text:'', cols:5},
+              {text: ingredient.qte, cols:3, align:'RIGHT'},
+              {text:' x ', cols:3},
+              {text: '  '+ingredient.nom, cols:31, align:'LEFT'},
+            ]);
 
           if (ingredient.comment!=='') {
 
             printer
-              .fontSize('normal')
+              // .fontSize('normal')
+              .fontSize('2height')
               .style('B')
               .tableCustom([
-                {text:'', cols:3},
+                {text:'', cols:5},
                 {text: '* ', cols:2, align:'RIGHT'},
-                {text: ingredient.comment, cols:32, align:'LEFT'},
+                {text: ingredient.comment, cols:33, align:'LEFT'},
                 {text: ' *', cols:2, align:'RIGHT'},
-                {text:'', cols:3}
-              ]);
+              ])
+              .feed(1)
+              ;
           }
         });
         printer.setReverseColors(false);
@@ -1014,7 +1034,7 @@ function _printDetail2(printer, data, strings) {
     }
 
     printer.fontSize('normal').feed(1);
-    printer.drawLine('=')
+    printer.drawLine('=');
     printer.feed(1);
 
     numarticles += numingredients>0 ? numingredients : article.qte;

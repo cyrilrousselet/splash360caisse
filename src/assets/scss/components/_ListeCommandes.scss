@@ -141,6 +141,7 @@
       }
       .MuiTableCell-body {
         font-size: 12px;
+        position: relative;
       }
       .MuiTableRow-root.odd {
         
@@ -189,6 +190,21 @@
         .liste-client,
         .liste-mode {
           background-image: linear-gradient(rgba(0, 255, 64, 0.5) 0%, rgba(0, 255, 64, 0.5) 100%);
+        }
+      }
+      .MuiTableRow-root.cmd-archived {
+        font-style: italic;
+        .liste-date:after {
+          content: '';
+          position: absolute;
+          width: 15px;
+          height: 37px;
+          top: 0;
+          left: 4px;
+          background-image: url('./../../images/lock.svg');
+          background-repeat: no-repeat;
+          background-position: left center;
+          background-size: 8px 8px;
         }
       }
 

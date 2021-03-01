@@ -21,17 +21,17 @@ const logger = new Logger();
 function getLast() {
   return dispatch => {
     dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_REQUEST, detail:"last" });
-    logger.time('ClotureActions.getLast');
+    // logger.time('ClotureActions.getLast');
     return clotureServices.getLast()
     .then(
         data => { 
-          logger.timeEnd('ClotureActions.getLast');
+          // logger.timeEnd('ClotureActions.getLast');
           dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_SUCCESS, ...data }) 
         }
     )
     .catch(
       error => { 
-        logger.timeEnd('ClotureActions.getLast');
+        // logger.timeEnd('ClotureActions.getLast');
         dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_FAILURE, error: error.toString() }) 
       }
     );
@@ -57,17 +57,17 @@ function getCloturesList(params={}) {
   return (dispatch) => {
     dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_REQUEST, criterias:params });
 
-    logger.time('ClotureActions.getCloturesList');
+    // logger.time('ClotureActions.getCloturesList');
     return clotureServices.getCloturesList(params)
     .then(
         data => { 
-          logger.timeEnd('ClotureActions.getCloturesList');
+          // logger.timeEnd('ClotureActions.getCloturesList');
           dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_SUCCESS, ...data }) 
         }
     )
     .catch(
       error => { 
-        logger.timeEnd('ClotureActions.getCloturesList');
+        // logger.timeEnd('ClotureActions.getCloturesList');
         dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_FAILURE, error: error.toString() }) 
       }
     );
@@ -92,7 +92,7 @@ function getCurrentPeriode(params={}) {
 
     // récup. cmd non clôturées
 
-    logger.time('ClotureActions.getCurrentPeriode -> getCommandesList()');
+    // logger.time('ClotureActions.getCurrentPeriode -> getCommandesList()');
     const {commandeslist} = await commandeServices.getCommandesList({
       $and: [
         { archived: {"$exists": false} },
@@ -111,7 +111,7 @@ function getCurrentPeriode(params={}) {
       ]
     });
 
-    logger.timeEnd('ClotureActions.getCurrentPeriode -> getCommandesList()');
+    // logger.timeEnd('ClotureActions.getCurrentPeriode -> getCommandesList()');
     
     
     // // si les cmd non clôt. proviennent d'une période précédente.
@@ -154,9 +154,9 @@ function getCurrentPeriode(params={}) {
 
     
 
-    logger.time('ClotureActions.getCurrentPeriode -> service');
+    // logger.time('ClotureActions.getCurrentPeriode -> service');
     const {periode} = clotureServices.getCurrentPeriode(commandeslist, catalogue, params)
-    logger.timeEnd('ClotureActions.getCurrentPeriode -> service');
+    // logger.timeEnd('ClotureActions.getCurrentPeriode -> service');
     dispatch({ type: clotureActionTypes.GET_CURRENT_PERIODE, periode });
   }
 }
@@ -171,11 +171,11 @@ function getTodayCa() {
     const lastperiode_end = __periode_bounds.debut;
 
 
-    logger.time('ClotureActions.getTodayCa');
+    // logger.time('ClotureActions.getTodayCa');
     // const {ca, numtickets} = clotureServices.getTodayCa(heure_fin, commandeslist);
     const stats = await clotureServices.getTodayCa(lastperiode_end);
     const {ca, numtickets} = stats;
-    logger.timeEnd('ClotureActions.getTodayCa', stats);
+    // logger.timeEnd('ClotureActions.getTodayCa', stats);
     // logger.time('clotureActions after getTodayCa');
     dispatch({type: clotureActionTypes.GET_TODAY_CA, ca, numtickets})
 
@@ -229,17 +229,17 @@ function makeCloture(params={}) {
     });
 
     
-    logger.time("makeCloture");
+    // logger.time("makeCloture");
     const cloture = clotureServices.makeCloture(commandeslist, catalogue, params)
-    logger.timeEnd("makeCloture");
-    logger.time("saveCloture"); 
+    // logger.timeEnd("makeCloture");
+    // logger.time("saveCloture"); 
 
     const __cloture = {...cloture, localsync: [options.caisse.uniqid]};
 
     clotureServices.saveCloture(__cloture)
       .then(
         data => {
-          logger.timeEnd("saveCloture");
+          // logger.timeEnd("saveCloture");
           dispatch(commandeActions.archiveCommands({cmd:cloture.archivedcommandesid, clotureId:cloture.clotureId}));
           dispatch({ type: clotureActionTypes.MAKE_CLOTURE, cloture });
           dispatch(getLast());

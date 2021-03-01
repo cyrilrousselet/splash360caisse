@@ -109,7 +109,7 @@ function TableCommandes(props) {
         </TableHead>
         <TableBody>
           {liste.map((row, i) => (
-            <TableRow key={row.id} className={ `${(i%2)?'odd':'even'} color-${(row.commande.caisse.id===thiscash.id)?'0':'autre'} ${(row.commande.centre==='uber'?'autrecentre':'')}` }>
+            <TableRow key={row.id} className={ `${(i%2)?'odd':'even'} color-${(row.commande.caisse.id===thiscash.id)?'0':'autre'} ${(row.commande.centre==='uber'?'autrecentre':'')}${(row.commande.archived?' cmd-archived':'')}` }>
               <TableCell key={`${row.id}-date`} className="liste-date">{ row.commande.date }</TableCell>
               <TableCell key={`${row.id}-heure`} className="liste-heure">{ row.commande.heure }</TableCell>
               <TableCell key={`${row.id}-numero`} className="liste-numero">{ row.commande.numero }</TableCell>
@@ -119,7 +119,7 @@ function TableCommandes(props) {
               <TableCell key={`${row.id}-mode`} className="liste-mode">{ strings.modules.listecommandes.liste.modes[row.commande.mode] }</TableCell>
               <TableCell key={`${row.id}-actions`} className="liste-actions">
                 {(row.commande.mode==='livraison' && id!=='standby') && <StdButton key={`${row.id}-livreur`} identifier='livreur' elementclass={ `action action-livreur${(row.commande.livreur?' lvr-active':'')}` } icon={ <DeliveryIcon htmlColor={(row.commande.livreur?'#FF2D55':'#666666')} /> } noStroke={true} text='' onClick={() => { openLivreurs(row.id) }} />}
-                <StdButton key={`${row.id}-encaissement`} identifier='encaissement' elementclass="action action-encaissement" icon={ <PaymentIcon htmlColor="#ffffff" /> } disabled={false} noStroke={true} text={ '' } onClick={ () => { openReglement(row.id) } } />
+                <StdButton key={`${row.id}-encaissement`} identifier='encaissement' elementclass="action action-encaissement" icon={ <PaymentIcon htmlColor="#ffffff" /> } disabled={row.commande.archived} noStroke={true} text={ '' } onClick={ () => { openReglement(row.id) } } />
                 <StdButton key={`${row.id}-annuler`} identifier='annuler' elementclass="action action-annuler" icon={ <DeleteIcon htmlColor="#ffffff" /> } disabled={id==='confirmed'} noStroke={true} text={ '' } onClick={() => { deleteCommande(row.id) }} />
                 <StdButton key={`${row.id}-reprise`} identifier='reprise' elementclass="action action-reprise" icon={ <EditIcon htmlColor="#ffffff" /> } disabled={id==='confirmed' || (row.commande.livreur!==null && row.commande.livreur!==undefined)} noStroke={true} text={ '' } onClick={() => { openReprise(row.id) }} />
                 <StdButton key={`${row.id}-imprimer`} identifier='imprimer' elementclass="action action-imprimer" icon={ <PrinterIcon /> } disabled={id==='standby'} noStroke={true} text='' onClick={() => { openPrint(row.id) }} />
@@ -377,6 +377,7 @@ class ListeCommandes extends React.Component {
     }).then((result)=> {
       if (result.value) {
         this.props.deleteCommande({ticketId:id, motif:'annulation'});
+        this.getBoundedCommandesList();
       }
     });
 
@@ -422,7 +423,8 @@ class ListeCommandes extends React.Component {
         mode: value.mode,
         caisse: value.caisse,
         livreur: value.livreur,
-        centre: value.centre_revenu ? value.centre_revenu : 'restaurant'
+        centre: value.centre_revenu ? value.centre_revenu : 'restaurant',
+        archived: value.hasOwnProperty('archived') && value.archived!==null,
       };
       let __start = compareAsc(new Date(value.createdAt), startDate);
       let __end = compareAsc(new Date(value.createdAt), endDate);
