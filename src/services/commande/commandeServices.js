@@ -79,11 +79,11 @@ function getCommandesList(params) {
 function getAllTicketsRestaurant(params) {
   return emit("dbTicketsRestauGetAll", params);
 }
-function persistTicketsRestaurants(liste) {
+function persistTicketsRestaurants(liste, caisseId) {
   const trliste = liste.map((trid) => {
     const __trValue = Number(trid.substr(11, 5)) / 100;
     const __trValid = Number(trid.substr(16, 4));
-    return { id: trid, valeur: __trValue, valid: __trValid };
+    return { id: trid, valeur: __trValue, valid: __trValid, localsync: [caisseId] };
   });
   return emit("dbTicketsRestauPersist", { payload: trliste });
 }

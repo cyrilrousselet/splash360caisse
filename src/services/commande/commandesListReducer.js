@@ -11,6 +11,8 @@ const initialState = {
 
 export function commandesListReducer(state = initialState, action) {
 
+  let ticketsrestau = state.ticketsrestau;
+
   switch (action.type) {
     case commandeActionTypes.GET_ALLCOMMANDES_REQUEST:
     case commandeActionTypes.GETALL_TICKETSRESTAU_REQUEST:
@@ -48,12 +50,19 @@ export function commandesListReducer(state = initialState, action) {
       };
     
     case commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_SUCCESS:
-      let __tr = state.ticketsrestau;
       return {
         ...state,
         loading: false,
         error: null,
-        ticketsrestau: [...__tr, action.ticketrestau]
+        ticketsrestau: [...ticketsrestau, action.ticketrestau]
+      }
+    case commandeActionTypes.PERSIST_TICKETRESTAU_SUCCESS:
+      let __newtr = action.ticketsrestau;
+      return {
+        ...state,
+        loading: false,
+        error: null,
+        ticketsrestau: [...ticketsrestau, ...__newtr]
       }
 
     case commandeActionTypes.GETALL_TICKETSRESTAU_SUCCESS:
