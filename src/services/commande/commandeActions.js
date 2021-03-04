@@ -83,6 +83,7 @@ function persistTicketsRestaurants(liste) {
 
     commandeServices.persistTicketsRestaurants(liste, caisse.uniqid).then(
       (data) => {
+        logger.log('tr persisted', data)
         dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_SUCCESS, ticketsrestau: data });
       //  dispatch(getAllTicketsRestaurant());
         dispatch(notificationActions.syncDispatch("ticketrestaurant", data));

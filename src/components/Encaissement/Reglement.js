@@ -171,7 +171,10 @@ class Reglement extends React.Component {
       if (trlist.length > 0) this.props.persistTicketsRestaurants(trlist);
       this.props.validateCommande(this.props.commande);
     }
-    this.setState({ input: false });
+    
+    // reset du state avant fermeture
+    this.setState({ input: false, trlist: [] });
+
     if (closeReglementAtEnd) {
       this.props.closeReglement();
     }
