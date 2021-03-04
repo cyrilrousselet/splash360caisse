@@ -31,6 +31,7 @@ const data = {
                 cancel: "Annuler",
                 clear: "Effacer",
                 save: "Enregistrer",
+                update: "Mettre à jour",
                 back: "Retour",
                 delete: "Supprimer",
                 accept: "Accepter",

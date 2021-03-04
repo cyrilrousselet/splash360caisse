@@ -75,14 +75,18 @@ function getAllTicketsRestaurant() {
 }
 
 function persistTicketsRestaurants(liste) {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_REQUEST });
 
-    commandeServices.persistTicketsRestaurants(liste).then(
+
+    const { caisse } = getState().parametresReducer.parametres.options;
+
+    commandeServices.persistTicketsRestaurants(liste, caisse.uniqid).then(
       (data) => {
-        dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_SUCCESS });
-        dispatch(getAllTicketsRestaurant());
-        dispatch(notificationActions.syncDispatch("ticketrestaurant", liste));
+        logger.log('tr persisted', data)
+        dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_SUCCESS, ticketsrestau: data });
+      //  dispatch(getAllTicketsRestaurant());
+        dispatch(notificationActions.syncDispatch("ticketrestaurant", data));
       },
       (error) =>
         dispatch({

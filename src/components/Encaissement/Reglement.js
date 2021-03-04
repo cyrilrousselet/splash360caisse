@@ -171,7 +171,10 @@ class Reglement extends React.Component {
       if (trlist.length > 0) this.props.persistTicketsRestaurants(trlist);
       this.props.validateCommande(this.props.commande);
     }
-    this.setState({ input: false });
+    
+    // reset du state avant fermeture
+    this.setState({ input: false, trlist: [] });
+
     if (closeReglementAtEnd) {
       this.props.closeReglement();
     }
@@ -309,7 +312,6 @@ class Reglement extends React.Component {
     } else {
       // if (error === "deprecated") {
         Swal.fire({
-          type: "warning",
           title:
             strings.modules.encaissement.reglement.erreur.ticket[error].titre,
           html:
@@ -322,7 +324,7 @@ class Reglement extends React.Component {
     }
 
 
-    console.log("tr", __trValue, __trValid);
+    console.log("tr", __value, __trValue, __trValid, error);
   }
 
   parseAvoir(value) {

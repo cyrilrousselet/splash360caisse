@@ -33,7 +33,7 @@ function createClient(payload) {
     clientsServices.createClient({...payload, localsync:[caisse.uniqid]})
     .then(
       data => {
-        dispatch({ type: clientsActionTypes.CREATE_SUCCESS, ...data });
+        dispatch({ type: clientsActionTypes.CREATE_SUCCESS, client: data });
         dispatch(notificationActions.syncDispatch('client', data));
         dispatch(getClientsList());
         if (payload.autoselect) {
@@ -57,7 +57,7 @@ function updateClient(payload) {
     clientsServices.updateClient({...payload, localsync:[caisse.uniqid]})
     .then(
       data => {
-        dispatch({ type: clientsActionTypes.UPDATE_SUCCESS, ...data });
+        dispatch({ type: clientsActionTypes.UPDATE_SUCCESS, client: data });
         dispatch(notificationActions.syncDispatch('client', data));
         dispatch(getClientsList());
         if (payload.autoselect) {
@@ -97,7 +97,7 @@ function setClientFromSync(client) {
     .then(
       result => {
 
-        dispatch({ type: clientsActionTypes.SET_FROM_API, ...result });
+        dispatch({ type: clientsActionTypes.SET_FROM_API, client: result });
 
         // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
         // donc inutile de lui renvoyer la synchro

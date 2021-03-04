@@ -157,12 +157,14 @@ class FicheClient extends React.Component {
     let params = this.getValeurs();
     params = {...params, autoselect:selection};
 
+    console.log('saveClient', client);
+
     // si on modifie la fiche client depuis l'Encaissement,
     // on demande la mise à jour des infos du client pour la commande en cours
     if (contexte==="encaissement" && client) {
       params = {...params, autoselect:true};
     }
-    if (client_id===null) { 
+    if (client_id===null && params.client_id===null) { 
       createClient(params);
     } else {
       updateClient(params);
@@ -176,7 +178,7 @@ class FicheClient extends React.Component {
     const { selectClient, client, closeHandler, mode } = this.props;
 
     const client_id = this.state.client_id || ((client && client.client_id) || null);
-    if (client_id===null) { 
+    if (client_id===null && this.state.client_id===null) { 
       this.saveClient(true);
     } else {
       if (mode==='fiche') {
@@ -299,7 +301,7 @@ class FicheClient extends React.Component {
                       id={ `clientid` }
                       name={ `clientid` }
                       className="fieldclientid"
-                      value={ client_id } 
+                      value={ client_id || '' } 
                       placeholder='' 
                       type='text' 
                       readOnly={ true } 
@@ -513,7 +515,7 @@ class FicheClient extends React.Component {
                 elementclass={ `select${((client_id&&client)?' unselect':'')}` } 
                 icon={ false } 
                 disabled={ !readytovalidate }
-                text={ client_id ? client ? strings.modules.clients.edition.unselect : strings.general.dialog.select : strings.modules.clients.edition.save_select } 
+                text={ client_id ? (client ? strings.modules.clients.edition.unselect : strings.general.dialog.select) : strings.modules.clients.edition.save_select } 
                 onClick={this.handleSelect} 
               />}
               {contexte!=='encaissement' && <div></div>}
@@ -522,7 +524,7 @@ class FicheClient extends React.Component {
                 elementclass="save" 
                 icon={ false } 
                 disabled={ !readytovalidate }
-                text={ strings.general.dialog.save } 
+                text={ client_id ? strings.general.dialog.update : (client ? strings.general.dialog.update : strings.general.dialog.save) } 
                 onClick={this.saveClient} 
               />
             </div>

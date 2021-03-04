@@ -924,7 +924,7 @@ function _printDetail(printer, data, strings) {
 // détail commande sur le ticket V2
 function _printDetail2(printer, data, strings) {
 
-
+  printer.lineSpace(1);
 
   if (data.comment!=='') {
     printer
@@ -1070,6 +1070,8 @@ function _printRecap(printer, recap, strings) {
 // récap des autres tickets V2
 function _printRecap2(printer, recap, strings) {
 
+  printer.lineSpace(1);
+
   printer
     // .fontSize('4square')
     .fontSize('normal')
@@ -1087,6 +1089,8 @@ function _printRecap2(printer, recap, strings) {
 
 // footer des tickets de prod
 async function _printProdfooter2(printer, data, strings) {
+
+  printer.lineSpace(1);
 
   printer
     .fontSize('normal')
@@ -1887,12 +1891,12 @@ function _printPeriodeZ(printer, data, strings, printx=false) {
     // caisse :
     if (data.caisse) {
       printer.tableCustom([
-        {text: strings.caisses[0]+data.caisse.nom+' ('+data.caisse.id+')', cols:42, align:'LEFT'}
+        {text: strings.caisses[0]+data.caisse.nom, cols:42, align:'LEFT'}
       ]).feed(1);
       
     } else {
       printer.tableCustom([
-        {text: strings.caisses[1]+strings.caisses_all, cols:42, align:'LEFT'}
+        {text: strings.caisses[(data.caisses.length>1?1:0)]+data.caisses.join(', '), cols:42, align:'LEFT'}
       ]).feed(1);
     }
     // récap montants :
