@@ -149,6 +149,13 @@ const server = {
       res.json({ status: "success" });
     });
 
+    api_server.post("/printticket", (req, res) => {
+      log.info("POST printticket", req.body);
+      
+      wcont.send("printticket", { ticketId: req.body.ticket_id, zoneId: req.body.zone_id });
+      res.json({ status: "success" });
+    });
+
     api_server.listen(API_PORT, () => {
       log.info(`api_server listening on *:${API_PORT}`);
     });

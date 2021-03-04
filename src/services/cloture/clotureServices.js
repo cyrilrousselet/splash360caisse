@@ -75,10 +75,12 @@ function getCurrentPeriode(commandes, catalogue, params) {
       // on ne considère pas les commandes en attente annulées :
       if (cmd.status==='deleted') __valid = false;
 
-      // si on ne récupère que les cmd non archivées (cas du Z)
-      // if (params.extract==='z' && cmd.archived!==undefined) __valid = false;
+      // on ne récupère que les cmd non archivées (cas du Z)
       if (cmd.archived!==undefined && cmd.archived!==null) __valid = false;
       if (__valid) numvalid++;
+
+
+      if (__valid && cmd.status!=='confirmed') __numStandby++;
 
       // si un vendeur est précisé
       if (vendeur) {
@@ -102,7 +104,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
       //  if (isAfter(createdAt, params.fin)) __valid = false;
  //     }
 
-      if (__valid && cmd.status!=='confirmed') __numStandby++;
+
 
       // status
       if (cmd.status!=='confirmed') __valid = false;

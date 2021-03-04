@@ -206,7 +206,9 @@ class EditTicketPopin extends React.Component {
       nom: null,
       template: null,
       imprimantes: null,
-      kds: null
+      kds: null,
+      indirect: null,
+      variante: 1
     }
 
     this.updateValue = this.updateValue.bind(this);
@@ -222,7 +224,9 @@ class EditTicketPopin extends React.Component {
       nom: this.props.ticket && this.props.ticket.nom,
       template: this.props.ticket && this.props.ticket.template,
       imprimantes: this.props.ticket && this.props.ticket.imprimantes,
-      kds: this.props.ticket && this.props.ticket.kds
+      kds: this.props.ticket && this.props.ticket.kds,
+      indirect: this.props.ticket && this.props.ticket.indirect,
+      variante: this.props.ticket && this.props.ticket.variante,
     }
     console.log('componentDidMount', st);
     this.setState(st);
@@ -246,20 +250,24 @@ class EditTicketPopin extends React.Component {
   }
 
   getValues() {
-    const { ticket_id, nom, template, imprimantes, kds } = this.props.ticket || {ticket_id:null, nom:null, template:null, imprimantes:[], kds:null};
+    const { ticket_id, nom, template, imprimantes, kds, indirect, variante } = this.props.ticket || {ticket_id:null, nom:null, template:null, imprimantes:[], kds:null, indirect:null, variante:1};
     
     const sticket_id = this.state.ticket_id;
     const snom = this.state.nom;
     const stemplate = this.state.template;
     const simprimantes = this.state.imprimantes;
     const skds = this.state.kds;
+    const sindirect = this.state.indirect;
+    const svariante = this.state.variante;
     
     return {
       ticket_id: sticket_id || ticket_id,
       nom: snom || nom,
       template: stemplate || template,
       imprimantes: simprimantes || imprimantes,
-      kds: skds==null ? kds : skds
+      kds: skds==null ? kds : skds,
+      indirect: sindirect==null ? indirect : sindirect,
+      variante: svariante==null ? variante : svariante
     };
   }
 
@@ -270,7 +278,9 @@ class EditTicketPopin extends React.Component {
       nom: null,
       template: null,
       imprimantes: null,
-      kds: null
+      kds: null,
+      indirect: null,
+      variante: 1
     }
     this.setState(st);
   }
@@ -289,7 +299,7 @@ class EditTicketPopin extends React.Component {
   render() {
 
     const { ticket, editOpen, closeHandler, allprinters } = this.props;
-    const { ticket_id, nom, template, imprimantes, kds } = this.getValues();
+    const { ticket_id, nom, template, imprimantes, kds, indirect, variante } = this.getValues();
 
     const incomplete = !nom || template===null;
 
@@ -324,6 +334,20 @@ class EditTicketPopin extends React.Component {
                     ))}
                 </Select>
               </FormControl>
+              {(template && (["partiel","principal"]).includes(template)) && (
+                <div className="template-variante">
+                <SwitchCheckbox 
+                    isChecked={ (variante===null || variante===undefined) ? false : variante===2 } 
+                    key={ `tpl-variante` }
+                    name={ `variante` } 
+                    className="tpl-variante"
+                    small={ true }
+                    labelLeft={ false }
+                    onChange={ (name,checked) => { this.updateValue({[name]: checked?2:1}) }} 
+                    label={ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.template_variante } 
+                    />
+              </div>
+              )}
               <div className="imprimantes-liste">
                 <div className="liste-label">{ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.imprimantes }</div>
                 <div className="liste-liste">
@@ -342,18 +366,36 @@ class EditTicketPopin extends React.Component {
                 </div>
               </div>
               <div className="kds">
-                <div className="liste-label">{ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.kds }</div>
-                <div className="liste-liste">
-                  <SwitchCheckbox 
-                    isChecked={ (kds===null || kds===undefined) ? false : kds } 
-                    key={ `select-kds` }
-                    name={ `kds` } 
-                    className="kds-checkbox"
-                    small={ true }
-                    labelLeft={ false }
-                    onChange={ (name,checked) => { this.updateValue({[name]: checked}) }} 
-                    label={ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.kds_active } 
-                    />
+                <div class="kds-activation">
+                  <div className="liste-label">{ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.kds }</div>
+                  <div className="liste-liste">
+                    <SwitchCheckbox 
+                      isChecked={ (kds===null || kds===undefined) ? false : kds } 
+                      key={ `select-kds` }
+                      name={ `kds` } 
+                      className="kds-checkbox"
+                      small={ true }
+                      labelLeft={ false }
+                      onChange={ (name,checked) => { this.updateValue({[name]: checked}) }} 
+                      label={ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.kds_active } 
+                      />
+                  </div>
+                </div>
+                <div class="indirect">
+                  <div className={ `liste-label${(kds?'':' disabled')}`}>{ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.indirect }</div>
+                  <div className="liste-liste">
+                    <SwitchCheckbox 
+                      isChecked={ (indirect===null || indirect===undefined) ? false : indirect } 
+                      key={ `select-indirect` }
+                      name={ `indirect` } 
+                      className="indirect-checkbox"
+                      disabled={!kds}
+                      small={ true }
+                      labelLeft={ false }
+                      onChange={ (name,checked) => { this.updateValue({[name]: checked}) }} 
+                      label={ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.indirect_active } 
+                      />
+                  </div>
                 </div>
               </div>
             </div>
@@ -393,6 +435,7 @@ function ListeImpression(props) {
           <TableCell key={`${id}-hd-type`} className="liste-type">{ strings.modules.parametres.submodules.peripheriques.impression[type].liste.type }</TableCell>
           <TableCell key={`${id}-hd-param`} className="liste-param">{ strings.modules.parametres.submodules.peripheriques.impression[type].liste.parametre }</TableCell>
           {type==='tickets' && <TableCell key={`${id}-hd-kds`} className="liste-kds">{ strings.modules.parametres.submodules.peripheriques.impression.tickets.liste.kds }</TableCell>}
+          {type==='tickets' && <TableCell key={`${id}-hd-indirect`} className="liste-indirect">{ strings.modules.parametres.submodules.peripheriques.impression.tickets.liste.indirect }</TableCell>}
         </TableRow>
       </TableHead>
       <TableBody>
@@ -403,6 +446,7 @@ function ListeImpression(props) {
             <TableCell key={`${i}-imp-connexion`} className="liste-type">{ row.type }</TableCell>
             <TableCell key={`${i}-param`} className="liste-param">{row.param}</TableCell>
             {type==='tickets' && <TableCell key={`${i}-kds`} className="liste-kds">{row.kds && <CheckIcon htmlColor="#7FAD3B" />}</TableCell>}
+            {type==='tickets' && <TableCell key={`${i}-indirect`} className="liste-indirect">{row.indirect && <CheckIcon htmlColor="#7FAD3B" />}</TableCell>}
           </TableRow>
         ))}
       </TableBody>
@@ -508,7 +552,8 @@ class PeripheriquesImpression extends React.Component {
           param: printlist.join(', '),
           weight: tck.weight,
           disabled: printlist.length===0 && !tck.kds,
-          kds: tck.kds
+          kds: tck.kds,
+          indirect: tck.indirect,
         };
     });
     tickets_liste = tickets_liste.sort((a,b)=>a.weight-b.weight);

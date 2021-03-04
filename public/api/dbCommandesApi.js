@@ -466,7 +466,8 @@ async function _persistTicketRestau(payload) {
 
         }
       });
-      return count == payload.length;
+      // return count == payload.length;
+      return payload;
     };
     start();
   
@@ -490,7 +491,8 @@ async function _persistTicketRestau(payload) {
       _tr_o = _insertTicketRestau(payload);
     }
 
-    return _tr_o != null;
+    // return _tr_o != null;
+    return [payload];
   }
 }
 

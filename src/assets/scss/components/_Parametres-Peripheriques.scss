@@ -114,6 +114,10 @@
             color: $rouge;
           }
       }
+      .liste-kds,
+      .liste-indirect {
+        text-align: center;
+      }
       .MuiTableRow-root.disabled {
         .MuiTableCell-body {
           font-family: $f_boo;

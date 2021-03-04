@@ -5,10 +5,8 @@ import { Fab, FormControl, MenuItem, Modal, Select } from "@material-ui/core";
 //   MuiPickersUtilsProvider,
 // } from "@material-ui/pickers";
 import {
-  endOfDay,
   format,
-  parseJSON,
-  startOfDay,
+  parseJSON
 } from "date-fns";
 import frLocale from "date-fns/locale/fr";
 import React from "react";
@@ -113,7 +111,6 @@ class Cloture extends React.Component {
     this.keyboardButtonHandler = this.keyboardButtonHandler.bind(this);
     this.closeKeyboard = this.closeKeyboard.bind(this);
     this.prepareCloture = this.prepareCloture.bind(this);
-    this.setSelectedDate = this.setSelectedDate.bind(this);
 
     this.openMotifModal = this.openMotifModal.bind(this);
     this.closeMotifModal = this.closeMotifModal.bind(this);
@@ -198,6 +195,9 @@ class Cloture extends React.Component {
 
   testStandbyCommandes(periode_z) {
     // s'il y a des commandes non confirmées ("standby" et "a_encaisser")
+
+    console.log('testStandByCommandes() L',periode_z.standby);
+
     if (periode_z.standby > 0 ) {
       Swal.fire({
         title: strings.modules.cloture.alerte.standby.titre,
@@ -283,15 +283,25 @@ class Cloture extends React.Component {
       ]
     });
 
+    const __reset = {
+      comptage: null,
+      saisie_especes: '',
+      saisie_ticket: '',
+      saisie_carte: '',
+      saisie_cheque: '',
+      saisie_avoir: '',
+      saisie_prelevement: ''
+    };
+
     // si la gestion du fond de caisse est activée, on récupère le solde au dernier mouvement de trésorerie.
     if (fonddecaisse_activation) {
       this.props.getLastMouvement(selection.uniqid).then(__lastmvt => {
         const __lastsolde = (__lastmvt && __lastmvt.hasOwnProperty('lastmouvement') && __lastmvt.lastmouvement!==null) ? __lastmvt.lastmouvement.solde : 0;
         // logger.log('Clo.getLastMouvement() solde:', __lastmvt, __lastsolde);
-        this.setState({ selection_caisse: selection, fonddecaisse: __lastsolde/100 });
+        this.setState({ selection_caisse: selection, fonddecaisse: __lastsolde/100, ...__reset });
       });
     } else {
-      this.setState({ selection_caisse: selection });
+      this.setState({ selection_caisse: selection, ...__reset });
     }
 
     // this.props.getCurrentPeriode(params);
@@ -310,12 +320,6 @@ class Cloture extends React.Component {
     this.props.getCurrentPeriode(params);
   }
 
-  // validComptage(comptageobject) {
-  //   logger.log("validComptage()", comptageobject);
-  //   //    this.setState({comptage: valeur, comptageOpen: false});
-  //   this.setState({ comptage: comptageobject });
-  // }
-
   startSaisie(field) {
     logger.log("startSaisie", field);
   //  let comptage = this.state.comptage;
@@ -333,14 +337,23 @@ class Cloture extends React.Component {
   keyboardButtonHandler(text) {
     const { fieldvalue } = this.state;
     let newvalue;
-    if (fieldvalue===null || isNaN(String(fieldvalue).replace(",", "."))) {
-      newvalue = (text !== "c") ? text : 0;
+    
+    if (fieldvalue===null || fieldvalue==="" || isNaN(String(fieldvalue).replace(",", "."))) {
+      newvalue = (text !== "c") ? ((text === ",") ? '0,' : text) : 0;
     } else {
-      newvalue =
-      (text !== "c")
-      ? String(fieldvalue) + text
-      : String(fieldvalue).slice(0, -1)
-      ;
+      if (String(fieldvalue).indexOf(',')===-1 || String(fieldvalue).substr(String(fieldvalue).indexOf(',')+1).length<2) {
+        newvalue =
+        (text !== "c")
+        ? String(fieldvalue) + text
+        : String(fieldvalue).slice(0, -1)
+        ;
+      } else {
+        newvalue =
+        (text !== "c")
+        ? String(fieldvalue)
+        : String(fieldvalue).slice(0, -1)
+        ;
+      }
     }
     this.setState({ fieldvalue: newvalue });
 
@@ -410,19 +423,7 @@ class Cloture extends React.Component {
   }
 
 
-  setSelectedDate(bound, date) {
-    const { startDate, endDate } = this.state;
-    if (bound === "start") {
-      this.setState({
-        startDate: date <= endDate ? startOfDay(date) : endDate,
-      });
-    }
-    if (bound === "end") {
-      this.setState({
-        endDate: date >= startDate ? endOfDay(date) : startDate,
-      });
-    }
-  }
+
 
   formatDate = (date, dateFormat) => {
     return format(parseJSON(date), dateFormat);
@@ -511,6 +512,37 @@ class Cloture extends React.Component {
       console.log('comptage', __field, __comptage);
 
       this.setState({comptage: {...__comptage, [__field]: Number(value), total:totalcomptage}});
+
+    } else if (fieldname==="saisie_prelevement") {
+
+      const { comptage } = this.state;
+      const { periode } = this.props;
+
+      const ventil_esp = periode.ventilation.moyen.find(m=>m.moyen==='especes');
+
+      let __cpt = comptage ? comptage.especes : Number(ventil_esp.valeur);
+
+
+      console.log('chech prelev', 'fdc['+periode.fdcaisse+'] + comptage['+__cpt+'] - val['+Number(value)+']', (periode.fdcaisse + __cpt - Number(value)));
+
+      if (periode.fdcaisse + __cpt - Number(value) < 0) {
+        Swal.fire({
+          title: strings.modules.cloture.alerte.prelevement.titre,
+          text: strings.modules.cloture.alerte.prelevement.texte,
+          focusConfirm: true,
+          showCancelButton: false,
+          customClass: {
+            container: "errorprelevement"
+          },
+          confirmButtonText: "OK",
+          buttonsStyling: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.startSaisie('saisie_prelevement');
+          }
+        });
+
+      }
 
     }
   }
@@ -717,6 +749,7 @@ class Cloture extends React.Component {
       !this.checkComptage(periode_z.periode) ||
       saisie_prelevement === null ||
       saisie_prelevement === "" ||
+      Number(fdcaisse_new.replace(',','.'))<0 ||
       periode_z.standby > 0 ||
       periode_z.cmdtoarchive.length === 0
     );

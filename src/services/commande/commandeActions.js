@@ -21,11 +21,11 @@ function getCommandesList(params = {}) {
   return (dispatch) => {
     dispatch({ type: commandeActionTypes.GET_COMMANDESLIST_REQUEST, params:params });
 
-    logger.time('getCommandesList');
+    // logger.time('getCommandesList');
     commandeServices
       .getCommandesList(params)
       .then((data) => {
-        logger.timeEnd('getCommandesList');
+        // logger.timeEnd('getCommandesList');
         dispatch({
           type: commandeActionTypes.GET_COMMANDESLIST_SUCCESS,
           ...data,
@@ -33,7 +33,7 @@ function getCommandesList(params = {}) {
         dispatch(clotureActions.getTodayCa());
       })
       .catch((error) => {
-        logger.timeEnd('getCommandesList');
+        // logger.timeEnd('getCommandesList');
         dispatch({
           type: commandeActionTypes.GET_COMMANDESLIST_FAILURE,
           error: error.toString(),
@@ -75,14 +75,17 @@ function getAllTicketsRestaurant() {
 }
 
 function persistTicketsRestaurants(liste) {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_REQUEST });
 
-    commandeServices.persistTicketsRestaurants(liste).then(
+
+    const { caisse } = getState().parametresReducer.parametres.options;
+
+    commandeServices.persistTicketsRestaurants(liste, caisse.uniqid).then(
       (data) => {
-        dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_SUCCESS });
-        dispatch(getAllTicketsRestaurant());
-        dispatch(notificationActions.syncDispatch("ticketrestaurant", liste));
+        dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_SUCCESS, ticketsrestau: data });
+      //  dispatch(getAllTicketsRestaurant());
+        dispatch(notificationActions.syncDispatch("ticketrestaurant", data));
       },
       (error) =>
         dispatch({
@@ -109,7 +112,7 @@ function getCommande(commandeId = null) {
     // sans id de commande, on crée une nouvelle commande
     if (null === commandeId) {
 
-      logger.time('getCommande (new)');
+      // logger.time('getCommande (new)');
       logger.log("on demande une nouvelle commande");
       const state = getState();
       const { user } = state.authentication;
@@ -118,7 +121,7 @@ function getCommande(commandeId = null) {
         operator: user,
         caisse: caisse,
       });
-      logger.timeEnd('getCommande (new)');
+      // logger.timeEnd('getCommande (new)');
       dispatch({ type: commandeActionTypes.GET_COMMANDE_SUCCESS, commande });
       //    dispatch(getNumero());
     }
@@ -126,11 +129,11 @@ function getCommande(commandeId = null) {
     else {
       logger.log("on va chercher la commande #" + commandeId);
 
-      logger.time('getCommande ('+commandeId+')');
+      // logger.time('getCommande ('+commandeId+')');
       commandeServices.getCommandeById(commandeId).then(
         (response) => {
 
-          logger.timeEnd('getCommande ('+commandeId+')');
+          // logger.timeEnd('getCommande ('+commandeId+')');
           const commande = response._cmd;
           dispatch({
             type: commandeActionTypes.GET_COMMANDE_SUCCESS,
@@ -138,7 +141,7 @@ function getCommande(commandeId = null) {
           });
         },
         (error) => {
-          logger.timeEnd('getCommande ('+commandeId+')');
+          // logger.timeEnd('getCommande ('+commandeId+')');
           dispatch({
             type: commandeActionTypes.GET_COMMANDE_FAILURE,
             error: error.toString(),
@@ -236,12 +239,12 @@ function validateCommande(payload) {
     const payloadcopy = { ...payload, localsync: [caisse.uniqid] };
     dispatch(getCommande());
 
-    logger.time('validateCommande (persist)');
+    // logger.time('validateCommande (persist)');
     commandeServices.saveCommande(payloadcopy, catalogueReducer).then(
       (confirm) => {
         //  const commande = commandeServices.getNewCommande({operator:{id: user.id, nom: user.nom}, caisse: caisse});
 
-        logger.timeEnd('validateCommande (persist)');
+        // logger.timeEnd('validateCommande (persist)');
         dispatch({
           type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS,
           commande: {},
@@ -260,11 +263,11 @@ function validateCommande(payload) {
 
         // si la caisse est une primary, elle s'occupe de la synchro avec le BO
         if (role==="primary") {
-          logger.time('validateCommande -> getCommandesToSync');
+          // logger.time('validateCommande -> getCommandesToSync');
 
           commandeServices.getCommandesToSync(10).then((results) => {
 
-            logger.timeEnd('validateCommande -> getCommandesToSync');
+            // logger.timeEnd('validateCommande -> getCommandesToSync');
 
             const { commandes, chronos } = results;
 
@@ -486,19 +489,38 @@ function addProduit(payload) {
     const tva = state.catalogueReducer.tva[payload.tva_id];
     const steps = state.catalogueReducer.steps[payload.produitid];
 
-    const composition = Object.entries(payload.composition).map(
-      ([ingid, qte]) => ({
-        ingredient: ingid,
-        qte: qte,
-        type: state.catalogueReducer.ingredients[ingid].type,
-        tva:
-          state.catalogueReducer.tva[
-            state.catalogueReducer.ingredients[ingid].tva_id
-          ],
-        prix: Number(state.catalogueReducer.ingredients[ingid].supplement),
-        nom: state.catalogueReducer.ingredients[ingid].nom,
-        fromStep: null,
-      })
+    // const composition = Object.entries(payload.composition).map(
+    //   ([ingid, qte]) => ({
+    //     ingredient: ingid,
+    //     qte: qte,
+    //     type: state.catalogueReducer.ingredients[ingid].type,
+    //     tva:
+    //       state.catalogueReducer.tva[
+    //         state.catalogueReducer.ingredients[ingid].tva_id
+    //       ],
+    //     prix: Number(state.catalogueReducer.ingredients[ingid].supplement),
+    //     nom: state.catalogueReducer.ingredients[ingid].nom,
+    //     fromStep: null,
+    //   })
+
+
+      const composition = payload.compo.map(
+        (comping) => {
+          const [ingid, qte] = Object.entries(comping)[0];
+          return {
+            ingredient: ingid,
+            qte: qte,
+            type: state.catalogueReducer.ingredients[ingid].type,
+            tva:
+              state.catalogueReducer.tva[
+                state.catalogueReducer.ingredients[ingid].tva_id
+              ],
+            prix: Number(state.catalogueReducer.ingredients[ingid].supplement),
+            nom: state.catalogueReducer.ingredients[ingid].nom,
+            fromStep: null,
+          }
+        });
+
 
       /*
 
@@ -510,7 +532,6 @@ function addProduit(payload) {
       fromStep:step.step_id,
       tva: tva
         */
-    );
     payload = { ...payload, composition };
 
     const { commandeItem, mode } = commandeServices.addProduit(
@@ -696,7 +717,7 @@ function deleteCommande(payload) {
 
           dispatch(notificationActions.syncCommandes([cmdtosync]));
 
-          dispatch(getTodayCommandesList());
+        //  dispatch(getTodayCommandesList());
         },
         (error) =>
           dispatch({
@@ -865,11 +886,11 @@ function archiveCommands(payload) {
 
     const { cmd, clotureId } = payload;
 
-    logger.time('archiveCommands');
+    // logger.time('archiveCommands');
     commandeServices.archiveCommands(cmd, clotureId).then(
       (confirm) => {
 
-       logger.timeEnd("archiveCommands");
+      //  logger.timeEnd("archiveCommands");
         dispatch({ type: commandeActionTypes.ARCHIVE_SUCCESS, ids: cmd });
         dispatch(
           notificationActions.syncDispatch("archivecommandes", {
@@ -881,7 +902,7 @@ function archiveCommands(payload) {
       },
       (error) => {
 
-        logger.timeEnd("archiveCommands");
+        // logger.timeEnd("archiveCommands");
         dispatch({
           type: commandeActionTypes.ARCHIVE_FAILURE,
           error: error.toString(),

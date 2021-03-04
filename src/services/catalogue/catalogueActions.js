@@ -159,7 +159,7 @@ function updateIngredientType(payload) {
     // (noprint)
     const filtered_update = {};
     Object.entries(update).forEach(([cle,valeur])=>{
-      if ((['noprint']).indexOf(cle)>-1) {
+      if ((['noprint','hilite']).indexOf(cle)>-1) {
         filtered_update[cle] = valeur;
       }
     });

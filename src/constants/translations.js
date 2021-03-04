@@ -31,6 +31,7 @@ const data = {
                 cancel: "Annuler",
                 clear: "Effacer",
                 save: "Enregistrer",
+                update: "Mettre à jour",
                 back: "Retour",
                 delete: "Supprimer",
                 accept: "Accepter",
@@ -206,6 +207,10 @@ const data = {
                             deprecated: {
                                 titre: 'Erreur Ticket Restaurant',
                                 texte: 'Le Ticket Restaurant est périmé.'
+                            },
+                            format: {
+                                titre: 'Erreur Ticket Restaurant',
+                                texte: 'Le code du Ticket Restaurant est erroné.'
                             }
                         },
                         avoir: {
@@ -609,6 +614,10 @@ const data = {
                     cmdnoncloturees: {
                         titre: "Commandes non clôturées",
                         texte: "Vous devez clôturer les commandes des jours précédents avant de commencer un nouveau service."
+                    },
+                    prelevement: {
+                        titre: "Erreur de prélèvement",
+                        texte: "Vous ne pouvez pas prélever plus que le contenu de la caisse."
                     }
                 }
             },
@@ -739,6 +748,7 @@ const data = {
                 catalogue: "Catalogue",
                 produits: "Produits",
                 ingredients: "Ingrédients",
+                hilite: "Surligner",
                 edit: {
                     ingredient: {
                         titre: 'Édition d’ingrédient',
@@ -1000,7 +1010,8 @@ const data = {
                                     nom: 'Nom',
                                     type: 'Template',
                                     parametre: 'Imprimé par',
-                                    kds: 'KitchenDisplay'
+                                    kds: 'KitchenDisplay',
+                                    indirect: 'Via Kds'
                                 },
                                 edition: {
                                     new: 'Nouveau ticket',
@@ -1015,9 +1026,13 @@ const data = {
                                         //  cloture_x: 'X de caisse',
                                         //  cloture_z: 'Ticket de clôture'
                                     },
+                                    template_variante: 'Variante du template de prod.',
+                                    template_variante_val: 'Activée',
                                     imprimantes: 'Imprimé par...',
                                     kds: 'KitchenDisplay',
-                                    kds_active: 'Activé'
+                                    kds_active: 'Activé',
+                                    indirect: 'Impression indirecte',
+                                    indirect_active: 'via KitchenDisplay'
                                 }
                             }
                         },
@@ -1251,6 +1266,8 @@ const data = {
                 numero: 'Cmd no ',
                 creation: 'Creee le ',
                 bipper: 'BIPPER #',
+                attach: 'ATTACHEZ MOI',
+                commande: 'CMDE',
                 mode: {
                     livraison: 'LIVRAISON',
                     surplace: 'SUR PLACE',

@@ -287,14 +287,19 @@ class Reglement extends React.Component {
     let error = "";
 
     const __value = String(value);
+    let __trValue, __trValid;
 
-    const __trValue = Number(__value.substr(11, 5)) / 100;
-    const __trValid = Number(__value.substr(16, 2));
+    if (__value.length!==24) {
+      error = "format";
+    } 
+    else {
+      __trValue = Number(__value.substr(11, 5)) / 100;
+      __trValid = Number(__value.substr(16, 2));
 
-    // const __now = new Date().getFullYear() - 2000;
+      // const __now = new Date().getFullYear() - 2000;
 
-    if (trlist.indexOf(__value) > -1) error = "yet";
-
+      if (trlist.indexOf(__value) > -1) error = "yet";
+    }
     // on supprime le test de validité (certains TR n'ont pas de date limite)
     //  if (__trValid<__now) error = 'deprecated';
 
@@ -302,9 +307,8 @@ class Reglement extends React.Component {
       this.toAddReglement("ticket", __trValue, value);
       this.setState({ trlist: [...trlist, __value] });
     } else {
-      if (error === "deprecated") {
+      // if (error === "deprecated") {
         Swal.fire({
-          type: "warning",
           title:
             strings.modules.encaissement.reglement.erreur.ticket[error].titre,
           html:
@@ -313,10 +317,11 @@ class Reglement extends React.Component {
           focusCancel: false,
           focusConfirm: true,
         });
-      }
+      // }
     }
 
-    console.log("tr", __trValue, __trValid);
+
+    console.log("tr", __value, __trValue, __trValid, error);
   }
 
   parseAvoir(value) {

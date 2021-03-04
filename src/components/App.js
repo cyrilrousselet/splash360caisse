@@ -1,6 +1,7 @@
 // @flow
 import * as React from 'react';
 import FooterCont from '../containers/FooterCont';
+import NotifierCont from '../containers/NotifierCont';
 import './../assets/scss/styles.scss'
 
 type Props = {
@@ -12,6 +13,13 @@ export default class App extends React.Component<Props> {
 
   render() {
     const { children } = this.props;
-    return <React.Fragment>{children}<FooterCont /></React.Fragment>;
+    return (
+      <React.Fragment>
+        {children}
+        <FooterCont />
+        <NotifierCont />
+      </React.Fragment>
+    );
   }
 }
+

@@ -16,6 +16,7 @@ import { commandeActions } from '../commande/commandeActions';
 import { remove } from 'diacritics';
 import { lowerCase } from 'lodash';
 import Logger from '../../helpers/Logger';
+import { commandeServices } from '../commande/commandeServices';
 const logger = new Logger();
 const removeDiacritics = remove;
 const strings = new LocalizedStrings(data);
@@ -340,12 +341,202 @@ function _getRecap(tickets, commande, catalogue, types, ingredients) {
 }
 
 
-function printCommandeTicket(quelstickets, cmd) {
+
+
+function _setCommandeToKDS(ticketsListe, cmd, state) {
+
+
+  const { catalogue, steps, ingredients, ingredientTypes } = state.catalogueReducer;
+  const { options, peripheriques } = state.parametresReducer.parametres;
+  const { clients } = state.clientsReducer;
+
+  const kds_url = options.role==='secondary' ? (peripheriques.kdsurl || options.primary) : (peripheriques.kdsurl || 'http://localhost');
+  const clt = cmd.client ? clients.find(c=>c.client_id===cmd.client.client_id) : null;
+
+  const ticketsKDS = ticketsListe.filter(t => (['partiel', 'principal']).indexOf(t.template)>-1 && (t.kds!==undefined && t.kds===true));
+  
+  // y a-t-il KDS d'activé pour un des ticket de la liste ?
+  if (ticketsKDS.length>0) {
+
+    let __origine = cmd.caisse.type || "caisse";
+    if (lowerCase(cmd.caisse.nom).indexOf('borne')>-1) __origine = 'borne';
+
+    const __cmt = cmd.comments.find(c => c.item==null && c.ingredient==null);
+
+    // gestion du numéro de commande (s'il en a un, sinon -> ticketId)
+    let cmdnumero = cmd.ticketId;
+    if (cmd.numero) {
+      // si le numéro doit être affiché en hexadécimal
+      if (cmd.numero.hex===true) {
+        cmdnumero = cmd.numero.value.toString(16);
+      }
+      else {
+        cmdnumero = cmd.numero.value;
+      }
+    }
+
+    // URL de réponse du kds : 
+    // si caisse secondary : url de la primary
+    // si caisse primary : caisse_ip ou à défaut localhost
+    const __responseurl = options.role==='secondary' ? options.primary : (options.caisse.url || 'http://localhost');
+
+    let kdsCmd = {
+      id: cmd.ticketId,
+      label_id: (cmd.hasOwnProperty('uber')) ? cmd.uber.display_id : cmdnumero,
+      ticket_id: cmd.ticketId,
+      origine: __origine,
+      name: clt ? `${clt.prenom} ${clt.nom}`: '',
+      mode: cmd.mode, // attention
+      comment: __cmt ? __cmt.texte : '',
+      timestamp: 1,
+      status: 0,
+      commande_status: cmd.status,
+      endTime: '',
+      careTime: '',
+      items: [],
+      confirmurl: __responseurl+':3300/chrono',
+      printurl: __responseurl+':3300/printticket',
+    }
+
+
+
+    cmd.items.forEach(article => {
+
+      let articleIngredients = [];
+      let ingredientsAsProducts = [];
+
+
+      const inglist = [...article.composition, ...article.ingredients];
+    
+    
+      const prd = _getProduit(article.produitid, catalogue);
+
+      // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
+
+      const prdnoprint = prd.noprint!=null ? prd.noprint : catalogue[prd.groupe].noprint;
+
+      const zones = ticketsKDS.filter(t => (prdnoprint.length===0 || prdnoprint.find(p=>p===t.ticket_id)===undefined) );
+
+    
+      inglist.forEach((ing, ii) => {
+
+        const ingnoprint = ingredients[ing.ingredient].noprint!=null ? ingredients[ing.ingredient].noprint : ingredientTypes[ing.type].noprint;
+        // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
+        const zonesi = ticketsKDS.filter(t => ingnoprint.length===0 || ingnoprint.find(p=>p===t.ticket_id)===undefined );
+        
+        // on supprime les zones qui ne sont pas dans la liste des zones du produit
+        const zonesifiltred = zonesi.filter(iz => zones.find(pz => pz.ticket_id===iz.ticket_id)!==undefined);
+        
+        const zonesilist = zonesifiltred.map(z => {
+          return {
+            name: z.ticket_id, 
+            status: 0, 
+            handledBy: null
+          }
+        });
+
+        // commentaire sur l'ingredient
+        const __ingcmt = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient);
+
+        let __iweight = -1;
+        // ordre des ingrédients : d'abord la composition puis les ingrédients dans l'ordre de leur step
+        if (ing.fromStep!==null) {
+          const iistep = steps[article.produitid].find(s=>s.step_id===ing.fromStep);
+          if (iistep) {
+            __iweight = iistep.weight;
+          }
+        }
+
+      //  if (ing.fromStep!=null) {
+        if (ingredients[ing.ingredient].asproduct) {
+          ingredientsAsProducts.push({
+            quantity: ing.qte * article.quantite,
+            productName: ing.nom,
+            subItems: [],
+            zones: zonesilist.length>0 ? zonesilist : [],
+            comment: __ingcmt ? __ingcmt.texte : ''
+          });
+        } else {
+          articleIngredients.push({
+            quantity: ing.qte * article.quantite,
+            subProductName: ing.nom,
+            zones: zonesilist.length>0 ? zonesilist : [],
+            comment: __ingcmt ? __ingcmt.texte : '',
+            weight: __iweight
+          });
+        }
+      //  }
+      });
+
+
+
+    
+
+      // si le groupe de produits ne doit pas s'imprimer sur ce ticket
+      // let __anoprint = catalogue[prd.groupe].noprint.find(p=>p===ticket.ticket_id);
+
+      // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
+      let __noprintableingredient =  (inglist.length>0 && articleIngredients.length===0);
+
+      // commentaire sur l'article
+      const __itmcmt = cmd.comments.find(c => c.item===article.itemid && (c.ingredient===null || c.ingredient===undefined));
+
+      
+      const zoneslist = zones.map(z => {
+        return {
+          name: z.ticket_id, 
+          status: 0, 
+          handledBy: null
+        }
+      })
+      
+      // if (!__anoprint && !__noprintableingredient) {
+      if (!__noprintableingredient) {
+        kdsCmd.items.push({
+          quantity: article.quantite,
+          productName: article.nom,
+          subItems: articleIngredients,
+          zones: zoneslist.length>0 ? zoneslist : [],
+          comment: __itmcmt ? __itmcmt.texte : ''
+        });        
+      }
+      if (ingredientsAsProducts.length>0) {
+        kdsCmd.items = [...kdsCmd.items, ...ingredientsAsProducts];
+      }
+
+    });
+
+    peripheralServices.setCommandeToKDS(kdsCmd, kds_url);
+  
+  }
+  else {
+    logger.log('ordre d’impression non concerné par le KDS');
+  }
+}
+
+
+function printTicketFromAPI(payload) {
+  return async (dispatch, getState) => {
+
+    const { ticketId, zoneId } = payload;
+    try {
+      const commande = await commandeServices.getCommandeById(ticketId);
+      dispatch(printCommandeTicket({ids:[zoneId]}, commande._cmd, true));
+    }
+    catch(error) {
+      logger.log('printTicketFromAPI', `commande #${ticketId} introuvable`);
+    }
+
+  }
+}
+
+
+function printCommandeTicket(quelstickets, cmd, nokds=false) {
   return (dispatch, getState) => {
 
     const state = getState();
 
-    logger.time('printCommandeTicket()');
+    // logger.time('printCommandeTicket()');
 
 
    // const cmd = state.commandeReducer.commande;
@@ -353,7 +544,7 @@ function printCommandeTicket(quelstickets, cmd) {
     const ingredients = state.catalogueReducer.ingredients;
     const {catalogue, steps} = state.catalogueReducer;
     const { imprimantes, tickets } = state.peripheralReducer;
-    const { peripheriques, entreprise, options } = state.parametresReducer.parametres;
+    const { entreprise } = state.parametresReducer.parametres;
   //  const { impression } = peripheriques;
     const { clients } = state.clientsReducer;
 
@@ -377,8 +568,7 @@ function printCommandeTicket(quelstickets, cmd) {
     let target_imprimantes = [];
   //  let impression_ordre = {};
 
-    let ticket = {};
-
+  
     let template = [];
 
 
@@ -398,161 +588,25 @@ function printCommandeTicket(quelstickets, cmd) {
 
     // récup de la liste des tickets à imprimer
     const ticketsListe = _getTicketsToPrint(quelstickets, tickets);
-    const ticketsKDS = ticketsListe.filter(t => (['partiel', 'principal']).indexOf(t.template)>-1 && (t.kds!==undefined && t.kds===true));
     const recapTickets = _getRecap(ticketsListe.filter(t => 'partiel' === t.template), cmd, catalogue, types, ingredients);
 
     logger.log('ticketsListe', ticketsListe);
 
-    // y a-t-il KDS d'activé pour un des ticket de la liste ?
-    const withKds = ticketsKDS.length>0;
-    if (withKds) {
-
-      const kds_url = options.role==='secondary' ? (peripheriques.kdsurl || options.primary) : (peripheriques.kdsurl || 'http://localhost');
-      const clt = cmd.client ? clients.find(c=>c.client_id===cmd.client.client_id) : null;
-
-
-      let __origine = cmd.caisse.type || "caisse";
-      if (lowerCase(cmd.caisse.nom).indexOf('borne')>-1) __origine = 'borne';
-
-      const __cmt = cmd.comments.find(c => c.item==null && c.ingredient==null);
-
-
-      // URL de réponse du kds : 
-      // si caisse secondary : url de la primary
-      // si caisse primary : caisse_ip ou à défaut localhost
-      const __responseurl = options.role==='secondary' ? options.primary : (options.caisse.url || 'http://localhost');
-
-      let kdsCmd = {
-        id: cmd.ticketId,
-        label_id: (quelstickets==='all_uber') ? cmd.uber.display_id : cmdnumero,
-        ticket_id: cmd.ticketId,
-        origine: __origine,
-        name: clt ? `${clt.prenom} ${clt.nom}`: '',
-        mode: cmd.mode, // attention
-        comment: __cmt ? __cmt.texte : '',
-        timestamp: 1,
-        status: 0,
-        commande_status: cmd.status,
-        endTime: '',
-        careTime: '',
-        items: [],
-        confirmurl: __responseurl+':3300/chrono'
-      }
-
-   
-
-      cmd.items.forEach(article => {
-
-        let articleIngredients = [];
-        let ingredientsAsProducts = [];
-
-
-        const inglist = [...article.composition, ...article.ingredients];
-       
-       
-        const prd = _getProduit(article.produitid, catalogue);
-
-        // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-
-        const prdnoprint = prd.noprint!=null ? prd.noprint : catalogue[prd.groupe].noprint;
-
-        const zones = ticketsKDS.filter(t => (prdnoprint.length===0 || prdnoprint.find(p=>p===t.ticket_id)===undefined) );
-
-       
-        inglist.forEach((ing, ii) => {
-
-          const ingnoprint = ingredients[ing.ingredient].noprint!=null ? ingredients[ing.ingredient].noprint : types[ing.type].noprint;
-          // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-          const zonesi = ticketsKDS.filter(t => ingnoprint.length===0 || ingnoprint.find(p=>p===t.ticket_id)===undefined );
-          
-          // on supprime les zones qui ne sont pas dans la liste des zones du produit
-          const zonesifiltred = zonesi.filter(iz => zones.find(pz => pz.ticket_id===iz.ticket_id)!==undefined);
-          
-          const zonesilist = zonesifiltred.map(z => {
-            return {
-              name: z.ticket_id, 
-              status: 0, 
-              handledBy: null
-            }
-          });
-
-          // commentaire sur l'ingredient
-          const __ingcmt = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient);
-
-          let __iweight = -1;
-          // ordre des ingrédients : d'abord la composition puis les ingrédients dans l'ordre de leur step
-          if (ing.fromStep!==null) {
-            const iistep = steps[article.produitid].find(s=>s.step_id===ing.fromStep);
-            if (iistep) {
-              __iweight = iistep.weight;
-            }
-          }
-
-        //  if (ing.fromStep!=null) {
-          if (ingredients[ing.ingredient].asproduct) {
-            ingredientsAsProducts.push({
-              quantity: ing.qte * article.quantite,
-              productName: ing.nom,
-              subItems: [],
-              zones: zonesilist.length>0 ? zonesilist : [],
-              comment: __ingcmt ? __ingcmt.texte : ''
-            });
-          } else {
-            articleIngredients.push({
-              quantity: ing.qte * article.quantite,
-              subProductName: ing.nom,
-              zones: zonesilist.length>0 ? zonesilist : [],
-              comment: __ingcmt ? __ingcmt.texte : '',
-              weight: __iweight
-            });
-          }
-        //  }
-        });
-
-
+    // envoi de la commande au serveur KDS (sauf si nokds==true)
+    if (!nokds) _setCommandeToKDS(ticketsListe, cmd, state);
     
-       
-
-        // si le groupe de produits ne doit pas s'imprimer sur ce ticket
-        let __anoprint = catalogue[prd.groupe].noprint.find(p=>p===ticket.ticket_id);
-
-        // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
-        let __noprintableingredient =  (inglist.length>0 && articleIngredients.length===0);
- 
-        // commentaire sur l'article
-        const __itmcmt = cmd.comments.find(c => c.item===article.itemid && (c.ingredient===null || c.ingredient===undefined));
-
-        
-        const zoneslist = zones.map(z => {
-          return {
-            name: z.ticket_id, 
-            status: 0, 
-            handledBy: null
-          }
-        })
-        
-        if (!__anoprint && !__noprintableingredient) {
-          kdsCmd.items.push({
-            quantity: article.quantite,
-            productName: article.nom,
-            subItems: articleIngredients,
-            zones: zoneslist.length>0 ? zoneslist : [],
-            comment: __itmcmt ? __itmcmt.texte : ''
-          });        
-        }
-        if (ingredientsAsProducts.length>0) {
-          kdsCmd.items = [...kdsCmd.items, ...ingredientsAsProducts];
-        }
-
-      });
-
-      peripheralServices.setCommandeToKDS(kdsCmd, kds_url);
-
-    }
 
 
     // pour chaque ticket à imprimer, on prépare les params et contenus
-    const tckToPrint = ticketsListe.filter(t=>t.imprimantes.length>0);
+    let tckToPrint = ticketsListe.filter(t=>t.imprimantes.length>0);
+
+    // on filtre les tickets à impression indirecte (c.-à-d. déclenchée par le KDS)
+    // sauf si l'impression est déclenchée par le KDS
+    if (!nokds) {
+      tckToPrint = tckToPrint.filter(t => !t.indirect);
+      logger.log('liste de tickets à impression directe', tckToPrint);
+    }
+
     let noarticle = false;
     tckToPrint.forEach(ticket => {
 
@@ -870,7 +924,7 @@ function printCommandeTicket(quelstickets, cmd) {
       else if (ticket.template==="partiel") {
         
         // -> template ticket
-        template = templates.partiel;
+        template = (ticket.hasOwnProperty('variante')) ? templates.partiel[ticket.variante] : templates.partiel[1];
 
         let __comment = null;
         let articles = [];
@@ -878,6 +932,7 @@ function printCommandeTicket(quelstickets, cmd) {
 
           let articleIngredients = [];
           let ingredientsAsProducts = [];
+          let ingredientTypes = [];
 
 
           const inglist = [...article.composition, ...article.ingredients];
@@ -913,6 +968,16 @@ function printCommandeTicket(quelstickets, cmd) {
 
 
             if (!__noprint) {
+
+              if (ingredientTypes.findIndex(t=>t.id===ing.type)===-1) {
+                ingredientTypes.push({
+                  id: ing.type, 
+                  nom: types[ing.type].nom,
+                  hilite: (types[ing.type].hasOwnProperty('hilite')) ? types[ing.type].hilite : false,
+                  ingredients: [],
+                });
+              }
+
               if (ingredients[ing.ingredient].asproduct) {
                 ingredientsAsProducts.push({
                     qte: ing.qte * article.quantite,
@@ -924,6 +989,7 @@ function printCommandeTicket(quelstickets, cmd) {
                 articleIngredients.push({
                   qte: ing.qte * article.quantite,
                   nom: removeDiacritics(ing.nom),
+                  type: ing.type,
                   weight: __ingweight,
                   comment: __comment ? removeDiacritics(__comment.texte) : ''
                 });
@@ -932,6 +998,14 @@ function printCommandeTicket(quelstickets, cmd) {
           });
 
           articleIngredients.sort((a,b)=>a.weight-b.weight);
+
+
+          articleIngredients.forEach(ing => {
+            let __tidx = ingredientTypes.findIndex(it=>it.id===ing.type);
+            ingredientTypes[__tidx].ingredients.push(ing);
+          })
+
+
 
           // commentaire pour l'article :
           __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
@@ -954,6 +1028,7 @@ function printCommandeTicket(quelstickets, cmd) {
               qte: article.quantite,
               nom: removeDiacritics(article.nom),
               ingredients: articleIngredients,
+              types: ingredientTypes,
               comment: __comment ? removeDiacritics(__comment.texte) : ''
             });        
           }
@@ -990,7 +1065,8 @@ function printCommandeTicket(quelstickets, cmd) {
           },
           nomticket: ticket.nom,
           detail: cmdpartiel,
-          strings: strings.tickets.production
+          strings: strings.tickets.production,
+          logo: logo,
         }
 
 
@@ -999,7 +1075,7 @@ function printCommandeTicket(quelstickets, cmd) {
         
         noarticle = false;
 
-        template = templates.principal;
+        template = (ticket.hasOwnProperty('variante')) ? templates.principal[ticket.variante] : templates.principal[1];
 
         let __comment = null;
         let articles = [];
@@ -1007,6 +1083,7 @@ function printCommandeTicket(quelstickets, cmd) {
 
           let articleIngredients = [];
           let ingredientsAsProducts = [];
+          let ingredientTypes = [];
 
        //   article.ingredients.forEach(ing => {
           const inglist = [...article.composition, ...article.ingredients];
@@ -1042,6 +1119,17 @@ function printCommandeTicket(quelstickets, cmd) {
             __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient);
 
             if (!__noprint) {
+
+
+              if (ingredientTypes.findIndex(t=>t.id===ing.type)===-1) {
+                ingredientTypes.push({
+                  id: ing.type, 
+                  nom: types[ing.type].nom,
+                  hilite: (types[ing.type].hasOwnProperty('hilite')) ? types[ing.type].hilite : false,
+                  ingredients: [],
+                });
+              }
+
               if (ingredients[ing.ingredient].asproduct) {
                 ingredientsAsProducts.push({
                     qte: ing.qte * article.quantite,
@@ -1054,6 +1142,7 @@ function printCommandeTicket(quelstickets, cmd) {
                   qte: ing.qte * article.quantite,
                   nom: removeDiacritics(ing.nom),
                   weight: __ingweight,
+                  type: ing.type,
                   comment: __comment ? removeDiacritics(__comment.texte) : ''
                 });
               }
@@ -1061,6 +1150,12 @@ function printCommandeTicket(quelstickets, cmd) {
           });
 
           articleIngredients.sort((a,b)=>a.weight-b.weight);
+
+
+          articleIngredients.forEach(ing => {
+            let __tidx = ingredientTypes.findIndex(it=>it.id===ing.type);
+            ingredientTypes[__tidx].ingredients.push(ing);
+          })
 
           // commentaire pour l'article :
           __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
@@ -1084,6 +1179,7 @@ function printCommandeTicket(quelstickets, cmd) {
               qte: article.quantite,
               nom: removeDiacritics(article.nom),
               ingredients: articleIngredients,
+              types: ingredientTypes,
               comment: __comment ? removeDiacritics(__comment.texte) : ''
             });     
           } 
@@ -1121,7 +1217,8 @@ function printCommandeTicket(quelstickets, cmd) {
           nomticket: ticket.nom,
           detail: cmdprincipal,
           strings: strings.tickets.production,
-          recap: recapTickets
+          recap: recapTickets,
+          logo: logo,
         }
 
       }
@@ -1223,16 +1320,17 @@ function printCommandeTicket(quelstickets, cmd) {
 
       }
 
+
       if (noarticle) {
         dispatch({ type: peripheralActionTypes.NOPRINT_TICKET, template: template, reason: 'no article' });
 
-        logger.timeEnd('printCommandeTicket()');
+        // logger.timeEnd('printCommandeTicket()');
       } else {
 
         peripheralServices.printTicket(target_imprimantes[0], template, contenu)
         .then(
           response => {
-            logger.timeEnd('printCommandeTicket()');
+            // logger.timeEnd('printCommandeTicket()');
             logger.log(response);
           }
         )
@@ -1361,7 +1459,12 @@ function printCloture(payload={}) {
     const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
 
     
-    const { tresorslist } = financier.fonddecaisse_activation ? await tresorServices.getServiceMouvements( {caisseId: caisse.uniqid, debut: new Date(debut).getTime()} ) : {tresorslist: null};
+    const { tresorslist } = 
+      financier.fonddecaisse_activation 
+      ? ( caisse 
+        ? await tresorServices.getServiceMouvements( {caisseId: caisse.uniqid, debut: new Date(debut).getTime()} ) 
+        : {tresorslist: null} ) 
+      : {tresorslist: null};
 
 
 
@@ -1412,6 +1515,7 @@ export const peripheralActions = {
   updateTicket,
   deleteTicket,
   createTicket,
+  printTicketFromAPI,
   printCommandeTicket,
   printTicket,
   printPeriodeX,

@@ -87,13 +87,15 @@ function TicketX(props) {
       <div className="periode" key="periode-hdr">
         <div className="ttl" key="periode-ttl">{ __strimp.periode.titre }</div>
         <div className="val" key="periode-val">{ `${format(new Date(periode.debut), "dd/MM/yyyy - HH:mm:ss", { locale: frLocale })}  ->  ${format(new Date(periode.fin), "dd/MM/yyyy - HH:mm:ss", { locale: frLocale })}` }</div>
-        { periode.editeur && <div className="editeur" key="periode-editeur">{ `${__strimp.editeur} ${periode.editeur.nom} (${periode.editeur.id})` }</div>}
+        { periode.editeur && <div className="editeur" key="periode-editeur">{ `${__strimp.editeur} ${ periode.editeur.nom }` }</div>}
       </div>
       <div className="sel" key="sel-hdr">
-        {(periode.vendeurs.length>1) && (<div className="val" key="sel-val1">{ `${__strimp.vendeurs[1]}${strings.vendeurs_all}` }</div>)}
-        {(periode.vendeurs.length===1) && (<div className="val" key="sel-val1">{ `${__strimp.vendeurs[0]}${periode.vendeurs[0].nom} (${periode.vendeurs[0].id})` }</div>)}
-        {(periode.caisses.length>1) && (<div className="val" key="sel-val2">{ `${__strimp.caisses[1]}${strings.caisses_all}` }</div>)}
-        {(periode.caisses.length===1) && (<div className="val" key="sel-val2">{ `${__strimp.caisses[0]}${periode.caisses[0].nom} (${periode.caisses[0].id})` }</div>)}
+        {(periode.vendeurs.length>1 || periode.vendeurs.length===0) && (<div className="val" key="sel-val1">{ `${__strimp.vendeurs[1]}${__strimp.vendeurs_all}` }</div>)}
+        {(periode.vendeurs.length===1) && (<div className="val" key="sel-val1">{ `${__strimp.vendeurs[0]}${periode.vendeurs[0].nom}` }</div>)}
+        {periode.caisses.length>0 && (<div className="val" key="sel-val2">{ `${__strimp.caisses[(periode.caisses.length>1?1:0)]}${periode.caisses.join(', ')}` }</div>)}
+        {periode.caisses.length===0 && (<div className="val" key="sel-val2">{ `${__strimp.caisses[0]}${periode.caisse.nom}` }</div>)}
+        {/* {(periode.caisses.length>1 || periode.caisses.length===0) && (<div className="val" key="sel-val2">{ `${__strimp.caisses[1]}${__strimp.caisses_all}` }</div>)} */}
+        {/* {(periode.caisses.length===1) && (<div className="val" key="sel-val2">{ `${__strimp.caisses[0]}${periode.caisses[0].nom} (${periode.caisses[0].id})` }</div>)} */}
       </div>
       <div className="recap" key="recap-hdr">
         <div className="recap-item" key="recap-item-1">
@@ -149,7 +151,7 @@ function TicketX(props) {
       </div>
       {periode.ventilation.vendeur.map(vendeur => (
         <div className="ventil ventil-vendeur" key={`vnd-${vendeur.id}`}>
-          <div className="ventil-nom" key={`vnd-${vendeur.id}-nom`}>{`${vendeur.nom} (${vendeur.id})`}</div>
+          <div className="ventil-nom" key={`vnd-${vendeur.id}-nom`}>{ vendeur.nom }</div>
           <div className="ventil-val" key={`vnd-${vendeur.id}-val1`}>{devise(vendeur.ventes)}</div>
           <div className="ventil-val" key={`vnd-${vendeur.id}-val2`}>{`-${devise(vendeur.remboursements)}`}</div>
           <div className="ventil-val" key={`vnd-${vendeur.id}-val3`}>{devise(vendeur.ventes-vendeur.remboursements)}</div>
@@ -507,20 +509,27 @@ class ListeClotures extends React.Component {
         // récup de la liste des vendeurs
         // s'il n'y a qu'un seul vendeur dans la période et dans la liste
         // on vérifie si c'est le même
-        if (periode.vendeurs.length===1 && __vnd.length===1) {
+        if ((periode.vendeurs && periode.vendeurs.length===1) && __vnd.length===1) {
           let __v = __vnd.filter(v => v.id===periode.vendeurs[0].id);
           if (__v) __vnd = __v;
         } else {
           __vnd = __vnd.concat(periode.vendeurs);
         }
+
+
         // récup de la liste des caisses
         // s'il n'y a qu'une seule caisses dans la période et dans la liste
         // on vérifie si c'est la même
-        if (periode.caisses.length===1 && __csh.length===1) {
-          let __c = __csh.filter(c => c.id===periode.caisses[0].id);
-          if (__c) __csh = __c;
-        } else {
-          __csh = __csh.concat(periode.caisses);
+
+        // if ((periode.caisses && periode.caisses.length===1) && __csh.length===1) {
+        //   let __c = __csh.filter(c => c.id===periode.caisses[0].id);
+        //   if (__c) __csh = __c;
+        // } else {
+        //   __csh = __csh.concat(periode.caisses);
+        // }
+
+        if (periode.caisse) {
+          if (!__csh.includes(periode.caisse.nom)) __csh = [...__csh, periode.caisse.nom];
         }
 
         // addition des dépenses

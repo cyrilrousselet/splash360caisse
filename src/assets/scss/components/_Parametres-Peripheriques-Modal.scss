@@ -94,6 +94,7 @@
       }
     }
     .imprimantes-liste,
+    .template-variante,
     .kds {
       padding-top: 15px;
       width: 100%;
@@ -104,6 +105,9 @@
         font-size: 14px;
         color: $noir;
         @include font-smoothing(on);
+        &.disabled {
+          opacity: .5;
+        }
       }
       .liste-liste {
         padding: 15px;
@@ -118,6 +122,18 @@
           width: auto;
         }
       }
+    }
+    .template-variante {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
+    }
+    .kds {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
     }
   }
   .footer{
