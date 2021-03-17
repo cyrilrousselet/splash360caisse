@@ -7,6 +7,7 @@ escpos.USB = require('escpos-usb');
 escpos.Network = require('escpos-network');
 escpos.SerialPort = require('escpos-serialport');
 const statuses = require('escpos/statuses');
+const iconv = require('iconv-lite');
 
 const {PrinterStatus,OfflineCauseStatus,ErrorCauseStatus,RollPaperSensorStatus} = statuses;
 const _ = require('escpos/commands');
@@ -28,6 +29,16 @@ const actions = {
   quitApp: (req,res) => {
     log.info('QUIT APP');
     app.quit();
+  },
+
+  printLabel: (req, res) => {
+
+    const { imprimante } = req.payload;
+
+    log.info('printLabel');
+
+    
+
   },
 
 
@@ -389,7 +400,7 @@ function _doPrintTicket(imprimante, template, contenu) {
 
             // une fois le logo chargé on lance l'impression des sections du tickets
             if (printimage) {
-            _launchPrint(template, printer, contenu);
+            _launchPrint(template, printer, contenu, imprimante.config);
             }
           }
 
@@ -412,8 +423,11 @@ function _doPrintTicket(imprimante, template, contenu) {
         if (error) {
           log.error(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`, error.message);
         } else {
+
+          log.info(`DEVICE OPEN (${imprimante.connexion}: ${imprimante.param})`);
+
           printerOpen = true;
-          _launchPrint(template, printer, contenu);
+          _launchPrint(template, printer, contenu, imprimante.config);
         }
       });
     } else {
@@ -455,7 +469,7 @@ function _printErrorHandler(error, methodName, printer) {
   _closePrinter(printer);
 }
 
-function _launchPrint(template, printer, contenu) {
+function _launchPrint(template, printer, contenu, config={}) {
 
   log.debug('_launchPrint()');
 
@@ -598,7 +612,7 @@ function _launchPrint(template, printer, contenu) {
     }
     else if ('etiquette' === section) {
       try {
-        _printEtiquettes(printer, contenu);
+        _printEtiquettes(printer, contenu, config);
       } catch(e) {
         _printErrorHandler(e, '_printEtiquettes', printer);
       }
@@ -619,40 +633,94 @@ function _launchPrint(template, printer, contenu) {
   });
 }
 
-function _printEtiquettes(printer, data) {
+function _printEtiquettes(printer, data, config) {
 
 
-  log.info('_printEtiquette', data);
+  log.info('_printEtiquette');
+  
+  // printer.raw('');
+
+  const __r = 0.04; // <- 1 mm / dots
+  const params = config || {
+                            resolution: 200,
+                            width: 55,
+                            height: 35,
+                            gap: 5
+                          };
+
+  let _mm = params.resolution * __r;
+  let __w = params.width * _mm;
+  let __h = params.height * _mm;
+
+  log.info('width',__w);
+  log.info('height',__h);
+
+  // const test = [
+  //   'SIZE ' + params.width + ' mm,' + params.height + ' mm',
+  //   'GAP ' + params.gap + ' mm,0',
+  //   'DIRECTION 1,0',
+  //   'CLS',
+  //   'TEXT 10,10,"2",0,2,2,"#25"',
+  //   'TEXT 150,10,"2",0,1,1,"20/04/21 - 12:32"',
+  //   'BAR 10,50,' + (__w - 20) + ',4',
+  //   // 'TEXT 10,70,"2",0,1,1,"A EMPORTER"',
+  //   'TEXT 10,70,"2",0,2,2,"MENU B1"',
+  //   // 'BLOCK 10,145,' + (__w - 20) + ',' + (__h - 155) + ',"1",0,1,1,"cheeseburger, frites, barbecue, cheesy, cheddar, cheeseburger, frites, barbecue, cheesy, cheddar, cheeseburger, frites, barbecue"',
+  //   'TEXT 10,145,"1",0,1,1,"cheeseburger, frites, barbecue, cheesy, cheddar, cheeseburger, frites, barbecue, cheesy, cheddar, cheeseburger, frites, barbecue"',
+  //   'PRINT 1'];
+
+  
+  // const feed = iconv.encode(test.join("\n"),"Cp850"); 
+  
+  // // log.info('feed',feed);
+
+
+  // printer.print(feed);
+
+
+  let __job = [];
 
   data.articles.forEach(art => {
 
     const inglist = art.ingredients.map(ing => ing.qte+'x '+ing.nom.toLowerCase());
 
-    printer
-    .font('A')
-    .align('CT')
-    .style('B')
-    .fontSize('normal')
-    .tableCustom([
-      {text:'#'+data.numero, align:'LEFT', cols:6, style:'B'},
-      {text:'', cols:3},
-      {text:data.mode, align:'CENTER', cols:10, style:'NORMAL'},
-      {text:'', cols:2},
-      {text:data.date, align:'RIGHT', cols:21, style:'NORMAL'}
-    ])
-    .fontSize('4square')
-    .tableCustom([
-      {text: art.nom, align:'LEFT', cols:42, style:'B'}
-    ])
-    .size(0.5,0.5)
-    .tableCustom([
-      {text: inglist.join(', '), align:'LEFT', cols:42, style:'NORMAL'}
-    ])
-    .feed(1)
-    .cut();
+    let __printlist = [
+      'SIZE ' + params.width + ' mm,' + params.height + ' mm',
+      'GAP ' + params.gap + ' mm,0',
+      'DIRECTION 1,0',
+      'CLS'
+    ];
 
+    const __num = ('TEXT 10,10,"2",0,2,2,"#%NUMERO%"').replace('%NUMERO%', data.numero);
+    __printlist.push(__num);
+
+    const __date = ('TEXT 150,10,"2",0,1,1,"%DATETIME%"').replace('%DATETIME%', data.date);
+    __printlist.push(__date);
+
+    __printlist.push('BAR 10,50,' + (__w - 20) + ',4');
+
+    const __prd = ('TEXT 10,70,"2",0,2,2,"%PRD%"').replace('%PRD%',art.nom);
+    __printlist.push(__prd);
+
+    let __y = 115;
+
+    const __ingline = 'TEXT 15,%Y%,"2",0,1,1,"* %ING%"';
+    inglist.forEach(ing=> {
+      __printlist.push(__ingline.replace('%Y%', __y).replace('%ING%',ing));
+      __y += 24;
+    });
+
+    __printlist.push('PRINT 1');
+
+  
+    __job = [...__job, ...__printlist];
 
   });
+
+
+  const feed = iconv.encode(__job.join("\n"),"Cp850"); 
+  
+  printer.print(feed);
 
 }
 
