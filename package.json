@@ -2,7 +2,7 @@
     "name": "splash360",
     "productName": "Splash360",
     "description": "Cash application",
-    "version": "0.1.2106131652",
+    "version": "0.1.210760120",
     "private": true,
     "author": {
         "name": "Splash360",
@@ -12,7 +12,7 @@
     "build": {
         "appId": "fr.splash360.splash",
         "productName": "Splash360",
-        "copyright": "Copyright © 2020 Splash360",
+        "copyright": "Copyright © 2021 Splash360",
         "mac": {
             "icon": "build/icon.icns",
             "category": "public.app-category.business"

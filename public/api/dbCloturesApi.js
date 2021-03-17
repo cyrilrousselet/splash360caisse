@@ -256,7 +256,7 @@ async function _setSynced(ids, datetime) {
     const doc = c;
 
     doc.sync = __datetime;
-    doc.updatedAt = __datetime;
+  //  doc.updatedAt = __datetime;
 
     // on en profite pour vider la propriété cmdtoarchive de chaque cloture synchronisée
     doc.cmdtoarchive = [];

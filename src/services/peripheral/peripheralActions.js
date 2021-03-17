@@ -519,12 +519,21 @@ function printTicketFromAPI(payload) {
   return async (dispatch, getState) => {
 
     const { ticketId, zoneId } = payload;
-    try {
-      const commande = await commandeServices.getCommandeById(ticketId);
-      dispatch(printCommandeTicket({ids:[zoneId]}, commande._cmd, true));
-    }
-    catch(error) {
-      logger.log('printTicketFromAPI', `commande #${ticketId} introuvable`);
+
+    const { tickets } = getState().peripheralReducer;
+
+    const _tck = tickets[zoneId];
+
+    if (_tck.hasOwnProperty('indirect') && _tck.indirect===true) { 
+      try {
+        const commande = await commandeServices.getCommandeById(ticketId);
+        dispatch(printCommandeTicket({ids:[zoneId]}, commande._cmd, true));
+      }
+      catch(error) {
+        logger.log('printTicketFromAPI', `commande #${ticketId} introuvable`);
+      }
+    } else {
+      logger.log('printTicketFromAPI', 'pas d’impression indirecte pour ce ticket');
     }
 
   }

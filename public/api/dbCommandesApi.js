@@ -198,6 +198,8 @@ const actions = {
     let _n = 0;
     if (db=='ticketsrestau') {
 
+      _n = await _addTicketsLocalSync(ids,from);
+
     } else {
       _n = await _addCommandesLocalSync(ids,from);
     }
@@ -217,7 +219,7 @@ async function _getCommandesToSync(limit = null) {
   const mongo = await connect();
   const criteria = {
     $and: [
-      { $or: [{ sync: {$exists: false} }, { $where: "this.updatedAt > this.sync" }] },
+      { sync: {$exists: false} },
       { $or: [{ status: "confirmed" }, { status: "deleted" }] },
     ],
   };
@@ -315,7 +317,7 @@ async function _persistCommande(payload) {
 
   if (_cmd) {
     log.info("cmd existe, donc on update");
-    _cmd = { ..._cmd, ...payload, updatedAt: __now };
+    _cmd = { ..._cmd, ...payload, updatedAt: __now, sync: null };
     delete _cmd._id;
     await CommandeModel.updateOne({ ticketId: payload.ticketId }, _cmd).exec();
   } else {
@@ -376,6 +378,7 @@ async function _setArchived(ids, clotureId) {
     const doc = c;
     doc.archived = clotureId;
     doc.updatedAt = __now;
+    doc.sync = null;
 
     await CommandeModel.updateOne({ ticketId: doc.ticketId }, doc).exec();
     log.info("Commande archived: ", doc.id);
@@ -398,7 +401,7 @@ async function _setSynced(ids, datetime) {
     const doc = c;
 
     doc.sync = __datetime;
-    doc.updatedAt = __datetime;
+  //  doc.updatedAt = __datetime;
 
     delete doc._id;
     await CommandeModel.updateOne({ ticketId: doc.ticketId }, doc).exec();
