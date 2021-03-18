@@ -21,7 +21,17 @@ const hydration = {
 
   imprimantes: [
     { printer_id: 'imp1', nom: 'POS Printer', connexion: 'usb', param: null, encoding: 'Cp850', pardefaut: true },
-    { printer_id: 'imp2', nom: 'Network1', connexion: 'usb', param: null, encoding: 'Cp850', pardefaut: false }//,
+    { printer_id: 'imp2', nom: 'Network1', connexion: 'usb', param: null, encoding: 'Cp850', pardefaut: false },
+    {
+      printer_id: 'imp3', nom: 'Label Printer', connexion: 'usb', param: null, encoding: 'Cp850',
+      config: {
+        resolution: 200,
+        width: 55,
+        height: 35,
+        gap: 5
+      }, 
+      pardefaut: false
+    }
   ],
 
   tickets: [
