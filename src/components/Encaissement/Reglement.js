@@ -83,8 +83,9 @@ class Reglement extends React.Component {
         __t *= 10;
         break;
       default:
-        __t = __t * 10 + value / 100;
+        __t = Number(((__t * 10) + (value / 100)).toFixed(2));
     }
+    console.log('total', __t, value);
     this.setState({ total: __t, input: __i });
   }
 

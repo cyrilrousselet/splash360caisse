@@ -651,14 +651,6 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
             let __noprint = types[ing.type].noprint.find(p=>p===ticket.ticket_id);
 
-            // // ordre du type d'ingrédient
-            // let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
-            // // ordre du type d'ingrédient (défini dans les paramètres)
-            // if (impression_ordre && impression_ordre.types) {
-            //   let __typeweight = impression_ordre.types.findIndex(t=>t===ing.type);
-            //   if (__typeweight>-1) __ingweight = __typeweight;
-            // }
-
 
             let __ingweight = -1;
             // ordre des ingrédients : d'abord la composition puis les ingrédients dans l'ordre de leur step
@@ -674,15 +666,6 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient)
 
 
-            // // modificateurs pour l'ingrédient
-            // __modificateur = cmd.modificateurs.find(m => m.item==article.itemid && m.ingredient==null);
-
-            // if (__modificateur) {
-            //   total += Number(__modificateur.valeur);
-            // }
-
-
-            // let artIngTva = tva[ingredients[ing.ingredient].tva_id];
             let artIngTva = ing.tva;
 
             if (ing.fromStep!==null && !__noprint) {
@@ -691,7 +674,6 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
                 codetva: artIngTva.code,
                 nom: removeDiacritics(ing.nom),
                 pu: ing.prix===0 ? '' : Number(ing.prix).toFixed(2),
-                // prix: ing.prix==0 ? '' : (Number(ing.prix)*ing.qte).toFixed(2),
                 prix: ing.supplement===0 ? '' : Number(ing.supplement).toFixed(2),
                 weight: __ingweight,
                 comment: __comment ? removeDiacritics(__comment.texte) : '',
@@ -699,17 +681,6 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               });
             }
 
-         //   articletotal += Number(ing.supplement);
-
-
-            // // ajout et calcul de la tva pour l'ingrédient
-            // if (!cmdTva.hasOwnProperty(artIngTva.code)) {
-            //   Object.defineProperty(cmdTva, artIngTva.code, {
-            //     value: {taux:`${Number(artIngTva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
-            //     writable: true,
-            //     enumerable: true
-            //   });
-            // }
 
             // ajout et calcul de la tva pour l'ingrédient
             if (!artTva.hasOwnProperty(artIngTva.code)) {
@@ -720,7 +691,6 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               });
             }
 
-            // let iht = (Number(ing.prix)*ing.qte) / (1 + Number(artIngTva.valeur));
             let iht = Number(ing.supplement) / (1 + Number(artIngTva.valeur));
 
             artTva[artIngTva.code] = Object.assign(artTva[artIngTva.code], {
@@ -728,10 +698,6 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               ht: artTva[artIngTva.code].ht + iht,
               ttc: artTva[artIngTva.code].ttc + Number(ing.supplement)
             });
-
-            // logger.log('iht','(Number('+ing.prix+')*'+ing.qte+') / (1 + Number('+artIngTva.valeur+'))');
-            // logger.log(JSON.stringify(cmdTva));
-            
 
           });
 
@@ -741,14 +707,14 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           // commentaire pour l'article
           __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
 
-        // 
+        
           // modificateurs pour l'article
           __modificateur = cmd.modificateurs.find(m => m.item===article.itemid && m.ingredient===null);
           let amodtx = 1;
           let __montant = 0;
           if (__modificateur) {
-           // total += Number(__modificateur.valeur);
 
+            // ispc :bool (is percent)
             const ispc = String(__modificateur.valeur).substr(-1,1)==='%';
             const val = Math.abs(Number(String(__modificateur.valeur).slice(0,-1)));
             __montant = ispc ? articletotal*(val/100) : val;
@@ -779,6 +745,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           // modificateur au niveau de la tva pour les ingrédients de l'article
           if (__modificateur) {
             Object.keys(artTva).forEach(k => {
+              artTva[k].montant *= amodtx; 
               artTva[k].ht *= amodtx;
               artTva[k].ttc *= amodtx;
             });
@@ -793,7 +760,6 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             });
           }
 
-          // let ht = (Number(article.pu)*article.quantite) / (1 + Number(article.tva.valeur));
           let ht = (Number(article.pu)*article.quantite)*amodtx / (1 + Number(article.tva.valeur));
 
           cmdTva[article.tva.code] = Object.assign(cmdTva[article.tva.code], {
@@ -865,6 +831,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
           // application de la réduction aux taux de tva
           Object.entries(cmdTva).forEach(([key, value])=> {
+            cmdTva[key].montant *= modtx; 
             cmdTva[key].ht *= modtx; 
             cmdTva[key].ttc *= modtx; 
           });

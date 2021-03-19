@@ -281,6 +281,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
         // modificateur au niveau de la tva pour les ingrédients de l'article
         if (__modificateur) {
           Object.keys(artTva).forEach(k => {
+            artTva[k].montant *= amodtx;
             artTva[k].ht *= amodtx;
             artTva[k].ttc *= amodtx;
           });
@@ -353,6 +354,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
 
          // application de la réduction aux taux de tva
          Object.entries(cmdTva).forEach(([key, value])=> {
+           cmdTva[key].montant *= modtx; 
            cmdTva[key].ht *= modtx; 
            cmdTva[key].ttc *= modtx; 
          });
