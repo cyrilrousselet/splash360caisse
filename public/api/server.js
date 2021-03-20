@@ -830,7 +830,12 @@ function bulkSyncToPrimary(db, data) {
   __request.setHeader("Access-Control-Allow-Origin", "*");
   __request.setHeader("Content-Type", "application/json");
 
-  __request.write(JSON.stringify({ db, data, emitter:_emitter }));
+  const __body = JSON.stringify({ db, data, emitter:_emitter });
+
+  log.info('bulk:', __body);
+
+  __request.write(__body);
+
 
   __request.on("response", (response) => {
     response.on("data", (chunk) => {
