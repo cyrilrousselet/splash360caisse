@@ -196,6 +196,9 @@ const synchroTreatment = (db, data, emitter = null, response = null) => {
       if (data!==null) {
         if (Array.isArray(data) && data.length==0) {
           log.info('synchroTreatment, empty array data', data);
+          // aucune donnée à traiter, on répond donc directement à la requête
+          responses[response].json({db:db, ids:[], from:_emitter, detail:'empty data'});
+          delete responses[response];
         } else {
           webContents.send(SYNCHRO_TREATMENT[db], { data, emitter, response });
         }
@@ -871,8 +874,14 @@ function bulkSyncToPrimary(db, data) {
       try {
         __conf = JSON.parse(__syncedData.join(""));
 
-        const {db, ids, from} = __conf;
-        synchroConfirm(db, ids, from);
+        const {db, ids, from, detail} = __conf;
+
+        if (ids.length>0) { 
+          synchroConfirm(db, ids, from);
+        }
+        else {
+          log.info('bulkSyncToPrimary','aucune donnée synchronisée à confirmer', detail)
+        }
 
       } catch (e) {
         __conf = { error: e.message };
