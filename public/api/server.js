@@ -90,7 +90,7 @@ const server = {
     //   .use(express.urlencoded({ extended: false }))
     //   .use(express.json());
     api_server
-      .use(bodyParser.urlencoded({extended:false})
+      .use(bodyParser.urlencoded({extended:false}))
       .use(bodyParser.json({limit:'50MB'}));
     api_server.get("/", (req, res) => {
       log.info("GET : " + req.query.fui);
