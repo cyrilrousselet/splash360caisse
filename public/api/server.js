@@ -836,7 +836,10 @@ async function prepareExportationToPrimary(exportation) {
   log.info('prepareExportationToPrimary E:', Object.entries(exportation).length);
 
   Object.entries(exportation).forEach(([db, items]) => {
-    if (items) bulkSyncToPrimary(db, items);
+    if (items.length>0) bulkSyncToPrimary(db, items);
+    else {
+      log.info('prepareExportationToPrimary','aucune donnée à synchroniser pour db ',db);
+    }
   });
   
 }
