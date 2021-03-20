@@ -4,6 +4,9 @@ const sync_server = express();
 const log = require("electron-log");
 const cors = require("cors");
 const { net } = require("electron");
+const bodyParser = require('body-parser');
+const lodashId = require('lodash-id');
+
 
 const http = require("http").Server(sync_server);
 const io = require("socket.io")(http);
@@ -71,7 +74,7 @@ const SYNCHRO_TREATMENT = {
   setsyncedcommandes: "setSynchedCommandesSync",
 };
 
-let responses = [];
+let responses = {};
 
 let _emitter = null;
 let _primaryUrl = null;
@@ -85,7 +88,12 @@ const server = {
     api_server.disable("x-powered-by");
     api_server.use(cors({ origin: "*" }));
 
-    api_server.use(express.urlencoded({ extended: false })).use(express.json());
+    // api_server
+    //   .use(express.urlencoded({ extended: false }))
+    //   .use(express.json());
+    api_server
+      .use(bodyParser.urlencoded({extended:false}))
+      .use(bodyParser.json({limit:'50MB'}));
     api_server.get("/", (req, res) => {
       log.info("GET : " + req.query.fui);
       let __d = new Date();
@@ -106,13 +114,17 @@ const server = {
     api_server.post("/setcommande", (req, res) => {
       log.info("POST setcommande", req.body.data);
 
-      const response_id = responses.push(res) - 1;
+      // const response_id = responses.push(res) - 1;
+      const response_id = lodashId.createId();
+      responses[response_id] = res;
       wcont.send("setCommande", { data: req.body.data, response: response_id });
     });
     // demande de nouveau numero de commande de la part des secondaries
     api_server.post("/getnumero", (req, res) => {
       log.info("POST getnumero");
-      const response_id = responses.push(res) - 1;
+      // const response_id = responses.push(res) - 1;
+      const response_id = lodashId.createId();
+      responses[response_id] = res;
       wcont.send("getNumero", { response: response_id });
     });
 
@@ -122,7 +134,11 @@ const server = {
       log.info("POST synchro", req.body);
       log.info("POST db", req.body["db"], `from ${emitter.nom}`);
 
-      const response_id = responses.push(res) - 1;
+      // const response_id = responses.push(res) - 1;
+      const response_id = lodashId.createId();
+      responses[response_id] = res;
+
+      log.info('POST synchro response_id',response_id)
 
       synchroTreatment(db, data, emitter, response_id);
     });
@@ -173,13 +189,20 @@ const synchroConfirm = (db, ids, from) => {
 }
 
 const synchroTreatment = (db, data, emitter = null, response = null) => {
-  log.info("synchroTreatment()", db, emitter);
+  log.info("synchroTreatment()", db, emitter, response);
 
   if (webContents !== null) {
     if (SYNCHRO_TREATMENT.hasOwnProperty(db)) {
       if (data!==null) {
         if (Array.isArray(data) && data.length==0) {
           log.info('synchroTreatment, empty array data', data);
+
+          // s'il y a une 'response' (donc depuis une requête de l'API)
+          if (response!==null) {
+            // aucune donnée à traiter, on répond donc directement à la requête
+            responses[response].json({db:db, ids:[], from:_emitter, detail:'empty data'});
+            delete responses[response];
+          }
         } else {
           webContents.send(SYNCHRO_TREATMENT[db], { data, emitter, response });
         }
@@ -383,6 +406,7 @@ const actions = {
     const { numero, response } = req.payload;
 
     responses[response].json({ status: "success", numero: numero });
+    delete responses[response];
 
     log.info("numero: ", numero);
 
@@ -433,8 +457,11 @@ const actions = {
   // confirme la bonne réception des synchro s/p
   syncConfirm: (req, res) => {
     const { response, data } = req.payload;
+    log.info('syncConfirm()', response, data);
     if (response !== null) {
+      log.info('synConfirm response ?',responses[response]!==undefined);
       responses[response].json(data);
+      delete responses[response];
       res.send({ msg: "sync confirm sent", donnees: data });
     }
   },
@@ -813,7 +840,13 @@ async function prepareExportationToPrimary(exportation) {
   log.info('prepareExportationToPrimary E:', Object.entries(exportation).length);
 
   Object.entries(exportation).forEach(([db, items]) => {
-    if (items) bulkSyncToPrimary(db, items);
+    if (items.length>0) {
+      log.info('prepareExportationToPrimary E:', db, items.length);
+      bulkSyncToPrimary(db, items);
+    }
+    else {
+      log.info('prepareExportationToPrimary','aucune donnée à synchroniser pour db ',db);
+    }
   });
   
 }
@@ -830,7 +863,12 @@ function bulkSyncToPrimary(db, data) {
   __request.setHeader("Access-Control-Allow-Origin", "*");
   __request.setHeader("Content-Type", "application/json");
 
-  __request.write(JSON.stringify({ db, data, emitter:_emitter }));
+  const __body = JSON.stringify({ db, data, emitter:_emitter });
+
+  log.info('bulk:', __body);
+
+  __request.write(__body);
+
 
   __request.on("response", (response) => {
     response.on("data", (chunk) => {
@@ -846,8 +884,14 @@ function bulkSyncToPrimary(db, data) {
       try {
         __conf = JSON.parse(__syncedData.join(""));
 
-        const {db, ids, from} = __conf;
-        synchroConfirm(db, ids, from);
+        const {db, ids, from, detail} = __conf;
+
+        if (ids.length>0) { 
+          synchroConfirm(db, ids, from);
+        }
+        else {
+          log.info('bulkSyncToPrimary','aucune donnée synchronisée à confirmer', detail)
+        }
 
       } catch (e) {
         __conf = { error: e.message };
