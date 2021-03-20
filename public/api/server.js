@@ -4,6 +4,7 @@ const sync_server = express();
 const log = require("electron-log");
 const cors = require("cors");
 const { net } = require("electron");
+const bodyParser = require('body-parser');
 
 const http = require("http").Server(sync_server);
 const io = require("socket.io")(http);
@@ -85,7 +86,12 @@ const server = {
     api_server.disable("x-powered-by");
     api_server.use(cors({ origin: "*" }));
 
-    api_server.use(express.urlencoded({ extended: false })).use(express.json());
+    // api_server
+    //   .use(express.urlencoded({ extended: false }))
+    //   .use(express.json());
+    api_server
+      .use(bodyParser.urlencoded({extended:false})
+      .use(bodyParser.json({limit:'50MB'}));
     api_server.get("/", (req, res) => {
       log.info("GET : " + req.query.fui);
       let __d = new Date();
