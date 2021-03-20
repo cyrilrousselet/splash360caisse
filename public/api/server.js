@@ -196,9 +196,13 @@ const synchroTreatment = (db, data, emitter = null, response = null) => {
       if (data!==null) {
         if (Array.isArray(data) && data.length==0) {
           log.info('synchroTreatment, empty array data', data);
-          // aucune donnée à traiter, on répond donc directement à la requête
-          responses[response].json({db:db, ids:[], from:_emitter, detail:'empty data'});
-          delete responses[response];
+
+          // s'il y a une 'response' (donc depuis une requête de l'API)
+          if (response!==null) {
+            // aucune donnée à traiter, on répond donc directement à la requête
+            responses[response].json({db:db, ids:[], from:_emitter, detail:'empty data'});
+            delete responses[response];
+          }
         } else {
           webContents.send(SYNCHRO_TREATMENT[db], { data, emitter, response });
         }
