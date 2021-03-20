@@ -179,7 +179,7 @@ const synchroConfirm = (db, ids, from) => {
 }
 
 const synchroTreatment = (db, data, emitter = null, response = null) => {
-  log.info("synchroTreatment()", db, emitter);
+  log.info("synchroTreatment()", db, emitter, response);
 
   if (webContents !== null) {
     if (SYNCHRO_TREATMENT.hasOwnProperty(db)) {
@@ -439,7 +439,9 @@ const actions = {
   // confirme la bonne réception des synchro s/p
   syncConfirm: (req, res) => {
     const { response, data } = req.payload;
+    log.info('syncConfirm()', response, data);
     if (response !== null) {
+      log.info('synConfirm reponse ?',response[response]!==undefined);
       responses[response].json(data);
       res.send({ msg: "sync confirm sent", donnees: data });
     }
