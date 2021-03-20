@@ -9,7 +9,10 @@ const lodashId = require('lodash-id');
 
 
 const http = require("http").Server(sync_server);
-const io = require("socket.io")(http);
+const io = require("socket.io")(http, {
+  pingInterval: 500,
+  pingTimeout: 400,
+});
 const ioclient = require("socket.io-client");
 const { difference, intersection } = require("lodash");
 
@@ -446,8 +449,8 @@ const actions = {
       });
     });
 
-    __request.on('error', (error) => {
-      log.error('askNumero ERROR', error);
+    __request.on("error", (error) => {
+      log.error("askNumero ERROR", error);
       res.error(error);
     });
 
@@ -825,8 +828,8 @@ const actions = {
       });
     });
 
-    __request.on('error', (error) => {
-      log.error('syncDispatchToPrimary ERROR', error);
+    __request.on("error", (error) => {
+      log.error("syncDispatchToPrimary ERROR", error);
       res.error(error);
     });
 

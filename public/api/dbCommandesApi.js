@@ -219,7 +219,10 @@ async function _getCommandesToSync(limit = null) {
   const mongo = await connect();
   const criteria = {
     $and: [
-      { sync: {$exists: false} },
+      { $or: [
+        { sync: {$exists: false} },
+        { sync: null }
+      ]},
       { $or: [{ status: "confirmed" }, { status: "deleted" }] },
     ],
   };
