@@ -128,7 +128,8 @@ const data = {
                         valider: "Valider",
                         tiroir: "Tiroir",
                         attente: "Attente",
-                        reprise: "Reprise"
+                        reprise: "Reprise",
+                        staffmeal: "Empl."
                     },
                     messages: {
                         delete: {
@@ -386,6 +387,10 @@ const data = {
                     a_encaisser: "À Encaisser",
                     confirmed: "Terminées"
                 },
+                type: {
+                    vente: "Vente",
+                    staffmeal: "Repas Empl."
+                },
                 recherche: {
                     numero: "N° Commande",
                     client: "Nom Client"
@@ -397,6 +402,7 @@ const data = {
                     montant: "Montant",
                     caisse: "Caisse",
                     client: "Client",
+                    beneficiaire: "Bénéficiaire",
                     actions: "Actions",
                     mode: "Mode",
                     modes: {

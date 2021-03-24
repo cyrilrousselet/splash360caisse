@@ -62,6 +62,8 @@ function getNewCommande(params) {
     printnum: 0,
     mode: "surplace",
     status: "pending",
+    type: "vente",
+    beneficiaire: params.beneficiaire ? params.beneficiaire : null,
   };
 }
 
