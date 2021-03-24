@@ -99,8 +99,14 @@ function setClientFromSync(client) {
 
         dispatch({ type: clientsActionTypes.SET_FROM_API, client: result });
 
+
+        // --> si 'emitter' n'est pas null, la synchro provient d'une caisse 'secondary',
+        // la caisse 'primary' synchronise donc vers les autres caisses (syncDispatch)
         // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
         // donc inutile de lui renvoyer la synchro
+
+        // -> si 'response' n'est pas null, la synchro provient de l'API,
+        // il faut confirmer le traitement de la synchro à l'emetteur (syncConfirm)
         // -> si 'response' est null, la synchro ne provient pas de l'API,
         // donc inutile de confirmer le traitement de la synchro
         if (emitter!==null && response!==null) {

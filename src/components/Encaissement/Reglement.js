@@ -83,8 +83,9 @@ class Reglement extends React.Component {
         __t *= 10;
         break;
       default:
-        __t = __t * 10 + value / 100;
+        __t = Number(((__t * 10) + (value / 100)).toFixed(2));
     }
+    console.log('total', __t, value);
     this.setState({ total: __t, input: __i });
   }
 
@@ -171,7 +172,10 @@ class Reglement extends React.Component {
       if (trlist.length > 0) this.props.persistTicketsRestaurants(trlist);
       this.props.validateCommande(this.props.commande);
     }
-    this.setState({ input: false });
+    
+    // reset du state avant fermeture
+    this.setState({ input: false, trlist: [] });
+
     if (closeReglementAtEnd) {
       this.props.closeReglement();
     }

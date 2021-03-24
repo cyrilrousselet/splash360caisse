@@ -83,6 +83,7 @@ function persistTicketsRestaurants(liste) {
 
     commandeServices.persistTicketsRestaurants(liste, caisse.uniqid).then(
       (data) => {
+        logger.log('tr persisted', data)
         dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_SUCCESS, ticketsrestau: data });
       //  dispatch(getAllTicketsRestaurant());
         dispatch(notificationActions.syncDispatch("ticketrestaurant", data));
@@ -1352,7 +1353,8 @@ function archiveCommandesFromSync(payload) {
   return (dispatch) => {
     dispatch({ type: commandeActionTypes.ARCHIVE_FROM_SYNC_REQUEST });
 
-    const { cmd, clotureId, emitter, response } = payload.data;
+    const { data, emitter, response } = payload;
+    const { cmd, clotureId } = data;
 
     commandeServices.archiveCommands(cmd, clotureId).then(
       (confirm) => {

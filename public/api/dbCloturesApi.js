@@ -256,7 +256,7 @@ async function _setSynced(ids, datetime) {
     const doc = c;
 
     doc.sync = __datetime;
-    doc.updatedAt = __datetime;
+  //  doc.updatedAt = __datetime;
 
     // on en profite pour vider la propriété cmdtoarchive de chaque cloture synchronisée
     doc.cmdtoarchive = [];
@@ -264,7 +264,7 @@ async function _setSynced(ids, datetime) {
     // delete doc._id;
     await ClotureModel.updateOne({ id: doc.id }, doc).exec();
     // await c.save();
-    log.info("Commande synced: ", doc);
+    // log.info("Commande synced: ", doc);
   });
 
   log.info("_clo", _clotures.length);

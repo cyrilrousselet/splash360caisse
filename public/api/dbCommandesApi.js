@@ -163,6 +163,9 @@ const actions = {
     (await db.ticketsrestau)._.mixin(lodashId);
     const confirm = await _persistTicketRestau(payload.payload);
 
+
+    log.info('dbTicketsRestauPersist confirm', confirm);
+
     res.send(confirm);
   },
 
@@ -195,6 +198,8 @@ const actions = {
     let _n = 0;
     if (db=='ticketsrestau') {
 
+      _n = await _addTicketsLocalSync(ids,from);
+
     } else {
       _n = await _addCommandesLocalSync(ids,from);
     }
@@ -214,7 +219,7 @@ async function _getCommandesToSync(limit = null) {
   const mongo = await connect();
   const criteria = {
     $and: [
-      { $or: [{ sync: {$exists: false} }, { $where: "this.updatedAt > this.sync" }] },
+      { sync: {$exists: false} },
       { $or: [{ status: "confirmed" }, { status: "deleted" }] },
     ],
   };
@@ -312,7 +317,7 @@ async function _persistCommande(payload) {
 
   if (_cmd) {
     log.info("cmd existe, donc on update");
-    _cmd = { ..._cmd, ...payload, updatedAt: __now };
+    _cmd = { ..._cmd, ...payload, updatedAt: __now, sync: null };
     delete _cmd._id;
     await CommandeModel.updateOne({ ticketId: payload.ticketId }, _cmd).exec();
   } else {
@@ -373,6 +378,7 @@ async function _setArchived(ids, clotureId) {
     const doc = c;
     doc.archived = clotureId;
     doc.updatedAt = __now;
+    doc.sync = null;
 
     await CommandeModel.updateOne({ ticketId: doc.ticketId }, doc).exec();
     log.info("Commande archived: ", doc.id);
@@ -395,7 +401,7 @@ async function _setSynced(ids, datetime) {
     const doc = c;
 
     doc.sync = __datetime;
-    doc.updatedAt = __datetime;
+  //  doc.updatedAt = __datetime;
 
     delete doc._id;
     await CommandeModel.updateOne({ ticketId: doc.ticketId }, doc).exec();
@@ -435,64 +441,104 @@ async function asyncForEach(array, callback) {
   }
 }
 
+
+
+async function _doPersistTR(payload) {
+
+  const __now = new Date().getTime();
+
+  const _trtest = await (await db.ticketsrestau).get("ticketsrestau")
+                                                .find({ id: payload.id })
+                                                .value();
+
+  if (_trtest) {
+    log.info("_tr existe, donc on update");
+    const __upd = { ..._trtest, ...payload, updatedAt: __now };
+
+    const _tru = await (await db.ticketsrestau).get("ticketsrestau")
+                                          .find({ id: payload.id })
+                                          .assign(__upd)
+                                          .write();
+
+    return _tru;
+
+  } else {
+
+    log.info("pas de _tr donc on insert");
+    const _tri = _insertTicketRestau(payload);
+
+    return _tri;
+  }
+}
+
+
+
+
+
+
+
 /**
  * Insert or Update ticketsrestau data into DB
  */
 async function _persistTicketRestau(payload) {
   const __now = new Date().getTime();
 
+  log.info('_persistTicketRestau()', payload);
+
+  
   if (Array.isArray(payload)) {
-    let count = 0;
+    // let count = 0;
+    
+    // const start = async () => {
+    //   const __resfe = await asyncForEach(payload, async (obj) => {
+    //     let _tr = await (await db.ticketsrestau).get("ticketsrestau")
+    //                                             .find({ id: payload.id })
+    //                                             .value();
 
-    const start = async () => {
-      await asyncForEach(payload, async (obj) => {
-        let _tr = await (await db.ticketsrestau).get("ticketsrestau")
-                                                .find({ id: payload.id })
-                                                .value();
+    //     if (_tr) {
+    //       log.info("_tr existe, donc on update");
+    //       let __upd = { ..._tr, ...obj, updatedAt: __now };
+    //       _tr = await (await db.paramticketsrestauetres).get("ticketsrestau")
+    //                                                     .find({ id: payload.id })
+    //                                                     .assign(__upd)
+    //                                                     .write();
+    //       if (_tr != null) count++;
+    //       log.info('_persistTR after update:', _tr);
+    //       response.push(_tr);
+    //     } else {
 
-        if (_tr) {
-          log.info("_tr existe, donc on update");
-          let __upd = { ..._tr, ...obj, updatedAt: __now };
-          _tr = await (await db.paramticketsrestauetres).get("ticketsrestau")
-                                                        .find({ id: payload.id })
-                                                        .assign(__upd)
-                                                        .write();
-          if (_tr != null) count++;
+    //       _tr = await _insertTicketRestau(obj);
+    //       log.info('_persistTR after insert:', _tr);
+    //       if (_tr != null) count++;
+    //       response.push(_tr);
 
-        } else {
+    //     }
+    //     log.info('boucle',count,payload.length);
+    //     if (count>=payload.length) {
+    //       return response;
+    //     }
+    //   });
+    //   log.info('boucle de persist TR', __resfe)
+    //   return __resfe;
+  
+    // };
 
-          _tr = await _insertTicketRestau(obj);
-          if (_tr != null) count++;
+    // const confirm = await start();
+    // log.info('fin de la boucle de persist TR:',confirm);
+    // return confirm;
 
-        }
-      });
-      // return count == payload.length;
-      return payload;
-    };
-    start();
+    let response = await Promise.all(payload.map(async (tr) => {
+      const __tr_a = await _doPersistTR(tr);
+      return __tr_a;
+    }));
+
+    return response;
   
   } else {
 
-    let _tr_o = await (await db.ticketsrestau).get("ticketsrestau")
-                                              .find({ id: payload.id })
-                                              .value();
-
-    if (_tr_o) {
-      log.info("_tr_o existe, donc on update");
-      let __upd = { ..._tr_o, ...payload, updatedAt: __now };
-  
-      _tr_o = await (await db.ticketsrestau).get("ticketsrestau")
-                                            .find({ id: payload.id })
-                                            .assign(__upd)
-                                            .write();
-    } else {
-
-      log.info("pas de _tr donc on insert");
-      _tr_o = _insertTicketRestau(payload);
-    }
-
-    // return _tr_o != null;
-    return [payload];
+    const __tr_o = await _doPersistTR(payload);
+    return [__tr_o];
+    
   }
 }
 

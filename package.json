@@ -2,7 +2,7 @@
     "name": "splash360",
     "productName": "Splash360",
     "description": "Cash application",
-    "version": "0.1.210611625",
+    "version": "0.1.210791930",
     "private": true,
     "author": {
         "name": "Splash360",
@@ -12,7 +12,7 @@
     "build": {
         "appId": "fr.splash360.splash",
         "productName": "Splash360",
-        "copyright": "Copyright © 2020 Splash360",
+        "copyright": "Copyright © 2021 Splash360",
         "mac": {
             "icon": "build/icon.icns",
             "category": "public.app-category.business"
@@ -44,6 +44,7 @@
         "@sentry/react": "^6.0.2",
         "axios": "^0.19.2",
         "babel-eslint": "^10.1.0",
+        "body-parser": "^1.19.0",
         "chart.js": "^2.9.3",
         "connected-react-router": "^6.5.2",
         "cors": "^2.8.5",

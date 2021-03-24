@@ -342,7 +342,7 @@ async function _setSynced(ids, datetime) {
     const doc = c;
 
     doc.sync = __datetime;
-    doc.updatedAt = __datetime;
+    // doc.updatedAt = __datetime;
 
     await TresorModel.update({ id: doc.id }, doc).exec();
     // await c.save();

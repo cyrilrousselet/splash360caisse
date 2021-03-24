@@ -1,3 +1,4 @@
+@charset "UTF-8";
 @font-face {
   font-family: 'Livvic-Bold';
   src: url("./../../fonts/Livvic-Bold.woff") format("woff"); }
@@ -277,7 +278,8 @@ body {
   padding-right: 20px;
   background: #F7F7F7;
   border-radius: 25px; }
-  .PillField input {
+  .PillField input,
+  .PillField .field {
     background-color: transparent;
     height: 50px;
     margin-top: -50px;
@@ -289,10 +291,14 @@ body {
     color: #4A4A4A;
     letter-spacing: 0.4em;
     width: 150px;
-    position: relative; }
-    .PillField input:focus {
+    position: relative;
+    line-height: 50px;
+    display: inline-block; }
+    .PillField input:focus,
+    .PillField .field:focus {
       outline: none; }
-    .PillField input[type='password'] {
+    .PillField input[type='password'],
+    .PillField .field[type='password'] {
       letter-spacing: 0.5em; }
   .PillField .innerButton {
     float: right;
@@ -300,7 +306,7 @@ body {
     background-position: right center;
     background-size: 23px 18px;
     height: 50px;
-    width: 25px;
+    width: 30px;
     cursor: pointer; }
     .PillField .innerButton.btn-none {
       display: none; }
@@ -550,6 +556,8 @@ input[type="checkbox"].switch {
       transform: none;
       top: auto;
       left: auto; }
+  .NumberKeyboardContainer.disabled .NumberKeyboard {
+    opacity: .5; }
 
 .Clavier {
   top: auto !important;
@@ -804,11 +812,16 @@ input[type="checkbox"].switch {
 .showfidcardPopin .swal2-actions button {
   width: 80%; }
 
-.Encaissement .Selecteur {
+.Encaissement .Selecteur,
+.Encaissement .selecteur-wait {
   display: inline-block;
   position: relative;
   height: 100%;
   width: calc(100% - 315px); }
+
+.Encaissement .selecteur-wait {
+  background-color: #FFFFFF;
+  border-radius: 15px; }
 
 .Encaissement .TabBar {
   width: 215px;
@@ -983,7 +996,7 @@ input[type="checkbox"].switch {
     height: 20px; }
     .Encaissement .Panier .header .ticketId {
       font-family: "Livvic-Regular";
-      font-size: 15px;
+      font-size: 12px;
       color: #4A4A4A;
       padding: 5px;
       user-select: none; }
@@ -1294,8 +1307,9 @@ input[type="checkbox"].switch {
       min-width: 170px;
       border-radius: 20px;
       padding-left: 15px;
-      padding-right: 15px; }
-      .Reglement .body .calculette .PillField input {
+      padding-right: 10px; }
+      .Reglement .body .calculette .PillField input,
+      .Reglement .body .calculette .PillField .field {
         letter-spacing: 0.1em;
         font-size: 22px;
         height: 40px;
@@ -1885,6 +1899,18 @@ input[type="checkbox"].switch {
       color: #4A4A4A;
       position: absolute;
       left: auto; }
+  .Parametres .Commandes.subcontent .CommandesGeneral .ligne-wrapper {
+    padding-top: 15px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center; }
+  .Parametres .Commandes.subcontent .CommandesGeneral .bipper-wrapper,
+  .Parametres .Commandes.subcontent .CommandesGeneral .printstandby-wrapper {
+    display: inline-flex;
+    flex-direction: column;
+    width: calc(50% - 7px); }
 
 .Parametres .Commandes.subcontent .CommandesCommentaires {
   position: relative; }
@@ -2343,6 +2369,10 @@ input[type="checkbox"].switch {
   .Parametres .Peripheriques tbody .liste-nom.user-disabled {
     color: #FF2D55; }
 
+.Parametres .Peripheriques tbody .liste-kds,
+.Parametres .Peripheriques tbody .liste-indirect {
+  text-align: center; }
+
 .Parametres .Peripheriques tbody .MuiTableRow-root.disabled .MuiTableCell-body {
   font-family: "Livvic-Light";
   color: #8F8E94; }
@@ -2779,14 +2809,18 @@ input[type="checkbox"].switch {
       position: absolute;
       left: auto; }
     .EditImprimanteModal .body .imprimantes-liste,
+    .EditImprimanteModal .body .template-variante,
     .EditImprimanteModal .body .kds,
     .EditTicketModal .body .imprimantes-liste,
+    .EditTicketModal .body .template-variante,
     .EditTicketModal .body .kds {
       padding-top: 15px;
       width: 100%; }
       .EditImprimanteModal .body .imprimantes-liste .liste-label,
+      .EditImprimanteModal .body .template-variante .liste-label,
       .EditImprimanteModal .body .kds .liste-label,
       .EditTicketModal .body .imprimantes-liste .liste-label,
+      .EditTicketModal .body .template-variante .liste-label,
       .EditTicketModal .body .kds .liste-label {
         font-family: "Livvic-Regular";
         position: relative;
@@ -2795,9 +2829,18 @@ input[type="checkbox"].switch {
         color: #4A4A4A;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale; }
+        .EditImprimanteModal .body .imprimantes-liste .liste-label.disabled,
+        .EditImprimanteModal .body .template-variante .liste-label.disabled,
+        .EditImprimanteModal .body .kds .liste-label.disabled,
+        .EditTicketModal .body .imprimantes-liste .liste-label.disabled,
+        .EditTicketModal .body .template-variante .liste-label.disabled,
+        .EditTicketModal .body .kds .liste-label.disabled {
+          opacity: .5; }
       .EditImprimanteModal .body .imprimantes-liste .liste-liste,
+      .EditImprimanteModal .body .template-variante .liste-liste,
       .EditImprimanteModal .body .kds .liste-liste,
       .EditTicketModal .body .imprimantes-liste .liste-liste,
+      .EditTicketModal .body .template-variante .liste-liste,
       .EditTicketModal .body .kds .liste-liste {
         padding: 15px;
         width: 100%;
@@ -2808,10 +2851,24 @@ input[type="checkbox"].switch {
         justify-content: space-between;
         align-items: flex-start; }
         .EditImprimanteModal .body .imprimantes-liste .liste-liste .switch-container,
+        .EditImprimanteModal .body .template-variante .liste-liste .switch-container,
         .EditImprimanteModal .body .kds .liste-liste .switch-container,
         .EditTicketModal .body .imprimantes-liste .liste-liste .switch-container,
+        .EditTicketModal .body .template-variante .liste-liste .switch-container,
         .EditTicketModal .body .kds .liste-liste .switch-container {
           width: auto; }
+    .EditImprimanteModal .body .template-variante,
+    .EditTicketModal .body .template-variante {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center; }
+    .EditImprimanteModal .body .kds,
+    .EditTicketModal .body .kds {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center; }
   .EditImprimanteModal .footer,
   .EditTicketModal .footer {
     text-align: right; }
@@ -3069,7 +3126,8 @@ input[type="checkbox"].switch {
   .ListeCommandes .listes tbody .liste-actions {
     background-color: #F7F7F7; }
   .ListeCommandes .listes tbody .MuiTableCell-body {
-    font-size: 12px; }
+    font-size: 12px;
+    position: relative; }
   .ListeCommandes .listes tbody .MuiTableRow-root.odd .liste-heure,
   .ListeCommandes .listes tbody .MuiTableRow-root.odd .liste-montant,
   .ListeCommandes .listes tbody .MuiTableRow-root.odd .liste-client,
@@ -3103,6 +3161,19 @@ input[type="checkbox"].switch {
   .ListeCommandes .listes tbody .MuiTableRow-root.autrecentre .liste-client,
   .ListeCommandes .listes tbody .MuiTableRow-root.autrecentre .liste-mode {
     background-image: linear-gradient(rgba(0, 255, 64, 0.5) 0%, rgba(0, 255, 64, 0.5) 100%); }
+  .ListeCommandes .listes tbody .MuiTableRow-root.cmd-archived {
+    font-style: italic; }
+    .ListeCommandes .listes tbody .MuiTableRow-root.cmd-archived .liste-date:after {
+      content: '';
+      position: absolute;
+      width: 15px;
+      height: 37px;
+      top: 0;
+      left: 4px;
+      background-image: url("./../../images/lock.svg");
+      background-repeat: no-repeat;
+      background-position: left center;
+      background-size: 8px 8px; }
   .ListeCommandes .listes tbody .liste-actions {
     text-align: right;
     justify-content: center; }
@@ -3292,10 +3363,10 @@ input[type="checkbox"].switch {
 .ListeClotures thead {
   background-color: rgba(0, 0, 0, 0.1); }
 
-.ListeClotures tbody .liste-id,
-.ListeClotures tbody .liste-fin,
-.ListeClotures tbody .liste-ventes,
-.ListeClotures tbody .liste-actions {
+.ListeClotures tbody .liste-date,
+.ListeClotures tbody .liste-debut,
+.ListeClotures tbody .liste-ht,
+.ListeClotures tbody .liste-nombre {
   background-color: #F7F7F7; }
 
 .ListeClotures tbody .liste-ht,
@@ -3305,20 +3376,22 @@ input[type="checkbox"].switch {
 .ListeClotures tbody .MuiTableCell-body {
   font-size: 12px; }
 
-.ListeClotures tbody .MuiTableRow-root.odd .liste-id,
-.ListeClotures tbody .MuiTableRow-root.odd .liste-fin,
-.ListeClotures tbody .MuiTableRow-root.odd .liste-ventes,
-.ListeClotures tbody .MuiTableRow-root.odd .liste-actions {
-  background-color: #EFEFEF; }
-
-.ListeClotures tbody .liste-debut,
-.ListeClotures tbody .liste-ht,
-.ListeClotures tbody .liste-nombre {
-  background-color: #FFFFFF; }
-
+.ListeClotures tbody .MuiTableRow-root.odd .liste-date,
 .ListeClotures tbody .MuiTableRow-root.odd .liste-debut,
 .ListeClotures tbody .MuiTableRow-root.odd .liste-ht,
 .ListeClotures tbody .MuiTableRow-root.odd .liste-nombre {
+  background-color: #EFEFEF; }
+
+.ListeClotures tbody .liste-station,
+.ListeClotures tbody .liste-fin,
+.ListeClotures tbody .liste-ventes,
+.ListeClotures tbody .liste-actions {
+  background-color: #FFFFFF; }
+
+.ListeClotures tbody .MuiTableRow-root.odd .liste-station,
+.ListeClotures tbody .MuiTableRow-root.odd .liste-fin,
+.ListeClotures tbody .MuiTableRow-root.odd .liste-ventes,
+.ListeClotures tbody .MuiTableRow-root.odd .liste-actions {
   background-color: #F7F7F7; }
 
 .ListeClotures .MuiTableContainer-root {
@@ -3419,7 +3492,8 @@ input[type="checkbox"].switch {
     .ViewCloturePopin .ticket-x .ventil {
       display: flex;
       flex-direction: row;
-      justify-content: space-between; }
+      justify-content: space-between;
+      flex-wrap: wrap; }
       .ViewCloturePopin .ticket-x .ventil .ventil-nom,
       .ViewCloturePopin .ticket-x .ventil .ventil-intit:nth-child(1) {
         width: 30%; }
@@ -3427,6 +3501,21 @@ input[type="checkbox"].switch {
         padding-top: 10px; }
       .ViewCloturePopin .ticket-x .ventil.intit {
         padding-bottom: 5px; }
+      .ViewCloturePopin .ticket-x .ventil.ventil-moyen .ventil-intit:not(:nth-child(1)) {
+        width: 23%;
+        text-align: right; }
+      .ViewCloturePopin .ticket-x .ventil.ventil-moyen .ventil-val {
+        width: 23%;
+        text-align: right; }
+      .ViewCloturePopin .ticket-x .ventil .ventil-ecart-motif {
+        width: 100%;
+        text-align: center;
+        padding-bottom: 5px; }
+      .ViewCloturePopin .ticket-x .ventil.ventil-mouvement .ventil-val:nth-child(1) {
+        width: 30%; }
+      .ViewCloturePopin .ticket-x .ventil.ventil-mouvement .ventil-val:not(:nth-child(1)) {
+        width: 23%;
+        text-align: right; }
 
 .Clients div {
   box-sizing: border-box; }
@@ -3529,6 +3618,39 @@ input[type="checkbox"].switch {
   .Clients .table-wrapper tbody .bloque .MuiTableCell-root {
     color: #FF2D55; }
 
+.CloturesHome .CloturesHome-sommaire {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+  align-items: flex-start;
+  height: 100%; }
+  .CloturesHome .CloturesHome-sommaire .titre {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-family: "Livvic-Bold";
+    color: #4A4A4A;
+    font-size: 20px;
+    padding-bottom: 50px; }
+    .CloturesHome .CloturesHome-sommaire .titre .LargeButton {
+      background-color: #FE485F; }
+      .CloturesHome .CloturesHome-sommaire .titre .LargeButton .LargeButton-icon {
+        background-image: url("./../../images/ico_cloture.svg"); }
+
+.CloturesHome .sommaire-item {
+  text-align: center;
+  width: 30%;
+  padding: 5px 0; }
+  .CloturesHome .sommaire-item .LargeButton {
+    background-color: #1EA9DF; }
+    .CloturesHome .sommaire-item .LargeButton .LargeButton-text {
+      color: #4A4A4A; }
+
+.Cloture.container {
+  height: 100%; }
+
 .Cloture .contimage {
   width: 100%;
   height: auto;
@@ -3537,259 +3659,338 @@ input[type="checkbox"].switch {
 
 .Cloture .MainZone {
   display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;
+  padding: 0; }
+
+.Cloture .processing {
+  font-family: "Livvic-Bold";
+  font-size: 20px;
+  color: #4A4A4A;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100px); }
+
+.Cloture .clo-top {
+  width: 100%;
+  display: flex;
   flex-direction: row;
-  justify-content: space-between; }
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 15px; }
+  .Cloture .clo-top .btnretour {
+    flex-grow: unset;
+    flex-shrink: unset;
+    background-color: #9EB3BB; }
+    .Cloture .clo-top .btnretour .StdButton-text {
+      text-decoration: underline;
+      color: #FFFFFF; }
+  .Cloture .clo-top .zone-selecteur {
+    display: flex;
+    flex-direction: row; }
+    .Cloture .clo-top .zone-selecteur .selecteur-caisse,
+    .Cloture .clo-top .zone-selecteur .selecteur-vendeur {
+      min-width: 150px;
+      margin: 0 20px 0 10px; }
+    .Cloture .clo-top .zone-selecteur .label {
+      font-family: "Livvic-Bold";
+      font-size: 14px;
+      color: #4A4A4A;
+      padding: 15px 0 5px; }
+    .Cloture .clo-top .zone-selecteur .selecteur {
+      background-color: #E6E6E6;
+      font-family: "Livvic-Light";
+      font-size: 14px;
+      color: #4A4A4A;
+      line-height: 0.1em; }
+      .Cloture .clo-top .zone-selecteur .selecteur .MuiOutlinedInput-input {
+        padding: 15px 15px; }
+      .Cloture .clo-top .zone-selecteur .selecteur .MuiSelect-root {
+        display: flex;
+        flex-direction: column;
+        justify-content: center; }
+  .Cloture .clo-top .periode {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start; }
+    .Cloture .clo-top .periode .titre {
+      font-family: "Livvic-Bold";
+      font-size: 20px;
+      color: #4A4A4A;
+      width: 100%; }
+    .Cloture .clo-top .periode .dates {
+      font-family: "Livvic-Regular";
+      font-size: 16px;
+      color: #4A4A4A; }
 
-.Cloture .clo-gauche,
-.Cloture .clo-centre,
-.Cloture .clo-droite {
-  width: 30%;
-  height: 100%; }
-
-.Cloture .clo-centre {
-  width: 38%;
-  font-family: "Livvic-Light";
-  font-size: 12px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale; }
-
-.Cloture .blocgauche,
-.Cloture .bloccentre,
-.Cloture .blocdroite {
+.Cloture .clo-main {
   background-color: #FFFFFF;
   box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1);
   border-radius: 15px;
   width: 100%;
   height: calc(100% - 60px);
-  overflow-y: auto; }
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start; }
 
-.Cloture .bloccentre {
-  box-shadow: none;
+.Cloture .clo-gauche {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: calc(100% - 240px);
   height: 100%;
-  border: 1px dashed #4A4A4A;
-  padding: 20px;
-  overflow-y: scroll; }
-  .Cloture .bloccentre .wrapper {
-    height: 100%;
-    width: 100%; }
-  .Cloture .bloccentre .periode {
-    padding-bottom: 10px; }
-    .Cloture .bloccentre .periode .val {
-      text-align: center; }
-  .Cloture .bloccentre .sel {
-    padding-bottom: 10px; }
-  .Cloture .bloccentre .recap {
-    padding-bottom: 10px; }
-    .Cloture .bloccentre .recap .recap-item {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between; }
-  .Cloture .bloccentre .titre {
-    text-align: center;
-    border-top: 1px solid #4A4A4A;
-    border-bottom: 1px solid #4A4A4A;
-    padding: 5px 0;
-    margin: 10px 0 5px; }
-  .Cloture .bloccentre .detail .detail-item {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between; }
-    .Cloture .bloccentre .detail .detail-item.pre-filet {
-      margin-top: 5px;
-      padding-top: 5px;
-      border-top: 1px solid #4A4A4A; }
-    .Cloture .bloccentre .detail .detail-item.post-space {
-      padding-bottom: 10px; }
-    .Cloture .bloccentre .detail .detail-item.total {
-      padding-left: 20px; }
-  .Cloture .bloccentre .ventil {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between; }
-    .Cloture .bloccentre .ventil .ventil-nom,
-    .Cloture .bloccentre .ventil .ventil-intit:nth-child(1) {
-      width: 30%; }
-    .Cloture .bloccentre .ventil.total {
-      padding-top: 10px; }
-    .Cloture .bloccentre .ventil.intit {
-      padding-bottom: 5px; }
+  padding-bottom: 10px; }
 
-.Cloture .blocgauche {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center; }
+.Cloture .clo-gauche-top,
+.Cloture .clo-gauche-btm {
+  width: 100%; }
 
-.Cloture .blocgauche-wrapper {
+.Cloture .cptitem {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center; }
-
-.Cloture .zone-lastcloture {
-  width: calc(100% - 30px);
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  flex-direction: row;
+  justify-content: flex-start;
   align-items: center;
-  padding: 15px 0;
-  min-height: 220px; }
-  .Cloture .zone-lastcloture .titre {
-    text-align: left;
+  padding: 5px 0; }
+  .Cloture .cptitem .item-label {
     font-family: "Livvic-Bold";
-    font-size: 14px;
-    color: #4A4A4A;
-    padding-bottom: 10px;
-    width: 100%; }
-  .Cloture .zone-lastcloture .itmliste {
-    width: 100%;
-    padding-bottom: 10px; }
-  .Cloture .zone-lastcloture .item {
-    display: flex;
-    flex-direction: row;
+    font-size: 13px;
+    color: #FFFFFF;
+    background-color: #7FAD3B;
+    width: 70px;
+    height: 55px;
+    border-radius: 5px 0px 0px 5px;
+    padding: 2px 0px 5px;
+    display: inline-flex;
+    flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 0; }
-    .Cloture .zone-lastcloture .item .label {
-      font-family: "Livvic-Light";
-      font-size: 14px;
-      color: #4A4A4A; }
-    .Cloture .zone-lastcloture .item .valeur {
-      font-family: "Livvic-Regular";
-      font-size: 14px;
-      color: #4A4A4A; }
-  .Cloture .zone-lastcloture .no-item {
     text-align: center;
-    font-family: "Livvic-Regular";
-    font-size: 14px;
-    color: #4A4A4A; }
-  .Cloture .zone-lastcloture .btnreprint {
-    width: 200px;
-    background-color: #9EB3BB; }
-  .Cloture .zone-lastcloture .btnliste {
-    width: 200px;
-    background-color: #9EB3BB; }
-
-.Cloture .zone-selecteur {
-  width: calc(100% - 30px); }
-  .Cloture .zone-selecteur .selecteur-caisse,
-  .Cloture .zone-selecteur .selecteur-vendeur {
-    width: 100%; }
-  .Cloture .zone-selecteur .label-inline {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center; }
-    .Cloture .zone-selecteur .label-inline .label {
-      width: 70px;
-      padding-top: 5px; }
-  .Cloture .zone-selecteur .datepicker {
-    width: calc(100% - 70px);
-    margin-top: 0; }
-    .Cloture .zone-selecteur .datepicker .MuiInputBase-root {
-      font-size: 13px; }
-  .Cloture .zone-selecteur .label {
+    line-height: 0.9em; }
+  .Cloture .cptitem.cptitem-esp .item-label .MuiSvgIcon-root,
+  .Cloture .cptitem.cptitem-chq .item-label .MuiSvgIcon-root {
+    margin-top: 8px; }
+  .Cloture .cptitem.cptitem-avr .item-label .MuiSvgIcon-root {
+    width: 16px; }
+  .Cloture .cptitem .valeur-static {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     font-family: "Livvic-Bold";
-    font-size: 14px;
-    color: #4A4A4A;
-    width: 100%;
-    padding: 15px 0 5px; }
-  .Cloture .zone-selecteur .selecteur {
-    background-color: #E6E6E6;
-    font-family: "Livvic-Light";
-    font-size: 14px;
-    color: #4A4A4A;
-    width: 100%;
-    line-height: 0.1em; }
-    .Cloture .zone-selecteur .selecteur .MuiOutlinedInput-input {
-      padding: 15px 15px; }
-
-.Cloture .btncomptage {
-  width: 235px;
-  background-color: #7FAD3B;
-  height: 45px; }
-
-.Cloture .btnx {
-  position: absolute;
-  width: 235px;
-  left: 50px;
-  bottom: 75px;
-  background-color: #9EB3BB;
-  height: 45px;
-  z-index: 1; }
-
-.Cloture .btncloture {
-  position: absolute;
-  width: 235px;
-  right: 50px;
-  bottom: 75px;
-  background-color: #FF2D55;
-  height: 45px;
-  z-index: 1; }
-
-.blocdroite {
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center; }
-  .blocdroite .droite-top,
-  .blocdroite .droite-btm {
-    width: 100%; }
-    .blocdroite .droite-top .labelledfield,
-    .blocdroite .droite-btm .labelledfield {
-      margin-bottom: 10px; }
-      .blocdroite .droite-top .labelledfield label,
-      .blocdroite .droite-btm .labelledfield label {
-        font-family: "Livvic-Light";
-        font-size: 14px; }
-      .blocdroite .droite-top .labelledfield .input-wrapper,
-      .blocdroite .droite-btm .labelledfield .input-wrapper {
-        width: 100%; }
-        .blocdroite .droite-top .labelledfield .input-wrapper input,
-        .blocdroite .droite-btm .labelledfield .input-wrapper input {
-          text-align: right; }
-      .blocdroite .droite-top .labelledfield.strong label,
-      .blocdroite .droite-btm .labelledfield.strong label {
-        font-family: "Livvic-Bold"; }
-  .blocdroite .editable .input {
-    width: 100%;
-    background-image: url("../../images/ico_edit.svg");
-    background-size: 18px 18px;
-    background-position: 10px center;
-    background-repeat: no-repeat; }
-  .blocdroite .valeur-input {
-    width: 100%;
-    margin-bottom: 10px; }
-    .blocdroite .valeur-input label {
-      font-family: "Livvic-Light";
-      font-size: 14px;
-      color: #4A4A4A; }
-    .blocdroite .valeur-input.strong label {
-      font-family: "Livvic-Bold"; }
-    .blocdroite .valeur-input .input {
+    font-size: 18px;
+    width: 100px;
+    height: 55px;
+    color: #7FAD3B;
+    border-radius: 0px 5px 5px 0px;
+    box-shadow: inset 0 0 0 3px #7FAD3B; }
+  .Cloture .cptitem .valeur-input {
+    width: 140px;
+    margin-left: 10px; }
+    .Cloture .cptitem .valeur-input .label {
       width: 100%;
-      height: 30px;
-      border-radius: 5px;
-      background-color: #F7F7F7;
+      font-family: "Livvic-Bold";
+      font-size: 12px;
+      color: #1EA9DF;
+      padding: 0px 5px;
+      height: 17px;
+      border-radius: 5px 5px 0px 0px;
+      box-shadow: inset 0 0 0 2px #1EA9DF; }
+    .Cloture .cptitem .valeur-input .input {
+      width: 100%;
+      height: 38px;
+      border-radius: 0px 0px 5px 5px;
+      background-color: #1EA9DF;
       padding: 0 10px;
       display: flex;
       flex-direction: row;
       justify-content: flex-end;
       align-items: center;
-      font-family: "Livvic-Light";
-      font-size: 14px;
-      color: #4A4A4A; }
-  .blocdroite .totalcomptageField .valeur-input .input {
-    height: 40px;
-    background-color: #1EA9DF;
-    color: #FFFFFF;
+      font-family: "Livvic-Bold";
+      font-size: 18px;
+      color: #FFFFFF;
+      background-image: url("../../images/ico_edit-blanc.svg");
+      background-size: 18px 18px;
+      background-position: 10px center;
+      background-repeat: no-repeat; }
+  .Cloture .cptitem .ecart {
+    height: 55px;
+    width: 100px;
     font-family: "Livvic-Bold";
-    font-size: 16px;
-    background-image: url("../../images/ico_edit-blanc.svg"); }
+    font-size: 15px;
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    color: #4A4A4A; }
+  .Cloture .cptitem .motif {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: calc(100% - 430px);
+    height: 55px;
+    border-radius: 5px;
+    background-color: #F7F7F7;
+    background-image: url("../../images/ico_edit.svg");
+    background-size: 18px 18px;
+    background-position: 10px center;
+    background-repeat: no-repeat;
+    font-family: "Livvic-Regular";
+    font-size: 14px;
+    text-transform: uppercase;
+    color: #4A4A4A; }
+  .Cloture .cptitem.error .item-label {
+    background-color: #FF2D55; }
+  .Cloture .cptitem.error .valeur-static {
+    color: #FF2D55;
+    box-shadow: inset 0 0 0 2px #FF2D55; }
+  .Cloture .cptitem.error .valeur-input .label {
+    color: #FF2D55;
+    box-shadow: inset 0 0 0 2px #FF2D55; }
+  .Cloture .cptitem.error .valeur-input .input {
+    background-color: #FF2D55; }
+  .Cloture .cptitem.error .ecart {
+    color: #FF2D55; }
+  .Cloture .cptitem.warning .item-label {
+    background-color: #FF9500; }
+  .Cloture .cptitem.warning .valeur-static {
+    color: #FF9500;
+    box-shadow: inset 0 0 0 2px #FF9500; }
+  .Cloture .cptitem.warning .valeur-input .label {
+    color: #FF9500;
+    box-shadow: inset 0 0 0 2px #FF9500; }
+  .Cloture .cptitem.warning .valeur-input .input {
+    background-color: #FF9500; }
+  .Cloture .cptitem.warning .ecart {
+    color: #FF9500; }
+
+.Cloture .cptitem-caption {
+  font-family: "Livvic-Bold";
+  font-size: 16px;
+  color: #4A4A4A; }
+  .Cloture .cptitem-caption .balance-label {
+    width: 320px; }
+  .Cloture .cptitem-caption .ecarts-label {
+    width: 100px;
+    text-align: center; }
+  .Cloture .cptitem-caption .motif-label {
+    width: 275px; }
+
+.Cloture .total-fdc,
+.Cloture .total-encaissement,
+.Cloture .total-caisse {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 5px; }
+  .Cloture .total-fdc label,
+  .Cloture .total-encaissement label,
+  .Cloture .total-caisse label {
+    font-family: "Livvic-Regular";
+    font-size: 15px;
+    color: #4A4A4A;
+    width: 175px; }
+  .Cloture .total-fdc .input,
+  .Cloture .total-encaissement .input,
+  .Cloture .total-caisse .input {
+    font-family: "Livvic-Bold";
+    font-size: 20px;
+    color: #1EA9DF;
+    width: 135px;
+    text-align: right; }
+
+.Cloture .total-caisse {
+  background-image: linear-gradient(#4A4A4A 0%, #4A4A4A 100%);
+  background-repeat: no-repeat;
+  background-size: 320px 1px;
+  background-position: left top;
+  padding-top: 5px; }
+
+.Cloture .clo-droite {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 230px;
+  height: 100%;
+  padding-top: 30px; }
+
+.Cloture .clo-droite-top,
+.Cloture .clo-droite-mid,
+.Cloture .clo-droite-btm {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center; }
+
+.Cloture .btncompttr,
+.Cloture .btncomptcaisse {
+  width: 100%;
+  background-color: #7FAD3B; }
+  .Cloture .btncompttr:hover,
+  .Cloture .btncomptcaisse:hover {
+    background-color: #628133 !important; }
+
+.Cloture .btncomptage {
+  width: 100%;
+  background-color: #7FAD3B;
+  height: 45px; }
+
+.Cloture .btncloture {
+  width: 100%;
+  background-color: #FF2D55;
+  height: 45px; }
+
+.clo-droite-mid .prelevementField {
+  width: 100%; }
+
+.clo-droite-mid .valeur-input {
+  width: 100%;
+  margin-bottom: 20px;
+  box-shadow: inset 0 0 0 1px #4A4A4A;
+  border-radius: 5px; }
+  .clo-droite-mid .valeur-input label {
+    font-family: "Livvic-Bold";
+    font-size: 13px;
+    color: #4A4A4A;
+    padding: 3px; }
+  .clo-droite-mid .valeur-input .input {
+    width: 100%;
+    text-align: right;
+    padding-right: 5px;
+    font-family: "Livvic-Bold";
+    padding-bottom: 3px; }
+  .clo-droite-mid .valeur-input.editable {
+    box-shadow: none; }
+    .clo-droite-mid .valeur-input.editable label {
+      padding: 0; }
+    .clo-droite-mid .valeur-input.editable .input {
+      background-image: url("../../images/ico_edit-blanc.svg");
+      background-size: 18px 18px;
+      background-position: 10px center;
+      background-repeat: no-repeat;
+      background-color: #1EA9DF;
+      color: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-end;
+      font-size: 20px;
+      border-radius: 5px;
+      height: 45px; }
 
 .ClotureComptage,
+.CountTool,
+.CountTRTool,
 .ClotureComptcaisse {
   display: inline-block;
   position: absolute;
@@ -3798,12 +3999,16 @@ input[type="checkbox"].switch {
   transform: translate(-50%, -50%);
   outline: none; }
   .ClotureComptage .Modal-container,
+  .CountTool .Modal-container,
+  .CountTRTool .Modal-container,
   .ClotureComptcaisse .Modal-container {
     background-color: #FFFFFF;
     width: 900px;
     border-radius: 15px;
     padding: 0 20px; }
   .ClotureComptage .close-button,
+  .CountTool .close-button,
+  .CountTRTool .close-button,
   .ClotureComptcaisse .close-button {
     background-color: #FFFFFF;
     position: absolute;
@@ -3813,6 +4018,8 @@ input[type="checkbox"].switch {
     height: 30px;
     min-height: 30px; }
   .ClotureComptage .close-button,
+  .CountTool .close-button,
+  .CountTRTool .close-button,
   .ClotureComptcaisse .close-button {
     background-color: #FFFFFF;
     position: absolute;
@@ -3822,12 +4029,16 @@ input[type="checkbox"].switch {
     height: 30px;
     min-height: 30px; }
   .ClotureComptage .header,
+  .CountTool .header,
+  .CountTRTool .header,
   .ClotureComptcaisse .header {
     height: 55px;
     display: flex;
     flex-direction: column;
     justify-content: center; }
     .ClotureComptage .header .title,
+    .CountTool .header .title,
+    .CountTRTool .header .title,
     .ClotureComptcaisse .header .title {
       font-family: "Livvic-Bold";
       font-size: 18px;
@@ -3835,24 +4046,41 @@ input[type="checkbox"].switch {
       text-align: center;
       text-transform: uppercase; }
   .ClotureComptage .btncomptcaisse,
+  .CountTool .btncomptcaisse,
+  .CountTRTool .btncomptcaisse,
   .ClotureComptcaisse .btncomptcaisse {
     width: calc(100% - 10px);
     background-color: #7FAD3B !important; }
     .ClotureComptage .btncomptcaisse .MuiButton-label,
+    .CountTool .btncomptcaisse .MuiButton-label,
+    .CountTRTool .btncomptcaisse .MuiButton-label,
     .ClotureComptcaisse .btncomptcaisse .MuiButton-label {
       padding: 0 25px; }
+    .ClotureComptage .btncomptcaisse:hover,
+    .CountTool .btncomptcaisse:hover,
+    .CountTRTool .btncomptcaisse:hover,
+    .ClotureComptcaisse .btncomptcaisse:hover {
+      background-color: #628133 !important; }
   .ClotureComptage .btncompttr,
+  .CountTool .btncompttr,
+  .CountTRTool .btncompttr,
   .ClotureComptcaisse .btncompttr {
     width: calc(100% - 10px);
     background-color: #7FAD3B !important; }
     .ClotureComptage .btncompttr .MuiButton-label,
+    .CountTool .btncompttr .MuiButton-label,
+    .CountTRTool .btncompttr .MuiButton-label,
     .ClotureComptcaisse .btncompttr .MuiButton-label {
       padding: 0; }
   .ClotureComptage .btncomptverif,
+  .CountTool .btncomptverif,
+  .CountTRTool .btncomptverif,
   .ClotureComptcaisse .btncomptverif {
     width: 100%;
     background-color: #FF2D55 !important; }
     .ClotureComptage .btncomptverif .MuiButton-label,
+    .CountTool .btncomptverif .MuiButton-label,
+    .CountTRTool .btncomptverif .MuiButton-label,
     .ClotureComptcaisse .btncomptverif .MuiButton-label {
       padding: 0 25px; }
 
@@ -4019,6 +4247,8 @@ input[type="checkbox"].switch {
   background-color: #7FAD3B !important; }
   .btncomptcaisseverif .MuiButton-label {
     padding: 0 25px; }
+  .btncomptcaisseverif:hover {
+    background-color: #628133 !important; }
 
 .MuiMenuItem-root {
   font-family: "Livvic-Light" !important;
@@ -4042,121 +4272,206 @@ input[type="checkbox"].switch {
     .swal2-container .standbycommandes .swal2-actions button.swal2-cancel {
       background-color: #5AC8FA; }
 
-.CountTool,
-.CountTRTool {
-  position: absolute;
-  display: none;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background-color: #FFFFFF;
-  border-radius: 15px; }
-  .CountTool.counttool-open, .CountTool.counttrtool-open,
-  .CountTRTool.counttool-open,
-  .CountTRTool.counttrtool-open {
-    display: block; }
-  .CountTool .tete,
-  .CountTRTool .tete {
-    height: 50px;
-    line-height: 50px;
-    text-align: center; }
-    .CountTool .tete .titre,
-    .CountTRTool .tete .titre {
-      font-family: "Livvic-Bold";
-      font-size: 16px;
-      color: #4A4A4A; }
-  .CountTool .corps,
-  .CountTRTool .corps {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 10px 20px; }
-    .CountTool .corps .colonne,
-    .CountTRTool .corps .colonne {
-      background-color: #F7F7F7;
-      border-radius: 15px;
-      padding: 30px 60px;
-      display: flex;
-      flex-direction: column;
-      width: calc(50% - 10px); }
-      .CountTool .corps .colonne + .colonne,
-      .CountTRTool .corps .colonne + .colonne {
-        justify-content: space-between; }
-      .CountTool .corps .colonne .champ,
-      .CountTRTool .corps .colonne .champ {
-        height: 35px;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        width: 100%; }
-        .CountTool .corps .colonne .champ + .champ,
-        .CountTRTool .corps .colonne .champ + .champ {
-          margin-top: 10px; }
-        .CountTool .corps .colonne .champ .nom,
-        .CountTRTool .corps .colonne .champ .nom {
-          font-family: "Livvic-Light";
-          font-size: 14px;
-          color: #4A4A4A;
-          width: 80px;
-          line-height: 35px; }
-        .CountTool .corps .colonne .champ .field,
-        .CountTRTool .corps .colonne .champ .field {
-          background-color: #FFFFFF;
-          width: 100px;
-          border-radius: 5px;
-          text-align: right;
-          padding: 0 5px;
-          font-family: "Livvic-Light";
-          color: #8F8E94;
-          font-size: 14px;
-          line-height: 35px; }
-        .CountTool .corps .colonne .champ .subtotal,
-        .CountTRTool .corps .colonne .champ .subtotal {
-          text-align: right;
-          padding: 0 5px;
-          font-family: "Livvic-Regular";
-          font-size: 14px;
-          line-height: 35px;
-          width: 100px; }
-        .CountTool .corps .colonne .champ.filled .field,
-        .CountTRTool .corps .colonne .champ.filled .field {
-          font-family: "Livvic-Regular";
-          color: #4A4A4A; }
-        .CountTool .corps .colonne .champ.filled .subtotal,
-        .CountTRTool .corps .colonne .champ.filled .subtotal {
-          font-family: "Livvic-Bold";
-          color: #1EA9DF; }
-      .CountTool .corps .colonne .counttotal,
-      .CountTRTool .corps .colonne .counttotal {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between; }
-        .CountTool .corps .colonne .counttotal .ttl,
-        .CountTRTool .corps .colonne .counttotal .ttl {
-          font-family: "Livvic-Bold";
-          font-size: 16px;
-          color: #4A4A4A; }
-        .CountTool .corps .colonne .counttotal .val,
-        .CountTRTool .corps .colonne .counttotal .val {
-          font-family: "Livvic-Bold";
-          font-size: 20px;
-          color: #1EA9DF; }
-  .CountTool .pied,
-  .CountTRTool .pied {
+.CountTool .body,
+.CountTRTool .body {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px 20px; }
+  .CountTool .body .colonne,
+  .CountTRTool .body .colonne {
+    background-color: #F7F7F7;
+    border-radius: 15px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center; }
-    .CountTool .pied .btnvalidcounttool,
-    .CountTool .pied .btnvalidcounttrtool,
-    .CountTRTool .pied .btnvalidcounttool,
-    .CountTRTool .pied .btnvalidcounttrtool {
-      background-color: #7FAD3B;
-      width: 250px; }
+    width: calc(65% - 10px); }
+    .CountTool .body .colonne + .colonne,
+    .CountTRTool .body .colonne + .colonne {
+      justify-content: space-between;
+      width: calc(35% - 10px); }
+    .CountTool .body .colonne .champ,
+    .CountTRTool .body .colonne .champ {
+      height: 28px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%; }
+      .CountTool .body .colonne .champ + .champ,
+      .CountTRTool .body .colonne .champ + .champ {
+        margin-top: 5px; }
+      .CountTool .body .colonne .champ .nom,
+      .CountTRTool .body .colonne .champ .nom {
+        font-family: "Livvic-Light";
+        font-size: 14px;
+        color: #4A4A4A;
+        width: 80px;
+        line-height: 28px; }
+      .CountTool .body .colonne .champ .field,
+      .CountTRTool .body .colonne .champ .field {
+        background-color: #FFFFFF;
+        width: 100px;
+        border-radius: 5px;
+        text-align: right;
+        padding: 0 5px;
+        font-family: "Livvic-Light";
+        color: #8F8E94;
+        font-size: 14px;
+        line-height: 28px;
+        position: relative; }
+        .CountTool .body .colonne .champ .field.active,
+        .CountTRTool .body .colonne .champ .field.active {
+          box-shadow: inset 0 0 0 2px #1EA9DF; }
+        .CountTool .body .colonne .champ .field:before,
+        .CountTRTool .body .colonne .champ .field:before {
+          content: '×';
+          display: inline-block;
+          position: absolute;
+          left: -35px;
+          font-family: "Livvic-Regular";
+          color: #4A4A4A; }
+        .CountTool .body .colonne .champ .field:after,
+        .CountTRTool .body .colonne .champ .field:after {
+          content: '=';
+          display: inline-block;
+          position: absolute;
+          right: -35px;
+          font-family: "Livvic-Regular";
+          color: #4A4A4A; }
+      .CountTool .body .colonne .champ .subtotal,
+      .CountTRTool .body .colonne .champ .subtotal {
+        text-align: right;
+        padding: 0 5px;
+        font-family: "Livvic-Regular";
+        font-size: 14px;
+        line-height: 35px;
+        width: 100px; }
+      .CountTool .body .colonne .champ.filled .field,
+      .CountTRTool .body .colonne .champ.filled .field {
+        font-family: "Livvic-Regular";
+        color: #4A4A4A; }
+      .CountTool .body .colonne .champ.filled .subtotal,
+      .CountTRTool .body .colonne .champ.filled .subtotal {
+        font-family: "Livvic-Bold";
+        color: #1EA9DF; }
+    .CountTool .body .colonne .champliste,
+    .CountTRTool .body .colonne .champliste {
+      padding: 15px 60px 15px 80px;
+      background-repeat: no-repeat;
+      background-position: 25px 15px;
+      background-size: 32px 32px;
+      position: relative; }
+      .CountTool .body .colonne .champliste.pieces-blanches,
+      .CountTRTool .body .colonne .champliste.pieces-blanches {
+        background-image: url("../../images/ico-piecesblanches.svg"); }
+      .CountTool .body .colonne .champliste.pieces-jaunes,
+      .CountTRTool .body .colonne .champliste.pieces-jaunes {
+        background-image: url("../../images/ico-piecesjaunes.svg"); }
+      .CountTool .body .colonne .champliste.pieces-rouges,
+      .CountTRTool .body .colonne .champliste.pieces-rouges {
+        background-image: url("../../images/ico-piecesrouges.svg"); }
+      .CountTool .body .colonne .champliste.billets,
+      .CountTRTool .body .colonne .champliste.billets {
+        background-image: url("../../images/ico-billets.svg"); }
+      .CountTool .body .colonne .champliste + .champliste:before,
+      .CountTRTool .body .colonne .champliste + .champliste:before {
+        content: '';
+        position: absolute;
+        display: block;
+        height: 3px;
+        width: 100%;
+        left: 0;
+        top: 0;
+        background-image: linear-gradient(#E6E6E6 0%, #E6E6E6 100%);
+        background-repeat: no-repeat;
+        background-position: 80px top;
+        background-size: calc(100% - 140px) 2px; }
+    .CountTool .body .colonne .counttheorique,
+    .CountTRTool .body .colonne .counttheorique {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px 25px; }
+      .CountTool .body .colonne .counttheorique .ttl,
+      .CountTRTool .body .colonne .counttheorique .ttl {
+        font-family: "Livvic-Regular";
+        font-size: 14px;
+        color: #4A4A4A; }
+      .CountTool .body .colonne .counttheorique .val,
+      .CountTRTool .body .colonne .counttheorique .val {
+        font-family: "Livvic-Regular";
+        font-size: 14px;
+        color: #4A4A4A; }
+    .CountTool .body .colonne .counttotal,
+    .CountTRTool .body .colonne .counttotal {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 15px; }
+      .CountTool .body .colonne .counttotal .ttl,
+      .CountTRTool .body .colonne .counttotal .ttl {
+        font-family: "Livvic-Bold";
+        font-size: 16px;
+        color: #4A4A4A; }
+      .CountTool .body .colonne .counttotal .val,
+      .CountTRTool .body .colonne .counttotal .val {
+        font-family: "Livvic-Bold";
+        font-size: 20px;
+        color: #1EA9DF; }
+    .CountTool .body .colonne .countfdcaisse,
+    .CountTRTool .body .colonne .countfdcaisse {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px 25px; }
+      .CountTool .body .colonne .countfdcaisse .ttl,
+      .CountTRTool .body .colonne .countfdcaisse .ttl {
+        font-family: "Livvic-Regular";
+        font-size: 16px;
+        color: #4A4A4A; }
+      .CountTool .body .colonne .countfdcaisse .val,
+      .CountTRTool .body .colonne .countfdcaisse .val {
+        font-family: "Livvic-Regular";
+        font-size: 16px;
+        color: #1EA9DF; }
 
-.CountTRTool .corps {
-  height: calc(100% - 105px); }
+.CountTool .footer,
+.CountTRTool .footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center; }
+  .CountTool .footer .btnvalidcounttool,
+  .CountTool .footer .btnvalidcounttrtool,
+  .CountTRTool .footer .btnvalidcounttool,
+  .CountTRTool .footer .btnvalidcounttrtool {
+    background-color: #7FAD3B;
+    width: 250px; }
+
+.CountToolKeyboard {
+  position: relative;
+  width: 100%;
+  height: auto;
+  display: flex !important;
+  flex-direction: row;
+  justify-content: center;
+  top: auto;
+  left: auto;
+  background-color: transparent; }
+  .CountToolKeyboard .NumberKeyboard {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    box-shadow: none; }
+    .CountToolKeyboard .NumberKeyboard .close-button {
+      display: none; }
+
+.CountTRTool .body {
+  height: 500px;
+  position: relative; }
 
 .CountTRTool .MuiTableContainer-root {
   position: relative;
@@ -4165,6 +4480,7 @@ input[type="checkbox"].switch {
 .CountTRTool .liste {
   margin-left: 50px;
   width: calc(100% - 100px);
+  height: 100%;
   background-color: #F7F7F7;
   border-radius: 10px; }
   .CountTRTool .liste .liste-body {
@@ -4214,6 +4530,540 @@ input[type="checkbox"].switch {
   top: 120px;
   outline: none;
   user-select: none; }
+
+.MotifModal {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none; }
+  .MotifModal .Modal-container {
+    background-color: #FFFFFF;
+    width: 300px;
+    border-radius: 15px;
+    padding: 0 20px; }
+  .MotifModal .close-button {
+    background-color: #FFFFFF;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px; }
+  .MotifModal .header {
+    height: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; }
+    .MotifModal .header .title {
+      font-family: "Livvic-Bold";
+      font-size: 18px;
+      color: #4A4A4A;
+      text-align: center;
+      text-transform: uppercase; }
+  .MotifModal .body {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-bottom: 30px; }
+    .MotifModal .body .motif-item {
+      font-family: "Livvic-Regular";
+      font-size: 14px;
+      text-transform: uppercase;
+      color: #4A4A4A;
+      background-color: #E6E6E6;
+      width: 250px;
+      height: 35px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 2px;
+      border-radius: 3px;
+      cursor: pointer; }
+      .MotifModal .body .motif-item.delete {
+        background-color: #FF2D55;
+        color: #FFFFFF; }
+
+.Tresorerie .caption {
+  font-family: "Livvic-Bold";
+  font-size: 18px;
+  color: #4A4A4A;
+  letter-spacing: 0; }
+
+.Tresorerie .dates {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  padding-bottom: 20px; }
+  .Tresorerie .dates .btnretour {
+    flex-grow: unset;
+    flex-shrink: unset;
+    background-color: #9EB3BB; }
+    .Tresorerie .dates .btnretour .StdButton-text {
+      text-decoration: underline;
+      color: #FFFFFF; }
+  .Tresorerie .dates .btnentree {
+    background-color: #7FAD3B;
+    margin-right: 20px; }
+  .Tresorerie .dates .btnsortie {
+    background-color: #FF2D55; }
+  .Tresorerie .dates .date-pickers {
+    width: calc(100% - 310px);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center; }
+  .Tresorerie .dates .btnsynthese {
+    flex-grow: unset;
+    flex-shrink: unset;
+    background-color: #9CD04E; }
+    .Tresorerie .dates .btnsynthese .StdButton-text {
+      color: #FFFFFF; }
+  .Tresorerie .dates .caption.space-left {
+    margin-left: 30px; }
+  .Tresorerie .dates .MuiFormControl-marginNormal {
+    margin: 0 10px;
+    width: 200px; }
+    .Tresorerie .dates .MuiFormControl-marginNormal:hover .MuiInput-underline:before,
+    .Tresorerie .dates .MuiFormControl-marginNormal:hover .MuiInput-underline:after,
+    .Tresorerie .dates .MuiFormControl-marginNormal .MuiInput-underline:before,
+    .Tresorerie .dates .MuiFormControl-marginNormal .MuiInput-underline:after {
+      border: 0; }
+    .Tresorerie .dates .MuiFormControl-marginNormal .MuiInput-formControl {
+      background-color: #FFFFFF;
+      border-radius: 2px;
+      padding: 2px 0px 2px 5px; }
+    .Tresorerie .dates .MuiFormControl-marginNormal input {
+      color: #1EA9DF;
+      font-family: "Livvic-Bold";
+      font-size: 18px;
+      text-align: center; }
+
+.Tresorerie .liste-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 0; }
+
+.Tresorerie .StdButton {
+  margin: 0 2px !important;
+  padding: 0 10px !important;
+  min-width: 40px;
+  min-height: 25px;
+  border-radius: 8px !important; }
+
+.Tresorerie .StdButton-text {
+  text-transform: uppercase;
+  font-size: 12px;
+  font-family: "Livvic-Bold"; }
+
+.Tresorerie .StdButton-icon {
+  height: 20px;
+  width: 20px; }
+  .Tresorerie .StdButton-icon svg {
+    width: 20px;
+    height: 20px; }
+
+.Tresorerie .action-view {
+  background-color: #9CD04E; }
+
+.Tresorerie .action-print {
+  background-color: #1EA9DF; }
+
+.Tresorerie .MuiTableCell-root {
+  font-family: "Livvic-Regular";
+  border: none; }
+
+.Tresorerie .MuiTableCell-stickyHeader {
+  background-color: #E6E6E6; }
+
+.Tresorerie thead {
+  background-color: rgba(0, 0, 0, 0.1); }
+
+.Tresorerie tbody .type-entree .liste-id,
+.Tresorerie tbody .type-entree .liste-origine,
+.Tresorerie tbody .type-entree .liste-debit,
+.Tresorerie tbody .type-entree .liste-montant {
+  background-color: #b5d3ad; }
+
+.Tresorerie tbody .type-entree .liste-date,
+.Tresorerie tbody .type-entree .liste-destination,
+.Tresorerie tbody .type-entree .liste-credit,
+.Tresorerie tbody .type-entree .liste-type {
+  background-color: #a4ce98; }
+
+.Tresorerie tbody .type-entree.odd .liste-id,
+.Tresorerie tbody .type-entree.odd .liste-origine,
+.Tresorerie tbody .type-entree.odd .liste-debit,
+.Tresorerie tbody .type-entree.odd .liste-montant {
+  background-color: #a4ce98; }
+
+.Tresorerie tbody .type-entree.odd .liste-date,
+.Tresorerie tbody .type-entree.odd .liste-destination,
+.Tresorerie tbody .type-entree.odd .liste-credit,
+.Tresorerie tbody .type-entree.odd .liste-type {
+  background-color: #8dc27e; }
+
+.Tresorerie tbody .type-sortie .liste-id,
+.Tresorerie tbody .type-sortie .liste-origine,
+.Tresorerie tbody .type-sortie .liste-debit,
+.Tresorerie tbody .type-sortie .liste-montant {
+  background-color: #e6a179; }
+
+.Tresorerie tbody .type-sortie .liste-date,
+.Tresorerie tbody .type-sortie .liste-destination,
+.Tresorerie tbody .type-sortie .liste-credit,
+.Tresorerie tbody .type-sortie .liste-type {
+  background-color: #e99261; }
+
+.Tresorerie tbody .type-sortie.odd .liste-id,
+.Tresorerie tbody .type-sortie.odd .liste-origine,
+.Tresorerie tbody .type-sortie.odd .liste-debit,
+.Tresorerie tbody .type-sortie.odd .liste-montant {
+  background-color: #e99261; }
+
+.Tresorerie tbody .type-sortie.odd .liste-date,
+.Tresorerie tbody .type-sortie.odd .liste-destination,
+.Tresorerie tbody .type-sortie.odd .liste-credit,
+.Tresorerie tbody .type-sortie.odd .liste-type {
+  background-color: #e67e42; }
+
+.Tresorerie tbody .type-ouverture .liste-id,
+.Tresorerie tbody .type-ouverture .liste-origine,
+.Tresorerie tbody .type-ouverture .liste-debit,
+.Tresorerie tbody .type-ouverture .liste-montant {
+  background-color: #9ed6f1; }
+
+.Tresorerie tbody .type-ouverture .liste-date,
+.Tresorerie tbody .type-ouverture .liste-destination,
+.Tresorerie tbody .type-ouverture .liste-credit,
+.Tresorerie tbody .type-ouverture .liste-type {
+  background-color: #85cef2; }
+
+.Tresorerie tbody .type-ouverture.odd .liste-id,
+.Tresorerie tbody .type-ouverture.odd .liste-origine,
+.Tresorerie tbody .type-ouverture.odd .liste-debit,
+.Tresorerie tbody .type-ouverture.odd .liste-montant {
+  background-color: #85cef2; }
+
+.Tresorerie tbody .type-ouverture.odd .liste-date,
+.Tresorerie tbody .type-ouverture.odd .liste-destination,
+.Tresorerie tbody .type-ouverture.odd .liste-credit,
+.Tresorerie tbody .type-ouverture.odd .liste-type {
+  background-color: #7fb1e7; }
+
+.Tresorerie tbody .type-ouverture.ecart .liste-credit,
+.Tresorerie tbody .type-ouverture.ecart .liste-debit {
+  background-color: #FF2D55;
+  color: #FFFFFF;
+  font-family: "Livvic-Bold"; }
+
+.Tresorerie tbody .type-ouverture.ecart .liste-debit {
+  background-color: #ff476a; }
+
+.Tresorerie tbody .type-cloture .liste-id,
+.Tresorerie tbody .type-cloture .liste-origine,
+.Tresorerie tbody .type-cloture .liste-debit,
+.Tresorerie tbody .type-cloture .liste-montant {
+  background-color: #fff8a5; }
+
+.Tresorerie tbody .type-cloture .liste-date,
+.Tresorerie tbody .type-cloture .liste-destination,
+.Tresorerie tbody .type-cloture .liste-credit,
+.Tresorerie tbody .type-cloture .liste-type {
+  background-color: #fff14b; }
+
+.Tresorerie tbody .type-cloture.odd .liste-id,
+.Tresorerie tbody .type-cloture.odd .liste-origine,
+.Tresorerie tbody .type-cloture.odd .liste-debit,
+.Tresorerie tbody .type-cloture.odd .liste-montant {
+  background-color: #fff14b; }
+
+.Tresorerie tbody .type-cloture.odd .liste-date,
+.Tresorerie tbody .type-cloture.odd .liste-destination,
+.Tresorerie tbody .type-cloture.odd .liste-credit,
+.Tresorerie tbody .type-cloture.odd .liste-type {
+  background-color: #ffc34b; }
+
+.Tresorerie tbody .liste-credit,
+.Tresorerie tbody .liste-debit,
+.Tresorerie tbody .liste-montant {
+  text-align: right; }
+
+.Tresorerie tbody .liste-montant {
+  font-style: italic; }
+
+.Tresorerie tbody .type-cloture .liste-montant,
+.Tresorerie tbody .type-ouverture .liste-montant {
+  font-style: normal;
+  font-family: "Livvic-Bold"; }
+
+.Tresorerie tbody .MuiTableCell-body {
+  font-size: 12px; }
+
+.Tresorerie .MuiTableContainer-root {
+  height: calc(100% - 40px); }
+
+.ViewCloturePopin {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none; }
+  .ViewCloturePopin .Modal-container {
+    background-color: #FFFFFF;
+    width: 500px;
+    border-radius: 15px;
+    padding: 0 20px; }
+  .ViewCloturePopin .close-button {
+    background-color: #FFFFFF;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px; }
+  .ViewCloturePopin .header {
+    height: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; }
+    .ViewCloturePopin .header .title {
+      font-family: "Livvic-Bold";
+      font-size: 18px;
+      color: #4A4A4A;
+      text-align: center;
+      text-transform: uppercase; }
+  .ViewCloturePopin .body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-bottom: 30px; }
+    .ViewCloturePopin .body .blocwrapper {
+      width: 100%; }
+  .ViewCloturePopin .footer {
+    text-align: right; }
+    .ViewCloturePopin .footer .print-cloture {
+      background-color: #1EA9DF;
+      width: 45%;
+      min-height: 30px; }
+      .ViewCloturePopin .footer .print-cloture .StdButton-text {
+        font-family: "Livvic-Bold";
+        font-size: 14px;
+        text-transform: uppercase; }
+  .ViewCloturePopin .ticket-x {
+    box-shadow: none;
+    height: 550px;
+    width: 100%;
+    border: 1px dashed #4A4A4A;
+    padding: 20px;
+    font-family: "Livvic-Light";
+    font-size: 12px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-y: scroll; }
+    .ViewCloturePopin .ticket-x .wrapper {
+      height: 100%;
+      width: 100%; }
+    .ViewCloturePopin .ticket-x .periode {
+      padding-bottom: 10px; }
+      .ViewCloturePopin .ticket-x .periode .val {
+        text-align: center; }
+    .ViewCloturePopin .ticket-x .sel {
+      padding-bottom: 10px; }
+    .ViewCloturePopin .ticket-x .recap {
+      padding-bottom: 10px; }
+      .ViewCloturePopin .ticket-x .recap .recap-item {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between; }
+    .ViewCloturePopin .ticket-x .titre {
+      text-align: center;
+      border-top: 1px solid #4A4A4A;
+      border-bottom: 1px solid #4A4A4A;
+      padding: 5px 0;
+      margin: 10px 0 5px; }
+    .ViewCloturePopin .ticket-x .detail .detail-item {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between; }
+      .ViewCloturePopin .ticket-x .detail .detail-item.pre-filet {
+        margin-top: 5px;
+        padding-top: 5px;
+        border-top: 1px solid #4A4A4A; }
+      .ViewCloturePopin .ticket-x .detail .detail-item.post-space {
+        padding-bottom: 10px; }
+      .ViewCloturePopin .ticket-x .detail .detail-item.total {
+        padding-left: 20px; }
+    .ViewCloturePopin .ticket-x .ventil {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between; }
+      .ViewCloturePopin .ticket-x .ventil .ventil-nom,
+      .ViewCloturePopin .ticket-x .ventil .ventil-intit:nth-child(1) {
+        width: 30%; }
+      .ViewCloturePopin .ticket-x .ventil.total {
+        padding-top: 10px; }
+      .ViewCloturePopin .ticket-x .ventil.intit {
+        padding-bottom: 5px; }
+
+.MouvementPopin {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none; }
+  .MouvementPopin .Modal-container {
+    background-color: #FFFFFF;
+    width: 800px;
+    border-radius: 15px;
+    padding: 0 20px; }
+  .MouvementPopin .close-button {
+    background-color: #FFFFFF;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    min-height: 30px; }
+  .MouvementPopin .header {
+    height: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; }
+    .MouvementPopin .header .title {
+      font-family: "Livvic-Bold";
+      font-size: 18px;
+      color: #4A4A4A;
+      text-align: center;
+      text-transform: uppercase; }
+  .MouvementPopin .body {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-bottom: 30px; }
+    .MouvementPopin .body .blocwrapper {
+      width: 100%; }
+    .MouvementPopin .body .label {
+      font-family: "Livvic-Bold";
+      font-size: 14px;
+      color: #4A4A4A; }
+    .MouvementPopin .body .zone-gauche {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      width: calc(100% - 270px); }
+    .MouvementPopin .body .zone-sel-io {
+      padding-top: 20px;
+      display: flex;
+      width: 100%;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      background-image: url("../../images/ico_arrow-right.svg");
+      background-repeat: no-repeat;
+      background-position: center calc(50% + 10px);
+      background-size: 20px; }
+    .MouvementPopin .body .sel-caisse,
+    .MouvementPopin .body .sel-external {
+      display: inline-flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+      width: 45%; }
+      .MouvementPopin .body .sel-caisse .MuiFormControl-root,
+      .MouvementPopin .body .sel-external .MuiFormControl-root {
+        width: 50%; }
+    .MouvementPopin .body .selected-caisse {
+      font-family: "Livvic-Bold";
+      font-size: 14px;
+      color: #4A4A4A;
+      width: 50%; }
+    .MouvementPopin .body.type-entree .sel-external, .MouvementPopin .body.type-ouverture .sel-external {
+      order: 1; }
+    .MouvementPopin .body.type-entree .sel-caisse, .MouvementPopin .body.type-ouverture .sel-caisse {
+      order: 2; }
+    .MouvementPopin .body.type-entree .zone-montant .label, .MouvementPopin .body.type-ouverture .zone-montant .label {
+      color: #7FAD3B; }
+    .MouvementPopin .body.type-sortie .sel-caisse, .MouvementPopin .body.type-cloture .sel-caisse {
+      order: 1; }
+    .MouvementPopin .body.type-sortie .sel-external, .MouvementPopin .body.type-cloture .sel-external {
+      order: 2; }
+    .MouvementPopin .body.type-sortie .zone-montant .label, .MouvementPopin .body.type-cloture .zone-montant .label {
+      color: #FF2D55; }
+    .MouvementPopin .body .zone-motif {
+      width: calc(100% - 15px); }
+      .MouvementPopin .body .zone-motif .label {
+        padding-bottom: 5px; }
+      .MouvementPopin .body .zone-motif .MuiFormControl-root {
+        width: 100%; }
+      .MouvementPopin .body .zone-motif .caption {
+        font-family: "Livvic-Regular";
+        font-size: 12px;
+        color: #1EA9DF; }
+    .MouvementPopin .body .zone-precedent {
+      padding-top: 40px;
+      padding-bottom: 10px;
+      text-align: center; }
+      .MouvementPopin .body .zone-precedent .label {
+        padding-bottom: 10px; }
+      .MouvementPopin .body .zone-precedent .date {
+        font-family: "Livvic-Regular";
+        font-size: 12px; }
+      .MouvementPopin .body .zone-precedent .montant {
+        font-family: "Livvic-Bold";
+        font-size: 24px;
+        color: #8F8E94;
+        padding-top: 10px; }
+    .MouvementPopin .body.type-ouverture .zone-gauche {
+      justify-content: flex-start; }
+    .MouvementPopin .body .zone-montant {
+      width: 270px;
+      background-image: linear-gradient(#8F8E94 0%, #8F8E94 100%);
+      background-repeat: no-repeat;
+      background-position: left top;
+      background-size: 1px 100%;
+      padding-left: 10px; }
+      .MouvementPopin .body .zone-montant .label {
+        text-transform: uppercase;
+        text-align: center;
+        padding-bottom: 5px; }
+      .MouvementPopin .body .zone-montant.ecart .PillField .field {
+        color: #FF2D55; }
+    .MouvementPopin .body .Calculette .field {
+      text-align: right;
+      letter-spacing: 0.1em; }
+    .MouvementPopin .body .Calculette .PillField {
+      width: 100%; }
+    .MouvementPopin .body .Calculette .keyboard {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      width: 170px;
+      height: 230px;
+      padding: 15px 6px 0;
+      margin: 0 auto; }
+  .MouvementPopin .footer .ftr-cont {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; }
+  .MouvementPopin .footer .btncancel {
+    background-color: #8F8E94; }
+  .MouvementPopin .footer .btnsave {
+    background-color: #7FAD3B; }
+
+.mouvementPopinAlert .swal2-actions {
+  justify-content: space-around; }
 
 .ClientModal,
 .FicheClient {
@@ -6070,7 +6920,6 @@ input[type="checkbox"].switch {
     display: inline-flex; }
 
 .Menu .MuiTypography-root {
-  height: 100%;
   background-color: #FFFFFF;
   border-radius: 15px 0 15px 15px; }
 
@@ -6093,9 +6942,18 @@ input[type="checkbox"].switch {
 .Menu .cont-title {
   font-family: "Livvic-SemiBold"; }
 
+.Menu .cont-print {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: center; }
+
 .Menu .cont-print .MuiFormControlLabel-label {
   font-size: 13px;
   font-family: "Livvic-Regular"; }
+
+.Menu .cont-print .type-hilite {
+  margin-right: 30px; }
 
 .Menu .panel-liste {
   width: 100%; }
@@ -6373,14 +7231,14 @@ input[type="checkbox"].switch {
     height: 30px;
     min-height: 30px; }
   .Personnalisation .header {
-    height: 55px;
+    height: 35px;
     display: flex;
     flex-direction: column;
     justify-content: center; }
     .Personnalisation .header .title {
       user-select: none;
       font-family: "Livvic-Bold";
-      font-size: 18px;
+      font-size: 15px;
       color: #4A4A4A;
       text-align: center;
       text-transform: uppercase; }
@@ -6390,18 +7248,18 @@ input[type="checkbox"].switch {
     justify-content: center;
     align-items: center;
     position: relative;
-    width: calc(25% - 6px);
-    height: 90px;
-    border-radius: 15px;
+    width: calc((100% / 10) - 4px);
+    height: 70px;
+    border-radius: 10px;
     color: #FFFFFF;
     font-family: "Livvic-Bold";
-    font-size: 15px;
+    font-size: 10px;
     vertical-align: top;
     text-transform: uppercase;
     box-sizing: border-box;
-    padding: 5px;
-    margin: 3px 3px 8px;
-    box-shadow: inset 0 0 0 8px #FFFFFF, 0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+    padding: 4px;
+    margin: 2px 2px 2px;
+    box-shadow: inset 0 0 0 4px #FFFFFF, 0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
     cursor: pointer; }
     .Personnalisation .body .IngredientBtn div.btnlabel {
       user-select: none;
