@@ -128,7 +128,8 @@ const data = {
                         valider: "Valider",
                         tiroir: "Tiroir",
                         attente: "Attente",
-                        reprise: "Reprise"
+                        reprise: "Reprise",
+                        staffmeal: "Empl."
                     },
                     messages: {
                         delete: {
@@ -245,6 +246,22 @@ const data = {
                     precedent: 'Précédent',
                     suivant: 'Suivant',
                     valider: 'Valider'
+                },
+                staffmeal: {
+                    titre: 'Repas Employé',
+                    label: 'Identification du bénéficiaire',
+                    alerte: {
+                        titre: 'Erreur !',
+                        texte: 'Aucun employé ne correspond à cet identifiant'
+                    },
+                    deja: {
+                        titre: 'Erreur !',
+                        texte: 'L’employé a déjà pris un Repas Employé aujourd’hui'
+                    },
+                    annulation: {
+                        titre: 'Annulation',
+                        texte: 'Êtes-vous sûr d’annuler ce Repas Employé ?'
+                    }
                 }
             },
             employes: { 
@@ -386,6 +403,10 @@ const data = {
                     a_encaisser: "À Encaisser",
                     confirmed: "Terminées"
                 },
+                type: {
+                    vente: "Vente",
+                    staffmeal: "Repas Empl."
+                },
                 recherche: {
                     numero: "N° Commande",
                     client: "Nom Client"
@@ -397,6 +418,7 @@ const data = {
                     montant: "Montant",
                     caisse: "Caisse",
                     client: "Client",
+                    beneficiaire: "Bénéficiaire",
                     actions: "Actions",
                     mode: "Mode",
                     modes: {
@@ -933,6 +955,11 @@ const data = {
                                     texte: '%NOM% sera supprimé de la liste et il ne pourra plus se connecter à la caisse'
                                 }
                             }
+                        },
+                        staffmeal: {
+                            titre: 'Repas Employés',
+                            activation: 'Activés',
+                            modifier: "Réduction"
                         }
                     },
                     financier: { 
@@ -1022,7 +1049,8 @@ const data = {
                                         //  commande: 'Commande',
                                         principal: 'Principal',
                                         partiel: 'Partiel',
-                                        etiquette: 'Etiquette'//,
+                                        etiquette: 'Etiquette',
+                                        produits: 'Produits'//,
                                         //  cloture_x: 'X de caisse',
                                         //  cloture_z: 'Ticket de clôture'
                                     },

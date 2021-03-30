@@ -102,7 +102,7 @@ function TableCommandes(props) {
             <TableCell key={`${id}-hd-numero`} className="liste-numero">{ strings.modules.listecommandes.liste.numero }</TableCell>
             <TableCell key={`${id}-hd-montant`} className="liste-montant">{ strings.modules.listecommandes.liste.montant }</TableCell>
             <TableCell key={`${id}-hd-caisse`} className="liste-caisse">{ strings.modules.listecommandes.liste.caisse }</TableCell>
-            <TableCell key={`${id}-hd-client`} className="liste-client">{ strings.modules.listecommandes.liste.client }</TableCell>
+            <TableCell key={`${id}-hd-client`} className="liste-client">{((id!=='staffmeals') ? strings.modules.listecommandes.liste.client : strings.modules.listecommandes.liste.beneficiaire )}</TableCell>
             <TableCell key={`${id}-hd-mode`} className="liste-mode">{ strings.modules.listecommandes.liste.mode }</TableCell>
             <TableCell key={`${id}-hd-actions`} className="liste-actions">{ strings.modules.listecommandes.liste.actions }</TableCell>
           </TableRow>
@@ -115,7 +115,7 @@ function TableCommandes(props) {
               <TableCell key={`${row.id}-numero`} className="liste-numero">{ row.commande.numero }</TableCell>
               <TableCell key={`${row.id}-montant`} className="liste-montant">{ row.commande.montant }</TableCell>
               <TableCell key={`${row.id}-caisse`} className="liste-caisse">{ row.commande.caisse.nom }</TableCell>
-              <TableCell key={`${row.id}-client`} className="liste-client">{ row.commande.client }</TableCell>
+              <TableCell key={`${row.id}-client`} className="liste-client">{ (id!=='staffmeals') ? row.commande.client : row.commande.beneficiaire.nom }</TableCell>
               <TableCell key={`${row.id}-mode`} className="liste-mode">{ strings.modules.listecommandes.liste.modes[row.commande.mode] }</TableCell>
               <TableCell key={`${row.id}-actions`} className="liste-actions">
                 {(row.commande.mode==='livraison' && id!=='standby') && <StdButton key={`${row.id}-livreur`} identifier='livreur' elementclass={ `action action-livreur${(row.commande.livreur?' lvr-active':'')}` } icon={ <DeliveryIcon htmlColor={(row.commande.livreur?'#FF2D55':'#666666')} /> } noStroke={true} text='' onClick={() => { openLivreurs(row.id) }} />}
@@ -400,7 +400,7 @@ class ListeCommandes extends React.Component {
     const commandeLivreur = commandeId!=null ? commandeslist[commandeId].livreur : null;
 
 
-    let a_encaisserlist = [], standbylist = [], confirmedlist = [];
+    let a_encaisserlist = [], standbylist = [], confirmedlist = [], stmeallist = [];
     
     for (let [key, value] of Object.entries(commandeslist)) {
 
@@ -423,15 +423,18 @@ class ListeCommandes extends React.Component {
         mode: value.mode,
         caisse: value.caisse,
         livreur: value.livreur,
+        type: value.type ? value.type : 'vente',
+        beneficiaire : value.beneficiaire ? value.beneficiaire : null, 
         centre: value.centre_revenu ? value.centre_revenu : 'restaurant',
         archived: value.hasOwnProperty('archived') && value.archived!==null,
       };
       let __start = compareAsc(new Date(value.createdAt), startDate);
       let __end = compareAsc(new Date(value.createdAt), endDate);
       if ((__start>-1 && __end<1) && (searchval==='' || cmd.id.indexOf(searchval)>-1)) {
-        if (value.status==='a_encaisser') a_encaisserlist.push({id: key, commande: cmd});
-        if (value.status==='standby') standbylist.push({id: key, commande: cmd});
-        if (value.status==='confirmed') confirmedlist.push({id: key, commande: cmd});
+        if (value.status==='a_encaisser' && value.type==="vente") a_encaisserlist.push({id: key, commande: cmd});
+        if (value.status==='standby' && value.type==="vente") standbylist.push({id: key, commande: cmd});
+        if (value.status==='confirmed' && value.type==="vente") confirmedlist.push({id: key, commande: cmd});
+        if (value.type==="staffmeal") stmeallist.push({id: key, commande: cmd});
       }
     }
     logger.log('searchval :',searchval!=='');
@@ -501,6 +504,7 @@ class ListeCommandes extends React.Component {
               <Tab label={<Badge color="primary" badgeContent={standbylist.length}>{ strings.modules.listecommandes.status.standby }</Badge>} {...a11yProps(0)} />
               <Tab label={<Badge color="primary" badgeContent={a_encaisserlist.length}>{ strings.modules.listecommandes.status.a_encaisser }</Badge>} {...a11yProps(1)} />
               <Tab label={<Badge color="primary" badgeContent={confirmedlist.length}>{ strings.modules.listecommandes.status.confirmed }</Badge>} {...a11yProps(2)} />
+              <Tab label={<Badge color="primary" badgeContent={stmeallist.length}>{ strings.modules.listecommandes.type.staffmeal }</Badge>} {...a11yProps(3)} />
             </Tabs>
             <PillField value={searchval} type="text" className="displayId" innerButton={ `${searchval==='' ? 'keyboard' : 'delete'}`} innerButtonHandler={this.searchBtn} />
           </AppBar>
@@ -512,6 +516,9 @@ class ListeCommandes extends React.Component {
           </TabPanel>
           <TabPanel className="panel" value={openTab} index={2}>
             <TableCommandes className="confirmed" id="confirmed" thiscash={thiscash} openReglement={ this.encaissementHandle } openPrint={ this.openPrint } openLivreurs={ this.openLivreurs } liste={confirmedlist} />
+          </TabPanel>
+          <TabPanel className="panel" value={openTab} index={3}>
+            <TableCommandes className="staffmeals" id="staffmeals" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } openLivreurs={ this.openLivreurs } liste={stmeallist} />
           </TabPanel>
         </div>
 

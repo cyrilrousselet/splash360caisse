@@ -10,6 +10,7 @@ const CommandeSchema = mongoose.Schema(
     updatedAt: Number,
     archived: String,
     localsync: Array,
+    type: String,
   },
   { strict: false }
 );

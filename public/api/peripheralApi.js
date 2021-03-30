@@ -617,6 +617,13 @@ function _launchPrint(template, printer, contenu, config={}) {
         _printErrorHandler(e, '_printEtiquettes', printer);
       }
     }
+    else if ('produits' === section) {
+      try {
+        _printProduits(printer, contenu, config);
+      } catch(e) {
+        _printErrorHandler(e, '_printProduits', printer);
+      }
+    }
     // else if ('logo' === section) {
     //   if (contenu.logo!==null) {
     //     const qim = await _printLogo(printer, contenu.logo);
@@ -654,29 +661,6 @@ function _printEtiquettes(printer, data, config) {
 
   log.info('width',__w);
   log.info('height',__h);
-
-  // const test = [
-  //   'SIZE ' + params.width + ' mm,' + params.height + ' mm',
-  //   'GAP ' + params.gap + ' mm,0',
-  //   'DIRECTION 1,0',
-  //   'CLS',
-  //   'TEXT 10,10,"2",0,2,2,"#25"',
-  //   'TEXT 150,10,"2",0,1,1,"20/04/21 - 12:32"',
-  //   'BAR 10,50,' + (__w - 20) + ',4',
-  //   // 'TEXT 10,70,"2",0,1,1,"A EMPORTER"',
-  //   'TEXT 10,70,"2",0,2,2,"MENU B1"',
-  //   // 'BLOCK 10,145,' + (__w - 20) + ',' + (__h - 155) + ',"1",0,1,1,"cheeseburger, frites, barbecue, cheesy, cheddar, cheeseburger, frites, barbecue, cheesy, cheddar, cheeseburger, frites, barbecue"',
-  //   'TEXT 10,145,"1",0,1,1,"cheeseburger, frites, barbecue, cheesy, cheddar, cheeseburger, frites, barbecue, cheesy, cheddar, cheeseburger, frites, barbecue"',
-  //   'PRINT 1'];
-
-  
-  // const feed = iconv.encode(test.join("\n"),"Cp850"); 
-  
-  // // log.info('feed',feed);
-
-
-  // printer.print(feed);
-
 
   let __job = [];
 
@@ -723,6 +707,56 @@ function _printEtiquettes(printer, data, config) {
   printer.print(feed);
 
 }
+
+function _printProduits(printer, data, strings) {
+
+  log.info('_printProduits', data);
+
+  data.articles.forEach((art, i, ar) => {
+
+    const inglist = art.ingredients.map(ing => ing.qte+'x '+ing.nom.toLowerCase());
+
+    let __fl = String(data.numero).length + 1;
+    __fl += String(data.mode).length;
+    let __sp = 21 - __fl;
+
+    const __flt = '#'+data.numero+(new Array(__sp+1)).join(' ')+data.mode;
+
+
+    printer
+      .font('A')
+      .align('CT')
+      .style('B')
+      .fontSize('4square')
+      .text(__flt)
+      // .tableCustom([
+      //   {text:'#'+data.numero, align:'LEFT', cols:19, style:'B'},
+      //   {text:data.mode, align:'RIGHT', cols:19, style:'NORMAL'},
+      // ])
+      .fontSize('normal')
+      .tableCustom([
+        {text:data.date, align:'RIGHT', cols:42, style:'NORMAL'}
+      ])
+      .drawLine()
+      .fontSize('4square')
+      .tableCustom([
+        {text: art.nom, align:'LEFT', cols:21, style:'B'}
+      ])
+      .fontSize('normal')
+      .tableCustom([
+        {text: inglist.join(', '), align:'LEFT', cols:42, style:'NORMAL'}
+      ])
+      .feed(2);
+
+      if (i<ar.length-1) {
+        printer.cut();
+      }
+  });
+  
+}
+
+
+
 
 // informations commande sur le ticket
 function _printInfo(printer, data, strings) {
