@@ -816,13 +816,14 @@ function addComment(payload, comments) {
 }
 
 function addModificateur(payload, comments) {
-  const { item, ingredient, valeur } = payload;
+  const { item, ingredient, valeur, nom } = payload;
 
   return {
     modificateur_id: _newModificateurId(),
     item: item,
     ingredient: ingredient,
     valeur: valeur,
+    nom: nom,
   };
 }
 

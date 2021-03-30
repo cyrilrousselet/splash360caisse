@@ -31,6 +31,9 @@ import paths from './../../constants/routes.json';
 
 import { decodetable } from '../../constants/decodetable';
 import MouvementPopin from '../Cloture/MouvementPopin';
+import EmployeIcon from '../common/icon/EmployeIcon';
+import LoginCont from '../../containers/LoginCont';
+import { dateBounds } from '../../helpers/toolbox';
 
 let strings = new LocalizedStrings(data);
 const logger = new Logger();
@@ -59,6 +62,28 @@ const logger = new Logger();
 //   }
 
 // }
+
+
+
+const BeneficiaireModal = ({open, getBeneficiaire, closePopin}) => (
+
+  <Modal open={open}>
+    <div className="BeneficiaireModal">
+      <div className="Modal-container">
+        <div className="header">
+          <div className="title">{ strings.modules.encaissement.staffmeal.titre }</div>
+        </div>
+        <div className="body">
+          <div className="soustitre">{ strings.modules.encaissement.staffmeal.label }</div>
+          <LoginCont inPopin={true} popinAction={ (passphrase) => getBeneficiaire(passphrase) } />
+        </div>
+      </div>
+      <Fab aria-label="close" size="small" className="close-button" onClick={ closePopin }>
+        <CloseIcon />
+      </Fab>
+    </div>
+  </Modal>
+);
 
 
 class BipperModal extends React.Component {
@@ -497,6 +522,10 @@ class Panier extends React.Component {
     this.closeOuverture = this.closeOuverture.bind(this);
     this.addOuverture = this.addOuverture.bind(this);
 
+    this.setStaffmeal = this.setStaffmeal.bind(this);
+    this.getBeneficiaire = this.getBeneficiaire.bind(this);
+    this.cancelStaffmeal = this.cancelStaffmeal.bind(this);
+
   }
 
   lock = false;
@@ -766,17 +795,19 @@ class Panier extends React.Component {
     });
   }
 
-  saveDiscount(discountid, itemid, ingredientid, valeur) {
+  saveDiscount(discountid, itemid, ingredientid, valeur, nom='') {
     if (discountid===null) {
       this.props.addDiscount({
         item: itemid,
         ingredient: ingredientid,
-        valeur: valeur
+        valeur: valeur,
+        nom: nom
       });
     } else {
       this.props.updateDiscount({
         discountId: discountid, 
-        valeur: valeur
+        valeur: valeur,
+        nom: nom
       });
     }
   }
@@ -922,6 +953,147 @@ class Panier extends React.Component {
     this.props.updateCommande({bipper:bipperId});
   }
 
+  setStaffmeal() {
+    const { commande, deleteDiscount } = this.props;
+
+    if (commande.type==='staffmeal' && commande.beneficiaire!==null) {
+
+      const discount_panier = commande.modificateurs.find(m => (m.item===null && m.ingredient===null));
+
+      Swal.fire({
+        title: strings.modules.encaissement.staffmeal.annulation.titre,
+        html: strings.modules.encaissement.staffmeal.annulation.texte,
+        focusConfirm: true,
+        showCancelButton: true,
+        customClass: 'deleteconfirm',
+        confirmButtonText: strings.general.dialog.delete,
+        cancelButtonText: strings.general.dialog.cancel,
+        buttonsStyling: false 
+      })
+      .then((result) => {
+        if (result.value) {
+          if (discount_panier) {
+            deleteDiscount({discountId:discount_panier.modificateur_id});
+          }
+        }
+      });
+
+      this.props.updateCommande({
+        type: 'vente',
+        beneficiaire: null
+      });
+
+    } else {
+      this.props.updateCommande({
+        type: 'staffmeal',
+        beneficiaire: null
+      });
+    }
+
+  }
+
+
+  async getBeneficiaire(passphrase) {
+
+    const { 
+      getUser, 
+      updateCommande, 
+      parametres, 
+      commande, 
+      addDiscount, 
+      updateDiscount,
+      getCommandesList 
+    } = this.props;
+    
+    const { staffmeal_modifier } = parametres.options;
+
+    let id, nom, user_id;
+
+    // récup de l'employé à partir de son identifiant
+    try {
+
+      const __user = await getUser(passphrase);
+
+      id = __user.id;
+      nom = __user.nom;
+      user_id = __user.user_id;
+
+    }
+    catch (error) {
+      Swal.fire({
+        title: strings.modules.encaissement.staffmeal.alerte.titre,
+        html: strings.modules.encaissement.staffmeal.alerte.texte,
+        showCancelButton: false,
+        focusConfirm: true
+      }).then((result)=> {
+        this.cancelStaffmeal();
+      });
+    }
+
+ 
+
+    const {heure_fin} = parametres.entreprise;
+    const {debut} = dateBounds(new Date(), heure_fin);
+
+
+    logger.log('query staffmeal','{$and:[{type:"staffmeal"}, {createdAt:{$gt:'+debut+'}}, {"beneficiaire.id":"'+id+'"}]}');
+
+    const daily_staffmeal = await getCommandesList({
+      $and:[
+        { type: 'staffmeal' },
+        { 'beneficiaire.id': id },
+        { createdAt: { $gt: debut } }
+      ]
+    });
+
+    logger.log('daily_staffmeal', daily_staffmeal);
+
+    if (daily_staffmeal && daily_staffmeal.commandeslist && Object.entries(daily_staffmeal.commandeslist).length>0) {
+
+      Swal.fire({
+        title: strings.modules.encaissement.staffmeal.deja.titre,
+        html: strings.modules.encaissement.staffmeal.deja.texte,
+        showCancelButton: false,
+        focusConfirm: true
+      }).then((result)=> {
+        this.cancelStaffmeal();
+      });
+      
+    }
+    else {
+      
+      // attribue le modificateur 'staffmeal_modifier' au niveau du panier
+      // modifie le modificateur panier s'il existe déjà
+      const discount_panier = commande.modificateurs.find(m => (m.item===null && m.ingredient===null));
+      if (discount_panier) {
+        updateDiscount({
+          discountId: discount_panier.modificateur_id, 
+          valeur: staffmeal_modifier.value+staffmeal_modifier.option,
+          nom: strings.modules.encaissement.staffmeal.titre
+        });
+      }
+      else {
+        addDiscount({
+          item: null,
+          ingredient: null,
+          valeur: staffmeal_modifier.value+staffmeal_modifier.option,
+          nom: strings.modules.encaissement.staffmeal.titre
+        });
+      }
+      
+      
+      // définit le bénéficiaire
+      updateCommande({beneficiaire:{id, nom, user_id}}); 
+    }
+      
+    
+
+  }
+
+  cancelStaffmeal() {
+    this.props.updateCommande({beneficiaire:null, type:'vente'});
+  }
+
   interval = 0;
 
   render() {
@@ -944,7 +1116,7 @@ class Panier extends React.Component {
             // caisses,
            } = this.props;
 
-    const { comments, modificateurs, items, ticketId, mode, client, bipper } = this.props.commande;
+    const { comments, modificateurs, items, ticketId, mode, client, bipper, type, beneficiaire } = this.props.commande;
     
     const {inputfocus, searchval, 
            commentOpen, commentId, commentItemId, commentIngredientId,
@@ -989,6 +1161,8 @@ class Panier extends React.Component {
     const total = this.calculateTotal(items, modificateurs);
     const devisemonnaie = '€';
     const { selectedIndex, selectedIngredient } = this.state;
+
+    const { staffmeal_active, staffmeal_modifier } = parametres.options;
 
 
     logger.log(`index:${selectedIndex}, ingIndex:${selectedIngredient}`);
@@ -1133,11 +1307,6 @@ class Panier extends React.Component {
     const tiroirHandler = (event) => {
       openDrawer();
     }
-
-    const staffmealHandler = (event) => {
-      console.log('staffmeal');
-    }
-
 
     const openReglementHandler = () => {
       if (!this.props.commande.numero) this.props.getNumero();
@@ -1288,6 +1457,7 @@ class Panier extends React.Component {
                   {modif_panier && <div className="separateur"></div>}
                   {modif_panier && <DiscountListItem
                       className="panier-discount"
+                      nom={modif_panier.nom||''}
                       valeur={modif_panier.valeur}
                       id={modif_panier.modificateur_id}
                       montant={modif_panier.montant}
@@ -1328,11 +1498,11 @@ class Panier extends React.Component {
             <StdButton identifier='emporter' elementclass={ `mode mode-emporter ${(('emporter'===mode) && 'active' : '')}` } disabled={ open } icon={ false } text={ strings.modules.encaissement.panier.mode.emporter } onClick={(value) => { updateCommande({mode:value}) }} />
             <StdButton identifier='livraison' elementclass={ `mode mode-livraison ${(('livraison'===mode) && 'active' : '')}` } disabled={ open } icon={ false } text={ strings.modules.encaissement.panier.mode.livraison } onClick={(value) => { updateCommande({mode:value}) }} />
           </div>
-          <div className="actions">
+          <div className={ `actions${ ((staffmeal_active && staffmeal_modifier) ? ' with-staffmeal' : '' ) }` }>
             <StdButton identifier='encaisser' elementclass={ `action action-encaisser${(ventecmd ? ' action-mid' : '')}` } disabled={ !__encaissable || open } icon={ false } text={ strings.modules.encaissement.panier.action.encaissement } onClick={ ()=> { openReglementHandler() }} />
             {(ventecmd) && (<StdButton identifier='valider' elementclass={ `action action-valider action-mid` } disabled={ !__encaissable || open } icon={ false } text={ strings.modules.encaissement.panier.action.valider } onClick={ ()=> { validationHandler() }} /> )}
             <StdButton identifier='tiroir' elementclass="action action-tiroir" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.tiroir } onClick={ tiroirHandler } />
-            <StdButton identifier='staffmeal' elementclass="action action-staffmeal" icon={ false } disabled={ open || open } text={ strings.modules.encaissement.panier.action.staffmeal } onClick={ staffmealHandler } />
+            {(staffmeal_active && staffmeal_modifier) && (<StdButton identifier='staffmeal' elementclass={ `action action-staffmeal${(type==="staffmeal" ? " activated" : "")}` } icon={ <EmployeIcon htmlColor="#ffffff" /> } disabled={ open || open } text={ '' } onClick={ () => { this.setStaffmeal() } } />)}
             <StdButton identifier='attente' elementclass="action action-attente" icon={ false } disabled={ !__encaissable || open } text={ strings.modules.encaissement.panier.action.attente } onClick={ attenteHandler } />
             <StdButton identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.reprise } onClick={gotoListeCommandes} />
           </div>
@@ -1377,6 +1547,7 @@ class Panier extends React.Component {
           closeHandler={ this.closeOuverture }
           saveMouvement={ this.addOuverture }
         />
+        {(staffmeal_active && staffmeal_modifier) && (<BeneficiaireModal closePopin={ this.cancelStaffmeal } getBeneficiaire={ this.getBeneficiaire } open={ type==="staffmeal" && !beneficiaire } />)}
       </div>
     );
   }
@@ -1403,14 +1574,14 @@ Panier.propTypes = {
 
 
 function DiscountListItem (props) {
-  const {valeur, montant, id, onClick, className, deleteHandler} = props;
+  const {valeur, montant, nom, id, onClick, className, deleteHandler} = props;
 
   const deleteDiscount = () => {
     logger.log('deleteDiscount',id);
 
     Swal.fire({
       title: strings.modules.encaissement.discount.suppression.titre,
-      text: strings.modules.encaissement.discount.suppression.titre,
+      html: strings.modules.encaissement.discount.suppression.texte,
       focusConfirm: true,
       showCancelButton: true,
       customClass: 'deleteconfirm',
@@ -1429,7 +1600,7 @@ function DiscountListItem (props) {
 
   return (
     <ListItem className={ `discount ${className||''}` }>
-      <ListItemText primary={valeur} onClick={onClick} />
+      <ListItemText primary={`${(nom ? nom : valeur)}`} onClick={onClick} />
       <ListItemSecondaryAction>
         <ListItemIcon onClick={deleteDiscount}>
           <DeleteIcon />

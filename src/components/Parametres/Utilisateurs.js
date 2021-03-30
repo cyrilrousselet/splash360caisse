@@ -536,12 +536,24 @@ class Utilisateurs extends React.Component {
  render() {
 
   const { utilisateur, editOpen } = this.state;
-  const { users, clavier } = this.props;
+  const { users, clavier, updateValeur, options } = this.props;
+  const { staffmeal_active, staffmeal_modifier } = options;
 
   const identifiants = {};
   users.forEach(usr=>{
     identifiants[usr.user_id] = usr.identifiant;
   })
+
+
+  // const onChangeModifierHandler = (val) => {
+  //   // let opt = '€';
+  //   // if ((['€','%']).indexOf(String(staffmeal_modifier).substr(-1,1))>-1) opt = String(staffmeal_modifier).substr(-1,1);
+  //   updateOption({domaine: 'options', cle:'staffmeal_modifier', valeur:val});
+  // }
+  const getOption = (str) => {
+    const o = String(str).substr(-1,1);
+    return ['€','%'].indexOf(o)>-1 ? o : '€';
+  }
 
 
   return (
@@ -552,6 +564,34 @@ class Utilisateurs extends React.Component {
     </Fab>
     <div className="table-wrapper">
       <TableUtilisateurs liste={users} id='usersliste' openEdit={this.openEdit} />
+    </div>
+    <div className="staffmeal">
+      <div className="subttl">{ strings.modules.parametres.submodules.utilisateurs.staffmeal.titre }</div>
+      <div className="staffmeal-activation">
+        <SwitchCheckbox 
+          label={ strings.modules.parametres.submodules.utilisateurs.staffmeal.activation }
+          isChecked={ staffmeal_active!==null ? staffmeal_active : false }
+          small={ true }
+          labelLeft={ true }
+          onChange={(name, val)=> {
+            updateValeur({domaine: 'options', cle:'staffmeal_active', valeur:val});
+          }}
+        />
+      </div>
+      <div className="staffmeal-modifier">
+        <LabelledField 
+          className="edit-input"
+          name="edit-input"
+          type="number"
+          value={Number(String(staffmeal_modifier).slice(0,-1))}
+          option={getOption(staffmeal_modifier)}
+          options={['€','%']}
+          onChange={(val)=> {
+            updateValeur({domaine: 'options', cle:'staffmeal_modifier', valeur:val});
+          }}
+          label={ strings.modules.parametres.submodules.utilisateurs.staffmeal.modifier }
+        />
+      </div>
     </div>
     <EditUtilisateurPopin utilisateur={utilisateur} editOpen={editOpen} clavierOpen={clavier} identifiants={identifiants} closeHandler={this.closeEdit} saveUtilisateur={this.saveUser} />
   </div>

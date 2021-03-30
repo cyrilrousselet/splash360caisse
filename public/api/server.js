@@ -9,7 +9,10 @@ const lodashId = require('lodash-id');
 
 
 const http = require("http").Server(sync_server);
-const io = require("socket.io")(http);
+const io = require("socket.io")(http, {
+  pingInterval: 500,
+  pingTimeout: 400,
+});
 const ioclient = require("socket.io-client");
 const { difference, intersection } = require("lodash");
 

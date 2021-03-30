@@ -172,6 +172,7 @@ function setChrono(payload) {
       if (commande.hasOwnProperty("sync")) {
         cmdToSync = {
           id: commande.id,
+          ticketId: commande.ticketId,
           careTime: formatISO(careDatetime),
           endTime: formatISO(endDatetime),
           productionTime:
