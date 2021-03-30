@@ -130,4 +130,41 @@
 
   }
 
+  .staffmeal {
+    .subttl {
+      width: 100%;
+      display: block;
+    }
+    .staffmeal-activation {
+      width: 50%;
+    }
+
+    .staffmeal-modifier {
+      width: 50%;
+      text-align: right;
+    }
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+    align-content: center;
+    .switch-container {
+      min-width: 200px;
+      padding: 0 0 10px 10px;
+      label {
+        position: relative;
+        user-select: none;
+        left: 75%;
+      }
+      label+label {
+        font-family: $f_med;
+        font-size: 14px;
+        color: $noir;
+        position: absolute;
+        left: auto;
+      }
+    }
+  }
+
 }

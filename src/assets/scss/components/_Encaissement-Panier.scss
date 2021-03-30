@@ -159,8 +159,51 @@
         flex-direction: row;
         justify-content: space-between;
         flex-wrap: wrap;
-        .action {
-            width: 29%;
+
+
+
+        &.with-staffmeal {
+            .action {
+                width: 25%;
+            }
+            .StdButton {
+                margin: 3px 3px !important;
+            }
+
+            .action-staffmeal {
+                background-color: $primary;
+                &.activated {
+                    background-color: $orange;
+                    .MuiTouchRipple-root {
+                        background: linear-gradient(-45deg, transparent 47%, red 48%, red 52%, transparent 53%), linear-gradient(45deg, transparent 47%, red 48%, red 52%, transparent 53%);
+                    }
+                }
+                width: 15px;
+                min-width: 45px;
+                padding: 1px 0 !important;
+                .StdButton-icon {
+                    display: inline-flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                    width: 40px;
+                    .MuiSvgIcon-root {
+                        margin-bottom: 5px;
+                    }
+                }
+            }
+        }
+        &:not(.with-staffmeal) {
+            
+            .action {
+                width: 29%;
+            }
+            .StdButton {
+                margin: 3px 5px !important;
+            }
+            .action-encaisser {
+                width: 100%;
+            }
         }
         .action-encaisser {
             background-color: $prairie;
@@ -173,7 +216,7 @@
             }
         }
         .action-mid {
-            width: 46%;
+            width: 46% !important;
             .StdButton-text {
                 font-size: 15px;
             }
@@ -195,9 +238,6 @@
         }
         .action-reprise {
             background-color: $jaune;
-        }
-        .StdButton {
-            margin: 3px 5px !important;
         }
     }
 
@@ -338,6 +378,22 @@
                 font-size: 16px;
                 font-family: $f_hea;
             }
+            .MuiListItemIcon-root {
+                width: 37px;
+                min-width: auto;
+                justify-content: center;
+                align-items: center;
+            }
+            .MuiListItemText-root {
+                width: 65px;
+                text-align: right;
+            }
+        }
+        &.panier-discount {
+            padding: 3px 10px;
+            .MuiListItemSecondaryAction-root {
+                right: 10px;
+            }
         }
         &.item-discount {
             background-color: $bleu;
@@ -358,3 +414,4 @@
         }
     }
 }
+

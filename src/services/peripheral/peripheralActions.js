@@ -257,11 +257,11 @@ function _getTicketsToPrint(filtre, tickets) {
 
   let liste;
   if (filtre==='all') {
-    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['commande','partiel','principal','etiquette']).indexOf(tck.template)>-1));
+    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['commande','partiel','principal','etiquette','produits']).indexOf(tck.template)>-1));
   } else if (filtre==='production') {
-    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['partiel','principal','etiquette']).indexOf(tck.template)>-1));
+    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['partiel','principal','etiquette','produits']).indexOf(tck.template)>-1));
   } else if (filtre==='all_uber') {
-    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['uber','partiel','principal','etiquette']).indexOf(tck.template)>-1));
+    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['uber','partiel','principal','etiquette','produits']).indexOf(tck.template)>-1));
   } else if (filtre.hasOwnProperty('templates')) {
     liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && filtre.templates.indexOf(tck.template)>-1));
   } else if (filtre.hasOwnProperty('ids')) {
@@ -1202,6 +1202,103 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
         // -> template ticket
         template = templates.etiquette;
+
+        let articles = [];
+        cmd.items.forEach(article => {
+
+          let articleIngredients = [];
+          let ingredientsAsProducts = [];
+
+
+          const inglist = [...article.composition, ...article.ingredients];
+
+
+          inglist.forEach(ing => {
+
+            const ingnoprint = (ingredients[ing.ingredient].noprint!==null && ingredients[ing.ingredient].noprint!==undefined) ? ingredients[ing.ingredient].noprint : types[ing.type].noprint;
+
+            // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
+            let __noprint = ingnoprint.find(p=>p===ticket.ticket_id);
+
+            // // ordre du type d'ingrédient
+            // let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
+            // // ordre du type d'ingrédient (défini dans les paramètres)
+            // if (impression_ordre && impression_ordre.types) {
+            //   let __typeweight = impression_ordre.types.findIndex(t=>t===ing.type);
+            //   if (__typeweight>-1) __ingweight = __typeweight;
+            // }
+
+
+            let __ingweight = -1;
+            // ordre des ingrédients : d'abord la composition puis les ingrédients dans l'ordre de leur step
+            if (ing.fromStep!==null) {
+              const iistep = steps[article.produitid].find(s=>s.step_id===ing.fromStep);
+              if (iistep) {
+                __ingweight = iistep.weight;
+              }
+            }
+
+
+            if (!__noprint) {
+              if (ingredients[ing.ingredient].asproduct) {
+                ingredientsAsProducts.push({
+                    qte: ing.qte * article.quantite,
+                    nom: removeDiacritics(ing.nom),
+                    ingredients: []
+                });
+              } else {
+                articleIngredients.push({
+                  qte: ing.qte * article.quantite,
+                  nom: removeDiacritics(ing.nom),
+                  weight: __ingweight
+                });
+              }
+            }
+          });
+
+          articleIngredients.sort((a,b)=>a.weight-b.weight);
+
+          const prd = _getProduit(article.produitid, catalogue);
+          const prdnoprint = prd.noprint!=null ? prd.noprint : catalogue[prd.groupe].noprint;
+          // si le groupe de produits ne doit pas s'imprimer sur ce ticket
+          let __anoprint = prdnoprint.find(p=>p===ticket.ticket_id);
+
+          // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
+          let __noprintableingredient = (inglist.length>0 && articleIngredients.length===0);
+          
+          // si le groupe doit s'imprimer sur ce ticket
+          // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
+          // on ajoute ce produit à la liste à imprimer
+          // if (!__noprintableingredient && (!__anoprint || (__anoprint && articleIngredients.length>0))) {
+          if (!__noprintableingredient && !__anoprint) {
+            articles.push({
+              qte: article.quantite,
+              nom: removeDiacritics(article.nom),
+              ingredients: articleIngredients
+            });        
+          }
+          if (ingredientsAsProducts.length>0 && !__anoprint) {
+            articles = [...articles, ...ingredientsAsProducts];
+          }
+
+        });
+
+
+        // si aucun article ne s'imprime sur ce ticket, on n'imprime pas le ticket
+        noarticle = (articles.length===0);
+
+        contenu = {
+          numero: cmdnumero,
+          mode: strings.tickets.production.mode[cmd.mode],
+          date: `${format(__createdAt, "dd/MM/yyyy")} à ${heure}`,
+          articles: articles
+        };
+
+      }
+      else if (ticket.template==="produits") {
+
+        // -> template ticket
+        template = templates.produits;
 
         let articles = [];
         cmd.items.forEach(article => {

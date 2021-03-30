@@ -155,15 +155,16 @@ function createUser(payload) {
 
 function getAll() {
   return dispatch => {
-      dispatch({ type: userActionTypes.GETALL_REQUEST });
+    dispatch({ type: userActionTypes.GETALL_REQUEST });
 
-      userServices.getAll()
-          .then(
-              users => dispatch({ type: userActionTypes.GETALL_SUCCESS, ...users }),
-              error => dispatch({ type: userActionTypes.GETALL_FAILURE, payload: error.toString() })
-          );
+    userServices.getAll()
+                .then(
+                    users => dispatch({ type: userActionTypes.GETALL_SUCCESS, ...users }),
+                    error => dispatch({ type: userActionTypes.GETALL_FAILURE, payload: error.toString() })
+                );
   }
 };
+
 
 // prefixed function name with underscore because delete is a reserved word in javascript
 function _delete(id) {
@@ -171,12 +172,12 @@ function _delete(id) {
       dispatch({ type: userActionTypes.DELETE_REQUEST, id });
 
       userServices.delete(id)
-          .then(
-              user => dispatch({ type: userActionTypes.DELETE_SUCCESS, id }),
-              error => dispatch({ type: userActionTypes.DELETE_FAILURE, id, payload: error.toString() })
-          );
-          }
-        }
+                  .then(
+                      user => dispatch({ type: userActionTypes.DELETE_SUCCESS, id }),
+                      error => dispatch({ type: userActionTypes.DELETE_FAILURE, id, payload: error.toString() })
+                  );
+  }
+}
 
 
 
