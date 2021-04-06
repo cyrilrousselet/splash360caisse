@@ -574,7 +574,7 @@ class Utilisateurs extends React.Component {
           small={ true }
           labelLeft={ true }
           onChange={(name, val)=> {
-            updateValeur({domaine: 'options', cle:'staffmeal_active', valeur:val});
+            updateValeur({domaine: 'options', cle:'staffmeal_active', valeur:val.valeur+val.option});
           }}
         />
       </div>
@@ -583,11 +583,14 @@ class Utilisateurs extends React.Component {
           className="edit-input"
           name="edit-input"
           type="number"
-          value={Number(String(staffmeal_modifier).slice(0,-1))}
+          value={Number(staffmeal_modifier.value)}
           option={getOption(staffmeal_modifier)}
           options={['€','%']}
           onChange={(val)=> {
-            updateValeur({domaine: 'options', cle:'staffmeal_modifier', valeur:val});
+            let opt = '€';
+            if ((['€','%']).indexOf(String(val).substr(-1,1))>-1) opt = String(val).substr(-1,1);
+          //  updateOption({domaine: 'options', cle:'staffmeal_modifier', valeur:val});
+            updateValeur({domaine: 'options', cle:'staffmeal_modifier', valeur:{value:String(val).substr(0,-2),option:opt}});
           }}
           label={ strings.modules.parametres.submodules.utilisateurs.staffmeal.modifier }
         />
