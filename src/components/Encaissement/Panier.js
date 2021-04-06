@@ -954,11 +954,11 @@ class Panier extends React.Component {
   }
 
   setStaffmeal() {
-    const { commande, deleteDiscount } = this.props;
+    const { commande } = this.props;
 
     if (commande.type==='staffmeal' && commande.beneficiaire!==null) {
 
-      const discount_panier = commande.modificateurs.find(m => (m.item===null && m.ingredient===null));
+      // const discount_panier = commande.modificateurs.find(m => (m.item===null && m.ingredient===null));
 
       Swal.fire({
         title: strings.modules.encaissement.staffmeal.annulation.titre,
@@ -972,21 +972,20 @@ class Panier extends React.Component {
       })
       .then((result) => {
         if (result.value) {
-          if (discount_panier) {
-            deleteDiscount({discountId:discount_panier.modificateur_id});
-          }
+          this.props.updateCommande({
+            type: 'vente',
+            beneficiaire: null,
+            modificateurs: []
+          });
         }
       });
 
-      this.props.updateCommande({
-        type: 'vente',
-        beneficiaire: null
-      });
 
     } else {
       this.props.updateCommande({
         type: 'staffmeal',
-        beneficiaire: null
+        beneficiaire: null,
+        modificateurs: []
       });
     }
 
@@ -1452,7 +1451,8 @@ class Panier extends React.Component {
                             let __nextid = (__stepIndex>=itm.steps.length-1) ? -1 : itm.steps[__stepIndex+1].id;
                             this.props.uncheckItemSteps({itemid:itm.itemid.toString(), stepid: stepid});
                             this.props.openPersonnalisation(itm.itemid.toString(), stepid, __previd, __nextid, __step.validated, itm.status, 'item');
-                          }} />
+                          }} 
+                          commandetype={ type }/>
                   )}
                   {modif_panier && <div className="separateur"></div>}
                   {modif_panier && <DiscountListItem
@@ -1463,6 +1463,7 @@ class Panier extends React.Component {
                       montant={modif_panier.montant}
                       onClick={this.openDiscount}
                       deleteHandler={deleteDiscount}
+                      discountsurvente={ type==="vente" }
                     />
                   }
                   </List>
@@ -1474,7 +1475,7 @@ class Panier extends React.Component {
                 <Fab aria-label="remove" size="small" className="tool remove" disabled={selectedIndex===-1 || open} onClick={onClickRemove}>
                   <MinusIcon htmlColor="#1EA9DF" />
                 </Fab>
-                <Fab aria-label="discount" size="small" className="tool discount" disabled={open} onClick={this.openDiscount}>
+                <Fab aria-label="discount" size="small" className="tool discount" disabled={open || (type==='staffmeal')} onClick={this.openDiscount}>
                   <DiscountIcon />
                 </Fab>
                 <Fab aria-label="comment" size="small" className="tool comment" disabled={open} onClick={this.openComment}>
@@ -1500,10 +1501,10 @@ class Panier extends React.Component {
           </div>
           <div className={ `actions${ ((staffmeal_active && staffmeal_modifier) ? ' with-staffmeal' : '' ) }` }>
             <StdButton identifier='encaisser' elementclass={ `action action-encaisser${(ventecmd ? ' action-mid' : '')}` } disabled={ !__encaissable || open } icon={ false } text={ strings.modules.encaissement.panier.action.encaissement } onClick={ ()=> { openReglementHandler() }} />
-            {(ventecmd) && (<StdButton identifier='valider' elementclass={ `action action-valider action-mid` } disabled={ !__encaissable || open } icon={ false } text={ strings.modules.encaissement.panier.action.valider } onClick={ ()=> { validationHandler() }} /> )}
+            {(ventecmd) && (<StdButton identifier='valider' elementclass={ `action action-valider action-mid` } disabled={ !__encaissable || open || (type==='staffmeal') } icon={ false } text={ strings.modules.encaissement.panier.action.valider } onClick={ ()=> { validationHandler() }} /> )}
             <StdButton identifier='tiroir' elementclass="action action-tiroir" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.tiroir } onClick={ tiroirHandler } />
             {(staffmeal_active && staffmeal_modifier) && (<StdButton identifier='staffmeal' elementclass={ `action action-staffmeal${(type==="staffmeal" ? " activated" : "")}` } icon={ <EmployeIcon htmlColor="#ffffff" /> } disabled={ open || open } text={ '' } onClick={ () => { this.setStaffmeal() } } />)}
-            <StdButton identifier='attente' elementclass="action action-attente" icon={ false } disabled={ !__encaissable || open } text={ strings.modules.encaissement.panier.action.attente } onClick={ attenteHandler } />
+            <StdButton identifier='attente' elementclass="action action-attente" icon={ false } disabled={ !__encaissable || open || (type==='staffmeal') } text={ strings.modules.encaissement.panier.action.attente } onClick={ attenteHandler } />
             <StdButton identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.reprise } onClick={gotoListeCommandes} />
           </div>
         </div>
@@ -1574,7 +1575,7 @@ Panier.propTypes = {
 
 
 function DiscountListItem (props) {
-  const {valeur, montant, nom, id, onClick, className, deleteHandler} = props;
+  const {valeur, montant, nom, id, onClick, className, deleteHandler, discountsurvente=true} = props;
 
   const deleteDiscount = () => {
     logger.log('deleteDiscount',id);
@@ -1603,7 +1604,7 @@ function DiscountListItem (props) {
       <ListItemText primary={`${(nom ? nom : valeur)}`} onClick={onClick} />
       <ListItemSecondaryAction>
         <ListItemIcon onClick={deleteDiscount}>
-          <DeleteIcon />
+          {discountsurvente && (<DeleteIcon />)}
         </ListItemIcon>
         <ListItemText primary={`-${montant}`} />
       </ListItemSecondaryAction>
@@ -1616,7 +1617,7 @@ class PanierListeItem extends React.Component {
 
  
   render() {
-    const {id, itemid, nom, quantite, prix, selected, discount, deleteDiscountHandler, openDiscountHandler, selectedIng, disabled, ingredients, composition, getComment, removeComment, steps, _onClick, _onDoubleClick, _onSubClick, _onSubDoubleClick} = this.props;
+    const {id, itemid, nom, quantite, prix, selected, discount, deleteDiscountHandler, openDiscountHandler, selectedIng, disabled, ingredients, composition, getComment, removeComment, steps, _onClick, _onDoubleClick, _onSubClick, _onSubDoubleClick, commandetype} = this.props;
 
 
     // logger.log('item discount', discount);
@@ -1716,6 +1717,7 @@ class PanierListeItem extends React.Component {
         id={ discount.modificateur_id }
         onClick={ openDiscountHandler }
         deleteHandler={ deleteDiscountHandler }
+        discountsurvente={commandetype==="vente" }
       />}
       </div>
     );
