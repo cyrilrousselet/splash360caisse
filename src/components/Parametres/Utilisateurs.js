@@ -555,7 +555,6 @@ class Utilisateurs extends React.Component {
     return ['€','%'].indexOf(o)>-1 ? o : '€';
   }
 
-
   return (
    <div className="Utilisateurs subcontent">
     <div className="subttl">{ strings.modules.parametres.submodules.utilisateurs.liste.titre }</div>
@@ -570,11 +569,11 @@ class Utilisateurs extends React.Component {
       <div className="staffmeal-activation">
         <SwitchCheckbox 
           label={ strings.modules.parametres.submodules.utilisateurs.staffmeal.activation }
-          isChecked={ staffmeal_active!==null ? staffmeal_active : false }
+          isChecked={ staffmeal_active ? staffmeal_active : false }
           small={ true }
           labelLeft={ true }
           onChange={(name, val)=> {
-            updateValeur({domaine: 'options', cle:'staffmeal_active', valeur:val.valeur+val.option});
+            updateValeur({domaine: 'options', cle:'staffmeal_active', valeur:val});
           }}
         />
       </div>
@@ -583,14 +582,14 @@ class Utilisateurs extends React.Component {
           className="edit-input"
           name="edit-input"
           type="number"
-          value={Number(staffmeal_modifier.value)}
+          value={staffmeal_modifier ? Number(String(staffmeal_modifier).substr(0, staffmeal_modifier.length-1)) : 0}
           option={getOption(staffmeal_modifier)}
           options={['€','%']}
           onChange={(val)=> {
-            let opt = '€';
-            if ((['€','%']).indexOf(String(val).substr(-1,1))>-1) opt = String(val).substr(-1,1);
+          //  let opt = '€';
+          //  if ((['€','%']).indexOf(String(val.value).substr(-1,1))>-1) opt = String(val.value).substr(-1,1);
           //  updateOption({domaine: 'options', cle:'staffmeal_modifier', valeur:val});
-            updateValeur({domaine: 'options', cle:'staffmeal_modifier', valeur:{value:String(val).substr(0,-2),option:opt}});
+            updateValeur({domaine: 'options', cle:'staffmeal_modifier', valeur:val.value+val.option});
           }}
           label={ strings.modules.parametres.submodules.utilisateurs.staffmeal.modifier }
         />

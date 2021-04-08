@@ -14,7 +14,7 @@ const io = require("socket.io")(http, {
   pingTimeout: 400,
 });
 const ioclient = require("socket.io-client");
-const { difference, intersection } = require("lodash");
+// const { difference, intersection } = require("lodash");
 
 const dbCatalogueApi = require("./dbCatalogueApi.js");
 const dbClientsApi = require("./dbClientsApi.js");
@@ -22,7 +22,7 @@ const dbCloturesApi = require("./dbCloturesApi.js");
 const dbCommandesApi = require("./dbCommandesApi.js");
 const dbEmployesApi = require("./dbEmployesApi.js");
 const dbMarketingApi = require("./dbMarketingApi.js");
-const dbTableApi = require("./dbTableApi.js");
+// const dbTableApi = require("./dbTableApi.js");
 const dbUsersApi = require("./dbUsersApi.js");
 const dbTresorerieApi = require("./dbTresorerieApi.js");
 
@@ -197,7 +197,7 @@ const synchroTreatment = (db, data, emitter = null, response = null) => {
   if (webContents !== null) {
     if (SYNCHRO_TREATMENT.hasOwnProperty(db)) {
       if (data!==null) {
-        if (Array.isArray(data) && data.length==0) {
+        if (Array.isArray(data) && data.length===0) {
           log.info('synchroTreatment, empty array data', data);
 
           // s'il y a une 'response' (donc depuis une requête de l'API)
@@ -246,14 +246,14 @@ const welcomeTreatment = async (station_uniqid) => {
     ]
   };
 
-  const catalogue_sum = await dbCatalogueApi.dbCatalogueSummary(station_uniqid);
-  const clients_sum = await dbClientsApi.dbClientsSummary(station_uniqid);
+  // const catalogue_sum = await dbCatalogueApi.dbCatalogueSummary(station_uniqid);
+  // const clients_sum = await dbClientsApi.dbClientsSummary(station_uniqid);
   const clotures_sum = await dbCloturesApi.dbCloturesSummary(mongo_query);
   const commandes_sum = await dbCommandesApi.dbCommandesSummary(mongocmd_query, station_uniqid);
-  const employes_sum = await dbEmployesApi.dbEmployesSummary(station_uniqid);
-  const marketing_sum = await dbMarketingApi.dbMarketingSummary(station_uniqid);
-  const table_sum = await dbTableApi.dbTableSummary(station_uniqid);
-  const users_sum = await dbUsersApi.dbUsersSummary(station_uniqid);
+  // const employes_sum = await dbEmployesApi.dbEmployesSummary(station_uniqid);
+  // const marketing_sum = await dbMarketingApi.dbMarketingSummary(station_uniqid);
+  // const table_sum = await dbTableApi.dbTableSummary(station_uniqid);
+  // const users_sum = await dbUsersApi.dbUsersSummary(station_uniqid);
   const tresors_sum = await dbTresorerieApi.dbTresorerieSummary(mongo_query);
 
   return {
@@ -276,117 +276,117 @@ const welcomeTreatment = async (station_uniqid) => {
  * @param {*} primarySum liste des tables et des entités {id, updatedAt} de la caisse principale
  * @param {*} secondarySum liste des tables et des entités {id, updatedAt} de la caisse secondaire
  */
-const getImportExport = (primarySum, secondarySum) => {
-  const prmkeys = Object.keys(primarySum);
-  const seckeys = Object.keys(secondarySum);
+// const getImportExport = (primarySum, secondarySum) => {
+//   const prmkeys = Object.keys(primarySum);
+//   const seckeys = Object.keys(secondarySum);
 
-  // récup des clés (noms des tables) pour chaque summary
-  const indbkeys = difference(prmkeys, seckeys);
-  const outdbkeys = difference(seckeys, prmkeys);
-  const comdbkeys = intersection(seckeys, prmkeys);
+//   // récup des clés (noms des tables) pour chaque summary
+//   const indbkeys = difference(prmkeys, seckeys);
+//   const outdbkeys = difference(seckeys, prmkeys);
+//   const comdbkeys = intersection(seckeys, prmkeys);
 
-  // liste des tables à importer
-  let in_db = {};
-  // ajout des tables inexistantes à importer
-  indbkeys.forEach((k) => {
-    Object.defineProperty(in_db, k, {
-      value: primarySum[k],
-      enumerable: true,
-      writable: false,
-      configurable: false,
-    });
-  });
+//   // liste des tables à importer
+//   let in_db = {};
+//   // ajout des tables inexistantes à importer
+//   indbkeys.forEach((k) => {
+//     Object.defineProperty(in_db, k, {
+//       value: primarySum[k],
+//       enumerable: true,
+//       writable: false,
+//       configurable: false,
+//     });
+//   });
 
-  // liste des tables à exporter
-  let out_db = {};
-  // ajout des tables inexistantes à exporter
-  outdbkeys.forEach((k) => {
-    Object.defineProperty(out_db, k, {
-      value: secondarySum[k],
-      enumerable: true,
-      writable: false,
-      configurable: false,
-    });
-  });
+//   // liste des tables à exporter
+//   let out_db = {};
+//   // ajout des tables inexistantes à exporter
+//   outdbkeys.forEach((k) => {
+//     Object.defineProperty(out_db, k, {
+//       value: secondarySum[k],
+//       enumerable: true,
+//       writable: false,
+//       configurable: false,
+//     });
+//   });
 
-  // ajout des tables existantes aux deux listes ('à importer' et 'à exporter')
-  comdbkeys.forEach((k) => {
-    const incom = [];
-    const outcom = [];
+//   // ajout des tables existantes aux deux listes ('à importer' et 'à exporter')
+//   comdbkeys.forEach((k) => {
+//     const incom = [];
+//     const outcom = [];
 
-    // pour chaque table en commun, on récupère les différences
+//     // pour chaque table en commun, on récupère les différences
 
-    // dans la liste de la caisse 'primary'
-    primarySum[k].forEach((nty) => {
-      const found = secondarySum[k].find((snty) => snty.id == nty.id);
-      // si un item a été trouvé
-      if (found) {
-        // si l'item a été mis à jour
-        if (nty.updatedAt) {
-          // si l'item correspondant a été mis à jour
-          if (found.updatedAt) {
-            // si l'item est plus récent il doit être importé
-            if (nty.updatedAt > found.updatedAt) {
-              incom.push(nty);
-            }
-            // si l'item correspondant est plus récent il doit être exporté
-            else {
-              outcom.push(found);
-            }
-          }
-          // si l'item correspondant n'a pas été mis à jour
-          // l'item doit être importé
-          else {
-            incom.push(nty);
-          }
-        }
-        // si l'item n'a pas été mis à jour
-        else {
-          // si l'item correspondant a été mis à jour
-          // il doit être exporté
-          if (found.updatedAt) {
-            outcom.push(found);
-          }
-        }
-      }
-      // s'il n'a pas été trouvé il doit être importé
-      else {
-        incom.push(nty);
-      }
-    });
+//     // dans la liste de la caisse 'primary'
+//     primarySum[k].forEach((nty) => {
+//       const found = secondarySum[k].find((snty) => snty.id == nty.id);
+//       // si un item a été trouvé
+//       if (found) {
+//         // si l'item a été mis à jour
+//         if (nty.updatedAt) {
+//           // si l'item correspondant a été mis à jour
+//           if (found.updatedAt) {
+//             // si l'item est plus récent il doit être importé
+//             if (nty.updatedAt > found.updatedAt) {
+//               incom.push(nty);
+//             }
+//             // si l'item correspondant est plus récent il doit être exporté
+//             else {
+//               outcom.push(found);
+//             }
+//           }
+//           // si l'item correspondant n'a pas été mis à jour
+//           // l'item doit être importé
+//           else {
+//             incom.push(nty);
+//           }
+//         }
+//         // si l'item n'a pas été mis à jour
+//         else {
+//           // si l'item correspondant a été mis à jour
+//           // il doit être exporté
+//           if (found.updatedAt) {
+//             outcom.push(found);
+//           }
+//         }
+//       }
+//       // s'il n'a pas été trouvé il doit être importé
+//       else {
+//         incom.push(nty);
+//       }
+//     });
 
-    // dans la liste de la caisse 'secondary'
-    secondarySum[k].forEach((nty) => {
-      const found = primarySum[k].find((pnty) => pnty.id == nty.id);
-      // si aucun item ne correspond, il doit être exporté
-      if (!found) {
-        outcom.push(nty);
-      }
-    });
+//     // dans la liste de la caisse 'secondary'
+//     secondarySum[k].forEach((nty) => {
+//       const found = primarySum[k].find((pnty) => pnty.id == nty.id);
+//       // si aucun item ne correspond, il doit être exporté
+//       if (!found) {
+//         outcom.push(nty);
+//       }
+//     });
 
-    // s'il y a des items à importer, on ajoute la table
-    if (incom.length > 0) {
-      Object.defineProperty(in_db, k, {
-        value: incom,
-        enumerable: true,
-        writable: true,
-        configurable: false,
-      });
-    }
+//     // s'il y a des items à importer, on ajoute la table
+//     if (incom.length > 0) {
+//       Object.defineProperty(in_db, k, {
+//         value: incom,
+//         enumerable: true,
+//         writable: true,
+//         configurable: false,
+//       });
+//     }
 
-    // s'il y a des items à exporter, on ajoute la table
-    if (outcom.length > 0) {
-      Object.defineProperty(out_db, k, {
-        value: outcom,
-        enumerable: true,
-        writable: true,
-        configurable: false,
-      });
-    }
-  });
+//     // s'il y a des items à exporter, on ajoute la table
+//     if (outcom.length > 0) {
+//       Object.defineProperty(out_db, k, {
+//         value: outcom,
+//         enumerable: true,
+//         writable: true,
+//         configurable: false,
+//       });
+//     }
+//   });
 
-  return { importation: in_db, exportation: out_db };
-};
+//   return { importation: in_db, exportation: out_db };
+// };
 
 const actions = {
   // renvoie le ticketId et le numero de la commande synchronisée par une borne
@@ -634,7 +634,7 @@ const actions = {
       log.info("on sync", payload);
       const {db, data, type} = payload;
       if (type==='sync') {
-        synchroTreatment(payload.db, payload.data);
+        synchroTreatment(db, data);
       } else {
         log.info('initialisaiton de la synchronisation P->S');
       }
@@ -644,7 +644,7 @@ const actions = {
     // (le primary envoie une liste de ses entités
     // qu'il faut comparer avec celle du secondary)
     socket.on("resync", async (payload) => {
-      const {update, liste, primary} = payload;
+      const {update, primary} = payload;
 
       Object.entries(update).forEach(([db,data])=>{
         log.info('resync: ', db, data);
@@ -731,7 +731,7 @@ const actions = {
         Object.entries(connectedSecondaries).forEach(([sockid]) => {
           // console.log("device", device)
           try {
-            if (sockid == sock.id) {
+            if (sockid === sock.id) {
               // console.log("socket", socket.id)
               delete connectedSecondaries[sockid];
             }

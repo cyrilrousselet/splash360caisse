@@ -1067,7 +1067,7 @@ class Panier extends React.Component {
       if (discount_panier) {
         updateDiscount({
           discountId: discount_panier.modificateur_id, 
-          valeur: staffmeal_modifier.value+staffmeal_modifier.option,
+          valeur: staffmeal_modifier,
           nom: strings.modules.encaissement.staffmeal.titre
         });
       }
@@ -1075,7 +1075,7 @@ class Panier extends React.Component {
         addDiscount({
           item: null,
           ingredient: null,
-          valeur: staffmeal_modifier.value+staffmeal_modifier.option,
+          valeur: staffmeal_modifier,
           nom: strings.modules.encaissement.staffmeal.titre
         });
       }
