@@ -4,14 +4,13 @@ const sync_server = express();
 const log = require("electron-log");
 const cors = require("cors");
 const { net } = require("electron");
-const bodyParser = require('body-parser');
-const lodashId = require('lodash-id');
-
+const bodyParser = require("body-parser");
+const lodashId = require("lodash-id");
 
 const http = require("http").Server(sync_server);
 const io = require("socket.io")(http, {
-  pingInterval: 500,
-  pingTimeout: 400,
+  pingInterval: 1000,
+  pingTimeout: 900,
 });
 const ioclient = require("socket.io-client");
 const { difference, intersection } = require("lodash");
@@ -27,26 +26,26 @@ const dbUsersApi = require("./dbUsersApi.js");
 const dbTresorerieApi = require("./dbTresorerieApi.js");
 
 const DATABASES = {
-  'categorie': dbCatalogueApi,
-  'groupe': dbCatalogueApi,
-  'tva': dbCatalogueApi,
-  'type': dbCatalogueApi,
-  'ingredient': dbCatalogueApi,
-  'produit': dbCatalogueApi,
-  'step': dbCatalogueApi,
-  'cloture': dbCloturesApi,
-  'commande': dbCommandesApi,
-  'ticketrestaurant': dbCommandesApi,
-  'user': dbUsersApi,
-  'tresor': dbTresorerieApi,
-  'client': dbClientsApi,
-  'pointage': dbEmployesApi,
-  'timeadjust': dbEmployesApi,
-  'shift': dbEmployesApi,
-  'avoir': dbMarketingApi,
-  'reglepanier': dbMarketingApi,
-  'reglecatalogue': dbMarketingApi
-}
+  categorie: dbCatalogueApi,
+  groupe: dbCatalogueApi,
+  tva: dbCatalogueApi,
+  type: dbCatalogueApi,
+  ingredient: dbCatalogueApi,
+  produit: dbCatalogueApi,
+  step: dbCatalogueApi,
+  cloture: dbCloturesApi,
+  commande: dbCommandesApi,
+  ticketrestaurant: dbCommandesApi,
+  user: dbUsersApi,
+  tresor: dbTresorerieApi,
+  client: dbClientsApi,
+  pointage: dbEmployesApi,
+  timeadjust: dbEmployesApi,
+  shift: dbEmployesApi,
+  avoir: dbMarketingApi,
+  reglepanier: dbMarketingApi,
+  reglecatalogue: dbMarketingApi,
+};
 
 const connectedSecondaries = {};
 const connectedTerminals = {};
@@ -95,8 +94,8 @@ const server = {
     //   .use(express.urlencoded({ extended: false }))
     //   .use(express.json());
     api_server
-      .use(bodyParser.urlencoded({extended:false}))
-      .use(bodyParser.json({limit:'50MB'}));
+      .use(bodyParser.urlencoded({ extended: false }))
+      .use(bodyParser.json({ limit: "50MB" }));
     api_server.get("/", (req, res) => {
       log.info("GET : " + req.query.fui);
       let __d = new Date();
@@ -141,7 +140,7 @@ const server = {
       const response_id = lodashId.createId();
       responses[response_id] = res;
 
-      log.info('POST synchro response_id',response_id)
+      log.info("POST synchro response_id", response_id);
 
       synchroTreatment(db, data, emitter, response_id);
     });
@@ -152,7 +151,7 @@ const server = {
       log.info("POST synchroconfirm", req.body);
       log.info("POST db", db, `from ${from}`);
 
-      res.json({status: "success"});
+      res.json({ status: "success" });
 
       synchroConfirm(db, ids, from);
     });
@@ -167,8 +166,11 @@ const server = {
 
     api_server.post("/printticket", (req, res) => {
       log.info("POST printticket", req.body);
-      
-      wcont.send("printticket", { ticketId: req.body.ticket_id, zoneId: req.body.zone_id });
+
+      wcont.send("printticket", {
+        ticketId: req.body.ticket_id,
+        zoneId: req.body.zone_id,
+      });
       res.json({ status: "success" });
     });
 
@@ -182,38 +184,40 @@ const synchroConfirm = (db, ids, from) => {
   log.info("synchroConfirm()", db, from);
 
   if (DATABASES.hasOwnProperty(db)) {
-    
     DATABASES[db].syncConfirm(db, ids, from);
-
   } else {
-    log.error("synchroConfirm error (db '"+db+"' inconnue)");
+    log.error("synchroConfirm error (db '" + db + "' inconnue)");
   }
-  
-}
+};
 
 const synchroTreatment = (db, data, emitter = null, response = null) => {
   log.info("synchroTreatment()", db, emitter, response);
 
   if (webContents !== null) {
     if (SYNCHRO_TREATMENT.hasOwnProperty(db)) {
-      if (data!==null) {
-        if (Array.isArray(data) && data.length==0) {
-          log.info('synchroTreatment, empty array data', data);
+      if (data !== null) {
+        if (Array.isArray(data) && data.length == 0) {
+          log.info("synchroTreatment, empty array data", data);
 
           // s'il y a une 'response' (donc depuis une requête de l'API)
-          if (response!==null) {
+          if (response !== null) {
             // aucune donnée à traiter, on répond donc directement à la requête
-            responses[response].json({db:db, ids:[], from:_emitter, detail:'empty data'});
+            responses[response].json({
+              db: db,
+              ids: [],
+              from: _emitter,
+              detail: "empty data",
+            });
             delete responses[response];
           }
         } else {
           webContents.send(SYNCHRO_TREATMENT[db], { data, emitter, response });
         }
       } else {
-        log.info('synchroTreatment, empty data', data);
+        log.info("synchroTreatment, empty data", data);
       }
     } else {
-      log.error("SynchroTreatment error (db '"+db+"' inconnue)");
+      log.error("SynchroTreatment error (db '" + db + "' inconnue)");
     }
   } else {
     log.error("webContents null (server non initialisé)");
@@ -221,35 +225,37 @@ const synchroTreatment = (db, data, emitter = null, response = null) => {
 };
 
 const welcomeTreatment = async (station_uniqid) => {
-
   // requête pour exclure la station ou pour inclure la station
   const mongo_query = {
-    $or:[
+    $or: [
       { localsync: { $exists: false } },
-      { localsync: { $ne: station_uniqid } }
-    ]
+      { localsync: { $ne: station_uniqid } },
+    ],
   };
 
   // requêtes spéciale pour les commandes
   // (on ne synchronise pas les commandes archivées)
   const mongocmd_query = {
     $and: [
-      { 
-        archived: { $exists: false }
+      {
+        archived: { $exists: false },
       },
       {
-        $or:[
+        $or: [
           { localsync: { $exists: false } },
-          { localsync: { $ne: station_uniqid } }
-        ]
-      }
-    ]
+          { localsync: { $ne: station_uniqid } },
+        ],
+      },
+    ],
   };
 
   const catalogue_sum = await dbCatalogueApi.dbCatalogueSummary(station_uniqid);
   const clients_sum = await dbClientsApi.dbClientsSummary(station_uniqid);
   const clotures_sum = await dbCloturesApi.dbCloturesSummary(mongo_query);
-  const commandes_sum = await dbCommandesApi.dbCommandesSummary(mongocmd_query, station_uniqid);
+  const commandes_sum = await dbCommandesApi.dbCommandesSummary(
+    mongocmd_query,
+    station_uniqid
+  );
   const employes_sum = await dbEmployesApi.dbEmployesSummary(station_uniqid);
   const marketing_sum = await dbMarketingApi.dbMarketingSummary(station_uniqid);
   const table_sum = await dbTableApi.dbTableSummary(station_uniqid);
@@ -460,9 +466,9 @@ const actions = {
   // confirme la bonne réception des synchro s/p
   syncConfirm: (req, res) => {
     const { response, data } = req.payload;
-    log.info('syncConfirm()', response, data);
+    log.info("syncConfirm()", response, data);
     if (response !== null) {
-      log.info('synConfirm response ?',responses[response]!==undefined);
+      log.info("synConfirm response ?", responses[response] !== undefined);
       responses[response].json(data);
       delete responses[response];
       res.send({ msg: "sync confirm sent", donnees: data });
@@ -471,7 +477,7 @@ const actions = {
 
   // confirme la bonne réception des synchro p/s
   syncConfirmToPrimary: (req, res) => {
-    const {url, data} = req.payload;
+    const { url, data } = req.payload;
 
     log.info("syncConfirmToPrimary", req.payload);
 
@@ -498,13 +504,16 @@ const actions = {
         log.info(`syncConfirmToPrimary BODY: ${chunk}`);
       });
       response.on("end", () => {
-        log.info("syncConfirmToPrimary: end", JSON.parse(__confirmation.join("")));
+        log.info(
+          "syncConfirmToPrimary: end",
+          JSON.parse(__confirmation.join(""))
+        );
         res.send({ msg: `syncConfirmToPrimary to primary` });
       });
     });
 
-    __request.on('error', (error) => {
-      log.error('syncConfirmToPrimary ERROR', error);
+    __request.on("error", (error) => {
+      log.error("syncConfirmToPrimary ERROR", error);
       res.error(error);
     });
 
@@ -516,90 +525,101 @@ const actions = {
 
     let listeNum = 0;
 
-
     const start = async () => {
-      await asyncForEach(Object.entries(connectedSecondaries), async ([sockid, secondary]) => {
+      await asyncForEach(
+        Object.entries(connectedSecondaries),
+        async ([sockid, secondary]) => {
+          let __summary = {};
 
+          const mongo_query = {
+            $or: [
+              { localsync: { $exists: false } },
+              { localsync: { $ne: secondary.uniqid } },
+            ],
+          };
+          const ldb_query = { stationid: secondary.uniqid, exclusion: true };
 
-        let __summary = {};
+          const start_secondary = async () => {
+            await asyncForEach(liste, async (entity) => {
+              if ("tresor" === entity) {
+                const tresors_sum = await dbTresorerieApi.dbTresorerieSummary(
+                  mongo_query
+                );
+                __summary = { ...__summary, ...tresors_sum };
+                listeNum++;
+              } else if ("commandes" === entity) {
+                const commandes_sum = await dbCommandesApi.dbCommandesSummary(
+                  mongo_query,
+                  ldb_query
+                );
+                __summary = { ...__summary, ...commandes_sum };
+                listeNum++;
+              } else if ("clotures" === entity) {
+                const clotures_sum = await dbCloturesApi.dbCloturesSummary(
+                  mongo_query
+                );
+                __summary = { ...__summary, ...clotures_sum };
+                listeNum++;
+              } else if ("employes" === entity) {
+                const employes_sum = await dbEmployesApi.dbEmployesSummary(
+                  ldb_query
+                );
+                __summary = { ...__summary, ...employes_sum };
+                listeNum++;
+              } else if ("marketing" === entity) {
+                const marketing_sum = await dbMarketingApi.dbMarketingSummary(
+                  ldb_query
+                );
+                __summary = { ...__summary, ...marketing_sum };
+                listeNum++;
+              } else if ("users" === entity) {
+                const users_sum = await dbUsersApi.dbUsersSummary(ldb_query);
+                __summary = { ...__summary, ...users_sum };
+                listeNum++;
+              } else if ("catalogue" === entity) {
+                const catalogue_sum = await dbCatalogueApi.dbCatalogueSummary(
+                  ldb_query
+                );
+                __summary = { ...__summary, ...catalogue_sum };
+                listeNum++;
+              } else if ("clients" === entity) {
+                const clients_sum = await dbClientsApi.dbClientsSummary(
+                  ldb_query
+                );
+                __summary = { ...__summary, ...clients_sum };
+                listeNum++;
+              }
 
-        const mongo_query = {
-          $or:[
-            { localsync: { $exists: false } },
-            { localsync: { $ne: secondary.uniqid } }
-          ]
-        };
-        const ldb_query = {stationid:secondary.uniqid, exclusion:true};
+              if (listeNum === liste.length) {
+                log.info("resync", __summary, secondary.uniqid);
+                io.to(sockid).emit("resync", {
+                  update: __summary,
+                  liste: liste,
+                  primary: caisseId,
+                });
+              }
+            });
+          };
 
-        const start_secondary = async () => {
-          await asyncForEach(liste, async (entity) => {
-            if ('tresor'===entity) {
-              const tresors_sum = await dbTresorerieApi.dbTresorerieSummary(mongo_query);
-              __summary = {...__summary, ...tresors_sum};
-              listeNum++;
-            }
-            else if ('commandes'===entity) {
-              const commandes_sum = await dbCommandesApi.dbCommandesSummary(mongo_query, ldb_query);
-              __summary = {...__summary, ...commandes_sum};
-              listeNum++;
-            } 
-            else if ('clotures'===entity) {
-              const clotures_sum = await dbCloturesApi.dbCloturesSummary(mongo_query);
-              __summary = {...__summary, ...clotures_sum};
-              listeNum++;
-            } 
-            else if ('employes'===entity) {
-              const employes_sum = await dbEmployesApi.dbEmployesSummary(ldb_query);
-              __summary = {...__summary, ...employes_sum};
-              listeNum++;
-            } 
-            else if ('marketing'===entity) {
-              const marketing_sum = await dbMarketingApi.dbMarketingSummary(ldb_query);
-              __summary = {...__summary, ...marketing_sum};
-              listeNum++;
-            } 
-            else if ('users'===entity) {
-              const users_sum = await dbUsersApi.dbUsersSummary(ldb_query);
-              __summary = {...__summary, ...users_sum};
-              listeNum++;
-            }
-            else if ('catalogue'===entity) {
-              const catalogue_sum = await dbCatalogueApi.dbCatalogueSummary(ldb_query);
-              __summary = {...__summary, ...catalogue_sum};
-              listeNum++;
-            }
-            else if ('clients'===entity) {
-              const clients_sum = await dbClientsApi.dbClientsSummary(ldb_query);
-              __summary = {...__summary, ...clients_sum};
-              listeNum++;
-            }
-
-            if (listeNum===liste.length) {
-              log.info('resync', __summary, secondary.uniqid);
-              io.to(sockid).emit("resync", {update: __summary, liste: liste, primary: caisseId});
-            }
-
-          });
-        };
-
-        start_secondary();
-
-      });
-    }
+          start_secondary();
+        }
+      );
+    };
     start();
 
-    res.send({ msg: "summary envoyé aux secondaries num. " + Object.keys(connectedSecondaries).length });
-
+    res.send({
+      msg:
+        "summary envoyé aux secondaries num. " +
+        Object.keys(connectedSecondaries).length,
+    });
   },
 
   // on lance la connexion au "primary" (si la caisse est "secondary")
   syncConnectToPrimary: (req, res) => {
     const { url, caisse } = req.payload;
 
-        
     _emitter = caisse;
     _primaryUrl = url;
-
 
     log.info("syncConnectToPrimary", req.payload);
 
@@ -612,12 +632,12 @@ const actions = {
     // avec la liste des summary (éléments à échanger entre les caisses)
     socket.on("welcome", async (welcomeData) => {
       log.info("on welcome");
-      const {update, primary} = welcomeData;
+      const { update, primary } = welcomeData;
 
       // log.info("primary update:", update);
 
-      Object.entries(update).forEach(([db,data])=>{
-        log.info('welcome: ', db, data);
+      Object.entries(update).forEach(([db, data]) => {
+        log.info("welcome: ", db, data);
         synchroTreatment(db, data);
       });
 
@@ -626,17 +646,16 @@ const actions = {
       // log.info("import:", secondaryUpdate);
 
       prepareExportationToPrimary(secondaryUpdate);
-
     });
 
     // écouteur de synchro de la part du primary
     socket.on("sync", (payload) => {
       log.info("on sync", payload);
-      const {db, data, type} = payload;
-      if (type==='sync') {
+      const { db, data, type } = payload;
+      if (type === "sync") {
         synchroTreatment(payload.db, payload.data);
       } else {
-        log.info('initialisaiton de la synchronisation P->S');
+        log.info("initialisaiton de la synchronisation P->S");
       }
     });
 
@@ -644,10 +663,10 @@ const actions = {
     // (le primary envoie une liste de ses entités
     // qu'il faut comparer avec celle du secondary)
     socket.on("resync", async (payload) => {
-      const {update, liste, primary} = payload;
+      const { update, liste, primary } = payload;
 
-      Object.entries(update).forEach(([db,data])=>{
-        log.info('resync: ', db, data);
+      Object.entries(update).forEach(([db, data]) => {
+        log.info("resync: ", db, data);
         synchroTreatment(db, data);
       });
 
@@ -656,8 +675,7 @@ const actions = {
       log.info("resync export:", secondaryUpdate);
 
       prepareExportationToPrimary(secondaryUpdate);
-
-    })
+    });
 
     res.send({ msg: "connection sent to primary" });
   },
@@ -673,7 +691,7 @@ const actions = {
     log.info("Start sync service on primary ...");
     sync_server.use(cors({ origin: "*" }));
 
-    const {caisseId} = req.payload;
+    const { caisseId } = req.payload;
 
     io.on("connection", (sock) => {
       log.info(
@@ -698,7 +716,7 @@ const actions = {
         });
 
         const update = await welcomeTreatment(data.uniqid);
-        io.to(sock.id).emit("welcome", {update: update, primary: caisseId});
+        io.to(sock.id).emit("welcome", { update: update, primary: caisseId });
       });
 
       // écouteur d'événement 'registerterminal' :
@@ -755,7 +773,8 @@ const actions = {
     // on envoie la synchro à tous les secondaries,
     // sauf celui qui est à l'origine de la synchro
     Object.entries(connectedSecondaries).forEach(([sockid, secondary]) => {
-      if (emitter !== secondary.id) io.to(sockid).emit("sync", {...req.payload, type:'sync'});
+      if (emitter !== secondary.id)
+        io.to(sockid).emit("sync", { ...req.payload, type: "sync" });
     });
 
     // s'il s'agit d'une synchro de produit ou d'ingrédient, on envoie la synchro à toutees les bornes,
@@ -811,20 +830,17 @@ const actions = {
       });
       response.on("end", () => {
         log.info("syncDispatchToPrimary: end");
-  
+
         let __conf = {};
         try {
           __conf = JSON.parse(__syncedData.join(""));
-  
-          const {db, ids, from} = __conf;
+
+          const { db, ids, from } = __conf;
           synchroConfirm(db, ids, from);
-  
         } catch (e) {
           __conf = { error: e.message };
           log.error("syncDispatchToPrimary JSON error", e);
         }
-  
-  
       });
     });
 
@@ -837,25 +853,27 @@ const actions = {
   },
 };
 
-
 async function prepareExportationToPrimary(exportation) {
-
-  log.info('prepareExportationToPrimary E:', Object.entries(exportation).length);
+  log.info(
+    "prepareExportationToPrimary E:",
+    Object.entries(exportation).length
+  );
 
   Object.entries(exportation).forEach(([db, items]) => {
-    if (items.length>0) {
-      log.info('prepareExportationToPrimary E:', db, items.length);
+    if (items.length > 0) {
+      log.info("prepareExportationToPrimary E:", db, items.length);
       bulkSyncToPrimary(db, items);
-    }
-    else {
-      log.info('prepareExportationToPrimary','aucune donnée à synchroniser pour db ',db);
+    } else {
+      log.info(
+        "prepareExportationToPrimary",
+        "aucune donnée à synchroniser pour db ",
+        db
+      );
     }
   });
-  
 }
 
 function bulkSyncToPrimary(db, data) {
-
   const __request = net.request({
     url: _primaryUrl + ":" + API_PORT + "/synchro",
     method: "post",
@@ -866,12 +884,11 @@ function bulkSyncToPrimary(db, data) {
   __request.setHeader("Access-Control-Allow-Origin", "*");
   __request.setHeader("Content-Type", "application/json");
 
-  const __body = JSON.stringify({ db, data, emitter:_emitter });
+  const __body = JSON.stringify({ db, data, emitter: _emitter });
 
-  log.info('bulk:', __body);
+  log.info("bulk:", __body);
 
   __request.write(__body);
-
 
   __request.on("response", (response) => {
     response.on("data", (chunk) => {
@@ -887,26 +904,26 @@ function bulkSyncToPrimary(db, data) {
       try {
         __conf = JSON.parse(__syncedData.join(""));
 
-        const {db, ids, from, detail} = __conf;
+        const { db, ids, from, detail } = __conf;
 
-        if (ids.length>0) { 
+        if (ids.length > 0) {
           synchroConfirm(db, ids, from);
+        } else {
+          log.info(
+            "bulkSyncToPrimary",
+            "aucune donnée synchronisée à confirmer",
+            detail
+          );
         }
-        else {
-          log.info('bulkSyncToPrimary','aucune donnée synchronisée à confirmer', detail)
-        }
-
       } catch (e) {
         __conf = { error: e.message };
         log.error("Erreur de JSON", e);
       }
-
-
     });
   });
 
-  __request.on('error', (error) => {
-    log.error('bulkSyncToPrimary ERROR', error);
+  __request.on("error", (error) => {
+    log.error("bulkSyncToPrimary ERROR", error);
   });
 
   __request.end();
@@ -917,7 +934,6 @@ async function asyncForEach(array, callback) {
     await callback(array[index], index, array);
   }
 }
-
 
 module.exports = {
   ...server,
