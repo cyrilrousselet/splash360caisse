@@ -252,22 +252,11 @@ const welcomeTreatment = async (station_uniqid) => {
   // const catalogue_sum = await dbCatalogueApi.dbCatalogueSummary(station_uniqid);
   // const clients_sum = await dbClientsApi.dbClientsSummary(station_uniqid);
   const clotures_sum = await dbCloturesApi.dbCloturesSummary(mongo_query);
-<<<<<<< HEAD
   const commandes_sum = await dbCommandesApi.dbCommandesSummary(mongocmd_query, station_uniqid);
   // const employes_sum = await dbEmployesApi.dbEmployesSummary(station_uniqid);
   // const marketing_sum = await dbMarketingApi.dbMarketingSummary(station_uniqid);
   // const table_sum = await dbTableApi.dbTableSummary(station_uniqid);
   // const users_sum = await dbUsersApi.dbUsersSummary(station_uniqid);
-=======
-  const commandes_sum = await dbCommandesApi.dbCommandesSummary(
-    mongocmd_query,
-    station_uniqid
-  );
-  const employes_sum = await dbEmployesApi.dbEmployesSummary(station_uniqid);
-  const marketing_sum = await dbMarketingApi.dbMarketingSummary(station_uniqid);
-  const table_sum = await dbTableApi.dbTableSummary(station_uniqid);
-  const users_sum = await dbUsersApi.dbUsersSummary(station_uniqid);
->>>>>>> origin/feature/ws-timeouts-increase
   const tresors_sum = await dbTresorerieApi.dbTresorerieSummary(mongo_query);
 
   return {
@@ -659,15 +648,9 @@ const actions = {
     // écouteur de synchro de la part du primary
     socket.on("sync", (payload) => {
       log.info("on sync", payload);
-<<<<<<< HEAD
       const {db, data, type} = payload;
       if (type==='sync') {
         synchroTreatment(db, data);
-=======
-      const { db, data, type } = payload;
-      if (type === "sync") {
-        synchroTreatment(payload.db, payload.data);
->>>>>>> origin/feature/ws-timeouts-increase
       } else {
         log.info("initialisaiton de la synchronisation P->S");
       }
@@ -677,11 +660,7 @@ const actions = {
     // (le primary envoie une liste de ses entités
     // qu'il faut comparer avec celle du secondary)
     socket.on("resync", async (payload) => {
-<<<<<<< HEAD
       const {update, primary} = payload;
-=======
-      const { update, liste, primary } = payload;
->>>>>>> origin/feature/ws-timeouts-increase
 
       Object.entries(update).forEach(([db, data]) => {
         log.info("resync: ", db, data);
