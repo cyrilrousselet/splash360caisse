@@ -101,7 +101,7 @@ function initSync() {
   }
 }
 
-function syncDispatch(db,data,emitter=null) {
+function syncDispatch(db, data, emitter=null) {
   return (dispatch, getState) => {
     const { options } = getState().parametresReducer.parametres;
 
@@ -113,7 +113,11 @@ function syncDispatch(db,data,emitter=null) {
       notificationServices.syncDispatch(db, data, emitter)
       .then(result => {
         logger.log('syncDispatch (primary)', result);
-      })
+      });
+
+      // update Produit / Ingredient sur BO
+      
+
     }
     else if (options.role==='secondary') {
       notificationServices.syncPrimary(db, data, options.caisse, options.primary)

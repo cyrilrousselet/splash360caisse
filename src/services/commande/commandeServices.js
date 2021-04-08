@@ -1162,7 +1162,7 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
         steps: steps_list,
         stepslength: steps.length,
         quantite: itm.quantite,
-        itemid: _newCommandeItemId(),
+        itemid: itm.itemid ? itm.itemid : _newCommandeItemId(),
         status: "completed",
       };
 

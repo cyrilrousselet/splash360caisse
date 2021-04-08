@@ -1,7 +1,7 @@
 const EventSource = require("eventsource");
 const log = require("electron-log");
 const { net } = require("electron");
-const { machineId, machineIdSync } = require("node-machine-id");
+const { machineIdSync } = require("node-machine-id");
 const qs = require('qs');
 
 // const externalUrls = require('../../src/constants/externalUrls.json');
