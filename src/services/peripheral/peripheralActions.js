@@ -353,7 +353,7 @@ function _setCommandeToKDS(ticketsListe, cmd, state) {
   const kds_url = options.role==='secondary' ? (peripheriques.kdsurl || options.primary) : (peripheriques.kdsurl || 'http://localhost');
   const clt = cmd.client ? clients.find(c=>c.client_id===cmd.client.client_id) : null;
 
-  const ticketsKDS = ticketsListe.filter(t => (['partiel', 'principal']).indexOf(t.template)>-1 && (t.kds!==undefined && t.kds===true));
+  const ticketsKDS = ticketsListe.filter(t => (['partiel', 'principal', 'etiquette', 'produits']).indexOf(t.template)>-1 && (t.kds!==undefined && t.kds===true));
   
   // y a-t-il KDS d'activé pour un des ticket de la liste ?
   if (ticketsKDS.length>0) {
