@@ -326,19 +326,35 @@ function getDatabase() {
     const { entreprise } = getState().parametresReducer.parametres; 
 
     if (entreprise.restaurant_id==='' || entreprise.restaurant_secret==='') {
+
+      // Afficher champs uniqid restaurant
+      // A la validation récuperer uniqid + uuid de la caisse et dispatch action parametre requestInstallStation
+
       Swal.fire({
-        type: 'warning',
-        title: 'Configuration incomplète',
-        text: 'Vous devez renseigner les identifiants de restaurant pour pouvoir initialiser la caisse',
-        showCancelButton: false,
-        focusConfirm: true,
-        allowEscapeKey: false,
-        allowOutsideClick: false
+        title: 'Installation de la caisse',
+        text:'Veuillez renseigner l\'uniqid du restaurant',
+        input:'text',
+        confirmButtonText: 'Valider',
+        showLoaderOnConfirm: true,
       }).then((result)=> {
-        if (result.value) {
-          dispatch(peripheralActions.quitApp());
+        if(null !== result.value) {
+          dispatch(parametresActions.installStation(result.value));
         }
-      });
+      })
+
+      // Swal.fire({
+      //   type: 'warning',
+      //   title: 'Configuration incomplète',
+      //   text: 'Vous devez renseigner les identifiants de restaurant pour pouvoir initialiser la caisse',
+      //   showCancelButton: false,
+      //   focusConfirm: true,
+      //   allowEscapeKey: false,
+      //   allowOutsideClick: false
+      // }).then((result)=> {
+      //   if (result.value) {
+      //     dispatch(peripheralActions.quitApp());
+      //   }
+      // });
     } else {
 
 

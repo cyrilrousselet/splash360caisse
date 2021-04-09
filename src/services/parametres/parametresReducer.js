@@ -105,6 +105,10 @@ export function parametresReducer(state=initialState, action) {
         error: action.error
       };
 
+    case parametresActionTypes.INSTALL_STATION_SUCCESS:
+      console.log(action);
+      return state;
+
     default:
       return state;
   }

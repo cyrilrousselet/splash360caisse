@@ -80,10 +80,39 @@ function update(payload) {
   }
 };
 
+// function requestInstallStation() parametre uniqid resto
+//parametresServices.requestInstallStation()
+function installStation(uniqid) {
+  return(dispatch) => {
+    parametresServices.installStation(uniqid)
+      .then(
+        data => {
+          console.log("DATA", data);
+          const {client_id, client_secret} = data;
+          console.log("CLIENT ID SECRET", client_id, client_secret);
+          const payload = [{
+            "domaine": "entreprise",
+            "cle": "restaurant_id",
+            "valeur": client_id
+          },
+          {
+            "domaine": "entreprise",
+            "cle": "restaurant_secret",
+            "valeur": client_secret
+          }]
+
+          dispatch(update(payload));
+          dispatch({ type: parametresActionTypes.INSTALL_STATION_SUCCESS, ...data });
+        }, 
+        error => dispatch({ type: parametresActionTypes.INSTALL_STATION_FAILURE, error: error.toString() })
+      )
+  }
+}
 
 
 export const parametresActions = {
   getAll,
   update,
-  replaceDatabase
+  replaceDatabase,
+  installStation
 };

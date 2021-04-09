@@ -15,7 +15,7 @@ const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 
-const DISABLED_MODULES = ["stocks"];
+const DISABLED_MODULES = [];
 
 class Dashboard extends Component {
   componentDidMount() {

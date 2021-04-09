@@ -3,6 +3,7 @@ const log = require("electron-log");
 const { net } = require("electron");
 const { machineId, machineIdSync } = require("node-machine-id");
 const qs = require('qs');
+const { uuid } = require('uuidv4');
 
 // const externalUrls = require('../../src/constants/externalUrls.json');
 
@@ -636,6 +637,49 @@ const actions = {
     });
 
     __request.end();
+  },
+
+  installStation: (req, res) => {
+    const {url, uniqid} = req.payload;
+
+    let data = '';
+
+    let uuid ="232323"; // pour tester, à changer
+    console.log('uuid', uuid);
+
+    const __request = net.request({
+      url: url,
+      method: "post",
+    });
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    const form = qs.stringify({
+      uuid: uuid,
+      uniqid: uniqid
+    });
+    __request.write(form);
+
+    __request.on("response", (response) => {
+      response.on("data", (chunk) => {
+        log.info(`installStation BODY: ${chunk}`);
+        data += chunk;
+      });
+
+      response.on("end", () => {
+        data = JSON.parse(data);
+        console.log("data", data);
+        res.send(data);
+      });
+    });
+
+    __request.on('error', (error) => {
+      log.error('installStation ERROR', error);
+      res.error(error);
+    });
+
+    __request.end();
+
   },
 };
 
