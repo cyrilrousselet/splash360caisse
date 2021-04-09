@@ -556,6 +556,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
     const { entreprise } = state.parametresReducer.parametres;
   //  const { impression } = peripheriques;
     const { clients } = state.clientsReducer;
+    const {print_standby} = state.parametresReducer.parametres.commandes;
 
 
     logger.log(cmd);
@@ -1394,7 +1395,10 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
       }
 
 
-      if (noarticle) {
+      if (cmd.status==="standby" && print_standby && ticket.kds!==true) {
+        dispatch({ type: peripheralActionTypes.NOPRINT_TICKET, template: template, reason: 'status=standby et pas de kds pour le ticket' });
+      }
+      else if (noarticle) {
         dispatch({ type: peripheralActionTypes.NOPRINT_TICKET, template: template, reason: 'no article' });
 
         // logger.timeEnd('printCommandeTicket()');
