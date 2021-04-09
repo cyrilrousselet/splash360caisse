@@ -5,7 +5,7 @@ const log = require('electron-log');
 
 const actions = {
   dbParametresGetAll: async (req,res) => {
-    const {payload} = req;
+  //  const {payload} = req;
 
     log.info("dbParametresGetAll() in API");
 
@@ -103,11 +103,11 @@ async function _replaceAll(data) {
     await asyncForEach(data, async (obj) => {
       
 //        _param = await _insertParametre(obj);
-        _param = await _persistParametres(obj);
+      const  _param = await _persistParametres(obj);
         if (_param!=null) count++;
       
     });
-    return count == data.length;
+    return count === data.length;
   }
   start();
 
@@ -226,7 +226,7 @@ async function _persistParametres(payload) {
           if (_param!=null) count++;
         }
       });
-      return count == payload.length;
+      return count === payload.length;
     }
     start();
 
