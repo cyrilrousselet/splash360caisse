@@ -1135,7 +1135,8 @@ function setCommandeFromAPI(payload) {
     const {print_standby} = parametres.commandes;
 
     if (data.provider==="clickandcollect") {
-      dispatch(peripheralActions.printCommandeTicket((commande.status === "confirmed") ? "all" : "production", commande));
+      // dispatch(peripheralActions.printCommandeTicket((commande.status === "confirmed") ? "all" : "production", commande));
+      dispatch(peripheralActions.printCommandeTicket("all", commande));
     } else {
       if (commande.status === "confirmed" || print_standby) {
         dispatch(peripheralActions.printCommandeTicket("production", commande));

@@ -1146,6 +1146,7 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
             prix: Number(c_ing.supplement),
             nom: c_ing.nom,
             fromStep: null,
+            tva: catalogueReducer.tva[c_ing.tva_id]
           };
         });
       }
@@ -1199,6 +1200,7 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
             supplement: Number(ingredient.supplement),
             nom: ingredient.nom,
             fromStep: ingredient_step ? ingredient_step.step_id : null,
+            tva: catalogueReducer.tva[ingredient.tva_id],
           });
 
           // Ajout commentaires ingredients

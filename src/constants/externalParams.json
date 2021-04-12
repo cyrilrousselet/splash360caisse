@@ -22,7 +22,7 @@
     },
     "pos": {
       "url": "https://api.uber.com/v1/eats/stores/{store_id}/pos_data",
-      "scope": "eats.store"
+      "scope": "eats.pos_provisioning"
     },
     "updateitem": {
       "url": "https://api.uber.com/v2/eats/stores/{store_id}/menus/items/{item_id}",
@@ -34,8 +34,8 @@
     "getdb": "https://api.splash360.fr/api/export/database",
     "syncCommandes": "https://api.splash360.fr/api/import/commandes",
     "syncClotures": "https://api.splash360.fr/api/import/clotures",
+    "syncCatalogue": "https://api.splash360.fr/api/import/catalogue",
     "getStatus": "https://api.splash360.fr/api/licence/station/%STATIONID%/%UUID%",
-    "confirmCommande": "https://api.splash360.fr/api/import/confirmcommande/{ticket_id}",
-    "syncCatalogue": "https://api.splash360.fr/api/import/catalogue"
+    "confirmCommande": "https://api.splash360.fr/api/import/confirmcommande/{ticket_id}"
   }
 }

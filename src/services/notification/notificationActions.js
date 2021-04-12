@@ -116,7 +116,15 @@ function syncDispatch(db, data, emitter=null) {
       });
 
       // update Produit / Ingredient sur BO
-      
+      // notificationServices.syncCatalogue({catalogue:{db:db, data:data}})
+      // .then(
+      //   response => {
+      //     dispatch(catalogueActions.setSyncedCatalogue(response.confirm))
+      //   },
+      //   error => {
+      //     logger.error(error);
+      //   }
+      // )
 
     }
     else if (options.role==='secondary') {

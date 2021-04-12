@@ -208,7 +208,11 @@ function updateGroupe(payload) {
   }
 }
 
-
+function setSyncedCatalogue(payload) {
+  return (dispatch, getState) => {
+    logger.log('TODO: set synced');
+  }
+}
 
 
 /** 
@@ -365,5 +369,6 @@ export const catalogueActions = {
   setProduitFromSync,
   setGroupeFromSync,
   setIngredientFromSync,
-  setIngredientTypeFromSync
+  setIngredientTypeFromSync,
+  setSyncedCatalogue
 };
