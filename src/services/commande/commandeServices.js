@@ -12,6 +12,7 @@ export const commandeServices = {
   getCommandeById,
   getCommandesList,
   //  getNewNumero,
+  checkMarketing,
   getCommandesCaisses,
   addProduit,
   updateProduit,
@@ -815,8 +816,16 @@ function addComment(payload, comments) {
   };
 }
 
-function addModificateur(payload, comments) {
-  const { item, ingredient, valeur, nom } = payload;
+function addModificateur(payload, modificateurs) {
+  
+  const { 
+    item, 
+    ingredient, 
+    valeur, 
+    nom, 
+    type = 'discount', 
+    operation = -1 
+  } = payload;
 
   return {
     modificateur_id: _newModificateurId(),
@@ -824,6 +833,8 @@ function addModificateur(payload, comments) {
     ingredient: ingredient,
     valeur: valeur,
     nom: nom,
+    type: type,
+    operation: operation
   };
 }
 
@@ -1146,6 +1157,7 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
             prix: Number(c_ing.supplement),
             nom: c_ing.nom,
             fromStep: null,
+            tva: catalogueReducer.tva[c_ing.tva_id]
           };
         });
       }
@@ -1199,6 +1211,7 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
             supplement: Number(ingredient.supplement),
             nom: ingredient.nom,
             fromStep: ingredient_step ? ingredient_step.step_id : null,
+            tva: catalogueReducer.tva[ingredient.tva_id],
           });
 
           // Ajout commentaires ingredients
@@ -1231,6 +1244,218 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
 
   commande.total = _getCommandeTotal(commande.items, []);
   return commande;
+}
+
+function checkMarketing(commande, reglescatalogue) {
+
+  // liste des règles actives
+  const regles_actives = reglescatalogue.filter(r => {
+    let active = true;
+    const now = new Date().getTime();
+    // si le mode de commande ne correspond pas à la promo...
+    if (r.mode!=='all' && commande.mode!==r.mode) active = false;
+    // si la promo n'est pas commencée...
+    if (r.start>now) active = false;
+    // s'il y a une date de fin et qu'elle est passée...
+    if (r.end>r.start && r.end<now) active = false;
+    return active;
+  });
+
+  console.log('checkMarketing', "regles actives : ",regles_actives.length);
+  console.log('checkMarketing', "items : ",commande.items.length);
+
+  // let produits_concernes = [];
+  // regles_actives.forEach(r => {
+  //   produits_concernes = [...produits_concernes, ...r.produits];
+  // });
+  // // liste dédoublonnée
+  // const liste_produits = Array.from(new Set(produits_concernes));
+
+  let modifiers = [];
+
+  // POUR CHAQUE PROMO :
+  regles_actives.forEach(promo => {
+
+    let produits = {};
+    // 1. COMPTE DES PRODUITS CONCERNÉS PAR LA PROMO
+
+    console.log('checkMarketing', 'promo :', JSON.stringify(promo));
+
+
+    // si la promo concerne des produits
+    if (promo.produits.length>0) {
+
+      // pour chaque produit de la commande...
+      commande.items.forEach((itm) => {
+
+        // si le produit est concerné par la promo
+        if (promo.produits.includes(itm.produitid)) {
+
+          // si la règle est sur plusieurs exemplaires d'un même produit
+          if (promo.selection==="one") {
+            if (!Object.keys(produits).includes(itm.produitid)) produits[itm.produitid] = {qte: 0, itemid: itm.itemid};
+            produits[itm.produitid].qte += itm.quantite;
+          }
+          // on si la règle est sur plusieurs exemplaires de tous les prd de la liste
+          else {
+            if (!Object.keys(produits).includes('qte')) produits = {qte: 0, items:[]};
+            // on précise la quantité d'items (pour gagner du temps)
+            produits.qte += itm.quantite;
+            // et on mets tous les produits dans un tableau (une ligne par item unique)
+            for(let i=0; i<itm.quantite; i++) {
+              produits.items.push({itemid: itm.itemid, pu: itm.pu});
+            }
+          }
+        }
+      });
+
+      // 2. COMPARAISON AVEC LES QUANTITÉS DE LA PROMO
+      // si la règle est sur plusieurs exemplaires d'un même produit
+      if (promo.selection==="one") {
+
+
+        // Récup. de la quantité des produits concernés par la promo
+        Object.entries(produits).forEach(([produitid, prd]) => {
+
+          let qte_promo = 0;
+
+          // combien de produits en promo par tranche de produits :
+          const appl = promo.max - (promo.min - 1);
+          // quantité de produits concernés par la promo (par tranche complète)
+          qte_promo = Math.floor(prd.qte/promo.max) * appl;
+          // reste de produits qui ne complètent pas de tranche
+          let reste = prd.qte % promo.max;
+
+          // s'il reste des produits qui ne complètent pas de tranche 
+          // mais qui sont concernés par la promo
+          if (reste && (reste - (promo.min - 1) > 0)) {
+            // on ajoute ces produits à la quantité de produits concernés
+            qte_promo += reste - (promo.min - 1);
+          }
+
+
+          // si la promo limite le nombre de produits concernés :
+          if (promo.quantite>0) {
+            qte_promo = Math.min(promo.quantite, qte_promo);
+          }
+
+          console.log('checkMarketing','qte_promo', qte_promo);
+
+
+          // Récup. de l'id de l'item sur lequel appliquer la promo
+          if (qte_promo>0) {
+
+            const item = commande.items.find(i=>i.itemid===prd.itemid)
+            let item_prix = item.pu * qte_promo;
+
+            // calcul de la valeur :
+            const ispc = String(promo.valeur).substr(-1, 1) === "%";
+            const val = Math.abs(
+              Number(String(promo.valeur).slice(0, -1))
+            );
+      
+            const promoval = ispc
+              ? Number(Math.round((item_prix * (val / 100))+'e2')+'e-2')
+              : val;
+
+
+            modifiers.push({
+              type: "catalogue",
+              item: prd.itemid,
+              ingredient: null,
+              nom: promo.nom+" "+promo.valeur,
+              operation: promo.operation,
+              valeur: promoval+'€'
+            });
+          }
+
+        });
+
+
+
+
+      }
+      // on si la règle est sur plusieurs exemplaires de tous les prd de la liste
+      else {
+
+        // on classe la liste des produits par prix (croissant)
+        if (produits.hasOwnProperty('items') && produits.items.length>0) produits.items.sort((a,b)=>a.pu-b.pu);
+
+
+        // combien de produits en promo par tranche de produits :
+        const appl = promo.max - (promo.min - 1);
+        // quantité de produits concernés par la promo (par tranche complète)
+        let qte_promo = Math.floor(produits.qte/promo.max) * appl;
+        // reste de produits qui ne complètent pas de tranche
+        let reste = produits.qte % promo.max;
+
+        // s'il reste des produits qui ne complètent pas de tranche 
+        // mais qui sont concernés par la promo
+        if (reste && (reste - (promo.min - 1) > 0)) {
+          // on ajoute ces produits à la quantité de produits concernés
+          qte_promo += reste - (promo.min - 1);
+        }
+
+
+        // si la promo limite le nombre de produits concernés :
+        if (promo.quantite>0) {
+          qte_promo = Math.min(promo.quantite, qte_promo);
+        }
+
+        if (qte_promo>0) {
+
+          // on dépile la liste des produits pour créer les modifiers
+          for (let i=0;i<qte_promo;i++) {
+            let item = produits.items.shift();
+            let item_prix = item.pu;
+
+            // calcul de la valeur :
+            const ispc = String(promo.valeur).substr(-1, 1) === "%";
+            const val = Math.abs(
+              Number(String(promo.valeur).slice(0, -1))
+            );
+      
+            const promoval = ispc
+              ? Number(Math.round((item_prix * (val / 100))+'e2')+'e-2')
+              : val;
+
+
+            
+
+            modifiers.push({
+              type: "catalogue",
+              item: item.itemid,
+              ingredient: null,
+              nom: promo.nom+" "+promo.valeur,
+              operation: promo.operation,
+              valeur: promoval+'€'
+            });
+          }
+
+        }
+
+      }
+    }
+    // si la promo concerne la commande entière
+    else {
+  
+      modifiers.push({
+        type: "catalogue",
+        item: null,
+        ingredient: null,
+        nom: promo.nom,
+        operation: promo.operation,
+        valeur: promo.valeur
+      });
+    }
+
+  });
+  
+ 
+
+  console.log('checkMarketing', modifiers);
+
+  return modifiers;
 }
 
 function sendTicketId(ticketId, numero, response) {
@@ -1302,9 +1527,11 @@ const _getCommandeTotal = (items, modificateurs) => {
         // let amodtx = (ispc) ? (100 - val) / 100 : 1 - (val/articletotal);
 
         if (ispc) {
-          articletotal *= (100 - val) / 100;
+          // articletotal *= (100 - val) / 100;
+          articletotal *= __modificateur.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
         } else {
-          articletotal -= val;
+          // articletotal -= val;
+          articletotal = __modificateur.operation>0 ? articletotal + val : articletotal - val;
         }
       }
 
@@ -1320,9 +1547,11 @@ const _getCommandeTotal = (items, modificateurs) => {
     const ispc = String(modificateurs[0].valeur).substr(-1, 1) === "%";
     const val = Math.abs(Number(String(modificateurs[0].valeur).slice(0, -1)));
     if (ispc) {
-      __total *= (100 - val) / 100;
+      // __total *= (100 - val) / 100;
+      __total *= __modificateur.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
     } else {
-      __total -= val;
+      // __total -= val;
+      __total = __modificateur.operation>0 ? articletotal + val : articletotal - val;
     }
   }
 

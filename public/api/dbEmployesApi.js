@@ -5,7 +5,7 @@ const log = require('electron-log');
 
 const actions = {
   dbPointagesGetAll: async (req,res) => {
-    const {payload} = req;
+    // const {payload} = req;
     log.info("dbPointagesGetAll() in API");
     
     (await db.pointages)._.mixin(lodashId);
@@ -32,7 +32,7 @@ const actions = {
       res.send(__pnt);
   },
   dbShiftsGetAll: async (req,res) => {
-    const {payload} = req;
+    // const {payload} = req;
     log.info("dbShiftsGetAll() in API");
     
     (await db.shifts)._.mixin(lodashId);
@@ -60,7 +60,7 @@ const actions = {
     res.send(confirm);
   },
   dbTimeadjustsGetAll: async (req,res) => {
-    const {payload} = req;
+    // const {payload} = req;
     log.info("dbTimeadjustsGetAll() in API");
     
     (await db.timeadjusts)._.mixin(lodashId);
@@ -91,7 +91,7 @@ const actions = {
   dbGetItems: async (itemtype, ids) => {
     let response = [];
     if (itemtype==="pointages") {
-      (await db.pointages)._.mixin(pointages);
+      (await db.pointages)._.mixin(lodashId);
       response = await (await db.pointages).get('pointages')
                                            .filter( c => ids.includes(c.pointage_id) )
                                            .value();
@@ -155,24 +155,30 @@ const actions = {
 async function _addLocalSync(db, ids, store_id) {
 
   if (db==="shifts") {
-    let _shf = await (await db.shifts)
+    await (await db.shifts)
               .get("shifts")
               .filter(t => ( ids.includes(t.shift_id) && !t.localsync.includes(store_id)) )
-              .assign({localsync: [...localsync, store_id]})
+              .get('localsync')
+              .push(store_id)
+              // .assign({localsync: [...localsync, store_id]})
               .write();
   } 
   else if (db==="timeadjusts") {
-    let _adj = await (await db.timeadjusts)
+    await (await db.timeadjusts)
               .get("timeadjusts")
               .filter(t => ( ids.includes(t.adjust_id) && !t.localsync.includes(store_id)) )
-              .assign({localsync: [...localsync, store_id]})
+              .get('localsync')
+              .push(store_id)
+              // .assign({localsync: [...localsync, store_id]})
               .write();
   } 
   else if (db==="pointages") {
-    let _pnt = await (await db.pointages)
+    await (await db.pointages)
               .get("pointages")
               .filter(t => ( ids.includes(t.pointage_id) && !t.localsync.includes(store_id)) )
-              .assign({localsync: [...localsync, store_id]})
+              .get('localsync')
+              .push(store_id)
+              // .assign({localsync: [...localsync, store_id]})
               .write();
   } 
   return ids.length;

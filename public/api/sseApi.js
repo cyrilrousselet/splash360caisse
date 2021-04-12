@@ -637,6 +637,53 @@ const actions = {
 
     __request.end();
   },
+
+  syncCatalogueBO: (req, res) => {
+    const { url, access_token, catalogue } = req.payload;
+
+    let __reponseServer = [];
+
+    const __request = net.request({
+      url: url,
+      method: "post",
+    });
+    __request.setHeader("Authorization", "Bearer " + access_token);
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/json");
+
+    const __data = JSON.stringify({ catalogue: catalogue });
+    console.log("Catalogue to sync: ", __data);
+
+    __request.write(__data);
+
+    __request.on("response", (response) => {
+      response.on("data", (chunk) => {
+        __reponseServer.push(chunk);
+        log.info(`syncCatalogueBO BODY: ${chunk}`);
+      });
+      response.on("end", () => {
+        log.info("syncCatalogueBO: end");
+
+        let __conf = {};
+        try {
+          __conf = { confirm: JSON.parse(__reponseServer.join("")) };
+        } catch (e) {
+          __conf = { error: e.message };
+          log.error("JSON error", e);
+        }
+        res.send(__conf);
+        //        res.send({confirm: JSON.parse(__syncedClotures.join(''))});
+        // res.send({confirm: true});
+      });
+    });
+
+    __request.on('error', (error) => {
+      log.error('syncCatalogueBO ERROR', error);
+      res.error(error);
+    });
+
+    __request.end();
+  },
 };
 
 module.exports = {

@@ -1250,7 +1250,9 @@ const data = {
                 modificateur: {
                     charge: 'CHARGE',
                     discount_panier: 'REDUCTION PANIER',
+                    frais_panier: 'FRAIS',
                     discount_item: 'Reduction article',
+                    frais_item: 'Frais article',
                     monnaie: 'EUR'
                 },
                 tva: {

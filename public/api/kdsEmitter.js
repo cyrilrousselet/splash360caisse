@@ -1,8 +1,8 @@
 
-const cors = require('cors');
+// const cors = require('cors');
 const {net} = require('electron');
 const log = require('electron-log');
-const e = require('express');
+// const e = require('express');
 
 
 const KDS_PORT = 3330;

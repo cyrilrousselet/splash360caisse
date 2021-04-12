@@ -5,7 +5,7 @@ const log = require('electron-log');
 
 const actions = {
   dbClientsGetAll: async (req,res) => {
-    const {payload} = req;
+    // const {payload} = req;
     log.info("dbClientsGetAll() in API");
     
     (await db.clients)._.mixin(lodashId);
@@ -93,10 +93,12 @@ async function _getAllClients() {
 
 async function _addLocalSync(ids, store_id) {
 
-  let _clt = await (await db.clients)
+  await (await db.clients)
             .get("clients")
             .filter(t => ( ids.includes(t.client_id) && !t.localsync.includes(store_id)) )
-            .assign({localsync: [...localsync, store_id]})
+            .get('localsync')
+            .push(store_id)
+            // .assign({localsync: [...localsync, store_id]})
             .write();
 
   return ids.length;

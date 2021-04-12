@@ -5,7 +5,7 @@ const log = require('electron-log');
 
 const actions = {
   dbTableGetAllSalles: async (req, res) => {
-    const {payload} = req;
+    // const {payload} = req;
     log.info('dbTableGetAllSalles() in API');
 
     (await db.tables)._.mixin(lodashId);
@@ -214,7 +214,7 @@ async function _findTable(criteriae={}) {
 
 async function _persistTable(payload) {
 
-  const {salleId, table} = payload;
+  const {table} = payload;
 
   const __now = new Date().getTime();
   let _tab = await (await db.tables).get('tables')
@@ -253,7 +253,7 @@ async function _persistTable(payload) {
 
     let __upds = {updatedAt: __now, tables: tables};
   
-    const _usal = await (await db.tables).get('salles')
+    await (await db.tables).get('salles')
                                   .find({salleId: _tab.salleId})
                                   .assign(__upds)
                                   .write();
@@ -286,7 +286,7 @@ async function _deleteTable(tableId) {
 
   let __upds = {updatedAt: __now, tables: tables};
 
-  const _usal = await (await db.tables).get('salles')
+  await (await db.tables).get('salles')
                                       .find({salleId: _tab.salleId})
                                       .assign(__upds)
                                       .write();

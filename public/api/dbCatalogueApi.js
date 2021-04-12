@@ -6,7 +6,7 @@ const log = require('electron-log');
 
 const actions = {
   dbCatalogueGetAll: async (req,res) => {
-    const {payload} = req;
+    // const {payload} = req;
 
     (await db.categories)._.mixin(lodashId);
     (await db.groupes)._.mixin(lodashId);
@@ -206,52 +206,66 @@ async function _getAll() {
 async function _addLocalSync(db, ids, store_id) {
 
   if (db==='categories') {
-    const _cat = await (await db.categories)
+    await (await db.categories)
       .get("categories")
       .filter(s => ( ids.includes(s.categorie_id) && !s.localsync.includes(store_id)) )
-      .assign({localsync: [...localsync, store_id]})
+      .get('localsync')
+      .push(store_id)
+      // .assign({localsync: [...localsync, store_id]})
       .write();
   }
   else if (db==='groupes') {
-    const _grp = await (await db.ingredienttypes)
+    await (await db.ingredienttypes)
       .get("ingredienttypes")
       .filter(s => ( ids.includes(s.type_id) && !s.localsync.includes(store_id)) )
-      .assign({localsync: [...localsync, store_id]})
+      .get('localsync')
+      .push(store_id)
+      // .assign({localsync: [...localsync, store_id]})
       .write();
   }
   else if (db==='types') {
-    const _igt = await (await db.groupes)
+    await (await db.groupes)
       .get("groupes")
       .filter(s => ( ids.includes(s.groupe_id) && !s.localsync.includes(store_id)) )
-      .assign({localsync: [...localsync, store_id]})
+      .get('localsync')
+      .push(store_id)
+      // .assign({localsync: [...localsync, store_id]})
       .write();
   }
   else if (db==='ingredients') {
-    const _ing = await (await db.ingredients)
+    await (await db.ingredients)
       .get("ingredients")
       .filter(s => ( ids.includes(s.ingredient_id) && !s.localsync.includes(store_id)) )
-      .assign({localsync: [...localsync, store_id]})
+      .get('localsync')
+      .push(store_id)
+      // .assign({localsync: [...localsync, store_id]})
       .write();
   }
   else if (db==='produits') {
-    const _prd = await (await db.produits)
+    await (await db.produits)
       .get("produits")
       .filter(s => ( ids.includes(s.produit_id) && !s.localsync.includes(store_id)) )
-      .assign({localsync: [...localsync, store_id]})
+      .get('localsync')
+      .push(store_id)
+      // .assign({localsync: [...localsync, store_id]})
       .write();
   }
   else if (db==='tva') {
-    const _tva = await (await db.tva)
+    await (await db.tva)
       .get("tva")
       .filter(s => ( ids.includes(s.tva_id) && !s.localsync.includes(store_id)) )
-      .assign({localsync: [...localsync, store_id]})
+      .get('localsync')
+      .push(store_id)
+      // .assign({localsync: [...localsync, store_id]})
       .write();
   }
   else if (db==='steps') {
-    const _stp = await (await db.steps)
+    await (await db.steps)
       .get("steps")
       .filter(s => ( ids.includes(s.step_id) && !s.localsync.includes(store_id)) )
-      .assign({localsync: [...localsync, store_id]})
+      .get('localsync')
+      .push(store_id)
+      // .assign({localsync: [...localsync, store_id]})
       .write();
   }
   return ids.length;
@@ -314,11 +328,11 @@ function _parseCatalogue(_rawdata) {
   });
 
 
-  // s'il y a plusieurs catégories, la première est celle par défaut
-  const __grp = _rawdata._cat.length>1 
-              ? _rawdata._grp.filter(g => g.categorie==_rawdata._cat[0].categorie_id)
-              : _rawdata._grp
-              ;
+  // // s'il y a plusieurs catégories, la première est celle par défaut
+  // const __grp = _rawdata._cat.length>1 
+  //             ? _rawdata._grp.filter(g => g.categorie===_rawdata._cat[0].categorie_id)
+  //             : _rawdata._grp
+  //             ;
 
 
   const __categories = _rawdata._cat;
@@ -374,39 +388,39 @@ async function _findCatalogue(prd_criteriae={}) {
 
 async function _replaceAll(data) {
 
-  let _cat = await (await db.categories).get('categories').remove().write();
+  await (await db.categories).get('categories').remove().write();
   data.categories.forEach(async (cat) => {
-    _cat = await (await db.categories).get('categories').insert(cat).write();
+    await (await db.categories).get('categories').insert(cat).write();
   });
 
-  let _grp = await (await db.groupes).get('groupes').remove().write();
+  await (await db.groupes).get('groupes').remove().write();
   data.groupes.forEach(async (grp) => {
-    _grp = await (await db.groupes).get('groupes').insert(grp).write();
+    await (await db.groupes).get('groupes').insert(grp).write();
   });
 
-  let _tva = await (await db.tva).get('tva').remove().write();
+  await (await db.tva).get('tva').remove().write();
   data.tva.forEach(async (tva) => {
-    _tva = await (await db.tva).get('tva').insert(tva).write();
+    await (await db.tva).get('tva').insert(tva).write();
   });
 
-  let _igt = await (await db.ingredienttypes).get('types').remove().write();
+  await (await db.ingredienttypes).get('types').remove().write();
   data.types.forEach(async (igt) => {
-    _igt = await (await db.ingredienttypes).get('types').insert(igt).write();
+    await (await db.ingredienttypes).get('types').insert(igt).write();
   });
 
-  let _ing = await (await db.ingredients).get('ingredients').remove().write();
+  await (await db.ingredients).get('ingredients').remove().write();
   data.ingredients.forEach(async (ing) => {
-    _ing = await (await db.ingredients).get('ingredients').insert(ing).write();
+    await (await db.ingredients).get('ingredients').insert(ing).write();
   });
 
-  let _prd = await (await db.produits).get('produits').remove().write();
+  await (await db.produits).get('produits').remove().write();
   data.produits.forEach(async (prd) => {
-    _prd = await (await db.produits).get('produits').insert(prd).write();
+    await (await db.produits).get('produits').insert(prd).write();
   });
 
-  let _stp = await (await db.steps).get('steps').remove().write();
+  await (await db.steps).get('steps').remove().write();
   data.steps.forEach(async (stp) => {
-    _stp = await (await db.steps).get('steps').insert(stp).write();
+    await (await db.steps).get('steps').insert(stp).write();
   });
 
   return true;
