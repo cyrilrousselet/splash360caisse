@@ -103,7 +103,7 @@ function initSync() {
 
 function syncDispatch(db, data, emitter=null) {
   return (dispatch, getState) => {
-    const { options } = getState().parametresReducer.parametres;
+    const { entreprise, options } = getState().parametresReducer.parametres;
 
     delete data._id;
     delete data.__v;
@@ -116,15 +116,15 @@ function syncDispatch(db, data, emitter=null) {
       });
 
       // update Produit / Ingredient sur BO
-      // notificationServices.syncCatalogue({catalogue:{db:db, data:data}})
-      // .then(
-      //   response => {
-      //     dispatch(catalogueActions.setSyncedCatalogue(response.confirm))
-      //   },
-      //   error => {
-      //     logger.error(error);
-      //   }
-      // )
+      notificationServices.syncCatalogue({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret, catalogue:{db:db, data:data}})
+      .then(
+        response => {
+          dispatch(catalogueActions.setSyncedCatalogue(response.confirm))
+        },
+        error => {
+          logger.error(error);
+        }
+      )
 
     }
     else if (options.role==='secondary') {

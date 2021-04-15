@@ -385,12 +385,16 @@ class Menu extends React.Component {
 
   updateMenuItem(params) {
     logger.log('updateMenuItem()',params)
-    const {editType} = this.state;
+    const {categories} = this.props;
+    const {editType, categorie} = this.state;
+
+    const defCat = categorie || categories[0].categorie_id;
+    
     if (editType==='ingredient') {
-      this.props.updateIngredient(params);
+      this.props.updateIngredient({...params, catalogue:defCat.substr(3)});
     }
     else if (editType==='produit') {
-      this.props.updateProduit(params);
+      this.props.updateProduit({...params, catalogue:defCat.substr(3)});
     }
   }
 

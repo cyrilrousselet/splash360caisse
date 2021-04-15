@@ -74,7 +74,7 @@ async function syncCatalogue(params) {
 
   if (__splashToken.splash_token.access_token) {
     var __url = externalParams.synchro.syncCatalogue;
-    return emit('syncCatalogueBO', {url: __url, access_token: __splashToken.splash_token.access_token, clotures: params.catalogue});
+    return emit('syncCatalogueBO', {url: __url, access_token: __splashToken.splash_token.access_token, catalogue: params.catalogue});
   }
 }
 async function confirmCommande(params) {

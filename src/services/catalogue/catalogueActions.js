@@ -75,7 +75,7 @@ function updateProduit(payload) {
   // return dispatch => {
     dispatch({ type: catalogueActionTypes.UPDATE_PRODUIT_REQUEST});
 
-    const {produit_id, update} = payload;
+    const {produit_id, update, catalogue} = payload;
     const {caisse} = getState().parametresReducer.parametres.options;
 
     // const catalogue = getState().catalogueReducer.catalogue;
@@ -101,7 +101,7 @@ function updateProduit(payload) {
     .then(
       data => {
         dispatch({ type: catalogueActionTypes.UPDATE_PRODUIT_SUCCESS});
-        dispatch(notificationActions.syncDispatch('produit', data));
+        dispatch(notificationActions.syncDispatch('produit', {...data, catalogue: catalogue}));
 
         dispatch(getAll());
       },
@@ -116,7 +116,7 @@ function updateIngredient(payload) {
   // return dispatch => {
     dispatch({ type: catalogueActionTypes.UPDATE_INGREDIENT_REQUEST});
 
-    const {ingredient_id, update} = payload;
+    const {ingredient_id, update, catalogue} = payload;
 
     const {caisse} = getState().parametresReducer.parametres.options;
     // const ingredients = getState().catalogueReducer.ingredients;
@@ -135,7 +135,7 @@ function updateIngredient(payload) {
     .then(
       data => {
         dispatch({ type: catalogueActionTypes.UPDATE_INGREDIENT_SUCCESS});
-        dispatch(notificationActions.syncDispatch('ingredient', data));
+        dispatch(notificationActions.syncDispatch('ingredient', {...data, catalogue: catalogue}));
         dispatch(getAll());
       },
       error => dispatch({type: catalogueActionTypes.UPDATE_INGREDIENT_FAILURE, error})
