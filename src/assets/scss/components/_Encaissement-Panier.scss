@@ -412,6 +412,13 @@
                 }
             }
         }
+        &.type-frais {
+            background-color: $rouge;
+            color: $blanc;
+            & + .MuiListItemSecondaryAction-root .MuiTypography-body1 {
+                color: $blanc;
+            }
+        }
     }
 }
 

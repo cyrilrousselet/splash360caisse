@@ -2,8 +2,8 @@
   "notification": "http://api.splash360.fr:3030/.well-known/mercure?topic=",
   "uber": {
     "oAuth": "https://login.uber.com/oauth/v2/token",
-    "clientid": "8OpdkXvG_D1IAb9J94Mf8srgdY2CXYif",
-    "secret": "fzik-B4lYFDJXuIwhoj0aULsW4-0EvWWJOsEms68",
+    "clientid": "kcKN_qhiHlwgG22qCqWPyWxNl10MKLwf",
+    "secret": "x5L3TuLNDW3cGXmn0JEZ4pI_wIIWYCOGXQuxdI1R",
     "getorder": {
       "url": "https://api.uber.com/v2/eats/order/{order_id}",
       "scope": "eats.store.orders.read"

@@ -69,6 +69,7 @@ const mapDispatchToProps = (dispatch) => {
     updateComment: commandeActions.updateComment,
     deleteComment: commandeActions.deleteComment,
     addDiscount: commandeActions.addDiscount,
+    checkMarketing: commandeActions.checkMarketing,
     updateDiscount: commandeActions.updateDiscount,
     deleteDiscount: commandeActions.deleteDiscount,
     getClientsList: clientsActions.getClientsList,

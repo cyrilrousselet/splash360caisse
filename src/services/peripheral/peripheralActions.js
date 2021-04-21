@@ -721,12 +721,23 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             __montant = ispc ? articletotal*(val/100) : val;
 
             // conversion du modificateur en coefficient
-            amodtx = (ispc) ? (100 - val) / 100 : 1 - (val/articletotal);
+            amodtx = (ispc) 
+            ? (
+              __modificateur.operation>0 
+              ? (100 + val) / 100
+              : (100 - val) / 100
+              ) 
+            : (
+              __modificateur.operation>0 
+              ? 1 + (val/articletotal)
+              : 1 - (val/articletotal)
+              )
+            ;
 
             if (ispc) {
-              articletotal *= (100 - val) / 100;
+              articletotal *= __modificateur.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
             } else {
-              articletotal -= val;
+              articletotal = __modificateur.operation>0 ? articletotal + val : articletotal - val;
             }
         
           }
@@ -739,7 +750,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             prix: articletotal.toFixed(2),
             ingredients: articleIngredients,
             comment: __comment ? removeDiacritics(__comment.texte) : '',
-            modificateur: __modificateur ? {valeur: __modificateur.valeur, montant: __montant} : null
+            modificateur: __modificateur ? {valeur: __modificateur.valeur, montant: __montant, operation: __modificateur.operation, nom: __modificateur.nom} : null
           });
 
 
@@ -821,12 +832,23 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           __modificateur = {...__modificateur, montant: montant};
 
           // conversion du modificateur en coefficient
-          const modtx = (ispc) ? (100 - val) / 100 : 1 - (val/total);
+          const modtx = (ispc)
+          ? (
+            __modificateur.operation>0 
+            ? (100 + val) / 100
+            : (100 - val) / 100
+            ) 
+          : (
+            __modificateur.operation>0 
+            ? 1 + (val/total)
+            : 1 - (val/total)
+            )
+          ;
 
           if (ispc) {
-            total *= (100 - val) / 100;
+            total *= __modificateur.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
           } else {
-            total -= val;
+            total = __modificateur.operation>0 ? total + val : total - val;
           }
 
 
@@ -854,7 +876,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           reglements: cmd.reglements,
           rendus: cmd.rendus,
           comment: __comment ? __comment.texte : '',
-          modificateur: __modificateur ? {valeur: __modificateur.valeur, montant: __modificateur.montant} : null,
+          modificateur: __modificateur ? {valeur: __modificateur.valeur, montant: __modificateur.montant, operation: __modificateur.operation, nom: __modificateur.nom} : null,
           client: cmd.client && clients.find(c=>c.client_id===cmd.client.client_id)
         };
 

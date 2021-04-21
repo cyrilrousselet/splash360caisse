@@ -547,6 +547,8 @@ function addProduit(payload) {
       dispatch({ type: commandeActionTypes.ADD_PRODUIT, commandeItem });
     if ("update" === mode)
       dispatch({ type: commandeActionTypes.UPDATE_PRODUIT, commandeItem });
+
+    dispatch(checkMarketing());
   };
 }
 
@@ -567,6 +569,9 @@ function updateProduit(payload) {
       dispatch({ type: commandeActionTypes.UPDATE_PRODUIT, commandeItem });
     if ("delete" === mode)
       dispatch({ type: commandeActionTypes.DELETE_PRODUIT, commandeItem });
+
+    
+    dispatch(checkMarketing());
   };
 }
 
@@ -681,6 +686,7 @@ function updateCommande(payload) {
   return (dispatch) => {
     logger.log(payload);
     dispatch({ type: commandeActionTypes.UPDATE_COMMANDE, payload });
+    dispatch(checkMarketing());
   };
 }
 
@@ -880,6 +886,34 @@ function deleteDiscount(payload) {
       discountId: payload.discountId,
     });
   };
+}
+
+function checkMarketing() {
+  return (dispatch, getState) => {
+    const { commande } = getState().commandeReducer;
+    const { reglescatalogue } = getState().marketingReducer;
+
+    const modifiers = commandeServices.checkMarketing(commande, reglescatalogue);
+
+    
+
+    let promos = [];
+
+    modifiers.forEach(m => {
+      promos.push(commandeServices.addModificateur(m, null));
+    });
+
+    const __cmdmodifiers = commande.modificateurs || [];
+
+    const newModificateurs = [
+      ...__cmdmodifiers.filter(m=>m.type!=='catalogue'),
+      ...promos
+    ];
+
+    dispatch({type: commandeActionTypes.CHECK_DISCOUNT, modificateurs: newModificateurs});
+
+
+  }
 }
 
 function archiveCommands(payload) {
@@ -1539,6 +1573,7 @@ export const commandeActions = {
   getTodayCommandesList,
   // setNewNumero,
   // resetNumero,
+  checkMarketing,
   getCommande,
   setChrono,
   validateCommande,

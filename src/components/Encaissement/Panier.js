@@ -688,9 +688,11 @@ class Panier extends React.Component {
           const ispc = String(__moditem.valeur).substr(-1,1)==='%';
           const val = Math.abs(Number(String(__moditem.valeur).slice(0,-1)));
           if (ispc) {
-            __itemtotal *= (100 - val) / 100;
+            // __itemtotal *= (100 - val) / 100;
+            __itemtotal *= __moditem.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
           } else {
-            __itemtotal -= val;
+            // __itemtotal -= val;
+            __itemtotal = __moditem.operation>0 ? __itemtotal + val : __itemtotal - val;
           }
         }
         __total += __itemtotal;
@@ -706,9 +708,9 @@ class Panier extends React.Component {
       const ispc = String(modpanier.valeur).substr(-1,1)==='%';
       const val = Math.abs(Number(String(modpanier.valeur).slice(0,-1)));
       if (ispc) {
-        __total *= (100 - val) / 100;
+        __total *= modpanier.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
       } else {
-        __total -= val;
+        __total = modpanier.operation>0 ? __total + val : __total - val;
       }
     }
     
@@ -1461,6 +1463,8 @@ class Panier extends React.Component {
                       valeur={modif_panier.valeur}
                       id={modif_panier.modificateur_id}
                       montant={modif_panier.montant}
+                      operation={modif_panier.operation}
+                      type={modif_panier.type}
                       onClick={this.openDiscount}
                       deleteHandler={deleteDiscount}
                       discountsurvente={ type==="vente" }
@@ -1575,7 +1579,7 @@ Panier.propTypes = {
 
 
 function DiscountListItem (props) {
-  const {valeur, montant, nom, id, onClick, className, deleteHandler, discountsurvente=true} = props;
+  const {valeur, montant, nom, id, type, operation, onClick, className, deleteHandler, discountsurvente=true} = props;
 
   const deleteDiscount = () => {
     logger.log('deleteDiscount',id);
@@ -1597,16 +1601,25 @@ function DiscountListItem (props) {
     });
   }
 
-  logger.log('discount id', id);
+  const modtype = type==="discount" 
+  ? "type-discount" 
+  : (
+    operation>0 
+    ? "type-frais" 
+    : "type-regle"
+    )
+  ;
+
+  logger.log('discount id', id, operation);
 
   return (
-    <ListItem className={ `discount ${className||''}` }>
-      <ListItemText primary={`${(nom ? nom : valeur)}`} onClick={onClick} />
+    <ListItem className={ `discount ${className||''} ${modtype}` }>
+      <ListItemText primary={`${(nom ? nom : valeur)}`} onClick={() => { type==="discount" ? onClick() : void(0);}} />
       <ListItemSecondaryAction>
         <ListItemIcon onClick={deleteDiscount}>
-          {discountsurvente && (<DeleteIcon />)}
+          {(discountsurvente && type==="discount") && (<DeleteIcon />)}
         </ListItemIcon>
-        <ListItemText primary={`-${montant}`} />
+        <ListItemText primary={`${(operation<0 ? '-' : '+')}${montant}`} />
       </ListItemSecondaryAction>
     </ListItem>
   );
@@ -1716,6 +1729,9 @@ class PanierListeItem extends React.Component {
         montant={ discount.montant }
         id={ discount.modificateur_id }
         onClick={ openDiscountHandler }
+        type={ discount.type }
+        nom={ discount.nom }
+        operation={ discount.operation }
         deleteHandler={ deleteDiscountHandler }
         discountsurvente={commandetype==="vente" }
       />}

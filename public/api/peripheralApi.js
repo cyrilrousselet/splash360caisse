@@ -6,11 +6,11 @@ const Printer = require('../utils/printer')
 escpos.USB = require('escpos-usb');
 escpos.Network = require('escpos-network');
 escpos.SerialPort = require('escpos-serialport');
-const statuses = require('escpos/statuses');
+// const statuses = require('escpos/statuses');
 const iconv = require('iconv-lite');
 
-const {PrinterStatus,OfflineCauseStatus,ErrorCauseStatus,RollPaperSensorStatus} = statuses;
-const _ = require('escpos/commands');
+// const {PrinterStatus,OfflineCauseStatus,ErrorCauseStatus,RollPaperSensorStatus} = statuses;
+// const _ = require('escpos/commands');
 const path = require('path');
 const fs = require('fs');
 
@@ -33,7 +33,7 @@ const actions = {
 
   printLabel: (req, res) => {
 
-    const { imprimante } = req.payload;
+    // const { imprimante } = req.payload;
 
     log.info('printLabel');
 
@@ -291,9 +291,12 @@ function _spoolManager(job=null) {
 
 function _openDrawer(imprimante, template, contenu) {
 
+
+  let vp, vid, pid;
+
   // déclaration de l'imprimante
   let device;
-  if (imprimante.connexion=='usb') {
+  if (imprimante.connexion==='usb') {
     if (imprimante.param && (typeof imprimante.param==="string") ) {
       vp = imprimante.param.split(';');
       vid = parseInt(vp[0], 16);
@@ -303,9 +306,9 @@ function _openDrawer(imprimante, template, contenu) {
       device = new escpos.USB();
     }
 
-  } else if (imprimante.connexion=='network') {
+  } else if (imprimante.connexion==='network') {
     device = new escpos.Network(imprimante.param); 
-  } else if (imprimante.connexion=='serial') {
+  } else if (imprimante.connexion==='serial') {
     device = new escpos.SerialPort(imprimante.param);
   }
   
@@ -313,7 +316,7 @@ function _openDrawer(imprimante, template, contenu) {
 
   device.open(function(error) {
     if (error) {
-      log.error(`ERREUR IMPRIMANTE->TIROIR (${imprimante.connexion}: ${imprimante.param}) =>`, e.message);
+      log.error(`ERREUR IMPRIMANTE->TIROIR (${imprimante.connexion}: ${imprimante.param}) =>`, error.message);
     } else {
       log.debug('device open -> cashdraw()');
       printerOpen = true;
@@ -334,7 +337,7 @@ function _openDrawer(imprimante, template, contenu) {
 function _doPrintTicket(imprimante, template, contenu) {
 
   // déclaration de l'imprimante
-  let device;
+  let device, vp, vid, pid;
   const options = {
     encoding: imprimante.encoding, 
     width:42
@@ -343,7 +346,7 @@ function _doPrintTicket(imprimante, template, contenu) {
   try {
     
 
-    if (imprimante.connexion=='usb') {
+    if (imprimante.connexion==='usb') {
       if (imprimante.param && (typeof imprimante.param==="string") ) {
         vp = imprimante.param.split(';');
           vid = parseInt(vp[0], 16);
@@ -352,9 +355,9 @@ function _doPrintTicket(imprimante, template, contenu) {
         } else {
           device = new escpos.USB();
         }
-    } else if (imprimante.connexion=='network') {
+    } else if (imprimante.connexion==='network') {
       device = new escpos.Network(imprimante.param); 
-    } else if (imprimante.connexion=='serial') {
+    } else if (imprimante.connexion==='serial') {
       device = new escpos.SerialPort(imprimante.param);
     }
     
@@ -459,21 +462,12 @@ function _printErrorHandler(error, methodName, printer) {
   _closePrinter(printer);
 }
 
-function _closePrinter(printer) {
-  printer.close(function() {
-    printerOpen = false;
-  });
-}
-function _printErrorHandler(error, methodName, printer) {
-  log.error(`ERREUR IMPRESSION ( ${methodName}() )`, error.message);
-  _closePrinter(printer);
-}
 
 function _launchPrint(template, printer, contenu, config={}) {
 
   log.debug('_launchPrint()');
 
-  if (template.length==0) {
+  if (template.length===0) {
     _closePrinter(printer);
   }
 
@@ -577,14 +571,14 @@ function _launchPrint(template, printer, contenu, config={}) {
     }
     else if ('qrcode' ===  section) {
       try {
-        const pqr = await _printQRCode(printer, contenu.code);
+        await _printQRCode(printer, contenu.code);
       } catch(e) {
         _printErrorHandler(e, '_printQRCode', printer);
       }
     }
     else if ('uber' ===  section) {
       try {
-        const pqr = await _printUber(printer, contenu.uber, contenu.strings.uber);
+        await _printUber(printer, contenu.uber, contenu.strings.uber);
       } catch(e) {
         _printErrorHandler(e, '_printUber', printer);
       }
@@ -605,7 +599,7 @@ function _launchPrint(template, printer, contenu, config={}) {
     } 
     else if ('prodfooter2' === section) {
       try {
-        const __ppf = await _printProdfooter2(printer, {id: contenu.detail.id, info: contenu.info, logo: contenu.logo}, contenu.strings);
+        await _printProdfooter2(printer, {id: contenu.detail.id, info: contenu.info, logo: contenu.logo}, contenu.strings);
       } catch(e) {
         _printErrorHandler(e, '_printProdfooter2', printer);
       }
@@ -1209,7 +1203,7 @@ async function _printProdfooter2(printer, data, strings) {
   if (data.logo) {
     const pixels = await getPixelsAsync(getLogoImg(data.logo));
     const image = new escpos.Image(pixels);
-    const printImage = await _printImage(printer, image);
+    await _printImage(printer, image);
   }
 }
 
@@ -1303,7 +1297,7 @@ async function _printQRCode(printer, code) {
   const pixels = await getPixelsAsync(qrimg);
   const image = new escpos.Image(pixels);
 //  log.info(image);
-  const printQRimage = await _printImage(printer, image);
+  await _printImage(printer, image);
 
   printer
     // .fontSize('4square')
@@ -1322,14 +1316,14 @@ function getLogoImg(filePath) {
 
 }
 
-async function _printLogo(printer, imageUrl) {
+// async function _printLogo(printer, imageUrl) {
 
-  const pixels = await getPixelsAsync(getLogoImg(imageUrl));
-  const image = new escpos.Image(pixels);
-//  log.info(image);
-  const printImage = await _printImage(printer, image);
+//   const pixels = await getPixelsAsync(getLogoImg(imageUrl));
+//   const image = new escpos.Image(pixels);
+// //  log.info(image);
+//   const printImage = await _printImage(printer, image);
 
-}
+// }
 
 // impression des informations de commande
 function _printCommande(printer, data, strings) {
@@ -1490,13 +1484,16 @@ function _printCommande(printer, data, strings) {
       });
     }
     if (article.modificateur) {
+      const modnom = article.modificateur.nom || ((article.modificateur.operation>0) ? strings.modificateur.frais_item : strings.modificateur.discount_item);
+      const modope = (article.modificateur.operation===1) ? '+' : '-';
       printer.align('CT').style('B').tableCustom([
         {text: '', cols:4},
-        {text: strings.modificateur.discount_item, cols:22, align:'LEFT'},
+        // {text: strings.modificateur.discount_item, cols:22, align:'LEFT'},
+        {text: modnom, cols:22, align:'LEFT'},
         {text:'', cols:1},
-        {text: article.modificateur.montant ? '' : '-'+article.modificateur.valeur, cols:6, align:'RIGHT'},
+        {text: article.modificateur.montant ? '' : modope+article.modificateur.valeur, cols:6, align:'RIGHT'},
         {text:'', cols:1},
-        {text: article.modificateur.montant ? '-'+article.modificateur.montant.toFixed(2) : '-'+article.modificateur.valeur, cols:6, align:'RIGHT'},
+        {text: article.modificateur.montant ? modope+article.modificateur.montant.toFixed(2) : modope+article.modificateur.valeur, cols:6, align:'RIGHT'},
         {text:'', cols:2}
       ]);
       _linecount++;
@@ -1505,6 +1502,8 @@ function _printCommande(printer, data, strings) {
 
   // modificateurs (charge ou discount) au niveau de la commande
   if (data.modificateur) {
+    const modnom = data.modificateur.nom || ((data.modificateur.operation>0) ? strings.modificateur.frais_panier : strings.modificateur.discount_panier);
+    const modope = (data.modificateur.operation===1) ? '+' : '-';
 
     // sous-total
     printer
@@ -1536,9 +1535,9 @@ function _printCommande(printer, data, strings) {
         // .fontSize('4square')
         .fontSize('normal')
         .tableCustom([
-          {text: strings.modificateur.discount_panier, cols:22, align:'LEFT'},
-          {text: '-'+modval, cols:10, align:'RIGHT'},
-          {text: '-'+montant, cols:10, align:'RIGHT'}
+          {text: modnom, cols:22, align:'LEFT'},
+          {text: modope+modval, cols:10, align:'RIGHT'},
+          {text: modope+montant, cols:10, align:'RIGHT'}
         ])
         .fontSize('normal')
       }
@@ -1549,9 +1548,9 @@ function _printCommande(printer, data, strings) {
       // .fontSize('4square')
       .fontSize('normal')
       .tableCustom([
-        {text: strings.modificateur.discount_panier, cols:22, align:'LEFT'},
+        {text: modnom, cols:22, align:'LEFT'},
         {text: '', cols:10, align:'RIGHT'},
-        {text: '-'+modval, cols:10, align:'RIGHT'}
+        {text: modope+modval, cols:10, align:'RIGHT'}
       ])
       .fontSize('normal')
       }

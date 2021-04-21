@@ -97,6 +97,7 @@ const actions = {
     const { payload } = req;
 
     const mongo = await connect();
+    if (!mongo)  return null;
     // ouverture correspondant au service
     const _serviceOuverture = await TresorModel.find({
       $and: [
@@ -233,6 +234,7 @@ const actions = {
 async function _findTresors(criteriae = {}) {
   log.info(criteriae);
   const mongo = await connect();
+  if (!mongo)  return null;
   const _tresor = await TresorModel.find(criteriae).lean().sort({createdAt: 1}).exec();
  // await mongo.disconnect();
   return _tresor;
@@ -241,6 +243,7 @@ async function _findTresors(criteriae = {}) {
 
 async function _getLastMouvement(caisseId) {
   const mongo = await connect();
+  if (!mongo)  return null;
   const _lastMvt = await TresorModel.find({
     $or: [
       {destination: caisseId},
@@ -257,6 +260,7 @@ async function _getLastMouvement(caisseId) {
 
 async function _addMouvementsLocalSync(ids, store_id) {
   const mongo = await connect();
+  if (!mongo)  return null;
 
   const _trs = await TresorModel.updateMany(
     {tresorId: {$in: ids}, localsync: { $ne: store_id }},
@@ -269,6 +273,7 @@ async function _addMouvementsLocalSync(ids, store_id) {
 
 async function _findLastOuverture(caisseId) {
   const mongo = await connect();
+  if (!mongo)  return null;
   const _lastOuverture = await TresorModel.find({
     type: "ouverture",
     destination: caisseId 
@@ -279,6 +284,7 @@ async function _findLastOuverture(caisseId) {
 
 async function _findLastCloture(caisseId) {
   const mongo = await connect();
+  if (!mongo)  return null;
   const _lastCloture = await TresorModel.find({
     type: "cloture",
     origine: caisseId
@@ -302,6 +308,7 @@ async function _persistTresor(payload) {
   const __now = new Date().getTime();
 
   const mongo = await connect();
+  if (!mongo)  return null;
   let _trs = await TresorModel.where({ tresorId: payload.tresorId })
     .findOne()
     .lean()

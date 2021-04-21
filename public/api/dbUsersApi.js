@@ -4,7 +4,7 @@ const log = require('electron-log');
 
 const actions = {
   dbUsersGetAll: async (req,res) => {
-    const {payload} = req;
+    // const {payload} = req;
 
     (await db.users)._.mixin(lodashId);
     log.info("dbUsersGetAll() in API");
@@ -25,7 +25,7 @@ const actions = {
     const {payload} = req;
 
     (await db.users)._.mixin(lodashId);
-    const __usr = await _findUser((u => (u.identifiant==payload.identifiant && u.status!='disabled')));
+    const __usr = await _findUser((u => (u.identifiant===payload.identifiant && u.status!=='disabled')));
     
     res.send(__usr);
   },
@@ -89,10 +89,12 @@ async function _hasUsers() {
 
 async function _addLocalSync(ids, store_id) {
 
-  let _clt = await (await db.users)
+  await (await db.users)
             .get("users")
             .filter(t => ( ids.includes(t.user_id) && !t.localsync.includes(store_id)) )
-            .assign({localsync: [...localsync, store_id]})
+            .get('localsync')
+            .push(store_id)
+            // .assign({localsync: [...localsync, store_id]})
             .write();
 
   return ids.length;

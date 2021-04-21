@@ -25,6 +25,8 @@ class Dashboard extends Component {
   //  this.props.getTodayCommandesList();
     this.props.getTodayCa();
     this.props.getAvoirsList();
+    this.props.getReglesPanierList();
+    this.props.getReglesCatalogueList();
     // this.props.deleteCurrentCommande();
     this.props.getCommande();
   }

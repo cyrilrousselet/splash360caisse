@@ -192,13 +192,21 @@ export function commandeReducer(state = initialState, action) {
         commande: {...commande, modificateurs}
       };
 
+    case commandeActionTypes.CHECK_DISCOUNT:
+
+      modificateurs = action.modificateurs;
+
+      return {
+        ...state,
+        commande: {...commande, modificateurs: modificateurs}
+      };
 
     case commandeActionTypes.UPDATE_DISCOUNT:
 
       const {discountId, valeur} = action.payload;
 
       modificateurs = commande.modificateurs;
-      modIndex = modificateurs.findIndex((obj => obj.modificateur_id === discountId));
+      modIndex = modificateurs.findIndex(obj => (obj.modificateur_id === discountId && obj.type==="discount"));
 
       if (-1 < modIndex) { 
         
