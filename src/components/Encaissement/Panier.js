@@ -322,7 +322,8 @@ class DiscountModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      valeur: null
+      valeur: null,
+      nom: ''
     };
     this.deleteDiscount = this.deleteDiscount.bind(this);
     this.saveDiscount = this.saveDiscount.bind(this);
@@ -357,33 +358,36 @@ class DiscountModal extends React.Component {
 
   saveDiscount() {
     const { discountid, item, ingredient } = this.props;
-    const { valeur } = this.state;
+    const { nom, valeur } = this.state;
 
     logger.log('saveDiscount()');
 
-    this.props.saveHandler(discountid, item, ingredient, valeur);
+    this.props.saveHandler(discountid, item, ingredient, valeur, nom);
     this.resetPopin();
     this.props.closeHandler();
 
   }
   resetPopin() {
-    this.setState({valeur:null});
+    this.setState({valeur:null, nom:''});
   }
   changeHandler(event) {
    // logger.log('CommentModal.changeHandler()', event.target.value);
-    this.setState({valeur:Math.abs(event.target.value)});
+    this.setState({valeur:Math.abs(event.target.value), nom:event.target.nom});
   }
-  setDiscount(valeur) {
+  setDiscount(discount) {
     // const { valeur } = this.state;
     // let newvaleur = (valeur===null) ? '' : texte+', ';
-    this.setState({valeur: valeur});
+    this.setState({nom: discount.nom, valeur: discount.valeur});
   }
   render() {
 
-    const { discountid, item, ingredient, dsclib, closeHandler, discountval, open } = this.props;
-    const { valeur } = this.state;
+    const { discountid, item, ingredient, dsclib, closeHandler, discountval, discountnom, open } = this.props;
+    const { valeur, nom } = this.state;
 
-    const vvaleur = valeur==null ? discountval : valeur;
+    console.log('dsclib',dsclib);
+
+    const vvaleur = valeur===null ? discountval : valeur;
+    const vnom = nom==='' ? discountnom : nom;
     logger.log('discountval', discountval);
 
     // setTimeout(() => {
@@ -416,7 +420,7 @@ class DiscountModal extends React.Component {
                     onChange={this.changeHandler}
                     variant="filled"
                   /> */}
-                  <div className="discount-valeur">{ vvaleur }</div>
+                  <div className="discount-valeur">{ (vvaleur ? `${vnom} (${vvaleur})` : '') }</div>
                   <div className="caption">{ strings.modules.encaissement.discount.caption }</div>
                 </div>
             </div>
@@ -424,7 +428,7 @@ class DiscountModal extends React.Component {
               <div className="label">{ strings.modules.encaissement.discount.predefini }</div>
               <div className="choix">
                 {dsclib && dsclib.map(dsc=>(
-                  <div className="dsclib-item" key={`dsc-${dsc.id}`} onClick={()=>{this.setDiscount(dsc.valeur)}}>{dsc.valeur}</div>
+                  <div className="dsclib-item" key={`dsc-${dsc.id}`} onClick={()=>{this.setDiscount(dsc)}}>{`${dsc.nom} (${dsc.valeur})`}</div>
                 ))}
               </div>
             </div>
@@ -1137,6 +1141,7 @@ class Panier extends React.Component {
 
     // récup de la valeur en fonction de l'id du discount (s'il est défini)
     const discountVal = (discountId!==null) ? modificateurs.find(dsc=>dsc.modificateur_id===discountId).valeur : '';
+    const discountNom = (discountId!==null) ? modificateurs.find(dsc=>dsc.modificateur_id===discountId).nom : '';
     // choix de discounts prédéfinis pour les discounts :
     const dsclib = (parametres && parametres.commandes) ? parametres.commandes.discount_predefini : [];
     // gestion de tables :
@@ -1532,6 +1537,7 @@ class Panier extends React.Component {
           discountid={discountId} 
           item={discountItemId} 
           discountval={ discountVal }
+          discountnom={ discountNom }
           ingredient={discountIngredientId}
           dsclib={ dsclib }
           />

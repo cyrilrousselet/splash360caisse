@@ -75,13 +75,17 @@
     .edit-zone {
         width: 100%;
     }
+    .editnom-input,
     .edit-input {
         width: 100% !important;
     }
 }
 .DiscountEditModal {
-    .edit-input .labelledfield-field { text-align: right;
-
+    .edit-input .labelledfield-field { 
+        text-align: right;
+    }
+    .editnom-input .labelledfield-field { 
+        text-align: left;
     }
 }
 .ClavierParamCmdDiscount {

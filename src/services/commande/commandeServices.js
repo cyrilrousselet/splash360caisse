@@ -1379,7 +1379,7 @@ function checkMarketing(commande, reglescatalogue) {
       else {
 
         // on classe la liste des produits par prix (croissant)
-        produits.items.sort((a,b)=>a.pu-b.pu);
+        if (produits.hasOwnProperty('items') && produits.items.length>0) produits.items.sort((a,b)=>a.pu-b.pu);
 
 
         // combien de produits en promo par tranche de produits :
