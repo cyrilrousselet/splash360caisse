@@ -12,7 +12,7 @@ import { templates } from '../../constants/templates';
 
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
-import { commandeActions } from '../commande/commandeActions';
+// import { commandeActions } from '../commande/commandeActions';
 import { remove } from 'diacritics';
 import { lowerCase } from 'lodash';
 import Logger from '../../helpers/Logger';
@@ -1435,7 +1435,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
         )
         dispatch({ type: peripheralActionTypes.PRINT_TICKET });
         if (ticket.template==='commande') {
-          dispatch(commandeActions.updateCommande({...cmd, printnum: Number(cmd.printnum)+1}));
+       //   dispatch(commandeActions.updateCommande({...cmd, printnum: Number(cmd.printnum)+1}));
+            commandeServices.persistCommande({...cmd, printnum: Number(cmd.printnum)+1});
         }
       }
 

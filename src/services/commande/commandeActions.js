@@ -774,29 +774,6 @@ function setLivreur(payload) {
   };
 }
 
-// function setProductionChrono(payload) {
-//   return (dispatch, getState) => {
-//     const {ticketId, careTime, endTime} = payload;
-//     const { commandeslist } = getState().commandesListReducer;
-//     const commande = Object.values(commandeslist).find(cmd => cmd.ticketId==ticketId);
-
-//     const waitChrono = Math.round(differenceInMilliseconds(careTime.firstCare, parseISO(commande.end))/10)/100;
-//     const prodChrono = Math.round(differenceInMilliseconds(endTime, careTime.firstCare)/10)/100;
-
-//     Object.keys(careTime).forEach(k=> careTime[k] = formatISO(careTime[k]));
-
-//     commandeServices.persistCommande({...commande, prodChrono:prodChrono, waitChrono:waitChrono, care: careTime, finish: formatISO(endTime)})
-//     .then(
-//       data => {
-//         dispatch({ type: commandeActionTypes.UPDATE_COMMANDE, payload:{prodChrono:prodChrono, waitChrono:waitChrono, care: careTime, finish:endTime} });
-//         dispatch(notificationActions.syncDispatch('commande',{...commande, prodChrono:prodChrono, waitChrono:waitChrono, care: careTime, finish:endTime}));
-//         dispatch(getCommandesList())
-//       },
-//       error => dispatch({ type: commandeActionTypes.UPDATE_COMMANDE_ERROR, error: error})
-//     );
-
-//   }
-// }
 
 function addReglement(payload) {
   return (dispatch, getState) => {
