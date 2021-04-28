@@ -60,10 +60,13 @@ function getNewCommande(params) {
     end: null,
     chrono: 0,
     total: 0,
-    printnum: 0,
+    printnum: 1,
     mode: "surplace",
     status: "pending",
     type: "vente",
+    livreur: null,
+    pickedAt: null,
+    shippedAt: null,
     beneficiaire: params.beneficiaire ? params.beneficiaire : null,
   };
 }

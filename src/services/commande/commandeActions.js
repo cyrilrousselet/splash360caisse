@@ -751,16 +751,19 @@ function setLivreur(payload) {
       (cmd) => cmd.ticketId === commandeId
     );
 
-    commandeServices.persistCommande({ ...commande, livreur: livreur }).then(
+    const now = new Date();
+
+    commandeServices.persistCommande({ ...commande, livreur: livreur, pickedAt:formatISO(now)}).then(
       (data) => {
         dispatch({
           type: commandeActionTypes.UPDATE_COMMANDE,
-          payload: { livreur: livreur },
+          payload: { livreur: livreur, pickedAt: formatISO(now) },
         });
         dispatch(
           notificationActions.syncDispatch("commande", {
             ...commande,
             livreur: livreur,
+            pickedAt: formatISO(now),
           })
         );
         dispatch(getTodayCommandesList());
