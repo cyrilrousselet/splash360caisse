@@ -196,7 +196,7 @@ const actions = {
   syncConfirm: async (db, ids, from) => {
 
     let _n = 0;
-    if (db=='ticketsrestau') {
+    if (db==='ticketsrestau') {
 
       _n = await _addTicketsLocalSync(ids,from);
 
@@ -217,6 +217,8 @@ async function _getAll() {
 
 async function _getCommandesToSync(limit = null) {
   const mongo = await connect();
+  if (!mongo) return false;
+
   const criteria = {
     $and: [
       { $or: [
@@ -260,6 +262,7 @@ async function _getCommandes(criteriae = {}) {
   log.info("CmdAPI._getCommandes()", criteriae);
 
   const mongo = await connect();
+  if (!mongo) return false;
  
   let __criteriae = criteriae;
   if (criteriae.hasOwnProperty('where')) {
@@ -281,6 +284,8 @@ async function _getCommandes(criteriae = {}) {
 async function _findCommande(criteriae = {}) {
  // log.info(criteriae);
   const mongo = await connect();
+  if (!mongo) return false;
+
   const _cmd = await CommandeModel.find(criteriae).lean().exec();
   // await mongo.disconnect();
   return _cmd;
@@ -288,6 +293,7 @@ async function _findCommande(criteriae = {}) {
 
 async function _addCommandesLocalSync(ids, store_id) {
   const mongo = await connect();
+  if (!mongo) return false;
 
   const _cmds = await CommandeModel.updateMany(
     {ticketId: {$in: ids}, localsync: { $ne: store_id }},
@@ -300,10 +306,12 @@ async function _addCommandesLocalSync(ids, store_id) {
 
 async function _addTicketsLocalSync(ids, store_id) {
 
-  let _tr = await (await db.paramticketsrestauetres)
+  await (await db.paramticketsrestauetres)
             .get("ticketsrestau")
             .filter(t => ( ids.includes(t.id) && !t.localsync.includes(store_id)) )
-            .assign({localsync: [...localsync, store_id]})
+            .get('localsync')
+            .push(store_id)
+            // .assign({localsync: [...localsync, store_id]})
             .write();
 
   return ids.length;
@@ -313,6 +321,8 @@ async function _persistCommande(payload) {
   const __now = new Date().getTime();
 
   const mongo = await connect();
+  if (!mongo) return false;
+
   let _cmd = await CommandeModel.where({ ticketId: payload.ticketId })
     .findOne()
     .lean()
@@ -352,6 +362,7 @@ function _parseCommandes(_rawdata) {
 
 async function _deleteCommande(ticketId, motif) {
   const mongo = await connect();
+  if (!mongo) return false;
 
   const _status = await CommandeModel.updateOne(
     { ticketId: ticketId },
@@ -438,11 +449,11 @@ async function _findTicketRestau(criteriae = {}) {
   return { _tr };
 }
 
-async function asyncForEach(array, callback) {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array);
-  }
-}
+// async function asyncForEach(array, callback) {
+//   for (let index = 0; index < array.length; index++) {
+//     await callback(array[index], index, array);
+//   }
+// }
 
 
 
@@ -484,7 +495,7 @@ async function _doPersistTR(payload) {
  * Insert or Update ticketsrestau data into DB
  */
 async function _persistTicketRestau(payload) {
-  const __now = new Date().getTime();
+  // const __now = new Date().getTime();
 
   log.info('_persistTicketRestau()', payload);
 

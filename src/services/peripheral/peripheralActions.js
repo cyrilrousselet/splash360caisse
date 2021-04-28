@@ -1436,7 +1436,11 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
         dispatch({ type: peripheralActionTypes.PRINT_TICKET });
         if (ticket.template==='commande') {
        //   dispatch(commandeActions.updateCommande({...cmd, printnum: Number(cmd.printnum)+1}));
+
+         // on met à jour le nbre d'impression de ticket si la commande a déjà été persistée
+          if (cmd.createdAt) {
             commandeServices.persistCommande({...cmd, printnum: Number(cmd.printnum)+1});
+          }
         }
       }
 

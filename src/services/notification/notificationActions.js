@@ -115,16 +115,18 @@ function syncDispatch(db, data, emitter=null) {
         logger.log('syncDispatch (primary)', result);
       });
 
-      // update Produit / Ingredient sur BO
-      notificationServices.syncCatalogue({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret, catalogue:{db:db, data:data}})
-      .then(
-        response => {
-          dispatch(catalogueActions.setSyncedCatalogue(response.confirm))
-        },
-        error => {
-          logger.error(error);
-        }
-      )
+      if ((['ingredient','produit']).includes(db)) {
+        // update Produit / Ingredient sur BO
+        notificationServices.syncCatalogue({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret, catalogue:{db:db, data:data}})
+        .then(
+          response => {
+            dispatch(catalogueActions.setSyncedCatalogue(response.confirm))
+          },
+          error => {
+            logger.error(error);
+          }
+        )
+      }
 
     }
     else if (options.role==='secondary') {
