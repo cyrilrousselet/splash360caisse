@@ -66,6 +66,8 @@ function getNewCommande(params) {
     type: "vente",
     livreur: null,
     pickedAt: null,
+    scheduled: null,
+    enproduction: params.enproduction ? params.enproduction : false,
     shippedAt: null,
     beneficiaire: params.beneficiaire ? params.beneficiaire : null,
   };

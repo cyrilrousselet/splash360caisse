@@ -1367,6 +1367,15 @@ function _printCommande(printer, data, strings) {
       .fontSize('normal');
   }
 
+  if (data.scheduled) {
+    printer
+    .fontSize('2width')
+    .text(`<<< ${strings.schedule.titre}${data.scheduled} >>>`)
+    .fontSize('normal')
+    .drawLine()
+    ;
+  }
+
 
   if (data.comment!=='') {
     printer.style('B').tableCustom([

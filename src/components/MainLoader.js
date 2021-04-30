@@ -12,6 +12,7 @@ const logger = new Logger();
 class MainLoader extends React.Component {
   
   _findeservice_job = null;
+  _scheduledcmd_job = null;
 
   constructor(props) {
     super(props);
@@ -45,7 +46,8 @@ class MainLoader extends React.Component {
       params, 
       dbupdated, 
       dbgetInit,
-      checkFinDeService
+      checkFinDeService,
+      checkScheduledCommandes
     } = this.props;
 
     if (this._findeservice_job===null) {  
@@ -53,6 +55,12 @@ class MainLoader extends React.Component {
         checkFinDeService();
       });
     } 
+
+    if (this._scheduledcmd_job===null) {
+      this._scheduledcmd_job = schedule.scheduleJob('*/5 * * * *', () => {
+        checkScheduledCommandes()
+      });
+    }
 
       
     let first_start = params ? params.first_start : null;
@@ -141,7 +149,8 @@ class MainLoader extends React.Component {
 
         } else if (readytolaunch===null) {
           this.props.initSyncCommandes();
-          this.props.initSyncClotures();
+          this.props.initSyncClotures();     
+          checkScheduledCommandes();
           this.props.loadingComplete();
         }
       }
@@ -259,6 +268,7 @@ class MainLoader extends React.Component {
         } else if (readytolauch===null) {
           this.props.initSyncCommandes();
           this.props.initSyncClotures();
+          this.props.checkScheduledCommandes();
           this.props.loadingComplete();
         }
       }

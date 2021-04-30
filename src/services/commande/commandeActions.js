@@ -12,6 +12,7 @@ import { dateBounds, asyncForEach } from "../../helpers/toolbox";
 import { clientsServices } from "../clients/clientsServices";
 import LodashId from "lodash-id";
 import { clientsActionTypes } from "../clients/clientsActionTypes";
+import { add } from 'date-fns';
 
 const logger = new Logger();
 
@@ -238,6 +239,8 @@ function validateCommande(payload) {
     payload.operator_encaissement = { id: user.id, nom: user.nom };
     payload.caisse_encaissement = caisse;
 
+    payload.enproduction = payload.scheduled ? false : true;
+
     const payloadcopy = { ...payload, localsync: [caisse.uniqid] };
     dispatch(getCommande());
 
@@ -250,6 +253,11 @@ function validateCommande(payload) {
         dispatch({
           type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS,
           commande: {},
+        });
+        // met à jour la liste des schedules (ajoute ou supprime la commande)
+        dispatch({
+          type: (payloadcopy.scheduled) ? commandeActionTypes.SET_SCHEDULE : commandeActionTypes.DELETE_SCHEDULE,
+          schedule: payloadcopy.ticketId
         });
         dispatch(notificationActions.syncDispatch("commande", confirm));
 
@@ -395,7 +403,9 @@ function standByCommande(payload, needNumero) {
           type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS,
           commande: {},
         });
-        if (print_standby) {
+        // on force l'impression des tickets de production si c'est paramétré
+        // sauf si la commande est programmée
+        if (print_standby && (payload.scheduled && payload.enproduction===false)) {
           dispatch(peripheralActions.printCommandeTicket("production", confirm));
         }
         dispatch(notificationActions.syncDispatch("commande", confirm));
@@ -417,6 +427,7 @@ function livraisonCommande(payload, needNumero) {
     dispatch({ type: commandeActionTypes.AENCAISSER_COMMANDE });
 
     payload.status = "a_encaisser";
+    payload.enproduction = payload.scheduled ? false : true;
     payload.end = new Date();
     payload.chrono =
       Math.round(differenceInMilliseconds(payload.end, payload.start) / 10) /
@@ -451,7 +462,17 @@ function livraisonCommande(payload, needNumero) {
     // }
 
     const payloadcopy = { ...payload, localsync: [parametres.options.caisse.uniqid] };
-    dispatch(peripheralActions.printTicket("all"));
+   
+    // si la commande à encaisser est PROGRAMMÉE,
+    // on n'imprime que le ticket commande
+    if (payload.scheduled && payload.enproduction===false) {
+      dispatch(peripheralActions.printTicket({templates:["commande"]}));
+    }
+    // sinon on imprime tout
+    else {
+      dispatch(peripheralActions.printTicket("all"));
+    }
+
     dispatch(getCommande());
 
     commandeServices.saveCommande(payloadcopy, state.catalogueReducer).then(
@@ -462,6 +483,11 @@ function livraisonCommande(payload, needNumero) {
         dispatch({
           type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS,
           commande: {},
+        });
+        // met à jour la liste des schedules (ajoute ou supprime la commande)
+        dispatch({
+          type: (confirm.scheduled) ? commandeActionTypes.SET_SCHEDULE : commandeActionTypes.DELETE_SCHEDULE,
+          schedule: confirm.ticketId
         });
         dispatch(notificationActions.syncDispatch("commande", confirm));
 
@@ -842,6 +868,106 @@ function deleteComment(payload) {
   };
 }
 
+function setSchedule(payload) {
+
+  return (dispatch, getState) => {
+    const { ticketId, heure } = payload;
+
+    const { commandeslist } = getState().commandesListReducer;
+    const commande = Object.values(commandeslist).find(
+      (cmd) => cmd.ticketId === ticketId
+    );
+
+    commandeServices.persistCommande({ ...commande, scheduled: heure, enproduction: false}).then(
+      (data) => {
+        dispatch({
+          type: commandeActionTypes.UPDATE_COMMANDE,
+          payload: { scheduled: heure, enproduction: false },
+        });
+        dispatch(
+          notificationActions.syncDispatch("commande", {
+            ...commande,
+            scheduled: heure, 
+            enproduction: false,
+          })
+        );
+        // met à jour la liste des schedules (ajoute ou supprime la commande)
+        dispatch({
+          type: (heure) ? commandeActionTypes.SET_SCHEDULE : commandeActionTypes.DELETE_SCHEDULE,
+          schedule: commande.ticketId
+        });
+        dispatch(getTodayCommandesList());
+      },
+      (error) =>
+        dispatch({
+          type: commandeActionTypes.UPDATE_COMMANDE_ERROR,
+          error: error,
+        })
+    );
+  };
+}
+
+function checkSchedules() {
+  return async (dispatch, getState) => {
+    // const {schedules} = getState().commandesListReducer;
+
+
+    const { options } = getState().parametresReducer.parametres;
+
+    if (options.role==='primary') {
+      
+      // heure de déclenchement de la production des commandes programmées (moins le délai)
+      const {commandes} = getState().parametresReducer.parametres;
+      const __now = new Date();
+      let __heure = __now;
+      // let __heure = (__now.getHours() * 100) + __now.getMinutes();
+      
+      if (commandes.hasOwnProperty('schedule_delay')) {
+        __heure = add(__now, {minutes: commandes.schedule_delay});
+      } else {
+        __heure = add(__now, {minutes: 15});
+      }
+
+      const { heure_fin } = getState().parametresReducer.parametres.entreprise;
+
+      // *** définition de la fin de la période précédente
+      const __periode_bounds = dateBounds(new Date(), heure_fin);
+      const lastperiode_end = __periode_bounds.debut;
+
+      // récupération commandes programmées à lancer
+      const { commandeslist } = await commandeServices.getCommandesList({
+        '$and': [
+          {createdAt: { '$gt': lastperiode_end } },
+          {scheduled: { '$exists': true }},
+          {scheduled: { '$lte': __heure.getTime()}},
+          {'$or': [
+            {enproduction: { '$exists': false }},
+            {enproduction: false}
+          ]}
+        ]
+      });
+
+      // s'il y a des commandes programmées à lancer...
+      if (Object.entries(commandeslist).length>0) {
+        logger.log('⏰ '+Object.entries(commandeslist).length+' commandes en attente devant être lancées.');
+
+        // on lance chaque commande et on la déclare comme 'en production'
+        Object.values(commandeslist).forEach(cmd => {
+          dispatch(peripheralActions.printCommandeTicket('all', {...cmd, enproduction: true}));
+          dispatch({
+            type: commandeActionTypes.DELETE_SCHEDULE,
+            schedule: cmd.ticketId
+          });
+        });
+
+      } else {
+        logger.log('⏰ aucune commande en attente 🚫');
+      }
+    }
+    
+  }
+}
+
 function addDiscount(payload) {
   return (dispatch, getState) => {
     const modificateurs = getState().commandeReducer.commande.modificateurs;
@@ -969,6 +1095,7 @@ function setCommandeFromOrder(provider, payload) {
       caisse: { id: -1, nom: "UberEats", type: "UberEats" },
       operator_encaissement: { id: -1, nom: "UberEats", type: "UberEats" },
       caisse_encaissement: { id: -1, nom: "UberEats", type: "UberEats" },
+      enproduction: true,
       reglements: [
         {
           moyen: "uber",
@@ -998,6 +1125,13 @@ function setCommandeFromOrder(provider, payload) {
 
     commandeServices.saveCommande({...commande, localsync: [parametres.options.caisse.uniqid]}, state.catalogueReducer).then(
       (confirm) => {
+
+        // met à jour la liste des schedules (ajoute ou supprime la commande)
+        dispatch({
+          type: (commande.scheduled) ? commandeActionTypes.SET_SCHEDULE : commandeActionTypes.DELETE_SCHEDULE,
+          schedule: commande.ticketId
+        });
+
         dispatch(getTodayCommandesList());
         dispatch(notificationActions.syncDispatch("commande", confirm));
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
@@ -1049,6 +1183,7 @@ function setCommandeFromAPI(payload) {
       const datacommande = data.commande;
       data = {
         ...datacommande,
+        enproduction: true,
         provider: data.provider,
         operator: {id:'clickandcollect', nom:'clickandcollect'},
         caisse: {id:'clickandcollect', nom:'clickandcollect'}
@@ -1064,6 +1199,7 @@ function setCommandeFromAPI(payload) {
 
         data = {
           ...data,
+          enproduction: true,
           operator_encaissement: data.operator,
           caisse_encaissement: data.caisse,
           reglements: data.reglements || [
@@ -1159,6 +1295,11 @@ function setCommandeFromAPI(payload) {
 
     commandeServices.saveCommande({...commande, localsync: [parametres.options.caisse.uniqid]}, state.catalogueReducer).then(
       (confirm) => {
+        // met à jour la liste des schedules (ajoute ou supprime la commande)
+        dispatch({
+          type: (commande.scheduled) ? commandeActionTypes.SET_SCHEDULE : commandeActionTypes.DELETE_SCHEDULE,
+          schedule: commande.ticketId
+        });
         dispatch(getTodayCommandesList());
         dispatch(notificationActions.syncDispatch("commande", confirm));
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
@@ -1573,6 +1714,8 @@ export const commandeActions = {
   setLivreur,
   getCommandesCaisses,
   // setProductionChrono,
+  setSchedule,
+  checkSchedules,
   addReglement,
   removeReglement,
   addRendu,
