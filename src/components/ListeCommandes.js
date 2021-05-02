@@ -427,6 +427,8 @@ class ListeCommandes extends React.Component {
         beneficiaire : value.beneficiaire ? value.beneficiaire : null, 
         centre: value.centre_revenu ? value.centre_revenu : 'restaurant',
         archived: value.hasOwnProperty('archived') && value.archived!==null,
+        scheduled: value.hasOwnProperty('scheduled') && value.scheduled,
+        enproduction: value.hasOwnProperty('enproduction') && value.enproduction,
       };
       let __start = compareAsc(new Date(value.createdAt), startDate);
       let __end = compareAsc(new Date(value.createdAt), endDate);

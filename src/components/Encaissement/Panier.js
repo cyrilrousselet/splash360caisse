@@ -6,6 +6,7 @@ import StdButton from '../common/StdButton';
 import { List, ListItem, Fab, Modal, TextField, ListItemText, ListItemIcon, ListItemSecondaryAction, Badge } from '@material-ui/core';
 import Swal from 'sweetalert2';
 import _ from 'lodash';
+import AlarmIcon from '@material-ui/icons/Alarm';
 
 import PlusIcon from '../common/icon/PlusIcon';
 import DiscountIcon from '../common/icon/DiscountIcon';
@@ -34,11 +35,22 @@ import MouvementPopin from '../Cloture/MouvementPopin';
 import EmployeIcon from '../common/icon/EmployeIcon';
 import LoginCont from '../../containers/LoginCont';
 import { dateBounds } from '../../helpers/toolbox';
+import frLocale from "date-fns/locale/fr";
+import { MuiPickersUtilsProvider, TimePicker } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+// import { formatISO } from 'date-fns';
+// import { add, isBefore, format } from 'date-fns';
+
 
 let strings = new LocalizedStrings(data);
 const logger = new Logger();
 
 
+class LocalizedDayUtils extends DateFnsUtils {
+  getDatePickerHeaderText(date) {
+    return this.format(date, "d MMM yyyy", { locale: frLocale });
+  }
+}
 
 // class TablesModal extends React.Component {
 
@@ -84,6 +96,118 @@ const BeneficiaireModal = ({open, getBeneficiaire, closePopin}) => (
     </div>
   </Modal>
 );
+
+
+class ScheduleModal extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      schedule: null
+    };
+
+    this.deleteSchedule = this.deleteSchedule.bind(this);
+    this.saveSchedule = this.saveSchedule.bind(this);
+    this.resetPopin = this.resetPopin.bind(this);
+    this.checkHour = this.checkHour.bind(this);
+  }
+
+  deleteSchedule() {
+    this.props.deleteSchedule();
+    this.resetPopin();
+  }
+  saveSchedule() {
+    const {schedule} = this.state;
+    if (schedule) {
+      const heure = new Date(schedule);
+      // this.props.saveSchedule((heure.getHours()*100)+heure.getMinutes());
+      this.props.saveSchedule(heure);
+      this.resetPopin();
+    }
+  }
+  checkHour(heure) {
+    // const now_delayed = add(new Date(), {minutes:this.props.delai});
+    // logger.log('checkHour()', new Date(heure), now_delayed);
+    // const heure_date = new Date(heure);
+    // if (isBefore(heure_date, now_delayed)) {
+    //   Swal.fire({
+    //     title: strings.modules.encaissement.schedule.alert.troptot.titre,
+    //     html: strings.modules.encaissement.schedule.alert.troptot.texte.replace('%HEURE%', format(now_delayed,'HH:mm'))
+    //   });
+    // } else {
+      this.setState({schedule: heure});
+    // }
+  }
+  resetPopin() {
+    this.setState({schedule: null});
+  }
+
+  render() {
+
+    const {open, closeHandler} = this.props;
+    const {schedule} = this.state;
+
+    const vschedule = this.props.schedule ? this.props.schedule : schedule;
+
+    return (
+      <Modal
+        open={open}
+        >
+        <div className={ `ScheduleModal`}>
+          <div className="Modal-container">
+            <div className="header">
+              <div className="title">{ strings.modules.encaissement.schedule.titre }</div>
+            </div>
+            <div className="body">
+      
+              <div className="heures">
+                <MuiPickersUtilsProvider utils={LocalizedDayUtils} locale={frLocale}>
+                  <TimePicker
+                            margin="dense"
+                            variant="static"
+                            orientation="landscape"
+                            openTo="hours"
+                            id="start"
+                            ampm={false}
+                            className="heure"
+                            label={ strings.modules.encaissement.schedule.heure }
+                            value={vschedule}
+                            minutesStep={5}
+                            onChange={(heure) => { this.checkHour(heure) }}
+                            KeyboardButtonProps={{
+                              'aria-label': 'change time',
+                            }}
+                          />
+                </MuiPickersUtilsProvider>
+              </div>
+            </div>
+            <div className="footer">
+            <StdButton 
+                identifier="modal-suppr" 
+                elementclass="suppr" 
+                icon={ false } 
+                disabled={ schedule!==null && schedule!==undefined }
+                text={ strings.general.dialog.delete } 
+                onClick={this.deleteSchedule} 
+              />
+              <StdButton 
+                identifier="modal-save" 
+                elementclass="save" 
+                icon={ false } 
+                disabled={schedule===null || schedule===undefined}
+                text={ strings.general.dialog.save } 
+                onClick={this.saveSchedule} 
+              />
+            </div>
+          </div>
+          <Fab aria-label="close" size="small" className="close-button" onClick={ ()=>{this.resetPopin(); closeHandler()} }>
+            <CloseIcon />
+          </Fab>
+        </div>
+      </Modal>
+    );
+  }
+}
 
 
 class BipperModal extends React.Component {
@@ -491,6 +615,7 @@ class Panier extends React.Component {
       inputValue: '',
       tablesOpen: false,
       bippersOpen: false,
+      scheduleOpen: false,
       ouvertureOpen: false,
       solde: 0
     }
@@ -520,6 +645,11 @@ class Panier extends React.Component {
     this.openBippers = this.openBippers.bind(this);
     this.closeBippers = this.closeBippers.bind(this);
     this.selectBipper = this.selectBipper.bind(this);
+
+    this.openSchedule = this.openSchedule.bind(this);
+    this.closeSchedule = this.closeSchedule.bind(this);
+    this.deleteSchedule = this.deleteSchedule.bind(this);
+    this.setSchedule = this.setSchedule.bind(this);
 
     this.testOuverture = this.testOuverture.bind(this);
     this.openOuverture = this.openOuverture.bind(this);
@@ -944,6 +1074,24 @@ class Panier extends React.Component {
     logger.log('selectTables()');
   }
 
+  openSchedule() {
+    logger.log('openSchedule()');
+    this.setState({scheduleOpen: true});
+  }
+  closeSchedule() {
+    logger.log('closeSchedule()');
+    this.setState({scheduleOpen: false});
+  }
+  deleteSchedule() {
+    logger.log('deleteSchedule()');
+    this.props.updateCommande({scheduled:null, enproduction:false});
+    this.setState({scheduleOpen: false});
+  }
+  setSchedule(heure) {
+    logger.log('setSchedule('+heure+')');
+    this.props.updateCommande({scheduled:heure, enproduction:false});
+    this.setState({scheduleOpen: false});
+  }
 
   openBippers() {
     logger.log('openBippers()');
@@ -1130,6 +1278,7 @@ class Panier extends React.Component {
            clavierOpen,
            bippersOpen,
            ouvertureOpen,
+           scheduleOpen,
            solde,
           } = this.state;
 
@@ -1149,7 +1298,9 @@ class Panier extends React.Component {
     const tableId = null;
     
     const gestion_bippers = (parametres && parametres.commandes) ? parametres.commandes.active_bippers : false;
-    
+    const schedule_delay = (parametres && parametres.commandes) ? (parametres.commandes.schedule_delay || 15) : 15;
+
+console.log('⏰', schedule_delay);
 
     const commandeClient = client ? clients.find(c=>c.client_id===client.client_id) : null;
 
@@ -1393,6 +1544,9 @@ class Panier extends React.Component {
           {/* <div className="ticketId">{ (this.interval==0?'X':'√')+strings.modules.encaissement.panier.ticket_no+' '+ticketId }</div> */}
           <div className="ticketId">{ strings.modules.encaissement.panier.ticket_no+' '+_.last(ticketId.split('-')) }</div>
           <div className="ticketComment"></div>
+          <div className="schedule">
+            <AlarmIcon className={`ico-schedule ${((this.props.commande.scheduled!==null && this.props.commande.scheduled!==undefined)?'schedule-set':'')}`} onClick={this.openSchedule} />
+          </div>
           {gestion_bippers && (<Badge className="bipper" badgeContent={bipper} max={999} color="primary">
               <BellIcon className={`ico-bipper ${((bipper!==null && bipper!==undefined)?'bipper-set':'')}`} onClick={this.openBippers} />
             </Badge>)}
@@ -1548,7 +1702,14 @@ class Panier extends React.Component {
           bipper={bipper}
           />
         <FicheClientCont open={ficheClientOpen} clavierOpen={ clavierOpen } client={commandeClient} mode={commandeClient?'fiche':'recherche'} contexte="encaissement" closeHandler={this.closeFicheClient} selectClient={this.selectClient} />
-
+        <ScheduleModal
+          open={ scheduleOpen }
+          closeHandler={ this.closeSchedule }
+          deleteSchedule={ this.deleteSchedule }
+          saveSchedule={ this.setSchedule }
+          schedule={this.props.commande.scheduled}
+          delai={schedule_delay}
+        />
         <MouvementPopin 
           open={ ouvertureOpen } 
           type={ "ouverture" } 

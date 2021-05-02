@@ -871,6 +871,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             tva: cmdTva
           },
           status: cmd.status,
+          scheduled: format(cmd.scheduled, 'HH:mm'),
           mode: cmd.mode,
           bipper: cmd.bipper || null,
           reglements: cmd.reglements,
@@ -1434,13 +1435,18 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           }
         )
         dispatch({ type: peripheralActionTypes.PRINT_TICKET });
-        if (ticket.template==='commande') {
-       //   dispatch(commandeActions.updateCommande({...cmd, printnum: Number(cmd.printnum)+1}));
 
-         // on met à jour le nbre d'impression de ticket si la commande a déjà été persistée
-          if (cmd.createdAt) {
-            commandeServices.persistCommande({...cmd, printnum: Number(cmd.printnum)+1});
-          }
+        // on déclare la commande comme étant lancée en production
+        let updateCmdAfterPrint = {...cmd, enproduction: true};
+
+        // pour les tickets commande, on met à jour le nombre d'impressions
+        if (ticket.template==='commande') {
+          updateCmdAfterPrint.printnum = Number(cmd.printnum)+1;
+        }
+
+        // si la commande a déjà été persistée
+        if (cmd.createdAt) {
+          commandeServices.persistCommande(updateCmdAfterPrint);
         }
       }
 

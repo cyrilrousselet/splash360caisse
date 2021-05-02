@@ -262,6 +262,16 @@ const data = {
                         titre: 'Annulation',
                         texte: 'Êtes-vous sûr d’annuler ce Repas Employé ?'
                     }
+                },
+                schedule: {
+                    titre: 'Programmer la commande',
+                    heure: 'Heure prévue',
+                    alert: {
+                        troptot: {
+                            titre: 'Impossible de choisir cette heure',
+                            texte: 'Vous devez choisir un créneau après %HEURE%'
+                        }
+                    }
                 }
             },
             employes: { 
@@ -1283,6 +1293,9 @@ const data = {
                     etage: 'Etage ',
                     email: 'Email :',
                     commentaire: 'Cmt. :'
+                },
+                schedule: {
+                    titre: 'PRET A '
                 }
             },
             uber: {

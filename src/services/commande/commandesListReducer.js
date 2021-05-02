@@ -5,13 +5,15 @@ const initialState = {
   error: null,
   commandeslist: {},
   ticketsrestau: [],
-  caisses: []
+  caisses: [],
+  schedules: [],
 }
 
 
 export function commandesListReducer(state = initialState, action) {
 
   let ticketsrestau = state.ticketsrestau;
+  let schedules = state.schedules;
 
   switch (action.type) {
     case commandeActionTypes.GET_ALLCOMMANDES_REQUEST:
@@ -47,6 +49,18 @@ export function commandesListReducer(state = initialState, action) {
         ...state,
         loading: false,
         error: action.error.message
+      };
+
+    case commandeActionTypes.SET_SCHEDULE:
+      return {
+        ...state,
+        schedules: [...schedules, action.schedule]
+      };
+
+    case commandeActionTypes.DELETE_SCHEDULE:
+      return {
+        ...state,
+        schedules: [ ...schedules.filter(s=>s!==action.schedule) ]
       };
     
     case commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_SUCCESS:

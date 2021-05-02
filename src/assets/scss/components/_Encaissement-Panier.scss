@@ -62,6 +62,23 @@
                 }
             }
         }
+        .schedule {
+            .ico-schedule {
+                
+                height: 20px;
+                cursor: pointer;
+                
+                &.schedule-set {
+                    fill: $vert;
+                }
+                
+                svg {
+                    width: auto;
+                    height: 100%;
+                }
+            }
+
+        }
     }
 
     .body {
@@ -168,6 +185,9 @@
             }
             .StdButton {
                 margin: 3px 3px !important;
+            }
+            .action-encaisser {
+                width: 100%;
             }
 
             .action-staffmeal {
