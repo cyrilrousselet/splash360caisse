@@ -791,6 +791,15 @@ class Panier extends React.Component {
     if (selectedIngredient===-1) {
       index = index===this.state.selectedIndex ? -1 : index;
     }
+
+    if (index >= 0 && this.props.open) {
+      const itemsCopy = [...this.props.commande.items];
+      const item = itemsCopy[index];
+      item.selected = !item.selected  ? true : false;
+      itemsCopy[index] = item;
+      this.props.updateCommande({...this.props.commande, items: itemsCopy})
+    }  
+
     this.setState({selectedIndex: index, selectedIngredient: -1, ingredientid: null})
   }
 
@@ -1584,7 +1593,7 @@ console.log('⏰', schedule_delay);
                           quantite={ itm.quantite }
                           // prix={ itm.prix }
                           prix={ itm.pu*itm.quantite }
-                          disabled={ open }
+                          disabled={ itm.paid }
                           commentaire={ itm.commentaire!=='' }
                           getComment={ this.getComment }
                           removeComment= { this.removeComment }
