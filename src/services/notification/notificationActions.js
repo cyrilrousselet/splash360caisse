@@ -204,6 +204,24 @@ function treatment(data) {
       )
 
     }
+    else if (data.eventType=="statuschange") {
+      // parametre status dans parametres, par défaut null ?
+
+      dispatch({ type: notificationActionTypes.GET_NOTIFICATION, notif: data.eventType });
+
+      const payload = [{
+        "domaine": "options",
+        "cle": "status",
+        "valeur": data.status
+      }];
+
+      dispatch(parametresActions.update(payload));
+
+      
+
+      //parametreServices.changeStatus 
+
+    }
   } 
 }
 
@@ -330,17 +348,17 @@ function getDatabase() {
       // Afficher champs uniqid restaurant
       // A la validation récuperer uniqid + uuid de la caisse et dispatch action parametre requestInstallStation
 
-      Swal.fire({
-        title: 'Installation de la caisse',
-        text:'Veuillez renseigner l\'uniqid du restaurant',
-        input:'text',
-        confirmButtonText: 'Valider',
-        showLoaderOnConfirm: true,
-      }).then((result)=> {
-        if(null !== result.value) {
-          dispatch(parametresActions.installStation(result.value));
-        }
-      })
+      // Swal.fire({
+      //   title: 'Installation de la caisse',
+      //   text:'Veuillez renseigner l\'uniqid du restaurant',
+      //   input:'text',
+      //   confirmButtonText: 'Valider',
+      //   showLoaderOnConfirm: true,
+      // }).then((result)=> {
+      //   if(null !== result.value) {
+      //     dispatch(parametresActions.installStation(result.value));
+      //   }
+      // })
 
       // Swal.fire({
       //   type: 'warning',

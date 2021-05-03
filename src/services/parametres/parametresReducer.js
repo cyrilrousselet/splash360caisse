@@ -107,7 +107,28 @@ export function parametresReducer(state=initialState, action) {
 
     case parametresActionTypes.INSTALL_STATION_SUCCESS:
       console.log(action);
-      return state;
+
+      const __up = {...parametres};
+
+      action.payload.forEach(obj => {
+        __up[obj.domaine][obj.cle] = obj.valeur;
+        console.log('up d:'+obj.domaine+', c:'+obj.cle+', v:'+obj.valeur, __up);
+      }, __up);
+
+      return {
+        ...state,
+        loading: false,
+        error: null,
+        parametres: __up,
+        stationinstalled: true
+      };
+
+    case parametresActionTypes.INSTALL_STATION_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.error
+      }
 
     default:
       return state;

@@ -1,5 +1,5 @@
 {
-  "notification": "http://api.splash360.fr:3030/.well-known/mercure?topic=",
+  "notification": "http://apidev.splash360.fr:3030/.well-known/mercure?topic=",
   "uber": {
     "oAuth": "https://login.uber.com/oauth/v2/token",
     "clientid": "8OpdkXvG_D1IAb9J94Mf8srgdY2CXYif",
@@ -30,12 +30,12 @@
     }
   },
   "synchro": {
-    "oAuth": "https://api.splash360.fr/oauth/v2/token?client_id=%ID%&client_secret=%PWD%&grant_type=client_credentials",
-    "getdb": "https://api.splash360.fr/api/export/database",
-    "syncCommandes": "https://api.splash360.fr/api/import/commandes",
-    "syncClotures": "https://api.splash360.fr/api/import/clotures",
-    "getStatus": "https://api.splash360.fr/api/licence/station/%STATIONID%/%UUID%",
-    "confirmCommande": "https://api.splash360.fr/api/import/confirmcommande/{ticket_id}",
+    "oAuth": "https://apidev.splash360.fr/oauth/v2/token?client_id=%ID%&client_secret=%PWD%&grant_type=client_credentials",
+    "getdb": "https://apidev.splash360.fr/api/export/database",
+    "syncCommandes": "https://apidev.splash360.fr/api/import/commandes",
+    "syncClotures": "https://apidev.splash360.fr/api/import/clotures",
+    "getStatus": "https://apidev.splash360.fr/api/licence/station/%STATIONID%/%UUID%",
+    "confirmCommande": "https://apidev.splash360.fr/api/import/confirmcommande/{ticket_id}",
     "installStation" : "https://apidev.splash360.fr/api/licence/createStation"
   }
 }

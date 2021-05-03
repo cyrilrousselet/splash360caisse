@@ -42,7 +42,7 @@ const actions = {
 
     // const es = new EventSource('http://api.splash360.fr:3030/.well-known/mercure?topic=819b4b71-bb93-4a91-9503-3c7af1e4e622');
     const es = new EventSource(
-      "http://api.splash360.fr:3030/.well-known/mercure?topic=" + restaurant_id
+      "http://apidev.splash360.fr:3030/.well-known/mercure?topic=" + restaurant_id
     );
 
     es.onmessage = (evt) => {
@@ -644,8 +644,9 @@ const actions = {
 
     let data = '';
 
-    let uuid ="232323"; // pour tester, à changer
-    console.log('uuid', uuid);
+    let id;
+    id = uuid(); // pour tester, à changer
+    console.log('uuid', id);
 
     const __request = net.request({
       url: url,
@@ -655,7 +656,7 @@ const actions = {
     __request.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
     const form = qs.stringify({
-      uuid: uuid,
+      uuid: id,
       uniqid: uniqid
     });
     __request.write(form);

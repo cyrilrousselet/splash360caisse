@@ -152,6 +152,8 @@ function getLastClotureAndAfter(caisseId) {
     dispatch({type: tresorActionTypes.GET_LASTCLOTUREANDAFTER_REQUEST});
 
     const {caisse} = getState().parametresReducer.parametres.options;
+  try {
+
   
     tresorServices.getLastClotureAndAfter({caisseId:caisse.uniqid}).then(
       result => {
@@ -181,6 +183,10 @@ function getLastClotureAndAfter(caisseId) {
         dispatch({ type: tresorActionTypes.GET_LASTCLOTUREANDAFTER_FAILURE, error: error.toString() })
       }
     );
+  }
+  catch(e) {
+    dispatch({ type: tresorActionTypes.GET_LASTCLOTUREANDAFTER_FAILURE, error: e.toString() })
+  }
   }
 }
 

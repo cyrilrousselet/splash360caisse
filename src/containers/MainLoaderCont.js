@@ -34,8 +34,10 @@ const mapStateToProps = (state) => {
     cloLoaded: Object.entries(state.clotureReducer).length>0,
     sseInit: state.notificationReducer.sseInit,
     params: state.parametresReducer.parametres.options,
+    paramsEntreprise: state.parametresReducer.parametres.entreprise,
     dbupdated: state.parametresReducer.dbupdated,
     dbgetInit: state.notificationReducer.getdbInit,
+    stationinstalled: state.parametresReducer.stationinstalled,
   }
 }
 
@@ -56,6 +58,8 @@ const mapDispatchToProps = (dispatch) => {
     initSyncClotures: notificationActions.initSyncClotures,
     quitApp: peripheralActions.quitApp,
     checkFinDeService: tresorActions.checkFinDeService,
+    installStation: parametresActions.installStation,
+    paramUpdate: parametresActions.update,
     // loadNumero: commandeActions.loadNumero
   }, dispatch);
   return {

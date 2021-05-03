@@ -2,6 +2,7 @@ import { parametresActionTypes } from './parametresActionTypes';
 import { parametresServices } from './parametresServices';
 import { commandeActions } from './../commande/commandeActions';
 import Logger from '../../helpers/Logger';
+import Swal from 'sweetalert2';
 
 const logger = new Logger();
 
@@ -80,11 +81,19 @@ function update(payload) {
   }
 };
 
-// function requestInstallStation() parametre uniqid resto
-//parametresServices.requestInstallStation()
-function installStation(uniqid) {
-  return(dispatch) => {
-    parametresServices.installStation(uniqid)
+function installStation() {
+  return async (dispatch) => {
+
+    const result = await Swal.fire({
+      title: 'Installation de la caisse',
+      text:'Veuillez renseigner l\'uniqid du restaurant',
+      input:'text',
+      confirmButtonText: 'Valider',
+      showLoaderOnConfirm: true,
+    });
+    
+    if(null !== result.value) {
+      parametresServices.installStation(result.value)
       .then(
         data => {
           console.log("DATA", data);
@@ -99,13 +108,21 @@ function installStation(uniqid) {
             "domaine": "entreprise",
             "cle": "restaurant_secret",
             "valeur": client_secret
-          }]
+          }];
 
-          dispatch(update(payload));
-          dispatch({ type: parametresActionTypes.INSTALL_STATION_SUCCESS, ...data });
+          parametresServices.update(payload)
+            .then(
+              data => {
+                dispatch({ type: parametresActionTypes.INSTALL_STATION_SUCCESS, ...data});
+              }
+            );
+
+          // dispatch(update(payload));
+          
         }, 
         error => dispatch({ type: parametresActionTypes.INSTALL_STATION_FAILURE, error: error.toString() })
       )
+    }
   }
 }
 

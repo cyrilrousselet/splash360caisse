@@ -16,8 +16,8 @@ class MainLoader extends React.Component {
   constructor(props) {
     super(props);
 
-
     let first_start = props.params ? props.params.first_start : null;
+
 
     this.state = {
       first_start: first_start,
@@ -26,7 +26,7 @@ class MainLoader extends React.Component {
       catLoaded: props.catLoaded,
       cmdLoaded: true,
       cloLoaded: props.cloLoaded,
-      inspect: false
+      inspect: false,
     };
   }
 
@@ -39,11 +39,15 @@ class MainLoader extends React.Component {
       // cmdLoading, 
       cloLoaded, 
       sseInit, 
-      params, 
+      params,
+      paramsEntreprise, 
       dbupdated, 
       dbgetInit,
-      checkFinDeService
+      checkFinDeService,
+      stationinstalled
     } = this.props;
+
+    console.log("DEBUT checkInstallation");
 
     if (this._findeservice_job===null && mode==="mount") {  
       this._findeservice_job = schedule.scheduleJob('0 30 5 * * *', () => {
@@ -55,19 +59,64 @@ class MainLoader extends React.Component {
     let readytolaunch = dbupdated || null;
 
     if (!paramLoaded) {
+      console.log("GONNA GET PARAMETRES");
       this.props.getParametres();
     }
 
-    if (paramLoaded===true && sseInit===false) {
-      first_start = params.first_start;
-      this.props.initSSE();
-      this.props.setPOS();
-      this.props.initSync();
-
-      checkFinDeService();
-  
-      if (first_start===true && dbgetInit===false) this.props.getDatabase();
+    if(paramLoaded) {
+      console.log("PARAM LOADED");
+      if(paramsEntreprise.restaurant_id==="" || paramsEntreprise.restaurant_secret==="") {
+        console.log("NO ID SECRET, GONNA INSTALL STATION");
+        // installStation
+        this.props.installStation(); // popin + requête au bo + update id et secret
+      }
+      else {
+        console.log("ID SECRET OK");
+        if(first_start===true && params.status === undefined) { 
+          console.log("NO STATUS");// Si le param status n'est pas défini, alors nouveau param status à null
+          const payload = [{
+            "domaine": "options",
+            "cle": "status",
+            "valeur": null
+          }];
+          this.props.paramUpdate(payload);
+        }
+    
+        if (sseInit===false) {
+          console.log("GONNA INIT SSE");
+          first_start = params.first_start;
+          this.props.initSSE();
+          this.props.setPOS();
+          this.props.initSync();
+    
+          checkFinDeService();          
+          // if (first_start===true && dbgetInit===false) this.props.getDatabase();
+        }
+    
+        if (params.status==="authorized" && first_start===true && dbgetInit===false){
+          console.log("GONNA GET DATABASE");
+          this.props.getDatabase();
+        }
+        else if(params.status != "authorized"){
+          Swal.fire({
+            type: 'warning',
+            title:'Station non activée',
+            text: 'Vous devez activer la station',
+            showCancelButton: false,
+            focusConfirm: true,
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            confirmButtonText: 'Réésayer',
+          }).then((result)=> {
+            if (result.value) {
+              this.forceUpdate();
+            }
+          });
+        }
+      }
     }
+
+
 
     if (first_start===false) {
       if (paramLoaded===true && sseInit===true && 
@@ -114,11 +163,13 @@ class MainLoader extends React.Component {
   }
 
   componentDidMount() {
+    console.log("componentDidMount");
     this.checkInstallation("mount");
   }
 
   componentDidUpdate(prevProps, prevState) {
-  this.checkInstallation("update");
+    console.log("componentDidUpdate");
+    this.checkInstallation("update");
   }
 
   render() {
