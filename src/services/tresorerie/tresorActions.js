@@ -153,34 +153,39 @@ function getLastClotureAndAfter(caisseId) {
 
     const {caisse} = getState().parametresReducer.parametres.options;
   
-    tresorServices.getLastClotureAndAfter({caisseId:caisse.uniqid}).then(
-      result => {
+    try {
+      tresorServices.getLastClotureAndAfter({caisseId:caisse.uniqid}).then(
+        result => {
 
-        let __solde = 0, __ouverture;
-        if (result.hasOwnProperty('last') && result.last!==null) {
-          __solde = result.last.solde;
-        }
-
-        if (result && result.hasOwnProperty('cloture') && result.cloture!==null) {
-          if (result.hasOwnProperty('ouverture') && result.ouverture) {
-            logger.log('IL Y A UNE CLOTURE et une ouverture');
-            __ouverture = true;
-          } else {
-            __ouverture = false;
+          let __solde = 0, __ouverture;
+          if (result.hasOwnProperty('last') && result.last!==null) {
+            __solde = result.last.solde;
           }
-        } else if (!result.ouverture) {
-          logger.log('IL N’Y A PAS DE CLOTURE et PAS D’OUVERTURE -> POPIN');
-          __ouverture = false;
-        } else {
-          __ouverture = true;
-        }
 
-        dispatch({type: tresorActionTypes.GET_LASTCLOTUREANDAFTER_SUCCESS, ouverture: __ouverture, solde: __solde})
-      },
-      error => { 
-        dispatch({ type: tresorActionTypes.GET_LASTCLOTUREANDAFTER_FAILURE, error: error.toString() })
-      }
-    );
+          if (result && result.hasOwnProperty('cloture') && result.cloture!==null) {
+            if (result.hasOwnProperty('ouverture') && result.ouverture) {
+              logger.log('IL Y A UNE CLOTURE et une ouverture');
+              __ouverture = true;
+            } else {
+              __ouverture = false;
+            }
+          } else if (!result.ouverture) {
+            logger.log('IL N’Y A PAS DE CLOTURE et PAS D’OUVERTURE -> POPIN');
+            __ouverture = false;
+          } else {
+            __ouverture = true;
+          }
+
+          dispatch({type: tresorActionTypes.GET_LASTCLOTUREANDAFTER_SUCCESS, ouverture: __ouverture, solde: __solde})
+        },
+        error => { 
+          dispatch({ type: tresorActionTypes.GET_LASTCLOTUREANDAFTER_FAILURE, error: error.toString() })
+        }
+      );
+    }
+    catch(e) {
+      dispatch({ type: tresorActionTypes.GET_LASTCLOTUREANDAFTER_FAILURE, error: e.toString() })
+    }
   }
 }
 

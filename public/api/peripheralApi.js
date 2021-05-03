@@ -439,7 +439,7 @@ function _doPrintTicket(imprimante, template, contenu) {
   }
     
 
-  log.debug('printTicket end');
+ // log.debug('printTicket end');
 
 }
 

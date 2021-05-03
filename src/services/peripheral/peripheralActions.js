@@ -871,7 +871,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             tva: cmdTva
           },
           status: cmd.status,
-          scheduled: format(cmd.scheduled, 'HH:mm'),
+          scheduled: cmd.scheduled ? format(cmd.scheduled, 'HH:mm') : null,
           mode: cmd.mode,
           bipper: cmd.bipper || null,
           reglements: cmd.reglements,
