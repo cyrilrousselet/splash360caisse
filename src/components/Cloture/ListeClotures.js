@@ -75,9 +75,11 @@ function TicketX(props) {
   moytotal -= periode.emission;
 
   let ecarttotal = 0;
-  Object.values(ecarts).forEach(ecart=> {
-    if (ecart!==null) ecarttotal += ecart.valeur;
-  });
+  if (ecarts) {
+    Object.values(ecarts).forEach(ecart=> {
+      if (ecart!==null) ecarttotal += ecart.valeur;
+    });
+  }
 
 
   return (
@@ -92,8 +94,8 @@ function TicketX(props) {
       <div className="sel" key="sel-hdr">
         {(periode.vendeurs.length>1 || periode.vendeurs.length===0) && (<div className="val" key="sel-val1">{ `${__strimp.vendeurs[1]}${__strimp.vendeurs_all}` }</div>)}
         {(periode.vendeurs.length===1) && (<div className="val" key="sel-val1">{ `${__strimp.vendeurs[0]}${periode.vendeurs[0].nom}` }</div>)}
-        {periode.caisses.length>0 && (<div className="val" key="sel-val2">{ `${__strimp.caisses[(periode.caisses.length>1?1:0)]}${periode.caisses.join(', ')}` }</div>)}
-        {periode.caisses.length===0 && (<div className="val" key="sel-val2">{ `${__strimp.caisses[0]}${periode.caisse.nom}` }</div>)}
+        {(periode.caisses && periode.caisses.length>0) && (<div className="val" key="sel-val2">{ `${__strimp.caisses[(periode.caisses.length>1?1:0)]}${periode.caisses.join(', ')}` }</div>)}
+        {periode.caisse && (<div className="val" key="sel-val2">{ `${__strimp.caisses[0]}${periode.caisse.nom}` }</div>)}
         {/* {(periode.caisses.length>1 || periode.caisses.length===0) && (<div className="val" key="sel-val2">{ `${__strimp.caisses[1]}${__strimp.caisses_all}` }</div>)} */}
         {/* {(periode.caisses.length===1) && (<div className="val" key="sel-val2">{ `${__strimp.caisses[0]}${periode.caisses[0].nom} (${periode.caisses[0].id})` }</div>)} */}
       </div>
@@ -198,14 +200,14 @@ function TicketX(props) {
       </div>
       {periode.ventilation.moyen.map(moyen => {
 
-        const __moy_ecart = (ecarts.hasOwnProperty(moyen.moyen) && ecarts[moyen.moyen]!==null) ? ecarts[moyen.moyen].valeur : 0;
+        const __moy_ecart = (ecarts && ecarts.hasOwnProperty(moyen.moyen) && ecarts[moyen.moyen]!==null) ? ecarts[moyen.moyen].valeur : 0;
         
         return (
         <>
         <div className="ventil ventil-moyen" key={ `ventil-${moyen.moyen}` }>
           <div className="ventil-nom" key={ `ventil-${moyen.moyen}-nom` }>{__strimp.caption.moyens[moyen.moyen]}</div>
           <div className="ventil-val" key={ `ventil-${moyen.moyen}-val1` }>{ (moyen.moyen==='ticket') ? devise(moyen.valeur - Number(periode.emission)) : devise(moyen.valeur) }</div>
-          <div className="ventil-val" key={ `ventil-${moyen.moyen}-val2` }>{ devise(comptage[moyen.moyen]) }</div>
+          <div className="ventil-val" key={ `ventil-${moyen.moyen}-val2` }>{ comptage[moyen.moyen] ? devise(comptage[moyen.moyen]) : devise(0) }</div>
           <div className="ventil-val" key={ `ventil-${moyen.moyen}-val3` }>{ __moy_ecart===0 ? '' : `${ (Number(__moy_ecart)>0) ? '+' : '' }${ devise(__moy_ecart) }` }</div>
           {(ecarts && ecarts[moyen.moyen] && ecarts[moyen.moyen].motif) &&
           <div className="ventil-ecart-motif" key={ `ventil-${moyen.moyen}-motif` }>{ `* ${__strimp.caption.ecart.motif} ${ecarts[moyen.moyen].motif} *` }</div>
