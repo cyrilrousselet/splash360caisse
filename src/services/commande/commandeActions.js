@@ -936,12 +936,13 @@ function checkSchedules() {
 
       // récupération commandes programmées à lancer
       const { commandeslist } = await commandeServices.getCommandesList({
-        '$and': [
-          {createdAt: { '$gt': lastperiode_end } },
-          {scheduled: { '$exists': true }},
-          {scheduled: { '$lte': __heure.getTime()}},
-          {'$or': [
-            {enproduction: { '$exists': false }},
+        $and: [
+          {createdAt: { $gt: lastperiode_end } },
+          {scheduled: { $exists: true }},
+          // {scheduled: { $lte: __heure.getTime()}},
+          {scheduled: { $lte: __heure}},
+          {$or: [
+            {enproduction: { $exists: false }},
             {enproduction: false}
           ]}
         ]
@@ -953,7 +954,7 @@ function checkSchedules() {
 
         // on lance chaque commande et on la déclare comme 'en production'
         Object.values(commandeslist).forEach(cmd => {
-          dispatch(peripheralActions.printCommandeTicket('all', {...cmd, enproduction: true}));
+          dispatch(peripheralActions.printCommandeTicket('production', {...cmd, enproduction: true}));
           dispatch({
             type: commandeActionTypes.DELETE_SCHEDULE,
             schedule: cmd.ticketId
