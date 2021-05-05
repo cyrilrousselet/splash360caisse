@@ -954,7 +954,7 @@ function checkSchedules() {
 
         // on lance chaque commande et on la déclare comme 'en production'
         Object.values(commandeslist).forEach(cmd => {
-          dispatch(peripheralActions.printCommandeTicket('all', {...cmd, enproduction: true}));
+          dispatch(peripheralActions.printCommandeTicket('production', {...cmd, enproduction: true}));
           dispatch({
             type: commandeActionTypes.DELETE_SCHEDULE,
             schedule: cmd.ticketId
