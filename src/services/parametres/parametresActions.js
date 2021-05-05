@@ -121,15 +121,49 @@ function installStation() {
           
         }, 
         error => dispatch({ type: parametresActionTypes.INSTALL_STATION_FAILURE, error: error.toString() })
-      )
+      );
     }
   }
 }
 
+function getStatus() {
+  return (dispatch, getState) => {
+
+    const { entreprise } = getState().parametresReducer.parametres;
+
+    if (entreprise.restaurant_id==='' || entreprise.restaurant_secret==='') {
+      //dispatch fail
+      dispatch({ type: parametresActionTypes.GET_STATUS_FAILURE, error: "NO ID SECRET"});
+    }
+    else {
+      parametresServices.getStatus({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret})
+        .then(
+          data => {
+            console.log(data);
+            const payload = [{
+              "domaine": "options",
+              "cle": "status",
+              "valeur": data.status
+            }];
+
+            parametresServices.update(payload)
+              .then(
+                 dispatch({type: parametresActionTypes.GET_STATUS_SUCCESS})
+                //checkStatus
+              )
+            
+          },
+          error => dispatch({ type: parametresActionTypes.GET_STATUS_FAILURE, error: "error"})
+        );
+    }
+
+  }
+}
 
 export const parametresActions = {
   getAll,
   update,
   replaceDatabase,
-  installStation
+  installStation,
+  getStatus
 };

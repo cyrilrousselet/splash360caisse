@@ -682,6 +682,40 @@ const actions = {
     __request.end();
 
   },
+
+  getStatus: (req, res) => {
+    const { url, access_token } = req.payload;
+
+    let data = '';
+
+    const __request = net.request({
+      url: url,
+      method: "get",
+    });
+    __request.setHeader("Authorization", "Bearer " + access_token);
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/json");
+
+    __request.on("response", (response) => {
+
+      response.on("data", (chunk) => {
+        log.info(`getStatus BODY: ${chunk}`);
+        data += chunk;
+      });
+      response.on("end", () => {
+        data = JSON.parse(data);
+      log.info(`data : ${data}`);
+        res.send(data);
+      });
+    });
+
+    __request.on('error', (error) => {
+      log.error('getStatus ERROR', error);
+      res.error(error);
+    });
+
+    __request.end();
+  },
 };
 
 module.exports = {

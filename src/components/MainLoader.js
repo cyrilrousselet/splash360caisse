@@ -12,6 +12,8 @@ const logger = new Logger();
 class MainLoader extends React.Component {
   
   _findeservice_job = null;
+  _scheduledcmd_job = null;
+  _getstatus_job = null;
 
   constructor(props) {
     super(props);
@@ -44,7 +46,8 @@ class MainLoader extends React.Component {
       dbupdated, 
       dbgetInit,
       checkFinDeService,
-      stationinstalled
+      stationinstalled,
+      getStatus
     } = this.props;
 
     console.log("DEBUT checkInstallation");
@@ -53,6 +56,19 @@ class MainLoader extends React.Component {
       this._findeservice_job = schedule.scheduleJob('0 30 5 * * *', () => {
         checkFinDeService();
       });
+    }
+
+    // if (this._scheduledcmd_job===null && mode==="mount") {
+    //   this._scheduledcmd_job = schedule.scheduleJob('*/5 * * * *', () => {
+    //     checkScheduledCommandes();
+    //   });
+    // }
+
+    if (this._getstatus_job===null && mode ==="mount") {
+      console.log("GONNA START SCHEDULE");
+      this._getstatus_job = schedule.scheduleJob('*/30 * * * * *', () => { //récupérer le status de la caisse sur le bo
+        getStatus();
+      })
     }
 
     let first_start = params ? params.first_start : null;

@@ -60,6 +60,7 @@ const mapDispatchToProps = (dispatch) => {
     checkFinDeService: tresorActions.checkFinDeService,
     installStation: parametresActions.installStation,
     paramUpdate: parametresActions.update,
+    getStatus: parametresActions.getStatus
     // loadNumero: commandeActions.loadNumero
   }, dispatch);
   return {
