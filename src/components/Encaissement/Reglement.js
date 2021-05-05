@@ -136,6 +136,16 @@ class Reglement extends React.Component {
     const { trlist } = this.state;
     console.log(reste, rendu);
     let closeReglementAtEnd = true;
+
+    const itemsCopy = [...this.props.commande.items];
+    itemsCopy.forEach(i => {
+      i.selected = false;
+    });
+    // const item = itemsCopy[index];
+    // item.selected = !item.selected  ? true : false;
+    // itemsCopy[index] = item;
+    this.props.updateCommande({...this.props.commande, items: itemsCopy})
+
     if (reste === 0) {
       if (this.props.commande.status === "pending") {
         this.props.commande.end = new Date();

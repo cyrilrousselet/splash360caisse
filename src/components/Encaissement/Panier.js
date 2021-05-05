@@ -788,11 +788,15 @@ class Panier extends React.Component {
 
   setSelectedIndex(index) {
     const {selectedIngredient} = this.state;
-    if (selectedIngredient===-1) {
-      index = index===this.state.selectedIndex ? -1 : index;
+    if (!this.props.open) {
+      console.log('select item');
+      if (selectedIngredient===-1) {
+        index = index===this.state.selectedIndex ? -1 : index;
+      }
     }
 
     if (index >= 0 && this.props.open) {
+      console.log('select dans le reglt');
       const itemsCopy = [...this.props.commande.items];
       const item = itemsCopy[index];
       item.selected = !item.selected  ? true : false;

@@ -936,12 +936,13 @@ function checkSchedules() {
 
       // récupération commandes programmées à lancer
       const { commandeslist } = await commandeServices.getCommandesList({
-        '$and': [
-          {createdAt: { '$gt': lastperiode_end } },
-          {scheduled: { '$exists': true }},
-          {scheduled: { '$lte': __heure.getTime()}},
-          {'$or': [
-            {enproduction: { '$exists': false }},
+        $and: [
+          {createdAt: { $gt: lastperiode_end } },
+          {scheduled: { $exists: true }},
+          // {scheduled: { $lte: __heure.getTime()}},
+          {scheduled: { $lte: __heure}},
+          {$or: [
+            {enproduction: { $exists: false }},
             {enproduction: false}
           ]}
         ]
