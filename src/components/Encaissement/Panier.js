@@ -1102,6 +1102,7 @@ class Panier extends React.Component {
   }
   setSchedule(heure) {
     logger.log('setSchedule('+heure+')');
+  //  const round_heure = heure.replace(/()Z^/, '00.000')
     this.props.updateCommande({scheduled:heure, enproduction:false});
     this.setState({scheduleOpen: false});
   }
