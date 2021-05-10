@@ -209,17 +209,15 @@ function treatment(data) {
 
       dispatch({ type: notificationActionTypes.GET_NOTIFICATION, notif: data.eventType });
 
-      const payload = [{
-        "domaine": "options",
-        "cle": "status",
-        "valeur": data.status
-      }];
+      // const payload = [{
+      //   "domaine": "options",
+      //   "cle": "status",
+      //   "valeur": data.status
+      // }];
 
-      dispatch(parametresActions.update(payload));
-
-      
-
-      //parametreServices.changeStatus 
+      // dispatch(parametresActions.update(payload));
+      localStorage.setItem("status", data.status);
+      dispatch(parametresActions.checkStatus());
 
     }
   } 

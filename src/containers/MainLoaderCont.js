@@ -38,6 +38,7 @@ const mapStateToProps = (state) => {
     dbupdated: state.parametresReducer.dbupdated,
     dbgetInit: state.notificationReducer.getdbInit,
     stationinstalled: state.parametresReducer.stationinstalled,
+    statuschecked: state.parametresReducer.statuschecked
   }
 }
 
@@ -60,7 +61,9 @@ const mapDispatchToProps = (dispatch) => {
     checkFinDeService: tresorActions.checkFinDeService,
     installStation: parametresActions.installStation,
     paramUpdate: parametresActions.update,
-    getStatus: parametresActions.getStatus
+    getStatus: parametresActions.getStatus,
+    checkStatus: parametresActions.checkStatus,
+    blockStation: parametresActions.blockStation
     // loadNumero: commandeActions.loadNumero
   }, dispatch);
   return {

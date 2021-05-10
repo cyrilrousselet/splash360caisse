@@ -3,7 +3,9 @@ import React from 'react';
 import LoadingSpinner from './common/LoadingSpinner';
 import Logger from '../helpers/Logger';
 import Swal from 'sweetalert2';
-import schedule from 'node-schedule';
+import schedule, { scheduleJob } from 'node-schedule';
+import { data } from '../constants/translations';
+import moment from 'moment';
 
 const logger = new Logger();
 
@@ -14,6 +16,7 @@ class MainLoader extends React.Component {
   _findeservice_job = null;
   _scheduledcmd_job = null;
   _getstatus_job = null;
+  _blockstation_job = null
 
   constructor(props) {
     super(props);
@@ -29,6 +32,7 @@ class MainLoader extends React.Component {
       cmdLoaded: true,
       cloLoaded: props.cloLoaded,
       inspect: false,
+      statuschecked: props.statuschecked
     };
   }
 
@@ -47,7 +51,10 @@ class MainLoader extends React.Component {
       dbgetInit,
       checkFinDeService,
       stationinstalled,
-      getStatus
+      statuschecked,
+      getStatus,
+      checkStatus,
+      blockStation
     } = this.props;
 
     console.log("DEBUT checkInstallation");
@@ -66,10 +73,33 @@ class MainLoader extends React.Component {
 
     if (this._getstatus_job===null && mode ==="mount") {
       console.log("GONNA START SCHEDULE");
-      this._getstatus_job = schedule.scheduleJob('*/30 * * * * *', () => { //récupérer le status de la caisse sur le bo
+      this._getstatus_job = schedule.scheduleJob('*/1 * * * *', () => { //récupérer le status de la caisse sur le bo
         getStatus();
       })
     }
+
+    // let expDate = localStorage.getItem("expireDate");
+    // if (expDate != null && mode ==="mount") { // if expiredate != null
+    //   let date = moment(expDate);
+    //   let today = moment();
+
+    //   console.log("expDate", date);
+    //   console.log("today", today);
+
+    //   if (date.isBefore(today)) {// if expire date < now
+    //     console.log("date expiration dépassé, station doit etre bloquée");
+    //     blockStation();// block station
+    //   }
+    //   else { // schedule block
+    //     console.log("schedule block");
+    //     if(this._blockstation_job===null) {
+    //       this._blockstation_job = scheduleJob(expDate, () => {
+    //         blockStation();
+    //       })
+    //     }
+    //   }
+    // }
+      
 
     let first_start = params ? params.first_start : null;
     let readytolaunch = dbupdated || null;
@@ -88,46 +118,69 @@ class MainLoader extends React.Component {
       }
       else {
         console.log("ID SECRET OK");
-        if(first_start===true && params.status === undefined) { 
-          console.log("NO STATUS");// Si le param status n'est pas défini, alors nouveau param status à null
-          const payload = [{
-            "domaine": "options",
-            "cle": "status",
-            "valeur": null
-          }];
-          this.props.paramUpdate(payload);
+        
+        if (statuschecked===false) {
+          getStatus();
         }
-    
-        if (sseInit===false) {
-          console.log("GONNA INIT SSE");
-          first_start = params.first_start;
-          this.props.initSSE();
-          this.props.setPOS();
-          this.props.initSync();
-    
-          checkFinDeService();          
-          // if (first_start===true && dbgetInit===false) this.props.getDatabase();
-        }
-    
-        if (params.status==="authorized" && first_start===true && dbgetInit===false){
-          console.log("GONNA GET DATABASE");
-          this.props.getDatabase();
-        }
-        else if(params.status != "authorized"){
-          Swal.fire({
-            type: 'warning',
-            title:'Station non activée',
-            text: 'Vous devez activer la station',
-            showCancelButton: false,
-            focusConfirm: true,
-            allowEscapeKey: false,
-            allowOutsideClick: false,
-            confirmButtonText: 'Réésayer',
-          }).then((result)=> {
-            if (result.value) {
-              this.forceUpdate();
+        else {
+          console.log("GONNA CHECK EXPIRE DATE");
+       
+          let expDate = localStorage.getItem("expireDate");
+          if (expDate != null) { // if expiredate != null
+            let date = moment(expDate);
+            let today = moment();
+      
+            console.log("expDate", date);
+            console.log("today", today);
+      
+            if (date.isBefore(today)) {// if expire date < now
+              console.log("date expiration dépassé, station doit etre bloquée");
+              blockStation();// block station
             }
-          });
+            else { // schedule block
+              console.log("schedule block");
+              if(this._blockstation_job===null) {
+                this._blockstation_job = schedule.scheduleJob("blockstationJob", expDate, () => {
+                  blockStation();
+                })
+              }
+              console.log("JOB BLOCK STATION", this._blockstation_job);
+            }
+          }
+
+          const status = localStorage.getItem('status');
+        
+          if (sseInit===false) {
+            console.log("GONNA INIT SSE");
+            first_start = params.first_start;
+            this.props.initSSE();
+            this.props.setPOS();
+            this.props.initSync();
+      
+            checkFinDeService();   
+            // if (first_start===true && dbgetInit===false) this.props.getDatabase();
+          }
+      
+          if (status==="authorized" && first_start===true && dbgetInit===false){
+            console.log("GONNA GET DATABASE");
+            this.props.getDatabase();
+          }
+          else if(status === null || status === "pending"){
+            Swal.fire({
+              type: 'warning',
+              title:'Station non activée',
+              text: 'Vous devez activer la station',
+              showCancelButton: false,
+              focusConfirm: true,
+              allowEscapeKey: false,
+              allowOutsideClick: false,
+              confirmButtonText: 'Réésayer',
+            }).then((result)=> {
+              if (result.value) {
+                this.forceUpdate();
+              }
+            });
+          }
         }
       }
     }

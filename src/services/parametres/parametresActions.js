@@ -1,8 +1,12 @@
 import { parametresActionTypes } from './parametresActionTypes';
 import { parametresServices } from './parametresServices';
 import { commandeActions } from './../commande/commandeActions';
+import { peripheralActions } from '../peripheral/peripheralActions';
 import Logger from '../../helpers/Logger';
 import Swal from 'sweetalert2';
+import moment from 'moment';
+import schedule, { scheduleJob } from 'node-schedule';
+
 
 const logger = new Logger();
 
@@ -90,6 +94,8 @@ function installStation() {
       input:'text',
       confirmButtonText: 'Valider',
       showLoaderOnConfirm: true,
+      allowEscapeKey: false,
+      allowOutsideClick: false
     });
     
     if(null !== result.value) {
@@ -139,24 +145,59 @@ function getStatus() {
       parametresServices.getStatus({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret})
         .then(
           data => {
-            console.log(data);
-            const payload = [{
-              "domaine": "options",
-              "cle": "status",
-              "valeur": data.status
-            }];
-
-            parametresServices.update(payload)
-              .then(
-                 dispatch({type: parametresActionTypes.GET_STATUS_SUCCESS})
-                //checkStatus
-              )
-            
+            localStorage.setItem("status", data.status);
+            dispatch(checkStatus());            
           },
           error => dispatch({ type: parametresActionTypes.GET_STATUS_FAILURE, error: "error"})
         );
     }
+  }
+}
 
+function checkStatus() {
+  return (dispatch, getState) => {
+    if (localStorage.getItem("status") === "blocked") {//if blocked 
+      if(localStorage.getItem("expireDate") === null) { // if expiredate == null
+        let date = moment().add(7, 'd'); // expiredate = now + 1 week
+        localStorage.setItem("expireDate", date); 
+        //Schedule blockstationJob
+        var _blockstation_job = schedule.scheduleJob("blockstationJob", date.toDate(), () => {
+          blockStation();
+        });
+        console.log("blockstationJob scheduled", _blockstation_job);
+      }
+    }
+    else if(localStorage.getItem("status") === "authorized") {
+      if(localStorage.getItem("expireDate") != null) {
+        localStorage.removeItem("expireDate");
+        // Annuler le blockstationJob si existant
+        if(typeof schedule.scheduledJobs["blockstationJob"] != 'undefined' ) {
+          console.log("GONNA CANCEL JOB BLOCK");
+          var job = schedule.scheduledJobs["blockstationJob"];
+          job.cancel();
+
+        }
+      }
+    }
+    dispatch({type: parametresActionTypes.CHECK_STATUS_SUCCESS});
+  }
+}
+
+function blockStation() {
+  return (dispatch, getState) => {
+    Swal.fire({
+      title: 'Station bloquée',
+      text:'Cette station a été bloquée.',
+      confirmButtonText: 'Eteindre la station',
+      showLoaderOnConfirm: true,
+      allowEscapeKey: false,
+      allowOutsideClick: false
+    }).then((result) => {
+        if (result.value) {
+          dispatch(peripheralActions.quitApp());
+        }
+      }
+    );
   }
 }
 
@@ -165,5 +206,7 @@ export const parametresActions = {
   update,
   replaceDatabase,
   installStation,
-  getStatus
+  getStatus,
+  checkStatus,
+  blockStation
 };

@@ -3,7 +3,8 @@ import { parametresActionTypes } from './parametresActionTypes';
 const initialState = {
   loading: false,
   parametres: {},
-  error: null
+  error: null,
+  statuschecked: false,
 };
 
 
@@ -128,7 +129,19 @@ export function parametresReducer(state=initialState, action) {
         ...state,
         loading: false,
         error: action.error
-      }
+      };
+
+    case parametresActionTypes.CHECK_STATUS_SUCCESS:
+      return {
+        ...state,
+        statuschecked: true
+      };
+
+    case parametresActionTypes.GET_STATUS_FAILURE:
+      return {
+        ...state,
+        statuschecked: true
+      };
 
     default:
       return state;
