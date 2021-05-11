@@ -6,6 +6,7 @@ import Logger from '../../helpers/Logger';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import schedule, { scheduleJob } from 'node-schedule';
+import externalParams from '../../constants/externalParams.json';
 
 
 const logger = new Logger();
@@ -132,7 +133,7 @@ function installStation() {
   }
 }
 
-function getStatus() {
+function getStatus() {  // récupére le status de la station auprès du bo puis checkStatus
   return (dispatch, getState) => {
 
     const { entreprise } = getState().parametresReducer.parametres;
@@ -154,7 +155,34 @@ function getStatus() {
   }
 }
 
-function checkStatus() {
+function testConnection() {
+  return (dispatch, getState) => {
+    const condition = navigator.onLine ? 'online' : 'offline';
+
+    if(condition === 'online') {
+      fetch(externalParams.synchro.ping, {
+        mode: 'no-cors',
+      })
+      .then(() => {
+        // Internet
+        console.log("test co : internet");
+        dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: true});
+      }).catch(()=> {
+        // Pas internet
+        console.log("test co : pas internet");
+        dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: false});
+      })
+    }
+    else {
+      // Pas internet
+      console.log("test co : pas internet");
+      dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: false});
+    }
+  }
+}
+
+
+function checkStatus() { //checkStatus&internet ?   gère la planification du blocage en foction du status actuel
   return (dispatch, getState) => {
     if (localStorage.getItem("status") === "blocked") {//if blocked 
       if(localStorage.getItem("expireDate") === null) { // if expiredate == null
@@ -207,6 +235,7 @@ export const parametresActions = {
   replaceDatabase,
   installStation,
   getStatus,
+  testConnection,
   checkStatus,
   blockStation
 };

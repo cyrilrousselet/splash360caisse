@@ -17,6 +17,7 @@ class MainLoader extends React.Component {
   _scheduledcmd_job = null;
   _getstatus_job = null;
   _blockstation_job = null
+  _checkinternetconnection_job = null;
 
   constructor(props) {
     super(props);
@@ -53,8 +54,8 @@ class MainLoader extends React.Component {
       stationinstalled,
       statuschecked,
       getStatus,
-      checkStatus,
-      blockStation
+      blockStation,
+      testConnection
     } = this.props;
 
     console.log("DEBUT checkInstallation");
@@ -73,33 +74,20 @@ class MainLoader extends React.Component {
 
     if (this._getstatus_job===null && mode ==="mount") {
       console.log("GONNA START SCHEDULE");
-      this._getstatus_job = schedule.scheduleJob('*/1 * * * *', () => { //récupérer le status de la caisse sur le bo
+      this._getstatus_job = schedule.scheduleJob('0 0 6 * * *', () => { //récupérer le status de la caisse sur le bo
         getStatus();
       })
     }
 
-    // let expDate = localStorage.getItem("expireDate");
-    // if (expDate != null && mode ==="mount") { // if expiredate != null
-    //   let date = moment(expDate);
-    //   let today = moment();
+    if(this._checkinternetconnection_job===null && mode==="mount") {
+      this._checkinternetconnection_job = schedule.scheduleJob('*/1 * * * *', () => {
+        // check internet with ping to bo
+        console.log("job test connection");
+        testConnection();
+      });
+    }
 
-    //   console.log("expDate", date);
-    //   console.log("today", today);
-
-    //   if (date.isBefore(today)) {// if expire date < now
-    //     console.log("date expiration dépassé, station doit etre bloquée");
-    //     blockStation();// block station
-    //   }
-    //   else { // schedule block
-    //     console.log("schedule block");
-    //     if(this._blockstation_job===null) {
-    //       this._blockstation_job = scheduleJob(expDate, () => {
-    //         blockStation();
-    //       })
-    //     }
-    //   }
-    // }
-      
+    
 
     let first_start = params ? params.first_start : null;
     let readytolaunch = dbupdated || null;
@@ -158,7 +146,6 @@ class MainLoader extends React.Component {
             this.props.initSync();
       
             checkFinDeService();   
-            // if (first_start===true && dbgetInit===false) this.props.getDatabase();
           }
       
           if (status==="authorized" && first_start===true && dbgetInit===false){

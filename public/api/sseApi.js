@@ -51,7 +51,8 @@ const actions = {
       _webContents.send("getNotification", { ...data });
     };
     es.onerror = (err) => {
-      log.info("es.onerror", err.message);
+      log.info("es.onerror err", err);
+      log.info("es.onerror msg", err.message);
       res.send({ msg: "ca va pas" });
       es.close();
     };
@@ -716,6 +717,27 @@ const actions = {
 
     __request.end();
   },
+
+  // pingBO: (req, res) => { // Test à la fois la connexion au bo et la connexion internet
+  //   const {url} = req.payload;
+
+  //   const __request = net.request({
+  //     url: url,
+  //     method: "get",
+  //   });
+  //   __request.setHeader("Access-Control-Allow-Origin", "*");
+  //   __request.setHeader("Content-Type", "application/json");
+
+  //   __request.on("response", (response) => {
+  //     res.send("")
+  //   });
+
+  //   __request.on('error', (error) => {
+  //     res.error(error);
+  //   });
+
+  // }
+
 };
 
 module.exports = {

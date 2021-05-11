@@ -143,6 +143,12 @@ export function parametresReducer(state=initialState, action) {
         statuschecked: true
       };
 
+    case parametresActionTypes.CONNECTION_TESTED:
+      return {
+        ...state,
+        online: action.value
+      };
+
     default:
       return state;
   }

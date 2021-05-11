@@ -76,6 +76,7 @@
         "qrcode": "^1.4.4",
         "react": "^16.9.0",
         "react-chartjs-2": "^2.9.0",
+        "react-detect-offline": "^2.4.3",
         "react-dom": "^16.9.0",
         "react-encrypt": "^1.0.1",
         "react-hot-loader": "^4.12.11",

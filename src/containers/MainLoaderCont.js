@@ -62,8 +62,8 @@ const mapDispatchToProps = (dispatch) => {
     installStation: parametresActions.installStation,
     paramUpdate: parametresActions.update,
     getStatus: parametresActions.getStatus,
-    checkStatus: parametresActions.checkStatus,
-    blockStation: parametresActions.blockStation
+    blockStation: parametresActions.blockStation,
+    testConnection: parametresActions.testConnection
     // loadNumero: commandeActions.loadNumero
   }, dispatch);
   return {
