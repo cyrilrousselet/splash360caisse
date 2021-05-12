@@ -38,7 +38,8 @@ const mapStateToProps = (state) => {
     dbupdated: state.parametresReducer.dbupdated,
     dbgetInit: state.notificationReducer.getdbInit,
     stationinstalled: state.parametresReducer.stationinstalled,
-    statuschecked: state.parametresReducer.statuschecked
+    statuschecked: state.parametresReducer.statuschecked,
+    online: state.parametresReducer.online
   }
 }
 

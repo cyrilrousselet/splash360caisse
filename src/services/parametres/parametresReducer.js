@@ -5,6 +5,7 @@ const initialState = {
   parametres: {},
   error: null,
   statuschecked: false,
+  online: null
 };
 
 
@@ -131,7 +132,7 @@ export function parametresReducer(state=initialState, action) {
         error: action.error
       };
 
-    case parametresActionTypes.CHECK_STATUS_SUCCESS:
+    case parametresActionTypes.CHECK_STATUS_AND_CONNECTION_SUCCESS:
       return {
         ...state,
         statuschecked: true

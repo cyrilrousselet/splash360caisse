@@ -147,7 +147,7 @@ function getStatus() {  // récupére le status de la station auprès du bo puis
         .then(
           data => {
             localStorage.setItem("status", data.status);
-            dispatch(checkStatus());            
+            dispatch(checkStatusAndConnection());            
           },
           error => dispatch({ type: parametresActionTypes.GET_STATUS_FAILURE, error: "error"})
         );
@@ -166,25 +166,31 @@ function testConnection() {
       .then(() => {
         // Internet
         console.log("test co : internet");
-        dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: true});
+        dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: 'on'});
+        dispatch(checkStatusAndConnection());
       }).catch(()=> {
         // Pas internet
         console.log("test co : pas internet");
-        dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: false});
+        dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: 'off'});
+        dispatch(checkStatusAndConnection());
       })
     }
     else {
       // Pas internet
       console.log("test co : pas internet");
-      dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: false});
+      dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: 'off'});
+      dispatch(checkStatusAndConnection());
     }
   }
 }
 
 
-function checkStatus() { //checkStatus&internet ?   gère la planification du blocage en foction du status actuel
+function checkStatusAndConnection() { //checkStatus&internet ?   gère la planification du blocage en foction du status actuel
   return (dispatch, getState) => {
-    if (localStorage.getItem("status") === "blocked") {//if blocked 
+    const {online} = getState().parametresReducer;
+    const status = localStorage.getItem("status");
+
+    if (status === "blocked" || online === 'off') { // if blocked or no connection
       if(localStorage.getItem("expireDate") === null) { // if expiredate == null
         let date = moment().add(7, 'd'); // expiredate = now + 1 week
         localStorage.setItem("expireDate", date); 
@@ -195,7 +201,7 @@ function checkStatus() { //checkStatus&internet ?   gère la planification du bl
         console.log("blockstationJob scheduled", _blockstation_job);
       }
     }
-    else if(localStorage.getItem("status") === "authorized") {
+    else if(status === "authorized" && online ==='on') { // if authorized and online
       if(localStorage.getItem("expireDate") != null) {
         localStorage.removeItem("expireDate");
         // Annuler le blockstationJob si existant
@@ -207,7 +213,7 @@ function checkStatus() { //checkStatus&internet ?   gère la planification du bl
         }
       }
     }
-    dispatch({type: parametresActionTypes.CHECK_STATUS_SUCCESS});
+    dispatch({type: parametresActionTypes.CHECK_STATUS_AND_CONNECTION_SUCCESS});
   }
 }
 
@@ -236,6 +242,6 @@ export const parametresActions = {
   installStation,
   getStatus,
   testConnection,
-  checkStatus,
+  checkStatusAndConnection,
   blockStation
 };

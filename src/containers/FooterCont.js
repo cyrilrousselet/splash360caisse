@@ -29,7 +29,11 @@ const userLogout = () => {
 
 
 const mapStateToProps = (state) => {
-  return {}
+  return {
+    online: state.parametresReducer.online,
+    status: localStorage.getItem("status"),
+    expiredate: localStorage.getItem("expireDate")
+  }
 }
 
 const mapDispatchToProps = (dispatch) => {

@@ -55,7 +55,8 @@ class MainLoader extends React.Component {
       statuschecked,
       getStatus,
       blockStation,
-      testConnection
+      testConnection,
+      online
     } = this.props;
 
     console.log("DEBUT checkInstallation");
@@ -99,74 +100,80 @@ class MainLoader extends React.Component {
 
     if(paramLoaded) {
       console.log("PARAM LOADED");
-      if(paramsEntreprise.restaurant_id==="" || paramsEntreprise.restaurant_secret==="") {
-        console.log("NO ID SECRET, GONNA INSTALL STATION");
-        // installStation
-        this.props.installStation(); // popin + requête au bo + update id et secret
+
+      if(online === null) { // if connexion pas
+        testConnection();
       }
       else {
-        console.log("ID SECRET OK");
-        
-        if (statuschecked===false) {
-          getStatus();
+        if(paramsEntreprise.restaurant_id==="" || paramsEntreprise.restaurant_secret==="") {
+          console.log("NO ID SECRET, GONNA INSTALL STATION");
+          // installStation
+          this.props.installStation(); // popin + requête au bo + update id et secret
         }
         else {
-          console.log("GONNA CHECK EXPIRE DATE");
-       
-          let expDate = localStorage.getItem("expireDate");
-          if (expDate != null) { // if expiredate != null
-            let date = moment(expDate);
-            let today = moment();
-      
-            console.log("expDate", date);
-            console.log("today", today);
-      
-            if (date.isBefore(today)) {// if expire date < now
-              console.log("date expiration dépassé, station doit etre bloquée");
-              blockStation();// block station
-            }
-            else { // schedule block
-              console.log("schedule block");
-              if(this._blockstation_job===null) {
-                this._blockstation_job = schedule.scheduleJob("blockstationJob", expDate, () => {
-                  blockStation();
-                })
-              }
-              console.log("JOB BLOCK STATION", this._blockstation_job);
-            }
+          console.log("ID SECRET OK");
+          
+          if (statuschecked===false) {
+            getStatus();
           }
-
-          const status = localStorage.getItem('status');
+          else {
+            console.log("GONNA CHECK EXPIRE DATE");
         
-          if (sseInit===false) {
-            console.log("GONNA INIT SSE");
-            first_start = params.first_start;
-            this.props.initSSE();
-            this.props.setPOS();
-            this.props.initSync();
-      
-            checkFinDeService();   
-          }
-      
-          if (status==="authorized" && first_start===true && dbgetInit===false){
-            console.log("GONNA GET DATABASE");
-            this.props.getDatabase();
-          }
-          else if(status === null || status === "pending"){
-            Swal.fire({
-              type: 'warning',
-              title:'Station non activée',
-              text: 'Vous devez activer la station',
-              showCancelButton: false,
-              focusConfirm: true,
-              allowEscapeKey: false,
-              allowOutsideClick: false,
-              confirmButtonText: 'Réésayer',
-            }).then((result)=> {
-              if (result.value) {
-                this.forceUpdate();
+            let expDate = localStorage.getItem("expireDate");
+            if (expDate != null) { // if expiredate != null
+              let date = moment(expDate);
+              let today = moment();
+        
+              console.log("expDate", date);
+              console.log("today", today);
+        
+              if (date.isBefore(today)) {// if expire date < now
+                console.log("date expiration dépassé, station doit etre bloquée");
+                blockStation();// block station
               }
-            });
+              else { // schedule block
+                console.log("schedule block");
+                if(this._blockstation_job===null) {
+                  this._blockstation_job = schedule.scheduleJob("blockstationJob", expDate, () => {
+                    blockStation();
+                  })
+                }
+                console.log("JOB BLOCK STATION", this._blockstation_job);
+              }
+            }
+
+            const status = localStorage.getItem('status');
+          
+            if (sseInit===false) {
+              console.log("GONNA INIT SSE");
+              first_start = params.first_start;
+              this.props.initSSE();
+              this.props.setPOS();
+              this.props.initSync();
+        
+              checkFinDeService();   
+            }
+        
+            if (status==="authorized" && first_start===true && dbgetInit===false){
+              console.log("GONNA GET DATABASE");
+              this.props.getDatabase();
+            }
+            else if(status === null || status === "pending"){
+              Swal.fire({
+                type: 'warning',
+                title:'Station non activée',
+                text: 'Vous devez activer la station',
+                showCancelButton: false,
+                focusConfirm: true,
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                confirmButtonText: 'Réésayer',
+              }).then((result)=> {
+                if (result.value) {
+                  this.forceUpdate();
+                }
+              });
+            }
           }
         }
       }

@@ -54,7 +54,7 @@ const actions = {
       log.info("es.onerror err", err);
       log.info("es.onerror msg", err.message);
       res.send({ msg: "ca va pas" });
-      es.close();
+      // es.close();
     };
     res.send({ msg: "sse listening" });
   },
