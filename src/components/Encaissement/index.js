@@ -75,11 +75,14 @@ class Encaissement extends React.Component {
 
  render () {
 
+  const { parametres } = this.props;
+  const layout = parametres.options.encaissement_layout || 'normal';
+
   // logger.log('encaissement state', this.state.personnalisationReview);
   logger.log('encaissement lock', this.state.lockEncaissement);
 
     return (
-      <div className="Encaissement container">
+      <div className={ `Encaissement container ${(layout==='narrow' ? 'encaissement-narrow' : 'encaissement-normal')}` }>
         <TopZone />
         <div className="MainZone">
           { this.state.lockEncaissement && (<div className="selecteur-wait"></div>) }
@@ -114,6 +117,7 @@ class Encaissement extends React.Component {
             validatePersonnalisation={ this.validatePersonnalisation }
             closePersonnalisation={ this.closePersonnalisation } 
             openPersonnalisation={ this.openPersonnalisation }
+            layout={layout}
           />
         </div>
       </div>

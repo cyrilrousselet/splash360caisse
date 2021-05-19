@@ -214,6 +214,22 @@
             background-color: $rouge;
           }
       }
+      .schedule {
+        .ico-schedule {
+            
+            height: 20px;
+            cursor: pointer;
+            
+            &.schedule-set {
+                fill: $vert;
+            }
+            
+            svg {
+                width: auto;
+                height: 100%;
+            }
+        }
+      }
       .save {
           background-color:$vert;
           min-width: 200px;
