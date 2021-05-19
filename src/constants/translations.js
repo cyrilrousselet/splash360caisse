@@ -1229,7 +1229,13 @@ const data = {
                             }
                         }
                     },
-                    options: { nom: 'Options' },
+                    options: { 
+                        nom: 'Options',
+                        encaissement_layout: {
+                            titre: 'Mise en page Encaissement',
+                            valeur: 'Étroite'
+                        }
+                    },
                 }
             }
         },

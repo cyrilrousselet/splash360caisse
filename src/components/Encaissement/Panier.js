@@ -38,8 +38,9 @@ import { dateBounds } from '../../helpers/toolbox';
 import frLocale from "date-fns/locale/fr";
 import { MuiPickersUtilsProvider, TimePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-// import { formatISO } from 'date-fns';
+// import { formatRFC3339 } from 'date-fns';
 // import { add, isBefore, format } from 'date-fns';
+import { add, isBefore } from 'date-fns';
 
 
 let strings = new LocalizedStrings(data);
@@ -147,7 +148,7 @@ class ScheduleModal extends React.Component {
     const {open, closeHandler} = this.props;
     const {schedule} = this.state;
 
-    const vschedule = this.props.schedule ? this.props.schedule : schedule;
+    const vschedule = schedule ? schedule : this.props.schedule;
 
     return (
       <Modal
@@ -1102,8 +1103,20 @@ class Panier extends React.Component {
   }
   setSchedule(heure) {
     logger.log('setSchedule('+heure+')');
-  //  const round_heure = heure.replace(/()Z^/, '00.000')
-    this.props.updateCommande({scheduled:heure, enproduction:false});
+    
+    const round_heure = `${ heure.getUTCFullYear() }-${ String(heure.getUTCMonth()+1).padStart(2,'0') }-${ String(heure.getUTCDate()).padStart(2, '0') }T${ String(heure.getUTCHours()).padStart(2, '0') }:${ String(heure.getUTCMinutes()).padStart(2, '0') }:00.000Z`;
+    
+    // si l'heure programmée est dans les 15 prochaines minutes -> enproduction=true
+    const {parametres} = this.props;
+    const schedule_delay = (parametres && parametres.commandes) ? (parametres.commandes.schedule_delay || 15) : 15;
+    const __end = add(new Date(), {minutes:schedule_delay});
+    let __enproduction = false;
+    if (isBefore(heure,__end)) {
+      __enproduction = true;
+    }
+    console.log('SETSCH', __end, heure, __enproduction);
+    
+    this.props.updateCommande({scheduled:round_heure, enproduction:__enproduction});
     this.setState({scheduleOpen: false});
   }
 
@@ -1715,7 +1728,7 @@ console.log('⏰', schedule_delay);
           selectBipper={this.selectBipper}
           bipper={bipper}
           />
-        <FicheClientCont open={ficheClientOpen} clavierOpen={ clavierOpen } client={commandeClient} mode={commandeClient?'fiche':'recherche'} contexte="encaissement" closeHandler={this.closeFicheClient} selectClient={this.selectClient} />
+        <FicheClientCont open={ficheClientOpen} clavierOpen={ clavierOpen } client={commandeClient} mode={commandeClient?'fiche':'recherche'} contexte="encaissement" closeHandler={this.closeFicheClient} selectClient={this.selectClient} scheduled={this.props.commande.scheduled} openSchedule={this.openSchedule} />
         <ScheduleModal
           open={ scheduleOpen }
           closeHandler={ this.closeSchedule }

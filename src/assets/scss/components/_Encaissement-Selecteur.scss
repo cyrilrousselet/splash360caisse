@@ -6,6 +6,12 @@
         height: 100%;
         width: calc(100% - 315px);
     }
+    &.encaissement-narrow .Selecteur,
+    &.encaissement-narrow .selecteur-wait {
+        width: calc(100% - 305px);
+    }
+
+
     .selecteur-wait {
         
         background-color: $blanc;
@@ -47,6 +53,11 @@
             }
         }
     }
+
+    &.encaissement-narrow .TabBar {
+        width: 140px;
+    }
+
     .tab-link {
         border: none;
         border-radius: 15px 0 0 15px;
@@ -71,6 +82,13 @@
             box-shadow: 0 5px 12px 0 $noir_005;
         }
     }
+
+    &.encaissement-narrow .tab-link {
+        width: 142px;
+        padding-right: 20px;
+        font-size: 13px;
+    }
+
     .TabCont {
         display: inline-block;
         vertical-align: top;
@@ -90,6 +108,15 @@
             }
         }
     }
+
+    &.encaissement-narrow .TabCont {
+        width: calc(100% - 125px);
+        padding: 5px;
+        .wrapper {
+            border-radius: 6px;
+        }
+    }
+
     .ProduitBtn {
         display: inline-flex;
         flex-direction: column;
@@ -177,4 +204,12 @@
           background-color: $gris;
           box-shadow: inset 0 0 0 3px $gris-fonce, 0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);;
         }
+    }
+
+    &.encaissement-narrow .ProduitBtn {
+        width: calc(20% - 2px);
+        height: 60px;
+        border-radius: 10px;
+        font-size: 11px;
+        margin: 1px 1px 3px;
     }
