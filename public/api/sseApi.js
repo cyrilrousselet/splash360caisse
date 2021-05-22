@@ -52,7 +52,7 @@ const actions = {
     es.onerror = (err) => {
       log.info("es.onerror", err.message);
       res.send({ msg: "ca va pas" });
-      es.close();
+      // es.close();
     };
     res.send({ msg: "sse listening" });
   },
@@ -398,8 +398,16 @@ const actions = {
       });
       response.on("end", () => {
         log.info("getSplashToken: end");
-        res.send({ splash_token: JSON.parse(__confirmation.join("")) });
-        // res.send({confirm: true});
+
+        let __token = {};
+        try {
+          __token = { splash_token: JSON.parse(__confirmation.join(""))};
+        } catch(err) {
+          __token = { error: err.message };
+          log.error("token JSON error", err);
+        }
+        res.send(__token);
+        
       });
     });
 
@@ -439,7 +447,7 @@ const actions = {
           __db = { database: JSON.parse(__database.join("")) };
         } catch (e) {
           __db = { error: e.message };
-          log.error("JSON error", e);
+          log.error("database JSON error", e);
         }
 
         res.send(__db);
@@ -482,7 +490,7 @@ const actions = {
           __cmd = { commande: JSON.parse(__commande.join("")) };
         } catch (e) {
           __cmd = { error: e.message };
-          log.error("JSON error", e);
+          log.error("commande JSON error", e);
         }
 
         res.send(__cmd);
@@ -529,7 +537,7 @@ const actions = {
           __conf = { confirm: JSON.parse(__confNumero.join("")) };
         } catch (e) {
           __conf = { error: e.message };
-          log.error("JSON error", e);
+          log.error("confirmcommande JSON error", e);
         }
 
         res.send(__conf);
@@ -574,7 +582,7 @@ const actions = {
           __conf = { confirm: JSON.parse(__syncedCommandes.join("")) };
         } catch (e) {
           __conf = { error: e.message };
-          log.error("JSON error", e);
+          log.error("synccmd JSON error", e);
         }
 
         res.send(__conf);
@@ -622,7 +630,7 @@ const actions = {
           __conf = { confirm: JSON.parse(__syncedClotures.join("")) };
         } catch (e) {
           __conf = { error: e.message };
-          log.error("JSON error", e);
+          log.error("synclo JSON error", e);
         }
         res.send(__conf);
         //        res.send({confirm: JSON.parse(__syncedClotures.join(''))});
@@ -669,7 +677,7 @@ const actions = {
           __conf = { confirm: JSON.parse(__reponseServer.join("")) };
         } catch (e) {
           __conf = { error: e.message };
-          log.error("JSON error", e);
+          log.error("synccat JSON error", e);
         }
         res.send(__conf);
         //        res.send({confirm: JSON.parse(__syncedClotures.join(''))});
