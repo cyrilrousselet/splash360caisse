@@ -146,6 +146,7 @@ function getStatus() {  // récupére le status de la station auprès du bo puis
       parametresServices.getStatus({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret})
         .then(
           data => {
+            console.log("GETSTATUS DATA", data);
             localStorage.setItem("status", data.status);
             dispatch(checkStatusAndConnection());            
           },
@@ -190,7 +191,7 @@ function checkStatusAndConnection() { //checkStatus&internet ?   gère la planif
     const {online} = getState().parametresReducer;
     const status = localStorage.getItem("status");
 
-    if (status === "blocked" || online === 'off') { // if blocked or no connection
+    if (status != "authorized" || online === 'off') { // if blocked or no connection
       if(localStorage.getItem("expireDate") === null) { // if expiredate == null
         let date = moment().add(7, 'd'); // expiredate = now + 1 week
         localStorage.setItem("expireDate", date); 

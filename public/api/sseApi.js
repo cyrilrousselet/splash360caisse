@@ -646,7 +646,8 @@ const actions = {
     let data = '';
 
     let id;
-    id = uuid(); // pour tester, à changer
+    // id = uuid(); // pour tester, à changer
+    id = machineIdSync(true); // pour tester, à changer
     console.log('uuid', id);
 
     const __request = net.request({
@@ -688,14 +689,21 @@ const actions = {
     const { url, access_token } = req.payload;
 
     let data = '';
+    let id;
+    id = machineIdSync(true);
 
     const __request = net.request({
       url: url,
-      method: "get",
+      method: "post",
     });
     __request.setHeader("Authorization", "Bearer " + access_token);
     __request.setHeader("Access-Control-Allow-Origin", "*");
-    __request.setHeader("Content-Type", "application/json");
+    __request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    const form = qs.stringify({
+      uuid: id,
+    });
+    __request.write(form);
 
     __request.on("response", (response) => {
 
