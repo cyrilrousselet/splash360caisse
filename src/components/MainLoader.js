@@ -1,11 +1,13 @@
 import React from 'react';
 
 import LoadingSpinner from './common/LoadingSpinner';
-import Logger from '../helpers/Logger';
+// import Logger from '../helpers/Logger';
 import Swal from 'sweetalert2';
 import schedule from 'node-schedule';
+// import { data } from '../constants/translations';
+import moment from 'moment';
 
-const logger = new Logger();
+// const logger = new Logger();
 
 
 
@@ -13,12 +15,15 @@ class MainLoader extends React.Component {
   
   _findeservice_job = null;
   _scheduledcmd_job = null;
+  _getstatus_job = null;
+  _blockstation_job = null
+  _checkinternetconnection_job = null;
 
   constructor(props) {
     super(props);
 
-
     let first_start = props.params ? props.params.first_start : null;
+
 
     this.state = {
       first_start: first_start,
@@ -27,14 +32,12 @@ class MainLoader extends React.Component {
       catLoaded: props.catLoaded,
       cmdLoaded: true,
       cloLoaded: props.cloLoaded,
-      inspect: false
+      inspect: false,
+      statuschecked: props.statuschecked
     };
   }
 
-  componentDidMount() {
-
-    logger.log('MainLoader.componentDidMount()');
-    
+  checkInstallation(mode) {
     const { 
       paramLoaded, 
       catLoaded, 
@@ -43,91 +46,133 @@ class MainLoader extends React.Component {
       // cmdLoading, 
       cloLoaded, 
       sseInit, 
-      params, 
+      params,
+      paramsEntreprise, 
       dbupdated, 
       dbgetInit,
       checkFinDeService,
-      checkScheduledCommandes
+      checkScheduledCommandes,
+      // stationinstalled,
+      statuschecked,
+      getStatus,
+      blockStation,
+      testConnection,
+      online
     } = this.props;
 
-    if (this._findeservice_job===null) {  
-      this._findeservice_job = schedule.scheduleJob('0 30 5 * * *', () => {
-        checkFinDeService();
-      });
-    } 
+    console.log("DEBUT checkInstallation");
 
-    if (this._scheduledcmd_job===null) {
-      this._scheduledcmd_job = schedule.scheduleJob('*/5 * * * *', () => {
-        checkScheduledCommandes()
-      });
-    }
-
-      
-    let first_start = params ? params.first_start : null;
-
-    let readytolaunch = dbupdated || null;
-      // this.props.getParametres();
-      // this.props.getCommandesList();
-      // this.props.getCatalogue();
-      // this.props.getCurrentPeriode();
-      // this.props.getCloturesList();
-      console.log('props', this.props);
-
-     if (!paramLoaded) {
-       logger.log('MainLoader.componentDidMount()', 'getParametres()');
-       this.props.getParametres();
-     }
-    
-    // logger.log('paramLoaded', paramLoaded);
-    // logger.log('first_start', first_start);
-    // logger.log('sseInit', sseInit);
-    // logger.log('catLoaded', catLoaded);
-    // logger.log('cmdLoaded', cmdLoaded);
-    // logger.log('cloLoaded', cloLoaded);
-    // if (paramLoaded===true && this.state.paramLoaded!==paramLoaded) {
-    //   this.setState({paramLoaded: true});
-    // }
-    // if (first_start===true && this.state.first_start!==first_start) {
-    //   this.setState({first_start: true});
-    // }
-    // if (sseInit===true && this.state.sseInit!==sseInit) {
-    //   this.setState({sseInit: true});
-    // }
-    // if (catLoaded===true && this.state.catLoaded!==catLoaded) {
-    //   this.setState({catLoaded: true});
-    // }
-    // if (cmdLoaded===true && this.state.cmdLoaded!==cmdLoaded) {
-    //   this.setState({cmdLoaded: true});
-    // }
-    // if (cloLoaded===true && this.state.cloLoaded!==cloLoaded) {
-    //   this.setState({cloLoaded: true});
-    // }
-    if (paramLoaded===true && sseInit===false) {
-      first_start = params.first_start;
-      logger.log('sse depuis componentDidMount');
-      this.props.initSSE();
-      this.props.setPOS();
-      this.props.initSync();
-      logger.log('first_start',first_start);
-
-      checkFinDeService();
   
-      if (first_start===true && dbgetInit===false) this.props.getDatabase();
+
+    
+
+    let first_start = params ? params.first_start : null;
+    let readytolaunch = dbupdated || null;
+
+    if (!paramLoaded) {
+      console.log("GONNA GET PARAMETRES");
+      this.props.getParametres();
     }
+
+    if(paramLoaded) {
+      console.log("PARAM LOADED");
+
+      if(online === null) { // if connexion pas
+        testConnection();
+      }
+      else {
+        if(paramsEntreprise.restaurant_id==="" || paramsEntreprise.restaurant_secret==="") {
+          console.log("NO ID SECRET, GONNA INSTALL STATION");
+          // installStation
+          this.props.installStation(); // popin + requête au bo + update id et secret
+        }
+        else {
+          console.log("ID SECRET OK");
+          
+          if (statuschecked===false) {
+            getStatus();
+          }
+          else {
+            console.log("GONNA CHECK EXPIRE DATE");
+        
+            let expDate = localStorage.getItem("expireDate");
+            if (expDate != null) { // if expiredate != null
+              let date = moment(expDate);
+              let today = moment();
+        
+              console.log("expDate", date);
+              console.log("today", today);
+        
+              if (date.isBefore(today)) {// if expire date < now
+                console.log("date expiration dépassé, station doit etre bloquée");
+                blockStation();// block station
+              }
+              else { // schedule block
+                console.log("schedule block");
+                if(this._blockstation_job===null) {
+                  this._blockstation_job = schedule.scheduleJob("blockstationJob", expDate, () => {
+                    blockStation();
+                  })
+                }
+                console.log("JOB BLOCK STATION", this._blockstation_job);
+              }
+            }
+
+            const status = localStorage.getItem('status');
+          
+            if (sseInit===false) {
+              console.log("GONNA INIT SSE");
+              first_start = params.first_start;
+              this.props.initSSE();
+              this.props.setPOS();
+              this.props.initSync();
+        
+              checkFinDeService();   
+            }
+        
+            if (status==="authorized" && first_start===true && dbgetInit===false){
+              console.log("GONNA GET DATABASE");
+              this.props.getDatabase();
+            }
+            else if(status === null || status === "pending"){
+              Swal.fire({
+                type: 'warning',
+                title:'Station non activée',
+                text: 'Vous devez activer la station',
+                showCancelButton: false,
+                focusConfirm: true,
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                confirmButtonText: 'Réésayer',
+              }).then((result)=> {
+                if (result.value) {
+                  this.forceUpdate();
+                }
+              });
+            }
+          }
+        }
+      }
+    }
+
+
+
     if (first_start===false) {
       if (paramLoaded===true && sseInit===true && 
           catLoaded===false) {
         this.props.getCatalogue();
         this.props.getLastClotureAndAfter();
       }
-      if (paramLoaded===true && sseInit===true && catLoaded===true) {
-     //   this.props.getTodayCommandesList();
-        // this.props.loadNumero();
-      }
+    //   if (paramLoaded===true && sseInit===true && catLoaded===true) {
+    //  //   this.props.getTodayCommandesList();
+    //     // this.props.loadNumero();
+    //   }
       if (paramLoaded===true && sseInit===true && catLoaded===true && 
           cloLoaded===false) {
         this.props.getCloturesList();
-        this.props.getTodayCa();
+        if(mode==="mount") {
+          this.props.getTodayCa();
+        }
         this.props.getCurrentPeriode();
       }
       if (paramLoaded===true && sseInit===true && catLoaded===true && cloLoaded===true) {
@@ -149,154 +194,70 @@ class MainLoader extends React.Component {
 
         } else if (readytolaunch===null) {
           this.props.initSyncCommandes();
-          this.props.initSyncClotures();     
+          this.props.initSyncClotures();
+          this.props.checkScheduledCommandes();  
           checkScheduledCommandes();
           this.props.loadingComplete();
         }
       }
     }
+  }
 
+  componentDidMount() {
+    console.log("componentDidMount");
+
+    const { 
+      checkFinDeService,
+      checkScheduledCommandes,
+      getStatus,
+      testConnection,
+    } = this.props;
+
+    if (this._findeservice_job===null) {  
+      this._findeservice_job = schedule.scheduleJob('0 30 5 * * *', () => {
+        checkFinDeService();
+      });
+    } 
+
+    if (this._scheduledcmd_job===null) {
+      this._scheduledcmd_job = schedule.scheduleJob('*/5 * * * *', () => {
+        checkScheduledCommandes()
+      });
+    }
+
+    if (this._getstatus_job===null) {
+      console.log("GONNA START SCHEDULE");
+      this._getstatus_job = schedule.scheduleJob('0 0 6 * * *', () => { //récupérer le status de la caisse sur le bo
+        getStatus();
+      })
+    }
+
+    if(this._checkinternetconnection_job===null) {
+      this._checkinternetconnection_job = schedule.scheduleJob('*/1 * * * *', () => {
+        // check internet with ping to bo
+        console.log("job test connection");
+        testConnection();
+      });
+    }
+
+    this.checkInstallation("mount");
   }
 
   componentDidUpdate(prevProps, prevState) {
-  //  logger.log('MainLoader.componentDidUpdate()', this.props);
-    const { 
-      paramLoaded, 
-      catLoaded, 
-      // catLoading, 
-      // cmdLoaded, 
-      // cmdLoading, 
-      cloLoaded, 
-      sseInit, 
-      params, 
-      dbupdated, 
-      dbgetInit 
-    } = this.props;
-
-    let first_start = params ? params.first_start : null;
-
-    let readytolauch = dbupdated || null;
-    // let first_start = false;
-
-    if (paramLoaded===false) {
-      this.props.getParametres();
-    }
-    // logger.log('paramLoaded', paramLoaded);
-    // logger.log('sseInit', sseInit);
-    // logger.log('catLoaded', catLoaded);
-    // logger.log('cmdLoaded', cmdLoaded);
-    // logger.log('cloLoaded', cloLoaded);
-
-
-    // let changess = [];
-    // if (this.state.paramLoaded!==prevState.paramLoaded) changess.push('paramLoaded');
-    // if (this.state.sseInit!==prevState.sseInit) changess.push('sseInit');
-    // if (this.state.catLoaded!==prevState.catLoaded) changess.push('catLoaded');
-    // if (this.state.cmdLoaded!==prevState.cmdLoaded) changess.push('cmdLoaded');
-    // if (this.state.cloLoaded!==prevState.cloLoaded) changess.push('cloLoaded');
-
-
-    // logger.log('changes state', changess.join(', '));
-
-    // let changes = [];
-    // if (paramLoaded!==prevProps.paramLoaded) changes.push('paramLoaded');
-    // if (sseInit!==prevProps.sseInit) changes.push('sseInit');
-    // if (catLoaded!==prevProps.catLoaded) changes.push('catLoaded');
-    // if (cmdLoaded!==prevProps.cmdLoaded) changes.push('cmdLoaded');
-    // if (cloLoaded!==prevProps.cloLoaded) changes.push('cloLoaded');
-    // if (params!==prevProps.params) changes.push('params');
-
-    // logger.log('changes props', changes.join(', '));
-
-    // if (paramLoaded===true && prevProps.paramLoaded!==paramLoaded) {
-    //   this.setState({paramLoaded: true});
-    // }
-
-    // if (sseInit===true && prevProps.sseInit!==sseInit) {
-    //   this.setState({sseInit: true});
-    // }
-    // if (catLoaded===true && prevProps.catLoaded!==catLoaded) {
-    //   this.setState({catLoaded: true});
-    // }
-    // if (cloLoaded===true && prevProps.cloLoaded!==cloLoaded) {
-    //   this.setState({cloLoaded: true});
-    // }
-    if (paramLoaded===true && sseInit===false) {
-      first_start = params.first_start;
-      logger.log('sse depuis componentDidUpdate');
-      this.props.initSSE();
-      this.props.setPOS();
-      this.props.initSync();
-      
-      this.props.checkFinDeService();
-
-      logger.log('first_start',first_start);
-     if (first_start===true && dbgetInit===false) this.props.getDatabase();
-    }
-    if (first_start===false) {
-      if (paramLoaded===true && sseInit===true && 
-          catLoaded===false) {
-        this.props.getCatalogue();
-        this.props.getLastClotureAndAfter();
-      }
-      if (paramLoaded===true && sseInit===true && catLoaded===true) {
-      //  this.props.getTodayCommandesList();
-        // this.props.loadNumero();
-      }
-      if (paramLoaded===true && sseInit===true && catLoaded===true && 
-          cloLoaded===false) {
-        this.props.getCloturesList();
-        this.props.getCurrentPeriode();
-      }
-      if (paramLoaded===true && sseInit===true && catLoaded===true && cloLoaded===true) {
-        if (readytolauch && readytolauch.length===2) {
-
-          Swal.fire({
-            type: 'warning',
-            title:'Installation prête',
-            text: 'Vous devez redémarrer l’application pour terminer l’installation',
-            showCancelButton: false,
-            focusConfirm: true,
-            allowEscapeKey: false,
-            allowOutsideClick: false
-          }).then((result)=> {
-            if (result.value) {
-              this.props.quitApp();
-            }
-          });
-
-        } else if (readytolauch===null) {
-          this.props.initSyncCommandes();
-          this.props.initSyncClotures();
-          this.props.checkScheduledCommandes();
-          this.props.loadingComplete();
-        }
-      }
-    }
+    console.log("componentDidUpdate");
+    this.checkInstallation("update");
   }
 
   render() {
-    // const { 
-    //   paramLoaded, 
-    //   catLoaded, 
-    //   // cmdLoaded, 
-    //   cloLoaded, 
-    //   sseInit, 
-    //   first_start 
-    // } = this.state;
-  //  const { paramLoaded, paramLoading, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, cloLoading, sseInit, params, dbupdated } = this.props;
+
     const { 
       paramLoaded, 
       catLoaded, 
       cloLoaded,
       sseInit,
-      // dbgetInit,
       first_start
     } = this.props;
 
-  // if (!paramLoaded || !catLoaded || !cmdLoaded || !cloLoaded || !sseInit) this.setState({inspect: true});
-
-  // const param_charge = paramLoaded;
 
     return (      
       <div>
@@ -306,7 +267,6 @@ class MainLoader extends React.Component {
           {paramLoaded && <p className="MainLoader-item">Paramètres chargés</p>}
           {sseInit && <p className="MainLoader-item">SSE initialisé</p>}
           {catLoaded && <p className="MainLoader-item">Catalogue chargés</p>}
-          {/* {cmdLoaded && <p className="MainLoader-item">Commandes chargées</p>} */}
           {cloLoaded && <p className="MainLoader-item">Clotures chargées</p>}
         </div>
       </div>

@@ -1,7 +1,13 @@
 import { parametresActionTypes } from './parametresActionTypes';
 import { parametresServices } from './parametresServices';
 import { commandeActions } from './../commande/commandeActions';
+import { peripheralActions } from '../peripheral/peripheralActions';
 import Logger from '../../helpers/Logger';
+import Swal from 'sweetalert2';
+import moment from 'moment';
+import schedule, { scheduleJob } from 'node-schedule';
+import externalParams from '../../constants/externalParams.json';
+
 
 const logger = new Logger();
 
@@ -80,10 +86,163 @@ function update(payload) {
   }
 };
 
+function installStation() {
+  return async (dispatch) => {
 
+    const result = await Swal.fire({
+      title: 'Installation de la caisse',
+      text:'Veuillez renseigner l\'uniqid du restaurant',
+      input:'text',
+      confirmButtonText: 'Valider',
+      showLoaderOnConfirm: true,
+      allowEscapeKey: false,
+      allowOutsideClick: false
+    });
+    
+    if(null !== result.value) {
+      parametresServices.installStation(result.value)
+      .then(
+        data => {
+          console.log("DATA", data);
+          const {client_id, client_secret} = data;
+          console.log("CLIENT ID SECRET", client_id, client_secret);
+          const payload = [{
+            "domaine": "entreprise",
+            "cle": "restaurant_id",
+            "valeur": client_id
+          },
+          {
+            "domaine": "entreprise",
+            "cle": "restaurant_secret",
+            "valeur": client_secret
+          }];
+
+          parametresServices.update(payload)
+            .then(
+              data => {
+                dispatch({ type: parametresActionTypes.INSTALL_STATION_SUCCESS, ...data});
+              }
+            );
+
+          // dispatch(update(payload));
+          
+        }, 
+        error => dispatch({ type: parametresActionTypes.INSTALL_STATION_FAILURE, error: error.toString() })
+      );
+    }
+  }
+}
+
+function getStatus() {  // récupére le status de la station auprès du bo puis checkStatus
+  return (dispatch, getState) => {
+
+    const { entreprise } = getState().parametresReducer.parametres;
+
+    if (entreprise.restaurant_id==='' || entreprise.restaurant_secret==='') {
+      //dispatch fail
+      dispatch({ type: parametresActionTypes.GET_STATUS_FAILURE, error: "NO ID SECRET"});
+    }
+    else {
+      parametresServices.getStatus({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret})
+        .then(
+          data => {
+            console.log("GETSTATUS DATA", data);
+            localStorage.setItem("status", data.status);
+            dispatch(checkStatusAndConnection());            
+          },
+          error => dispatch({ type: parametresActionTypes.GET_STATUS_FAILURE, error: "error"})
+        );
+    }
+  }
+}
+
+function testConnection() {
+  return (dispatch, getState) => {
+    const condition = navigator.onLine ? 'online' : 'offline';
+
+    if(condition === 'online') {
+      fetch(externalParams.synchro.ping, {
+        mode: 'no-cors',
+      })
+      .then(() => {
+        // Internet
+        console.log("test co : internet");
+        dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: 'on'});
+        dispatch(checkStatusAndConnection());
+      }).catch(()=> {
+        // Pas internet
+        console.log("test co : pas internet");
+        dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: 'off'});
+        dispatch(checkStatusAndConnection());
+      })
+    }
+    else {
+      // Pas internet
+      console.log("test co : pas internet");
+      dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: 'off'});
+      dispatch(checkStatusAndConnection());
+    }
+  }
+}
+
+
+function checkStatusAndConnection() { //checkStatus&internet ?   gère la planification du blocage en foction du status actuel
+  return (dispatch, getState) => {
+    const {online} = getState().parametresReducer;
+    const status = localStorage.getItem("status");
+
+    if (status != "authorized" || online === 'off') { // if blocked or no connection
+      if(localStorage.getItem("expireDate") === null) { // if expiredate == null
+        let date = moment().add(7, 'd'); // expiredate = now + 1 week
+        localStorage.setItem("expireDate", date); 
+        //Schedule blockstationJob
+        var _blockstation_job = schedule.scheduleJob("blockstationJob", date.toDate(), () => {
+          blockStation();
+        });
+        console.log("blockstationJob scheduled", _blockstation_job);
+      }
+    }
+    else if(status === "authorized" && online ==='on') { // if authorized and online
+      if(localStorage.getItem("expireDate") != null) {
+        localStorage.removeItem("expireDate");
+        // Annuler le blockstationJob si existant
+        if(typeof schedule.scheduledJobs["blockstationJob"] != 'undefined' ) {
+          console.log("GONNA CANCEL JOB BLOCK");
+          var job = schedule.scheduledJobs["blockstationJob"];
+          job.cancel();
+
+        }
+      }
+    }
+    dispatch({type: parametresActionTypes.CHECK_STATUS_AND_CONNECTION_SUCCESS});
+  }
+}
+
+function blockStation() {
+  return (dispatch, getState) => {
+    Swal.fire({
+      title: 'Station bloquée',
+      text:'Cette station a été bloquée.',
+      confirmButtonText: 'Eteindre la station',
+      showLoaderOnConfirm: true,
+      allowEscapeKey: false,
+      allowOutsideClick: false
+    }).then((result) => {
+        if (result.value) {
+          dispatch(peripheralActions.quitApp());
+        }
+      }
+    );
+  }
+}
 
 export const parametresActions = {
   getAll,
   update,
-  replaceDatabase
+  replaceDatabase,
+  installStation,
+  getStatus,
+  testConnection,
+  checkStatusAndConnection,
+  blockStation
 };
