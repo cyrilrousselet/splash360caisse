@@ -39,6 +39,9 @@
         &.blocked:before {
             background-image: radial-gradient($rouge 40%, white 40% );
         }
+        &.pending:before {
+            background-image: radial-gradient($rouge 40%, white 40% );
+        }
         &:hover .top {
             visibility:visible; opacity:1;
         }

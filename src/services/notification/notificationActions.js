@@ -217,7 +217,7 @@ function treatment(data) {
 
       // dispatch(parametresActions.update(payload));
       localStorage.setItem("status", data.status);
-      dispatch(parametresActions.checkStatusAndConnection());
+      dispatch(parametresActions.checkStatus());
 
     }
   } 

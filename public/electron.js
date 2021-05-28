@@ -48,12 +48,16 @@ function createWindow() {
         }
       }
         mainWindow.webContents.openDevTools();
+        // mainWindow.webContents.on("devtools-opened", () => { mainWindow.webContents.closeDevTools(); });
     } else {
         // suppression du menu sur Windows et Linux en prod
         if (process.platform !== 'darwin') {
             Menu.setApplicationMenu(null);
             mainWindow.setFullScreen(true);
         }
+
+        // mainWindow.webContents.on("devtools-opened", () => { mainWindow.webContents.closeDevTools(); }); // Pour empecher l'ouverture du devtools ?
+
     }
     mainWindow.on('closed', () => mainWindow = null);
 

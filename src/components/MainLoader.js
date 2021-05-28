@@ -101,22 +101,28 @@ class MainLoader extends React.Component {
     if(paramLoaded) {
       console.log("PARAM LOADED");
 
-      if(online === null) { // if connexion pas
-        testConnection();
+      
+
+      // if(online === null) { // if connexion pas
+      //   testConnection();
+      // }
+ 
+      if(paramsEntreprise.restaurant_id==="" || paramsEntreprise.restaurant_secret==="") {
+        console.log("NO ID SECRET, GONNA INSTALL STATION");
+        // installStation
+        this.props.installStation(); // popin + requête au bo + update id et secret
       }
       else {
-        if(paramsEntreprise.restaurant_id==="" || paramsEntreprise.restaurant_secret==="") {
-          console.log("NO ID SECRET, GONNA INSTALL STATION");
-          // installStation
-          this.props.installStation(); // popin + requête au bo + update id et secret
+        console.log("ID SECRET OK");
+        
+        if (statuschecked===false) {
+          getStatus();
         }
         else {
-          console.log("ID SECRET OK");
-          
-          if (statuschecked===false) {
-            getStatus();
+          if(online === null) { 
+            testConnection();
           }
-          else {
+          else { 
             console.log("GONNA CHECK EXPIRE DATE");
         
             let expDate = localStorage.getItem("expireDate");

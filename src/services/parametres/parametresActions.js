@@ -148,11 +148,28 @@ function getStatus() {  // récupére le status de la station auprès du bo puis
           data => {
             console.log("GETSTATUS DATA", data);
             localStorage.setItem("status", data.status);
-            dispatch(checkStatusAndConnection());            
+            // dispatch(checkStatusAndConnection());
+            dispatch({type: parametresActionTypes.GETALL_SUCCESS}); 
+            dispatch(checkStatus());           
           },
-          error => dispatch({ type: parametresActionTypes.GET_STATUS_FAILURE, error: "error"})
+          error => {
+            dispatch({ type: parametresActionTypes.GET_STATUS_FAILURE, error: "error"});
+            dispatch(checkStatus()); 
+          }
         );
     }
+  }
+}
+
+function checkStatus() {
+  return (dispatch, getState) => {
+    const status = localStorage.getItem("status");
+
+    console.log("checking status : ", status);
+    if (status === "blocked") {
+      dispatch(blockStation());
+    }
+    dispatch({type: parametresActionTypes.STATUS_CHECKED});
   }
 }
 
@@ -168,31 +185,32 @@ function testConnection() {
         // Internet
         console.log("test co : internet");
         dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: 'on'});
-        dispatch(checkStatusAndConnection());
+        // dispatch(checkStatusAndConnection());
+        dispatch(checkConnection());
       }).catch(()=> {
         // Pas internet
         console.log("test co : pas internet");
         dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: 'off'});
-        dispatch(checkStatusAndConnection());
+        // dispatch(checkStatusAndConnection());
+        dispatch(checkConnection());
       })
     }
     else {
       // Pas internet
       console.log("test co : pas internet");
       dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: 'off'});
-      dispatch(checkStatusAndConnection());
+      // dispatch(checkStatusAndConnection());
+      dispatch(checkConnection());
     }
   }
 }
 
-
-function checkStatusAndConnection() { //checkStatus&internet ?   gère la planification du blocage en foction du status actuel
+function checkConnection() {
   return (dispatch, getState) => {
     const {online} = getState().parametresReducer;
-    const status = localStorage.getItem("status");
 
-    if (status != "authorized" || online === 'off') { // if blocked or no connection
-      if(localStorage.getItem("expireDate") === null) { // if expiredate == null
+    if(online !== 'on') {
+      if(localStorage.getItem("expireDate") === null) {
         let date = moment().add(7, 'd'); // expiredate = now + 1 week
         localStorage.setItem("expireDate", date); 
         //Schedule blockstationJob
@@ -202,7 +220,7 @@ function checkStatusAndConnection() { //checkStatus&internet ?   gère la planif
         console.log("blockstationJob scheduled", _blockstation_job);
       }
     }
-    else if(status === "authorized" && online ==='on') { // if authorized and online
+    else if(online === 'on') {
       if(localStorage.getItem("expireDate") != null) {
         localStorage.removeItem("expireDate");
         // Annuler le blockstationJob si existant
@@ -210,13 +228,43 @@ function checkStatusAndConnection() { //checkStatus&internet ?   gère la planif
           console.log("GONNA CANCEL JOB BLOCK");
           var job = schedule.scheduledJobs["blockstationJob"];
           job.cancel();
-
         }
       }
     }
-    dispatch({type: parametresActionTypes.CHECK_STATUS_AND_CONNECTION_SUCCESS});
   }
 }
+
+// function checkStatusAndConnection() { //checkStatus&internet ?   gère la planification du blocage en foction du status actuel
+//   return (dispatch, getState) => {
+//     const {online} = getState().parametresReducer;
+//     const status = localStorage.getItem("status");
+
+//     if (status != "authorized" || online === 'off') { // if blocked or no connection
+//       if(localStorage.getItem("expireDate") === null) { // if expiredate == null
+//         let date = moment().add(7, 'd'); // expiredate = now + 1 week
+//         localStorage.setItem("expireDate", date); 
+//         //Schedule blockstationJob
+//         var _blockstation_job = schedule.scheduleJob("blockstationJob", date.toDate(), () => {
+//           blockStation();
+//         });
+//         console.log("blockstationJob scheduled", _blockstation_job);
+//       }
+//     }
+//     else if(status === "authorized" && online ==='on') { // if authorized and online
+//       if(localStorage.getItem("expireDate") != null) {
+//         localStorage.removeItem("expireDate");
+//         // Annuler le blockstationJob si existant
+//         if(typeof schedule.scheduledJobs["blockstationJob"] != 'undefined' ) {
+//           console.log("GONNA CANCEL JOB BLOCK");
+//           var job = schedule.scheduledJobs["blockstationJob"];
+//           job.cancel();
+
+//         }
+//       }
+//     }
+//     dispatch({type: parametresActionTypes.CHECK_STATUS_AND_CONNECTION_SUCCESS});
+//   }
+// }
 
 function blockStation() {
   return (dispatch, getState) => {
@@ -242,7 +290,8 @@ export const parametresActions = {
   replaceDatabase,
   installStation,
   getStatus,
+  checkStatus,
   testConnection,
-  checkStatusAndConnection,
+  checkConnection,
   blockStation
 };

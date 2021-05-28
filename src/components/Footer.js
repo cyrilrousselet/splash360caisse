@@ -66,7 +66,7 @@ class Footer extends React.Component {
                 <span>{ online === 'on' ? strings.footer.online : strings.footer.offline }</span>
 
                 <div className="top">
-                    <p>Satut : {status ==="blocked" ? "bloqué" : "activé"}</p>
+                    <p>Satut : {status !="authorized" ? "bloqué" : "activé"}</p>
                     <p>Connexion : { online === 'on' ? strings.footer.online : strings.footer.offline }</p>
                     {expiredate != null && <p>La caisse sera définitivement bloquée le : {expDate.format("LLL")}</p>}
                 </div>

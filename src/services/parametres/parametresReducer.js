@@ -132,13 +132,13 @@ export function parametresReducer(state=initialState, action) {
         error: action.error
       };
 
-    case parametresActionTypes.CHECK_STATUS_AND_CONNECTION_SUCCESS:
-      return {
-        ...state,
-        statuschecked: true
-      };
+    case parametresActionTypes.GET_STATUS_SUCCESS:
+      return state;
 
     case parametresActionTypes.GET_STATUS_FAILURE:
+      return state;
+
+    case parametresActionTypes.STATUS_CHECKED:
       return {
         ...state,
         statuschecked: true
