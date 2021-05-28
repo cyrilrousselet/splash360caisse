@@ -35,7 +35,7 @@
     "syncCommandes": "https://api.splash360.fr/api/import/commandes",
     "syncClotures": "https://api.splash360.fr/api/import/clotures",
     "syncCatalogue": "https://api.splash360.fr/api/import/catalogue",
-    "getStatus": "https://api.splash360.fr/api/licence/station/%STATIONID%/%UUID%",
+    "getStatus": "https://api.splash360.fr/api/export/stationstatus",
     "confirmCommande": "https://api.splash360.fr/api/import/confirmcommande/{ticket_id}",
     "installStation" : "https://api.splash360.fr/api/licence/createStation",
     "ping" : "https://admin.splash360.fr"

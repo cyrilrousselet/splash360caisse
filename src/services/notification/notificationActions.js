@@ -218,7 +218,7 @@ function treatment(data) {
       )
 
     }
-    else if (data.eventType=="statuschange") {
+    else if (data.eventType==="statuschange") {
       // parametre status dans parametres, par défaut null ?
 
       dispatch({ type: notificationActionTypes.GET_NOTIFICATION, notif: data.eventType });

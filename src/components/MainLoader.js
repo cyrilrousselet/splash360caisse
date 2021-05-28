@@ -21,7 +21,7 @@ class MainLoader extends React.Component {
 
   constructor(props) {
     super(props);
-
+    
     let first_start = props.params ? props.params.first_start : null;
 
 
