@@ -168,6 +168,7 @@ class Personnalisation extends React.Component {
       completeStep,
       valide,
       updateProduit,
+      layout
     } = this.props;
 
     if (null === stepObject || Object.entries(stepObject).length === 0)
@@ -205,7 +206,7 @@ class Personnalisation extends React.Component {
 
     return (
       <Modal open={open}>
-        <div className={`Personnalisation ${contClass}`}>
+        <div className={`Personnalisation ${contClass} ${(layout==='narrow' ? 'personnalisation-narrow' : 'personnalisation-normal')}`}>
           <div className="Modal-container">
             <div className="header">
               <div className="title">{stepObject.titre}</div>

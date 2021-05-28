@@ -112,6 +112,8 @@ const mapDispatchToProps = (dispatch) => {
     getParametres: parametresActions.getAll,
     getTodayCa: clotureActions.getTodayCa,
     getAvoirsList: marketingActions.getAvoirsList,
+    getReglesCatalogueList: marketingActions.getReglesCatalogueList,
+    getReglesPanierList: marketingActions.getReglesPanierList,
     deleteCurrentCommande: commandeActions.deleteCurrentCommande,
     getCommande: commandeActions.getCommande
   }, dispatch);

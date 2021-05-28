@@ -250,18 +250,26 @@ class Menu extends React.Component {
   }
 
   changeDispoProduit(id) {
-    logger.log('changeDispoProduit()', id);
+    const {categories} = this.props;
+    const {categorie} = this.state;
+    const defCat = categorie || categories[0].categorie_id;
+    logger.log('changeDispoProduit()', id, defCat.substr(3));
+    
     const produit = this.getProduit(id);
-    this.props.updateProduit({produit_id:id, update:{active:produit.active===1?0:1}});
+    this.props.updateProduit({produit_id:id, update:{active:produit.active===1?0:1}, catalogue:defCat.substr(3)});
   }
   editProduit(id) {
     logger.log('editProduit()', id);
   }
   changeDispoIngredient(id) {
-    logger.log('changeDispoIngredient()', id);
+    const {categories} = this.props;
+    const {categorie} = this.state;
+    const defCat = categorie || categories[0].categorie_id;
+    logger.log('changeDispoIngredient()', id, defCat.substr(3));
+
     const {ingredients} = this.props;
     const ingredient = ingredients[id];
-    this.props.updateIngredient({ingredient_id:id, update:{active:ingredient.active===1?0:1}});
+    this.props.updateIngredient({ingredient_id:id, update:{active:ingredient.active===1?0:1}, catalogue:defCat.substr(3)});
   }
   editIngredient(id) {
     logger.log('editIngredient()', id);
@@ -280,7 +288,10 @@ class Menu extends React.Component {
     return produit;
   }
   changeNoPrintGroupe(id,ticketId, sub=false) {
-    const {catalogue, updateGroupe, updateProduit} = this.props;
+    const {categories, catalogue, updateGroupe, updateProduit} = this.props;
+    const {categorie} = this.state;
+
+    const defCat = categorie || categories[0].categorie_id;
     let noprint = null;
     
     // édition pour un produit
@@ -295,20 +306,20 @@ class Menu extends React.Component {
         // si le ticket n'est pas indiqué dans le noprint du groupe, on doit le désactiver
         // donc on clone le noprint du groupe et on ajoute l'id du ticket qu'on veut désactiver
         if (noprint.indexOf(ticketId)===-1) {
-          updateProduit({produit_id:id, update:{noprint:[...noprint, ticketId]}});
+          updateProduit({produit_id:id, update:{noprint:[...noprint, ticketId]}, catalogue:defCat.substr(3)});
         } 
         // si le ticket est indiqué dans le noprint du groupe, on doit le réactiver pour le produit
         // donc clone le noprint du groupe et on supprime l'id du ticket qu'on veut activer
         else {
-          updateProduit({produit_id:id, update:{noprint:noprint.filter(t=>t!==ticketId)}});
+          updateProduit({produit_id:id, update:{noprint:noprint.filter(t=>t!==ticketId)}, catalogue:defCat.substr(3)});
         }
       } 
       // s'il y a un noprint pour le produit, on intervient comme pour le noprint du groupe
       else {
         if (prdnoprint.indexOf(ticketId)===-1) {
-          updateProduit({produit_id:id, update:{noprint:[...prdnoprint, ticketId]}});
+          updateProduit({produit_id:id, update:{noprint:[...prdnoprint, ticketId]}, catalogue:defCat.substr(3)});
         } else {
-          updateProduit({produit_id:id, update:{noprint:prdnoprint.filter(t=>t!==ticketId)}});
+          updateProduit({produit_id:id, update:{noprint:prdnoprint.filter(t=>t!==ticketId)}, catalogue:defCat.substr(3)});
         }
       }
     } else {
@@ -325,7 +336,11 @@ class Menu extends React.Component {
 
 
   changeNoPrintType(id,ticketId, sub=false) {
-    const {ingredientTypes, ingredients, updateIngredientType, updateIngredient} = this.props;
+    const {categories, ingredientTypes, ingredients, updateIngredientType, updateIngredient} = this.props;
+    const {categorie} = this.state;
+
+    const defCat = categorie || categories[0].categorie_id;
+
     let noprint = null;
 
     if (sub) {
@@ -338,20 +353,20 @@ class Menu extends React.Component {
         // si le ticket n'est pas indiqué dans le noprint du type, on doit le désactiver
         // donc on clone le noprint du type et on ajoute l'id du ticket qu'on veut désactiver
         if (noprint.indexOf(ticketId)===-1) {
-          updateIngredient({ingredient_id:id, update:{noprint:[...noprint, ticketId]}});
+          updateIngredient({ingredient_id:id, update:{noprint:[...noprint, ticketId]}, catalogue:defCat.substr(3)});
         } 
         // si le ticket est indiqué dans le noprint du type, on doit le réactiver pour l'ingredient
         // donc clone le noprint du type et on supprime l'id du ticket qu'on veut activer
         else {
-          updateIngredient({ingredient_id:id, update:{noprint:noprint.filter(t=>t!==ticketId)}});
+          updateIngredient({ingredient_id:id, update:{noprint:noprint.filter(t=>t!==ticketId)}, catalogue:defCat.substr(3)});
         }
       } 
       // s'il y a un noprint pour l'ingredient, on intervient comme pour le noprint du type
       else {
         if (ingnoprint.indexOf(ticketId)===-1) {
-          updateIngredient({ingredient_id:id, update:{noprint:[...ingnoprint, ticketId]}});
+          updateIngredient({ingredient_id:id, update:{noprint:[...ingnoprint, ticketId]}, catalogue:defCat.substr(3)});
         } else {
-          updateIngredient({ingredient_id:id, update:{noprint:ingnoprint.filter(t=>t!==ticketId)}});
+          updateIngredient({ingredient_id:id, update:{noprint:ingnoprint.filter(t=>t!==ticketId)}, catalogue:defCat.substr(3)});
         }
       }
     } else {
@@ -384,13 +399,17 @@ class Menu extends React.Component {
   }
 
   updateMenuItem(params) {
-    logger.log('updateMenuItem()',params)
-    const {editType} = this.state;
+    const {categories} = this.props;
+    const {editType, categorie} = this.state;
+    
+    const defCat = categorie || categories[0].categorie_id;
+    logger.log('updateMenuItem()',params, defCat.substr(3))
+    
     if (editType==='ingredient') {
-      this.props.updateIngredient(params);
+      this.props.updateIngredient({...params, catalogue:defCat.substr(3)});
     }
     else if (editType==='produit') {
-      this.props.updateProduit(params);
+      this.props.updateProduit({...params, catalogue:defCat.substr(3)});
     }
   }
 
@@ -401,7 +420,7 @@ class Menu extends React.Component {
 
   const defCat = categorie || categories[0].categorie_id;
 
-  const tickList = Object.values(tickets).filter(tck=> (['partiel','principal','etiquette']).indexOf(tck.template)>-1 && tck.imprimantes.length>0);
+  const tickList = Object.values(tickets).filter(tck=> (['partiel','principal','etiquette','produits']).indexOf(tck.template)>-1 && tck.imprimantes.length>0);
 
   const inglist = Object.entries(ingredientTypes).map(([typid,type]) => {
     const ing = type.ingredients.map(ingid => ingredients[ingid]);

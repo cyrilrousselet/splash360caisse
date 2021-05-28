@@ -1,13 +1,13 @@
 import React from 'react';
 
 import LoadingSpinner from './common/LoadingSpinner';
-import Logger from '../helpers/Logger';
+// import Logger from '../helpers/Logger';
 import Swal from 'sweetalert2';
-import schedule, { scheduleJob } from 'node-schedule';
-import { data } from '../constants/translations';
+import schedule from 'node-schedule';
+// import { data } from '../constants/translations';
 import moment from 'moment';
 
-const logger = new Logger();
+// const logger = new Logger();
 
 
 
@@ -21,7 +21,7 @@ class MainLoader extends React.Component {
 
   constructor(props) {
     super(props);
-
+    
     let first_start = props.params ? props.params.first_start : null;
 
 
@@ -51,7 +51,8 @@ class MainLoader extends React.Component {
       dbupdated, 
       dbgetInit,
       checkFinDeService,
-      stationinstalled,
+      checkScheduledCommandes,
+      // stationinstalled,
       statuschecked,
       getStatus,
       blockStation,
@@ -61,32 +62,7 @@ class MainLoader extends React.Component {
 
     console.log("DEBUT checkInstallation");
 
-    if (this._findeservice_job===null && mode==="mount") {  
-      this._findeservice_job = schedule.scheduleJob('0 30 5 * * *', () => {
-        checkFinDeService();
-      });
-    }
-
-    // if (this._scheduledcmd_job===null && mode==="mount") {
-    //   this._scheduledcmd_job = schedule.scheduleJob('*/5 * * * *', () => {
-    //     checkScheduledCommandes();
-    //   });
-    // }
-
-    if (this._getstatus_job===null && mode ==="mount") {
-      console.log("GONNA START SCHEDULE");
-      this._getstatus_job = schedule.scheduleJob('0 0 6 * * *', () => { //récupérer le status de la caisse sur le bo
-        getStatus();
-      })
-    }
-
-    if(this._checkinternetconnection_job===null && mode==="mount") {
-      this._checkinternetconnection_job = schedule.scheduleJob('*/1 * * * *', () => {
-        // check internet with ping to bo
-        console.log("job test connection");
-        testConnection();
-      });
-    }
+  
 
     
 
@@ -193,10 +169,10 @@ class MainLoader extends React.Component {
         this.props.getCatalogue();
         this.props.getLastClotureAndAfter();
       }
-      if (paramLoaded===true && sseInit===true && catLoaded===true) {
-     //   this.props.getTodayCommandesList();
-        // this.props.loadNumero();
-      }
+    //   if (paramLoaded===true && sseInit===true && catLoaded===true) {
+    //  //   this.props.getTodayCommandesList();
+    //     // this.props.loadNumero();
+    //   }
       if (paramLoaded===true && sseInit===true && catLoaded===true && 
           cloLoaded===false) {
         this.props.getCloturesList();
@@ -225,6 +201,8 @@ class MainLoader extends React.Component {
         } else if (readytolaunch===null) {
           this.props.initSyncCommandes();
           this.props.initSyncClotures();
+          this.props.checkScheduledCommandes();  
+          checkScheduledCommandes();
           this.props.loadingComplete();
         }
       }
@@ -233,6 +211,41 @@ class MainLoader extends React.Component {
 
   componentDidMount() {
     console.log("componentDidMount");
+
+    const { 
+      checkFinDeService,
+      checkScheduledCommandes,
+      getStatus,
+      testConnection,
+    } = this.props;
+
+    if (this._findeservice_job===null) {  
+      this._findeservice_job = schedule.scheduleJob('0 30 5 * * *', () => {
+        checkFinDeService();
+      });
+    } 
+
+    if (this._scheduledcmd_job===null) {
+      this._scheduledcmd_job = schedule.scheduleJob('*/5 * * * *', () => {
+        checkScheduledCommandes()
+      });
+    }
+
+    if (this._getstatus_job===null) {
+      console.log("GONNA START SCHEDULE");
+      this._getstatus_job = schedule.scheduleJob('0 0 6 * * *', () => { //récupérer le status de la caisse sur le bo
+        getStatus();
+      })
+    }
+
+    if(this._checkinternetconnection_job===null) {
+      this._checkinternetconnection_job = schedule.scheduleJob('*/1 * * * *', () => {
+        // check internet with ping to bo
+        console.log("job test connection");
+        testConnection();
+      });
+    }
+
     this.checkInstallation("mount");
   }
 
@@ -242,27 +255,15 @@ class MainLoader extends React.Component {
   }
 
   render() {
-    // const { 
-    //   paramLoaded, 
-    //   catLoaded, 
-    //   // cmdLoaded, 
-    //   cloLoaded, 
-    //   sseInit, 
-    //   first_start 
-    // } = this.state;
-  //  const { paramLoaded, paramLoading, catLoaded, catLoading, cmdLoaded, cmdLoading, cloLoaded, cloLoading, sseInit, params, dbupdated } = this.props;
+
     const { 
       paramLoaded, 
       catLoaded, 
       cloLoaded,
       sseInit,
-      // dbgetInit,
       first_start
     } = this.props;
 
-  // if (!paramLoaded || !catLoaded || !cmdLoaded || !cloLoaded || !sseInit) this.setState({inspect: true});
-
-  // const param_charge = paramLoaded;
 
     return (      
       <div>
@@ -272,7 +273,6 @@ class MainLoader extends React.Component {
           {paramLoaded && <p className="MainLoader-item">Paramètres chargés</p>}
           {sseInit && <p className="MainLoader-item">SSE initialisé</p>}
           {catLoaded && <p className="MainLoader-item">Catalogue chargés</p>}
-          {/* {cmdLoaded && <p className="MainLoader-item">Commandes chargées</p>} */}
           {cloLoaded && <p className="MainLoader-item">Clotures chargées</p>}
         </div>
       </div>

@@ -46,9 +46,9 @@ const getCommandeTotal = (items, modificateurs) => {
           const ispc = String(__moditem.valeur).substr(-1,1)==='%';
           const val = Math.abs(Number(String(__moditem.valeur).slice(0,-1)));
           if (ispc) {
-            __itemtotal *= (100 - val) / 100;
+            __itemtotal *= __moditem.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
           } else {
-            __itemtotal -= val;
+            __itemtotal = __moditem.operation>0 ? __itemtotal + val : __itemtotal - val;
           }
         }
         __total += __itemtotal;
@@ -64,9 +64,9 @@ const getCommandeTotal = (items, modificateurs) => {
       const ispc = String(modpanier.valeur).substr(-1,1)==='%';
       const val = Math.abs(Number(String(modpanier.valeur).slice(0,-1)));
       if (ispc) {
-        __total *= (100 - val) / 100;
+        __total *= modpanier.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
       } else {
-        __total -= val;
+        __total = modpanier.operation>0 ? __total + val : __total - val;
       }
     }
     

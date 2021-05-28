@@ -7,7 +7,8 @@ import App from './App';
 import DashboardCont from './../containers/DashboardCont';
 import LoginCont from './../containers/LoginCont';
 import ParametresCont from './../containers/ParametresCont';
-import Encaissement from './../components/Encaissement';
+// import Encaissement from './../components/Encaissement';
+import EncaissementCont from './../containers/EncaissementCont';
 import MarketingCont from './../containers/MarketingCont';
 import ClotureHomeCont from './../containers/ClotureHomeCont';
 import ClotureCont from './../containers/ClotureCont';
@@ -29,7 +30,8 @@ const Routes = () => (
       <PrivateRoute exact path={ paths.DASHBOARD } component={DashboardCont} />
       <Route path={ paths.LOGIN } component={LoginCont} />
       <PrivateRoute path={ paths.MARKETING } component={MarketingCont} />
-      <PrivateRoute path={ paths.ENCAISSEMENT } component={Encaissement} />
+      {/* <PrivateRoute path={ paths.ENCAISSEMENT } component={Encaissement} /> */}
+      <PrivateRoute path={ paths.ENCAISSEMENT } component={EncaissementCont} />
       <PrivateRoute path={ paths.EMPLOYES } component={EmployesCont} />
       <PrivateRoute path={ paths.DEPENSES } component={DepensesCont} />
       <PrivateRoute path={ paths.LISTECOMMANDES } component={ListeCommandesCont} />

@@ -5,7 +5,7 @@ const log = require('electron-log');
 
 const actions = {
   dbAvoirGetAll: async (req,res) => {
-    const {payload} = req;
+    // const {payload} = req;
     log.info("dbAvoirGetAll() in API");
     
     (await db.avoirs)._.mixin(lodashId);
@@ -42,7 +42,7 @@ const actions = {
 
 
   dbReglePanierGetAll: async (req,res) => {
-    const {payload} = req;
+    // const {payload} = req;
     log.info("dbReglePanierGetAll() in API");
     
     (await db.reglespanier)._.mixin(lodashId);
@@ -72,7 +72,7 @@ const actions = {
 
 
   dbRegleCatalogueGetAll: async (req,res) => {
-    const {payload} = req;
+    // const {payload} = req;
     log.info("dbRegleCatalogueGetAll() in API");
     
     (await db.reglescatalogue)._.mixin(lodashId);
@@ -103,7 +103,7 @@ const actions = {
   dbGetItems: async (itemtype, ids) => {
     let response = [];
     if (itemtype==="avoirs") {
-      (await db.avoirs)._.mixin(avoirs);
+      (await db.avoirs)._.mixin(lodashId);
       response = await (await db.avoirs).get('avoirs')
                                         .filter( c => ids.includes(c.avoir_id) )
                                         .value();
@@ -165,24 +165,30 @@ const actions = {
 async function _addLocalSync(db, ids, store_id) {
 
   if (db==="avoirs") {
-    let _shf = await (await db.avoirs)
+    await (await db.avoirs)
               .get("avoirs")
               .filter(t => ( ids.includes(t.avoir_id) && !t.localsync.includes(store_id)) )
-              .assign({localsync: [...localsync, store_id]})
+              .get('localsync')
+              .push(store_id)
+              // .assign({localsync: [...localsync, store_id]})
               .write();
   } 
   else if (db==="reglespanier") {
-    let _adj = await (await db.reglespanier)
+   await (await db.reglespanier)
               .get("reglespanier")
               .filter(t => ( ids.includes(t.reglepanier_id) && !t.localsync.includes(store_id)) )
-              .assign({localsync: [...localsync, store_id]})
+              .get('localsync')
+              .push(store_id)
+              // .assign({localsync: [...localsync, store_id]})
               .write();
   } 
   else if (db==="reglescatalogue") {
-    let _pnt = await (await db.poinreglescataloguetages)
+    await (await db.poinreglescataloguetages)
               .get("reglescatalogue")
               .filter(t => ( ids.includes(t.reglecatalogue_id) && !t.localsync.includes(store_id)) )
-              .assign({localsync: [...localsync, store_id]})
+              .get('localsync')
+              .push(store_id)
+              // .assign({localsync: [...localsync, store_id]})
               .write();
   } 
   return ids.length;

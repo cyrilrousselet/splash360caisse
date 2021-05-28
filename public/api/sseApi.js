@@ -1,9 +1,8 @@
 const EventSource = require("eventsource");
 const log = require("electron-log");
 const { net } = require("electron");
-const { machineId, machineIdSync } = require("node-machine-id");
+const { machineIdSync } = require("node-machine-id");
 const qs = require('qs');
-const { uuid } = require('uuidv4');
 
 // const externalUrls = require('../../src/constants/externalUrls.json');
 
@@ -42,7 +41,7 @@ const actions = {
 
     // const es = new EventSource('http://api.splash360.fr:3030/.well-known/mercure?topic=819b4b71-bb93-4a91-9503-3c7af1e4e622');
     const es = new EventSource(
-      "http://apidev.splash360.fr:3030/.well-known/mercure?topic=" + restaurant_id
+      "http://api.splash360.fr:3030/.well-known/mercure?topic=" + restaurant_id
     );
 
     es.onmessage = (evt) => {
@@ -400,8 +399,16 @@ const actions = {
       });
       response.on("end", () => {
         log.info("getSplashToken: end");
-        res.send({ splash_token: JSON.parse(__confirmation.join("")) });
-        // res.send({confirm: true});
+
+        let __token = {};
+        try {
+          __token = { splash_token: JSON.parse(__confirmation.join(""))};
+        } catch(err) {
+          __token = { error: err.message };
+          log.error("token JSON error", err);
+        }
+        res.send(__token);
+        
       });
     });
 
@@ -441,7 +448,7 @@ const actions = {
           __db = { database: JSON.parse(__database.join("")) };
         } catch (e) {
           __db = { error: e.message };
-          log.error("JSON error", e);
+          log.error("database JSON error", e);
         }
 
         res.send(__db);
@@ -484,7 +491,7 @@ const actions = {
           __cmd = { commande: JSON.parse(__commande.join("")) };
         } catch (e) {
           __cmd = { error: e.message };
-          log.error("JSON error", e);
+          log.error("commande JSON error", e);
         }
 
         res.send(__cmd);
@@ -531,7 +538,7 @@ const actions = {
           __conf = { confirm: JSON.parse(__confNumero.join("")) };
         } catch (e) {
           __conf = { error: e.message };
-          log.error("JSON error", e);
+          log.error("confirmcommande JSON error", e);
         }
 
         res.send(__conf);
@@ -576,7 +583,7 @@ const actions = {
           __conf = { confirm: JSON.parse(__syncedCommandes.join("")) };
         } catch (e) {
           __conf = { error: e.message };
-          log.error("JSON error", e);
+          log.error("synccmd JSON error", e);
         }
 
         res.send(__conf);
@@ -624,7 +631,7 @@ const actions = {
           __conf = { confirm: JSON.parse(__syncedClotures.join("")) };
         } catch (e) {
           __conf = { error: e.message };
-          log.error("JSON error", e);
+          log.error("synclo JSON error", e);
         }
         res.send(__conf);
         //        res.send({confirm: JSON.parse(__syncedClotures.join(''))});
@@ -640,14 +647,59 @@ const actions = {
     __request.end();
   },
 
+  syncCatalogueBO: (req, res) => {
+    const { url, access_token, catalogue } = req.payload;
+
+    let __reponseServer = [];
+
+    const __request = net.request({
+      url: url,
+      method: "post",
+    });
+    __request.setHeader("Authorization", "Bearer " + access_token);
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/json");
+
+    const __data = JSON.stringify({ catalogue: catalogue });
+    console.log("Catalogue to sync: ", __data);
+
+    __request.write(__data);
+
+    __request.on("response", (response) => {
+      response.on("data", (chunk) => {
+        __reponseServer.push(chunk);
+        log.info(`syncCatalogueBO BODY: ${chunk}`);
+      });
+      response.on("end", () => {
+        log.info("syncCatalogueBO: end");
+
+        let __conf = {};
+        try {
+          __conf = { confirm: JSON.parse(__reponseServer.join("")) };
+        } catch (e) {
+          __conf = { error: e.message };
+          log.error("synccat JSON error", e);
+        }
+        res.send(__conf);
+
+      });
+    });
+
+    __request.on('error', (error) => {
+      log.error('syncCatalogueBO ERROR', error);
+      res.error(error);
+    });
+
+    __request.end();
+  },
+        
   installStation: (req, res) => {
     const {url, uniqid} = req.payload;
 
     let data = '';
 
     let id;
-    // id = uuid(); // pour tester, à changer
-    id = machineIdSync(true); // pour tester, à changer
+    id = machineIdSync(true);
     console.log('uuid', id);
 
     const __request = net.request({
@@ -670,9 +722,17 @@ const actions = {
       });
 
       response.on("end", () => {
-        data = JSON.parse(data);
-        console.log("data", data);
-        res.send(data);
+
+        let __conf = {};
+        try {
+          __conf = JSON.parse(data);
+          console.log("data", data);
+        } catch (e) {
+          __conf = { error: e.message };
+          log.error("installStation JSON error", e);
+        }
+        res.send(__conf);
+
       });
     });
 
@@ -712,9 +772,15 @@ const actions = {
         data += chunk;
       });
       response.on("end", () => {
-        data = JSON.parse(data);
-      log.info(`data : ${data}`);
-        res.send(data);
+        let __conf = {};
+        try {
+          __conf = JSON.parse(data);
+          console.log("data", data);
+        } catch (e) {
+          __conf = { error: e.message };
+          log.error("getStatus JSON error", e);
+        }
+        res.send(__conf);
       });
     });
 
@@ -725,6 +791,7 @@ const actions = {
 
     __request.end();
   },
+
 
   // pingBO: (req, res) => { // Test à la fois la connexion au bo et la connexion internet
   //   const {url} = req.payload;

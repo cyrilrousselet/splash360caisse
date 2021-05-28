@@ -34,10 +34,10 @@
             box-shadow: inset 0 0 0 2px $vert;
         }
         &.authorized:before {
-            background-image: radial-gradient($vert 40%, white 40% );
+            background-image: radial-gradient($vert 0%, $vert 35%, transparent 45% );
         }
         &.blocked:before {
-            background-image: radial-gradient($rouge 40%, white 40% );
+            background-image: radial-gradient($rouge 0%, $rouge 35%,  transparent 45% );
         }
         &.pending:before {
             background-image: radial-gradient($rouge 40%, white 40% );

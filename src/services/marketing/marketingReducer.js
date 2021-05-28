@@ -19,6 +19,18 @@ export function marketingReducer(state = initialState, action) {
         loading: false,
         avoirs: action.avoirslist
       };
+    case marketingActionTypes.GET_REGLESCATALOGUE_LIST_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        reglescatalogue: action.reglescataloguelist
+      };
+    case marketingActionTypes.GET_REGLESPANIER_LIST_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        reglespanier: action.reglespanierlist
+      };
     default:
       return state;
   }

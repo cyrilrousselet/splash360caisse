@@ -29,7 +29,7 @@ export const paramSubmodulesList = [
   "peripheriques",
   "commandes",
  // 'tables'
-  //   'options'
+    'options'
 ];
 
 export const clotureSubmodulesList = [

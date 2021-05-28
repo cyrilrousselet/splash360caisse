@@ -5,7 +5,7 @@ import { peripheralActions } from '../peripheral/peripheralActions';
 import Logger from '../../helpers/Logger';
 import Swal from 'sweetalert2';
 import moment from 'moment';
-import schedule, { scheduleJob } from 'node-schedule';
+import schedule from 'node-schedule';
 import externalParams from '../../constants/externalParams.json';
 
 

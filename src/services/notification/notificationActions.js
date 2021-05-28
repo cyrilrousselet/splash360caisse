@@ -101,9 +101,9 @@ function initSync() {
   }
 }
 
-function syncDispatch(db,data,emitter=null) {
+function syncDispatch(db, data, emitter=null) {
   return (dispatch, getState) => {
-    const { options } = getState().parametresReducer.parametres;
+    const { entreprise, options } = getState().parametresReducer.parametres;
 
     delete data._id;
     delete data.__v;
@@ -113,7 +113,21 @@ function syncDispatch(db,data,emitter=null) {
       notificationServices.syncDispatch(db, data, emitter)
       .then(result => {
         logger.log('syncDispatch (primary)', result);
-      })
+      });
+
+      if ((['ingredient','produit']).includes(db)) {
+        // update Produit / Ingredient sur BO
+        notificationServices.syncCatalogue({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret, catalogue:{db:db, data:data}})
+        .then(
+          response => {
+            dispatch(catalogueActions.setSyncedCatalogue(response.confirm))
+          },
+          error => {
+            logger.error(error);
+          }
+        )
+      }
+
     }
     else if (options.role==='secondary') {
       notificationServices.syncPrimary(db, data, options.caisse, options.primary)
@@ -204,7 +218,7 @@ function treatment(data) {
       )
 
     }
-    else if (data.eventType=="statuschange") {
+    else if (data.eventType==="statuschange") {
       // parametre status dans parametres, par défaut null ?
 
       dispatch({ type: notificationActionTypes.GET_NOTIFICATION, notif: data.eventType });

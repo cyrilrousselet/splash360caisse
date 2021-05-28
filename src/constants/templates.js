@@ -47,6 +47,9 @@ export const templates = {
   etiquette: [
     'etiquette'
   ],
+  produits: [
+    'produits'
+  ],
   cloture: [
     'entreprise', 
     'periode_z',

@@ -12,7 +12,7 @@ import { templates } from '../../constants/templates';
 
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
-import { commandeActions } from '../commande/commandeActions';
+// import { commandeActions } from '../commande/commandeActions';
 import { remove } from 'diacritics';
 import { lowerCase } from 'lodash';
 import Logger from '../../helpers/Logger';
@@ -257,11 +257,11 @@ function _getTicketsToPrint(filtre, tickets) {
 
   let liste;
   if (filtre==='all') {
-    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['commande','partiel','principal','etiquette']).indexOf(tck.template)>-1));
+    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['commande','partiel','principal','etiquette','produits']).indexOf(tck.template)>-1));
   } else if (filtre==='production') {
-    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['partiel','principal','etiquette']).indexOf(tck.template)>-1));
+    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['partiel','principal','etiquette','produits']).indexOf(tck.template)>-1));
   } else if (filtre==='all_uber') {
-    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['uber','partiel','principal','etiquette']).indexOf(tck.template)>-1));
+    liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && (['uber','partiel','principal','etiquette','produits']).indexOf(tck.template)>-1));
   } else if (filtre.hasOwnProperty('templates')) {
     liste = Object.values(tickets).filter((tck) => ((tck.imprimantes.length>0 || tck.kds) && filtre.templates.indexOf(tck.template)>-1));
   } else if (filtre.hasOwnProperty('ids')) {
@@ -353,7 +353,7 @@ function _setCommandeToKDS(ticketsListe, cmd, state) {
   const kds_url = options.role==='secondary' ? (peripheriques.kdsurl || options.primary) : (peripheriques.kdsurl || 'http://localhost');
   const clt = cmd.client ? clients.find(c=>c.client_id===cmd.client.client_id) : null;
 
-  const ticketsKDS = ticketsListe.filter(t => (['partiel', 'principal']).indexOf(t.template)>-1 && (t.kds!==undefined && t.kds===true));
+  const ticketsKDS = ticketsListe.filter(t => (['partiel', 'principal', 'etiquette', 'produits']).indexOf(t.template)>-1 && (t.kds!==undefined && t.kds===true));
   
   // y a-t-il KDS d'activé pour un des ticket de la liste ?
   if (ticketsKDS.length>0) {
@@ -556,6 +556,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
     const { entreprise } = state.parametresReducer.parametres;
   //  const { impression } = peripheriques;
     const { clients } = state.clientsReducer;
+    const {print_standby} = state.parametresReducer.parametres.commandes;
 
 
     logger.log(cmd);
@@ -616,709 +617,850 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
       logger.log('liste de tickets à impression directe', tckToPrint);
     }
 
-    let noarticle = false;
-    tckToPrint.forEach(ticket => {
+    if (tckToPrint.length===0) {
+      // si la commande a déjà été persistée
+      if (cmd.createdAt) {
+        commandeServices.persistCommande({...cmd, enproduction: true});
+      }
+    } else {
+      
 
-    //  impression_ordre = impression.find(it => it.ticket===ticket.ticket_id);
-      target_imprimantes = Object.values(imprimantes).filter((imp)=>(ticket.imprimantes.indexOf(imp.printer_id)>-1));
-    //  let imprimante = target_imprimantes[0];
+      let noarticle = false;
+      tckToPrint.forEach(ticket => {
 
-      // en fonction du type de ticket demandé
+      //  impression_ordre = impression.find(it => it.ticket===ticket.ticket_id);
+        target_imprimantes = Object.values(imprimantes).filter((imp)=>(ticket.imprimantes.indexOf(imp.printer_id)>-1));
+      //  let imprimante = target_imprimantes[0];
 
-      // ticket commande et ticket UberEats
-      if (['commande','uber'].indexOf(ticket.template)>-1) {
-     
-        // -> template ticket
-        template = (ticket.template==='uber') ? templates.uber : templates.commande;
+        // en fonction du type de ticket demandé
 
-        const cmdTva = {};
-        let articles = [];
-        let total = 0;
-        let articletotal = 0;
-        let __comment = null;
-        let __modificateur = null;
-        cmd.items.forEach(article => {
+        // ticket commande et ticket UberEats
+        if (['commande','uber'].indexOf(ticket.template)>-1) {
+      
+          // -> template ticket
+          template = (ticket.template==='uber') ? templates.uber : templates.commande;
 
-
-          const artTva = {};
-          let articleIngredients = [];
-          articletotal = article.quantite * article.prix;
-          // articletotal = Number(article.pu)*article.quantite;
-
-
-          article.ingredients.forEach(ing => {
-
-            // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-            let __noprint = types[ing.type].noprint.find(p=>p===ticket.ticket_id);
+          const cmdTva = {};
+          let articles = [];
+          let total = 0;
+          let articletotal = 0;
+          let __comment = null;
+          let __modificateur = null;
+          cmd.items.forEach(article => {
 
 
-            let __ingweight = -1;
-            // ordre des ingrédients : d'abord la composition puis les ingrédients dans l'ordre de leur step
-            if (ing.fromStep!==null) {
-              const iistep = steps[article.produitid].find(s=>s.step_id===ing.fromStep);
-              if (iistep) {
-                __ingweight = iistep.weight;
+            const artTva = {};
+            let articleIngredients = [];
+            articletotal = article.quantite * article.prix;
+            // articletotal = Number(article.pu)*article.quantite;
+
+
+            article.ingredients.forEach(ing => {
+
+              // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
+              let __noprint = types[ing.type].noprint.find(p=>p===ticket.ticket_id);
+
+
+              let __ingweight = -1;
+              // ordre des ingrédients : d'abord la composition puis les ingrédients dans l'ordre de leur step
+              if (ing.fromStep!==null) {
+                const iistep = steps[article.produitid].find(s=>s.step_id===ing.fromStep);
+                if (iistep) {
+                  __ingweight = iistep.weight;
+                }
               }
-            }
 
 
-            // commentaire pour l'ingrédient
-            __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient)
+              // commentaire pour l'ingrédient
+              __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient)
 
 
-            let artIngTva = ing.tva;
+              let artIngTva = ing.tva;
 
-            if (ing.fromStep!==null && !__noprint) {
-              articleIngredients.push({
-                qte: ing.qte,
-                codetva: artIngTva.code,
-                nom: removeDiacritics(ing.nom),
-                pu: ing.prix===0 ? '' : Number(ing.prix).toFixed(2),
-                prix: ing.supplement===0 ? '' : Number(ing.supplement).toFixed(2),
-                weight: __ingweight,
-                comment: __comment ? removeDiacritics(__comment.texte) : '',
-                modificateur: __modificateur ? __modificateur.valeur: 0
+              if (ing.fromStep!==null && !__noprint) {
+                articleIngredients.push({
+                  qte: ing.qte,
+                  codetva: artIngTva.code,
+                  nom: removeDiacritics(ing.nom),
+                  pu: ing.prix===0 ? '' : Number(ing.prix).toFixed(2),
+                  prix: ing.supplement===0 ? '' : Number(ing.supplement).toFixed(2),
+                  weight: __ingweight,
+                  comment: __comment ? removeDiacritics(__comment.texte) : '',
+                  modificateur: __modificateur ? __modificateur.valeur: 0
+                });
+              }
+
+
+              // ajout et calcul de la tva pour l'ingrédient
+              if (!artTva.hasOwnProperty(artIngTva.code)) {
+                Object.defineProperty(artTva, artIngTva.code, {
+                  value: {taux:`${Number(artIngTva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
+                  writable: true,
+                  enumerable: true
+                });
+              }
+
+              let iht = Number(ing.supplement) / (1 + Number(artIngTva.valeur));
+
+              artTva[artIngTva.code] = Object.assign(artTva[artIngTva.code], {
+                montant: artTva[artIngTva.code].montant + (iht * Number(artIngTva.valeur)),
+                ht: artTva[artIngTva.code].ht + iht,
+                ttc: artTva[artIngTva.code].ttc + Number(ing.supplement)
               });
+
+            });
+
+            articleIngredients.sort((a,b)=>a.weight-b.weight);
+
+
+            // commentaire pour l'article
+            __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
+
+          
+            // modificateurs pour l'article
+            __modificateur = cmd.modificateurs.find(m => m.item===article.itemid && m.ingredient===null);
+            let amodtx = 1;
+            let __montant = 0;
+            if (__modificateur) {
+
+              // ispc :bool (is percent)
+              const ispc = String(__modificateur.valeur).substr(-1,1)==='%';
+              const val = Math.abs(Number(String(__modificateur.valeur).slice(0,-1)));
+              __montant = ispc ? articletotal*(val/100) : val;
+
+              // conversion du modificateur en coefficient
+              amodtx = (ispc) 
+              ? (
+                __modificateur.operation>0 
+                ? (100 + val) / 100
+                : (100 - val) / 100
+                ) 
+              : (
+                __modificateur.operation>0 
+                ? 1 + (val/articletotal)
+                : 1 - (val/articletotal)
+                )
+              ;
+
+              if (ispc) {
+                articletotal *= __modificateur.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
+              } else {
+                articletotal = __modificateur.operation>0 ? articletotal + val : articletotal - val;
+              }
+          
             }
+          
+            articles.push({
+              qte: article.quantite,
+              codetva: article.tva.code,
+              nom: removeDiacritics(article.nom),
+              pu: Number(article.pu).toFixed(2),
+              prix: articletotal.toFixed(2),
+              ingredients: articleIngredients,
+              comment: __comment ? removeDiacritics(__comment.texte) : '',
+              modificateur: __modificateur ? {valeur: __modificateur.valeur, montant: __montant, operation: __modificateur.operation, nom: __modificateur.nom} : null
+            });
 
 
-            // ajout et calcul de la tva pour l'ingrédient
-            if (!artTva.hasOwnProperty(artIngTva.code)) {
-              Object.defineProperty(artTva, artIngTva.code, {
-                value: {taux:`${Number(artIngTva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
+            // modificateur au niveau de la tva pour les ingrédients de l'article
+            if (__modificateur) {
+              Object.keys(artTva).forEach(k => {
+                artTva[k].montant *= amodtx; 
+                artTva[k].ht *= amodtx;
+                artTva[k].ttc *= amodtx;
+              });
+            } 
+
+            // ajout et calcul de la tva pour l'article
+            if (!cmdTva.hasOwnProperty(article.tva.code)) {
+              Object.defineProperty(cmdTva, article.tva.code, {
+                value: {taux:`${Number(article.tva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
                 writable: true,
                 enumerable: true
               });
             }
 
-            let iht = Number(ing.supplement) / (1 + Number(artIngTva.valeur));
+            let ht = (Number(article.pu)*article.quantite)*amodtx / (1 + Number(article.tva.valeur));
 
-            artTva[artIngTva.code] = Object.assign(artTva[artIngTva.code], {
-              montant: artTva[artIngTva.code].montant + (iht * Number(artIngTva.valeur)),
-              ht: artTva[artIngTva.code].ht + iht,
-              ttc: artTva[artIngTva.code].ttc + Number(ing.supplement)
+            cmdTva[article.tva.code] = Object.assign(cmdTva[article.tva.code], {
+              montant: cmdTva[article.tva.code].montant + (ht * Number(article.tva.valeur)),
+              ht: cmdTva[article.tva.code].ht + ht,
+              ttc: cmdTva[article.tva.code].ttc + ((Number(article.pu)*article.quantite)*amodtx)
             });
 
+            // if (__modificateur) {
+            //   cmdTva[article.tva.code].ht *= amodtx;
+            //   cmdTva[article.tva.code].ttc *= amodtx;
+            // }   
+            
+
+            // ajout des tva des ingrédients de l'article
+            Object.entries(artTva).forEach(([k,v]) => {
+              
+              // si le taux n'est pas listé dans les TVA
+              // on l'ajoute et on lui assigne les valeurs enregistrées pour les ingrédients
+              if (!cmdTva.hasOwnProperty(k)) {
+                Object.defineProperty(cmdTva, k, {
+                  value: {taux:v.taux, montant: v.montant, ht: v.ht, ttc: v.ttc},
+                  writable: true,
+                  enumerable: true
+                });
+
+              } 
+              // si le taux est déjà listé,
+              // on additionne avec les valeurs enregistrées pour les ingrédients
+              else {
+                cmdTva[k] = Object.assign(cmdTva[k], {
+                  montant: cmdTva[k].montant + v.montant,
+                  ht: cmdTva[k].ht + v.ht,
+                  ttc: cmdTva[k].ttc + v.ttc
+                });
+              }
+            });
+            
+
+            // logger.log('iht','(Number('+article.pu+')*'+article.quantite+') / (1 + Number('+article.tva.valeur +'))');
+            // logger.log(JSON.stringify(cmdTva));
+            total += articletotal;
           });
+          
+          
+          // commentaire pour la commande
+          __comment = cmd.comments.find(c => c.item===null && c.ingredient===null);
 
-          articleIngredients.sort((a,b)=>a.weight-b.weight);
-
-
-          // commentaire pour l'article
-          __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
-
-        
-          // modificateurs pour l'article
-          __modificateur = cmd.modificateurs.find(m => m.item===article.itemid && m.ingredient===null);
-          let amodtx = 1;
-          let __montant = 0;
+          // modificateurs pour la commande
+          __modificateur = cmd.modificateurs.find(c => c.item===null && c.ingredient===null);
           if (__modificateur) {
+        //   total += Number(__modificateur.valeur);
 
-            // ispc :bool (is percent)
             const ispc = String(__modificateur.valeur).substr(-1,1)==='%';
             const val = Math.abs(Number(String(__modificateur.valeur).slice(0,-1)));
-            __montant = ispc ? articletotal*(val/100) : val;
+            const montant = ispc ? total*(val/100) : val;
+
+            __modificateur = {...__modificateur, montant: montant};
 
             // conversion du modificateur en coefficient
-            amodtx = (ispc) ? (100 - val) / 100 : 1 - (val/articletotal);
+            const modtx = (ispc)
+            ? (
+              __modificateur.operation>0 
+              ? (100 + val) / 100
+              : (100 - val) / 100
+              ) 
+            : (
+              __modificateur.operation>0 
+              ? 1 + (val/total)
+              : 1 - (val/total)
+              )
+            ;
 
             if (ispc) {
-              articletotal *= (100 - val) / 100;
+              total *= __modificateur.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
             } else {
-              articletotal -= val;
+              total = __modificateur.operation>0 ? total + val : total - val;
             }
-        
-          }
-        
-          articles.push({
-            qte: article.quantite,
-            codetva: article.tva.code,
-            nom: removeDiacritics(article.nom),
-            pu: Number(article.pu).toFixed(2),
-            prix: articletotal.toFixed(2),
-            ingredients: articleIngredients,
-            comment: __comment ? removeDiacritics(__comment.texte) : '',
-            modificateur: __modificateur ? {valeur: __modificateur.valeur, montant: __montant} : null
-          });
 
 
-          // modificateur au niveau de la tva pour les ingrédients de l'article
-          if (__modificateur) {
-            Object.keys(artTva).forEach(k => {
-              artTva[k].montant *= amodtx; 
-              artTva[k].ht *= amodtx;
-              artTva[k].ttc *= amodtx;
+            // application de la réduction aux taux de tva
+            Object.entries(cmdTva).forEach(([key, value])=> {
+              cmdTva[key].montant *= modtx; 
+              cmdTva[key].ht *= modtx; 
+              cmdTva[key].ttc *= modtx; 
             });
-          } 
 
-          // ajout et calcul de la tva pour l'article
-          if (!cmdTva.hasOwnProperty(article.tva.code)) {
-            Object.defineProperty(cmdTva, article.tva.code, {
-              value: {taux:`${Number(article.tva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
-              writable: true,
-              enumerable: true
-            });
           }
 
-          let ht = (Number(article.pu)*article.quantite)*amodtx / (1 + Number(article.tva.valeur));
+          const commande = {
+            numero: cmdnumero,
+            id: cmd.ticketId,
+            date: removeDiacritics(`${date} à ${heure}`),
+            articles: articles,
+            total: {
+              total: total.toFixed(2),
+              tva: cmdTva
+            },
+            status: cmd.status,
+            scheduled: cmd.scheduled ? format(new Date(cmd.scheduled), 'HH:mm') : null,
+            mode: cmd.mode,
+            bipper: cmd.bipper || null,
+            reglements: cmd.reglements,
+            rendus: cmd.rendus,
+            comment: __comment ? __comment.texte : '',
+            modificateur: __modificateur ? {valeur: __modificateur.valeur, montant: __modificateur.montant, operation: __modificateur.operation, nom: __modificateur.nom} : null,
+            client: cmd.client && clients.find(c=>c.client_id===cmd.client.client_id)
+          };
 
-          cmdTva[article.tva.code] = Object.assign(cmdTva[article.tva.code], {
-            montant: cmdTva[article.tva.code].montant + (ht * Number(article.tva.valeur)),
-            ht: cmdTva[article.tva.code].ht + ht,
-            ttc: cmdTva[article.tva.code].ttc + ((Number(article.pu)*article.quantite)*amodtx)
-          });
 
-          // if (__modificateur) {
-          //   cmdTva[article.tva.code].ht *= amodtx;
-          //   cmdTva[article.tva.code].ttc *= amodtx;
-          // }   
+          const siret = entreprise.siret;
+          const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
+
+          // contenu :
+          contenu = {
+            // -> logo
+            logo: logo,
+            // -> entreprise
+            entreprise: {
+              nom: removeDiacritics(String(entreprise.denomination).toUpperCase()),
+              coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, entreprise.telephone, entreprise.site_web ],
+              fiscal: [ siret_formatted ]
+            },
+            // -> commande (id, date, articles, remises, totaux, tva, réglements)
+            commande: commande,
+            // -> message
+            message: [ 'Notre restaurant est ouvert', 'Du lundi au samedi', 'De 11h à 14h et de 18h à 22h30', 'Et le dimanche', 'de 18h à 22h30', 'MERCI ET BON APPÉTIT !' ],
+            // -> infos légales (type d'opération, code vendeur, code caisse, code centre profit, code opération, version logiciel)
+            // et infos ticket : numéro ticket, date
+            legal: {
+              type: 'VENTE',
+              vendeur: removeDiacritics(operateur.nom)+' - '+operateur.id,
+              caisse: caisse.id,
+              centre: 'Rest.01',
+              version: '0.1.0',
+              ticketid: `T${caisse.id}-${Number(cmd.printnum)+1}`,
+              printid: Number(cmd.printnum)+1,
+              date: `${date} - ${heure}`
+            },
+            nomticket: ticket.nom,
+            strings: {commande: strings.tickets.commande, uber: strings.tickets.uber}
+          };
+
+
+          if (ticket.template==='uber') {
+            contenu = {...contenu, uber: cmd.uber};
+          }
+
+        }
+        else if (ticket.template==="partiel") {
           
+          // -> template ticket
+          template = (ticket.hasOwnProperty('variante')) ? templates.partiel[ticket.variante] : templates.partiel[1];
 
-          // ajout des tva des ingrédients de l'article
-          Object.entries(artTva).forEach(([k,v]) => {
+          let __comment = null;
+          let articles = [];
+          cmd.items.forEach(article => {
+
+            let articleIngredients = [];
+            let ingredientsAsProducts = [];
+            let ingredientTypes = [];
+
+
+            const inglist = [...article.composition, ...article.ingredients];
+
+
+            inglist.forEach(ing => {
+
+              const ingnoprint = (ingredients[ing.ingredient].noprint!==null && ingredients[ing.ingredient].noprint!==undefined) ? ingredients[ing.ingredient].noprint : types[ing.type].noprint;
+
+              // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
+              let __noprint = ingnoprint.find(p=>p===ticket.ticket_id);
+
+              // // ordre du type d'ingrédient
+              // let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
+              // // ordre du type d'ingrédient (défini dans les paramètres)
+              // if (impression_ordre && impression_ordre.types) {
+              //   let __typeweight = impression_ordre.types.findIndex(t=>t===ing.type);
+              //   if (__typeweight>-1) __ingweight = __typeweight;
+              // }
+
+
+              let __ingweight = -1;
+              // ordre des ingrédients : d'abord la composition puis les ingrédients dans l'ordre de leur step
+              if (ing.fromStep!==null) {
+                const iistep = steps[article.produitid].find(s=>s.step_id===ing.fromStep);
+                if (iistep) {
+                  __ingweight = iistep.weight;
+                }
+              }
+
+              // commentaire pour l'ingrédient :
+              __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient);
+
+
+              if (!__noprint) {
+
+                if (ingredientTypes.findIndex(t=>t.id===ing.type)===-1) {
+                  ingredientTypes.push({
+                    id: ing.type, 
+                    nom: types[ing.type].nom,
+                    hilite: (types[ing.type].hasOwnProperty('hilite')) ? types[ing.type].hilite : false,
+                    ingredients: [],
+                  });
+                }
+
+                if (ingredients[ing.ingredient].asproduct) {
+                  ingredientsAsProducts.push({
+                      qte: ing.qte * article.quantite,
+                      nom: removeDiacritics(ing.nom),
+                      ingredients: [],
+                      comment: __comment ? removeDiacritics(__comment.texte) : ''
+                  });
+                } else {
+                  articleIngredients.push({
+                    qte: ing.qte * article.quantite,
+                    nom: removeDiacritics(ing.nom),
+                    type: ing.type,
+                    weight: __ingweight,
+                    comment: __comment ? removeDiacritics(__comment.texte) : ''
+                  });
+                }
+              }
+            });
+
+            articleIngredients.sort((a,b)=>a.weight-b.weight);
+
+
+            articleIngredients.forEach(ing => {
+              let __tidx = ingredientTypes.findIndex(it=>it.id===ing.type);
+              ingredientTypes[__tidx].ingredients.push(ing);
+            })
+
+
+
+            // commentaire pour l'article :
+            __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
+
+
+            const prd = _getProduit(article.produitid, catalogue);
+            const prdnoprint = prd.noprint!=null ? prd.noprint : catalogue[prd.groupe].noprint;
+            // si le groupe de produits ne doit pas s'imprimer sur ce ticket
+            let __anoprint = prdnoprint.find(p=>p===ticket.ticket_id);
+
+            // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
+            let __noprintableingredient =  (inglist.length>0 && articleIngredients.length===0);
             
-            // si le taux n'est pas listé dans les TVA
-            // on l'ajoute et on lui assigne les valeurs enregistrées pour les ingrédients
-            if (!cmdTva.hasOwnProperty(k)) {
-              Object.defineProperty(cmdTva, k, {
-                value: {taux:v.taux, montant: v.montant, ht: v.ht, ttc: v.ttc},
-                writable: true,
-                enumerable: true
-              });
+            // si le groupe doit s'imprimer sur ce ticket
+            // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
+            // on ajoute ce produit à la liste à imprimer
+            // if (!__noprintableingredient && (!__anoprint || (__anoprint && articleIngredients.length>0))) {
+            if (!__noprintableingredient && !__anoprint) {
+              articles.push({
+                qte: article.quantite,
+                nom: removeDiacritics(article.nom),
+                ingredients: articleIngredients,
+                types: ingredientTypes,
+                comment: __comment ? removeDiacritics(__comment.texte) : ''
+              });        
+            }
+            if (ingredientsAsProducts.length>0 && !__anoprint) {
+              articles = [...articles, ...ingredientsAsProducts];
+            }
 
+          });
+
+          // commentaire pour la commande :
+          __comment = cmd.comments.find(c => c.item===null && c.ingredient===null);
+
+
+          // si aucun article ne s'imprime sur ce ticket, on n'imprime pas le ticket
+          noarticle = (articles.length===0);
+
+          const cmdpartiel = {
+            numero: cmdnumero,
+            id: cmd.ticketId,
+            mode: cmd.mode,
+            status: cmd.status,
+            bipper: cmd.bipper || null,
+            date: `${date} à ${heure}`,
+            articles: articles,
+            comment: __comment ? removeDiacritics(__comment.texte) : '',
+            client: cmd.client && clients.find(c=>c.client_id===cmd.client.client_id)
+          };
+
+
+          contenu = {
+            info: {
+              date: date,
+              heure: heure
+            },
+            nomticket: ticket.nom,
+            detail: cmdpartiel,
+            strings: strings.tickets.production,
+            logo: logo,
+          }
+
+
+        }
+        else if (ticket.template==="principal") {
+          
+          noarticle = false;
+
+          template = (ticket.hasOwnProperty('variante')) ? templates.principal[ticket.variante] : templates.principal[1];
+
+          let __comment = null;
+          let articles = [];
+          cmd.items.forEach(article => {
+
+            let articleIngredients = [];
+            let ingredientsAsProducts = [];
+            let ingredientTypes = [];
+
+        //   article.ingredients.forEach(ing => {
+            const inglist = [...article.composition, ...article.ingredients];
+
+
+            inglist.forEach(ing => {
+
+
+              const ingnoprint = (ingredients[ing.ingredient].noprint!==null && ingredients[ing.ingredient].noprint!==undefined) ? ingredients[ing.ingredient].noprint : types[ing.type].noprint;
+
+              // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
+              let __noprint = ingnoprint.find(p=>p===ticket.ticket_id);
+
+              // // ordre du type d'ingrédient
+              // let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
+              // // ordre du type d'ingrédient (défini dans les paramètres)
+              // if (impression_ordre && impression_ordre.types) {
+              //   let __typeweight = impression_ordre.types.findIndex(t=>t===ing.type);
+              //   if (__typeweight>-1) __ingweight = __typeweight;
+              // }
+
+
+              let __ingweight = -1;
+              // ordre des ingrédients : d'abord la composition puis les ingrédients dans l'ordre de leur step
+              if (ing.fromStep!==null) {
+                const iistep = steps[article.produitid].find(s=>s.step_id===ing.fromStep);
+                if (iistep) {
+                  __ingweight = iistep.weight;
+                }
+              }
+
+              // commentaire pour l'ingrédient :
+              __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient);
+
+              if (!__noprint) {
+
+
+                if (ingredientTypes.findIndex(t=>t.id===ing.type)===-1) {
+                  ingredientTypes.push({
+                    id: ing.type, 
+                    nom: types[ing.type].nom,
+                    hilite: (types[ing.type].hasOwnProperty('hilite')) ? types[ing.type].hilite : false,
+                    ingredients: [],
+                  });
+                }
+
+                if (ingredients[ing.ingredient].asproduct) {
+                  ingredientsAsProducts.push({
+                      qte: ing.qte * article.quantite,
+                      nom: removeDiacritics(ing.nom),
+                      ingredients: [],
+                      comment: __comment ? removeDiacritics(__comment.texte) : ''
+                  });
+                } else {
+                  articleIngredients.push({
+                    qte: ing.qte * article.quantite,
+                    nom: removeDiacritics(ing.nom),
+                    weight: __ingweight,
+                    type: ing.type,
+                    comment: __comment ? removeDiacritics(__comment.texte) : ''
+                  });
+                }
+              }
+            });
+
+            articleIngredients.sort((a,b)=>a.weight-b.weight);
+
+
+            articleIngredients.forEach(ing => {
+              let __tidx = ingredientTypes.findIndex(it=>it.id===ing.type);
+              ingredientTypes[__tidx].ingredients.push(ing);
+            })
+
+            // commentaire pour l'article :
+            __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
+
+            const prd = _getProduit(article.produitid, catalogue);
+            const prdnoprint = prd.noprint!=null ? prd.noprint : catalogue[prd.groupe].noprint;
+
+            // si le groupe de produits ne doit pas s'imprimer sur ce ticket
+            let __anoprint = prdnoprint.find(p=>p===ticket.ticket_id);
+
+
+            // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
+            let __noprintableingredient =  (inglist.length>0 && articleIngredients.length===0);
+            
+            // si le groupe doit s'imprimer sur ce ticket
+            // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
+            // on ajoute ce produit à la liste à imprimer
+            // if (!__noprintableingredient && (!__anoprint || (__anoprint && articleIngredients.length>0))) {
+            if (!__noprintableingredient && !__anoprint) {
+              articles.push({
+                qte: article.quantite,
+                nom: removeDiacritics(article.nom),
+                ingredients: articleIngredients,
+                types: ingredientTypes,
+                comment: __comment ? removeDiacritics(__comment.texte) : ''
+              });     
             } 
-            // si le taux est déjà listé,
-            // on additionne avec les valeurs enregistrées pour les ingrédients
-            else {
-              cmdTva[k] = Object.assign(cmdTva[k], {
-                montant: cmdTva[k].montant + v.montant,
-                ht: cmdTva[k].ht + v.ht,
-                ttc: cmdTva[k].ttc + v.ttc
-              });
-            }
+            if (ingredientsAsProducts.length>0 && !__anoprint) {
+              articles = [...articles, ...ingredientsAsProducts];
+            }  
+
           });
-          
 
-          // logger.log('iht','(Number('+article.pu+')*'+article.quantite+') / (1 + Number('+article.tva.valeur +'))');
-          // logger.log(JSON.stringify(cmdTva));
-          total += articletotal;
-        });
-        
-        
-        // commentaire pour la commande
-        __comment = cmd.comments.find(c => c.item===null && c.ingredient===null);
 
-        // modificateurs pour la commande
-        __modificateur = cmd.modificateurs.find(c => c.item===null && c.ingredient===null);
-        if (__modificateur) {
-       //   total += Number(__modificateur.valeur);
+          // commentaire pour la commande :
+          __comment = cmd.comments.find(c => c.item===null && c.ingredient===null);
 
-          const ispc = String(__modificateur.valeur).substr(-1,1)==='%';
-          const val = Math.abs(Number(String(__modificateur.valeur).slice(0,-1)));
-          const montant = ispc ? total*(val/100) : val;
 
-          __modificateur = {...__modificateur, montant: montant};
+          const cmdprincipal = {
+            numero: cmdnumero,
+            id: cmd.ticketId,
+            mode: cmd.mode,
+            status: cmd.status,
+            bipper: cmd.bipper || null,
+            date: `${date} à ${heure}`,
+            articles: articles,
+            comment: __comment ? removeDiacritics(__comment.texte) : '',
+            client: cmd.client && clients.find(c=>c.client_id===cmd.client.client_id)
+          };
 
-          // conversion du modificateur en coefficient
-          const modtx = (ispc) ? (100 - val) / 100 : 1 - (val/total);
 
-          if (ispc) {
-            total *= (100 - val) / 100;
-          } else {
-            total -= val;
+
+
+          contenu = {
+            info: {
+              date: date,
+              heure: heure
+            },
+            nomticket: ticket.nom,
+            detail: cmdprincipal,
+            strings: strings.tickets.production,
+            recap: recapTickets,
+            logo: logo,
           }
 
-
-          // application de la réduction aux taux de tva
-          Object.entries(cmdTva).forEach(([key, value])=> {
-            cmdTva[key].montant *= modtx; 
-            cmdTva[key].ht *= modtx; 
-            cmdTva[key].ttc *= modtx; 
-          });
-
         }
+        else if (ticket.template==="etiquette") {
 
-        const commande = {
-          numero: cmdnumero,
-          id: cmd.ticketId,
-          date: removeDiacritics(`${date} à ${heure}`),
-          articles: articles,
-          total: {
-            total: total.toFixed(2),
-            tva: cmdTva
-          },
-          status: cmd.status,
-          mode: cmd.mode,
-          bipper: cmd.bipper || null,
-          reglements: cmd.reglements,
-          rendus: cmd.rendus,
-          comment: __comment ? __comment.texte : '',
-          modificateur: __modificateur ? {valeur: __modificateur.valeur, montant: __modificateur.montant} : null,
-          client: cmd.client && clients.find(c=>c.client_id===cmd.client.client_id)
-        };
+          // -> template ticket
+          template = templates.etiquette;
+
+          let articles = [];
+          cmd.items.forEach(article => {
+
+            let articleIngredients = [];
+            let ingredientsAsProducts = [];
 
 
-        const siret = entreprise.siret;
-        const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
-
-        // contenu :
-        contenu = {
-          // -> logo
-          logo: logo,
-          // -> entreprise
-          entreprise: {
-            nom: removeDiacritics(String(entreprise.denomination).toUpperCase()),
-            coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, entreprise.telephone, entreprise.site_web ],
-            fiscal: [ siret_formatted ]
-          },
-          // -> commande (id, date, articles, remises, totaux, tva, réglements)
-          commande: commande,
-          // -> message
-          message: [ 'Notre restaurant est ouvert', 'Du lundi au samedi', 'De 11h à 14h et de 18h à 22h30', 'Et le dimanche', 'de 18h à 22h30', 'MERCI ET BON APPÉTIT !' ],
-          // -> infos légales (type d'opération, code vendeur, code caisse, code centre profit, code opération, version logiciel)
-          // et infos ticket : numéro ticket, date
-          legal: {
-            type: 'VENTE',
-            vendeur: removeDiacritics(operateur.nom)+' - '+operateur.id,
-            caisse: caisse.id,
-            centre: 'Rest.01',
-            version: '0.1.0',
-            ticketid: `T${caisse.id}-${Number(cmd.printnum)+1}`,
-            printid: Number(cmd.printnum)+1,
-            date: `${date} - ${heure}`
-          },
-          nomticket: ticket.nom,
-          strings: {commande: strings.tickets.commande, uber: strings.tickets.uber}
-        };
+            const inglist = [...article.composition, ...article.ingredients];
 
 
-        if (ticket.template==='uber') {
-          contenu = {...contenu, uber: cmd.uber};
-        }
+            inglist.forEach(ing => {
 
-      }
-      else if (ticket.template==="partiel") {
-        
-        // -> template ticket
-        template = (ticket.hasOwnProperty('variante')) ? templates.partiel[ticket.variante] : templates.partiel[1];
+              const ingnoprint = (ingredients[ing.ingredient].noprint!==null && ingredients[ing.ingredient].noprint!==undefined) ? ingredients[ing.ingredient].noprint : types[ing.type].noprint;
 
-        let __comment = null;
-        let articles = [];
-        cmd.items.forEach(article => {
+              // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
+              let __noprint = ingnoprint.find(p=>p===ticket.ticket_id);
 
-          let articleIngredients = [];
-          let ingredientsAsProducts = [];
-          let ingredientTypes = [];
+              // // ordre du type d'ingrédient
+              // let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
+              // // ordre du type d'ingrédient (défini dans les paramètres)
+              // if (impression_ordre && impression_ordre.types) {
+              //   let __typeweight = impression_ordre.types.findIndex(t=>t===ing.type);
+              //   if (__typeweight>-1) __ingweight = __typeweight;
+              // }
 
 
-          const inglist = [...article.composition, ...article.ingredients];
-
-
-          inglist.forEach(ing => {
-
-            const ingnoprint = (ingredients[ing.ingredient].noprint!==null && ingredients[ing.ingredient].noprint!==undefined) ? ingredients[ing.ingredient].noprint : types[ing.type].noprint;
-
-            // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-            let __noprint = ingnoprint.find(p=>p===ticket.ticket_id);
-
-            // // ordre du type d'ingrédient
-            // let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
-            // // ordre du type d'ingrédient (défini dans les paramètres)
-            // if (impression_ordre && impression_ordre.types) {
-            //   let __typeweight = impression_ordre.types.findIndex(t=>t===ing.type);
-            //   if (__typeweight>-1) __ingweight = __typeweight;
-            // }
-
-
-            let __ingweight = -1;
-            // ordre des ingrédients : d'abord la composition puis les ingrédients dans l'ordre de leur step
-            if (ing.fromStep!==null) {
-              const iistep = steps[article.produitid].find(s=>s.step_id===ing.fromStep);
-              if (iistep) {
-                __ingweight = iistep.weight;
-              }
-            }
-
-            // commentaire pour l'ingrédient :
-            __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient);
-
-
-            if (!__noprint) {
-
-              if (ingredientTypes.findIndex(t=>t.id===ing.type)===-1) {
-                ingredientTypes.push({
-                  id: ing.type, 
-                  nom: types[ing.type].nom,
-                  hilite: (types[ing.type].hasOwnProperty('hilite')) ? types[ing.type].hilite : false,
-                  ingredients: [],
-                });
+              let __ingweight = -1;
+              // ordre des ingrédients : d'abord la composition puis les ingrédients dans l'ordre de leur step
+              if (ing.fromStep!==null) {
+                const iistep = steps[article.produitid].find(s=>s.step_id===ing.fromStep);
+                if (iistep) {
+                  __ingweight = iistep.weight;
+                }
               }
 
-              if (ingredients[ing.ingredient].asproduct) {
-                ingredientsAsProducts.push({
+
+              if (!__noprint) {
+                if (ingredients[ing.ingredient].asproduct) {
+                  ingredientsAsProducts.push({
+                      qte: ing.qte * article.quantite,
+                      nom: removeDiacritics(ing.nom),
+                      ingredients: []
+                  });
+                } else {
+                  articleIngredients.push({
                     qte: ing.qte * article.quantite,
                     nom: removeDiacritics(ing.nom),
-                    ingredients: [],
-                    comment: __comment ? removeDiacritics(__comment.texte) : ''
-                });
-              } else {
-                articleIngredients.push({
-                  qte: ing.qte * article.quantite,
-                  nom: removeDiacritics(ing.nom),
-                  type: ing.type,
-                  weight: __ingweight,
-                  comment: __comment ? removeDiacritics(__comment.texte) : ''
-                });
+                    weight: __ingweight
+                  });
+                }
               }
+            });
+
+            articleIngredients.sort((a,b)=>a.weight-b.weight);
+
+            const prd = _getProduit(article.produitid, catalogue);
+            const prdnoprint = prd.noprint!=null ? prd.noprint : catalogue[prd.groupe].noprint;
+            // si le groupe de produits ne doit pas s'imprimer sur ce ticket
+            let __anoprint = prdnoprint.find(p=>p===ticket.ticket_id);
+
+            // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
+            let __noprintableingredient = (inglist.length>0 && articleIngredients.length===0);
+            
+            // si le groupe doit s'imprimer sur ce ticket
+            // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
+            // on ajoute ce produit à la liste à imprimer
+            // if (!__noprintableingredient && (!__anoprint || (__anoprint && articleIngredients.length>0))) {
+            if (!__noprintableingredient && !__anoprint) {
+              articles.push({
+                qte: article.quantite,
+                nom: removeDiacritics(article.nom),
+                ingredients: articleIngredients
+              });        
             }
+            if (ingredientsAsProducts.length>0 && !__anoprint) {
+              articles = [...articles, ...ingredientsAsProducts];
+            }
+
           });
 
-          articleIngredients.sort((a,b)=>a.weight-b.weight);
 
+          // si aucun article ne s'imprime sur ce ticket, on n'imprime pas le ticket
+          noarticle = (articles.length===0);
 
-          articleIngredients.forEach(ing => {
-            let __tidx = ingredientTypes.findIndex(it=>it.id===ing.type);
-            ingredientTypes[__tidx].ingredients.push(ing);
-          })
+          contenu = {
+            numero: cmdnumero,
+            mode: strings.tickets.production.mode[cmd.mode],
+            date: `${format(__createdAt, "dd/MM/yyyy")} à ${heure}`,
+            articles: articles
+          };
 
-
-
-          // commentaire pour l'article :
-          __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
-
-
-          const prd = _getProduit(article.produitid, catalogue);
-          const prdnoprint = prd.noprint!=null ? prd.noprint : catalogue[prd.groupe].noprint;
-          // si le groupe de produits ne doit pas s'imprimer sur ce ticket
-          let __anoprint = prdnoprint.find(p=>p===ticket.ticket_id);
-
-          // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
-          let __noprintableingredient =  (inglist.length>0 && articleIngredients.length===0);
-          
-          // si le groupe doit s'imprimer sur ce ticket
-          // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
-          // on ajoute ce produit à la liste à imprimer
-          // if (!__noprintableingredient && (!__anoprint || (__anoprint && articleIngredients.length>0))) {
-          if (!__noprintableingredient && !__anoprint) {
-            articles.push({
-              qte: article.quantite,
-              nom: removeDiacritics(article.nom),
-              ingredients: articleIngredients,
-              types: ingredientTypes,
-              comment: __comment ? removeDiacritics(__comment.texte) : ''
-            });        
-          }
-          if (ingredientsAsProducts.length>0 && !__anoprint) {
-            articles = [...articles, ...ingredientsAsProducts];
-          }
-
-        });
-
-        // commentaire pour la commande :
-        __comment = cmd.comments.find(c => c.item===null && c.ingredient===null);
-
-
-        // si aucun article ne s'imprime sur ce ticket, on n'imprime pas le ticket
-        noarticle = (articles.length===0);
-
-        const cmdpartiel = {
-          numero: cmdnumero,
-          id: cmd.ticketId,
-          mode: cmd.mode,
-          status: cmd.status,
-          bipper: cmd.bipper || null,
-          date: `${date} à ${heure}`,
-          articles: articles,
-          comment: __comment ? removeDiacritics(__comment.texte) : '',
-          client: cmd.client && clients.find(c=>c.client_id===cmd.client.client_id)
-        };
-
-
-        contenu = {
-          info: {
-            date: date,
-            heure: heure
-          },
-          nomticket: ticket.nom,
-          detail: cmdpartiel,
-          strings: strings.tickets.production,
-          logo: logo,
         }
+        else if (ticket.template==="produits") {
+
+          // -> template ticket
+          template = templates.produits;
+
+          let articles = [];
+          cmd.items.forEach(article => {
+
+            let articleIngredients = [];
+            let ingredientsAsProducts = [];
 
 
-      }
-      else if (ticket.template==="principal") {
-        
-        noarticle = false;
-
-        template = (ticket.hasOwnProperty('variante')) ? templates.principal[ticket.variante] : templates.principal[1];
-
-        let __comment = null;
-        let articles = [];
-        cmd.items.forEach(article => {
-
-          let articleIngredients = [];
-          let ingredientsAsProducts = [];
-          let ingredientTypes = [];
-
-       //   article.ingredients.forEach(ing => {
-          const inglist = [...article.composition, ...article.ingredients];
+            const inglist = [...article.composition, ...article.ingredients];
 
 
-          inglist.forEach(ing => {
+            inglist.forEach(ing => {
+
+              const ingnoprint = (ingredients[ing.ingredient].noprint!==null && ingredients[ing.ingredient].noprint!==undefined) ? ingredients[ing.ingredient].noprint : types[ing.type].noprint;
+
+              // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
+              let __noprint = ingnoprint.find(p=>p===ticket.ticket_id);
+
+              // // ordre du type d'ingrédient
+              // let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
+              // // ordre du type d'ingrédient (défini dans les paramètres)
+              // if (impression_ordre && impression_ordre.types) {
+              //   let __typeweight = impression_ordre.types.findIndex(t=>t===ing.type);
+              //   if (__typeweight>-1) __ingweight = __typeweight;
+              // }
 
 
-            const ingnoprint = (ingredients[ing.ingredient].noprint!==null && ingredients[ing.ingredient].noprint!==undefined) ? ingredients[ing.ingredient].noprint : types[ing.type].noprint;
-
-            // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-            let __noprint = ingnoprint.find(p=>p===ticket.ticket_id);
-
-            // // ordre du type d'ingrédient
-            // let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
-            // // ordre du type d'ingrédient (défini dans les paramètres)
-            // if (impression_ordre && impression_ordre.types) {
-            //   let __typeweight = impression_ordre.types.findIndex(t=>t===ing.type);
-            //   if (__typeweight>-1) __ingweight = __typeweight;
-            // }
-
-
-            let __ingweight = -1;
-            // ordre des ingrédients : d'abord la composition puis les ingrédients dans l'ordre de leur step
-            if (ing.fromStep!==null) {
-              const iistep = steps[article.produitid].find(s=>s.step_id===ing.fromStep);
-              if (iistep) {
-                __ingweight = iistep.weight;
-              }
-            }
-
-            // commentaire pour l'ingrédient :
-            __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient);
-
-            if (!__noprint) {
-
-
-              if (ingredientTypes.findIndex(t=>t.id===ing.type)===-1) {
-                ingredientTypes.push({
-                  id: ing.type, 
-                  nom: types[ing.type].nom,
-                  hilite: (types[ing.type].hasOwnProperty('hilite')) ? types[ing.type].hilite : false,
-                  ingredients: [],
-                });
+              let __ingweight = -1;
+              // ordre des ingrédients : d'abord la composition puis les ingrédients dans l'ordre de leur step
+              if (ing.fromStep!==null) {
+                const iistep = steps[article.produitid].find(s=>s.step_id===ing.fromStep);
+                if (iistep) {
+                  __ingweight = iistep.weight;
+                }
               }
 
-              if (ingredients[ing.ingredient].asproduct) {
-                ingredientsAsProducts.push({
+
+              if (!__noprint) {
+                if (ingredients[ing.ingredient].asproduct) {
+                  ingredientsAsProducts.push({
+                      qte: ing.qte * article.quantite,
+                      nom: removeDiacritics(ing.nom),
+                      ingredients: []
+                  });
+                } else {
+                  articleIngredients.push({
                     qte: ing.qte * article.quantite,
                     nom: removeDiacritics(ing.nom),
-                    ingredients: [],
-                    comment: __comment ? removeDiacritics(__comment.texte) : ''
-                });
-              } else {
-                articleIngredients.push({
-                  qte: ing.qte * article.quantite,
-                  nom: removeDiacritics(ing.nom),
-                  weight: __ingweight,
-                  type: ing.type,
-                  comment: __comment ? removeDiacritics(__comment.texte) : ''
-                });
+                    weight: __ingweight
+                  });
+                }
               }
+            });
+
+            articleIngredients.sort((a,b)=>a.weight-b.weight);
+
+            const prd = _getProduit(article.produitid, catalogue);
+            const prdnoprint = prd.noprint!=null ? prd.noprint : catalogue[prd.groupe].noprint;
+            // si le groupe de produits ne doit pas s'imprimer sur ce ticket
+            let __anoprint = prdnoprint.find(p=>p===ticket.ticket_id);
+
+            // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
+            let __noprintableingredient = (inglist.length>0 && articleIngredients.length===0);
+            
+            // si le groupe doit s'imprimer sur ce ticket
+            // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
+            // on ajoute ce produit à la liste à imprimer
+            // if (!__noprintableingredient && (!__anoprint || (__anoprint && articleIngredients.length>0))) {
+            if (!__noprintableingredient && !__anoprint) {
+              articles.push({
+                qte: article.quantite,
+                nom: removeDiacritics(article.nom),
+                ingredients: articleIngredients
+              });        
             }
+            if (ingredientsAsProducts.length>0 && !__anoprint) {
+              articles = [...articles, ...ingredientsAsProducts];
+            }
+
           });
 
-          articleIngredients.sort((a,b)=>a.weight-b.weight);
 
+          // si aucun article ne s'imprime sur ce ticket, on n'imprime pas le ticket
+          noarticle = (articles.length===0);
 
-          articleIngredients.forEach(ing => {
-            let __tidx = ingredientTypes.findIndex(it=>it.id===ing.type);
-            ingredientTypes[__tidx].ingredients.push(ing);
-          })
+          contenu = {
+            numero: cmdnumero,
+            mode: strings.tickets.production.mode[cmd.mode],
+            date: `${format(__createdAt, "dd/MM/yyyy")} à ${heure}`,
+            articles: articles
+          };
 
-          // commentaire pour l'article :
-          __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
-
-          const prd = _getProduit(article.produitid, catalogue);
-          const prdnoprint = prd.noprint!=null ? prd.noprint : catalogue[prd.groupe].noprint;
-
-          // si le groupe de produits ne doit pas s'imprimer sur ce ticket
-          let __anoprint = prdnoprint.find(p=>p===ticket.ticket_id);
-
-
-          // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
-          let __noprintableingredient =  (inglist.length>0 && articleIngredients.length===0);
-          
-          // si le groupe doit s'imprimer sur ce ticket
-          // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
-          // on ajoute ce produit à la liste à imprimer
-          // if (!__noprintableingredient && (!__anoprint || (__anoprint && articleIngredients.length>0))) {
-          if (!__noprintableingredient && !__anoprint) {
-            articles.push({
-              qte: article.quantite,
-              nom: removeDiacritics(article.nom),
-              ingredients: articleIngredients,
-              types: ingredientTypes,
-              comment: __comment ? removeDiacritics(__comment.texte) : ''
-            });     
-          } 
-          if (ingredientsAsProducts.length>0 && !__anoprint) {
-            articles = [...articles, ...ingredientsAsProducts];
-          }  
-
-        });
-
-
-        // commentaire pour la commande :
-        __comment = cmd.comments.find(c => c.item===null && c.ingredient===null);
-
-
-        const cmdprincipal = {
-          numero: cmdnumero,
-          id: cmd.ticketId,
-          mode: cmd.mode,
-          status: cmd.status,
-          bipper: cmd.bipper || null,
-          date: `${date} à ${heure}`,
-          articles: articles,
-          comment: __comment ? removeDiacritics(__comment.texte) : '',
-          client: cmd.client && clients.find(c=>c.client_id===cmd.client.client_id)
-        };
-
-
-
-
-        contenu = {
-          info: {
-            date: date,
-            heure: heure
-          },
-          nomticket: ticket.nom,
-          detail: cmdprincipal,
-          strings: strings.tickets.production,
-          recap: recapTickets,
-          logo: logo,
         }
 
-      }
-      else if (ticket.template==="etiquette") {
 
-        // -> template ticket
-        template = templates.etiquette;
-
-        let articles = [];
-        cmd.items.forEach(article => {
-
-          let articleIngredients = [];
-          let ingredientsAsProducts = [];
-
-
-          const inglist = [...article.composition, ...article.ingredients];
-
-
-          inglist.forEach(ing => {
-
-            const ingnoprint = (ingredients[ing.ingredient].noprint!==null && ingredients[ing.ingredient].noprint!==undefined) ? ingredients[ing.ingredient].noprint : types[ing.type].noprint;
-
-            // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-            let __noprint = ingnoprint.find(p=>p===ticket.ticket_id);
-
-            // // ordre du type d'ingrédient
-            // let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
-            // // ordre du type d'ingrédient (défini dans les paramètres)
-            // if (impression_ordre && impression_ordre.types) {
-            //   let __typeweight = impression_ordre.types.findIndex(t=>t===ing.type);
-            //   if (__typeweight>-1) __ingweight = __typeweight;
-            // }
-
-
-            let __ingweight = -1;
-            // ordre des ingrédients : d'abord la composition puis les ingrédients dans l'ordre de leur step
-            if (ing.fromStep!==null) {
-              const iistep = steps[article.produitid].find(s=>s.step_id===ing.fromStep);
-              if (iistep) {
-                __ingweight = iistep.weight;
-              }
-            }
-
-
-            if (!__noprint) {
-              if (ingredients[ing.ingredient].asproduct) {
-                ingredientsAsProducts.push({
-                    qte: ing.qte * article.quantite,
-                    nom: removeDiacritics(ing.nom),
-                    ingredients: []
-                });
-              } else {
-                articleIngredients.push({
-                  qte: ing.qte * article.quantite,
-                  nom: removeDiacritics(ing.nom),
-                  weight: __ingweight
-                });
-              }
-            }
-          });
-
-          articleIngredients.sort((a,b)=>a.weight-b.weight);
-
-          const prd = _getProduit(article.produitid, catalogue);
-          const prdnoprint = prd.noprint!=null ? prd.noprint : catalogue[prd.groupe].noprint;
-          // si le groupe de produits ne doit pas s'imprimer sur ce ticket
-          let __anoprint = prdnoprint.find(p=>p===ticket.ticket_id);
-
-          // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
-          let __noprintableingredient = (inglist.length>0 && articleIngredients.length===0);
-          
-          // si le groupe doit s'imprimer sur ce ticket
-          // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
-          // on ajoute ce produit à la liste à imprimer
-          // if (!__noprintableingredient && (!__anoprint || (__anoprint && articleIngredients.length>0))) {
-          if (!__noprintableingredient && !__anoprint) {
-            articles.push({
-              qte: article.quantite,
-              nom: removeDiacritics(article.nom),
-              ingredients: articleIngredients
-            });        
-          }
-          if (ingredientsAsProducts.length>0 && !__anoprint) {
-            articles = [...articles, ...ingredientsAsProducts];
-          }
-
-        });
-
-
-        // si aucun article ne s'imprime sur ce ticket, on n'imprime pas le ticket
-        noarticle = (articles.length===0);
-
-        contenu = {
-          numero: cmdnumero,
-          mode: strings.tickets.production.mode[cmd.mode],
-          date: `${format(__createdAt, "dd/MM/yyyy")} à ${heure}`,
-          articles: articles
-        };
-
-      }
-
-
-      if (noarticle) {
-        dispatch({ type: peripheralActionTypes.NOPRINT_TICKET, template: template, reason: 'no article' });
-
-        // logger.timeEnd('printCommandeTicket()');
-      } else {
-
-        peripheralServices.printTicket(target_imprimantes[0], template, contenu)
-        .then(
-          response => {
-            // logger.timeEnd('printCommandeTicket()');
-            logger.log(response);
-          }
-        )
-        dispatch({ type: peripheralActionTypes.PRINT_TICKET });
-        if (ticket.template==='commande') {
-          dispatch(commandeActions.updateCommande({...cmd, printnum: Number(cmd.printnum)+1}));
+        if (cmd.status==="standby" && print_standby && ticket.kds!==true) {
+          dispatch({ type: peripheralActionTypes.NOPRINT_TICKET, template: template, reason: 'status=standby et pas de kds pour le ticket' });
         }
-      }
+        else if (noarticle) {
+          dispatch({ type: peripheralActionTypes.NOPRINT_TICKET, template: template, reason: 'no article' });
+
+          // logger.timeEnd('printCommandeTicket()');
+        } else {
+
+          peripheralServices.printTicket(target_imprimantes[0], template, contenu)
+          .then(
+            response => {
+              // logger.timeEnd('printCommandeTicket()');
+              logger.log(response);
+            }
+          )
+          dispatch({ type: peripheralActionTypes.PRINT_TICKET });
+
+          // on déclare la commande comme étant lancée en production
+          let updateCmdAfterPrint = {...cmd, enproduction: true};
+
+          // pour les tickets commande, on met à jour le nombre d'impressions
+          if (ticket.template==='commande') {
+            updateCmdAfterPrint.printnum = Number(cmd.printnum)+1;
+          }
+
+          // si la commande a déjà été persistée
+          if (cmd.createdAt) {
+            commandeServices.persistCommande(updateCmdAfterPrint);
+          }
+        }
 
 
-    });
-
+      });
+    }
 
   }
 }

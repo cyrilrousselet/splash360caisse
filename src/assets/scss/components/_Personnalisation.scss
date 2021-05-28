@@ -188,6 +188,23 @@
   }
 
 
+  &.personnalisation-narrow {
+
+    .IngredientBtn {
+      height: 60px;
+      margin: 1px 1px 3px;
+      box-shadow: inset 0 0 0 3px $blanc, 0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12);
+     
+    }
+    .igtype {
+      padding: 0px 0 5px;
+    }
+    .igtype-nom {
+      font-size: 13px;
+    }
+  }
+
+
 
   .footer {
     display: flex;

@@ -1,5 +1,5 @@
-const db = require("../db.js");
-const lodashId = require("lodash-id");
+// const db = require("../db.js");
+// const lodashId = require("lodash-id");
 const log = require("electron-log");
 const connect = require("../db/mongodb");
 const ClotureModel = require("../db/clotureModel");
@@ -97,6 +97,7 @@ const actions = {
 
 async function _getLast() {
   const mongo = await connect();
+  if (!mongo) return false;
   const __rawdata = await ClotureModel.find().lean().sort({createdAt: -1}).limit(1);
   // await mongo.disconnect();
   return _parseCloture(__rawdata);
@@ -111,6 +112,7 @@ async function _getAll() {
 
 async function _addCloturesLocalSync(ids, store_id) {
   const mongo = await connect();
+  if (!mongo) return false;
 
   const _cmds = await ClotureModel.updateMany(
     {clotureId: {$in: ids}, localsync: { $ne: store_id }},
@@ -123,6 +125,7 @@ async function _addCloturesLocalSync(ids, store_id) {
 
 async function _findBoundedClotures(start, end) {
   const mongo = await connect();
+  if (!mongo) return false;
 
 // const query = [
 //   {'$addFields': {
@@ -174,6 +177,7 @@ async function _findBoundedClotures(start, end) {
 async function _findCloture(criteriae = {}) {
   log.info(criteriae);
   const mongo = await connect();
+  if (!mongo) return false;
   const _cloture = await ClotureModel.find(criteriae).lean().sort({createdAt: 1}).exec();
   // await mongo.disconnect();
   return _cloture;
@@ -184,6 +188,7 @@ async function _persistCloture(payload) {
   const __now = new Date().getTime();
 
   const mongo = await connect();
+  if (!mongo) return false;
   let _clo = await ClotureModel.where({ clotureId: payload.clotureId })
     .findOne()
     .lean()
@@ -221,6 +226,7 @@ function _parseCloture(_rawdata) {
 
 async function _getCloturesToSync(limit = null) {
   const mongo = await connect();
+  if (!mongo) return false;
   const criteria = {
     $or: [{ sync: {$exists: false} }, { $where: "this.updatedAt > this.sync" }],
   };

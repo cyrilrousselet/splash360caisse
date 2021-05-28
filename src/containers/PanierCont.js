@@ -16,6 +16,8 @@ import { tableActions } from '../services/table/tableActions';
 import { numeroActions } from '../services/commande/numeroActions';
 import { tresorServices } from '../services/tresorerie/tresorServices';
 import { tresorActions } from '../services/tresorerie/tresorActions';
+import { userServices } from '../services/user/userServices';
+import { commandeServices } from '../services/commande/commandeServices';
 
 
 const gotoListeCommandes = () => {
@@ -67,6 +69,7 @@ const mapDispatchToProps = (dispatch) => {
     updateComment: commandeActions.updateComment,
     deleteComment: commandeActions.deleteComment,
     addDiscount: commandeActions.addDiscount,
+    checkMarketing: commandeActions.checkMarketing,
     updateDiscount: commandeActions.updateDiscount,
     deleteDiscount: commandeActions.deleteDiscount,
     getClientsList: clientsActions.getClientsList,
@@ -77,7 +80,9 @@ const mapDispatchToProps = (dispatch) => {
     ...bound,
     gotoListeCommandes: gotoListeCommandes,
     getLastMouvement: tresorServices.getLastMouvement,
-    getLastClotureAndAfter: tresorServices.getLastClotureAndAfter
+    getLastClotureAndAfter: tresorServices.getLastClotureAndAfter,
+    getUser: userServices.login,
+    getCommandesList: commandeServices.getCommandesList
   };
 }
 

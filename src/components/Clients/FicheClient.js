@@ -16,6 +16,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import Clavier from '../common/Clavier';
 import SwitchCheckbox from '../common/SwitchCheckbox';
+import AlarmIcon from '@material-ui/icons/Alarm';
 
 let strings = new LocalizedStrings(data);
 
@@ -211,7 +212,7 @@ class FicheClient extends React.Component {
 
   render() {
 
-    const {open, client, mode, clients, clavierOpen, contexte} = this.props;
+    const {open, client, mode, clients, clavierOpen, contexte, scheduled, openSchedule} = this.props;
     const {
       client_id,
       bloque,
@@ -228,7 +229,7 @@ class FicheClient extends React.Component {
 
     const { focusInput, search } = this.state;
 
-    const readytovalidate = nom!=='' && prenom!=='' && (telephone!=='' || EMAIL_REG.test(email));
+    const readytovalidate = nom!=='' || prenom!=='' || telephone!=='' || telephone2!=='' || EMAIL_REG.test(email);
     const mapid = 'map-none';
 
     const vmode = this.state.innermode || mode;
@@ -510,14 +511,21 @@ class FicheClient extends React.Component {
               </div>
             </div>
             <div className="footer">
-              {contexte==='encaissement' && <StdButton 
-                identifier="modal-select" 
-                elementclass={ `select${((client_id&&client)?' unselect':'')}` } 
-                icon={ false } 
-                disabled={ !readytovalidate }
-                text={ client_id ? (client ? strings.modules.clients.edition.unselect : strings.general.dialog.select) : strings.modules.clients.edition.save_select } 
-                onClick={this.handleSelect} 
-              />}
+              {contexte==='encaissement' && (
+                <>
+                  <StdButton 
+                    identifier="modal-select" 
+                    elementclass={ `select${((client_id&&client)?' unselect':'')}` } 
+                    icon={ false } 
+                    disabled={ !readytovalidate }
+                    text={ client_id ? (client ? strings.modules.clients.edition.unselect : strings.general.dialog.select) : strings.modules.clients.edition.save_select } 
+                    onClick={this.handleSelect} 
+                  />
+                  <div className="schedule">
+                    <AlarmIcon className={`ico-schedule ${((scheduled!==null && scheduled!==undefined)?'schedule-set':'')}`} onClick={openSchedule} />
+                  </div>
+                </>
+              )}
               {contexte!=='encaissement' && <div></div>}
               <StdButton 
                 identifier="modal-save" 

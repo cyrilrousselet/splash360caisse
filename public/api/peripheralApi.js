@@ -6,11 +6,11 @@ const Printer = require('../utils/printer')
 escpos.USB = require('escpos-usb');
 escpos.Network = require('escpos-network');
 escpos.SerialPort = require('escpos-serialport');
-const statuses = require('escpos/statuses');
+// const statuses = require('escpos/statuses');
 const iconv = require('iconv-lite');
 
-const {PrinterStatus,OfflineCauseStatus,ErrorCauseStatus,RollPaperSensorStatus} = statuses;
-const _ = require('escpos/commands');
+// const {PrinterStatus,OfflineCauseStatus,ErrorCauseStatus,RollPaperSensorStatus} = statuses;
+// const _ = require('escpos/commands');
 const path = require('path');
 const fs = require('fs');
 
@@ -33,7 +33,7 @@ const actions = {
 
   printLabel: (req, res) => {
 
-    const { imprimante } = req.payload;
+    // const { imprimante } = req.payload;
 
     log.info('printLabel');
 
@@ -291,9 +291,12 @@ function _spoolManager(job=null) {
 
 function _openDrawer(imprimante, template, contenu) {
 
+
+  let vp, vid, pid;
+
   // déclaration de l'imprimante
   let device;
-  if (imprimante.connexion=='usb') {
+  if (imprimante.connexion==='usb') {
     if (imprimante.param && (typeof imprimante.param==="string") ) {
       vp = imprimante.param.split(';');
       vid = parseInt(vp[0], 16);
@@ -303,9 +306,9 @@ function _openDrawer(imprimante, template, contenu) {
       device = new escpos.USB();
     }
 
-  } else if (imprimante.connexion=='network') {
+  } else if (imprimante.connexion==='network') {
     device = new escpos.Network(imprimante.param); 
-  } else if (imprimante.connexion=='serial') {
+  } else if (imprimante.connexion==='serial') {
     device = new escpos.SerialPort(imprimante.param);
   }
   
@@ -313,7 +316,7 @@ function _openDrawer(imprimante, template, contenu) {
 
   device.open(function(error) {
     if (error) {
-      log.error(`ERREUR IMPRIMANTE->TIROIR (${imprimante.connexion}: ${imprimante.param}) =>`, e.message);
+      log.error(`ERREUR IMPRIMANTE->TIROIR (${imprimante.connexion}: ${imprimante.param}) =>`, error.message);
     } else {
       log.debug('device open -> cashdraw()');
       printerOpen = true;
@@ -334,7 +337,7 @@ function _openDrawer(imprimante, template, contenu) {
 function _doPrintTicket(imprimante, template, contenu) {
 
   // déclaration de l'imprimante
-  let device;
+  let device, vp, vid, pid;
   const options = {
     encoding: imprimante.encoding, 
     width:42
@@ -343,7 +346,7 @@ function _doPrintTicket(imprimante, template, contenu) {
   try {
     
 
-    if (imprimante.connexion=='usb') {
+    if (imprimante.connexion==='usb') {
       if (imprimante.param && (typeof imprimante.param==="string") ) {
         vp = imprimante.param.split(';');
           vid = parseInt(vp[0], 16);
@@ -352,9 +355,9 @@ function _doPrintTicket(imprimante, template, contenu) {
         } else {
           device = new escpos.USB();
         }
-    } else if (imprimante.connexion=='network') {
+    } else if (imprimante.connexion==='network') {
       device = new escpos.Network(imprimante.param); 
-    } else if (imprimante.connexion=='serial') {
+    } else if (imprimante.connexion==='serial') {
       device = new escpos.SerialPort(imprimante.param);
     }
     
@@ -436,7 +439,7 @@ function _doPrintTicket(imprimante, template, contenu) {
   }
     
 
-  log.debug('printTicket end');
+ // log.debug('printTicket end');
 
 }
 
@@ -459,21 +462,12 @@ function _printErrorHandler(error, methodName, printer) {
   _closePrinter(printer);
 }
 
-function _closePrinter(printer) {
-  printer.close(function() {
-    printerOpen = false;
-  });
-}
-function _printErrorHandler(error, methodName, printer) {
-  log.error(`ERREUR IMPRESSION ( ${methodName}() )`, error.message);
-  _closePrinter(printer);
-}
 
 function _launchPrint(template, printer, contenu, config={}) {
 
   log.debug('_launchPrint()');
 
-  if (template.length==0) {
+  if (template.length===0) {
     _closePrinter(printer);
   }
 
@@ -577,14 +571,14 @@ function _launchPrint(template, printer, contenu, config={}) {
     }
     else if ('qrcode' ===  section) {
       try {
-        const pqr = await _printQRCode(printer, contenu.code);
+        await _printQRCode(printer, contenu.code);
       } catch(e) {
         _printErrorHandler(e, '_printQRCode', printer);
       }
     }
     else if ('uber' ===  section) {
       try {
-        const pqr = await _printUber(printer, contenu.uber, contenu.strings.uber);
+        await _printUber(printer, contenu.uber, contenu.strings.uber);
       } catch(e) {
         _printErrorHandler(e, '_printUber', printer);
       }
@@ -605,7 +599,7 @@ function _launchPrint(template, printer, contenu, config={}) {
     } 
     else if ('prodfooter2' === section) {
       try {
-        const __ppf = await _printProdfooter2(printer, {id: contenu.detail.id, info: contenu.info, logo: contenu.logo}, contenu.strings);
+        await _printProdfooter2(printer, {id: contenu.detail.id, info: contenu.info, logo: contenu.logo}, contenu.strings);
       } catch(e) {
         _printErrorHandler(e, '_printProdfooter2', printer);
       }
@@ -615,6 +609,13 @@ function _launchPrint(template, printer, contenu, config={}) {
         _printEtiquettes(printer, contenu, config);
       } catch(e) {
         _printErrorHandler(e, '_printEtiquettes', printer);
+      }
+    }
+    else if ('produits' === section) {
+      try {
+        _printProduits(printer, contenu, config);
+      } catch(e) {
+        _printErrorHandler(e, '_printProduits', printer);
       }
     }
     // else if ('logo' === section) {
@@ -654,29 +655,6 @@ function _printEtiquettes(printer, data, config) {
 
   log.info('width',__w);
   log.info('height',__h);
-
-  // const test = [
-  //   'SIZE ' + params.width + ' mm,' + params.height + ' mm',
-  //   'GAP ' + params.gap + ' mm,0',
-  //   'DIRECTION 1,0',
-  //   'CLS',
-  //   'TEXT 10,10,"2",0,2,2,"#25"',
-  //   'TEXT 150,10,"2",0,1,1,"20/04/21 - 12:32"',
-  //   'BAR 10,50,' + (__w - 20) + ',4',
-  //   // 'TEXT 10,70,"2",0,1,1,"A EMPORTER"',
-  //   'TEXT 10,70,"2",0,2,2,"MENU B1"',
-  //   // 'BLOCK 10,145,' + (__w - 20) + ',' + (__h - 155) + ',"1",0,1,1,"cheeseburger, frites, barbecue, cheesy, cheddar, cheeseburger, frites, barbecue, cheesy, cheddar, cheeseburger, frites, barbecue"',
-  //   'TEXT 10,145,"1",0,1,1,"cheeseburger, frites, barbecue, cheesy, cheddar, cheeseburger, frites, barbecue, cheesy, cheddar, cheeseburger, frites, barbecue"',
-  //   'PRINT 1'];
-
-  
-  // const feed = iconv.encode(test.join("\n"),"Cp850"); 
-  
-  // // log.info('feed',feed);
-
-
-  // printer.print(feed);
-
 
   let __job = [];
 
@@ -723,6 +701,56 @@ function _printEtiquettes(printer, data, config) {
   printer.print(feed);
 
 }
+
+function _printProduits(printer, data, strings) {
+
+  log.info('_printProduits', data);
+
+  data.articles.forEach((art, i, ar) => {
+
+    const inglist = art.ingredients.map(ing => ing.qte+'x '+ing.nom.toLowerCase());
+
+    let __fl = String(data.numero).length + 1;
+    __fl += String(data.mode).length;
+    let __sp = 21 - __fl;
+
+    const __flt = '#'+data.numero+(new Array(__sp+1)).join(' ')+data.mode;
+
+
+    printer
+      .font('A')
+      .align('CT')
+      .style('B')
+      .fontSize('4square')
+      .text(__flt)
+      // .tableCustom([
+      //   {text:'#'+data.numero, align:'LEFT', cols:19, style:'B'},
+      //   {text:data.mode, align:'RIGHT', cols:19, style:'NORMAL'},
+      // ])
+      .fontSize('normal')
+      .tableCustom([
+        {text:data.date, align:'RIGHT', cols:42, style:'NORMAL'}
+      ])
+      .drawLine()
+      .fontSize('4square')
+      .tableCustom([
+        {text: art.nom, align:'LEFT', cols:21, style:'B'}
+      ])
+      .fontSize('normal')
+      .tableCustom([
+        {text: inglist.join(', '), align:'LEFT', cols:42, style:'NORMAL'}
+      ])
+      .feed(2);
+
+      if (i<ar.length-1) {
+        printer.cut();
+      }
+  });
+  
+}
+
+
+
 
 // informations commande sur le ticket
 function _printInfo(printer, data, strings) {
@@ -1175,7 +1203,7 @@ async function _printProdfooter2(printer, data, strings) {
   if (data.logo) {
     const pixels = await getPixelsAsync(getLogoImg(data.logo));
     const image = new escpos.Image(pixels);
-    const printImage = await _printImage(printer, image);
+    await _printImage(printer, image);
   }
 }
 
@@ -1269,7 +1297,7 @@ async function _printQRCode(printer, code) {
   const pixels = await getPixelsAsync(qrimg);
   const image = new escpos.Image(pixels);
 //  log.info(image);
-  const printQRimage = await _printImage(printer, image);
+  await _printImage(printer, image);
 
   printer
     // .fontSize('4square')
@@ -1288,14 +1316,14 @@ function getLogoImg(filePath) {
 
 }
 
-async function _printLogo(printer, imageUrl) {
+// async function _printLogo(printer, imageUrl) {
 
-  const pixels = await getPixelsAsync(getLogoImg(imageUrl));
-  const image = new escpos.Image(pixels);
-//  log.info(image);
-  const printImage = await _printImage(printer, image);
+//   const pixels = await getPixelsAsync(getLogoImg(imageUrl));
+//   const image = new escpos.Image(pixels);
+// //  log.info(image);
+//   const printImage = await _printImage(printer, image);
 
-}
+// }
 
 // impression des informations de commande
 function _printCommande(printer, data, strings) {
@@ -1337,6 +1365,15 @@ function _printCommande(printer, data, strings) {
       .fontSize('2height')
       .drawLine()
       .fontSize('normal');
+  }
+
+  if (data.scheduled) {
+    printer
+    .fontSize('2width')
+    .text(`<<< ${strings.schedule.titre}${data.scheduled} >>>`)
+    .fontSize('normal')
+    .drawLine()
+    ;
   }
 
 
@@ -1456,13 +1493,16 @@ function _printCommande(printer, data, strings) {
       });
     }
     if (article.modificateur) {
+      const modnom = article.modificateur.nom || ((article.modificateur.operation>0) ? strings.modificateur.frais_item : strings.modificateur.discount_item);
+      const modope = (article.modificateur.operation===1) ? '+' : '-';
       printer.align('CT').style('B').tableCustom([
         {text: '', cols:4},
-        {text: strings.modificateur.discount_item, cols:22, align:'LEFT'},
+        // {text: strings.modificateur.discount_item, cols:22, align:'LEFT'},
+        {text: modnom, cols:22, align:'LEFT'},
         {text:'', cols:1},
-        {text: article.modificateur.montant ? '' : '-'+article.modificateur.valeur, cols:6, align:'RIGHT'},
+        {text: article.modificateur.montant ? '' : modope+article.modificateur.valeur, cols:6, align:'RIGHT'},
         {text:'', cols:1},
-        {text: article.modificateur.montant ? '-'+article.modificateur.montant.toFixed(2) : '-'+article.modificateur.valeur, cols:6, align:'RIGHT'},
+        {text: article.modificateur.montant ? modope+article.modificateur.montant.toFixed(2) : modope+article.modificateur.valeur, cols:6, align:'RIGHT'},
         {text:'', cols:2}
       ]);
       _linecount++;
@@ -1471,6 +1511,8 @@ function _printCommande(printer, data, strings) {
 
   // modificateurs (charge ou discount) au niveau de la commande
   if (data.modificateur) {
+    const modnom = data.modificateur.nom || ((data.modificateur.operation>0) ? strings.modificateur.frais_panier : strings.modificateur.discount_panier);
+    const modope = (data.modificateur.operation===1) ? '+' : '-';
 
     // sous-total
     printer
@@ -1502,9 +1544,9 @@ function _printCommande(printer, data, strings) {
         // .fontSize('4square')
         .fontSize('normal')
         .tableCustom([
-          {text: strings.modificateur.discount_panier, cols:22, align:'LEFT'},
-          {text: '-'+modval, cols:10, align:'RIGHT'},
-          {text: '-'+montant, cols:10, align:'RIGHT'}
+          {text: modnom, cols:22, align:'LEFT'},
+          {text: modope+modval, cols:10, align:'RIGHT'},
+          {text: modope+montant, cols:10, align:'RIGHT'}
         ])
         .fontSize('normal')
       }
@@ -1515,9 +1557,9 @@ function _printCommande(printer, data, strings) {
       // .fontSize('4square')
       .fontSize('normal')
       .tableCustom([
-        {text: strings.modificateur.discount_panier, cols:22, align:'LEFT'},
+        {text: modnom, cols:22, align:'LEFT'},
         {text: '', cols:10, align:'RIGHT'},
-        {text: '-'+modval, cols:10, align:'RIGHT'}
+        {text: modope+modval, cols:10, align:'RIGHT'}
       ])
       .fontSize('normal')
       }
@@ -2252,8 +2294,8 @@ function _printUber(printer, data, strings) {
     .text(strings.titre)
     .text('#'+data.display_id)
     .font('A')
-    // .fontSize('4square')
-    .fontSize('normal')
+    .fontSize('4square')
+    // .fontSize('normal')
     .style('NORMAL')
     .feed(1)
     .text(`${strings.client} ${data.eater.first_name} ${data.eater.last_name}` )

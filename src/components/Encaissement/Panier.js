@@ -6,6 +6,7 @@ import StdButton from '../common/StdButton';
 import { List, ListItem, Fab, Modal, TextField, ListItemText, ListItemIcon, ListItemSecondaryAction, Badge } from '@material-ui/core';
 import Swal from 'sweetalert2';
 import _ from 'lodash';
+import AlarmIcon from '@material-ui/icons/Alarm';
 
 import PlusIcon from '../common/icon/PlusIcon';
 import DiscountIcon from '../common/icon/DiscountIcon';
@@ -31,11 +32,26 @@ import paths from './../../constants/routes.json';
 
 import { decodetable } from '../../constants/decodetable';
 import MouvementPopin from '../Cloture/MouvementPopin';
+import EmployeIcon from '../common/icon/EmployeIcon';
+import LoginCont from '../../containers/LoginCont';
+import { dateBounds } from '../../helpers/toolbox';
+import frLocale from "date-fns/locale/fr";
+import { MuiPickersUtilsProvider, TimePicker } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+// import { formatRFC3339 } from 'date-fns';
+// import { add, isBefore, format } from 'date-fns';
+import { add, isBefore } from 'date-fns';
+
 
 let strings = new LocalizedStrings(data);
 const logger = new Logger();
 
 
+class LocalizedDayUtils extends DateFnsUtils {
+  getDatePickerHeaderText(date) {
+    return this.format(date, "d MMM yyyy", { locale: frLocale });
+  }
+}
 
 // class TablesModal extends React.Component {
 
@@ -59,6 +75,140 @@ const logger = new Logger();
 //   }
 
 // }
+
+
+
+const BeneficiaireModal = ({open, getBeneficiaire, closePopin}) => (
+
+  <Modal open={open}>
+    <div className="BeneficiaireModal">
+      <div className="Modal-container">
+        <div className="header">
+          <div className="title">{ strings.modules.encaissement.staffmeal.titre }</div>
+        </div>
+        <div className="body">
+          <div className="soustitre">{ strings.modules.encaissement.staffmeal.label }</div>
+          <LoginCont inPopin={true} popinAction={ (passphrase) => getBeneficiaire(passphrase) } />
+        </div>
+      </div>
+      <Fab aria-label="close" size="small" className="close-button" onClick={ closePopin }>
+        <CloseIcon />
+      </Fab>
+    </div>
+  </Modal>
+);
+
+
+class ScheduleModal extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      schedule: null
+    };
+
+    this.deleteSchedule = this.deleteSchedule.bind(this);
+    this.saveSchedule = this.saveSchedule.bind(this);
+    this.resetPopin = this.resetPopin.bind(this);
+    this.checkHour = this.checkHour.bind(this);
+  }
+
+  deleteSchedule() {
+    this.props.deleteSchedule();
+    this.resetPopin();
+  }
+  saveSchedule() {
+    const {schedule} = this.state;
+    if (schedule) {
+      const heure = new Date(schedule);
+      // this.props.saveSchedule((heure.getHours()*100)+heure.getMinutes());
+      this.props.saveSchedule(heure);
+      this.resetPopin();
+    }
+  }
+  checkHour(heure) {
+    // const now_delayed = add(new Date(), {minutes:this.props.delai});
+    // logger.log('checkHour()', new Date(heure), now_delayed);
+    // const heure_date = new Date(heure);
+    // if (isBefore(heure_date, now_delayed)) {
+    //   Swal.fire({
+    //     title: strings.modules.encaissement.schedule.alert.troptot.titre,
+    //     html: strings.modules.encaissement.schedule.alert.troptot.texte.replace('%HEURE%', format(now_delayed,'HH:mm'))
+    //   });
+    // } else {
+      this.setState({schedule: heure});
+    // }
+  }
+  resetPopin() {
+    this.setState({schedule: null});
+  }
+
+  render() {
+
+    const {open, closeHandler} = this.props;
+    const {schedule} = this.state;
+
+    const vschedule = schedule ? schedule : this.props.schedule;
+
+    return (
+      <Modal
+        open={open}
+        >
+        <div className={ `ScheduleModal`}>
+          <div className="Modal-container">
+            <div className="header">
+              <div className="title">{ strings.modules.encaissement.schedule.titre }</div>
+            </div>
+            <div className="body">
+      
+              <div className="heures">
+                <MuiPickersUtilsProvider utils={LocalizedDayUtils} locale={frLocale}>
+                  <TimePicker
+                            margin="dense"
+                            variant="static"
+                            orientation="landscape"
+                            openTo="hours"
+                            id="start"
+                            ampm={false}
+                            className="heure"
+                            label={ strings.modules.encaissement.schedule.heure }
+                            value={vschedule}
+                            minutesStep={5}
+                            onChange={(heure) => { this.checkHour(heure) }}
+                            KeyboardButtonProps={{
+                              'aria-label': 'change time',
+                            }}
+                          />
+                </MuiPickersUtilsProvider>
+              </div>
+            </div>
+            <div className="footer">
+            <StdButton 
+                identifier="modal-suppr" 
+                elementclass="suppr" 
+                icon={ false } 
+                disabled={ schedule!==null && schedule!==undefined }
+                text={ strings.general.dialog.delete } 
+                onClick={this.deleteSchedule} 
+              />
+              <StdButton 
+                identifier="modal-save" 
+                elementclass="save" 
+                icon={ false } 
+                disabled={schedule===null || schedule===undefined}
+                text={ strings.general.dialog.save } 
+                onClick={this.saveSchedule} 
+              />
+            </div>
+          </div>
+          <Fab aria-label="close" size="small" className="close-button" onClick={ ()=>{this.resetPopin(); closeHandler()} }>
+            <CloseIcon />
+          </Fab>
+        </div>
+      </Modal>
+    );
+  }
+}
 
 
 class BipperModal extends React.Component {
@@ -297,7 +447,8 @@ class DiscountModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      valeur: null
+      valeur: null,
+      nom: ''
     };
     this.deleteDiscount = this.deleteDiscount.bind(this);
     this.saveDiscount = this.saveDiscount.bind(this);
@@ -332,33 +483,36 @@ class DiscountModal extends React.Component {
 
   saveDiscount() {
     const { discountid, item, ingredient } = this.props;
-    const { valeur } = this.state;
+    const { nom, valeur } = this.state;
 
     logger.log('saveDiscount()');
 
-    this.props.saveHandler(discountid, item, ingredient, valeur);
+    this.props.saveHandler(discountid, item, ingredient, valeur, nom);
     this.resetPopin();
     this.props.closeHandler();
 
   }
   resetPopin() {
-    this.setState({valeur:null});
+    this.setState({valeur:null, nom:''});
   }
   changeHandler(event) {
    // logger.log('CommentModal.changeHandler()', event.target.value);
-    this.setState({valeur:Math.abs(event.target.value)});
+    this.setState({valeur:Math.abs(event.target.value), nom:event.target.nom});
   }
-  setDiscount(valeur) {
+  setDiscount(discount) {
     // const { valeur } = this.state;
     // let newvaleur = (valeur===null) ? '' : texte+', ';
-    this.setState({valeur: valeur});
+    this.setState({nom: discount.nom, valeur: discount.valeur});
   }
   render() {
 
-    const { discountid, item, ingredient, dsclib, closeHandler, discountval, open } = this.props;
-    const { valeur } = this.state;
+    const { discountid, item, ingredient, dsclib, closeHandler, discountval, discountnom, open } = this.props;
+    const { valeur, nom } = this.state;
 
-    const vvaleur = valeur==null ? discountval : valeur;
+    console.log('dsclib',dsclib);
+
+    const vvaleur = valeur===null ? discountval : valeur;
+    const vnom = nom==='' ? discountnom : nom;
     logger.log('discountval', discountval);
 
     // setTimeout(() => {
@@ -391,7 +545,7 @@ class DiscountModal extends React.Component {
                     onChange={this.changeHandler}
                     variant="filled"
                   /> */}
-                  <div className="discount-valeur">{ vvaleur }</div>
+                  <div className="discount-valeur">{ (vvaleur ? `${vnom} (${vvaleur})` : '') }</div>
                   <div className="caption">{ strings.modules.encaissement.discount.caption }</div>
                 </div>
             </div>
@@ -399,7 +553,7 @@ class DiscountModal extends React.Component {
               <div className="label">{ strings.modules.encaissement.discount.predefini }</div>
               <div className="choix">
                 {dsclib && dsclib.map(dsc=>(
-                  <div className="dsclib-item" key={`dsc-${dsc.id}`} onClick={()=>{this.setDiscount(dsc.valeur)}}>{dsc.valeur}</div>
+                  <div className="dsclib-item" key={`dsc-${dsc.id}`} onClick={()=>{this.setDiscount(dsc)}}>{`${dsc.nom} (${dsc.valeur})`}</div>
                 ))}
               </div>
             </div>
@@ -462,6 +616,7 @@ class Panier extends React.Component {
       inputValue: '',
       tablesOpen: false,
       bippersOpen: false,
+      scheduleOpen: false,
       ouvertureOpen: false,
       solde: 0
     }
@@ -492,10 +647,19 @@ class Panier extends React.Component {
     this.closeBippers = this.closeBippers.bind(this);
     this.selectBipper = this.selectBipper.bind(this);
 
+    this.openSchedule = this.openSchedule.bind(this);
+    this.closeSchedule = this.closeSchedule.bind(this);
+    this.deleteSchedule = this.deleteSchedule.bind(this);
+    this.setSchedule = this.setSchedule.bind(this);
+
     this.testOuverture = this.testOuverture.bind(this);
     this.openOuverture = this.openOuverture.bind(this);
     this.closeOuverture = this.closeOuverture.bind(this);
     this.addOuverture = this.addOuverture.bind(this);
+
+    this.setStaffmeal = this.setStaffmeal.bind(this);
+    this.getBeneficiaire = this.getBeneficiaire.bind(this);
+    this.cancelStaffmeal = this.cancelStaffmeal.bind(this);
 
   }
 
@@ -625,9 +789,22 @@ class Panier extends React.Component {
 
   setSelectedIndex(index) {
     const {selectedIngredient} = this.state;
-    if (selectedIngredient===-1) {
-      index = index===this.state.selectedIndex ? -1 : index;
+    if (!this.props.open) {
+      console.log('select item');
+      if (selectedIngredient===-1) {
+        index = index===this.state.selectedIndex ? -1 : index;
+      }
     }
+
+    if (index >= 0 && this.props.open) {
+      console.log('select dans le reglt');
+      const itemsCopy = [...this.props.commande.items];
+      const item = itemsCopy[index];
+      item.selected = !item.selected  ? true : false;
+      itemsCopy[index] = item;
+      this.props.updateCommande({...this.props.commande, items: itemsCopy})
+    }  
+
     this.setState({selectedIndex: index, selectedIngredient: -1, ingredientid: null})
   }
 
@@ -659,9 +836,11 @@ class Panier extends React.Component {
           const ispc = String(__moditem.valeur).substr(-1,1)==='%';
           const val = Math.abs(Number(String(__moditem.valeur).slice(0,-1)));
           if (ispc) {
-            __itemtotal *= (100 - val) / 100;
+            // __itemtotal *= (100 - val) / 100;
+            __itemtotal *= __moditem.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
           } else {
-            __itemtotal -= val;
+            // __itemtotal -= val;
+            __itemtotal = __moditem.operation>0 ? __itemtotal + val : __itemtotal - val;
           }
         }
         __total += __itemtotal;
@@ -677,9 +856,9 @@ class Panier extends React.Component {
       const ispc = String(modpanier.valeur).substr(-1,1)==='%';
       const val = Math.abs(Number(String(modpanier.valeur).slice(0,-1)));
       if (ispc) {
-        __total *= (100 - val) / 100;
+        __total *= modpanier.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
       } else {
-        __total -= val;
+        __total = modpanier.operation>0 ? __total + val : __total - val;
       }
     }
     
@@ -766,17 +945,19 @@ class Panier extends React.Component {
     });
   }
 
-  saveDiscount(discountid, itemid, ingredientid, valeur) {
+  saveDiscount(discountid, itemid, ingredientid, valeur, nom='') {
     if (discountid===null) {
       this.props.addDiscount({
         item: itemid,
         ingredient: ingredientid,
-        valeur: valeur
+        valeur: valeur,
+        nom: nom
       });
     } else {
       this.props.updateDiscount({
         discountId: discountid, 
-        valeur: valeur
+        valeur: valeur,
+        nom: nom
       });
     }
   }
@@ -907,6 +1088,37 @@ class Panier extends React.Component {
     logger.log('selectTables()');
   }
 
+  openSchedule() {
+    logger.log('openSchedule()');
+    this.setState({scheduleOpen: true});
+  }
+  closeSchedule() {
+    logger.log('closeSchedule()');
+    this.setState({scheduleOpen: false});
+  }
+  deleteSchedule() {
+    logger.log('deleteSchedule()');
+    this.props.updateCommande({scheduled:null, enproduction:false});
+    this.setState({scheduleOpen: false});
+  }
+  setSchedule(heure) {
+    logger.log('setSchedule('+heure+')');
+    
+    const round_heure = `${ heure.getUTCFullYear() }-${ String(heure.getUTCMonth()+1).padStart(2,'0') }-${ String(heure.getUTCDate()).padStart(2, '0') }T${ String(heure.getUTCHours()).padStart(2, '0') }:${ String(heure.getUTCMinutes()).padStart(2, '0') }:00.000Z`;
+    
+    // si l'heure programmée est dans les 15 prochaines minutes -> enproduction=true
+    const {parametres} = this.props;
+    const schedule_delay = (parametres && parametres.commandes) ? (parametres.commandes.schedule_delay || 15) : 15;
+    const __end = add(new Date(), {minutes:schedule_delay});
+    let __enproduction = false;
+    if (isBefore(heure,__end)) {
+      __enproduction = true;
+    }
+    console.log('SETSCH', __end, heure, __enproduction);
+    
+    this.props.updateCommande({scheduled:round_heure, enproduction:__enproduction});
+    this.setState({scheduleOpen: false});
+  }
 
   openBippers() {
     logger.log('openBippers()');
@@ -920,6 +1132,146 @@ class Panier extends React.Component {
     logger.log('selectBipper('+bipperId+')');
     this.setState({bippersOpen: false});
     this.props.updateCommande({bipper:bipperId});
+  }
+
+  setStaffmeal() {
+    const { commande } = this.props;
+
+    if (commande.type==='staffmeal' && commande.beneficiaire!==null) {
+
+      // const discount_panier = commande.modificateurs.find(m => (m.item===null && m.ingredient===null));
+
+      Swal.fire({
+        title: strings.modules.encaissement.staffmeal.annulation.titre,
+        html: strings.modules.encaissement.staffmeal.annulation.texte,
+        focusConfirm: true,
+        showCancelButton: true,
+        customClass: 'deleteconfirm',
+        confirmButtonText: strings.general.dialog.delete,
+        cancelButtonText: strings.general.dialog.cancel,
+        buttonsStyling: false 
+      })
+      .then((result) => {
+        if (result.value) {
+          this.props.updateCommande({
+            type: 'vente',
+            beneficiaire: null,
+            modificateurs: []
+          });
+        }
+      });
+
+
+    } else {
+      this.props.updateCommande({
+        type: 'staffmeal',
+        beneficiaire: null,
+        modificateurs: []
+      });
+    }
+
+  }
+
+
+  async getBeneficiaire(passphrase) {
+
+    const { 
+      getUser, 
+      updateCommande, 
+      parametres, 
+      commande, 
+      addDiscount, 
+      updateDiscount,
+      getCommandesList 
+    } = this.props;
+    
+    const { staffmeal_modifier } = parametres.options;
+
+    let id, nom, user_id;
+
+    // récup de l'employé à partir de son identifiant
+    try {
+
+      const __user = await getUser(passphrase);
+
+      id = __user.id;
+      nom = __user.nom;
+      user_id = __user.user_id;
+
+    }
+    catch (error) {
+      Swal.fire({
+        title: strings.modules.encaissement.staffmeal.alerte.titre,
+        html: strings.modules.encaissement.staffmeal.alerte.texte,
+        showCancelButton: false,
+        focusConfirm: true
+      }).then((result)=> {
+        this.cancelStaffmeal();
+      });
+    }
+
+ 
+
+    const {heure_fin} = parametres.entreprise;
+    const {debut} = dateBounds(new Date(), heure_fin);
+
+
+    logger.log('query staffmeal','{$and:[{type:"staffmeal"}, {createdAt:{$gt:'+debut+'}}, {"beneficiaire.id":"'+id+'"}]}');
+
+    const daily_staffmeal = await getCommandesList({
+      $and:[
+        { type: 'staffmeal' },
+        { 'beneficiaire.id': id },
+        { createdAt: { $gt: debut } }
+      ]
+    });
+
+    logger.log('daily_staffmeal', daily_staffmeal);
+
+    if (daily_staffmeal && daily_staffmeal.commandeslist && Object.entries(daily_staffmeal.commandeslist).length>0) {
+
+      Swal.fire({
+        title: strings.modules.encaissement.staffmeal.deja.titre,
+        html: strings.modules.encaissement.staffmeal.deja.texte,
+        showCancelButton: false,
+        focusConfirm: true
+      }).then((result)=> {
+        this.cancelStaffmeal();
+      });
+      
+    }
+    else {
+      
+      // attribue le modificateur 'staffmeal_modifier' au niveau du panier
+      // modifie le modificateur panier s'il existe déjà
+      const discount_panier = commande.modificateurs.find(m => (m.item===null && m.ingredient===null));
+      if (discount_panier) {
+        updateDiscount({
+          discountId: discount_panier.modificateur_id, 
+          valeur: staffmeal_modifier,
+          nom: strings.modules.encaissement.staffmeal.titre
+        });
+      }
+      else {
+        addDiscount({
+          item: null,
+          ingredient: null,
+          valeur: staffmeal_modifier,
+          nom: strings.modules.encaissement.staffmeal.titre
+        });
+      }
+      
+      
+      // définit le bénéficiaire
+      updateCommande({beneficiaire:{id, nom, user_id}}); 
+    }
+      
+    
+
+  }
+
+  cancelStaffmeal() {
+    this.props.updateCommande({beneficiaire:null, type:'vente'});
   }
 
   interval = 0;
@@ -944,7 +1296,7 @@ class Panier extends React.Component {
             // caisses,
            } = this.props;
 
-    const { comments, modificateurs, items, ticketId, mode, client, bipper } = this.props.commande;
+    const { comments, modificateurs, items, ticketId, mode, client, bipper, type, beneficiaire } = this.props.commande;
     
     const {inputfocus, searchval, 
            commentOpen, commentId, commentItemId, commentIngredientId,
@@ -953,6 +1305,7 @@ class Panier extends React.Component {
            clavierOpen,
            bippersOpen,
            ouvertureOpen,
+           scheduleOpen,
            solde,
           } = this.state;
 
@@ -964,6 +1317,7 @@ class Panier extends React.Component {
 
     // récup de la valeur en fonction de l'id du discount (s'il est défini)
     const discountVal = (discountId!==null) ? modificateurs.find(dsc=>dsc.modificateur_id===discountId).valeur : '';
+    const discountNom = (discountId!==null) ? modificateurs.find(dsc=>dsc.modificateur_id===discountId).nom : '';
     // choix de discounts prédéfinis pour les discounts :
     const dsclib = (parametres && parametres.commandes) ? parametres.commandes.discount_predefini : [];
     // gestion de tables :
@@ -971,7 +1325,9 @@ class Panier extends React.Component {
     const tableId = null;
     
     const gestion_bippers = (parametres && parametres.commandes) ? parametres.commandes.active_bippers : false;
-    
+    const schedule_delay = (parametres && parametres.commandes) ? (parametres.commandes.schedule_delay || 15) : 15;
+
+console.log('⏰', schedule_delay);
 
     const commandeClient = client ? clients.find(c=>c.client_id===client.client_id) : null;
 
@@ -989,6 +1345,8 @@ class Panier extends React.Component {
     const total = this.calculateTotal(items, modificateurs);
     const devisemonnaie = '€';
     const { selectedIndex, selectedIngredient } = this.state;
+
+    const { staffmeal_active, staffmeal_modifier } = parametres.options;
 
 
     logger.log(`index:${selectedIndex}, ingIndex:${selectedIngredient}`);
@@ -1213,6 +1571,9 @@ class Panier extends React.Component {
           {/* <div className="ticketId">{ (this.interval==0?'X':'√')+strings.modules.encaissement.panier.ticket_no+' '+ticketId }</div> */}
           <div className="ticketId">{ strings.modules.encaissement.panier.ticket_no+' '+_.last(ticketId.split('-')) }</div>
           <div className="ticketComment"></div>
+          <div className="schedule">
+            <AlarmIcon className={`ico-schedule ${((this.props.commande.scheduled!==null && this.props.commande.scheduled!==undefined)?'schedule-set':'')}`} onClick={this.openSchedule} />
+          </div>
           {gestion_bippers && (<Badge className="bipper" badgeContent={bipper} max={999} color="primary">
               <BellIcon className={`ico-bipper ${((bipper!==null && bipper!==undefined)?'bipper-set':'')}`} onClick={this.openBippers} />
             </Badge>)}
@@ -1250,7 +1611,7 @@ class Panier extends React.Component {
                           quantite={ itm.quantite }
                           // prix={ itm.prix }
                           prix={ itm.pu*itm.quantite }
-                          disabled={ open }
+                          disabled={ itm.paid }
                           commentaire={ itm.commentaire!=='' }
                           getComment={ this.getComment }
                           removeComment= { this.removeComment }
@@ -1278,16 +1639,21 @@ class Panier extends React.Component {
                             let __nextid = (__stepIndex>=itm.steps.length-1) ? -1 : itm.steps[__stepIndex+1].id;
                             this.props.uncheckItemSteps({itemid:itm.itemid.toString(), stepid: stepid});
                             this.props.openPersonnalisation(itm.itemid.toString(), stepid, __previd, __nextid, __step.validated, itm.status, 'item');
-                          }} />
+                          }} 
+                          commandetype={ type }/>
                   )}
                   {modif_panier && <div className="separateur"></div>}
                   {modif_panier && <DiscountListItem
                       className="panier-discount"
+                      nom={modif_panier.nom||''}
                       valeur={modif_panier.valeur}
                       id={modif_panier.modificateur_id}
                       montant={modif_panier.montant}
+                      operation={modif_panier.operation}
+                      type={modif_panier.type}
                       onClick={this.openDiscount}
                       deleteHandler={deleteDiscount}
+                      discountsurvente={ type==="vente" }
                     />
                   }
                   </List>
@@ -1299,7 +1665,7 @@ class Panier extends React.Component {
                 <Fab aria-label="remove" size="small" className="tool remove" disabled={selectedIndex===-1 || open} onClick={onClickRemove}>
                   <MinusIcon htmlColor="#1EA9DF" />
                 </Fab>
-                <Fab aria-label="discount" size="small" className="tool discount" disabled={open} onClick={this.openDiscount}>
+                <Fab aria-label="discount" size="small" className="tool discount" disabled={open || (type==='staffmeal')} onClick={this.openDiscount}>
                   <DiscountIcon />
                 </Fab>
                 <Fab aria-label="comment" size="small" className="tool comment" disabled={open} onClick={this.openComment}>
@@ -1323,11 +1689,12 @@ class Panier extends React.Component {
             <StdButton identifier='emporter' elementclass={ `mode mode-emporter ${(('emporter'===mode) && 'active' : '')}` } disabled={ open } icon={ false } text={ strings.modules.encaissement.panier.mode.emporter } onClick={(value) => { updateCommande({mode:value}) }} />
             <StdButton identifier='livraison' elementclass={ `mode mode-livraison ${(('livraison'===mode) && 'active' : '')}` } disabled={ open } icon={ false } text={ strings.modules.encaissement.panier.mode.livraison } onClick={(value) => { updateCommande({mode:value}) }} />
           </div>
-          <div className="actions">
+          <div className={ `actions${ ((staffmeal_active && staffmeal_modifier) ? ' with-staffmeal' : '' ) }` }>
             <StdButton identifier='encaisser' elementclass={ `action action-encaisser${(ventecmd ? ' action-mid' : '')}` } disabled={ !__encaissable || open } icon={ false } text={ strings.modules.encaissement.panier.action.encaissement } onClick={ ()=> { openReglementHandler() }} />
-            {(ventecmd) && (<StdButton identifier='valider' elementclass={ `action action-valider action-mid` } disabled={ !__encaissable || open } icon={ false } text={ strings.modules.encaissement.panier.action.valider } onClick={ ()=> { validationHandler() }} /> )}
+            {(ventecmd) && (<StdButton identifier='valider' elementclass={ `action action-valider action-mid` } disabled={ !__encaissable || open || (type==='staffmeal') } icon={ false } text={ strings.modules.encaissement.panier.action.valider } onClick={ ()=> { validationHandler() }} /> )}
             <StdButton identifier='tiroir' elementclass="action action-tiroir" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.tiroir } onClick={ tiroirHandler } />
-            <StdButton identifier='attente' elementclass="action action-attente" icon={ false } disabled={ !__encaissable || open } text={ strings.modules.encaissement.panier.action.attente } onClick={ attenteHandler } />
+            {(staffmeal_active && staffmeal_modifier) && (<StdButton identifier='staffmeal' elementclass={ `action action-staffmeal${(type==="staffmeal" ? " activated" : "")}` } icon={ <EmployeIcon htmlColor="#ffffff" /> } disabled={ open || open } text={ '' } onClick={ () => { this.setStaffmeal() } } />)}
+            <StdButton identifier='attente' elementclass="action action-attente" icon={ false } disabled={ !__encaissable || open || (type==='staffmeal') } text={ strings.modules.encaissement.panier.action.attente } onClick={ attenteHandler } />
             <StdButton identifier='reprise' elementclass="action action-reprise" icon={ false } disabled={ open } text={ strings.modules.encaissement.panier.action.reprise } onClick={gotoListeCommandes} />
           </div>
         </div>
@@ -1351,6 +1718,7 @@ class Panier extends React.Component {
           discountid={discountId} 
           item={discountItemId} 
           discountval={ discountVal }
+          discountnom={ discountNom }
           ingredient={discountIngredientId}
           dsclib={ dsclib }
           />
@@ -1360,8 +1728,15 @@ class Panier extends React.Component {
           selectBipper={this.selectBipper}
           bipper={bipper}
           />
-        <FicheClientCont open={ficheClientOpen} clavierOpen={ clavierOpen } client={commandeClient} mode={commandeClient?'fiche':'recherche'} contexte="encaissement" closeHandler={this.closeFicheClient} selectClient={this.selectClient} />
-
+        <FicheClientCont open={ficheClientOpen} clavierOpen={ clavierOpen } client={commandeClient} mode={commandeClient?'fiche':'recherche'} contexte="encaissement" closeHandler={this.closeFicheClient} selectClient={this.selectClient} scheduled={this.props.commande.scheduled} openSchedule={this.openSchedule} />
+        <ScheduleModal
+          open={ scheduleOpen }
+          closeHandler={ this.closeSchedule }
+          deleteSchedule={ this.deleteSchedule }
+          saveSchedule={ this.setSchedule }
+          schedule={this.props.commande.scheduled}
+          delai={schedule_delay}
+        />
         <MouvementPopin 
           open={ ouvertureOpen } 
           type={ "ouverture" } 
@@ -1371,6 +1746,7 @@ class Panier extends React.Component {
           closeHandler={ this.closeOuverture }
           saveMouvement={ this.addOuverture }
         />
+        {(staffmeal_active && staffmeal_modifier) && (<BeneficiaireModal closePopin={ this.cancelStaffmeal } getBeneficiaire={ this.getBeneficiaire } open={ type==="staffmeal" && !beneficiaire } />)}
       </div>
     );
   }
@@ -1397,14 +1773,14 @@ Panier.propTypes = {
 
 
 function DiscountListItem (props) {
-  const {valeur, montant, id, onClick, className, deleteHandler} = props;
+  const {valeur, montant, nom, id, type, operation, onClick, className, deleteHandler, discountsurvente=true} = props;
 
   const deleteDiscount = () => {
     logger.log('deleteDiscount',id);
 
     Swal.fire({
       title: strings.modules.encaissement.discount.suppression.titre,
-      text: strings.modules.encaissement.discount.suppression.titre,
+      html: strings.modules.encaissement.discount.suppression.texte,
       focusConfirm: true,
       showCancelButton: true,
       customClass: 'deleteconfirm',
@@ -1419,16 +1795,25 @@ function DiscountListItem (props) {
     });
   }
 
-  logger.log('discount id', id);
+  const modtype = type==="discount" 
+  ? "type-discount" 
+  : (
+    operation>0 
+    ? "type-frais" 
+    : "type-regle"
+    )
+  ;
+
+  logger.log('discount id', id, operation);
 
   return (
-    <ListItem className={ `discount ${className||''}` }>
-      <ListItemText primary={valeur} onClick={onClick} />
+    <ListItem className={ `discount ${className||''} ${modtype}` }>
+      <ListItemText primary={`${(nom ? nom : valeur)}`} onClick={() => { type==="discount" ? onClick() : void(0);}} />
       <ListItemSecondaryAction>
         <ListItemIcon onClick={deleteDiscount}>
-          <DeleteIcon />
+          {(discountsurvente && type==="discount") && (<DeleteIcon />)}
         </ListItemIcon>
-        <ListItemText primary={`-${montant}`} />
+        <ListItemText primary={`${(operation<0 ? '-' : '+')}${montant}`} />
       </ListItemSecondaryAction>
     </ListItem>
   );
@@ -1439,7 +1824,7 @@ class PanierListeItem extends React.Component {
 
  
   render() {
-    const {id, itemid, nom, quantite, prix, selected, discount, deleteDiscountHandler, openDiscountHandler, selectedIng, disabled, ingredients, composition, getComment, removeComment, steps, _onClick, _onDoubleClick, _onSubClick, _onSubDoubleClick} = this.props;
+    const {id, itemid, nom, quantite, prix, selected, discount, deleteDiscountHandler, openDiscountHandler, selectedIng, disabled, ingredients, composition, getComment, removeComment, steps, _onClick, _onDoubleClick, _onSubClick, _onSubDoubleClick, commandetype} = this.props;
 
 
     // logger.log('item discount', discount);
@@ -1538,7 +1923,11 @@ class PanierListeItem extends React.Component {
         montant={ discount.montant }
         id={ discount.modificateur_id }
         onClick={ openDiscountHandler }
+        type={ discount.type }
+        nom={ discount.nom }
+        operation={ discount.operation }
         deleteHandler={ deleteDiscountHandler }
+        discountsurvente={commandetype==="vente" }
       />}
       </div>
     );

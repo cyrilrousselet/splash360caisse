@@ -136,6 +136,16 @@ class Reglement extends React.Component {
     const { trlist } = this.state;
     console.log(reste, rendu);
     let closeReglementAtEnd = true;
+
+    const itemsCopy = [...this.props.commande.items];
+    itemsCopy.forEach(i => {
+      i.selected = false;
+    });
+    // const item = itemsCopy[index];
+    // item.selected = !item.selected  ? true : false;
+    // itemsCopy[index] = item;
+    this.props.updateCommande({...this.props.commande, items: itemsCopy})
+
     if (reste === 0) {
       if (this.props.commande.status === "pending") {
         this.props.commande.end = new Date();
@@ -158,14 +168,16 @@ class Reglement extends React.Component {
       } else if (this.props.commande.status === "standby") {
         this.props.commande.status = "confirmed";
         //this.props.printTicket("all");
-        this.props.printCommandeTicket("all", {...this.props.commande, status:'confirmed'});
+        const __tpl = (this.props.commande.scheduled && this.props.commande.enproduction===false) ? { templates: ["commande"]} : "all";
+        this.props.printCommandeTicket(__tpl, {...this.props.commande, status:'confirmed'});
       } else {
         logger.log("reglement modif", modif);
         closeReglementAtEnd = modif;
         logger.log("reglement closeReglementAtEnd", closeReglementAtEnd);
         this.props.commande.status = "confirmed";
         // on imprime tous les tickets (sauf si on modifie juste les réglements)
-        if (!modif) this.props.printTicket("all");
+        const __tpl = (this.props.commande.scheduled && this.props.commande.enproduction===false) ? { templates: ["commande"]} : "all";
+        if (!modif) this.props.printTicket(__tpl);
       }
 
       // enregistrement des TR en base (pour contrôle ultérieur)
@@ -188,7 +200,24 @@ class Reglement extends React.Component {
     const { reste } = this.updateValeurs();
     if (valeur === -1) {
       const { input, total } = this.state;
-      montant = input ? total : reste;
+      // montant = input ? total : reste;
+
+
+      const items = this.props.commande.items || [];
+
+      if (items) {
+        let value = 0;
+      
+        items.forEach((item) => {
+          if (item.selected) {
+            value = value  + (item.prix * item.quantite);
+          }
+        });
+
+        const other = value > 0 ? value : Math.max(0, reste);
+        montant = input ? total : other;
+      } 
+
     } else {
       montant = valeur;
     }
@@ -211,7 +240,31 @@ class Reglement extends React.Component {
         const { reste } = this.updateValeurs();
         if (moyen === "especes") openDrawer();
         if (moyen === "ticket" && reste < 0) openDrawer();
-        this.setState({ total: 0, input: false });
+        // this.setState({ total: 0, input: false });
+
+        if (!this.state.input && !this.state.checked) {
+          let commandeCopy = {...this.props.commande};
+          let itemsCopy = [...commandeCopy.items];
+          const updatedItems = itemsCopy.map((item) => {
+            if (item.selected) {
+              item.selected = false;
+              item.paid = true;
+            }
+            return item;
+          })
+          commandeCopy.items = updatedItems;
+          this.props.updateCommande(commandeCopy);
+        }
+        
+        this.setState({ total: 0, input: false }, () => {
+          if (this.state.checked) {
+           
+            this.calculetteClick(this.state.part, true)
+  
+          }
+        });
+        
+
 
         // s'il ne reste rien à payer ni à rendre,
         // on ferme l'encaissement et on valide la commande
@@ -391,7 +444,20 @@ class Reglement extends React.Component {
     const { reste, rendable } = this.updateValeurs();
     const { total, input } = this.state;
 
-    const aAfficher = input ? total : Math.max(0, reste);
+
+
+    const items = this.props.commande.items;
+    let value = 0;
+    items.forEach((item) => {
+      if (item.selected) {
+        value = value  + (item.prix * item.quantite);
+      }
+    })
+
+    const other = value > 0 ? value : Math.max(0, reste);
+
+    const aAfficher = input ? total : other;
+    // const aAfficher = input ? total : Math.max(0, reste);
 
     // gestion du focus sur le champ de recherche (scan QR code)
     clearInterval(this.interval);

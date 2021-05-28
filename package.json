@@ -2,7 +2,7 @@
     "name": "splash360",
     "productName": "Splash360",
     "description": "Cash application",
-    "version": "0.1.210841450",
+    "version": "0.1.211461728",
     "private": true,
     "author": {
         "name": "Splash360",
@@ -76,7 +76,6 @@
         "qrcode": "^1.4.4",
         "react": "^16.9.0",
         "react-chartjs-2": "^2.9.0",
-        "react-detect-offline": "^2.4.3",
         "react-dom": "^16.9.0",
         "react-encrypt": "^1.0.1",
         "react-hot-loader": "^4.12.11",

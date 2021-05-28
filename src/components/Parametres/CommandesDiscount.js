@@ -12,18 +12,19 @@ import CloseIcon from '../common/icon/CloseIcon';
 import StdButton from '../common/StdButton';
 import AddIcon from '../common/icon/AddIcon';
 import Clavier from '../common/Clavier';
+import LodashId from 'lodash-id';
 let strings = new LocalizedStrings(data);
 
 
 
 function DiscountEditModal (props) {
-  const {id, discount, editOpen, clavierOpen, closeHandler, updateDiscount, saveDiscount} = props;
+  const {id, discount, nom='', editOpen, clavierOpen, closeHandler, updateDiscount, saveDiscount} = props;
 
 
   const onChangeHandler = (val) => {
     let opt = '€';
     if ((['€','%']).indexOf(String(discount).substr(-1,1))>-1) opt = String(discount).substr(-1,1);
-    updateDiscount({value:val, option:opt});
+    updateDiscount({value:val, option:opt, nom:nom});
   }
   const getOption = (str) => {
     const o = String(str).substr(-1,1);
@@ -42,6 +43,13 @@ function DiscountEditModal (props) {
               <div className="edit-zone">
                 {/* <TextField className="edit-input" defaultValue={discount} onChange={updateDiscount} variant="filled" /> */}
                 <LabelledField 
+                  className="editnom-input"
+                  name="editnom-input"
+                  type="text"
+                  value={nom}
+                  onChange={({value}) => {updateDiscount('nom', value)}}
+                />
+                <LabelledField 
                   className="edit-input"
                   name="edit-input"
                   type="number"
@@ -49,7 +57,7 @@ function DiscountEditModal (props) {
                   // option={String(discount).substr(-1,1)}
                   option={getOption(discount)}
                   options={['€','%']}
-                  onChange={updateDiscount}
+                  onChange={(val) => {updateDiscount('valeur',val)}}
                 />
               </div>
             </div>
@@ -80,7 +88,8 @@ class CommandesDiscount extends React.Component {
     super(props);
     this.state = {
       editing: null,
-      editdiscount: ''
+      editdiscount: '',
+      editnom: ''
     };
     this.onDrop = this.onDrop.bind(this);
     this.closeEdit = this.closeEdit.bind(this);
@@ -116,10 +125,12 @@ class CommandesDiscount extends React.Component {
     return arr; // for testing
   }
 
-  editDiscount(id, msg) {
+  editDiscount(id, val, nom) {
+    console.log('editDiscount', id, val, nom);
     this.setState({
       editing: id,
-      editdiscount: msg
+      editdiscount: val,
+      editnom: nom
     })
   };
 
@@ -130,14 +141,22 @@ class CommandesDiscount extends React.Component {
     });
   }
 
-  updateDiscount(val) {
-    const {value, option} = val;
 
-    if (!isNaN(parseInt(value))) {
-      this.setState({
-        editdiscount: Math.abs(value)+option
-      });
+
+  updateDiscount(field, val) {
+    if (field==='valeur') {
+      const {value, option} = val;
+      if (!isNaN(parseInt(value))) {
+        this.setState({
+          editdiscount: Math.abs(value)+option
+        });
+      }
     }
+    else {
+      this.setState({
+        editnom: val
+      });
+    }  
   }
 
 
@@ -146,11 +165,17 @@ class CommandesDiscount extends React.Component {
 
     const { data, updateValeur } = this.props;
     const {discount_predefini} = data;
-    const {editdiscount} = this.state;
-
+    const {editdiscount, editnom} = this.state;
+    console.log("saveDiscount",'editnom', editnom);
     if (editdiscount!=='') {
 
-      let dsc = {id: new Date().getTime(), valeur: editdiscount};
+      let dsc = {
+        id: LodashId.createId(), 
+        valeur: editdiscount, 
+        nom: editnom,
+        operation: -1,
+        type: "discount"
+      };
       let nvdiscount_predefini = discount_predefini || [];
 
       // nouveau commentaire
@@ -159,7 +184,13 @@ class CommandesDiscount extends React.Component {
       } else {
         const dscIndex = nvdiscount_predefini.findIndex(d=>d.id===id);
         dsc = nvdiscount_predefini[dscIndex];
-        nvdiscount_predefini[dscIndex] = {...dsc, valeur: editdiscount};
+        nvdiscount_predefini[dscIndex] = {
+          ...dsc, 
+          valeur: editdiscount, 
+          nom: editnom,
+          operation: -1,
+          type: "discount"
+        };
       }
 
       updateValeur({
@@ -199,7 +230,7 @@ class CommandesDiscount extends React.Component {
   render() {
     const { data, entreprise } = this.props;
     const { discount_predefini } = data;
-    const { editing, editdiscount } = this.state;
+    const { editing, editdiscount, editnom } = this.state;
     const { clavier } = entreprise;
 
     return (
@@ -212,13 +243,13 @@ class CommandesDiscount extends React.Component {
           </Fab>
           <List>
             <Container dragHandleSelector=".drag-handle" lockAxis="y" onDrop={ this.onDrop }>
-              { discount_predefini && discount_predefini.map(({id, valeur}) => (
+              { discount_predefini && discount_predefini.map(({id, nom, valeur}) => (
                 <Draggable key={`dsc${id}`}>
                   <ListItem>
-                    <ListItemText primary={valeur} />
+                    <ListItemText primary={`${nom} (${valeur})`} />
                     <ListItemSecondaryAction>
                       <ListItemIcon className="edit">
-                        <EditIcon onClick={() => { this.editDiscount(id, valeur) }} />
+                        <EditIcon onClick={() => { this.editDiscount(id, valeur, nom) }} />
                       </ListItemIcon>
                       <ListItemIcon className="delete">
                         <DeleteIcon onClick={() => { this.deleteDiscount(id) }} />
@@ -237,6 +268,7 @@ class CommandesDiscount extends React.Component {
       <DiscountEditModal
         className="editModal"
         id={editing} 
+        nom={editnom}
         discount={editdiscount}
         editOpen={editing!==null}
         closeHandler={this.closeEdit}
