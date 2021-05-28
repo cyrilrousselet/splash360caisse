@@ -88,10 +88,13 @@ if (!gotTheLock) {
     app.on('ready', createWindow);
 
     app.on('window-all-closed', () => {
-      //  localStorage.removeItem('user');
-        if (process.platform !== 'darwin') {
-            app.quit();
-        }
+      // localStorage.removeItem('user');
+
+      mainWindow.webContents.executeJavaScript('localStorage.removeItem("user");', true);
+
+      if (process.platform !== 'darwin') {
+          app.quit();
+      }
     });
 
     app.on('activate', () => {
