@@ -73,9 +73,9 @@ if (!gotTheLock) {
     app.quit()
 } else {
 
-    // app.on('before-quit', () => {
-    //     localStorage.removeItem('user');
-    // })
+    app.on('before-quit', () => {
+      mainWindow.webContents.executeJavaScript('localStorage.removeItem("user");', true);
+    })
 
     app.on('second-instance', (event, commandLine, workingDirectory) => {
       // Someone tried to run a second instance, we should focus our window.
