@@ -78,6 +78,8 @@ function updateProduit(payload) {
     const {produit_id, update, catalogue} = payload;
     const {caisse} = getState().parametresReducer.parametres.options;
 
+    console.log("produit_id", produit_id);
+
     // const catalogue = getState().catalogueReducer.catalogue;
     // let produit = {};
     // Object.values(catalogue).forEach(grp => {
@@ -182,6 +184,7 @@ function updateGroupe(payload) {
     dispatch({ type: catalogueActionTypes.UPDATE_GROUPE_REQUEST});
 
     const {groupe_id, update} = payload;
+    console.log("update : ", update);
 
     // const catalogue = getState().catalogueReducer.catalogue;
     // const groupe = catalogue[groupe_id];
@@ -195,8 +198,26 @@ function updateGroupe(payload) {
         filtered_update[cle] = valeur;
       }
     });
+    console.log("filtered_update", filtered_update);
 
-    catalogueServices.updateGroupe({...filtered_update, groupe_id, localsync:[caisse.uniqid]})
+    // debut modifs
+    const prdGrouped = [];
+
+    const catalogue = getState().catalogueReducer.catalogue;
+    const groupe = catalogue[groupe_id];
+    const produits = groupe.produits;
+    console.log("produits du groupes", produits);
+    produits.forEach((prd) =>{
+      var produit_id = prd.produit_id;
+      var produit = {...filtered_update, produit_id, localsync:[caisse.uniqid] };
+      prdGrouped.push(produit);
+    });
+
+    console.log("prdGrouped", prdGrouped);
+    //fin modifs
+
+    // catalogueServices.updateGroupe({...filtered_update, groupe_id, localsync:[caisse.uniqid]})
+    catalogueServices.updateGroupe(prdGrouped, {groupe_id, localsync:[caisse.uniqid]}) // Envoyer tableau de produits
     .then(
       data => {
         dispatch({ type: catalogueActionTypes.UPDATE_GROUPE_SUCCESS});

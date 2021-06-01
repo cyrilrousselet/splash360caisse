@@ -22,8 +22,8 @@ function updateProduit(produit) {
 function updateIngredient(ingredient) {
   return emit('dbCatalogueUpdateIngredient', {ingredient:ingredient});
 }
-function updateGroupe(groupe) {
-  return emit('dbCatalogueUpdateGroupe', {groupe:groupe});
+function updateGroupe(produits, groupe) {
+  return emit('dbCatalogueUpdateGroupe', {produits:produits, groupe:groupe});
 }
 function updateIngredientType(type) {
   return emit('dbCatalogueUpdateIngredientType', {type:type});

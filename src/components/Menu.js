@@ -228,6 +228,8 @@ class Menu extends React.Component {
     this.editIngredient = this.editIngredient.bind(this);
     this.getProduit = this.getProduit.bind(this);
     this.changeNoPrintGroupe = this.changeNoPrintGroupe.bind(this);
+    this.isGroupeIndeterminate = this.isGroupeIndeterminate.bind(this);
+    this.isGroupeChecked = this.isGroupeChecked.bind(this);
     this.changeNoPrintType = this.changeNoPrintType.bind(this);
 
     this.openEdit = this.openEdit.bind(this);
@@ -334,6 +336,37 @@ class Menu extends React.Component {
     }
   }
 
+  isGroupeIndeterminate(ticketId, list) {
+    const itemNoPrint = list.filter((item) => {
+      if(item.noprint === undefined || item.noprint === null) {
+        return false;
+      }
+      else if (item.noprint.indexOf(ticketId) !== -1) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    });
+
+    return ((itemNoPrint.length != list.length) && itemNoPrint.length > 0 ) ? true : false ;
+  }
+
+  isGroupeChecked(ticketId, list) {
+    const itemNoPrint = list.filter((item) => {
+      if(item.noprint === undefined || item.noprint === null) {
+        return false;
+      }
+      else if (item.noprint.indexOf(ticketId) !== -1) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    });
+
+    return (itemNoPrint.length === 0 ) ? true : false ;
+  }
 
   changeNoPrintType(id,ticketId, sub=false) {
     const {categories, ingredientTypes, ingredients, updateIngredientType, updateIngredient} = this.props;
@@ -473,10 +506,10 @@ class Menu extends React.Component {
               </Tabs>
             </AppBar>
             <TabPanel key={ `panel-produits` } className="panel" value={openTab} index={0}>
-              <MenuListe key="liste-produits" data={prdlist} type="produits" openEdit={this.editProduit} tickets={tickList} changeDispo={this.changeDispoProduit} changeNoPrint={this.changeNoPrintGroupe} editOpen={this.openEdit} updateType={null} />
+              <MenuListe key="liste-produits" data={prdlist} type="produits" openEdit={this.editProduit} tickets={tickList} changeDispo={this.changeDispoProduit} changeNoPrint={this.changeNoPrintGroupe} isIndeterminate={this.isGroupeIndeterminate} isChecked={this.isGroupeChecked} editOpen={this.openEdit} updateType={null} />
             </TabPanel>
             <TabPanel key={ `panel-ingredients` } className="panel" value={openTab} index={1}>
-              <MenuListe  key="liste-ingredients" data={inglist} type="ingredients" openEdit={this.editIngredient} tickets={tickList} changeDispo={this.changeDispoIngredient} changeNoPrint={this.changeNoPrintType} editOpen={this.openEdit} updateType={updateIngredientType} />
+              <MenuListe  key="liste-ingredients" data={inglist} type="ingredients" openEdit={this.editIngredient} tickets={tickList} changeDispo={this.changeDispoIngredient} changeNoPrint={this.changeNoPrintType} isIndeterminate={this.isGroupeIndeterminate} isChecked={this.isGroupeChecked} editOpen={this.openEdit} updateType={updateIngredientType} />
             </TabPanel>
           </div>
       </div>
@@ -544,12 +577,22 @@ const IOSSwitch = withStyles((theme) => ({
 
 
 
+
+
 function MenuListe(props) {
 
-  const {data, type, changeDispo, tickets, changeNoPrint, editOpen, updateType} = props;
+  const {data, type, changeDispo, tickets, changeNoPrint, isIndeterminate, isChecked, editOpen, updateType} = props;
 
-  const mliste = data.map((cont,i) => (
-    <Accordion key={`panel${i}`}>
+  const mliste = data.map((cont,i) => {
+    
+    
+  //  tickets.forEach((ticket) => {
+  //    const prds = cont.produits.filter((prd) => {
+  //      prd.no
+  //    })
+  //   });
+
+    return <Accordion key={`panel${i}`}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={ `panel${i}-content` }
@@ -585,9 +628,10 @@ function MenuListe(props) {
                 <Checkbox
                   icon={<CheckBoxOutlineBlankIcon htmlColor="#7FAD3B" fontSize="small" />}
                   checkedIcon={<CheckBoxIcon  htmlColor="#7FAD3B" fontSize="small" />}
-                  checked={cont.noprint.indexOf(tck.ticket_id)===-1}
+                  checked={ (type==='produits') ? isChecked(tck.ticket_id, cont.produits) : isChecked(tck.ticket_id, cont.ingredients)}
                   onClick={(e)=>{ e.stopPropagation();}}
                   onChange={(e) => { changeNoPrint(type==='produits'?cont.groupe_id:cont.id, tck.ticket_id) }}
+                  indeterminate={ (type==='produits') ? isIndeterminate(tck.ticket_id, cont.produits) : isIndeterminate(tck.ticket_id, cont.ingredients)}
                   name="checkedB"
                   color="primary"
                 />
@@ -671,7 +715,8 @@ function MenuListe(props) {
           </List>
         </AccordionDetails>
     </Accordion>
-  ));
+    
+  });
 
 
   return (<div className="liste-wrapper">{ mliste }</div>);

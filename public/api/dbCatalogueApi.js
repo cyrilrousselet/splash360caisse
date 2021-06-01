@@ -61,8 +61,18 @@ const actions = {
 
   dbCatalogueUpdateGroupe: async (req,res) => {
     const {payload} = req;
-
+    (await db.produits)._.mixin(lodashId);
     (await db.groupes)._.mixin(lodashId);
+
+    //for each payload.produits as produit
+    //const prd = await _persistProduit(payload.produit);
+    for (const prd of payload.produits) {
+      const produit = await _persistProduit(prd);
+    }
+    // payload.produits.forEach(async(prd) => {
+      
+    // });
+    
     const grp = await _persistGroupe(payload.groupe);
 
     res.send(grp);
