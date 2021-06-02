@@ -59,20 +59,38 @@ const actions = {
     res.send(ing);
   },
 
-  dbCatalogueUpdateGroupe: async (req,res) => {
+  dbCatalogueUpdateMultipleProduits: async (req,res) => {
     const {payload} = req;
     (await db.produits)._.mixin(lodashId);
     (await db.groupes)._.mixin(lodashId);
+    const prds = []
 
-    //for each payload.produits as produit
-    //const prd = await _persistProduit(payload.produit);
     for (const prd of payload.produits) {
       const produit = await _persistProduit(prd);
+      prds.push(produit);
     }
-    // payload.produits.forEach(async(prd) => {
-      
-    // });
     
+    res.send(prds);
+  },
+
+  dbCatalogueUpdateMultipleIngredients: async (req,res) => {
+    const {payload} = req;
+    (await db.ingredients)._.mixin(lodashId);
+    (await db.ingredienttypes)._.mixin(lodashId);
+    const ings = [];
+
+    for (const ing of payload.ingredients) {
+      const ingredient = await _persistIngredient(ing);
+      ings.push(ingredient);
+    }
+
+    res.send(ings);
+  },
+
+  dbCatalogueUpdateGroupe: async (req,res) => {
+    const {payload} = req;
+
+    (await db.groupes)._.mixin(lodashId);
     const grp = await _persistGroupe(payload.groupe);
 
     res.send(grp);

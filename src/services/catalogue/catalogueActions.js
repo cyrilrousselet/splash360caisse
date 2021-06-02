@@ -178,13 +178,84 @@ function updateIngredientType(payload) {
   }
 }
 
+function updateMultipleProduits(payload) {
+  return (dispatch, getState) => {
+    dispatch({ type: catalogueActionTypes.UPDATE_MULTIPLE_PRODUITS_REQUEST});
+
+    const {groupe_id, catalogue, updates} = payload;
+    const {caisse} = getState().parametresReducer.parametres.options;
+    
+    const prdGrouped = [];
+
+    updates.forEach((prdUpdate) => {
+      let update = prdUpdate.update;
+      let produit_id = prdUpdate.produit_id;
+      let filtered_update = {};
+      Object.entries(update).forEach(([cle,valeur])=>{
+        if ((['noprint']).indexOf(cle)>-1) {
+          filtered_update[cle] = valeur;
+        }
+      });
+
+      prdGrouped.push({...filtered_update, produit_id, localsync:[caisse.uniqid]});
+    })
+
+    console.log("prdGrouped", prdGrouped);
+
+    catalogueServices.updateMultipleProduits(prdGrouped, {groupe_id, localsync:[caisse.uniqid]}) // Envoyer tableau de produits
+    .then(
+      data => {
+        dispatch({ type: catalogueActionTypes.UPDATE_MULTIPLE_PRODUITS_SUCCESS});
+        dispatch(notificationActions.syncDispatch('groupe', data));
+        dispatch(getAll());
+      },
+      error => dispatch({type: catalogueActionTypes.UPDATE_MULTIPLE_PRODUITS_FAILURE, error})
+    );
+  }
+}
+
+function updateMultipleIngredients(payload) {
+  return (dispatch, getState) => {
+    dispatch({ type: catalogueActionTypes.UPDATE_MULTIPLE_INGREDIENTS_REQUEST});
+
+    const {type_id, catalogue, updates} = payload;
+    const {caisse} = getState().parametresReducer.parametres.options;
+    
+    const ingGrouped = [];
+
+    updates.forEach((ingUpdate) => {
+      let update = ingUpdate.update;
+      let ingredient_id = ingUpdate.ingredient_id;
+      let filtered_update = {};
+      Object.entries(update).forEach(([cle,valeur])=>{
+        if ((['noprint']).indexOf(cle)>-1) {
+          filtered_update[cle] = valeur;
+        }
+      });
+
+      ingGrouped.push({...filtered_update, ingredient_id, localsync:[caisse.uniqid]});
+    })
+
+    console.log("ingGrouped", ingGrouped);
+
+    catalogueServices.updateMultipleIngredients(ingGrouped, {type_id, localsync:[caisse.uniqid]}) // Envoyer tableau de produits
+    .then(
+      data => {
+        dispatch({ type: catalogueActionTypes.UPDATE_MULTIPLE_INGREDIENTS_SUCCESS});
+        dispatch(notificationActions.syncDispatch('type', data));
+        dispatch(getAll());
+      },
+      error => dispatch({type: catalogueActionTypes.UPDATE_MULTIPLE_INGREDIENTS_FAILURE, error})
+    );
+  }
+}
+
 function updateGroupe(payload) {
   return (dispatch, getState) => {
   // return dispatch => {
     dispatch({ type: catalogueActionTypes.UPDATE_GROUPE_REQUEST});
 
     const {groupe_id, update} = payload;
-    console.log("update : ", update);
 
     // const catalogue = getState().catalogueReducer.catalogue;
     // const groupe = catalogue[groupe_id];
@@ -198,26 +269,8 @@ function updateGroupe(payload) {
         filtered_update[cle] = valeur;
       }
     });
-    console.log("filtered_update", filtered_update);
 
-    // debut modifs
-    const prdGrouped = [];
-
-    const catalogue = getState().catalogueReducer.catalogue;
-    const groupe = catalogue[groupe_id];
-    const produits = groupe.produits;
-    console.log("produits du groupes", produits);
-    produits.forEach((prd) =>{
-      var produit_id = prd.produit_id;
-      var produit = {...filtered_update, produit_id, localsync:[caisse.uniqid] };
-      prdGrouped.push(produit);
-    });
-
-    console.log("prdGrouped", prdGrouped);
-    //fin modifs
-
-    // catalogueServices.updateGroupe({...filtered_update, groupe_id, localsync:[caisse.uniqid]})
-    catalogueServices.updateGroupe(prdGrouped, {groupe_id, localsync:[caisse.uniqid]}) // Envoyer tableau de produits
+    catalogueServices.updateGroupe({...filtered_update, groupe_id, localsync:[caisse.uniqid]})
     .then(
       data => {
         dispatch({ type: catalogueActionTypes.UPDATE_GROUPE_SUCCESS});
@@ -385,6 +438,8 @@ export const catalogueActions = {
   getAll,
   updateProduit,
   updateIngredient,
+  updateMultipleProduits,
+  updateMultipleIngredients,
   updateGroupe,
   updateIngredientType,
   setProduitFromSync,
