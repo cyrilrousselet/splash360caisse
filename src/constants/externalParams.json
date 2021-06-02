@@ -2,8 +2,8 @@
   "notification": "http://apidev.splash360.fr:3030/.well-known/mercure?topic=",
   "uber": {
     "oAuth": "https://login.uber.com/oauth/v2/token",
-    "clientid": "kcKN_qhiHlwgG22qCqWPyWxNl10MKLwf",
-    "secret": "x5L3TuLNDW3cGXmn0JEZ4pI_wIIWYCOGXQuxdI1R",
+    "clientid": "8OpdkXvG_D1IAb9J94Mf8srgdY2CXYif",
+    "secret": "fzik-B4lYFDJXuIwhoj0aULsW4-0EvWWJOsEms68",
     "getorder": {
       "url": "https://api.uber.com/v2/eats/order/{order_id}",
       "scope": "eats.store.orders.read"
@@ -22,7 +22,7 @@
     },
     "pos": {
       "url": "https://api.uber.com/v1/eats/stores/{store_id}/pos_data",
-      "scope": "eats.pos_provisioning"
+      "scope": "eats.store"
     },
     "updateitem": {
       "url": "https://api.uber.com/v2/eats/stores/{store_id}/menus/items/{item_id}",
@@ -30,14 +30,14 @@
     }
   },
   "synchro": {
-    "oAuth": "https://api.splash360.fr/oauth/v2/token?client_id=%ID%&client_secret=%PWD%&grant_type=client_credentials",
-    "getdb": "https://api.splash360.fr/api/export/database",
-    "syncCommandes": "https://api.splash360.fr/api/import/commandes",
-    "syncClotures": "https://api.splash360.fr/api/import/clotures",
-    "syncCatalogue": "https://api.splash360.fr/api/import/catalogue",
-    "getStatus": "https://api.splash360.fr/api/export/stationstatus",
-    "confirmCommande": "https://api.splash360.fr/api/import/confirmcommande/{ticket_id}",
-    "installStation" : "https://api.splash360.fr/api/licence/createStation",
-    "ping" : "https://admin.splash360.fr"
+    "oAuth": "https://apidev.splash360.fr/oauth/v2/token?client_id=%ID%&client_secret=%PWD%&grant_type=client_credentials",
+    "getdb": "https://apidev.splash360.fr/api/export/database",
+    "syncCommandes": "https://apidev.splash360.fr/api/import/commandes",
+    "syncClotures": "https://apidev.splash360.fr/api/import/clotures",
+    "syncCatalogue": "https://apidev.splash360.fr/api/import/catalogue",
+    "getStatus": "https://apidev.splash360.fr/api/export/stationstatus",
+    "confirmCommande": "https://apidev.splash360.fr/api/import/confirmcommande/{ticket_id}",
+    "installStation" : "https://apidev.splash360.fr/api/licence/createStation",
+    "ping" : "https://admindev.splash360.fr"
   }
 }

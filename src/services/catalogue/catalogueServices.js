@@ -24,11 +24,11 @@ function updateProduit(produit) {
 function updateIngredient(ingredient) {
   return emit('dbCatalogueUpdateIngredient', {ingredient:ingredient});
 }
-function updateMultipleProduits(produits, groupe) {
-  return emit('dbCatalogueUpdateMultipleProduits', {produits:produits, groupe:groupe});
+function updateMultipleProduits(produits) {
+  return emit('dbCatalogueUpdateMultipleProduits', {produits:produits});
 }
-function updateMultipleIngredients(ingredients, type) {
-  return emit('dbCatalogueUpdateMultipleIngredients', {ingredients:ingredients, type:type});
+function updateMultipleIngredients(ingredients) {
+  return emit('dbCatalogueUpdateMultipleIngredients', {ingredients:ingredients});
 }
 function updateGroupe(groupe) {
   return emit('dbCatalogueUpdateGroupe', {groupe:groupe});

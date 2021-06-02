@@ -5,6 +5,7 @@ import { notificationActions } from '../notification/notificationActions';
 
 import { parametresActions } from '../parametres/parametresActions';
 import { parametresActionTypes } from '../parametres/parametresActionTypes';
+import { result } from 'lodash';
 
 const logger = new Logger();
 
@@ -202,11 +203,11 @@ function updateMultipleProduits(payload) {
 
     console.log("prdGrouped", prdGrouped);
 
-    catalogueServices.updateMultipleProduits(prdGrouped, {groupe_id, localsync:[caisse.uniqid]}) // Envoyer tableau de produits
+    catalogueServices.updateMultipleProduits(prdGrouped) // Envoyer tableau de produits
     .then(
       data => {
         dispatch({ type: catalogueActionTypes.UPDATE_MULTIPLE_PRODUITS_SUCCESS});
-        dispatch(notificationActions.syncDispatch('groupe', data));
+        dispatch(notificationActions.syncDispatch('produits', data));
         dispatch(getAll());
       },
       error => dispatch({type: catalogueActionTypes.UPDATE_MULTIPLE_PRODUITS_FAILURE, error})
@@ -238,11 +239,11 @@ function updateMultipleIngredients(payload) {
 
     console.log("ingGrouped", ingGrouped);
 
-    catalogueServices.updateMultipleIngredients(ingGrouped, {type_id, localsync:[caisse.uniqid]}) // Envoyer tableau de produits
+    catalogueServices.updateMultipleIngredients(ingGrouped) // Envoyer tableau de produits
     .then(
       data => {
         dispatch({ type: catalogueActionTypes.UPDATE_MULTIPLE_INGREDIENTS_SUCCESS});
-        dispatch(notificationActions.syncDispatch('type', data));
+        dispatch(notificationActions.syncDispatch('ingredients', data));
         dispatch(getAll());
       },
       error => dispatch({type: catalogueActionTypes.UPDATE_MULTIPLE_INGREDIENTS_FAILURE, error})
@@ -430,6 +431,78 @@ function setIngredientTypeFromSync(payload) {
   }
 }
 
+function setProduitsFromSync(payload) {
+  return (dispatch, getState) => {
+
+    const {data, emitter, response} = payload;
+    
+    const {caisse} = getState().parametresReducer.parametres.options;
+    const {produits} = data;
+    const __produits = [];
+
+    // on ajoute l'id de la caisse à la propriété localsync pour chaque produits
+    // et si elle n'existe pas, on crée la propriété
+    produits.forEach((prd) => {
+      let __lsync = prd.localsync || [];
+      if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
+      __produits.push({...prd, localsync:__lsync});
+    });
+   
+    catalogueServices.updateMultipleProduits(__produits)
+    .then(
+      result => {
+        dispatch({type: catalogueActionTypes.UPDATE_MULTIPLE_PRODUITS_FROM_SYNC, result});
+        
+        // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
+        // donc inutile de lui renvoyer la synchro
+        // -> si 'response' est null, la synchro ne provient pas de l'API,
+        // donc inutile de confirmer le traitement de la synchro
+        if (emitter!==null && response!==null) {
+          dispatch(notificationActions.syncConfirm(response));
+          dispatch(notificationActions.syncDispatch('produits', __produits, emitter));
+        }
+        dispatch(getAll());
+      }
+    )
+  }
+}
+
+function setIngredientsFromSync(payload) {
+  return (dispatch, getState) => {
+
+    const {data, emitter, response} = payload;
+    
+    const {caisse} = getState().parametresReducer.parametres.options;
+    const {ingredients} = data;
+    const __ingredients = [];
+
+    // on ajoute l'id de la caisse à la propriété localsync pour chaque ingredients
+    // et si elle n'existe pas, on crée la propriété
+    ingredients.forEach((ing) => {
+      let __lsync = ing.localsync || [];
+      if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
+      __ingredients.push({...ing, localsync:__lsync});
+    });
+   
+    catalogueServices.updateMultipleIngredients(__ingredients)
+    .then(
+      result => {
+        dispatch({type: catalogueActionTypes.UPDATE_MULTIPLE_INGREDIENTS_FROM_SYNC, result});
+        
+        // -> si 'emitter' est null, la synchro provient de la caisse 'primary', 
+        // donc inutile de lui renvoyer la synchro
+        // -> si 'response' est null, la synchro ne provient pas de l'API,
+        // donc inutile de confirmer le traitement de la synchro
+        if (emitter!==null && response!==null) {
+          dispatch(notificationActions.syncConfirm(response));
+          dispatch(notificationActions.syncDispatch('produits', __ingredients, emitter));
+        }
+        dispatch(getAll());
+      }
+    )
+  }
+}
+
 
 
 export const catalogueActions = {
@@ -446,5 +519,7 @@ export const catalogueActions = {
   setGroupeFromSync,
   setIngredientFromSync,
   setIngredientTypeFromSync,
-  setSyncedCatalogue
+  setSyncedCatalogue,
+  setProduitsFromSync,
+  setIngredientsFromSync
 };
