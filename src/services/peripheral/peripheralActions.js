@@ -307,7 +307,7 @@ function _getRecap(tickets, commande, catalogue, types, ingredients) {
       let __ingasprdnum = 0;
       article.ingredients.forEach(ing => {
         // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-        const ingnoprint = ingredients[ing.ingredient].noprint!=null ? ingredients[ing.ingredient].noprint : types[ing.type].noprint;
+        const ingnoprint = ingredients[ing.ingredient].noprint!=null ? ingredients[ing.ingredient].noprint : [];
         let __noprint = ingnoprint.find(p=>p===ticket.ticket_id);
         // on comptabilise le nbre d'ingrédients imprimables provenant d'une personnalisation
         // on ne compte pas les ingrédients de composition, parce qu'on compte les produits
@@ -317,7 +317,7 @@ function _getRecap(tickets, commande, catalogue, types, ingredients) {
       });
 
       const prd = _getProduit(article.produitid, catalogue);
-      const prdnoprint = prd.noprint!=null ? prd.noprint : catalogue[prd.groupe].noprint;
+      const prdnoprint = prd.noprint!=null ? prd.noprint : [];
       // si le groupe de produits ne doit pas s'imprimer sur ce ticket
       let __anoprint = prdnoprint.find(p=>p===ticket.ticket_id);
 
@@ -413,14 +413,14 @@ function _setCommandeToKDS(ticketsListe, cmd, state) {
 
       // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
 
-      const prdnoprint = prd.noprint!=null ? prd.noprint : catalogue[prd.groupe].noprint;
+      const prdnoprint = prd.noprint!=null ? prd.noprint : [];
 
       const zones = ticketsKDS.filter(t => (prdnoprint.length===0 || prdnoprint.find(p=>p===t.ticket_id)===undefined) );
 
     
       inglist.forEach((ing, ii) => {
 
-        const ingnoprint = ingredients[ing.ingredient].noprint!=null ? ingredients[ing.ingredient].noprint : ingredientTypes[ing.type].noprint;
+        const ingnoprint = ingredients[ing.ingredient].noprint!=null ? ingredients[ing.ingredient].noprint : [];
         // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
         const zonesi = ticketsKDS.filter(t => ingnoprint.length===0 || ingnoprint.find(p=>p===t.ticket_id)===undefined );
         
@@ -658,8 +658,10 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             article.ingredients.forEach(ing => {
 
               // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-              let __noprint = types[ing.type].noprint.find(p=>p===ticket.ticket_id);
-
+              // let __noprint = types[ing.type].noprint.find(p=>p===ticket.ticket_id);
+              
+              // si l'ingrédient ne doit pas s'imprimer sur le ticket
+              let __noprint = ing.noprint != null ? ing.noprint.find(p=>p===ticket.ticket_id) : false;
 
               let __ingweight = -1;
               // ordre des ingrédients : d'abord la composition puis les ingrédients dans l'ordre de leur step
@@ -948,7 +950,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
             inglist.forEach(ing => {
 
-              const ingnoprint = (ingredients[ing.ingredient].noprint!==null && ingredients[ing.ingredient].noprint!==undefined) ? ingredients[ing.ingredient].noprint : types[ing.type].noprint;
+              const ingnoprint = (ingredients[ing.ingredient].noprint!==null && ingredients[ing.ingredient].noprint!==undefined) ? ingredients[ing.ingredient].noprint : [];
 
               // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
               let __noprint = ingnoprint.find(p=>p===ticket.ticket_id);
@@ -1020,7 +1022,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
 
             const prd = _getProduit(article.produitid, catalogue);
-            const prdnoprint = prd.noprint!=null ? prd.noprint : catalogue[prd.groupe].noprint;
+            const prdnoprint = prd.noprint!=null ? prd.noprint : [];
             // si le groupe de produits ne doit pas s'imprimer sur ce ticket
             let __anoprint = prdnoprint.find(p=>p===ticket.ticket_id);
 
@@ -1100,7 +1102,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             inglist.forEach(ing => {
 
 
-              const ingnoprint = (ingredients[ing.ingredient].noprint!==null && ingredients[ing.ingredient].noprint!==undefined) ? ingredients[ing.ingredient].noprint : types[ing.type].noprint;
+              const ingnoprint = (ingredients[ing.ingredient].noprint!==null && ingredients[ing.ingredient].noprint!==undefined) ? ingredients[ing.ingredient].noprint : [];
 
               // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
               let __noprint = ingnoprint.find(p=>p===ticket.ticket_id);
@@ -1169,7 +1171,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
 
             const prd = _getProduit(article.produitid, catalogue);
-            const prdnoprint = prd.noprint!=null ? prd.noprint : catalogue[prd.groupe].noprint;
+            const prdnoprint = prd.noprint!=null ? prd.noprint : [];
 
             // si le groupe de produits ne doit pas s'imprimer sur ce ticket
             let __anoprint = prdnoprint.find(p=>p===ticket.ticket_id);
@@ -1247,7 +1249,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
             inglist.forEach(ing => {
 
-              const ingnoprint = (ingredients[ing.ingredient].noprint!==null && ingredients[ing.ingredient].noprint!==undefined) ? ingredients[ing.ingredient].noprint : types[ing.type].noprint;
+              const ingnoprint = (ingredients[ing.ingredient].noprint!==null && ingredients[ing.ingredient].noprint!==undefined) ? ingredients[ing.ingredient].noprint : [];
 
               // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
               let __noprint = ingnoprint.find(p=>p===ticket.ticket_id);
@@ -1344,7 +1346,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
             inglist.forEach(ing => {
 
-              const ingnoprint = (ingredients[ing.ingredient].noprint!==null && ingredients[ing.ingredient].noprint!==undefined) ? ingredients[ing.ingredient].noprint : types[ing.type].noprint;
+              const ingnoprint = (ingredients[ing.ingredient].noprint!==null && ingredients[ing.ingredient].noprint!==undefined) ? ingredients[ing.ingredient].noprint : [];
 
               // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
               let __noprint = ingnoprint.find(p=>p===ticket.ticket_id);
@@ -1388,7 +1390,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             articleIngredients.sort((a,b)=>a.weight-b.weight);
 
             const prd = _getProduit(article.produitid, catalogue);
-            const prdnoprint = prd.noprint!=null ? prd.noprint : catalogue[prd.groupe].noprint;
+            const prdnoprint = prd.noprint!=null ? prd.noprint : [];
             // si le groupe de produits ne doit pas s'imprimer sur ce ticket
             let __anoprint = prdnoprint.find(p=>p===ticket.ticket_id);
 
