@@ -437,12 +437,13 @@ function setProduitsFromSync(payload) {
     const {data, emitter, response} = payload;
     
     const {caisse} = getState().parametresReducer.parametres.options;
-    const {produits} = data;
+    console.log(data);
+    // const {produits} = data;
     const __produits = [];
 
     // on ajoute l'id de la caisse à la propriété localsync pour chaque produits
     // et si elle n'existe pas, on crée la propriété
-    produits.forEach((prd) => {
+    data.forEach((prd) => {
       let __lsync = prd.localsync || [];
       if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
       __produits.push({...prd, localsync:__lsync});
@@ -473,12 +474,12 @@ function setIngredientsFromSync(payload) {
     const {data, emitter, response} = payload;
     
     const {caisse} = getState().parametresReducer.parametres.options;
-    const {ingredients} = data;
+    // const {ingredients} = data;
     const __ingredients = [];
 
     // on ajoute l'id de la caisse à la propriété localsync pour chaque ingredients
     // et si elle n'existe pas, on crée la propriété
-    ingredients.forEach((ing) => {
+    data.forEach((ing) => {
       let __lsync = ing.localsync || [];
       if (!__lsync.includes(caisse.uniqid)) __lsync.push(caisse.uniqid);
       __ingredients.push({...ing, localsync:__lsync});
