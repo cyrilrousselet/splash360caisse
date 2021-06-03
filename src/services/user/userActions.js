@@ -119,6 +119,7 @@ function updateUser(payload) {
         user => {
           dispatch({ type: userActionTypes.UPDATE_SUCCESS, user });
           dispatch(notificationActions.syncDispatch('user', user));
+          localStorage.setItem('user', JSON.stringify(user));
           dispatch(getAll());
         },
         error => dispatch({ type: userActionTypes.UPDATE_FAILURE, payload: error.toString() })

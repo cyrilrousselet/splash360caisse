@@ -561,7 +561,7 @@ class Menu extends React.Component {
 
  render() {
 
-  const { catalogue, categories, ingredients, ingredientTypes, tickets, clavier, updateIngredientType } = this.props;
+  const { catalogue, categories, ingredients, ingredientTypes, tickets, clavier, updateIngredientType, noprintAllowed } = this.props;
   const { openTab, categorie, itemId, editItem, editOpen, editType } = this.state;
 
   const defCat = categorie || categories[0].categorie_id;
@@ -619,10 +619,10 @@ class Menu extends React.Component {
               </Tabs>
             </AppBar>
             <TabPanel key={ `panel-produits` } className="panel" value={openTab} index={0}>
-              <MenuListe key="liste-produits" data={prdlist} type="produits" openEdit={this.editProduit} tickets={tickList} changeDispo={this.changeDispoProduit} changeNoPrintAll={this.changeNoPrintMultipleProduits} changeNoPrintItem={this.changeNoPrintProduit} isIndeterminate={this.isGroupeIndeterminate} isChecked={this.isGroupeChecked} editOpen={this.openEdit} updateType={null} />
+              <MenuListe key="liste-produits" data={prdlist} type="produits" openEdit={this.editProduit} tickets={tickList} changeDispo={this.changeDispoProduit} changeNoPrintAll={this.changeNoPrintMultipleProduits} changeNoPrintItem={this.changeNoPrintProduit} isIndeterminate={this.isGroupeIndeterminate} isChecked={this.isGroupeChecked} editOpen={this.openEdit} updateType={null} noprintAllowed={noprintAllowed}/>
             </TabPanel>
             <TabPanel key={ `panel-ingredients` } className="panel" value={openTab} index={1}>
-              <MenuListe  key="liste-ingredients" data={inglist} type="ingredients" openEdit={this.editIngredient} tickets={tickList} changeDispo={this.changeDispoIngredient} changeNoPrintAll={this.changeNoPrintMultipleIngredients} changeNoPrintItem={this.changeNoPrintIngredient} isIndeterminate={this.isGroupeIndeterminate} isChecked={this.isGroupeChecked} editOpen={this.openEdit} updateType={updateIngredientType} />
+              <MenuListe  key="liste-ingredients" data={inglist} type="ingredients" openEdit={this.editIngredient} tickets={tickList} changeDispo={this.changeDispoIngredient} changeNoPrintAll={this.changeNoPrintMultipleIngredients} changeNoPrintItem={this.changeNoPrintIngredient} isIndeterminate={this.isGroupeIndeterminate} isChecked={this.isGroupeChecked} editOpen={this.openEdit} updateType={updateIngredientType} noprintAllowed={noprintAllowed} />
             </TabPanel>
           </div>
       </div>
@@ -694,7 +694,7 @@ const IOSSwitch = withStyles((theme) => ({
 
 function MenuListe(props) {
 
-  const {data, type, changeDispo, tickets, changeNoPrintAll, changeNoPrintItem, isIndeterminate, isChecked, editOpen, updateType} = props;
+  const {data, type, changeDispo, tickets, changeNoPrintAll, changeNoPrintItem, isIndeterminate, isChecked, editOpen, updateType, noprintAllowed} = props;
 
   const mliste = data.map((cont,i) => {
     
@@ -735,7 +735,7 @@ function MenuListe(props) {
               />
             </div>
             )}
-            {tickets.map(tck=>
+            {(noprintAllowed) && tickets.map(tck=>
               <FormControlLabel
               control={
                 <Checkbox
@@ -765,7 +765,7 @@ function MenuListe(props) {
               <ListItemText id={p.id} onClick={ () => { editOpen('produit', p.id) } } primary={p.nom} secondary={ `${devise(Number(p.prix))} €`} />
               <ListItemSecondaryAction>
                 <div className="cont-print">
-                  {tickets.map(tck=>
+                  {(noprintAllowed) && tickets.map(tck=>
                     <FormControlLabel
                     control={
                       <Checkbox
@@ -799,7 +799,7 @@ function MenuListe(props) {
               <ListItemText id={n.id} onClick={ () => { editOpen('ingredient', n.id) } } primary={n.nom} secondary={`${devise(Number(n.supplement))} €` } />
               <ListItemSecondaryAction>
                 <div className="cont-print">
-                  {tickets.map(tck=>
+                  {(noprintAllowed) && tickets.map(tck=>
                     <FormControlLabel
                     control={
                       <Checkbox

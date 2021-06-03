@@ -13,7 +13,8 @@ const mapStateToProps = (state) => {
     ingredients: state.catalogueReducer.ingredients,
     ingredientTypes: state.catalogueReducer.ingredientTypes,
     tickets: state.peripheralReducer.tickets,
-    clavier: state.parametresReducer.parametres.entreprise.clavier
+    clavier: state.parametresReducer.parametres.entreprise.clavier,
+    noprintAllowed: (state.authentication.user.droits.hasOwnProperty("no_print") && state.authentication.user.droits["no_print"]===true) ? true : false
   }
 }
 
