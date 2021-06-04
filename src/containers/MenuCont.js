@@ -23,6 +23,8 @@ const mapDispatchToProps = (dispatch) => {
     getAllTickets: peripheralActions.getAllTickets,
     updateProduit: catalogueActions.updateProduit,
     updateIngredient: catalogueActions.updateIngredient,
+    updateMultipleProduits: catalogueActions.updateMultipleProduits,
+    updateMultipleIngredients: catalogueActions.updateMultipleIngredients,
     updateGroupe: catalogueActions.updateGroupe,
     updateIngredientType: catalogueActions.updateIngredientType,
     getParametres: parametresActions.getAll

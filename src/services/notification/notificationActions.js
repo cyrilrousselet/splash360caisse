@@ -218,6 +218,22 @@ function treatment(data) {
       )
 
     }
+    else if (data.eventType==="statuschange") {
+      // parametre status dans parametres, par défaut null ?
+
+      dispatch({ type: notificationActionTypes.GET_NOTIFICATION, notif: data.eventType });
+
+      // const payload = [{
+      //   "domaine": "options",
+      //   "cle": "status",
+      //   "valeur": data.status
+      // }];
+
+      // dispatch(parametresActions.update(payload));
+      localStorage.setItem("status", data.status);
+      dispatch(parametresActions.checkStatus());
+
+    }
   } 
 }
 
@@ -340,19 +356,35 @@ function getDatabase() {
     const { entreprise } = getState().parametresReducer.parametres; 
 
     if (entreprise.restaurant_id==='' || entreprise.restaurant_secret==='') {
-      Swal.fire({
-        type: 'warning',
-        title: 'Configuration incomplète',
-        text: 'Vous devez renseigner les identifiants de restaurant pour pouvoir initialiser la caisse',
-        showCancelButton: false,
-        focusConfirm: true,
-        allowEscapeKey: false,
-        allowOutsideClick: false
-      }).then((result)=> {
-        if (result.value) {
-          dispatch(peripheralActions.quitApp());
-        }
-      });
+
+      // Afficher champs uniqid restaurant
+      // A la validation récuperer uniqid + uuid de la caisse et dispatch action parametre requestInstallStation
+
+      // Swal.fire({
+      //   title: 'Installation de la caisse',
+      //   text:'Veuillez renseigner l\'uniqid du restaurant',
+      //   input:'text',
+      //   confirmButtonText: 'Valider',
+      //   showLoaderOnConfirm: true,
+      // }).then((result)=> {
+      //   if(null !== result.value) {
+      //     dispatch(parametresActions.installStation(result.value));
+      //   }
+      // })
+
+      // Swal.fire({
+      //   type: 'warning',
+      //   title: 'Configuration incomplète',
+      //   text: 'Vous devez renseigner les identifiants de restaurant pour pouvoir initialiser la caisse',
+      //   showCancelButton: false,
+      //   focusConfirm: true,
+      //   allowEscapeKey: false,
+      //   allowOutsideClick: false
+      // }).then((result)=> {
+      //   if (result.value) {
+      //     dispatch(peripheralActions.quitApp());
+      //   }
+      // });
     } else {
 
 

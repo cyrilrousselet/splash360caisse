@@ -227,7 +227,12 @@ class Menu extends React.Component {
     this.changeDispoIngredient = this.changeDispoIngredient.bind(this);
     this.editIngredient = this.editIngredient.bind(this);
     this.getProduit = this.getProduit.bind(this);
-    this.changeNoPrintGroupe = this.changeNoPrintGroupe.bind(this);
+    this.changeNoPrintMultipleProduits = this.changeNoPrintMultipleProduits.bind(this);
+    this.changeNoPrintProduit = this.changeNoPrintProduit.bind(this);
+    this.changeNoPrintMultipleIngredients = this.changeNoPrintMultipleIngredients.bind(this);
+    this.changeNoPrintIngredient = this.changeNoPrintIngredient.bind(this);
+    this.isGroupeIndeterminate = this.isGroupeIndeterminate.bind(this);
+    this.isGroupeChecked = this.isGroupeChecked.bind(this);
     this.changeNoPrintType = this.changeNoPrintType.bind(this);
 
     this.openEdit = this.openEdit.bind(this);
@@ -287,53 +292,194 @@ class Menu extends React.Component {
     });
     return produit;
   }
-  changeNoPrintGroupe(id,ticketId, sub=false) {
-    const {categories, catalogue, updateGroupe, updateProduit} = this.props;
+
+  changeNoPrintMultipleProduits(id, produits, ticketId, isChecked, isIndeterminate) {
+    const {categories, updateMultipleProduits} = this.props;
     const {categorie} = this.state;
 
     const defCat = categorie || categories[0].categorie_id;
-    let noprint = null;
-    
-    // édition pour un produit
-    if (sub) {
-      const produit = this.getProduit(id);
-      const prdnoprint = produit.noprint;
-      logger.log('produit',produit);
-      noprint = catalogue[produit.groupe].noprint;
-      // s'il n'y a pas de noprint pour le produit, on se base sur celui du groupe correspondant
-      if (prdnoprint===undefined || prdnoprint===null) {
 
-        // si le ticket n'est pas indiqué dans le noprint du groupe, on doit le désactiver
-        // donc on clone le noprint du groupe et on ajoute l'id du ticket qu'on veut désactiver
-        if (noprint.indexOf(ticketId)===-1) {
-          updateProduit({produit_id:id, update:{noprint:[...noprint, ticketId]}, catalogue:defCat.substr(3)});
-        } 
-        // si le ticket est indiqué dans le noprint du groupe, on doit le réactiver pour le produit
-        // donc clone le noprint du groupe et on supprime l'id du ticket qu'on veut activer
-        else {
-          updateProduit({produit_id:id, update:{noprint:noprint.filter(t=>t!==ticketId)}, catalogue:defCat.substr(3)});
-        }
-      } 
-      // s'il y a un noprint pour le produit, on intervient comme pour le noprint du groupe
-      else {
-        if (prdnoprint.indexOf(ticketId)===-1) {
-          updateProduit({produit_id:id, update:{noprint:[...prdnoprint, ticketId]}, catalogue:defCat.substr(3)});
-        } else {
-          updateProduit({produit_id:id, update:{noprint:prdnoprint.filter(t=>t!==ticketId)}, catalogue:defCat.substr(3)});
-        }
-      }
-    } else {
+    let allUpdates = [];
 
-      noprint = catalogue[id].noprint;
-      
-      if (noprint.indexOf(ticketId)===-1) {
-        updateGroupe({groupe_id:id, update:{noprint:[...noprint, ticketId]}});
-      } else {
-        updateGroupe({groupe_id:id, update:{noprint:noprint.filter(t=>t!==ticketId)}});
-      }
+    if(!isChecked || isIndeterminate) { // Si aucun produit cochés ou pas tous cochés, alors tous cocher => retirer le ticketId du noprint
+      produits.forEach((prd) => {
+        if(prd.noprint === undefined || prd.noprint === null) {
+          prd.noprint = [];
+        }
+
+        allUpdates.push({produit_id: prd.id , update: {noprint: prd.noprint.filter(t=>t!==ticketId)}});
+      });
+    }
+    else if(isChecked) { // Si tous le produits cochés alors ajouter le ticketId dans leur noprint
+      produits.forEach((prd) => {
+        if(prd.noprint === undefined || prd.noprint === null) {
+          prd.noprint = [];
+        }
+
+        if(!(prd.noprint.includes(ticketId))) { // Ne rien faire si le ticketId est déjà présent dans noprint (ne devrait pas être possible)
+          allUpdates.push({produit_id: prd.id, update: {noprint: [...prd.noprint, ticketId]}});
+        }
+      });
+    }
+
+    if(allUpdates !== []) {
+      updateMultipleProduits({groupe_id:id, updates: allUpdates, catalogue:defCat.substr(3)});
     }
   }
 
+  changeNoPrintProduit(id, ticketId) {
+    const {categories, updateProduit} = this.props;
+    const {categorie} = this.state;
+
+    const defCat = categorie || categories[0].categorie_id;
+
+    const produit = this.getProduit(id);
+    logger.log('produit',produit);
+
+    if(produit.noprint === undefined || produit.noprint === null) {
+      produit.noprint = [];
+    }
+
+    if (produit.noprint.indexOf(ticketId)===-1) {
+      updateProduit({produit_id:id, update:{noprint:[...produit.noprint, ticketId]}, catalogue:defCat.substr(3)});
+    } else {
+      updateProduit({produit_id:id, update:{noprint:produit.noprint.filter(t=>t!==ticketId)}, catalogue:defCat.substr(3)});
+    }
+
+  }
+
+  changeNoPrintMultipleIngredients(id, ingredients, ticketId, isChecked, isIndeterminate) {
+    const {categories, updateMultipleIngredients} = this.props;
+    const {categorie} = this.state;
+
+    const defCat = categorie || categories[0].categorie_id;
+
+    let allUpdates = [];
+
+    if(!isChecked || isIndeterminate) { // Si aucun produit cochés ou pas tous cochés, alors tous cocher => retirer le ticketId du noprint
+      ingredients.forEach((ing) => {
+        if(ing.noprint === undefined || ing.noprint === null) {
+          ing.noprint = [];
+        }
+
+        allUpdates.push({ingredient_id: ing.id , update: {noprint: ing.noprint.filter(t=>t!==ticketId)}});
+      });
+    }
+    else if(isChecked) { // Si tous le produits cochés alors ajouter le ticketId dans leur noprint
+      ingredients.forEach((ing) => {
+        if(ing.noprint === undefined || ing.noprint === null) {
+          ing.noprint = [];
+        }
+
+        if(!(ing.noprint.includes(ticketId))) { // Ne rien faire si le ticketId est déjà présent dans noprint (ne devrait pas être possible)
+          allUpdates.push({ingredient_id: ing.id, update: {noprint: [...ing.noprint, ticketId]}});
+        }
+      });
+    }
+
+    if(allUpdates !== []) {
+      updateMultipleIngredients({type_id:id, updates: allUpdates, catalogue:defCat.substr(3)});
+    }
+  }
+
+  changeNoPrintIngredient(id, ticketId) {
+    const {categories, updateIngredient, ingredients} = this.props;
+    const {categorie} = this.state;
+
+    const defCat = categorie || categories[0].categorie_id;
+
+    const ingredient = ingredients[id];
+    logger.log('ingredient',ingredient);
+
+    if(ingredient.noprint === undefined || ingredient.noprint === null) {
+      ingredient.noprint = [];
+    }
+
+    if (ingredient.noprint.indexOf(ticketId)===-1) {
+      updateIngredient({ingredient_id:id, update:{noprint:[...ingredient.noprint, ticketId]}, catalogue:defCat.substr(3)});
+    } else {
+      updateIngredient({ingredient_id:id, update:{noprint:ingredient.noprint.filter(t=>t!==ticketId)}, catalogue:defCat.substr(3)});
+    }
+
+  }
+  // changeNoPrintGroupe(id,ticketId, sub=false) {
+  //   const {categories, catalogue, updateGroupe, updateProduit} = this.props;
+  //   const {categorie} = this.state;
+
+  //   const defCat = categorie || categories[0].categorie_id;
+  //   let noprint = null;
+    
+  //   // édition pour un produit
+  //   if (sub) {
+  //     const produit = this.getProduit(id);
+  //     const prdnoprint = produit.noprint;
+  //     logger.log('produit',produit);
+  //     noprint = catalogue[produit.groupe].noprint;
+  //     // s'il n'y a pas de noprint pour le produit, on se base sur celui du groupe correspondant
+  //     if (prdnoprint===undefined || prdnoprint===null) {
+
+  //       // si le ticket n'est pas indiqué dans le noprint du groupe, on doit le désactiver
+  //       // donc on clone le noprint du groupe et on ajoute l'id du ticket qu'on veut désactiver
+  //       if (noprint.indexOf(ticketId)===-1) {
+  //         updateProduit({produit_id:id, update:{noprint:[...noprint, ticketId]}, catalogue:defCat.substr(3)});
+  //       } 
+  //       // si le ticket est indiqué dans le noprint du groupe, on doit le réactiver pour le produit
+  //       // donc clone le noprint du groupe et on supprime l'id du ticket qu'on veut activer
+  //       else {
+  //         updateProduit({produit_id:id, update:{noprint:noprint.filter(t=>t!==ticketId)}, catalogue:defCat.substr(3)});
+  //       }
+  //     } 
+  //     // s'il y a un noprint pour le produit, on intervient comme pour le noprint du groupe
+  //     else {
+  //       if (prdnoprint.indexOf(ticketId)===-1) {
+  //         updateProduit({produit_id:id, update:{noprint:[...prdnoprint, ticketId]}, catalogue:defCat.substr(3)});
+  //       } else {
+  //         updateProduit({produit_id:id, update:{noprint:prdnoprint.filter(t=>t!==ticketId)}, catalogue:defCat.substr(3)});
+  //       }
+  //     }
+  //   } else {
+
+  //     noprint = catalogue[id].noprint;
+      
+  //     if (noprint.indexOf(ticketId)===-1) {
+  //       updateGroupe({groupe_id:id, update:{noprint:[...noprint, ticketId]}});
+  //     } else {
+  //       updateGroupe({groupe_id:id, update:{noprint:noprint.filter(t=>t!==ticketId)}});
+  //     }
+  //   }
+  // }
+
+  isGroupeIndeterminate(ticketId, list) {
+    const itemNoPrint = list.filter((item) => {
+      if(item.noprint === undefined || item.noprint === null) {
+        return false;
+      }
+      else if (item.noprint.indexOf(ticketId) !== -1) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    });
+
+    return ((itemNoPrint.length !== list.length) && itemNoPrint.length > 0 ) ? true : false ;
+  }
+
+  isGroupeChecked(ticketId, list) {
+    const itemNoPrint = list.filter((item) => {
+      if(item.noprint === undefined || item.noprint === null) {
+        return false;
+      }
+      else if (item.noprint.indexOf(ticketId) !== -1) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    });
+
+    return (itemNoPrint.length === 0 ) ? true : false ;
+  }
 
   changeNoPrintType(id,ticketId, sub=false) {
     const {categories, ingredientTypes, ingredients, updateIngredientType, updateIngredient} = this.props;
@@ -473,10 +619,10 @@ class Menu extends React.Component {
               </Tabs>
             </AppBar>
             <TabPanel key={ `panel-produits` } className="panel" value={openTab} index={0}>
-              <MenuListe key="liste-produits" data={prdlist} type="produits" openEdit={this.editProduit} tickets={tickList} changeDispo={this.changeDispoProduit} changeNoPrint={this.changeNoPrintGroupe} editOpen={this.openEdit} updateType={null} />
+              <MenuListe key="liste-produits" data={prdlist} type="produits" openEdit={this.editProduit} tickets={tickList} changeDispo={this.changeDispoProduit} changeNoPrintAll={this.changeNoPrintMultipleProduits} changeNoPrintItem={this.changeNoPrintProduit} isIndeterminate={this.isGroupeIndeterminate} isChecked={this.isGroupeChecked} editOpen={this.openEdit} updateType={null} />
             </TabPanel>
             <TabPanel key={ `panel-ingredients` } className="panel" value={openTab} index={1}>
-              <MenuListe  key="liste-ingredients" data={inglist} type="ingredients" openEdit={this.editIngredient} tickets={tickList} changeDispo={this.changeDispoIngredient} changeNoPrint={this.changeNoPrintType} editOpen={this.openEdit} updateType={updateIngredientType} />
+              <MenuListe  key="liste-ingredients" data={inglist} type="ingredients" openEdit={this.editIngredient} tickets={tickList} changeDispo={this.changeDispoIngredient} changeNoPrintAll={this.changeNoPrintMultipleIngredients} changeNoPrintItem={this.changeNoPrintIngredient} isIndeterminate={this.isGroupeIndeterminate} isChecked={this.isGroupeChecked} editOpen={this.openEdit} updateType={updateIngredientType} />
             </TabPanel>
           </div>
       </div>
@@ -544,12 +690,22 @@ const IOSSwitch = withStyles((theme) => ({
 
 
 
+
+
 function MenuListe(props) {
 
-  const {data, type, changeDispo, tickets, changeNoPrint, editOpen, updateType} = props;
+  const {data, type, changeDispo, tickets, changeNoPrintAll, changeNoPrintItem, isIndeterminate, isChecked, editOpen, updateType} = props;
 
-  const mliste = data.map((cont,i) => (
-    <Accordion key={`panel${i}`}>
+  const mliste = data.map((cont,i) => {
+    
+    
+  //  tickets.forEach((ticket) => {
+  //    const prds = cont.produits.filter((prd) => {
+  //      prd.no
+  //    })
+  //   });
+
+    return <Accordion key={`panel${i}`}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={ `panel${i}-content` }
@@ -585,9 +741,10 @@ function MenuListe(props) {
                 <Checkbox
                   icon={<CheckBoxOutlineBlankIcon htmlColor="#7FAD3B" fontSize="small" />}
                   checkedIcon={<CheckBoxIcon  htmlColor="#7FAD3B" fontSize="small" />}
-                  checked={cont.noprint.indexOf(tck.ticket_id)===-1}
+                  checked={ (type==='produits') ? isChecked(tck.ticket_id, cont.produits) : isChecked(tck.ticket_id, cont.ingredients)}
                   onClick={(e)=>{ e.stopPropagation();}}
-                  onChange={(e) => { changeNoPrint(type==='produits'?cont.groupe_id:cont.id, tck.ticket_id) }}
+                  onChange={(e) => { (type==='produits') ? changeNoPrintAll(cont.groupe_id, cont.produits, tck.ticket_id, isChecked(tck.ticket_id, cont.produits), isIndeterminate(tck.ticket_id, cont.produits) ) : changeNoPrintAll(cont.groupe_id, cont.ingredients, tck.ticket_id, isChecked(tck.ticket_id, cont.ingredients), isIndeterminate(tck.ticket_id, cont.ingredients) ) }}
+                  indeterminate={ (type==='produits') ? isIndeterminate(tck.ticket_id, cont.produits) : isIndeterminate(tck.ticket_id, cont.ingredients)}
                   name="checkedB"
                   color="primary"
                 />
@@ -616,7 +773,7 @@ function MenuListe(props) {
                         checkedIcon={<CheckBoxIcon  htmlColor="#7FAD3B" fontSize="small" />}
                         checked={(p.noprint!=null) ? p.noprint.indexOf(tck.ticket_id)===-1 : cont.noprint.indexOf(tck.ticket_id)===-1}
                         onClick={(e)=>{ e.stopPropagation();}}
-                        onChange={(e) => { changeNoPrint(p.id, tck.ticket_id, true) }}
+                        onChange={(e) => { changeNoPrintItem(p.id, tck.ticket_id) }}
                         name="checkedB"
                         color="primary"
                       />
@@ -650,7 +807,7 @@ function MenuListe(props) {
                         checkedIcon={<CheckBoxIcon  htmlColor="#7FAD3B" fontSize="small" />}
                         checked={(n.noprint!=null) ? n.noprint.indexOf(tck.ticket_id)===-1 : cont.noprint.indexOf(tck.ticket_id)===-1}
                         onClick={(e)=>{ e.stopPropagation();}}
-                        onChange={(e) => { changeNoPrint(n.id, tck.ticket_id, true) }}
+                        onChange={(e) => { changeNoPrintItem(n.id, tck.ticket_id, true) }}
                         name="checkedB"
                         color="primary"
                       />
@@ -671,7 +828,8 @@ function MenuListe(props) {
           </List>
         </AccordionDetails>
     </Accordion>
-  ));
+    
+  });
 
 
   return (<div className="liste-wrapper">{ mliste }</div>);

@@ -35,8 +35,12 @@ const mapStateToProps = (state) => {
     cloLoaded: Object.entries(state.clotureReducer).length>0,
     sseInit: state.notificationReducer.sseInit,
     params: state.parametresReducer.parametres.options,
+    paramsEntreprise: state.parametresReducer.parametres.entreprise,
     dbupdated: state.parametresReducer.dbupdated,
     dbgetInit: state.notificationReducer.getdbInit,
+    stationinstalled: state.parametresReducer.stationinstalled,
+    statuschecked: state.parametresReducer.statuschecked,
+    online: state.parametresReducer.online
   }
 }
 
@@ -58,6 +62,11 @@ const mapDispatchToProps = (dispatch) => {
     quitApp: peripheralActions.quitApp,
     checkFinDeService: tresorActions.checkFinDeService,
     checkScheduledCommandes: commandeActions.checkSchedules,
+    installStation: parametresActions.installStation,
+    paramUpdate: parametresActions.update,
+    getStatus: parametresActions.getStatus,
+    blockStation: parametresActions.blockStation,
+    testConnection: parametresActions.testConnection
     // loadNumero: commandeActions.loadNumero
   }, dispatch);
   return {

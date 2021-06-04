@@ -144,6 +144,14 @@ ipcRenderer.on('setIngredientTypeSync', (event, ingredienttype) => {
   logger.log('renderer: setIngredientTypeSync', ingredienttype);
   catalogueActions.setIngredientTypeFromSync(ingredienttype)(store.dispatch, store.getState);
 });
+ipcRenderer.on('setProduitsSync', (event, produits) => {
+  logger.log('renderer: setProduitsSync', produits);
+  catalogueActions.setProduitsFromSync(produits)(store.dispatch, store.getState);
+});
+ipcRenderer.on('setIngredientsSync', (event, ingredients) => {
+  logger.log('renderer: setIngredientsSync', ingredients);
+  catalogueActions.setIngredientsFromSync(ingredients)(store.dispatch, store.getState);
+});
 
 
 ipcRenderer.on('setTimeadjustSync', (event, timeadjust) => {

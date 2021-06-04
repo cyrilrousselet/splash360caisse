@@ -74,6 +74,8 @@ const SYNCHRO_TREATMENT = {
   ingredient: "setIngredientSync",
   type: "setIngredientTypeSync",
   setsyncedcommandes: "setSynchedCommandesSync",
+  produits: "setProduitsSync",
+  ingredients: "setIngredientsSync",
 };
 
 let responses = {};

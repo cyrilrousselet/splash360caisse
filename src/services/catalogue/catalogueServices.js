@@ -5,6 +5,8 @@ export const catalogueServices = {
   getAll,
   updateProduit,
   updateIngredient,
+  updateMultipleProduits,
+  updateMultipleIngredients,
   updateGroupe,
   updateIngredientType,
   replaceDatabase
@@ -21,6 +23,12 @@ function updateProduit(produit) {
 }
 function updateIngredient(ingredient) {
   return emit('dbCatalogueUpdateIngredient', {ingredient:ingredient});
+}
+function updateMultipleProduits(produits) {
+  return emit('dbCatalogueUpdateMultipleProduits', {produits:produits});
+}
+function updateMultipleIngredients(ingredients) {
+  return emit('dbCatalogueUpdateMultipleIngredients', {ingredients:ingredients});
 }
 function updateGroupe(groupe) {
   return emit('dbCatalogueUpdateGroupe', {groupe:groupe});

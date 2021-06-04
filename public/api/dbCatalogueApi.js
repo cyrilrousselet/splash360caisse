@@ -59,6 +59,34 @@ const actions = {
     res.send(ing);
   },
 
+  dbCatalogueUpdateMultipleProduits: async (req,res) => {
+    const {payload} = req;
+    (await db.produits)._.mixin(lodashId);
+    (await db.groupes)._.mixin(lodashId);
+    const prds = []
+
+    for (const prd of payload.produits) {
+      const produit = await _persistProduit(prd);
+      prds.push(produit);
+    }
+    
+    res.send(prds);
+  },
+
+  dbCatalogueUpdateMultipleIngredients: async (req,res) => {
+    const {payload} = req;
+    (await db.ingredients)._.mixin(lodashId);
+    (await db.ingredienttypes)._.mixin(lodashId);
+    const ings = [];
+
+    for (const ing of payload.ingredients) {
+      const ingredient = await _persistIngredient(ing);
+      ings.push(ingredient);
+    }
+
+    res.send(ings);
+  },
+
   dbCatalogueUpdateGroupe: async (req,res) => {
     const {payload} = req;
 

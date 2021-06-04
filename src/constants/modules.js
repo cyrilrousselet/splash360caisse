@@ -5,7 +5,7 @@ export const modulesList = [
   "listecommandes",
   "cloture",
   "menu",
-  //  'stocks',
+  // 'stocks',
   "statistiques",
   "parametres",
   "clients",

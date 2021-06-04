@@ -50,7 +50,8 @@ const actions = {
       _webContents.send("getNotification", { ...data });
     };
     es.onerror = (err) => {
-      log.info("es.onerror", err.message);
+      log.info("es.onerror err", err);
+      log.info("es.onerror msg", err.message);
       res.send({ msg: "ca va pas" });
       // es.close();
     };
@@ -680,8 +681,7 @@ const actions = {
           log.error("synccat JSON error", e);
         }
         res.send(__conf);
-        //        res.send({confirm: JSON.parse(__syncedClotures.join(''))});
-        // res.send({confirm: true});
+
       });
     });
 
@@ -692,6 +692,127 @@ const actions = {
 
     __request.end();
   },
+        
+  installStation: (req, res) => {
+    const {url, uniqid} = req.payload;
+
+    let data = '';
+
+    let id;
+    id = machineIdSync(true);
+    console.log('uuid', id);
+
+    const __request = net.request({
+      url: url,
+      method: "post",
+    });
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    const form = qs.stringify({
+      uuid: id,
+      uniqid: uniqid
+    });
+    __request.write(form);
+
+    __request.on("response", (response) => {
+      response.on("data", (chunk) => {
+        log.info(`installStation BODY: ${chunk}`);
+        data += chunk;
+      });
+
+      response.on("end", () => {
+
+        let __conf = {};
+        try {
+          __conf = JSON.parse(data);
+          console.log("data", data);
+        } catch (e) {
+          __conf = { error: e.message };
+          log.error("installStation JSON error", e);
+        }
+        res.send(__conf);
+
+      });
+    });
+
+    __request.on('error', (error) => {
+      log.error('installStation ERROR', error);
+      res.error(error);
+    });
+
+    __request.end();
+
+  },
+
+  getStatus: (req, res) => {
+    const { url, access_token } = req.payload;
+
+    let data = '';
+    let id;
+    id = machineIdSync(true);
+
+    const __request = net.request({
+      url: url,
+      method: "post",
+    });
+    __request.setHeader("Authorization", "Bearer " + access_token);
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    const form = qs.stringify({
+      uuid: id,
+    });
+    __request.write(form);
+
+    __request.on("response", (response) => {
+
+      response.on("data", (chunk) => {
+        log.info(`getStatus BODY: ${chunk}`);
+        data += chunk;
+      });
+      response.on("end", () => {
+        let __conf = {};
+        try {
+          __conf = JSON.parse(data);
+          console.log("data", data);
+        } catch (e) {
+          __conf = { error: e.message };
+          log.error("getStatus JSON error", e);
+        }
+        res.send(__conf);
+      });
+    });
+
+    __request.on('error', (error) => {
+      log.error('getStatus ERROR', error);
+      res.error(error);
+    });
+
+    __request.end();
+  },
+
+
+  // pingBO: (req, res) => { // Test à la fois la connexion au bo et la connexion internet
+  //   const {url} = req.payload;
+
+  //   const __request = net.request({
+  //     url: url,
+  //     method: "get",
+  //   });
+  //   __request.setHeader("Access-Control-Allow-Origin", "*");
+  //   __request.setHeader("Content-Type", "application/json");
+
+  //   __request.on("response", (response) => {
+  //     res.send("")
+  //   });
+
+  //   __request.on('error', (error) => {
+  //     res.error(error);
+  //   });
+
+  // }
+
 };
 
 module.exports = {

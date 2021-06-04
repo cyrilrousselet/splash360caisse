@@ -33,7 +33,7 @@ function createWindow() {
       if (process.platform === 'darwin') {
         try {
           BrowserWindow.addDevToolsExtension(
-              path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions/lmhkpmbekcpmknklioeibfkpmmfibljd/2.17.0_0')
+              path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions/lmhkpmbekcpmknklioeibfkpmmfibljd/2.17.2_0')
           );
         } catch(e) {
           log.info('pbm devtool darwin', e.message);
@@ -41,19 +41,23 @@ function createWindow() {
       } else if (process.platform === 'win32') {
         try {
           BrowserWindow.addDevToolsExtension(
-          path.join(os.homedir(), '\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\lmhkpmbekcpmknklioeibfkpmmfibljd\\2.17.0_0')
+          path.join(os.homedir(), '\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\lmhkpmbekcpmknklioeibfkpmmfibljd\\2.17.2_0')
           );
         } catch(e) {
           log.info('pbm devtool win', e.message);
         }
       }
         mainWindow.webContents.openDevTools();
+        // mainWindow.webContents.on("devtools-opened", () => { mainWindow.webContents.closeDevTools(); });
     } else {
         // suppression du menu sur Windows et Linux en prod
         if (process.platform !== 'darwin') {
             Menu.setApplicationMenu(null);
             mainWindow.setFullScreen(true);
         }
+
+        // mainWindow.webContents.on("devtools-opened", () => { mainWindow.webContents.closeDevTools(); }); // Pour empecher l'ouverture du devtools ?
+
     }
     mainWindow.on('closed', () => mainWindow = null);
 
@@ -69,9 +73,9 @@ if (!gotTheLock) {
     app.quit()
 } else {
 
-    // app.on('before-quit', () => {
-    //     localStorage.removeItem('user');
-    // })
+    app.on('before-quit', () => {
+      mainWindow.webContents.executeJavaScript('localStorage.removeItem("user");', true);
+    })
 
     app.on('second-instance', (event, commandLine, workingDirectory) => {
       // Someone tried to run a second instance, we should focus our window.
@@ -84,10 +88,13 @@ if (!gotTheLock) {
     app.on('ready', createWindow);
 
     app.on('window-all-closed', () => {
-      //  localStorage.removeItem('user');
-        if (process.platform !== 'darwin') {
-            app.quit();
-        }
+      // localStorage.removeItem('user');
+
+      mainWindow.webContents.executeJavaScript('localStorage.removeItem("user");', true);
+
+      if (process.platform !== 'darwin') {
+          app.quit();
+      }
     });
 
     app.on('activate', () => {

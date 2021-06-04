@@ -3,7 +3,9 @@ import { parametresActionTypes } from './parametresActionTypes';
 const initialState = {
   loading: false,
   parametres: {},
-  error: null
+  error: null,
+  statuschecked: false,
+  online: null
 };
 
 
@@ -103,6 +105,49 @@ export function parametresReducer(state=initialState, action) {
         ...state,
         loading: false,
         error: action.error
+      };
+
+    case parametresActionTypes.INSTALL_STATION_SUCCESS:
+      console.log(action);
+
+      const __up = {...parametres};
+
+      action.payload.forEach(obj => {
+        __up[obj.domaine][obj.cle] = obj.valeur;
+        console.log('up d:'+obj.domaine+', c:'+obj.cle+', v:'+obj.valeur, __up);
+      }, __up);
+
+      return {
+        ...state,
+        loading: false,
+        error: null,
+        parametres: __up,
+        stationinstalled: true
+      };
+
+    case parametresActionTypes.INSTALL_STATION_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.error
+      };
+
+    case parametresActionTypes.GET_STATUS_SUCCESS:
+      return state;
+
+    case parametresActionTypes.GET_STATUS_FAILURE:
+      return state;
+
+    case parametresActionTypes.STATUS_CHECKED:
+      return {
+        ...state,
+        statuschecked: true
+      };
+
+    case parametresActionTypes.CONNECTION_TESTED:
+      return {
+        ...state,
+        online: action.value
       };
 
     default:
