@@ -462,7 +462,7 @@ class Menu extends React.Component {
       }
     });
 
-    return ((itemNoPrint.length != list.length) && itemNoPrint.length > 0 ) ? true : false ;
+    return ((itemNoPrint.length !== list.length) && itemNoPrint.length > 0 ) ? true : false ;
   }
 
   isGroupeChecked(ticketId, list) {

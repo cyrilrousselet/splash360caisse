@@ -682,6 +682,12 @@ function _printEtiquettes(printer, data, config) {
 
     let __y = 115;
 
+    if (art.comment!=='') {
+      const __cmt = ('TEXT 15,%Y%,"2",0,1,1,"-- %CMT% --"').replace('%Y%', __y).replace('%CMT%',art.comment);
+      __printlist.push(__cmt);
+      __y += 35;
+    }
+
     const __ingline = 'TEXT 15,%Y%,"2",0,1,1,"* %ING%"';
     inglist.forEach(ing=> {
       __printlist.push(__ingline.replace('%Y%', __y).replace('%ING%',ing));
@@ -735,7 +741,15 @@ function _printProduits(printer, data, strings) {
       .fontSize('4square')
       .tableCustom([
         {text: art.nom, align:'LEFT', cols:21, style:'B'}
-      ])
+      ]);
+    if (art.comment!=="") {
+      printer
+      .fontSize('normal')
+      .tableCustom([
+        {text: '-- '+art.comment+' --', align:'LEFT', cols:42, style:'NORMAL'}
+      ]);
+    }
+    printer
       .fontSize('normal')
       .tableCustom([
         {text: inglist.join(', '), align:'LEFT', cols:42, style:'NORMAL'}

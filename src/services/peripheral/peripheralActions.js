@@ -346,7 +346,7 @@ function _getRecap(tickets, commande, catalogue, types, ingredients) {
 function _setCommandeToKDS(ticketsListe, cmd, state) {
 
 
-  const { catalogue, steps, ingredients, ingredientTypes } = state.catalogueReducer;
+  const { catalogue, steps, ingredients } = state.catalogueReducer;
   const { options, peripheriques } = state.parametresReducer.parametres;
   const { clients } = state.clientsReducer;
 
@@ -1027,7 +1027,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             let __anoprint = prdnoprint.find(p=>p===ticket.ticket_id);
 
             // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
-            let __noprintableingredient =  (inglist.length>0 && articleIngredients.length===0);
+            let __noprintableingredient =  (inglist.length>0 && articleIngredients.length===0 && ingredientsAsProducts.length===0);
             
             // si le groupe doit s'imprimer sur ce ticket
             // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
@@ -1178,7 +1178,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
 
             // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
-            let __noprintableingredient =  (inglist.length>0 && articleIngredients.length===0);
+            let __noprintableingredient =  (inglist.length>0 && articleIngredients.length===0 && ingredientsAsProducts.length===0);
             
             // si le groupe doit s'imprimer sur ce ticket
             // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
@@ -1242,6 +1242,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
             let articleIngredients = [];
             let ingredientsAsProducts = [];
+            let __comment = null;
 
 
             const inglist = [...article.composition, ...article.ingredients];
@@ -1290,6 +1291,9 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               }
             });
 
+
+            __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
+
             articleIngredients.sort((a,b)=>a.weight-b.weight);
 
             const prd = _getProduit(article.produitid, catalogue);
@@ -1298,7 +1302,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             let __anoprint = prdnoprint.find(p=>p===ticket.ticket_id);
 
             // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
-            let __noprintableingredient = (inglist.length>0 && articleIngredients.length===0);
+            let __noprintableingredient = (inglist.length>0 && articleIngredients.length===0 && ingredientsAsProducts.length===0);
             
             // si le groupe doit s'imprimer sur ce ticket
             // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
@@ -1308,7 +1312,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               articles.push({
                 qte: article.quantite,
                 nom: removeDiacritics(article.nom),
-                ingredients: articleIngredients
+                ingredients: articleIngredients,
+                comment: __comment ? removeDiacritics(__comment.texte) : ''
               });        
             }
             if (ingredientsAsProducts.length>0 && !__anoprint) {
@@ -1339,6 +1344,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
             let articleIngredients = [];
             let ingredientsAsProducts = [];
+            let __comment = null;
 
 
             const inglist = [...article.composition, ...article.ingredients];
@@ -1381,11 +1387,14 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
                   articleIngredients.push({
                     qte: ing.qte * article.quantite,
                     nom: removeDiacritics(ing.nom),
-                    weight: __ingweight
+                    weight: __ingweight,
+                    comments: __comment
                   });
                 }
               }
             });
+
+            __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
 
             articleIngredients.sort((a,b)=>a.weight-b.weight);
 
@@ -1405,7 +1414,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               articles.push({
                 qte: article.quantite,
                 nom: removeDiacritics(article.nom),
-                ingredients: articleIngredients
+                ingredients: articleIngredients,
+                comment: __comment ? removeDiacritics(__comment.texte) : ''
               });        
             }
             if (ingredientsAsProducts.length>0 && !__anoprint) {

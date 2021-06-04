@@ -5,7 +5,7 @@ import { notificationActions } from '../notification/notificationActions';
 
 import { parametresActions } from '../parametres/parametresActions';
 import { parametresActionTypes } from '../parametres/parametresActionTypes';
-import { result } from 'lodash';
+// import { result } from 'lodash';
 
 const logger = new Logger();
 
@@ -183,7 +183,7 @@ function updateMultipleProduits(payload) {
   return (dispatch, getState) => {
     dispatch({ type: catalogueActionTypes.UPDATE_MULTIPLE_PRODUITS_REQUEST});
 
-    const {groupe_id, catalogue, updates} = payload;
+    const {updates} = payload;
     const {caisse} = getState().parametresReducer.parametres.options;
     
     const prdGrouped = [];
@@ -219,7 +219,7 @@ function updateMultipleIngredients(payload) {
   return (dispatch, getState) => {
     dispatch({ type: catalogueActionTypes.UPDATE_MULTIPLE_INGREDIENTS_REQUEST});
 
-    const {type_id, catalogue, updates} = payload;
+    const {updates} = payload;
     const {caisse} = getState().parametresReducer.parametres.options;
     
     const ingGrouped = [];
