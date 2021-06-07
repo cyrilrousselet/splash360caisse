@@ -31,6 +31,10 @@ export function authentication(state = initialState, action) {
     case userActionTypes.LOGOUT:
       
       return {loggedIn: false};
+    case userActionTypes.UPDATE_SUCCESS:
+      return {
+        user: action.user
+      }
     default:
       return state
   }
