@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-// import { bindActionCreators } from 'redux';
+import { bindActionCreators } from 'redux';
 import Footer from '../components/Footer';
 import history from '../helpers/history';
 import paths from './../constants/routes.json';
@@ -8,6 +8,7 @@ import Swal from 'sweetalert2';
 
 import {data} from '../constants/translations';
 import LocalizedStrings from 'react-localization';
+import { userActions } from '../services/user/userActions';
 let strings = new LocalizedStrings(data);
 
 
@@ -37,9 +38,13 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
+  const bound = bindActionCreators({
+    toggleMode: userActions.toggleSuperUserMode
+  }, dispatch);
   return {
+    ...bound,
     userLogout: userLogout
-  };
+  }
 }
 
 const FooterCont = connect(

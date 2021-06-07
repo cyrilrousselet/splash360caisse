@@ -55,6 +55,9 @@ const data = {
                 active: 'Entrez le mot de passe par défaut pour activer la caisse',
                 texte: 'Vous devez personnaliser l’identifiant administrateur afin d’utiliser la caisse.'
             },
+            superuser: {
+                titre: 'Connexion superuser'
+            },
             erreur: {
                 titre: 'Erreur !',
                 texte: 'Veuillez vérifier votre identifiant'
@@ -933,7 +936,7 @@ const data = {
                                 cartes: "Encaissement CB",
                                 listecommandes: "Accès Liste Commandes",
                                 encaissement: "Accès Encaissement",
-                                no_print: "Accès NoPrint",
+                                // no_print: "Accès NoPrint",
 
                             }
                         },
@@ -958,7 +961,7 @@ const data = {
                                 depenses: "Accès Dépenses",
                                 employes: "Accès Employés",
                                 remise: "Remise",
-                                no_print: "Accès NoPrint",
+                                // no_print: "Accès NoPrint",
                             },
                             suppression: {
                                 bouton: 'Supprimer l’Utilisateur',

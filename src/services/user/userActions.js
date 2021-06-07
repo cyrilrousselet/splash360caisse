@@ -219,6 +219,47 @@ function setUserFromSync(payload) {
   }
 }
 
+function toggleSuperUserMode() {
+  console.log("toggleSU");
+  return dispatch => { dispatch({ type: userActionTypes.TOGGLE_SUPERUSER_MODE }) };
+}
+
+function loginSU(passphrase) {
+  console.log("loginSU");
+
+  return dispatch => {
+
+
+    dispatch({ type: userActionTypes.LOGIN_REQUEST, payload: passphrase });
+
+    userServices.loginSU(passphrase)
+        .then(
+            user => {
+              if (user) {
+
+                // si l'utilisateur n'est pas superuser -> refus
+                if (user.status!=='superuser') {
+                  dispatch({ type: userActionTypes.LOGIN_DENIED, payload: strings.login.denied.titre });
+                } else {
+                  dispatch({ type: userActionTypes.LOGIN_SUCCESS, user });
+                  // store user details and jwt token in local storage to keep user logged in between page refreshes
+                  localStorage.setItem('user', JSON.stringify(user));
+                  
+                  history.push(paths.DASHBOARD);
+                }
+                
+              }
+              else {
+                dispatch({ type: userActionTypes.LOGIN_ERROR, payload: strings.login.erreur.titre });
+              }
+            },
+            error => {
+                dispatch({ type: userActionTypes.LOGIN_FAILURE, payload: error.toString() });
+                dispatch(alertActions.error(error.toString()));
+            }
+        );
+  }
+};
 
 
 export const userActions = {
@@ -231,5 +272,7 @@ export const userActions = {
   createUser,
   getAll,
   delete: _delete,
-  setUserFromSync
+  setUserFromSync,
+  toggleSuperUserMode,
+  loginSU
 }
