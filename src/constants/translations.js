@@ -933,6 +933,7 @@ const data = {
                                 cartes: "Encaissement CB",
                                 listecommandes: "Accès Liste Commandes",
                                 encaissement: "Accès Encaissement",
+                                no_print: "Accès NoPrint",
 
                             }
                         },
@@ -956,7 +957,8 @@ const data = {
                                 marketing: "Accès Marketing",
                                 depenses: "Accès Dépenses",
                                 employes: "Accès Employés",
-                                remise: "Remise"
+                                remise: "Remise",
+                                no_print: "Accès NoPrint",
                             },
                             suppression: {
                                 bouton: 'Supprimer l’Utilisateur',
