@@ -2,6 +2,7 @@ import { emit } from 'eiphop';
 
 export const userServices = {
  login,
+ loginSU,
  logout,
  getAll,
  update,
@@ -34,6 +35,10 @@ function login(passphrase) {
   // }
 
 
+}
+
+function loginSU(passphrase) {
+  return emit('dbUsersLoginSU' , {identifiant:passphrase});
 }
 
 function setAdmin(passphrase) {

@@ -479,7 +479,7 @@ function TableUtilisateurs(props) {
       </TableHead>
       <TableBody>
         {liste.map((row, i) => (
-          (row.status!=='deleted') && (<TableRow key={row.id} className={(i%2)?'odd':'even'}>
+          (row.status!=='deleted' && row.status!=='superuser') && (<TableRow key={row.id} className={(i%2)?'odd':'even'}>
             <TableCell key={`${i}-nom`} className={ `liste-nom${ (row.status && row.status==='disabled')?' user-disabled':''}` }><div onClick={ () => { openEdit(i) } }>{ row.nom }{ row.livreur && <DeliveryIcon className="delivery" /> }{ (row.livreur && row.coordonnees) && `(${row.coordonnees})` }</div></TableCell>
             <TableCell key={`${i}-passe`} className="liste-passe">{ row.identifiant }</TableCell>
             <TableCell key={`${i}-droits`} className="liste-droits"><DroitsPopper id={`drt${i}`} droits={row.droits}></DroitsPopper></TableCell>

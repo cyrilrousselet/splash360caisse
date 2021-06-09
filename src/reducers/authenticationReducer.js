@@ -1,7 +1,7 @@
 import { userActionTypes } from './../services/user/userActionTypes';
 
 let user = JSON.parse(localStorage.getItem('user'));
-const initialState = user ? { loggedIn: true, user } : {loggedIn: false};
+const initialState = user ? { loggedIn: true, user, superuserMode: false } : {loggedIn: false, superuserMode:false};
 
 export function authentication(state = initialState, action) {
 
@@ -34,6 +34,11 @@ export function authentication(state = initialState, action) {
     case userActionTypes.UPDATE_SUCCESS:
       return {
         user: action.user
+      }
+    case userActionTypes.TOGGLE_SUPERUSER_MODE:
+      return {
+        ...state,
+        superuserMode: !state.superuserMode
       }
     default:
       return state

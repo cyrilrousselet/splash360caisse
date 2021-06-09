@@ -10,7 +10,7 @@ import { parametresActions } from '../services/parametres/parametresActions';
 
 const getActiveUsers = (state) => {
   if (state.userReducer.users) {
-    return state.userReducer.users.filter(u=>u.status!=='deleted');
+    return state.userReducer.users.filter(u=>u.status!=='deleted' && u.status!=='superuser');
   } else {
     return null;
   }

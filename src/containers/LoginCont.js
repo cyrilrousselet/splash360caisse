@@ -7,13 +7,15 @@ import { bindActionCreators } from 'redux';
 const mapStateToProps = (state) => { 
   return {
     hasUsers: hasUsers(state),
-    error: state.authentication.error
+    error: state.authentication.error,
+    superuserLoginMode: state.authentication.superuserMode
   };
 }
 
 const mapDispatchToProps = (dispatch) => {
   const bound = bindActionCreators({
     login: userActions.login,
+    loginSU: userActions.loginSU,
     checkUsers: userActions.checkUsers,
     setAdmin: userActions.setAdmin,
     resetError: userActions.resetError

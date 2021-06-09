@@ -14,7 +14,14 @@ const hydration = {
   ticketsrestau: [],
   clotures: [],
   tresorerie: [],
-  users: [],
+  users: [
+    {
+      "user_id": "superusr0",
+      "nom": "Superuser",
+      "identifiant": "290381 ",
+      "status": "superuser"
+    }
+  ],
   pointages: [],
   shifts: [],
   timeadjusts: [],

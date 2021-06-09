@@ -4,6 +4,7 @@ import { data } from '../constants/translations';
 import packageJson from './../../package.json';
 import moment from 'moment';
 import frLocale from "moment/locale/fr";
+import {withRouter} from 'react-router-dom';
 
 
 let strings = new LocalizedStrings(data);
@@ -55,7 +56,7 @@ class Footer extends React.Component {
 
     render() {
 
-        const {online, status, expiredate} = this.props;
+        const {online, status, expiredate, toggleMode} = this.props;
 
         const expDate = moment(expiredate).locale('fr', [frLocale]);
 
@@ -79,7 +80,7 @@ class Footer extends React.Component {
                     </div>
                 )}
             /> */}
-            <div className="build-version">{ `Splash360 Build v. ${packageJson.version}` }</div>
+            <div className="build-version" onClick={ (this.props.location.pathname === '/login') && toggleMode }>{ `Splash360 Build v. ${packageJson.version}` } </div>
             <div className="right">
               <div className="date">{ this.state.date }</div>
               <div className="heure">{ this.state.heure }</div>
@@ -91,4 +92,4 @@ class Footer extends React.Component {
     }
 }
 
-export default Footer;
+export default withRouter(Footer);

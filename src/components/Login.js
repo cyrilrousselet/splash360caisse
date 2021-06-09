@@ -99,7 +99,7 @@ class Login extends React.Component {
 
   submitPassphrase(passphrase) {
     const { prepareToSet } = this.state; 
-    const { hasUsers, inPopin, popinAction, setAdmin, login } = this.props;
+    const { hasUsers, inPopin, popinAction, setAdmin, login, superuserLoginMode, loginSU } = this.props;
 
     this.resetPassphrase();
     // dans le cas où la page de login serait utilisée en popin
@@ -116,7 +116,11 @@ class Login extends React.Component {
       else {
         // s'il y a au moins un user en base
         if (hasUsers) {
-          login(passphrase);
+          if(superuserLoginMode) {
+            loginSU(passphrase);//loginVersionSU
+          } else {
+            login(passphrase);
+          }
         } 
         // si aucun user n'est en base
         else {
@@ -151,7 +155,7 @@ class Login extends React.Component {
   render() {
 
     const {passphrase, boutons, prepareToSet} = this.state;
-    const {hasUsers, inPopin} = this.props;
+    const {hasUsers, inPopin, superuserLoginMode} = this.props;
 
 
     // if (error) {
@@ -168,7 +172,8 @@ class Login extends React.Component {
         </div>}
         <div className={ `panel${(prepareToSet ? ' prepareAdmin' : '')}` }>
           {(!hasUsers) && <div className="prepareTitle">{ strings.login.premiere.titre }</div> }
-          <PillField type="password" innerButton="delete" charNum={ NUMCHAR } value={passphrase} innerButtonHandler={this.deleteHandler}/>
+          {(superuserLoginMode && hasUsers && !prepareToSet) && <div className="superuserTitle">{ strings.login.superuser.titre }</div> }
+          <PillField  className={(superuserLoginMode && hasUsers && !prepareToSet) ? "superuser" : ""} type="password" innerButton="delete" charNum={ NUMCHAR } value={passphrase} innerButtonHandler={this.deleteHandler}/>
           {(!hasUsers && !prepareToSet) && <div className="prepareTexte">{ strings.login.premiere.active }</div> }
           {(!hasUsers && prepareToSet) && <div className="prepareTexte">{ strings.login.premiere.texte }</div> }
           <div className="keyboard">
