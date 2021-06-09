@@ -74,7 +74,7 @@ const mapStateToProps = (state) => {
     today_numtickets: state.clotureReducer.today_numtickets,
    // periode: getPeriode(state),
     points: null, //200,
-    modules: getModulesFromDroits(state.authentication.user.droits),
+    modules: (state.authentication.user.status === 'superuser') ? modulesList : getModulesFromDroits(state.authentication.user.droits),
     devise: ' €',
     caisse: 0,
     blocage_encaissement: state.tresorReducer.blocage,

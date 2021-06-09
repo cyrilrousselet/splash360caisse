@@ -25,7 +25,15 @@ const actions = {
     const {payload} = req;
 
     (await db.users)._.mixin(lodashId);
-    const __usr = await _findUser((u => (u.identifiant===payload.identifiant && u.status!=='disabled')));
+    const __usr = await _findUser((u => (u.identifiant===payload.identifiant && u.status==='active')));
+    
+    res.send(__usr);
+  },
+  dbUsersLoginSU: async (req,res) => {
+    const {payload} = req;
+
+    (await db.users)._.mixin(lodashId);
+    const __usr = await _findUser((u => (u.identifiant===payload.identifiant && u.status==='superuser')));
     
     res.send(__usr);
   },
@@ -82,7 +90,7 @@ const actions = {
 
 
 async function _hasUsers() {
-  const __users = await (await db.users).get('users').size().value();
+  const __users = await (await db.users).get('users').filter( u => (u.status!=="superuser")).size().value();
   log.info('_hasUsers()', __users);
   return __users>0;
 }

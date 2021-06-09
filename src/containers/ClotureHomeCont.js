@@ -21,7 +21,7 @@ const getSubModulesFromDroits = (droits) => {
 const mapStateToProps = (state) => {
   return {
   //  pointages: getPointages(state),
-    submodules: getSubModulesFromDroits(state.authentication.user.droits),
+    submodules: (state.authentication.user.status === 'superuser') ? ['tresor', 'cloture'] : getSubModulesFromDroits(state.authentication.user.droits),
   }
 }
 
