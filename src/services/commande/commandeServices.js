@@ -60,7 +60,7 @@ function getNewCommande(params) {
     end: null,
     chrono: 0,
     total: 0,
-    printnum: 1,
+    printnum: 0,
     mode: "surplace",
     status: "pending",
     type: "vente",

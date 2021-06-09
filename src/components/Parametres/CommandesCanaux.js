@@ -13,29 +13,29 @@ class CommandesCanaux extends React.Component {
     this.state = {
       uuid:null
     };
-    this.updatePOS = this.updatePOS.bind(this);
+    // this.updatePOS = this.updatePOS.bind(this);
     this.updateRestaurantOnline = this.updateRestaurantOnline.bind(this);
     this.updateUUID = this.updateUUID.bind(this);
   }
 
-  updatePOS(value) {
-    const { data, updateValeur, setPOS} = this.props;
-    if (data.store_id) {
-      updateValeur({
-        domaine: 'commandes',
-        cle: 'pos_integration_enabled',
-        valeur: value
-      });
-      setPOS(value);
-    } else {
-      Swal.fire({
-        title: strings.modules.parametres.submodules.commandes.canaux.uber.alerte.enable_noid.titre,
-        text: strings.modules.parametres.submodules.commandes.canaux.uber.alerte.enable_noid.texte,
-        showCancelButton: false,
-        focusConfirm: true
-      });
-    }
-  }
+  // updatePOS(value) {
+  //   const { data, updateValeur, setPOS} = this.props;
+  //   if (data.store_id) {
+  //     updateValeur({
+  //       domaine: 'commandes',
+  //       cle: 'pos_integration_enabled',
+  //       valeur: value
+  //     });
+  //     setPOS(value);
+  //   } else {
+  //     Swal.fire({
+  //       title: strings.modules.parametres.submodules.commandes.canaux.uber.alerte.enable_noid.titre,
+  //       text: strings.modules.parametres.submodules.commandes.canaux.uber.alerte.enable_noid.texte,
+  //       showCancelButton: false,
+  //       focusConfirm: true
+  //     });
+  //   }
+  // }
 
   updateRestaurantOnline(value) {
     const { data, updateValeur, setRestaurantOnline} = this.props;
@@ -119,7 +119,7 @@ class CommandesCanaux extends React.Component {
                 label={ strings.modules.parametres.submodules.commandes.canaux.uber.store_id }
               />
 
-          <SwitchCheckbox 
+          {/* <SwitchCheckbox 
             isChecked={ data.hasOwnProperty('pos_integration_enabled') && data.pos_integration_enabled } 
             labelLeft={ false } 
             key={`pos_integration_enabled`}
@@ -128,7 +128,7 @@ class CommandesCanaux extends React.Component {
               this.updatePOS(isChecked)
             } } 
             label={ strings.modules.parametres.submodules.commandes.canaux.uber.pos_integration_enabled }
-          />
+          /> */}
 
           <SwitchCheckbox 
             isChecked={ data.hasOwnProperty('restaurant_online') && data.restaurant_online } 

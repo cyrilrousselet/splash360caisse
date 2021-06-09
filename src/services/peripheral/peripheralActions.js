@@ -1027,7 +1027,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             let __anoprint = prdnoprint.find(p=>p===ticket.ticket_id);
 
             // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
-            let __noprintableingredient =  (inglist.length>0 && articleIngredients.length===0 && ingredientsAsProducts.length===0);
+            // let __noprintableingredient =  (inglist.length>0 && articleIngredients.length===0 && ingredientsAsProducts.length===0);
+            let __noprintableingredient =  (inglist.length>0 && articleIngredients.length===0);
             
             // si le groupe doit s'imprimer sur ce ticket
             // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
@@ -1178,7 +1179,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
 
             // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
-            let __noprintableingredient =  (inglist.length>0 && articleIngredients.length===0 && ingredientsAsProducts.length===0);
+            // let __noprintableingredient =  (inglist.length>0 && articleIngredients.length===0 && ingredientsAsProducts.length===0);
+            let __noprintableingredient =  (inglist.length>0 && articleIngredients.length===0);
             
             // si le groupe doit s'imprimer sur ce ticket
             // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
@@ -1302,13 +1304,18 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             let __anoprint = prdnoprint.find(p=>p===ticket.ticket_id);
 
             // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
-            let __noprintableingredient = (inglist.length>0 && articleIngredients.length===0 && ingredientsAsProducts.length===0);
+            let __noprintableingredient = (inglist.length>0 && articleIngredients.length===0);
+            // let __noprintableingredient = false;
+            // if (inglist.length>0) {
+            //   if (ingredientsAsProducts.length>0) __noprintableingredient = ingredientsAsProducts.length===inglist.length;
+            // } 
             
             // si le groupe doit s'imprimer sur ce ticket
             // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
             // on ajoute ce produit à la liste à imprimer
             // if (!__noprintableingredient && (!__anoprint || (__anoprint && articleIngredients.length>0))) {
             if (!__noprintableingredient && !__anoprint) {
+            // if (!__anoprint) {
               articles.push({
                 qte: article.quantite,
                 nom: removeDiacritics(article.nom),
@@ -1317,6 +1324,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               });        
             }
             if (ingredientsAsProducts.length>0 && !__anoprint) {
+            // if (ingredientsAsProducts.length>0) {
               articles = [...articles, ...ingredientsAsProducts];
             }
 
@@ -1457,7 +1465,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           dispatch({ type: peripheralActionTypes.PRINT_TICKET });
 
           // on déclare la commande comme étant lancée en production
-          let updateCmdAfterPrint = {...cmd, enproduction: true};
+          let updateCmdAfterPrint = {ticketId: cmd.ticketId, enproduction: true};
 
           // pour les tickets commande, on met à jour le nombre d'impressions
           if (ticket.template==='commande') {
