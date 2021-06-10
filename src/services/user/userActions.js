@@ -160,7 +160,11 @@ function getAll() {
 
     userServices.getAll()
                 .then(
-                    users => dispatch({ type: userActionTypes.GETALL_SUCCESS, ...users }),
+                    users => {
+                      
+                    
+                      dispatch({ type: userActionTypes.GETALL_SUCCESS, ...users });
+                    },
                     error => dispatch({ type: userActionTypes.GETALL_FAILURE, payload: error.toString() })
                 );
   }
