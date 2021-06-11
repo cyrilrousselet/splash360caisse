@@ -40,6 +40,7 @@ import DeliveryIcon from './common/icon/DeliveryIcon';
 import PaymentIcon from './common/icon/PaymentIcon';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from './common/icon/EditIcon';
+import AccessTimeIcon from '@material-ui/icons/AccessTime';
 
 import { decodetable } from '../constants/decodetable';
 import { dateBounds } from '../helpers/toolbox';
@@ -85,7 +86,7 @@ TabPanel.propTypes = {
 
 
 function TableCommandes(props) {
-  const { liste, id, openReglement, openReprise, deleteCommande, openPrint, openLivreurs, thiscash } = props;
+  const { liste, id, openReglement, openReprise, deleteCommande, openPrint, openLivreurs, openSchedule, thiscash } = props;
 
   liste.sort((a,b) => {
     let da = new Date(a.commande.createdAt), db = new Date(b.commande.createdAt);
@@ -111,7 +112,16 @@ function TableCommandes(props) {
           {liste.map((row, i) => (
             <TableRow key={row.id} className={ `${(i%2)?'odd':'even'} color-${(row.commande.caisse.id===thiscash.id)?'0':'autre'} ${(row.commande.centre==='uber'?'autrecentre':'')}${(row.commande.archived?' cmd-archived':'')}` }>
               <TableCell key={`${row.id}-date`} className="liste-date">{ row.commande.date }</TableCell>
-              <TableCell key={`${row.id}-heure`} className="liste-heure">{ row.commande.heure }</TableCell>
+              <TableCell key={`${row.id}-heure`} className="liste-heure">
+                { (row.commande.scheduled) ? 
+                  <div className= {`heure-scheduled ${(id==="a_encaisser") && "highlited"}`}>
+                  <p>{row.commande.scheduled}</p>
+                  <AccessTimeIcon /> 
+                  </div>
+                : 
+                  row.commande.heure 
+                }
+              </TableCell>
               <TableCell key={`${row.id}-numero`} className="liste-numero">{ row.commande.numero }</TableCell>
               <TableCell key={`${row.id}-montant`} className="liste-montant">{ row.commande.montant }</TableCell>
               <TableCell key={`${row.id}-caisse`} className="liste-caisse">{ row.commande.caisse.nom }</TableCell>
@@ -158,7 +168,6 @@ function LivreurPopin(props) {
     </Modal>
   );
 }
-
 
 function ImpressionTicketPopin(props) {
   const { tickets, printOpen, closeHandler, launchTicket } = props;
@@ -225,7 +234,9 @@ class ListeCommandes extends React.Component {
       searchval:'',
       inputfocus: true,
       keyboardOpen: false,
-      livreurOpen: false
+      livreurOpen: false,
+      scheduleOpen: false,
+      scheduleDate: null
     };
   }
   
@@ -393,7 +404,7 @@ class ListeCommandes extends React.Component {
   render() {
     const { commandeslist, loading, tickets, printTicket, thiscash, livreurs, setLivreur } = this.props;
 
-    const { startDate, endDate, openTab, commandeId, printOpen, searchval, inputfocus, keyboardOpen, livreurOpen } = this.state;
+    const { startDate, endDate, openTab, commandeId, printOpen, searchval, inputfocus, keyboardOpen, livreurOpen, scheduleOpen, scheduleDate } = this.state;
 
     const self = this;
 
@@ -427,7 +438,7 @@ class ListeCommandes extends React.Component {
         beneficiaire : value.beneficiaire ? value.beneficiaire : null, 
         centre: value.centre_revenu ? value.centre_revenu : 'restaurant',
         archived: value.hasOwnProperty('archived') && value.archived!==null,
-        scheduled: value.hasOwnProperty('scheduled') && value.scheduled,
+        scheduled: value.scheduled && format(new Date(value.scheduled), "H:mm:ss"),
         enproduction: value.hasOwnProperty('enproduction') && value.enproduction,
       };
       let __start = compareAsc(new Date(value.createdAt), startDate);
@@ -511,16 +522,16 @@ class ListeCommandes extends React.Component {
             <PillField value={searchval} type="text" className="displayId" innerButton={ `${searchval==='' ? 'keyboard' : 'delete'}`} innerButtonHandler={this.searchBtn} />
           </AppBar>
           <TabPanel className="panel" value={openTab} index={0}>
-            <TableCommandes className="standby" id="standby" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } liste={standbylist} />
+            <TableCommandes className="standby" id="standby" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } openSchedule={ this.openSchedule } liste={standbylist} />
           </TabPanel>
           <TabPanel className="panel" value={openTab} index={1}>
-            <TableCommandes className="a_encaisser" id="a_encaisser" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } openLivreurs={ this.openLivreurs } liste={a_encaisserlist} />
+            <TableCommandes className="a_encaisser" id="a_encaisser" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } openLivreurs={ this.openLivreurs } openSchedule={ this.openSchedule } liste={a_encaisserlist} />
           </TabPanel>
           <TabPanel className="panel" value={openTab} index={2}>
-            <TableCommandes className="confirmed" id="confirmed" thiscash={thiscash} openReglement={ this.encaissementHandle } openPrint={ this.openPrint } openLivreurs={ this.openLivreurs } liste={confirmedlist} />
+            <TableCommandes className="confirmed" id="confirmed" thiscash={thiscash} openReglement={ this.encaissementHandle } openPrint={ this.openPrint } openLivreurs={ this.openLivreurs } openSchedule={ this.openSchedule } liste={confirmedlist} />
           </TabPanel>
           <TabPanel className="panel" value={openTab} index={3}>
-            <TableCommandes className="staffmeals" id="staffmeals" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } openLivreurs={ this.openLivreurs } liste={stmeallist} />
+            <TableCommandes className="staffmeals" id="staffmeals" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } openLivreurs={ this.openLivreurs } openSchedule={ this.openSchedule } liste={stmeallist} />
           </TabPanel>
         </div>
 
