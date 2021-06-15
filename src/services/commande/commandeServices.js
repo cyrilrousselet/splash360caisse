@@ -3,9 +3,12 @@ import LodashId from "lodash-id";
 import LocalizedStrings from "react-localization";
 import { data } from "../../constants/translations";
 import Logger from "../../helpers/Logger";
+import {MODES} from '../../constants/commandeModes';
 
 const strings = new LocalizedStrings(data);
 const logger = new Logger();
+
+
 
 export const commandeServices = {
   getNewCommande,
@@ -21,6 +24,7 @@ export const commandeServices = {
   addComment,
   addModificateur,
   saveCommande,
+  updateMode,
   persistCommande,
   deleteCommande,
   archiveCommands,
@@ -424,6 +428,65 @@ function completeStep(step, item, produitSteps) {
     resolve(item);
   });
 }
+
+function updateMode(mode, commande, data_catalogue) {
+  const {ingredients, catalogue, tva} = data_catalogue;
+
+
+  commande.mode = mode;
+
+  const __modeid = MODES[mode];
+
+  let __items = [...commande.items];
+  let __cmdtotal = 0;
+  // mise à jour des items (prix et tva)
+  __items = __items.map(itm => {
+    
+    const __produit = _getProduit(itm.produitid,catalogue);
+
+    let __itming = [...itm.ingredients];
+    __itming = __itming.map(ing => {
+
+      let __ingredient = ingredients[ing.ingredient];
+      console.log('ingredient id', ing.ingredient, __ingredient);
+      return {
+        ...ing,
+        tva: __ingredient.tvaArray[__modeid],
+        supplement: __ingredient.supplementArray[__modeid].ttc
+      };
+    });
+
+    const __ritm = {
+      ...itm,
+      tva: tva[__produit.tvaArray[__modeid]],
+      pu: __produit.prixArray[__modeid].ttc,
+      ingredients: __itming
+    };
+    __ritm.prix = __ritm.steps ? _getPrix(__ritm, __ritm.steps) : (__ritm.pu * __ritm.quantite);
+    __cmdtotal += __ritm.prix;
+    return __ritm;
+
+  });
+  commande.items = __items;
+
+  commande.total = __cmdtotal;
+
+  return commande;
+}
+
+
+function _getProduit(id, catalogue) {
+  let produit = {};
+  Object.values(catalogue).forEach(grp => {
+    const p = grp.produits.find(p=>p.id===id);
+    if (p!==undefined) {
+      produit = p;
+      return;
+    }
+  });
+  return produit;
+}
+
 
 // on passe en revue chaque step pour déterminer le supplément pour chaque ingrédient
 function _ventilationIngredientsSteps(item, produitSteps) {

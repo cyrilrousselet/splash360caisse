@@ -708,6 +708,22 @@ function uncheckItemSteps(payload) {
   };
 }
 
+
+function updateMode(mode) {
+  return (dispatch, getState) => {
+    const {commande} = getState().commandeReducer;
+    const {ingredients, catalogue, tva} = getState().catalogueReducer;
+
+    const updated_commande = commandeServices.updateMode(mode, commande, {ingredients, catalogue, tva})
+      
+    dispatch({type: commandeActionTypes.UPDATE_COMMANDE, commande: updated_commande});
+      
+    dispatch(checkMarketing());
+
+  }
+}
+
+
 function updateCommande(payload) {
   return (dispatch) => {
     logger.log(payload);
@@ -1711,6 +1727,7 @@ export const commandeActions = {
   completeStep,
   uncheckItemSteps,
   updateCommande,
+  updateMode,
   deleteCommande,
   setLivreur,
   getCommandesCaisses,

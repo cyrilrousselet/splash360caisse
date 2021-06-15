@@ -76,7 +76,7 @@ class Encaissement extends React.Component {
  render () {
 
   const { parametres } = this.props;
-  const layout = parametres.options.encaissement_layout || 'normal';
+  const layout = (parametres.options && parametres.options.hasOwnProperty('encaissement_layout')) ? parametres.options.encaissement_layout : 'normal';
 
   // logger.log('encaissement state', this.state.personnalisationReview);
   logger.log('encaissement lock', this.state.lockEncaissement);
