@@ -86,7 +86,7 @@ TabPanel.propTypes = {
 
 
 function TableCommandes(props) {
-  const { liste, id, openReglement, openReprise, deleteCommande, openPrint, openLivreurs, openSchedule, thiscash } = props;
+  const { liste, id, openReglement, openReprise, deleteCommande, openPrint, openLivreurs, openLivraisonStatus, thiscash } = props;
 
   liste.sort((a,b) => {
     let da = new Date(a.commande.createdAt), db = new Date(b.commande.createdAt);
@@ -169,6 +169,31 @@ function LivreurPopin(props) {
   );
 }
 
+function LivraisonStatusPopin(props) {
+  const { commandeId, livraisonStatusOpen, closeHandler } = props;
+
+  return (
+    <Modal
+      open={ livraisonStatusOpen }
+      >
+      <div className="ScheduleModal">
+        <div className="Modal-container">
+          <div className="header">
+            <div className="title"></div>
+          </div>
+          <div className="body">
+            
+          </div>
+        </div>
+        <Fab aria-label="close" size="small" className="close-button" onClick={ closeHandler }>
+          <CloseIcon />
+        </Fab>
+      </div>
+    </Modal>
+  );
+}
+
+
 function ImpressionTicketPopin(props) {
   const { tickets, printOpen, closeHandler, launchTicket } = props;
 
@@ -219,6 +244,8 @@ class ListeCommandes extends React.Component {
     this.deleteCommande = this.deleteCommande.bind(this);
     this.openLivreurs = this.openLivreurs.bind(this);
     this.closeLivreurs = this.closeLivreurs.bind(this);
+    this.openLivraisonStatus = this.openLivraisonStatus.bind(this);
+    this.closeLivraisonStatus = this.closeLivraisonStatus.bind(this);
     this.getBoundedCommandesList = this.getBoundedCommandesList.bind(this);
 
     const {heure_fin} = props;
@@ -235,8 +262,7 @@ class ListeCommandes extends React.Component {
       inputfocus: true,
       keyboardOpen: false,
       livreurOpen: false,
-      scheduleOpen: false,
-      scheduleDate: null
+      livraisonStatusOpen: false
     };
   }
   
@@ -401,10 +427,18 @@ class ListeCommandes extends React.Component {
     this.setState({livreurOpen:false, commandeId: null});
   }
 
+  openLivraisonStatus(cmdid) {
+    this.props.getCommande(cmdid);
+    this.setState({commandeId:cmdid, livraisonStatusOpen:true});
+  }
+  closeLivraisonStatus(cmdid) {
+    this.setState({livraisonStatusOpen:false, commandeId:null});
+  }
+
   render() {
     const { commandeslist, loading, tickets, printTicket, thiscash, livreurs, setLivreur } = this.props;
 
-    const { startDate, endDate, openTab, commandeId, printOpen, searchval, inputfocus, keyboardOpen, livreurOpen, scheduleOpen, scheduleDate } = this.state;
+    const { startDate, endDate, openTab, commandeId, printOpen, searchval, inputfocus, keyboardOpen, livreurOpen, livraisonStatusOpen } = this.state;
 
     const self = this;
 
@@ -522,16 +556,16 @@ class ListeCommandes extends React.Component {
             <PillField value={searchval} type="text" className="displayId" innerButton={ `${searchval==='' ? 'keyboard' : 'delete'}`} innerButtonHandler={this.searchBtn} />
           </AppBar>
           <TabPanel className="panel" value={openTab} index={0}>
-            <TableCommandes className="standby" id="standby" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } openSchedule={ this.openSchedule } liste={standbylist} />
+            <TableCommandes className="standby" id="standby" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } liste={standbylist} />
           </TabPanel>
           <TabPanel className="panel" value={openTab} index={1}>
-            <TableCommandes className="a_encaisser" id="a_encaisser" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } openLivreurs={ this.openLivreurs } openSchedule={ this.openSchedule } liste={a_encaisserlist} />
+            <TableCommandes className="a_encaisser" id="a_encaisser" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } openLivreurs={ this.openLivreurs } openLivraisonStatus={ this.openLivraisonStatus } liste={a_encaisserlist} />
           </TabPanel>
           <TabPanel className="panel" value={openTab} index={2}>
-            <TableCommandes className="confirmed" id="confirmed" thiscash={thiscash} openReglement={ this.encaissementHandle } openPrint={ this.openPrint } openLivreurs={ this.openLivreurs } openSchedule={ this.openSchedule } liste={confirmedlist} />
+            <TableCommandes className="confirmed" id="confirmed" thiscash={thiscash} openReglement={ this.encaissementHandle } openPrint={ this.openPrint } openLivreurs={ this.openLivreurs } liste={confirmedlist} />
           </TabPanel>
           <TabPanel className="panel" value={openTab} index={3}>
-            <TableCommandes className="staffmeals" id="staffmeals" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } openLivreurs={ this.openLivreurs } openSchedule={ this.openSchedule } liste={stmeallist} />
+            <TableCommandes className="staffmeals" id="staffmeals" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } openLivreurs={ this.openLivreurs } liste={stmeallist} />
           </TabPanel>
         </div>
 
@@ -539,6 +573,7 @@ class ListeCommandes extends React.Component {
         <NumberKeyboard open={keyboardOpen} numbersOnly={true} buttonHandler={this.keyboardButtonHandler} closeHandler={this.closeKeyboard} />
         <ImpressionTicketPopin tickets={tickets} printOpen={printOpen} closeHandler={this.closePrint} commandeId={ this.state.commandeId } launchTicket={printTicket} />
         <LivreurPopin livreurs={livreurs} livreurOpen={livreurOpen} setLivreur={setLivreur} closeHandler={this.closeLivreurs} commandeId={ this.state.commandeId } commandeLivreur={commandeLivreur} launchTicket={printTicket} />
+        <LivraisonStatusPopin livraisonStatusOpen={livraisonStatusOpen} closeHandler={this.closeLivraisonStatus}/>
       </div>
     </div>
     );
