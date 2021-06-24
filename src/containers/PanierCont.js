@@ -58,6 +58,7 @@ const mapDispatchToProps = (dispatch) => {
     getListeCommandes: commandeActions.getCommandesList,
     updateProduit: commandeActions.updateProduit,
     updateCommande: commandeActions.updateCommande,
+    updateMode: commandeActions.updateMode,
     standByCommande: commandeActions.standByCommande,
     livraisonCommande: commandeActions.livraisonCommande,
     deleteCommande: commandeActions.deleteCurrentCommande,

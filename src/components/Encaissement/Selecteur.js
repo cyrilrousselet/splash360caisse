@@ -4,9 +4,12 @@ import PropTypes from 'prop-types';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import LoadingSpinner from '../common/LoadingSpinner';
 
+import {MODES} from '../../constants/commandeModes';
+
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 let strings = new LocalizedStrings(data);
+
 
 const ProduitBtn = ({ id, nom, prix, composition, color, onClick, disabled }) => (
   // <Button
@@ -48,7 +51,7 @@ class Selecteur extends React.Component {
 
   render() {
 
-    const { catalogue, categories, error, loading, addProduit } = this.props;
+    const { catalogue, categories, error, loading, addProduit, mode } = this.props;
   
     let tlinks = [];
     let tcontents = [];
@@ -97,11 +100,11 @@ class Selecteur extends React.Component {
                   key={ prd.id } 
                   id={ prd.id } 
                   nom={ prd.nom } 
-                  prix={ prd.prix } 
+                  prix={ prd.prixArray[MODES[mode]].ttc } 
                   color={ prd.color }
                   disabled={ prd.active===0 }
                   composition={prd.composition}
-                  onClick={ () => addProduit({produitid: prd.id, nom: prd.nom, prix: Number(prd.prix), composition: prd.composition, compo: prd.compo, customizable: prd.customizable, tva_id:prd.tva_id }) } />
+                  onClick={ () => addProduit({produitid: prd.id, nom: prd.nom, prix: Number(prd.prixArray[MODES[mode]].ttc), composition: prd.composition, compo: prd.compo, customizable: prd.customizable, tva_id:prd.tvaArray[MODES[mode]] }) } />
               )}
             </TabContent>
             )}

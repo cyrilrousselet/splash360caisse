@@ -386,6 +386,7 @@ function _setCommandeToKDS(ticketsListe, cmd, state) {
       ticket_id: cmd.ticketId,
       origine: __origine,
       name: clt ? `${clt.prenom} ${clt.nom}`: '',
+      city: clt ? `${clt.ville}`: '',
       mode: cmd.mode, // attention
       comment: __cmt ? __cmt.texte : '',
       timestamp: 1,
@@ -438,6 +439,9 @@ function _setCommandeToKDS(ticketsListe, cmd, state) {
         // commentaire sur l'ingredient
         const __ingcmt = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient);
 
+        // couleur de l'ingrédient
+        const __ingcol = options.hasOwnProperty('kds_product_color') && options.kds_product_color ? ingredients[ing.ingredient].color : '';
+
         let __iweight = -1;
         // ordre des ingrédients : d'abord la composition puis les ingrédients dans l'ordre de leur step
         if (ing.fromStep!==null) {
@@ -451,6 +455,7 @@ function _setCommandeToKDS(ticketsListe, cmd, state) {
         if (ingredients[ing.ingredient].asproduct) {
           ingredientsAsProducts.push({
             quantity: ing.qte * article.quantite,
+            color: __ingcol===null ? '' : __ingcol,
             productName: ing.nom,
             subItems: [],
             zones: zonesilist.length>0 ? zonesilist : [],
@@ -458,7 +463,8 @@ function _setCommandeToKDS(ticketsListe, cmd, state) {
           });
         } else {
           articleIngredients.push({
-            quantity: ing.qte * article.quantite,
+            quantity: ing.qte * article.quantite, 
+            color: __ingcol===null ? '' : __ingcol,
             subProductName: ing.nom,
             zones: zonesilist.length>0 ? zonesilist : [],
             comment: __ingcmt ? __ingcmt.texte : '',
@@ -480,6 +486,9 @@ function _setCommandeToKDS(ticketsListe, cmd, state) {
 
       // commentaire sur l'article
       const __itmcmt = cmd.comments.find(c => c.item===article.itemid && (c.ingredient===null || c.ingredient===undefined));
+     
+      // couleur de l'article
+      const __itmcol = options.hasOwnProperty('kds_product_color') && options.kds_product_color ? prd.color : '';
 
       
       const zoneslist = zones.map(z => {
@@ -495,6 +504,7 @@ function _setCommandeToKDS(ticketsListe, cmd, state) {
         kdsCmd.items.push({
           quantity: article.quantite,
           productName: article.nom,
+          color: __itmcol===null ? '' : __itmcol,
           subItems: articleIngredients,
           zones: zoneslist.length>0 ? zoneslist : [],
           comment: __itmcmt ? __itmcmt.texte : ''

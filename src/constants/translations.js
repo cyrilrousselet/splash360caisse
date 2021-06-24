@@ -1239,6 +1239,10 @@ const data = {
                         encaissement_layout: {
                             titre: 'Mise en page Encaissement',
                             valeur: 'Étroite'
+                        },
+                        kds_product_color: {
+                            titre: 'KDS : affichage de la couleur du produit',
+                            valeur: 'Activé'
                         }
                     },
                 }

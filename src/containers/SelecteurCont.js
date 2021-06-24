@@ -11,7 +11,8 @@ const mapStateToProps = (state) => {
     loading: getCatalogueLoading(state),
     catalogue: getCatalogue(state),
     categories: getCategories(state),
-    error: getCatalogueError(state)
+    error: getCatalogueError(state),
+    mode: state.commandeReducer.commande.mode
   };
 }
 
