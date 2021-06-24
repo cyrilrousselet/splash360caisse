@@ -27,6 +27,7 @@ const mapStateToProps = (state) => {
       commandeslist: getCommandesList(state),
       tickets: getTicketsListe(state),
       livreurs: getLivreurs(state),
+      commande : state.commandeReducer.commande,
       heure_fin: (state.parametresReducer.parametres.entreprise && state.parametresReducer.parametres.entreprise.heure_fin) || '05:00',
       thiscash: (state.parametresReducer.parametres.options && state.parametresReducer.parametres.options.caisse) || {}
   }
