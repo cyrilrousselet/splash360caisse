@@ -430,7 +430,7 @@ function completeStep(step, item, produitSteps) {
 }
 
 function updateMode(mode, commande, data_catalogue) {
-  const {ingredients, catalogue, tva} = data_catalogue;
+  const {ingredients, catalogue, steps, tva} = data_catalogue;
 
 
   commande.mode = mode;
@@ -462,7 +462,9 @@ function updateMode(mode, commande, data_catalogue) {
       pu: __produit.prixArray[__modeid].ttc,
       ingredients: __itming
     };
-    __ritm.prix = __ritm.steps ? _getPrix(__ritm, __ritm.steps) : (__ritm.pu * __ritm.quantite);
+
+    let __stepsDuProduit = steps[itm.produitid];
+    __ritm.prix = __stepsDuProduit ? _getPrix(__ritm, __stepsDuProduit) : (__ritm.pu * __ritm.quantite);
     __cmdtotal += __ritm.prix;
     return __ritm;
 

@@ -712,9 +712,9 @@ function uncheckItemSteps(payload) {
 function updateMode(mode) {
   return (dispatch, getState) => {
     const {commande} = getState().commandeReducer;
-    const {ingredients, catalogue, tva} = getState().catalogueReducer;
+    const {ingredients, catalogue, tva, steps} = getState().catalogueReducer;
 
-    const updated_commande = commandeServices.updateMode(mode, commande, {ingredients, catalogue, tva})
+    const updated_commande = commandeServices.updateMode(mode, commande, {ingredients, catalogue, tva, steps})
       
     dispatch({type: commandeActionTypes.UPDATE_COMMANDE, commande: updated_commande});
       
