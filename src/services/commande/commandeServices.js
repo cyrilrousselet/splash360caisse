@@ -1246,7 +1246,7 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
         steps: steps_list,
         stepslength: steps.length,
         quantite: itm.quantite,
-        itemid: itm.itemid ? itm.itemid : _newCommandeItemId(),
+        itemid: data.provider!=="clickandcollect" ? _newCommandeItemId() : (itm.itemid ? itm.itemid : _newCommandeItemId()),
         status: "completed",
       };
 
