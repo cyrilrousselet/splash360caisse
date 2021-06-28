@@ -582,6 +582,8 @@ function _getPrix(item, produitSteps) {
   let __supplement = 0;
   let __ing = null;
 
+  console.log('commandeServices._getPrix()', produitStep);
+
   produitSteps.forEach((step) => {
     if (
       step.regles.length === 1 ||

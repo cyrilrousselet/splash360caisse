@@ -61,7 +61,17 @@ checkDirectorySync(directory) {
 
 
 browseHandle(e) {
-  dialog.showOpenDialog((fileNames) => {
+  console.log('Entreprise.browseHandle()');
+  dialog.showOpenDialog({
+    title: strings.modules.parametres.submodules.entreprise.options.label.logo_ticket_dialog_titre,
+    properties: ['openFile'],
+    filters: [
+      { name: 'Images', extensions: ['png', 'gif']}
+    ]
+  }).then((result) => {
+
+    let fileNames = result.filePaths;
+
     // fileNames is an array that contains all the selected
     if(fileNames === undefined){
         console.log("No file selected");
@@ -76,7 +86,10 @@ browseHandle(e) {
     this.checkDirectorySync(`${app.getPath('userData')}/userdata`);
 
 
+    
     const newFileName = file_ar.join('.');
+    
+    console.log('Entreprise.browseHandle()', `${app.getPath('userData')}/userdata/${newFileName}`);
 
     fs.copyFile(fileNames[0], `${app.getPath('userData')}/userdata/${newFileName}`, () => {
       console.log('file copied');
