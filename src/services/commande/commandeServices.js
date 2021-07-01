@@ -456,7 +456,7 @@ function updateMode(mode, commande, data_catalogue) {
       console.log('ingredient id', ing.ingredient, __ingredient);
       return {
         ...ing,
-        tva: __ingredient.tvaArray[__modeid],
+        tva: tva[__ingredient.tvaArray[__modeid]],
         supplement: Number(__ingredient.supplementArray[__modeid].ttc)
       };
     });

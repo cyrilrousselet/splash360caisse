@@ -1890,7 +1890,8 @@ class PanierListeItem extends React.Component {
           key={`lpli-${id}`}
           >
           <div className="litm row">
-            <div className="nom">{ `${nom} (${itemid.substr(0,5)})` }</div> 
+            { /*<div className="nom">{ `${nom} (${itemid.substr(0,5)})` }</div> */ }
+            <div className="nom">{ `${nom}` }</div> 
             <div className="quantite">{quantite}</div> 
             <div className="prix">{ prix.toFixed(2).replace('.',',') }</div>
           </div>

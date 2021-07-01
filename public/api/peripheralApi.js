@@ -1455,30 +1455,30 @@ function _printCommande(printer, data, strings) {
     let _subtotal = 0;
 
       
-    data.articles.forEach((article) => {
-      _subtotal += Number(article.prix);
+  data.articles.forEach((article) => {
+    _subtotal += Number(article.prix);
+    printer.align('CT').style('B').tableCustom([
+      {text: article.qte, cols:3, align:'RIGHT'},
+      {text:'', cols:1},
+      {text: article.nom, cols:22, align:'LEFT'},
+      {text:'', cols:1},
+      {text: article.pu, cols:6, align:'RIGHT'},
+      {text:'', cols:1},
+      {text: (Number(article.qte)*Number(article.pu)).toFixed(2), cols:6, align:'RIGHT'},
+      {text:'', cols:1},
+      {text: article.codetva, cols:1}
+    ]);
+    if (article.comment!=='') {
       printer.align('CT').style('B').tableCustom([
-        {text: article.qte, cols:3, align:'RIGHT'},
-        {text:'', cols:1},
-        {text: article.nom, cols:22, align:'LEFT'},
-        {text:'', cols:1},
-        {text: article.pu, cols:6, align:'RIGHT'},
-        {text:'', cols:1},
-        {text: (Number(article.qte)*Number(article.pu)).toFixed(2), cols:6, align:'RIGHT'},
-        {text:'', cols:1},
-        {text: article.codetva, cols:1}
+        {text:'', cols:3},
+        {text: '* ', cols:2, align:'RIGHT'},
+        {text: article.comment, cols:32, align:'LEFT'},
+        {text: ' *', cols:2, align:'RIGHT'},
+        {text:'', cols:3}
       ]);
-      if (article.comment!=='') {
-        printer.align('CT').style('B').tableCustom([
-          {text:'', cols:3},
-          {text: '* ', cols:2, align:'RIGHT'},
-          {text: article.comment, cols:32, align:'LEFT'},
-          {text: ' *', cols:2, align:'RIGHT'},
-          {text:'', cols:3}
-        ]);
-        _linecount++;
-      }
       _linecount++;
+    }
+    _linecount++;
 
     if (article.ingredients.length>0) {
       article.ingredients.forEach((ingredient) => {
