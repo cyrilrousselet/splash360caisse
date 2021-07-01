@@ -176,7 +176,8 @@ ipcRenderer.on('setUserSync', (event, user) => {
 
 ipcRenderer.on('chrono', (event, commande) => {
   logger.log('renderer: chrono', commande);
-  commandeActions.setChrono(commande)(store.dispatch, store.getState);
+  logger.log('⚠️ setChrono désactivé')
+  //  commandeActions.setChrono(commande)(store.dispatch, store.getState);
 });
 
 ipcRenderer.on('printticket', (event, print) => {

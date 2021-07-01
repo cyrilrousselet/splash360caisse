@@ -517,6 +517,7 @@ function addProduit(payload) {
     const tva = state.catalogueReducer.tva[payload.tva_id];
     const steps = state.catalogueReducer.steps[payload.produitid];
 
+
     // const composition = Object.entries(payload.composition).map(
     //   ([ingid, qte]) => ({
     //     ingredient: ingid,
@@ -562,6 +563,9 @@ function addProduit(payload) {
         */
     payload = { ...payload, composition };
 
+
+    console.log('addprd pl', payload);
+
     const { commandeItem, mode } = commandeServices.addProduit(
       payload,
       tva,
@@ -580,24 +584,36 @@ function addProduit(payload) {
 
 function updateProduit(payload) {
   return (dispatch, getState) => {
-    const { itemid } = payload;
+    const { itemid, addPrd } = payload;
     const state = getState();
     const item = state.commandeReducer.commande.items.find(
       (itm) => itm.itemid === itemid
     );
+    const steps = state.catalogueReducer.steps[item.produitid];
 
-    const { commandeItem, mode } = commandeServices.updateProduit(
-      payload,
-      item
-    );
+    // s'il s'agit d'un produit customisable et si on augmente la quantité
+    if (addPrd && steps) {
 
-    if ("update" === mode)
-      dispatch({ type: commandeActionTypes.UPDATE_PRODUIT, commandeItem });
-    if ("delete" === mode)
-      dispatch({ type: commandeActionTypes.DELETE_PRODUIT, commandeItem });
+      dispatch({ type: commandeActionTypes.ADD_PRODUIT, commandeItem: {...item, itemid:commandeServices.getNewCommandeItemId()} });
+    }
+    // si on diminue la quantité et/ou s'il s'agit d'un produit non customisable
+    else {
 
-    
+      const { commandeItem, mode } = commandeServices.updateProduit(
+        payload,
+        item
+      );
+
+      if ("update" === mode) {
+        dispatch({ type: commandeActionTypes.UPDATE_PRODUIT, commandeItem });
+      }
+      if ("delete" === mode) {
+        dispatch({ type: commandeActionTypes.DELETE_PRODUIT, commandeItem });
+      }
+
+    }
     dispatch(checkMarketing());
+    
   };
 }
 
@@ -614,6 +630,8 @@ function addIngredient(payload) {
     const ingredient = state.catalogueReducer.ingredients[ingredientid];
     const produitSteps = state.catalogueReducer.steps[item.produitid];
     const tva = state.catalogueReducer.tva[ingredient.tva_id];
+
+      console.log('addIngredient', payload);
 
     const commandeItem = commandeServices.addIngredient(
       ingredient,
@@ -965,7 +983,7 @@ function checkSchedules() {
       });
 
       // s'il y a des commandes programmées à lancer...
-      if (Object.entries(commandeslist).length>0) {
+      if (commandeslist && Object.entries(commandeslist).length>0) {
         logger.log('⏰ '+Object.entries(commandeslist).length+' commandes en attente devant être lancées.');
 
         // on lance chaque commande et on la déclare comme 'en production'

@@ -1392,12 +1392,12 @@ console.log('⏰', schedule_delay);
     // const onClickAction = (value) => { logger.log(`Action: ${value}`) };
 
     const onClickAdd = (event) => {
-      updateProduit({itemid: items[selectedIndex].itemid, quantite: items[selectedIndex].quantite + 1});
+      updateProduit({itemid: items[selectedIndex].itemid, quantite: items[selectedIndex].quantite + 1, addPrd: true});
     }
     const onClickRemove = (event) => {
       let __i = selectedIndex;
       if (items[selectedIndex].quantite===1) this.setSelectedIndex(-1, -1);
-      updateProduit({itemid: items[__i].itemid, quantite: items[__i].quantite - 1});
+      updateProduit({itemid: items[__i].itemid, quantite: items[__i].quantite - 1, addPrd: false});
     }
     const onClickDelete = (event) => {
       Swal.fire({
@@ -1890,7 +1890,7 @@ class PanierListeItem extends React.Component {
           key={`lpli-${id}`}
           >
           <div className="litm row">
-            <div className="nom">{nom}</div> 
+            <div className="nom">{ `${nom} (${itemid.substr(0,5)})` }</div> 
             <div className="quantite">{quantite}</div> 
             <div className="prix">{ prix.toFixed(2).replace('.',',') }</div>
           </div>

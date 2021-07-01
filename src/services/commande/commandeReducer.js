@@ -127,6 +127,7 @@ export function commandeReducer(state = initialState, action) {
       commandeitem = action.commandeItem;
       itmIndex = items.findIndex((obj => obj.itemid === commandeitem.itemid));
       itm = items[itmIndex];
+      console.log('add_ing', itmIndex, itm);
       items[itmIndex] = {...itm, ...commandeitem};
 
       return {

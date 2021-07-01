@@ -196,7 +196,7 @@ class Personnalisation extends React.Component {
 
     const onClickDelete = () => {
       if (itemstatus === "pending")
-        updateProduit({ itemid: item, quantite: 0 });
+        updateProduit({ itemid: item, quantite: 0, addPrd: false });
       closePersonnalisation("popin");
     };
 

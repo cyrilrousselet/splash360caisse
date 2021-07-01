@@ -43,6 +43,7 @@ export const commandeServices = {
   getAllTicketsRestaurant,
   persistTicketsRestaurants,
   persistSingleTicketRestaurant,
+  getNewCommandeItemId,
 };
 
 function getNewCommande(params) {
@@ -75,6 +76,10 @@ function getNewCommande(params) {
     shippedAt: null,
     beneficiaire: params.beneficiaire ? params.beneficiaire : null,
   };
+}
+
+function getNewCommandeItemId() {
+  return _newCommandeItemId();
 }
 
 function getCommandeById(id) {
@@ -452,14 +457,14 @@ function updateMode(mode, commande, data_catalogue) {
       return {
         ...ing,
         tva: __ingredient.tvaArray[__modeid],
-        supplement: __ingredient.supplementArray[__modeid].ttc
+        supplement: Number(__ingredient.supplementArray[__modeid].ttc)
       };
     });
 
     const __ritm = {
       ...itm,
       tva: tva[__produit.tvaArray[__modeid]],
-      pu: __produit.prixArray[__modeid].ttc,
+      pu: Number(__produit.prixArray[__modeid].ttc),
       ingredients: __itming
     };
 
