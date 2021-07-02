@@ -1239,83 +1239,98 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
         });
       }
 
-      // création de l'item (produit dans la commande)
-      const item = {
-        produitid: itm.produitid,
-        nom: prd.nom,
-        prix: itm.quantite * Number(prd.prix),
-        pu: Number(prd.prix),
-        tva: { ...catalogueReducer.tva[prd.tva_id] },
-        composition: complist,
-        ingredients: [],
-        steps: steps_list,
-        stepslength: steps.length,
-        quantite: itm.quantite,
-        itemid: data.provider!=="clickandcollect" ? _newCommandeItemId() : (itm.itemid ? itm.itemid : _newCommandeItemId()),
-        status: "completed",
-      };
+      // si le produit est customizable et qu'il est en plusieurs exemplaires,
+      // on duplique l'opération de création d'item
 
-      // Ajout commentaires item
-      if (itm.comments && itm.comments.length) {
-        const commentText = itm.comments.join(", ");
-
-        commande.comments.push({
-          comment_id: _newCommentId(),
-          ingredient: null,
-          item: item.itemid,
-          texte: commentText,
-        });
+      let __nombredefois = 1, 
+          i=0, 
+          __itmqte = itm.quantite
+      ;
+      if (steps.length>0 && itm.quantite>1) {
+        __nombredefois = itm.quantite;
+        __itmqte = 1;
       }
 
-      // ajout des ingrédients (personnalisation)
-      itm.ingredients.forEach((ing) => {
-        // infos de l'ingrédient issues du catalogue
-        const ingredient = catalogueReducer.ingredients[ing.ingredient];
-        if (ingredient) {
-          const ingredient_step = steps.find((st) => {
-            let __istype = false;
-            st.regles.forEach((str) => {
-              if (str.type === ingredient.type) __istype = true;
-            });
-            return __istype;
+      for (i;i<__nombredefois;i++) {
+
+        // création de l'item (produit dans la commande)
+        const item = {
+          produitid: itm.produitid,
+          nom: prd.nom,
+          prix: __itmqte * Number(prd.prix),
+          pu: Number(prd.prix),
+          tva: { ...catalogueReducer.tva[prd.tva_id] },
+          composition: complist,
+          ingredients: [],
+          steps: steps_list,
+          stepslength: steps.length,
+          quantite: __itmqte,
+          itemid: data.provider!=="clickandcollect" ? _newCommandeItemId() : (itm.itemid ? itm.itemid : _newCommandeItemId()),
+          status: "completed",
+        };
+
+        // Ajout commentaires item
+        if (itm.comments && itm.comments.length) {
+          const commentText = itm.comments.join(", ");
+
+          commande.comments.push({
+            comment_id: _newCommentId(),
+            ingredient: null,
+            item: item.itemid,
+            texte: commentText,
           });
-
-          item.ingredients.push({
-            ingredient: ing.ingredient,
-            type: ingredient.type,
-            qte: ing.qte,
-            prix: Number(ingredient.supplement),
-            supplement: Number(ingredient.supplement),
-            nom: ingredient.nom,
-            fromStep: ingredient_step ? ingredient_step.step_id : null,
-            tva: catalogueReducer.tva[ingredient.tva_id],
-          });
-
-          // Ajout commentaires ingredients
-          if (ing.comments && ing.comments.length) {
-            ing.comments.forEach((comment) => {
-              const commentText = ing.comments.join(", ");
-
-              commande.comments.push({
-                comment_id: _newCommentId(),
-                ingredient: ing.ingredient,
-                item: item.itemid,
-                texte: commentText,
-              });
-            });
-          }
         }
-      });
 
-      if (catalogueReducer.steps[itm.produitid]) {
-        item.ingredients = _ventilationIngredientsSteps(
-          item,
-          catalogueReducer.steps[itm.produitid]
-        );
+        // ajout des ingrédients (personnalisation)
+        itm.ingredients.forEach((ing) => {
+          // infos de l'ingrédient issues du catalogue
+          const ingredient = catalogueReducer.ingredients[ing.ingredient];
+          if (ingredient) {
+            const ingredient_step = steps.find((st) => {
+              let __istype = false;
+              st.regles.forEach((str) => {
+                if (str.type === ingredient.type) __istype = true;
+              });
+              return __istype;
+            });
+
+            item.ingredients.push({
+              ingredient: ing.ingredient,
+              type: ingredient.type,
+              qte: ing.qte,
+              prix: Number(ingredient.supplement),
+              supplement: Number(ingredient.supplement),
+              nom: ingredient.nom,
+              fromStep: ingredient_step ? ingredient_step.step_id : null,
+              tva: catalogueReducer.tva[ingredient.tva_id],
+            });
+
+            // Ajout commentaires ingredients
+            if (ing.comments && ing.comments.length) {
+              ing.comments.forEach((comment) => {
+                const commentText = ing.comments.join(", ");
+
+                commande.comments.push({
+                  comment_id: _newCommentId(),
+                  ingredient: ing.ingredient,
+                  item: item.itemid,
+                  texte: commentText,
+                });
+              });
+            }
+          }
+        });
+
+        if (catalogueReducer.steps[itm.produitid]) {
+          item.ingredients = _ventilationIngredientsSteps(
+            item,
+            catalogueReducer.steps[itm.produitid]
+          );
+        }
+
+        item.prix = _getPrix(item, steps);
+        commande.items.push(item);
       }
-
-      item.prix = _getPrix(item, steps);
-      commande.items.push(item);
     }
   });
 

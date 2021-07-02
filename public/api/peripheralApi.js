@@ -660,51 +660,55 @@ function _printEtiquettes(printer, data, config) {
 
   data.articles.forEach(art => {
 
-    const inglist = art.ingredients.map(ing => ing.qte+'x '+ing.nom.toLowerCase());
+    let i = 0, __artqte = art.quantite;
+    for (i;i<__artqte;i++) {
 
-    let __printlist = [
-      'SIZE ' + params.width + ' mm,' + params.height + ' mm',
-      'GAP ' + params.gap + ' mm,0',
-      'DIRECTION 1,0',
-      'CLS'
-    ];
+      const inglist = art.ingredients.map(ing => ing.qte+'x '+ing.nom.toLowerCase());
 
-    const __num = ('TEXT 10,10,"2",0,2,2,"#%NUMERO%"').replace('%NUMERO%', data.numero);
-    __printlist.push(__num);
+      let __printlist = [
+        'SIZE ' + params.width + ' mm,' + params.height + ' mm',
+        'GAP ' + params.gap + ' mm,0',
+        'DIRECTION 1,0',
+        'CLS'
+      ];
 
-    const __date = ('TEXT 150,10,"2",0,1,1,"%DATETIME%"').replace('%DATETIME%', data.date);
-    __printlist.push(__date);
+      const __num = ('TEXT 10,10,"2",0,2,2,"#%NUMERO%"').replace('%NUMERO%', data.numero);
+      __printlist.push(__num);
 
-    __printlist.push('BAR 10,50,' + (__w - 20) + ',4');
+      const __date = ('TEXT 150,10,"2",0,1,1,"%DATETIME%"').replace('%DATETIME%', data.date);
+      __printlist.push(__date);
 
-    const __prd = ('TEXT 10,70,"2",0,2,2,"%PRD%"').replace('%PRD%',art.nom);
-    __printlist.push(__prd);
+      __printlist.push('BAR 10,50,' + (__w - 20) + ',4');
 
-    let __y = 115;
+      const __prd = ('TEXT 10,70,"2",0,2,2,"%PRD%"').replace('%PRD%',art.nom);
+      __printlist.push(__prd);
 
-    if (art.comment!=='') {
-      const __cmt = ('TEXT 15,%Y%,"2",0,1,1,"-- %CMT% --"').replace('%Y%', __y).replace('%CMT%',art.comment);
-      __printlist.push(__cmt);
-      __y += 35;
+      let __y = 115;
+
+      if (art.comment!=='') {
+        const __cmt = ('TEXT 15,%Y%,"2",0,1,1,"-- %CMT% --"').replace('%Y%', __y).replace('%CMT%',art.comment);
+        __printlist.push(__cmt);
+        __y += 35;
+      }
+
+      const __ingline = 'TEXT 15,%Y%,"2",0,1,1,"* %ING%"';
+      inglist.forEach(ing=> {
+        __printlist.push(__ingline.replace('%Y%', __y).replace('%ING%',ing));
+        __y += 24;
+      });
+
+      __printlist.push('PRINT 1');
+
+    
+      __job = [...__job, ...__printlist];
+
     }
-
-    const __ingline = 'TEXT 15,%Y%,"2",0,1,1,"* %ING%"';
-    inglist.forEach(ing=> {
-      __printlist.push(__ingline.replace('%Y%', __y).replace('%ING%',ing));
-      __y += 24;
-    });
-
-    __printlist.push('PRINT 1');
-
-  
-    __job = [...__job, ...__printlist];
-
   });
-
 
   const feed = iconv.encode(__job.join("\n"),"Cp850"); 
   
   printer.print(feed);
+
 
 }
 
@@ -714,51 +718,55 @@ function _printProduits(printer, data, strings) {
 
   data.articles.forEach((art, i, ar) => {
 
-    const inglist = art.ingredients.map(ing => ing.qte+'x '+ing.nom.toLowerCase());
+    let j = 0, __artqte = art.quantite;
+    for (j;j<__artqte;j++) {
 
-    let __fl = String(data.numero).length + 1;
-    __fl += String(data.mode).length;
-    let __sp = 21 - __fl;
+      const inglist = art.ingredients.map(ing => ing.qte+'x '+ing.nom.toLowerCase());
 
-    const __flt = '#'+data.numero+(new Array(__sp+1)).join(' ')+data.mode;
+      let __fl = String(data.numero).length + 1;
+      __fl += String(data.mode).length;
+      let __sp = 21 - __fl;
+
+      const __flt = '#'+data.numero+(new Array(__sp+1)).join(' ')+data.mode;
 
 
-    printer
-      .font('A')
-      .align('CT')
-      .style('B')
-      .fontSize('4square')
-      .text(__flt)
-      // .tableCustom([
-      //   {text:'#'+data.numero, align:'LEFT', cols:19, style:'B'},
-      //   {text:data.mode, align:'RIGHT', cols:19, style:'NORMAL'},
-      // ])
-      .fontSize('normal')
-      .tableCustom([
-        {text:data.date, align:'RIGHT', cols:42, style:'NORMAL'}
-      ])
-      .drawLine()
-      .fontSize('4square')
-      .tableCustom([
-        {text: art.nom, align:'LEFT', cols:21, style:'B'}
-      ]);
-    if (art.comment!=="") {
       printer
-      .fontSize('normal')
-      .tableCustom([
-        {text: '-- '+art.comment+' --', align:'LEFT', cols:42, style:'NORMAL'}
-      ]);
-    }
-    printer
-      .fontSize('normal')
-      .tableCustom([
-        {text: inglist.join(', '), align:'LEFT', cols:42, style:'NORMAL'}
-      ])
-      .feed(2);
-
-      if (i<ar.length-1) {
-        printer.cut();
+        .font('A')
+        .align('CT')
+        .style('B')
+        .fontSize('4square')
+        .text(__flt)
+        // .tableCustom([
+        //   {text:'#'+data.numero, align:'LEFT', cols:19, style:'B'},
+        //   {text:data.mode, align:'RIGHT', cols:19, style:'NORMAL'},
+        // ])
+        .fontSize('normal')
+        .tableCustom([
+          {text:data.date, align:'RIGHT', cols:42, style:'NORMAL'}
+        ])
+        .drawLine()
+        .fontSize('4square')
+        .tableCustom([
+          {text: art.nom, align:'LEFT', cols:21, style:'B'}
+        ]);
+      if (art.comment!=="") {
+        printer
+        .fontSize('normal')
+        .tableCustom([
+          {text: '-- '+art.comment+' --', align:'LEFT', cols:42, style:'NORMAL'}
+        ]);
       }
+      printer
+        .fontSize('normal')
+        .tableCustom([
+          {text: inglist.join(', '), align:'LEFT', cols:42, style:'NORMAL'}
+        ])
+        .feed(2);
+
+        if (i<ar.length-1) {
+          printer.cut();
+        }
+    }
   });
   
 }

@@ -594,7 +594,41 @@ function updateProduit(payload) {
     // s'il s'agit d'un produit customisable et si on augmente la quantité
     if (addPrd && steps) {
 
-      dispatch({ type: commandeActionTypes.ADD_PRODUIT, commandeItem: {...item, itemid:commandeServices.getNewCommandeItemId()} });
+
+      const items = state.commandeReducer.commande.items;
+      const tva = state.catalogueReducer.tva[item.tva.tva_id];
+      const steps = state.catalogueReducer.steps[item.produitid];
+
+      const __prd = {
+        produitid: item.produitid,
+        nom: item.nom,
+        prix: item.pu,
+        composition: item.composition,
+        compo: [],
+        customizable: true,
+        tva_id: item.tva.tva_id
+      };
+
+      const { commandeItem } = commandeServices.addProduit(
+        __prd,
+        tva,
+        items,
+        steps
+      );
+
+      commandeItem.steps = item.steps;
+
+      dispatch({ type: commandeActionTypes.ADD_PRODUIT, commandeItem });
+
+      item.ingredients.forEach(ing => {
+        dispatch(addIngredient({
+          itemid: commandeItem.itemid,
+          stepid: ing.fromStep,
+          ingredientid: ing.ingredient,
+          quantite: ing.qte
+        }));
+      });
+
     }
     // si on diminue la quantité et/ou s'il s'agit d'un produit non customisable
     else {
