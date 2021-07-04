@@ -469,7 +469,8 @@ function updateMode(mode, commande, data_catalogue) {
     };
 
     let __stepsDuProduit = steps[itm.produitid];
-    __ritm.prix = __stepsDuProduit ? _getPrix(__ritm, __stepsDuProduit) : (__ritm.pu * __ritm.quantite);
+    // __ritm.prix = __stepsDuProduit ? _getPrix(__ritm, __stepsDuProduit) : (__ritm.pu * __ritm.quantite);
+    __ritm.prix = __stepsDuProduit ? _getPrix(__ritm, __stepsDuProduit) : __ritm.pu;
     __cmdtotal += __ritm.prix;
     return __ritm;
 
