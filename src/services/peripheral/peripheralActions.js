@@ -537,6 +537,7 @@ function printTicketFromAPI(payload) {
     if (_tck.hasOwnProperty('indirect') && _tck.indirect===true) { 
       try {
         const commande = await commandeServices.getCommandeById(ticketId);
+        logger.log('peripheralActions.printTicketFromAPI()', commande);
         dispatch(printCommandeTicket({ids:[zoneId]}, commande._cmd, true));
       }
       catch(error) {
@@ -569,7 +570,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
     const {print_standby} = state.parametresReducer.parametres.commandes;
 
 
-    logger.log(cmd);
+    logger.log('peripheralAction.printCommandeTicket()',cmd);
     // logger.log(clients);
 
     const caisse = cmd.caisse;
