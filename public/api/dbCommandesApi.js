@@ -330,9 +330,13 @@ async function _persistCommande(payload) {
 
   if (_cmd) {
     log.info("cmd existe, donc on update");
-    _cmd = { ..._cmd, ...payload, updatedAt: __now, sync: null };
-    delete _cmd._id;
-    await CommandeModel.updateOne({ ticketId: payload.ticketId }, _cmd).exec();
+    if (_cmd.status==="confirmed" && payload.status==="standby") {
+      log.warn('⛔️ On ne met pas à jour une commande CONFIRMED avec un nouveau status STANDBY !');
+    } else {
+      _cmd = { ..._cmd, ...payload, updatedAt: __now, sync: null };
+      delete _cmd._id;
+      await CommandeModel.updateOne({ ticketId: payload.ticketId }, _cmd).exec();
+    }
   } else {
     log.info("pas de cmd donc on insert");
     // Create command id
