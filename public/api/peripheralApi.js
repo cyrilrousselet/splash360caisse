@@ -1,4 +1,5 @@
 const log = require('electron-log');
+// const log = require('../utils/Logger');
 const electron = require('electron');
 const { app } = electron;
 const escpos = require('escpos');

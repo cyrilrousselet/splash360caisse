@@ -1,6 +1,7 @@
 // const db = require("../db.js");
 // const lodashId = require("lodash-id");
-const log = require("electron-log");
+const log = require('electron-log');
+// const log = require('../utils/Logger');
 const connect = require("../db/mongodb");
 const ClotureModel = require("../db/clotureModel");
 const { uuid } = require("uuidv4");

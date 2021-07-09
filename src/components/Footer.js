@@ -58,7 +58,7 @@ class Footer extends React.Component {
 
         const {online, status, expiredate, toggleMode} = this.props;
 
-        const expDate = moment(expiredate).locale('fr', [frLocale]);
+        const expDate = expiredate ? moment(expiredate).locale('fr', [frLocale]) : 'inconnue';
 
         return (
           <div className="Footer">

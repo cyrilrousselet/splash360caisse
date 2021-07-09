@@ -1,4 +1,5 @@
 const log = require('electron-log');
+// const log = require('../utils/Logger');
 const connect = require("../db/mongodb");
 const TresorModel = require("../db/tresorModel");
 const { uuid } = require('uuidv4');

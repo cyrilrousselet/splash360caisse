@@ -982,7 +982,7 @@ function checkSchedules() {
 
     const { options } = getState().parametresReducer.parametres;
 
-    if (options.role==='primary') {
+    if (options && options.role==='primary') {
       
       // heure de déclenchement de la production des commandes programmées (moins le délai)
       const {commandes} = getState().parametresReducer.parametres;

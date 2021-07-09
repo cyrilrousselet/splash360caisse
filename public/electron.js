@@ -1,11 +1,12 @@
 const electron = require('electron');
 const { app, BrowserWindow, Menu } = electron;
 const log = require('electron-log');
+// const log = require('./utils/Logger');
 
 const path = require('path');
 const os = require('os')
 const isDev = require('electron-is-dev');
-const api = require('./api/index.js');
+// const api = require('./api/index.js');
 const server = require('./api/server.js');
 const sse = require('./api/sseApi.js');
 // const kds = require('./api/kitchenDisplayServer.js');
@@ -18,9 +19,9 @@ const sse = require('./api/sseApi.js');
     // });
 
 let mainWindow;
-let db_users;
-let userData = app.getPath('userData');
-let menu;
+// let db_users;
+// let userData = app.getPath('userData');
+// let menu;
 
 
 function createWindow() {

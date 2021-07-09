@@ -1,5 +1,6 @@
 const EventSource = require("eventsource");
-const log = require("electron-log");
+const log = require('electron-log');
+// const log = require('../utils/Logger');
 const { net } = require("electron");
 const { machineIdSync } = require("node-machine-id");
 const qs = require('qs');

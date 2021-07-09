@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-const log = require("electron-log");
+const log = require('electron-log');
+// const log = require('../utils/Logger');
 
 let db = null;
 
@@ -20,8 +21,8 @@ async function connect() {
     return db;
   }
   
-  mongoose.connection.on("error", function () {
-    console.error("Cannot connect to mongo: ", error);
+  mongoose.connection.on("error", function (error) {
+    log.error("Cannot connect to mongo: ", error);
   });
 
   mongoose.connection.on("connected", function() {
