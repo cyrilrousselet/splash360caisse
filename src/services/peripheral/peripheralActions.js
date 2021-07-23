@@ -395,6 +395,7 @@ function _setCommandeToKDS(ticketsListe, cmd, state) {
       endTime: '',
       careTime: '',
       items: [],
+      lot: cmd.lot,
       confirmurl: __responseurl+':3300/chrono',
       printurl: __responseurl+':3300/printticket',
     }

@@ -457,6 +457,35 @@ function livraisonCommande(payload, needNumero) {
 
     logger.log("livraisonCommande numero", payload.numero);
 
+
+    if (payload.mode==="livraison" && payload.client && !payload.lot) {
+
+      const {parametres} = getState().parametresReducer;
+      let param_limit = parametres.commandes.hasOwnProperty('lot_max_num_commandes') ? parametres.commandes.lot_max_num_commandes : 10;
+      let param_exp = parametres.commandes.hasOwnProperty('lot_exp_in_minutes') ? parametres.commandes.lot_exp_in_minutes : 15;
+
+      const client = state.clientsReducer.clients.find(clt=>clt.client_id===payload.client.client_id);
+      if (client.hasOwnProperty('secteur')) {
+        const {lots} = state.commandesListReducer;
+        if (lots) {
+          let lot = _getActiveLot(client.secteur, lots, param_limit);
+
+          if (!lot) {
+            lot = commandeServices.createLot(client.secteur, param_exp);
+            if (!lot.commandes.includes(payload.ticketId)) {
+              lot.commandes.push(payload.ticketId);
+              dispatch({type: commandeActionTypes.CREATE_LOT, lot: lot});
+            }
+          } else {
+            dispatch({type: commandeActionTypes.ADD_COMMANDE_TO_LOT, lot_id: lot.lot_id, ticket_id: payload.ticketId});
+          }
+          payload.lot = lot.lot_id;
+
+        }
+      }
+    }
+
+
     // if (payload.numero==null) {
     //   payload.numero = getState().commandeReducer.commande.numero;
     // }
@@ -503,6 +532,13 @@ function livraisonCommande(payload, needNumero) {
     );
   };
 }
+
+function _getActiveLot(secteur, lots, limit) {
+  console.log("_getActiveLot", secteur, lots, limit);
+   const __now = new Date();
+   return lots.find(lot => lot.secteur===secteur && lot.expiredAt>__now && lot.commandes.length<limit); 
+}
+
 
 function deleteCurrentCommande() {
   return (dispatch) => {
@@ -765,6 +801,27 @@ function updateMode(mode) {
   return (dispatch, getState) => {
     const {commande} = getState().commandeReducer;
     const {ingredients, catalogue, tva, steps} = getState().catalogueReducer;
+    
+    
+    
+    // if (mode==="livraison" && commande.client && !commande.lot) {
+      
+    //   const {parametres} = getState().parametresReducer;
+    //   let param_exp = parametres.commandes.hasOwnProperty('lot_exp_in_minutes') ? parametres.commandes.lot_exp_in_minutes : 15;
+    //   let param_limit = parametres.commandes.hasOwnProperty('lot_max_num_commandes') ? parametres.commandes.lot_max_num_commandes : 10;
+
+    //   const client = getState().clientsReducer.clients.find(clt=>clt.client_id===commande.client.client_id);
+    //   if (client.hasOwnProperty('secteur')) {
+    //     const {lots} = getState().commandesListReducer;
+    //     if (lots) {
+    //       let lot = _getActiveLot(client.secteur, lots, param_limit);
+    //       if (!lot) lot = commandeServices.createLot(client.secteur, param_exp);
+    //       lot.commandes.push(commande.ticketId);
+    //       commande.lot = lot.lot_id;
+    //       dispatch({type: commandeActionTypes.CREATE_LOT, lot: lot});
+    //     }
+    //   }
+    // }
 
     const updated_commande = commandeServices.updateMode(mode, commande, {ingredients, catalogue, tva, steps})
       
@@ -777,8 +834,37 @@ function updateMode(mode) {
 
 
 function updateCommande(payload) {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     logger.log(payload);
+
+    const {commande} = getState().commandeReducer;
+    
+
+    if (commande.mode==="livraison" && commande.client && !commande.lot) {
+
+      const {parametres} = getState().parametresReducer;
+      let param_limit = parametres.commandes.hasOwnProperty('lot_max_num_commandes') ? parametres.commandes.lot_max_num_commandes : 10;
+      let param_exp = parametres.commandes.hasOwnProperty('lot_exp_in_minutes') ? parametres.commandes.lot_exp_in_minutes : 15;
+
+      const client = getState().clientsReducer.clients.find(clt=>clt.client_id===commande.client.client_id);
+      if (client.hasOwnProperty('secteur')) {
+        const {lots} = getState().commandesListReducer;
+        if (lots) {
+          let lot = _getActiveLot(client.secteur, lots, param_limit);
+          if (!lot) {
+            lot = commandeServices.createLot(client.secteur, param_exp);
+            if (!lot.commandes.includes(commande.ticketId)) {
+              lot.commandes.push(commande.ticketId);
+              dispatch({type: commandeActionTypes.CREATE_LOT, lot: lot});
+            }
+          } else {
+            dispatch({type: commandeActionTypes.ADD_COMMANDE_TO_LOT, lot_id: lot.lot_id, ticket_id: commande.ticketId});
+          }
+          payload = {...payload, lot: lot.lot_id};
+        }
+      }
+    }
+
     dispatch({ type: commandeActionTypes.UPDATE_COMMANDE, payload });
     dispatch(checkMarketing());
   };
@@ -982,7 +1068,7 @@ function checkSchedules() {
 
     const { options } = getState().parametresReducer.parametres;
 
-    if (options.role==='primary') {
+    if (options && options.role==='primary') {
       
       // heure de déclenchement de la production des commandes programmées (moins le délai)
       const {commandes} = getState().parametresReducer.parametres;

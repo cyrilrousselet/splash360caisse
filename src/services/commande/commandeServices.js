@@ -4,6 +4,7 @@ import LocalizedStrings from "react-localization";
 import { data } from "../../constants/translations";
 import Logger from "../../helpers/Logger";
 import {MODES} from '../../constants/commandeModes';
+import {add} from "date-fns";
 
 const strings = new LocalizedStrings(data);
 const logger = new Logger();
@@ -44,6 +45,7 @@ export const commandeServices = {
   persistTicketsRestaurants,
   persistSingleTicketRestaurant,
   getNewCommandeItemId,
+  createLot,
 };
 
 function getNewCommande(params) {
@@ -72,6 +74,7 @@ function getNewCommande(params) {
     livreur: null,
     pickedAt: null,
     scheduled: null,
+    lot: null,
     enproduction: params.enproduction ? params.enproduction : false,
     shippedAt: null,
     beneficiaire: params.beneficiaire ? params.beneficiaire : null,
@@ -1560,6 +1563,20 @@ function getCommandesToSync(limit = null) {
   return emit("dbCommandeGetToSync", { limit: limit });
 }
 
+
+function createLot(secteur, expiration) {
+  const __now = new Date(); 
+  return {
+    lot_id: _newLotId(),
+    secteur: secteur,
+    commandes: [],
+    createdAt: __now,
+    expiredAt: add(__now, {minutes: expiration})
+  };
+}
+
+
+
 const _newCommandeId = () => {
   // let __d = new Date();
   // return __d.getTime().toString();
@@ -1586,6 +1603,11 @@ const _newCommentId = () => {
   return LodashId.createId();
 };
 const _newModificateurId = () => {
+  // let __d = new Date();
+  // return __d.getTime().toString();
+  return LodashId.createId();
+};
+const _newLotId = () => {
   // let __d = new Date();
   // return __d.getTime().toString();
   return LodashId.createId();

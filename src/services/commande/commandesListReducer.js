@@ -7,6 +7,7 @@ const initialState = {
   ticketsrestau: [],
   caisses: [],
   schedules: [],
+  lots: [],
 }
 
 
@@ -14,6 +15,7 @@ export function commandesListReducer(state = initialState, action) {
 
   let ticketsrestau = state.ticketsrestau;
   let schedules = state.schedules;
+  let lots = state.lots;
 
   switch (action.type) {
     case commandeActionTypes.GET_ALLCOMMANDES_REQUEST:
@@ -84,6 +86,29 @@ export function commandesListReducer(state = initialState, action) {
         ...state,
         loading: false,
         ticketsrestau: action.ticketsrestaulist
+      };
+
+    case commandeActionTypes.CREATE_LOT:
+      return {
+        ...state,
+        lots: [...lots, action.lot]
+      };
+    
+    case commandeActionTypes.ADD_COMMANDE_TO_LOT:
+
+      const index = lots.findIndex(l => l.lot_id===action.lot_id );
+      lots[index].commandes.push(action.ticket_id);
+
+      return {
+        ...state,
+        lots: [...lots]
+      };
+
+    case commandeActionTypes.DELETE_LOT:
+
+      return {
+        ...state,
+        lots: [...lots.filter(l=>l.lot_id!==action.lot_id)]
       };
 
     default:

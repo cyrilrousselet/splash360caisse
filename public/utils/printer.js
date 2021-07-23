@@ -1,4 +1,4 @@
-'use strict';
+// 'use strict';
 const util = require('util');
 const qr = require('qr-image');
 const iconv = require('iconv-lite');
@@ -12,7 +12,7 @@ const Promiseify = require('../../node_modules/escpos/promisify');
 const statuses = require('../../node_modules/escpos/statuses');
 const {PrinterStatus,OfflineCauseStatus,ErrorCauseStatus,RollPaperSensorStatus} = statuses;
 
-const log = require('electron-log');
+// const log = require('electron-log');
 
 /**
  * [function ESC/POS Printer]
@@ -23,13 +23,13 @@ function Printer(adapter, options) {
   if (!(this instanceof Printer)) {
     return new Printer(adapter);
   }
-  var self = this;
+  // var self = this;
   EventEmitter.call(this);
   this.adapter = adapter;
   this.options = options;
   this.buffer = new MutableBuffer();
-  this.encoding = options && options.encoding || 'GB18030';
-  this.width = options && options.width || 48;
+  this.encoding = (options && options.encoding) || 'GB18030';
+  this.width = (options && options.width) || 48;
   this._fontsize = [1,1];
   this._model = null;
 };
@@ -394,9 +394,9 @@ Printer.prototype.font = function (family) {
     'TXT_FONT_' + family.toUpperCase()
   ]);
   if (family.toUpperCase() === 'A')
-    this.width = this.options && this.options.width || 42;
+    this.width = (this.options && this.options.width) || 42;
   else
-    this.width = this.options && this.options.width || 56;
+    this.width = (this.options && this.options.width) || 56;
   return this;
 };
 
@@ -638,7 +638,7 @@ Printer.prototype.barcode = function (code, type, options) {
       parityBit = utils.getParityBit(code);
     }
   }
-  if (type == 'CODE128' || type == 'CODE93') {
+  if (type === 'CODE128' || type === 'CODE93') {
     codeLength = utils.codeLength(code);
   }
   this.buffer.write(codeLength + code + (includeParity ? parityBit : '') + '\x00'); // Allow to skip the parity byte
@@ -1011,6 +1011,8 @@ Printer.prototype.getStatuses = function(callback) {
         case 3  :
           statuses.push(new ErrorCauseStatus(byte));
           break;
+        default:
+          console.log('');
       }
     }
 

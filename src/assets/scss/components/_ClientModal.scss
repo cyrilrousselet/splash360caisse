@@ -126,6 +126,48 @@
       text-transform: uppercase;
     }
 
+    .recherche-cp-input,
+    .recherche-ville-input {
+      width: calc(50% - 5px);
+      margin-bottom: 10px;
+      .MuiFormLabel-root,
+      .MuiInputBase-root {
+
+        font-family: $f_med;
+        font-size: 14px;
+        color: $noir;
+      }
+      .MuiInputBase-root {
+        color: $bleu-prusse;
+      }
+      .MuiFilledInput-root {
+        background-color: transparent;
+        background: linear-gradient($blanc-fonce 0%, $blanc-fonce 100%);
+        background-size: 100% 30px;
+        background-repeat: no-repeat;
+        background-position: center bottom;
+      }
+      .MuiFilledInput-underline:before,
+      .MuiFilledInput-underline:after {
+        border-bottom: none;
+      }
+      .MuiAutocomplete-endAdornment {
+        top: calc(100% - 30px);
+      }
+      .MuiInputLabel-animated {
+        transition: none;
+      }
+      .MuiInputLabel-filled.MuiInputLabel-shrink {
+        transform: scale(1);
+      }
+      .MuiInputLabel-filled {
+        transform: translate(0,0);
+      }
+      .MuiAutocomplete-inputRoot[class*="MuiFilledInput-root"] {
+        padding-top: 12px;
+      }
+    }
+
     .labelledfield {
         width: calc(50% - 5px);
         label {

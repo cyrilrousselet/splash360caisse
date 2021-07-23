@@ -18,9 +18,9 @@ const sse = require('./api/sseApi.js');
     // });
 
 let mainWindow;
-let db_users;
-let userData = app.getPath('userData');
-let menu;
+// let db_users;
+// let userData = app.getPath('userData');
+// let menu;
 
 
 function createWindow() {

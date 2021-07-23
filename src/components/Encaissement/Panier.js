@@ -1279,7 +1279,7 @@ class Panier extends React.Component {
   render() {
 
     const { updateProduit, 
-            // updateCommande, 
+            updateCommande, 
             updateMode,
             standByCommande, 
             livraisonCommande, 
@@ -1482,6 +1482,7 @@ console.log('⏰', schedule_delay);
     //  if (!this.props.commande.numero) this.props.getNumero();
    //   logger.log('validationHandler commande numero :', this.props.commande.numero);
       this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1});
+      if (this.props.commande.mode==="livraison") updateCommande({});
       livraisonCommande(this.props.commande, !this.props.commande.numero);
     }
 

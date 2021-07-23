@@ -2,6 +2,7 @@ import React from 'react';
 
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
+import canonicalizeString from '@pelevesque/canonicalize-string';
 
 import { Modal, Fab } from '@material-ui/core';
 import CloseIcon from '../common/icon/CloseIcon';
@@ -17,6 +18,7 @@ import TextField from '@material-ui/core/TextField';
 import Clavier from '../common/Clavier';
 import SwitchCheckbox from '../common/SwitchCheckbox';
 import AlarmIcon from '@material-ui/icons/Alarm';
+import { clientsServices } from '../../services/clients/clientsServices';
 
 let strings = new LocalizedStrings(data);
 
@@ -30,6 +32,7 @@ class FicheClient extends React.Component {
     super(props);
     this.state = {
       search: '',
+      cpliste: [],
       focusInput: props.contexte==='encaissement'?'search':'nom',
       innermode: null,
       client_id: null,
@@ -45,6 +48,7 @@ class FicheClient extends React.Component {
       etage: null,
       codepostal: null, 
       ville: null,
+      secteur: null,
       commentaire: null,
       inscription: new Date().getTime()
     };
@@ -57,6 +61,8 @@ class FicheClient extends React.Component {
     this.gotoFiche = this.gotoFiche.bind(this);
     this.setFocus = this.setFocus.bind(this);
     this.onKeyboardChange = this.onKeyboardChange.bind(this);
+    this.getRechercheCp = this.getRechercheCp.bind(this);
+    this.getRechercheVille = this.getRechercheVille.bind(this);
   }
 
   componentDidMount() {
@@ -66,13 +72,14 @@ class FicheClient extends React.Component {
   getValeurs() {
     const { client_id, bloque, nom, prenom,
       email, telephone, telephone2,
-      adresse, adresse2, batiment, etage, codepostal, ville,
-      commentaire, inscription } = this.props.client || { client_id: null, bloque: false, nom: '', prenom: '',
+      adresse, adresse2, batiment, etage, codepostal, ville, secteur,
+      commentaire, inscription } = this.props.client || { client_id: null, bloque: false, secteur: null, nom: '', prenom: '',
                                                           email: '', telephone: '', telephone2: '',
                                                           adresse: '', adresse2: '', batiment: '', etage: '', codepostal: '', ville: '',
                                                           commentaire: '', inscription: new Date().getTime() };
 
     const sclient_id = this.state.client_id;
+    const ssecteur = this.state.secteur;
     const sbloque = this.state.bloque;
     const snom = this.state.nom;
     const sprenom = this.state.prenom;
@@ -90,6 +97,7 @@ class FicheClient extends React.Component {
 
     return {
       client_id: sclient_id!==null ? sclient_id : client_id,
+      secteur: ssecteur!==null ? ssecteur : secteur,
       bloque: sbloque!==null ? sbloque : bloque,
       nom: snom!==null ? snom : nom,
       prenom: sprenom!==null ? sprenom : prenom,
@@ -134,6 +142,7 @@ class FicheClient extends React.Component {
       focusInput: contexte==='encaissement'?'search':'nom',
       innermode: null,
       client_id: null,
+      secteur: null,
       bloque: null,
       nom: null, 
       prenom: null,
@@ -208,6 +217,46 @@ class FicheClient extends React.Component {
      console.log('recherche', value);
      this.setState({innermode:'fiche',  search: value, ...value});
   }
+  getRechercheCp(value) {
+    console.log('FicheClient.getRechercheCp() value', value);
+    if (value && value.length>1) {
+     
+      clientsServices.searchSecteurs({zip:value})
+      .then(
+        data => {
+          console.log('FicheClient.getRechercheCp()', data.secteurs);
+          this.setState({cpliste: data.secteurs});
+        },
+        error => {
+          console.log('FicheClient.getRecherche()', "aucun secteur");
+          this.setState({cpliste: []});
+        }
+      );
+
+    }
+  }
+  getRechercheVille(value) {
+    console.log('FicheClient.getRechercheVille() value', value);
+    if (value && value.length>1) {
+
+      let __value = canonicalizeString(value).toUpperCase();
+      __value = __value.replace(/[-,_]/gi,' ');
+      __value = __value.replace(/SAINT /gi,'ST ');
+
+      clientsServices.searchSecteurs({nom:__value})
+      .then(
+        data => {
+          console.log('FicheClient.getRechercheVille()', data.secteurs);
+          this.setState({cpliste: data.secteurs});
+        },
+        error => {
+          console.log('FicheClient.getRechercheVille()', "aucun secteur");
+          this.setState({cpliste: []});
+        }
+      );
+
+    }
+  }
 
 
   render() {
@@ -227,12 +276,15 @@ class FicheClient extends React.Component {
 
     const liste = clients.filter(c=>( (!c.hasOwnProperty('bloque')) || (!c.bloque) ));
 
-    const { focusInput, search } = this.state;
+    const { focusInput, search, cpliste } = this.state;
 
     const readytovalidate = nom!=='' || prenom!=='' || telephone!=='' || telephone2!=='' || EMAIL_REG.test(email);
     const mapid = 'map-none';
 
     const vmode = this.state.innermode || mode;
+
+    // const cpliste = secteurs ? secteurs.map(sct => sct.zip) : [];
+    // const cityliste = secteurs.map(sct => sct.nom);
 
 
     const inputs = {
@@ -251,7 +303,9 @@ class FicheClient extends React.Component {
       'commentaire': commentaire
     };
 
-    console.log(focusInput, inputs[focusInput]);
+    // console.log(focusInput, inputs[focusInput]);
+
+console.log('cpliste', cpliste);
 
     return (
       <div>
@@ -450,7 +504,48 @@ class FicheClient extends React.Component {
                       onChange={(val)=>{ this.updateValue({email:val.value}) }}
                       label={ strings.modules.clients.edition.email }
                   />
-                  <LabelledField 
+                  <Autocomplete
+                    className="recherche-cp-input"
+                    id="clt-cp-recherche"
+                    filterOptions={(x)=>x}
+                    options={cpliste}
+                    autoComplete
+                    value={codepostal}
+                    noOptionsText={ strings.modules.clients.edition.aucune_sugg }
+                    onChange={(event, newValue, reason) => {
+                      console.log('onChange', newValue, reason);
+                      if (reason==="select-option") {
+                        this.updateValue({
+                          codepostal: newValue.zip.toString(),
+                          secteur: newValue.secteur,
+                          ville: (newValue.ligne5!=="") ? newValue.ligne5+' '+newValue.nom : newValue.nom
+                        }) 
+                      }
+                    }}
+                    getOptionSelected={ (option,value)=>option.zip.toString()===value }
+                    onInputChange={(e,value,r) => { 
+                      this.updateValue({codepostal:value}) 
+                      this.getRechercheCp(value);
+                    }}
+                    getOptionLabel={(option) => option.hasOwnProperty('zip') ? option.zip : option }
+                    inputValue={codepostal}
+                    renderOption={(props, option) => {
+                      console.log('option', props);
+                      return (
+                        <React.Fragment>
+                          { props.zip+' '+props.nom+' '+props.ligne5 }
+                        </React.Fragment>
+                      );
+                    }}
+                    renderInput={(params) => (
+                      <TextField 
+                          {...params}
+                          variant="filled"
+                          label={ strings.modules.clients.edition.codepostal }
+                      />
+                    )}
+                  />
+        {/*       <LabelledField 
                       id={ `codepostal` }
                       name={ `codepostal` }
                       className="fieldcodepostal"
@@ -463,17 +558,59 @@ class FicheClient extends React.Component {
                       label={ strings.modules.clients.edition.codepostal }
                   />
                   <LabelledField 
-                      id={ `ville` }
-                      name={ `ville` }
-                      className="fieldville"
-                      value={ ville } 
-                      placeholder='' 
-                      type='text' 
-                      readOnly={ false } 
-                      onClick={this.setFocus}
-                      onChange={(val)=>{ this.updateValue({ville:val.value}) }}
-                      label={ strings.modules.clients.edition.ville }
+                  id={ `ville` }
+                  name={ `ville` }
+                  className="fieldville"
+                  value={ ville } 
+                  placeholder='' 
+                  type='text' 
+                  readOnly={ false } 
+                  onClick={this.setFocus}
+                  onChange={(val)=>{ this.updateValue({ville:val.value}) }}
+                  label={ strings.modules.clients.edition.ville }
                   />
+                */}
+                  <Autocomplete
+                  className="recherche-ville-input"
+                  id="clt-ville-recherche"
+                  filterOptions={(x)=>x}
+                  options={cpliste}
+                  autoComplete
+                  value={ville}
+                  noOptionsText={ strings.modules.clients.edition.aucune_sugg }
+                  onChange={(event, newValue, reason) => {
+                    console.log('onChange', newValue, reason);
+                    if (reason==="select-option") {
+                      this.updateValue({
+                        codepostal: newValue.zip.toString(),
+                        secteur: newValue.secteur,
+                        ville: (newValue.ligne5!=="") ? newValue.ligne5+' '+newValue.nom : newValue.nom
+                      }) 
+                    }
+                  }}
+                  getOptionSelected={ (option,value)=>option.nom===value }
+                  onInputChange={(e,value,r) => { 
+                    this.updateValue({ville:value}) 
+                    this.getRechercheVille(value);
+                  }}
+                  getOptionLabel={(option) => option.hasOwnProperty('nom') ? option.nom : option }
+                  inputValue={ville}
+                  renderOption={(props, option) => {
+                    console.log('option', props);
+                    return (
+                      <React.Fragment>
+                        { props.zip+' '+props.nom+' '+props.ligne5 }
+                      </React.Fragment>
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField 
+                        {...params}
+                        variant="filled"
+                        label={ strings.modules.clients.edition.ville }
+                    />
+                  )}
+                />
                   <LabelledField 
                       id={ `telephone` }
                       name={ `telephone` }

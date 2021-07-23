@@ -3,6 +3,7 @@ import { clientsServices } from './clientsServices';
 import { commandeActions } from './../commande/commandeActions';
 import Logger from '../../helpers/Logger';
 import { notificationActions } from '../notification/notificationActions';
+import { secteursActionTypes } from './secteursActionTypes';
 
 const logger = new Logger();
 
@@ -75,6 +76,17 @@ function setClientFromAPI(payload) {
   }
 }
 
+function searchSecteurs(payload) {
+  return (dispatch, getState) => {
+    clientsServices.searchSecteurs(payload)
+                   .then(
+                     data => {
+                      dispatch({ type: secteursActionTypes.SEARCH_SUCCESS, secteurs: data });
+                     },
+                     error => dispatch({ type: secteursActionTypes.SEARCH_FAILURE, error: error.toString() })
+                   )
+  }
+}
 
 /** 
  * ajout / modif de client depuis la synchro
@@ -125,5 +137,6 @@ export const clientsActions = {
   createClient,
   updateClient,
   setClientFromAPI,
-  setClientFromSync
+  setClientFromSync,
+  searchSecteurs,
 };

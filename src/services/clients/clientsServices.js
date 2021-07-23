@@ -10,7 +10,8 @@ export const clientsServices = {
   findClient,
   createClient,
   updateClient,
-  deleteClient
+  deleteClient,
+  searchSecteurs
 };
 
 
@@ -44,7 +45,8 @@ function createClient(payload) {
     commentaire: payload.commentaire,
     prenom_canonical: canonicalizeString(payload.prenom),
     nom_canonical: canonicalizeString(payload.nom),
-    inscription: new Date().getTime()
+    inscription: new Date().getTime(),
+    secteur: payload.secteur
   }
 
   logger.log('CltSv.createClient()', client);
@@ -62,6 +64,12 @@ function updateClient(client) {
 
 function deleteClient(client_id) {
   return emit('dbClientDelete', {client_id:client_id});
+}
+
+
+
+function searchSecteurs(params) {
+  return emit('dbSecteursFindZip', params);
 }
 
 

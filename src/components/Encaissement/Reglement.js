@@ -163,10 +163,16 @@ class Reglement extends React.Component {
       if (this.props.commande.status === "a_encaisser") {
         this.props.commande.status = "confirmed";
         // this.props.printTicket({ templates: ["commande"] });
+
+        // update à vide pour provoquer la création du lot dans le cas d'une commande en livraison
+        // if (this.props.commande.mode==="livraison") this.props.updateCommande({});
+
         this.props.printCommandeTicket({ templates: ["commande"] }, {...this.props.commande, status:'confirmed'});
 
       } else if (this.props.commande.status === "standby") {
         this.props.commande.status = "confirmed";
+        // update à vide pour provoquer la création du lot dans le cas d'une commande en livraison
+        // if (this.props.commande.mode==="livraison") this.props.updateCommande({});
         //this.props.printTicket("all");
         const __tpl = (this.props.commande.scheduled && this.props.commande.enproduction===false) ? { templates: ["commande"]} : "all";
         this.props.printCommandeTicket(__tpl, {...this.props.commande, status:'confirmed'});
@@ -175,6 +181,8 @@ class Reglement extends React.Component {
         closeReglementAtEnd = modif;
         logger.log("reglement closeReglementAtEnd", closeReglementAtEnd);
         this.props.commande.status = "confirmed";
+        // update à vide pour provoquer la création du lot dans le cas d'une commande en livraison
+        // if (this.props.commande.mode==="livraison") this.props.updateCommande({});
         // on imprime tous les tickets (sauf si on modifie juste les réglements)
         const __tpl = (this.props.commande.scheduled && this.props.commande.enproduction===false) ? { templates: ["commande"]} : "all";
         if (!modif) this.props.printTicket(__tpl);

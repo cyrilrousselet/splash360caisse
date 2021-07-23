@@ -1,9 +1,11 @@
 import { clientsActionTypes } from './clientsActionTypes';
+import { secteursActionTypes } from './secteursActionTypes';
 
 const initialState = {
   loading: false,
   error: null,
-  clients: []
+  clients: [],
+  secteurs: [],
 }
 
 export function clientsReducer(state = initialState, action) {
@@ -50,6 +52,14 @@ export function clientsReducer(state = initialState, action) {
           client
         ]
       }
+    
+    case secteursActionTypes.SEARCH_SUCCESS:
+
+      return {
+        ...state,
+        secteurs: action.secteurs
+      }
+    
     default:
       return state;
   }

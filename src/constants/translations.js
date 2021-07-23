@@ -854,7 +854,8 @@ const data = {
                     save_select: 'Enregistrer et Sélectionner',
                     unselect: 'Désélectionner',
                     rechercher: 'CLIENT',
-                    input: 'Nom ou téléphone'
+                    input: 'Nom ou téléphone',
+                    aucune_sugg: 'Aucune suggestion'
                 }
             },
             compte_utilisateur: { nom: "Compte utilisateur" },

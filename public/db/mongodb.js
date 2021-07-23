@@ -20,7 +20,7 @@ async function connect() {
     return db;
   }
   
-  mongoose.connection.on("error", function () {
+  mongoose.connection.on("error", function (error) {
     console.error("Cannot connect to mongo: ", error);
   });
 
