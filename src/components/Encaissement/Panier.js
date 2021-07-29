@@ -670,6 +670,7 @@ class Panier extends React.Component {
     const { 
       getCommande, 
       getParametres, 
+      getLots,
       // getListeCommandes, 
       getClientsList, 
       commande, 
@@ -679,6 +680,7 @@ class Panier extends React.Component {
     // getListeCommandes();
     getParametres();    
     getClientsList();
+    getLots();
     getSallesList();
     this.testOuverture();
     this.listewrapper.scrollTop = this.listewrapper.scrollHeight;

@@ -46,6 +46,10 @@ export const commandeServices = {
   persistSingleTicketRestaurant,
   getNewCommandeItemId,
   createLot,
+  getLot,
+  getAllLots,
+  deleteLot,
+  saveLot,
 };
 
 function getNewCommande(params) {
@@ -1573,6 +1577,22 @@ function createLot(secteur, expiration) {
     createdAt: __now,
     expiredAt: add(__now, {minutes: expiration})
   };
+}
+
+function getLot(lot_id) {
+  return emit('dbSecteursGetLot', {lot_id: lot_id});
+}
+
+function getAllLots() {
+  return emit('dbSecteursGetLot', {});
+}
+
+function saveLot(lot) {
+  return emit('dbSecteursPersistLot', {lot:lot});
+}
+
+function deleteLot(lot_id) {
+  return emit('dbSecteursDeleteLot', {lot_id: lot_id});
 }
 
 

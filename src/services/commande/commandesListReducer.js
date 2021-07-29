@@ -88,6 +88,12 @@ export function commandesListReducer(state = initialState, action) {
         ticketsrestau: action.ticketsrestaulist
       };
 
+    case commandeActionTypes.GET_LOTS:
+      return {
+        ...state,
+        lots: action.lots
+      };
+
     case commandeActionTypes.CREATE_LOT:
       return {
         ...state,

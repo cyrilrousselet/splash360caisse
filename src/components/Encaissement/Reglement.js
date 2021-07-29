@@ -144,7 +144,12 @@ class Reglement extends React.Component {
     // const item = itemsCopy[index];
     // item.selected = !item.selected  ? true : false;
     // itemsCopy[index] = item;
-    this.props.updateCommande({...this.props.commande, items: itemsCopy})
+    // this.props.updateCommande({...this.props.commande, items: itemsCopy})
+
+    let __previousstatus = this.props.commande.status;
+
+
+    this.props.updateCommande({items: itemsCopy, status:'confirmed'}, 'beforeCloseReglement')
 
     if (reste === 0) {
       if (this.props.commande.status === "pending") {
@@ -160,29 +165,24 @@ class Reglement extends React.Component {
 
       // si on encaisse une commande déjà produite,
       // on ne réimprime pas les tickets de production (ms seulmt 'commande')
-      if (this.props.commande.status === "a_encaisser") {
-        this.props.commande.status = "confirmed";
-        // this.props.printTicket({ templates: ["commande"] });
+      if (__previousstatus === "a_encaisser") {
+        // this.props.commande.status = "confirmed";
 
-        // update à vide pour provoquer la création du lot dans le cas d'une commande en livraison
-        // if (this.props.commande.mode==="livraison") this.props.updateCommande({});
+        // this.props.printCommandeTicket({ templates: ["commande"] }, {...this.props.commande, status:'confirmed'});
+        this.props.printTicket({ templates: ["commande"] });
 
-        this.props.printCommandeTicket({ templates: ["commande"] }, {...this.props.commande, status:'confirmed'});
+      } else if (__previousstatus === "standby") {
+        // this.props.commande.status = "confirmed";
 
-      } else if (this.props.commande.status === "standby") {
-        this.props.commande.status = "confirmed";
-        // update à vide pour provoquer la création du lot dans le cas d'une commande en livraison
-        // if (this.props.commande.mode==="livraison") this.props.updateCommande({});
-        //this.props.printTicket("all");
         const __tpl = (this.props.commande.scheduled && this.props.commande.enproduction===false) ? { templates: ["commande"]} : "all";
-        this.props.printCommandeTicket(__tpl, {...this.props.commande, status:'confirmed'});
+        // this.props.printCommandeTicket(__tpl, {...this.props.commande, status:'confirmed'});
+        this.props.printTicket(__tpl);
       } else {
         logger.log("reglement modif", modif);
         closeReglementAtEnd = modif;
         logger.log("reglement closeReglementAtEnd", closeReglementAtEnd);
-        this.props.commande.status = "confirmed";
-        // update à vide pour provoquer la création du lot dans le cas d'une commande en livraison
-        // if (this.props.commande.mode==="livraison") this.props.updateCommande({});
+        // this.props.commande.status = "confirmed";
+
         // on imprime tous les tickets (sauf si on modifie juste les réglements)
         const __tpl = (this.props.commande.scheduled && this.props.commande.enproduction===false) ? { templates: ["commande"]} : "all";
         if (!modif) this.props.printTicket(__tpl);
@@ -261,7 +261,7 @@ class Reglement extends React.Component {
             return item;
           })
           commandeCopy.items = updatedItems;
-          this.props.updateCommande(commandeCopy);
+          this.props.updateCommande(commandeCopy, 'toAddReglement');
         }
         
         this.setState({ total: 0, input: false }, () => {

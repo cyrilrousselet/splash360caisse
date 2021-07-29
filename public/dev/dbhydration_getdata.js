@@ -19,6 +19,7 @@ const hydration = {
   shifts: [],
   timeadjusts: [],
   secteurs: [],
+  lots: [],
 
   imprimantes: [
     { printer_id: 'imp1', nom: 'POS Printer', connexion: 'usb', param: null, encoding: 'Cp850', pardefaut: true },

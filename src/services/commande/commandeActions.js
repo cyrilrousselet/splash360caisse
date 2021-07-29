@@ -218,20 +218,20 @@ function setChrono(payload) {
 }
 
 // payload = commande à sauvegarder
-function validateCommande(payload) {
+function validateCommande(_payload) {
   return (dispatch, getState) => {
     dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_REQUEST });
 
-    // payload.status = 'confirmed';
     const catalogueReducer = getState().catalogueReducer;
     const { caisse, role } = getState().parametresReducer.parametres.options;
     const { user } = getState().authentication;
+    const { commande } = getState().commandeReducer;
 
-    // if (payload.numero==null) {
-    //   const numero = commandeServices.getNewNumero(getState().parametresReducer.parametres, getState().commandeReducer.numero);
-    //   payload.numero = numero;
-    //   dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
-    // }
+
+    console.log('validateCommande', _payload);
+    let payload = {...commande};
+    console.log('validateCommande commande', commande);
+
     if (payload.numero == null) {
       payload.numero = getState().commandeReducer.commande.numero;
     }
@@ -244,12 +244,9 @@ function validateCommande(payload) {
     const payloadcopy = { ...payload, localsync: [caisse.uniqid] };
     dispatch(getCommande());
 
-    // logger.time('validateCommande (persist)');
     commandeServices.saveCommande(payloadcopy, catalogueReducer).then(
       (confirm) => {
-        //  const commande = commandeServices.getNewCommande({operator:{id: user.id, nom: user.nom}, caisse: caisse});
 
-        // logger.timeEnd('validateCommande (persist)');
         dispatch({
           type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS,
           commande: {},
@@ -273,11 +270,8 @@ function validateCommande(payload) {
 
         // si la caisse est une primary, elle s'occupe de la synchro avec le BO
         if (role==="primary") {
-          // logger.time('validateCommande -> getCommandesToSync');
 
           commandeServices.getCommandesToSync(10).then((results) => {
-
-            // logger.timeEnd('validateCommande -> getCommandesToSync');
 
             const { commandes, chronos } = results;
 
@@ -422,9 +416,12 @@ function standByCommande(payload, needNumero) {
   };
 }
 
-function livraisonCommande(payload, needNumero) {
+function livraisonCommande(_payload, needNumero) {
   return async (dispatch, getState) => {
     dispatch({ type: commandeActionTypes.AENCAISSER_COMMANDE });
+
+    const { commande } = getState().commandeReducer;
+    let payload = {...commande};
 
     payload.status = "a_encaisser";
     payload.enproduction = payload.scheduled ? false : true;
@@ -460,26 +457,22 @@ function livraisonCommande(payload, needNumero) {
 
     if (payload.mode==="livraison" && payload.client && !payload.lot) {
 
-      const {parametres} = getState().parametresReducer;
-      let param_limit = parametres.commandes.hasOwnProperty('lot_max_num_commandes') ? parametres.commandes.lot_max_num_commandes : 10;
-      let param_exp = parametres.commandes.hasOwnProperty('lot_exp_in_minutes') ? parametres.commandes.lot_exp_in_minutes : 15;
+      // const {parametres} = getState().parametresReducer;
+      // let param_limit = parametres.commandes.hasOwnProperty('lot_max_num_commandes') ? parametres.commandes.lot_max_num_commandes : 10;
+      // let param_exp = parametres.commandes.hasOwnProperty('lot_exp_in_minutes') ? parametres.commandes.lot_exp_in_minutes : 15;
 
       const client = state.clientsReducer.clients.find(clt=>clt.client_id===payload.client.client_id);
       if (client.hasOwnProperty('secteur')) {
+        logger.log('client', client);
         const {lots} = state.commandesListReducer;
-        if (lots) {
-          let lot = _getActiveLot(client.secteur, lots, param_limit);
+        logger.log('lots', lots);
+        if (lots!==undefined) {
+          logger.log('lots non undefined');
 
-          if (!lot) {
-            lot = commandeServices.createLot(client.secteur, param_exp);
-            if (!lot.commandes.includes(payload.ticketId)) {
-              lot.commandes.push(payload.ticketId);
-              dispatch({type: commandeActionTypes.CREATE_LOT, lot: lot});
-            }
-          } else {
-            dispatch({type: commandeActionTypes.ADD_COMMANDE_TO_LOT, lot_id: lot.lot_id, ticket_id: payload.ticketId});
-          }
-          payload.lot = lot.lot_id;
+          const lot_id = dispatch(addCommandeToLot(payload.ticketId, client.secteur));
+          console.log('livraisonCommande() lot_id', lot_id);
+
+          payload.lot = lot_id;
 
         }
       }
@@ -802,30 +795,9 @@ function updateMode(mode) {
     const {commande} = getState().commandeReducer;
     const {ingredients, catalogue, tva, steps} = getState().catalogueReducer;
     
-    
-    
-    // if (mode==="livraison" && commande.client && !commande.lot) {
-      
-    //   const {parametres} = getState().parametresReducer;
-    //   let param_exp = parametres.commandes.hasOwnProperty('lot_exp_in_minutes') ? parametres.commandes.lot_exp_in_minutes : 15;
-    //   let param_limit = parametres.commandes.hasOwnProperty('lot_max_num_commandes') ? parametres.commandes.lot_max_num_commandes : 10;
-
-    //   const client = getState().clientsReducer.clients.find(clt=>clt.client_id===commande.client.client_id);
-    //   if (client.hasOwnProperty('secteur')) {
-    //     const {lots} = getState().commandesListReducer;
-    //     if (lots) {
-    //       let lot = _getActiveLot(client.secteur, lots, param_limit);
-    //       if (!lot) lot = commandeServices.createLot(client.secteur, param_exp);
-    //       lot.commandes.push(commande.ticketId);
-    //       commande.lot = lot.lot_id;
-    //       dispatch({type: commandeActionTypes.CREATE_LOT, lot: lot});
-    //     }
-    //   }
-    // }
-
     const updated_commande = commandeServices.updateMode(mode, commande, {ingredients, catalogue, tva, steps})
       
-    dispatch({type: commandeActionTypes.UPDATE_COMMANDE, commande: updated_commande});
+    dispatch({type: commandeActionTypes.UPDATE_COMMANDE, commande: updated_commande, contexte:"updateMode"});
       
     dispatch(checkMarketing());
 
@@ -833,40 +805,34 @@ function updateMode(mode) {
 }
 
 
-function updateCommande(payload) {
+function updateCommande(payload, from='') {
   return (dispatch, getState) => {
-    logger.log(payload);
+    logger.log('updateCommande()',from, payload);
 
     const {commande} = getState().commandeReducer;
+    const {lots} = getState().commandesListReducer;
     
 
-    if (commande.mode==="livraison" && commande.client && !commande.lot) {
+    if (commande.mode==="livraison" && commande.client && !commande.lot && lots!==undefined) {
 
-      const {parametres} = getState().parametresReducer;
-      let param_limit = parametres.commandes.hasOwnProperty('lot_max_num_commandes') ? parametres.commandes.lot_max_num_commandes : 10;
-      let param_exp = parametres.commandes.hasOwnProperty('lot_exp_in_minutes') ? parametres.commandes.lot_exp_in_minutes : 15;
+      // const {parametres} = getState().parametresReducer;
+      // let param_limit = parametres.commandes.hasOwnProperty('lot_max_num_commandes') ? parametres.commandes.lot_max_num_commandes : 10;
+      // let param_exp = parametres.commandes.hasOwnProperty('lot_exp_in_minutes') ? parametres.commandes.lot_exp_in_minutes : 15;
 
       const client = getState().clientsReducer.clients.find(clt=>clt.client_id===commande.client.client_id);
       if (client.hasOwnProperty('secteur')) {
-        const {lots} = getState().commandesListReducer;
-        if (lots) {
-          let lot = _getActiveLot(client.secteur, lots, param_limit);
-          if (!lot) {
-            lot = commandeServices.createLot(client.secteur, param_exp);
-            if (!lot.commandes.includes(commande.ticketId)) {
-              lot.commandes.push(commande.ticketId);
-              dispatch({type: commandeActionTypes.CREATE_LOT, lot: lot});
-            }
-          } else {
-            dispatch({type: commandeActionTypes.ADD_COMMANDE_TO_LOT, lot_id: lot.lot_id, ticket_id: commande.ticketId});
-          }
-          payload = {...payload, lot: lot.lot_id};
-        }
+       
+        const lot_id = dispatch(addCommandeToLot(commande.ticketId, client.secteur));
+        console.log('updateCommande() lot_id', lot_id);
+
+        payload = {...payload, lot: lot_id};
+        
       }
     }
-
-    dispatch({ type: commandeActionTypes.UPDATE_COMMANDE, payload });
+    dispatch({ type: commandeActionTypes.UPDATE_COMMANDE, payload: payload, contexte:'updateCommande' });
     dispatch(checkMarketing());
+    
+
   };
 }
 
@@ -938,6 +904,7 @@ function setLivreur(payload) {
         dispatch({
           type: commandeActionTypes.UPDATE_COMMANDE,
           payload: { livreur: livreur, pickedAt: formatISO(now) },
+          contexte: 'setLivreur'
         });
         dispatch(
           notificationActions.syncDispatch("commande", {
@@ -1037,6 +1004,7 @@ function setSchedule(payload) {
         dispatch({
           type: commandeActionTypes.UPDATE_COMMANDE,
           payload: { scheduled: heure, enproduction: false },
+          contexte: 'setSchedule'
         });
         dispatch(
           notificationActions.syncDispatch("commande", {
@@ -1147,6 +1115,51 @@ function deleteDiscount(payload) {
       discountId: payload.discountId,
     });
   };
+}
+
+function getLots() {
+  return dispatch => {
+    commandeServices.getAllLots()
+    .then(data => {
+      dispatch({type: commandeActionTypes.GET_LOTS, lots:data});
+    })
+  }
+}
+
+function addCommandeToLot(ticketId, secteur) {
+  return (dispatch, getState) => {
+
+    console.log('📦 addCommandeToLot()');
+    
+    const {lots} = getState().commandesListReducer;
+    const {parametres} = getState().parametresReducer;
+    let param_limit = parametres.commandes.hasOwnProperty('lot_max_num_commandes') ? parametres.commandes.lot_max_num_commandes : 10;
+    let param_exp = parametres.commandes.hasOwnProperty('lot_exp_in_minutes') ? parametres.commandes.lot_exp_in_minutes : 15;
+
+    let lot = _getActiveLot(secteur, lots, param_limit);
+    let mode = 'add';
+    if (!lot) {
+      lot = commandeServices.createLot(secteur, param_exp);
+      if (!lot.commandes.includes(ticketId)) {
+        lot.commandes.push(ticketId);
+        mode = 'create';
+      }
+    }    
+
+    console.log("addCommandeToLot()", lot);
+    
+    commandeServices
+      .saveLot(lot)
+      .then(data => {
+        if (mode==="create") {
+          dispatch({type: commandeActionTypes.CREATE_LOT, lot: lot});
+        } else {
+          dispatch({type: commandeActionTypes.ADD_COMMANDE_TO_LOT, lot_id: lot.lot_id, ticket_id: ticketId});
+        }
+      });
+    
+    return lot.lot_id;
+  }
 }
 
 function checkMarketing() {
@@ -1884,6 +1897,7 @@ export const commandeActions = {
   addDiscount,
   updateDiscount,
   deleteDiscount,
+  getLots,
   setCommandeFromOrder,
   setCommandeFromAPI,
   getAllTicketsRestaurant,
