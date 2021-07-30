@@ -1,7 +1,8 @@
 const express = require("express");
 const api_server = express();
 const sync_server = express();
-const log = require("electron-log");
+// const log = require("electron-log");
+const log = require('../utils/logger');
 const cors = require("cors");
 const { net } = require("electron");
 const bodyParser = require("body-parser");

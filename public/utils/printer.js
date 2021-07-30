@@ -13,6 +13,7 @@ const statuses = require('../../node_modules/escpos/statuses');
 const {PrinterStatus,OfflineCauseStatus,ErrorCauseStatus,RollPaperSensorStatus} = statuses;
 
 // const log = require('electron-log');
+// const log = require('../utils/logger');
 
 /**
  * [function ESC/POS Printer]

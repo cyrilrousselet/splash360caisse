@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-const log = require("electron-log");
+// const log = require("electron-log");
+const log = require('../utils/logger');
 
 let db = null;
 

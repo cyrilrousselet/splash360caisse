@@ -1,7 +1,8 @@
 
 // const cors = require('cors');
 const {net} = require('electron');
-const log = require('electron-log');
+// const log = require('electron-log');
+const log = require('../utils/logger');
 // const e = require('express');
 
 

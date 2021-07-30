@@ -1,11 +1,12 @@
 const electron = require('electron');
 const { app, BrowserWindow, Menu } = electron;
-const log = require('electron-log');
+// const log = require('electron-log');
+const log = require('./utils/logger');
 
 const path = require('path');
 const os = require('os')
 const isDev = require('electron-is-dev');
-const api = require('./api/index.js');
+require('./api/index.js');
 const server = require('./api/server.js');
 const sse = require('./api/sseApi.js');
 // const kds = require('./api/kitchenDisplayServer.js');
@@ -24,6 +25,8 @@ let mainWindow;
 
 
 function createWindow() {
+
+  log.info('createWindow()');
 
 
     mainWindow = new BrowserWindow({ width: 1024, height: 768, backgroundColor: '#F7F7F7', webPreferences: { nodeIntegration: true } });

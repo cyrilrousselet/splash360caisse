@@ -2,7 +2,7 @@
     "name": "splash360",
     "productName": "Splash360",
     "description": "Cash application",
-    "version": "0.1.212102230",
+    "version": "0.1.212111212",
     "private": true,
     "author": {
         "name": "Splash360",
@@ -96,7 +96,9 @@
         "socket.io-client": "^2.3.0",
         "sweetalert2": "^10.12.6",
         "sweetalert2-react-content": "^3.2.2",
-        "uuidv4": "^6.2.5"
+        "uuidv4": "^6.2.5",
+        "winston": "^3.3.3",
+        "winston-daily-rotate-file": "^4.5.5"
     },
     "scripts": {
         "build-css": "node-sass-chokidar src/ -o src/",
