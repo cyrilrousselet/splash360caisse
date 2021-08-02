@@ -20,9 +20,10 @@ import NextIcon from '../common/icon/NextIcon';
 
 import {devise} from '../../helpers/toolbox';
 
-import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 
-const logger = new Logger();
+// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 
@@ -57,7 +58,7 @@ class TimeadjustPopin extends React.Component {
     const hrs = this._getHeures(nv);
     const min = this._getMinutes(nv);
 
-    logger.log('setNewValeur',champ,val);
+    logger.info('setNewValeur',champ,val);
 
     if (champ==='minutes') {
       this.setState({newvaleur:((hrs*3600)+val)*1000});
@@ -68,7 +69,7 @@ class TimeadjustPopin extends React.Component {
   }
   setNewValeurSign() {
     const nv = this.state.newvaleur || this.props.valeur;
-    logger.log('sign',nv, (0-nv));
+    logger.info('sign',nv, (0-nv));
     this.setState({newvaleur:(0-nv)});
   }
   saveTimeadjust() {
@@ -84,7 +85,7 @@ class TimeadjustPopin extends React.Component {
         date: fin.getTime()
       };
 
-      logger.log('nv,v', newvaleur, valeur, ta);
+      logger.info('nv,v', newvaleur, valeur, ta);
 
       this.props.saveTimeadjust(ta);
     } 
@@ -102,7 +103,7 @@ class TimeadjustPopin extends React.Component {
     const newvaleur = (this.state.newvaleur!==null) ? this.state.newvaleur : valeur;
 
 
-    logger.log("newvaleur",newvaleur);
+    logger.info("newvaleur",newvaleur);
 
     return (
       <Modal
@@ -477,7 +478,7 @@ class Paies extends React.Component {
     if (employes && pointages) {
       employes.forEach(usr => {
       
-        logger.log('user',usr.nom);
+        logger.info('user',usr.nom);
         let usr_obj = {
           id: usr.user_id, 
           nom: usr.nom, 
@@ -503,7 +504,7 @@ class Paies extends React.Component {
         if (usr_obj.pointages) {
           usr_obj.pointages.forEach(up => {
             usr_obj.reel += up.clockout - up.clockin;
-            // logger.log('ptn', {itv: `${differenceInDays(up.clockout, up.clockin)}j ${differenceInHours(up.clockout, up.clockin)}h ${differenceInSeconds(up.clockout, up.clockin)}s`, id:up.pointage_id});
+            // logger.info('ptn', {itv: `${differenceInDays(up.clockout, up.clockin)}j ${differenceInHours(up.clockout, up.clockin)}h ${differenceInSeconds(up.clockout, up.clockin)}s`, id:up.pointage_id});
           });
         }
 
@@ -545,7 +546,7 @@ class Paies extends React.Component {
           usr_obj.prevurealtime += this.getPlanningTotal(s.shifts, shifttypes, s.date);
         });
 
-     //   logger.log(_ecartToHmm(usr_obj.prevu), _ecartToHmm(usr_obj.prevurealtime));
+     //   logger.info(_ecartToHmm(usr_obj.prevu), _ecartToHmm(usr_obj.prevurealtime));
 
         /* TODO - filtrage et comptage des shifts de la période */
 

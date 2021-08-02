@@ -8,6 +8,7 @@ import StdButton from '../common/StdButton';
 import fs from 'fs';
 import mkdirp from 'mkdirp';
 import { remote }  from 'electron';
+import logger from '../../helpers/Logger';
 const { app, dialog } = remote;
 let strings = new LocalizedStrings(data);
 
@@ -61,7 +62,7 @@ checkDirectorySync(directory) {
 
 
 browseHandle(e) {
-  console.log('Entreprise.browseHandle()');
+  logger.info('Entreprise.browseHandle()');
   dialog.showOpenDialog({
     title: strings.modules.parametres.submodules.entreprise.options.label.logo_ticket_dialog_titre,
     properties: ['openFile'],
@@ -74,7 +75,7 @@ browseHandle(e) {
 
     // fileNames is an array that contains all the selected
     if(fileNames === undefined){
-        console.log("No file selected");
+        logger.info("No file selected");
         return;
     }
 
@@ -89,10 +90,10 @@ browseHandle(e) {
     
     const newFileName = file_ar.join('.');
     
-    console.log('Entreprise.browseHandle()', `${app.getPath('userData')}/userdata/${newFileName}`);
+    logger.info('Entreprise.browseHandle()', `${app.getPath('userData')}/userdata/${newFileName}`);
 
     fs.copyFile(fileNames[0], `${app.getPath('userData')}/userdata/${newFileName}`, () => {
-      console.log('file copied');
+      logger.info('file copied');
       this.props.updateValeur({
         domaine:'entreprise', 
         cle:'ticket_logo', 
@@ -115,7 +116,7 @@ getLogoImg(filePath) {
   const { message_ticket } = this.state;
   const { data, updateValeur } = this.props;
 
-  console.log(strings.modules.parametres.submodules.entreprise.options.label.auto_update);
+  logger.info(strings.modules.parametres.submodules.entreprise.options.label.auto_update);
 
   return (
     <div className="Entreprise subcontent">
@@ -131,7 +132,7 @@ getLogoImg(filePath) {
               placeholder={ strings.modules.parametres.submodules.entreprise.general.placeholder[field] } 
               type='text' 
               readOnly={ true } 
-              onChange={()=>{console.log('click')}}
+              onChange={()=>{logger.info('click')}}
               label={ strings.modules.parametres.submodules.entreprise.general.label[field] }
             />
           ))}
@@ -143,7 +144,7 @@ getLogoImg(filePath) {
               placeholder='0' 
               type='text' 
               readOnly={ false } 
-              onChange={()=>{console.log('click')}}
+              onChange={()=>{logger.info('click')}}
               label={ strings.modules.parametres.submodules.entreprise.objectif.label.ca }
               postvalue='€'
             />
@@ -157,7 +158,7 @@ getLogoImg(filePath) {
               labelLeft={ true } 
               key={`${field}-${i}`}
               name={ field } 
-              onChange={ console.log } 
+              onChange={ logger.info } 
               label={ strings.modules.parametres.submodules.entreprise.options.label[field] } 
             />
           ))}

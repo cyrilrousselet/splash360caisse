@@ -86,7 +86,7 @@ const actions = {
 
     const { imprimante } = req.payload;
 
-  //  log.debug('openDrawer', imprimante);
+  //  log.info('openDrawer', imprimante);
 
     _spoolManager({
       action: _openDrawer,
@@ -100,7 +100,7 @@ const actions = {
 
     // device.open(function() {
 
-    //   log.debug('device open -> cashdraw()');
+    //   log.info('device open -> cashdraw()');
     //   printer
     //     .cashdraw()
     //     .cashdraw();
@@ -111,9 +111,9 @@ const actions = {
 
 
     //   // device.on('data', function (data) {
-    //   //     // log.debug(data);
+    //   //     // log.info(data);
     //   //     if (typeof data === "string") {
-    //   //       log.debug(' --> ',  data.charCodeAt(0).toString(2).padStart(8, '0'));
+    //   //       log.info(' --> ',  data.charCodeAt(0).toString(2).padStart(8, '0'));
     //   //     }
           
     //   // });
@@ -176,10 +176,10 @@ const actions = {
     const { payload } = req;
     const msg = payload.msg!=='' ? payload.msg : 'rien';
 
-    log.debug('printTest start');
+    log.info('printTest start');
 
     const tux = path.join(__dirname, 'default_logo.png');
-    log.debug('img : '+tux);
+    log.info('img : '+tux);
     escpos.Image.load(tux, function(image){
     
 
@@ -216,7 +216,7 @@ const actions = {
       });
     });
 
-    log.debug('printTest end');
+    log.info('printTest end');
 
     res.send({msg: 'test printed'});
   }
@@ -319,14 +319,14 @@ function _openDrawer(imprimante, template, contenu) {
     if (error) {
       log.error(`ERREUR IMPRIMANTE->TIROIR (${imprimante.connexion}: ${imprimante.param}) =>`, error.message);
     } else {
-      log.debug('device open -> cashdraw()');
+      log.info('device open -> cashdraw()');
       printerOpen = true;
       printer
         .cashdraw()
         .cashdraw();
         
       setTimeout(() => {
-        log.debug('printer.close()', '_openDrawer() 2');
+        log.info('printer.close()', '_openDrawer() 2');
         _closePrinter(printer);
       }, 1000);
     }
@@ -366,19 +366,20 @@ function _doPrintTicket(imprimante, template, contenu) {
     printer = new Printer(device, options);
     
   } catch(e) {
-    log.error(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`, e.message);
+    log.warn(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`);
+    log.error(e);
   }
 
-  log.debug('printTicket start');
+  log.info('printTicket start');
 
   // const tux = path.join(__dirname, 'default_logo.png');
-  // log.debug('img : '+tux);
+  // log.info('img : '+tux);
 
-  log.debug('device opened');
+  log.info('device opened');
 
   // // s'il y a un logo au début du ticket
   if (template[0]==='logo' && contenu.logo!==null) {
-    log.debug('Image.load -> print');
+    log.info('Image.load -> print');
 
     const imglogo = getLogoImg(contenu.logo);
 
@@ -396,7 +397,7 @@ function _doPrintTicket(imprimante, template, contenu) {
             
             printerOpen = true;
 
-            log.debug('print logo');
+            log.info('print logo');
             // center logo
             printer.align('CT');
             // impression logo
@@ -440,7 +441,7 @@ function _doPrintTicket(imprimante, template, contenu) {
   }
     
 
- // log.debug('printTicket end');
+ // log.info('printTicket end');
 
 }
 
@@ -459,14 +460,15 @@ function _closePrinter(printer) {
   });
 }
 function _printErrorHandler(error, methodName, printer) {
-  log.error(`ERREUR IMPRESSION ( ${methodName}() )`, error.message);
+  log.warn(`ERREUR IMPRESSION ( ${methodName}() )`);
+  log.error(error);
   _closePrinter(printer);
 }
 
 
 function _launchPrint(template, printer, contenu, config={}) {
 
-  log.debug('_launchPrint()');
+  log.info('_launchPrint()');
 
   if (template.length===0) {
     _closePrinter(printer);
@@ -476,7 +478,7 @@ function _launchPrint(template, printer, contenu, config={}) {
 
   template.forEach(async (section,i,arr) => {
 
-    log.debug(section);
+    log.info(section);
 
     if ('entreprise' === section) { 
       try {

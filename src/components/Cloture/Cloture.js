@@ -15,7 +15,8 @@ import Swal from "sweetalert2";
 import paths from "../../constants/routes";
 import { data } from "../../constants/translations";
 import history from "../../helpers/history";
-import Logger from "../../helpers/Logger";
+// import Logger from "../../helpers/Logger";
+import logger from "../../helpers/Logger";
 import CarteIcon from "../common/icon/CarteIcon";
 import ChequeIcon from "../common/icon/ChequeIcon";
 import CloseIcon from "../common/icon/CloseIcon";
@@ -31,7 +32,7 @@ import CountTool from "./CountTool";
 import CountTRTool from "./CountTRTool";
 
 
-const logger = new Logger();
+// const logger = new Logger();
 let strings = new LocalizedStrings(data);
 
 // class LocalizedUtils extends DateFnsUtils {
@@ -162,7 +163,7 @@ class Cloture extends React.Component {
     if (fonddecaisse_activation) {
       getLastMouvement(caisse.uniqid).then(__lastmvt => {
         const __lastsolde = (__lastmvt && __lastmvt.hasOwnProperty('lastmouvement') && __lastmvt.lastmouvement!==null) ? __lastmvt.lastmouvement.solde : 0;
-        // logger.log('Clo.getLastMouvement() solde:', __lastmvt, __lastsolde);
+        // logger.info('Clo.getLastMouvement() solde:', __lastmvt, __lastsolde);
         this.setState({fonddecaisse: __lastsolde/100});
       });
     }
@@ -184,7 +185,7 @@ class Cloture extends React.Component {
   }
 
   componentDidUpdate() {
-    logger.log('update Cloture');
+    logger.info('update Cloture');
   }
 
   shouldComponentRender() {
@@ -196,7 +197,7 @@ class Cloture extends React.Component {
   testStandbyCommandes(periode_z) {
     // s'il y a des commandes non confirmées ("standby" et "a_encaisser")
 
-    console.log('testStandByCommandes() L',periode_z.standby);
+    logger.info('testStandByCommandes() L',periode_z.standby);
 
     if (periode_z.standby > 0 ) {
       Swal.fire({
@@ -297,7 +298,7 @@ class Cloture extends React.Component {
     if (fonddecaisse_activation) {
       this.props.getLastMouvement(selection.uniqid).then(__lastmvt => {
         const __lastsolde = (__lastmvt && __lastmvt.hasOwnProperty('lastmouvement') && __lastmvt.lastmouvement!==null) ? __lastmvt.lastmouvement.solde : 0;
-        // logger.log('Clo.getLastMouvement() solde:', __lastmvt, __lastsolde);
+        // logger.info('Clo.getLastMouvement() solde:', __lastmvt, __lastsolde);
         this.setState({ selection_caisse: selection, fonddecaisse: __lastsolde/100, ...__reset });
       });
     } else {
@@ -321,7 +322,7 @@ class Cloture extends React.Component {
   }
 
   startSaisie(field) {
-    logger.log("startSaisie", field);
+    logger.info("startSaisie", field);
   //  let comptage = this.state.comptage;
 
     this.setState({
@@ -481,7 +482,7 @@ class Cloture extends React.Component {
 
   validComptage(fieldname, value) {
 
-    console.log('validComptage', fieldname, value);
+    logger.info('validComptage', fieldname, value);
 
     if (([
       "saisie_carte", 
@@ -509,7 +510,7 @@ class Cloture extends React.Component {
       __comptage[__field] =  Number(value);
       const totalcomptage = Object.values(__comptage).reduce((a,b)=>a+b,0);
 
-      console.log('comptage', __field, __comptage);
+      logger.info('comptage', __field, __comptage);
 
       this.setState({comptage: {...__comptage, [__field]: Number(value), total:totalcomptage}});
 
@@ -523,7 +524,7 @@ class Cloture extends React.Component {
       let __cpt = comptage ? comptage.especes : Number(ventil_esp.valeur);
 
 
-      console.log('chech prelev', 'fdc['+periode.fdcaisse+'] + comptage['+__cpt+'] - val['+Number(value)+']', (periode.fdcaisse + __cpt - Number(value)));
+      logger.info('chech prelev', 'fdc['+periode.fdcaisse+'] + comptage['+__cpt+'] - val['+Number(value)+']', (periode.fdcaisse + __cpt - Number(value)));
 
       if (periode.fdcaisse + __cpt - Number(value) < 0) {
         Swal.fire({
@@ -652,19 +653,19 @@ class Cloture extends React.Component {
       params
     );
 
-    // logger.log("periode", periode);
+    // logger.info("periode", periode);
 
-  //  logger.log("periode_z", periode_z);
-  //  logger.log("periode_z ventil.", periode_z.periode.ventilation);
+  //  logger.info("periode_z", periode_z);
+  //  logger.info("periode_z ventil.", periode_z.periode.ventilation);
 
     const readyToCloture = this.testStandbyCommandes(periode_z);
 
     const operators = this.getListeVendeurs();
 
           
-    // logger.log('fdcaisse_new', periode_z.periode.fdcaisse+' + ('+comptage_fv+' - '+Number(prelevement_fv.replace(",", "."))+')');
-    // logger.log('operators', operators);
-     logger.log('******* caisses', caisses);
+    // logger.info('fdcaisse_new', periode_z.periode.fdcaisse+' + ('+comptage_fv+' - '+Number(prelevement_fv.replace(",", "."))+')');
+    // logger.info('operators', operators);
+     logger.info('******* caisses', caisses);
 
     if (processing) {
 

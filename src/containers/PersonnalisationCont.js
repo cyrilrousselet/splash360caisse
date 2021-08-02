@@ -14,7 +14,6 @@ import Personnalisation from '../components/Encaissement/Personnalisation';
 //       __total += itm.quantite * itm.prix;      
 //     });
 //   }
-//   console.log('getCommandeTotal : '+__total);
 //   return __total;
 // }
 

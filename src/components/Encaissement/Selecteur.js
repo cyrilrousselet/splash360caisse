@@ -8,6 +8,7 @@ import {MODES} from '../../constants/commandeModes';
 
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
+import logger from '../../helpers/Logger';
 let strings = new LocalizedStrings(data);
 
 
@@ -40,7 +41,7 @@ class Selecteur extends React.Component {
 
   // action on buttons (fill in passphrase)
   buttonHandler(text) {
-    console.log(`Produit #${text}`);
+    logger.info(`Produit #${text}`);
   }
 
   scrollTabBar(dir) {

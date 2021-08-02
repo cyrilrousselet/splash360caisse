@@ -1,10 +1,11 @@
 import {emit} from 'eiphop';
 
 import LodashId from 'lodash-id';
-import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 
 
-const logger = new Logger();
+// const logger = new Logger();
 
 
 export const tableServices = {
@@ -43,7 +44,7 @@ function getSallesList(params) {
 }
 
 function persistSalle(salle) {
-  logger.log('tabS.persistSalle()', salle);
+  logger.info('tabS.persistSalle()', salle);
   return emit('dbTablePersistSalle', {salle:salle});
 }
 

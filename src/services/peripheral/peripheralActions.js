@@ -15,9 +15,10 @@ import {data} from '../../constants/translations';
 // import { commandeActions } from '../commande/commandeActions';
 import { remove } from 'diacritics';
 import { lowerCase } from 'lodash';
-import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 import { commandeServices } from '../commande/commandeServices';
-const logger = new Logger();
+// const logger = new Logger();
 const removeDiacritics = remove;
 const strings = new LocalizedStrings(data);
 
@@ -26,7 +27,7 @@ function printTest(payload) {
     peripheralServices.printTest()
     .then(
       response => {
-        logger.log(response);
+        logger.info(response);
       }
     )
     dispatch({ type: peripheralActionTypes.PRINT_TEST });
@@ -37,7 +38,7 @@ function printAvoir(payload) {
   return (dispatch, getState) => {  
     
    
-    logger.log('printAvoir()', payload);
+    logger.info('printAvoir()', payload);
 
     const { imprimantes, tickets } = getState().peripheralReducer;
     const { entreprise } = getState().parametresReducer.parametres;
@@ -70,7 +71,7 @@ function printAvoir(payload) {
     peripheralServices.printTicket(imprimante, templates.avoir, contenu)
     .then(
       response => {
-        logger.log('print Avoir');
+        logger.info('print Avoir');
       }
     )
     dispatch({ type: peripheralActionTypes.PRINT_AVOIR });
@@ -89,7 +90,10 @@ function openDrawer() {
         data => { dispatch({ type: peripheralActionTypes.OPEN_DRAWER }) }
     )
     .catch(
-      error => { dispatch({ type: peripheralActionTypes.OPEN_DRAWER_FAILURE, error: error.toString() }) }
+      error => { 
+        logger.error(error);
+        dispatch({ type: peripheralActionTypes.OPEN_DRAWER_FAILURE, error: error.toString() }) 
+      }
     );
   }
 }
@@ -127,7 +131,7 @@ function updateImprimante(payload) {
 
     imprimante = {...imprimante, ...updated_data};
 
-    logger.log('updateImprimante()', imprimante);
+    logger.info('updateImprimante()', imprimante);
 
     peripheralServices.updateImprimante(imprimante)
       .then(
@@ -202,7 +206,7 @@ function updateTicket(payload) {
     });
 
     ticket = {...ticket, ...updated_data};
-    logger.log('updateTicket()', ticket);
+    logger.info('updateTicket()', ticket);
 
      peripheralServices.updateTicket(ticket)
       .then(
@@ -253,7 +257,7 @@ function createTicket(payload) {
 
 function _getTicketsToPrint(filtre, tickets) {
 
-  logger.log('_getTicketsToPrint',filtre);
+  logger.info('_getTicketsToPrint',filtre);
 
   let liste;
   if (filtre==='all') {
@@ -521,7 +525,7 @@ function _setCommandeToKDS(ticketsListe, cmd, state) {
   
   }
   else {
-    logger.log('ordre d’impression non concerné par le KDS');
+    logger.info('ordre d’impression non concerné par le KDS');
   }
 }
 
@@ -538,14 +542,15 @@ function printTicketFromAPI(payload) {
     if (_tck.hasOwnProperty('indirect') && _tck.indirect===true) { 
       try {
         const commande = await commandeServices.getCommandeById(ticketId);
-        logger.log('peripheralActions.printTicketFromAPI()', commande);
+        logger.info('peripheralActions.printTicketFromAPI()', commande);
         dispatch(printCommandeTicket({ids:[zoneId]}, commande._cmd, true));
       }
       catch(error) {
-        logger.log('printTicketFromAPI', `commande #${ticketId} introuvable`);
+        logger.info('printTicketFromAPI', `commande #${ticketId} introuvable`);
+        logger.error(error);
       }
     } else {
-      logger.log('printTicketFromAPI', 'pas d’impression indirecte pour ce ticket');
+      logger.info('printTicketFromAPI', 'pas d’impression indirecte pour ce ticket');
     }
 
   }
@@ -571,8 +576,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
     const {print_standby} = state.parametresReducer.parametres.commandes;
 
 
-    logger.log('peripheralAction.printCommandeTicket()',cmd);
-    // logger.log(clients);
+    logger.info('peripheralAction.printCommandeTicket()',cmd);
+    // logger.info(clients);
 
     const caisse = cmd.caisse;
     const operateur = cmd.operator;
@@ -612,7 +617,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
     const ticketsListe = _getTicketsToPrint(quelstickets, tickets);
     const recapTickets = _getRecap(ticketsListe.filter(t => 'partiel' === t.template), cmd, catalogue, types, ingredients);
 
-    logger.log('ticketsListe', ticketsListe);
+    logger.info('ticketsListe', ticketsListe);
 
     // envoi de la commande au serveur KDS (sauf si nokds==true)
     if (!nokds) _setCommandeToKDS(ticketsListe, cmd, state);
@@ -626,7 +631,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
     // sauf si l'impression est déclenchée par le KDS
     if (!nokds) {
       tckToPrint = tckToPrint.filter(t => !t.indirect);
-      logger.log('liste de tickets à impression directe', tckToPrint);
+      logger.info('liste de tickets à impression directe', tckToPrint);
     }
 
     if (tckToPrint.length===0) {
@@ -833,8 +838,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             });
             
 
-            // logger.log('iht','(Number('+article.pu+')*'+article.quantite+') / (1 + Number('+article.tva.valeur +'))');
-            // logger.log(JSON.stringify(cmdTva));
+            // logger.info('iht','(Number('+article.pu+')*'+article.quantite+') / (1 + Number('+article.tva.valeur +'))');
+            // logger.info(JSON.stringify(cmdTva));
             total += articletotal;
           });
           
@@ -1471,7 +1476,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           .then(
             response => {
               // logger.timeEnd('printCommandeTicket()');
-              logger.log(response);
+              logger.info(response);
             }
           )
           dispatch({ type: peripheralActionTypes.PRINT_TICKET });
@@ -1549,7 +1554,7 @@ function printPeriodeX(payload={}) {
     peripheralServices.printTicket(imprimante, template, contenu)
     .then(
       response => {
-        logger.log('print X');
+        logger.info('print X');
       }
     )
     dispatch({ type: peripheralActionTypes.PRINT_PERIODE_X });
@@ -1585,7 +1590,7 @@ function printCloture(payload={}) {
     }
 
 
-    logger.log('printCloture()', payload);
+    logger.info('printCloture()', payload);
 
     const { impression } = strings.modules.cloture;
     const { imprimantes, tickets } = getState().peripheralReducer;
@@ -1633,12 +1638,12 @@ function printCloture(payload={}) {
       mouvements: tresorslist
     };
 
-    logger.log('peripheralActions.printCloture contenu:', contenu);
+    logger.info('peripheralActions.printCloture contenu:', contenu);
 
     peripheralServices.printTicket(imprimante, template, contenu)
     .then(
       response => {
-        logger.log('print Z');
+        logger.info('print Z');
       }
     )
     dispatch({ type: peripheralActionTypes.PRINT_PERIODE_Z });

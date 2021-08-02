@@ -29,10 +29,11 @@ import StdButton from '../common/StdButton';
 import MouvementPopin from './MouvementPopin';
 import { dateBounds } from '../../helpers/toolbox';
 
-import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 // import {devise} from '../../helpers/toolbox';
 
-const logger = new Logger();
+// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 
@@ -146,7 +147,7 @@ class Tresorerie extends React.Component {
   }
 
   componentDidMount() {
-    logger.log('Tresorerie.componentDidMount()');
+    logger.info('Tresorerie.componentDidMount()');
     const {caisse, getLastOuvertureAndAfter} = this.props;
     getLastOuvertureAndAfter(caisse.uniqid);
   }
@@ -181,7 +182,7 @@ class Tresorerie extends React.Component {
       this.setState({endDate:f});
     }
 
-    console.log(
+    logger.info(
       'setSelectedDate('+bound+')', 
       '('+format(d, "dd/MM/yyyy HH:mm")+' -> '+format(f, "dd/MM/yyyy HH:mm")+')'
     );
@@ -211,12 +212,12 @@ class Tresorerie extends React.Component {
     this.props.getLastMouvement(__csh)
               .then(__lastmvt => {
                 const __lastsolde = __lastmvt ? __lastmvt.lastmouvement.solde : 0;
-                console.log('saveMouvement lastSolde: ',__lastsolde);
+                logger.info('saveMouvement lastSolde: ',__lastsolde);
                 const __newsolde = 
                 (["entree", "sortie"]).includes(mouvement.type) 
                 ? __lastsolde + mouvement.credit - mouvement.debit 
                 : mouvement.solde;
-                console.log('saveMouvement newSolde: ',__newsolde);
+                logger.info('saveMouvement newSolde: ',__newsolde);
                 this.props.addTresor({...mouvement, solde: __newsolde});
                 this.closeMouvement();
               });

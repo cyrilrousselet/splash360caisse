@@ -6,6 +6,7 @@ import paths from './../../constants/routes.json';
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import { notificationActions } from '../notification/notificationActions';
+import logger from '../../helpers/Logger';
 let strings = new LocalizedStrings(data);
 
 function resetError() {
@@ -102,14 +103,14 @@ function updateUser(payload) {
     // on ne récupère que les propriétés qui ont été mises à jour
     let updated_data = {};
     Object.entries(data).forEach(([key,value]) => {
-      console.log('updateUser: '+key,value);
+      logger.info('updateUser: '+key,value);
       if (value!==null) updated_data[key] = value;
       if (key==='status' && value==='deleted') updated_data['identifiant'] = '';
     });
 
     
     user = {...user, ...updated_data, localsync: [caisse.uniqid]};
-    console.log(user);
+    logger.info(user);
     
      userServices.update(user)
       .then(
@@ -224,12 +225,12 @@ function setUserFromSync(payload) {
 }
 
 function toggleSuperUserMode() {
-  console.log("toggleSU");
+  logger.info("toggleSU");
   return dispatch => { dispatch({ type: userActionTypes.TOGGLE_SUPERUSER_MODE }) };
 }
 
 function loginSU(passphrase) {
-  console.log("loginSU");
+  logger.info("loginSU");
 
   return dispatch => {
 

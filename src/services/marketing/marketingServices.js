@@ -35,8 +35,6 @@ function createAvoir(payload) {
     code: `cdt${new Date().getTime().toString(16)}`
   }
 
-  console.log('MktSv.createAvoir()', avoir);
-
   return emit('dbAvoirPersist', {avoir:avoir});
 }
 

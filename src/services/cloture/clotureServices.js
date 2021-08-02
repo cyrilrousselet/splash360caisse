@@ -3,8 +3,9 @@ import {emit} from 'eiphop';
 import { startOfDay, startOfToday, isAfter, isBefore } from 'date-fns';
 // import { dateBounds } from '../../helpers/toolbox';
 import LodashId from 'lodash-id';
-import Logger from '../../helpers/Logger';
-const logger = new Logger();
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
+// const logger = new Logger();
 
 export const clotureServices = {
   getCurrentPeriode,
@@ -31,7 +32,7 @@ function getTodayCa(heure_fin) {
 
 function getCurrentPeriode(commandes, catalogue, params) {
 
- logger.log('clotureServices.getCurrentPeriode()', params);
+ logger.info('clotureServices.getCurrentPeriode()', params);
 
   let __dep = 0
      ,__vnt = 0
@@ -109,13 +110,13 @@ function getCurrentPeriode(commandes, catalogue, params) {
       // status
       if (cmd.status!=='confirmed') __valid = false;
 
-    //  console.log('cmd valid='+__valid,cmd);
+    //  logger.info('cmd valid='+__valid,cmd);
       return __valid;
     });
 
-    logger.log('après deleted', numvalid, '/', Object.values(commandes).length);
+    logger.info('après deleted', numvalid, '/', Object.values(commandes).length);
 
-    logger.log('filtererd_cmd', __filtered_cmd.length);
+    logger.info('filtererd_cmd', __filtered_cmd.length);
 
     // récup des différentes valeurs :
     __filtered_cmd.forEach(cmd => {
@@ -394,7 +395,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
 
     __mtcaisse = params.fdcaisse + __ca;
 
-   // console.log('per.fdcaisse', __fdcaisse_courant);
+   // logger.info('per.fdcaisse', __fdcaisse_courant);
 
     return {
       periode: {

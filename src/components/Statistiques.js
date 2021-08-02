@@ -22,6 +22,7 @@ import TopZone from "../containers/TopZone";
 import LoadingSpinner from "./common/LoadingSpinner";
 import StdButton from "./common/StdButton";
 import {dateBounds} from "./../helpers/toolbox";
+import logger from './../helpers/Logger';
 
 let strings = new LocalizedStrings(data);
 
@@ -192,7 +193,7 @@ class Statistiques extends React.Component {
   }
 
   componentDidMount() {
-    console.log("Statistiques.componentDidMount()");
+    logger.info("Statistiques.componentDidMount()");
     this.getBoundedCommandesList();
     this.props.getAllActive();
   }
@@ -229,7 +230,7 @@ class Statistiques extends React.Component {
       this.setState({ endDate: f });
     }
 
-    console.log(
+    logger.info(
       'setSelectedDate('+bound+')', 
       '('+format(d, "dd/MM/yyyy HH:mm")+' -> '+format(f, "dd/MM/yyyy HH:mm")+')'
     );
@@ -266,7 +267,7 @@ class Statistiques extends React.Component {
         endDate = startBound.fin;
     }
 
-    console.log(
+    logger.info(
       'datesShortcut('+short+')', 
       '('+format(new Date(startDate), "dd/MM/yyyy HH:mm")+' -> '+format(new Date(endDate), "dd/MM/yyyy HH:mm")+')'
     );
@@ -337,7 +338,7 @@ class Statistiques extends React.Component {
 
           // par canal
           let can = canaux.find((cnl) => {
-            console.log(cnl.ids);
+            logger.info(cnl.ids);
             return cnl.ids.indexOf(value.caisse.id) > -1;
           });
           const nomcanal = can ? can.nom : value.caisse.id;

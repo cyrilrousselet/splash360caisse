@@ -63,7 +63,7 @@ export function parametresReducer(state=initialState, action) {
 
         action.payload.forEach(obj => {
           __up[obj.domaine][obj.cle] = obj.valeur;
-          console.log('up d:'+obj.domaine+', c:'+obj.cle+', v:'+obj.valeur, __up);
+          // console.log('up d:'+obj.domaine+', c:'+obj.cle+', v:'+obj.valeur, __up);
         }, __up);
 
         return {
@@ -108,13 +108,13 @@ export function parametresReducer(state=initialState, action) {
       };
 
     case parametresActionTypes.INSTALL_STATION_SUCCESS:
-      console.log(action);
+      // console.log(action);
 
       const __up = {...parametres};
 
       action.payload.forEach(obj => {
         __up[obj.domaine][obj.cle] = obj.valeur;
-        console.log('up d:'+obj.domaine+', c:'+obj.cle+', v:'+obj.valeur, __up);
+        // console.log('up d:'+obj.domaine+', c:'+obj.cle+', v:'+obj.valeur, __up);
       }, __up);
 
       return {

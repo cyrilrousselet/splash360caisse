@@ -11,14 +11,14 @@ const SwitchCheckbox = ({ name, isChecked, onChange, className, label, labelLeft
             name={name}
             checked={ isChecked }
             disabled={ disabled }
-            onClick={ (e) => { console.log('click sur switchcheckbox'); e.stopPropagation(); } }
+            onClick={ (e) => { e.stopPropagation(); } }
             onChange={ (event) => onChange(name, !isChecked) }
           />
           <div><div></div></div>
         </label>
         <label 
           htmlFor={`switchid-${name}`}
-          onClick={(e) => { console.log('click sur switchcheckbox'); e.stopPropagation() }}>{ label }</label>
+          onClick={(e) => { e.stopPropagation() }}>{ label }</label>
       </div>
     );
 

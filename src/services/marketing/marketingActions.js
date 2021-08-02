@@ -2,6 +2,7 @@ import { marketingActionTypes } from "./marketingActionTypes";
 import { marketingServices } from "./marketingServices";
 import { peripheralActions } from "../peripheral/peripheralActions";
 import { notificationActions } from "../notification/notificationActions";
+import logger from '../../helpers/Logger';
 
 
 
@@ -15,7 +16,10 @@ function getAvoirsList(params={}) {
         data => { dispatch({ type: marketingActionTypes.GET_AVOIRS_LIST_SUCCESS, ...data }) }
     )
     .catch(
-      error => { dispatch({ type: marketingActionTypes.GET_AVOIRS_LIST_FAILURE, error: error.toString() }) }
+      error => { 
+        logger.error(error);
+        dispatch({ type: marketingActionTypes.GET_AVOIRS_LIST_FAILURE, error: error.toString() }) 
+      }
     );
   }
 }
@@ -39,7 +43,10 @@ function createAvoir(payload) {
         dispatch(notificationActions.syncDispatch('avoir', data));
         dispatch(getAvoirsList());
       },
-      error => dispatch({ type: marketingActionTypes.CREATE_AVOIR_FAILURE, error: error.toString() })
+      error => {
+        logger.error(error);
+        dispatch({ type: marketingActionTypes.CREATE_AVOIR_FAILURE, error: error.toString() })
+      }
     );
   }
 }
@@ -58,7 +65,10 @@ function updateAvoir(payload) {
         dispatch(notificationActions.syncDispatch('avoir', data));
         dispatch(getAvoirsList());
       },
-      error => dispatch({ type: marketingActionTypes.UPDATE_AVOIR_FAILURE, error: error.toString() })
+      error => {
+        logger.error(error);
+        dispatch({ type: marketingActionTypes.UPDATE_AVOIR_FAILURE, error: error.toString() })
+      }
     );
   }
 }
@@ -74,7 +84,10 @@ function deleteAvoir(payload) {
         dispatch(notificationActions.syncDispatch('deleteavoir', payload));
         dispatch(getAvoirsList());
       },
-      error => dispatch({ type: marketingActionTypes.DELETE_AVOIR_FAILURE, error: error.toString() })
+      error => {
+        logger.error(error);
+        dispatch({ type: marketingActionTypes.DELETE_AVOIR_FAILURE, error: error.toString() })
+      }
     );
   }
 }
@@ -91,7 +104,10 @@ function getReglesPanierList(params={}) {
         data => { dispatch({ type: marketingActionTypes.GET_REGLESPANIER_LIST_SUCCESS, ...data }) }
     )
     .catch(
-      error => { dispatch({ type: marketingActionTypes.GET_REGLESPANIER_LIST_FAILURE, error: error.toString() }) }
+      error => { 
+        logger.error(error);
+        dispatch({ type: marketingActionTypes.GET_REGLESPANIER_LIST_FAILURE, error: error.toString() }) 
+      }
     );
   }
 }
@@ -107,7 +123,10 @@ function getReglesCatalogueList(params={}) {
         data => { dispatch({ type: marketingActionTypes.GET_REGLESCATALOGUE_LIST_SUCCESS, ...data }) }
     )
     .catch(
-      error => { dispatch({ type: marketingActionTypes.GET_REGLESCATALOGUE_LIST_FAILURE, error: error.toString() }) }
+      error => { 
+        logger.error(error);
+        dispatch({ type: marketingActionTypes.GET_REGLESCATALOGUE_LIST_FAILURE, error: error.toString() }) 
+      }
     );
   }
 }

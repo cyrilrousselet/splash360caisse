@@ -13,6 +13,7 @@ import StdButton from '../common/StdButton';
 import AddIcon from '../common/icon/AddIcon';
 import Clavier from '../common/Clavier';
 import LodashId from 'lodash-id';
+import logger from '../../helpers/Logger';
 let strings = new LocalizedStrings(data);
 
 
@@ -126,7 +127,7 @@ class CommandesDiscount extends React.Component {
   }
 
   editDiscount(id, val, nom) {
-    console.log('editDiscount', id, val, nom);
+    logger.info('editDiscount', id, val, nom);
     this.setState({
       editing: id,
       editdiscount: val,
@@ -166,7 +167,7 @@ class CommandesDiscount extends React.Component {
     const { data, updateValeur } = this.props;
     const {discount_predefini} = data;
     const {editdiscount, editnom} = this.state;
-    console.log("saveDiscount",'editnom', editnom);
+    logger.info("saveDiscount",'editnom', editnom);
     if (editdiscount!=='') {
 
       let dsc = {

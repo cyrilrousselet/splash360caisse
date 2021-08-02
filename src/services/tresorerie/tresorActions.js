@@ -5,15 +5,16 @@ import { isBefore } from "date-fns";
 
 import { notificationActions } from '../notification/notificationActions';
 
-import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 import { commandeServices } from "../commande/commandeServices";
-const logger = new Logger();
+// const logger = new Logger();
 
 
 function addTresor(payload) {
   return (dispatch, getState) => {
 
-    logger.log('addTresor()', payload);
+    logger.info('addTresor()', payload);
 
     dispatch({ type: tresorActionTypes.ADD_REQUEST });
 
@@ -71,7 +72,7 @@ function checkFinDeService() {
     try {
       const __reponse = await tresorServices.getLastClotureAndAfter({caisseId:caisse.uniqid}); 
 
-      console.log('CFS', __reponse);
+      logger.info('CFS', __reponse);
 
       let __ouverture = false;
       if (__reponse && __reponse.hasOwnProperty('cloture') && __reponse.cloture!==null) {
@@ -101,11 +102,11 @@ function checkFinDeService() {
           }
         }
       } else {
-        console.log('pas de cloture');
+        logger.info('pas de cloture');
         if (__reponse.hasOwnProperty('ouverture') && __reponse.ouverture) {
-          console.log(new Date(__reponse.ouverture_mvt.createdAt), new Date().setHours(5,0));
+          logger.info(new Date(__reponse.ouverture_mvt.createdAt), new Date().setHours(5,0));
           if (isBefore(new Date(__reponse.ouverture_mvt.createdAt), new Date().setHours(5,0))) {
-            console.log('la cloture est avant le servide d’aujourd’hui');
+            logger.info('la cloture est avant le servide d’aujourd’hui');
 
             // y a-t-il des commandes non cloturées ?
             const currentCmd = await commandeServices.getCommandesList({$and: [
@@ -138,7 +139,7 @@ function checkFinDeService() {
         dispatch({ type: tresorActionTypes.CHECK_FINDESERVICE_SUCCESS, blocage: false });}
       
     } catch (error) {
-      logger.log('TrsAct.checkFinDeService() ERROR', error);
+      logger.info('TrsAct.checkFinDeService() ERROR', error);
       dispatch({ type: tresorActionTypes.CHECK_FINDESERVICE_FAILURE, error })
     }
 
@@ -166,13 +167,13 @@ function getLastClotureAndAfter(caisseId) {
 
           if (result && result.hasOwnProperty('cloture') && result.cloture!==null) {
             if (result.hasOwnProperty('ouverture') && result.ouverture) {
-              logger.log('IL Y A UNE CLOTURE et une ouverture');
+              logger.info('IL Y A UNE CLOTURE et une ouverture');
               __ouverture = true;
             } else {
               __ouverture = false;
             }
           } else if (!result.ouverture) {
-            logger.log('IL N’Y A PAS DE CLOTURE et PAS D’OUVERTURE -> POPIN');
+            logger.info('IL N’Y A PAS DE CLOTURE et PAS D’OUVERTURE -> POPIN');
             __ouverture = false;
           } else {
             __ouverture = true;
@@ -186,10 +187,12 @@ function getLastClotureAndAfter(caisseId) {
       );
     }
     catch(e) {
+      logger.error(e);
       dispatch({ type: tresorActionTypes.GET_LASTCLOTUREANDAFTER_FAILURE, error: e.toString() })
     }
   }
   catch(e) {
+    logger.error(e);
     dispatch({ type: tresorActionTypes.GET_LASTCLOTUREANDAFTER_FAILURE, error: e.toString() })
   }
   }
@@ -198,7 +201,7 @@ function getLastClotureAndAfter(caisseId) {
 function getLastOuvertureAndAfter(caisseId) {
   return (dispatch, getState) => {
 
-    logger.log("TrsA.getLastOuvertureAndAfter()");
+    logger.info("TrsA.getLastOuvertureAndAfter()");
     const { heure_fin } = getState().parametresReducer.parametres.entreprise;
 
     // *** définition de la fin de la période précédente
@@ -229,6 +232,7 @@ function getLastOuvertureAndAfter(caisseId) {
     .catch(
       error => { 
 
+        logger.error(error);
         // logger.timeEnd('getLastOuvertureAndAfter');
         dispatch({ type: tresorActionTypes.GET_LASTOUVERTUREANDAFTER_FAILURE, error: error.toString() }) }
     );
@@ -256,6 +260,7 @@ function getTresors(params={}) {
     .catch(
       error => { 
         // logger.timeEnd('getTresors');
+        logger.error(error);
         dispatch({ type: tresorActionTypes.GET_FAILURE, error: error.toString() })
       }
     );
@@ -348,7 +353,7 @@ function setTresorFromSync(tresor) {
 
           } catch (err) {
             dispatch({ type: tresorActionTypes.SETSYNCED_FAILURE, error: err });
-            logger.log('sync trs err', err);
+            logger.info('sync trs err', err);
           }
 
 
@@ -425,7 +430,7 @@ function setTresorFromSync(tresor) {
       
       } catch (err) {
         dispatch({ type: tresorActionTypes.SETSYNCED_FAILURE, error: err });
-        logger.log('sync trs err', err);
+        logger.info('sync trs err', err);
       }
       
     }

@@ -5,9 +5,10 @@ import SelecteurCont from '../../containers/SelecteurCont';
 import PanierCont from '../../containers/PanierCont';
 import ReglementCont from '../../containers/ReglementCont';
 import PersonnalisationCont from '../../containers/PersonnalisationCont';
-import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 
-const logger = new Logger();
+// const logger = new Logger();
 
 class Encaissement extends React.Component {
 
@@ -40,7 +41,7 @@ class Encaissement extends React.Component {
     this.setState({reglementOpen: false});
   }
   openPersonnalisation(itemid, stepid, previousstepid, nextstepid, stepvalidated, itemstatus, from='unknown') {
-    logger.log('openPersonnalisation(item:'+itemid+', stepid:'+stepid+', previd:'+previousstepid+', nextid:'+nextstepid+', itmstatus:'+itemstatus+', (from:'+from+'))');
+    logger.info('openPersonnalisation(item:'+itemid+', stepid:'+stepid+', previd:'+previousstepid+', nextid:'+nextstepid+', itmstatus:'+itemstatus+', (from:'+from+'))');
     this.setState({
       personnalisationOpen: true, 
       personnalisationStep: stepid, 
@@ -53,7 +54,7 @@ class Encaissement extends React.Component {
     });
   }
   closePersonnalisation(from='unknown') {
-    logger.log('closePersonnalisation('+from+')');
+    logger.info('closePersonnalisation('+from+')');
     this.setState({personnalisationOpen: false, personnalisationStep: -1, commandeItemToPersonnalize: null, personnalisationReview:null});
   }
 
@@ -69,7 +70,7 @@ class Encaissement extends React.Component {
   //   this.setState({personnalisationValide:validstep});
   // }  
   unlockEncaissement() {
-    logger.log('Enc.unlockEncaissement()');
+    logger.info('Enc.unlockEncaissement()');
     this.setState({lockEncaissement: false});
   }
 
@@ -78,8 +79,8 @@ class Encaissement extends React.Component {
   const { parametres } = this.props;
   const layout = (parametres.options && parametres.options.hasOwnProperty('encaissement_layout')) ? parametres.options.encaissement_layout : 'normal';
 
-  // logger.log('encaissement state', this.state.personnalisationReview);
-  logger.log('encaissement lock', this.state.lockEncaissement);
+  // logger.info('encaissement state', this.state.personnalisationReview);
+  logger.info('encaissement lock', this.state.lockEncaissement);
 
     return (
       <div className={ `Encaissement container ${(layout==='narrow' ? 'encaissement-narrow' : 'encaissement-normal')}` }>

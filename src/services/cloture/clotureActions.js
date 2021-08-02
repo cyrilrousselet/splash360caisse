@@ -8,14 +8,15 @@ import { peripheralActions } from '../peripheral/peripheralActions';
 // import LocalizedStrings from 'react-localization';
 // import {data} from '../../constants/translations';
 // import Swal from 'sweetalert2';
-import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 import { commandeServices } from '../commande/commandeServices';
 import { dateBounds, asyncForEach } from '../../helpers/toolbox';
 import { notificationActions } from '../notification/notificationActions';
 // import { dateBounds } from '../../helpers/toolbox';
 // const strings = new LocalizedStrings(data);
 
-const logger = new Logger();
+// const logger = new Logger();
 
 
 function getLast() {
@@ -32,6 +33,7 @@ function getLast() {
     .catch(
       error => { 
         // logger.timeEnd('ClotureActions.getLast');
+        logger.error(error);
         dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_FAILURE, error: error.toString() }) 
       }
     );
@@ -47,7 +49,10 @@ function getBoundedClotures(params={}) {
         data => { dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_SUCCESS, ...data }) }
     )
     .catch(
-      error => { dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_FAILURE, error: error.toString() }) }
+      error => { 
+        logger.error(error);
+        dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_FAILURE, error: error.toString() })
+      }
     );
   }
 }
@@ -68,6 +73,7 @@ function getCloturesList(params={}) {
     .catch(
       error => { 
         // logger.timeEnd('ClotureActions.getCloturesList');
+        logger.error(error);
         dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_FAILURE, error: error.toString() }) 
       }
     );
@@ -117,7 +123,7 @@ function getCurrentPeriode(params={}) {
     // // si les cmd non clôt. proviennent d'une période précédente.
     // if (commandeslist.length>0) {
     //   const pastcmdopen = commandeslist.findIndex(oc=>differenceInMinutes(new Date(oc.updatedAt), periode_start)<0);
-    //   logger.log('commandes provenant d’une période précédente', pastcmdopen);
+    //   logger.info('commandes provenant d’une période précédente', pastcmdopen);
     //   if (pastcmdopen>-1) {
     //     dispatch({ type: clotureActionTypes.PREVIOUS_PERIOD_ERROR });
 
@@ -195,7 +201,7 @@ function makeCloture(params={}) {
     const {financier, options} = state.parametresReducer.parametres;
     const { user } = state.authentication;
 
-  //  console.log(commandeslist);
+  //  logger.info(commandeslist);
 
     const default_params =  {
       user: {id: user.id, nom: user.nom, user_id: user.user_id},
@@ -256,7 +262,7 @@ function makeCloture(params={}) {
 function setSyncedClotures(payload) {
   return dispatch => {
     dispatch({ type: clotureActionTypes.SETSYNCED_REQUEST });
-    logger.log('setSyncedClotures()', payload);
+    logger.info('setSyncedClotures()', payload);
     const {id, datetime} = payload;
     clotureServices.setSyncedClotures(id,datetime)
     .then(
@@ -305,8 +311,8 @@ function setClotureFromSync(cloture) {
             cloturesIds.push(clotureConfirm.clotureId);
 
           } catch(err) {
+            logger.error(err);
             dispatch({ type: clotureActionTypes.PERSIST_FROM_SYNC_FAILURE, error: err });
-            logger.log('sync clo err', err);
           }
 
           if (cloNum===data.length) {
@@ -364,8 +370,8 @@ function setClotureFromSync(cloture) {
         }
 
       } catch(err) {
+        logger.error(err);
         dispatch({ type: clotureActionTypes.PERSIST_FROM_SYNC_FAILURE, error: err });
-        logger.log('sync clo err', err);
       }
 
     }

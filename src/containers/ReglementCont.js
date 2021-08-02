@@ -30,7 +30,6 @@ const getCommandeTotal = (items, modificateurs) => {
   //   }
 
 
-  // console.log('getCommandeTotal : '+__total);
   // return __total;
 
 

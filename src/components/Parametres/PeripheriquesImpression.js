@@ -9,6 +9,7 @@ import CloseIcon from '../common/icon/CloseIcon';
 import SwitchCheckbox from '../common/SwitchCheckbox';
 import StdButton from '../common/StdButton';
 import CheckIcon from '@material-ui/icons/Check';
+import logger from '../../helpers/Logger';
 
 
 let strings = new LocalizedStrings(data);
@@ -44,12 +45,12 @@ class EditImprimantePopin extends React.Component {
       pardefaut: this.props.imprimante && this.props.imprimante.pardefaut,
       fallback: this.props.imprimante && this.props.imprimante.fallback
     }
-    console.log('componentDidMount', st);
+    logger.info('componentDidMount', st);
     this.setState(st);
   }
 
   updateValue(value) {
-    console.log('updateValue', value);
+    logger.info('updateValue', value);
     this.setState(value);
   }
 
@@ -106,7 +107,7 @@ class EditImprimantePopin extends React.Component {
     const { printer_id, nom, connexion, param, encoding, pardefaut, fallback } = this.getValues();
 
 
-    console.log('render connexion', connexion);
+    logger.info('render connexion', connexion);
 
     const incomplete = !nom || connexion==null;
 
@@ -228,19 +229,19 @@ class EditTicketPopin extends React.Component {
       indirect: this.props.ticket && this.props.ticket.indirect,
       variante: this.props.ticket && this.props.ticket.variante,
     }
-    console.log('componentDidMount', st);
+    logger.info('componentDidMount', st);
     this.setState(st);
   }
 
   updateValue(value) {
-    console.log('updateValue', value);
+    logger.info('updateValue', value);
     this.setState(value);
   }
 
   updateImprimantesSelection(value) {
     const { imprimantes } = this.getValues();
     let idx = imprimantes.findIndex(prnt=>prnt===value);
-    console.log('updateImprimantesSelection', value);
+    logger.info('updateImprimantesSelection', value);
     if (idx===-1) {
       this.setState({imprimantes:[...imprimantes, value]});
     } else {
@@ -484,7 +485,7 @@ class PeripheriquesImpression extends React.Component {
   }
 
   openImprimanteEdit(impid=null) {
-    console.log('openImprimanteEdit '+impid);
+    logger.info('openImprimanteEdit '+impid);
     const {imprimantes} = this.props;
     if (impid!==null) {
       this.setState({imprimante:imprimantes[impid], editImprimanteOpen:true});
@@ -507,7 +508,7 @@ class PeripheriquesImpression extends React.Component {
 
 
   openTicketEdit(tckid=null) {
-    console.log('openTicketEdit '+tckid);
+    logger.info('openTicketEdit '+tckid);
     const {tickets} = this.props;
     if (tckid!==null) {
       this.setState({ticket:tickets[tckid], editTicketOpen:true});

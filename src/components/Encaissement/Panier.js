@@ -23,7 +23,8 @@ import Clavier from '../common/Clavier';
 import {devise} from '../../helpers/toolbox';
 import TableIcon from '../common/icon/TableIcon';
 import BellIcon from '../common/icon/BellIcon';
-import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 import CommentRemoveIcon from '../common/icon/CommentRemoveIcon';
 import NumberKeyboard from '../common/NumberKeyboard';
 
@@ -44,7 +45,7 @@ import { add, isBefore } from 'date-fns';
 
 
 let strings = new LocalizedStrings(data);
-const logger = new Logger();
+// const logger = new Logger();
 
 
 class LocalizedDayUtils extends DateFnsUtils {
@@ -128,7 +129,7 @@ class ScheduleModal extends React.Component {
   }
   checkHour(heure) {
     // const now_delayed = add(new Date(), {minutes:this.props.delai});
-    // logger.log('checkHour()', new Date(heure), now_delayed);
+    // logger.info('checkHour()', new Date(heure), now_delayed);
     // const heure_date = new Date(heure);
     // if (isBefore(heure_date, now_delayed)) {
     //   Swal.fire({
@@ -338,7 +339,7 @@ class CommentModal extends React.Component {
     const { commentid, item, ingredient } = this.props;
     const { texte } = this.state;
 
-    logger.log('saveComment()');
+    logger.info('saveComment()');
 
     this.props.saveHandler(commentid, item, ingredient, texte);
     this.resetPopin();
@@ -349,7 +350,7 @@ class CommentModal extends React.Component {
     this.setState({texte:null});
   }
   changeHandler(event) {
-   // logger.log('CommentModal.changeHandler()', event.target.value);
+   // logger.info('CommentModal.changeHandler()', event.target.value);
     this.setState({texte:String(event.target.value).toUpperCase()});
   }
   setComment(message) {
@@ -362,7 +363,7 @@ class CommentModal extends React.Component {
 
   onKeyboardChange(input) {
     this.setState({ texte:input });
-    logger.log("Comment Input changed", input);
+    logger.info("Comment Input changed", input);
   };
 
   render() {
@@ -485,7 +486,7 @@ class DiscountModal extends React.Component {
     const { discountid, item, ingredient } = this.props;
     const { nom, valeur } = this.state;
 
-    logger.log('saveDiscount()');
+    logger.info('saveDiscount()');
 
     this.props.saveHandler(discountid, item, ingredient, valeur, nom);
     this.resetPopin();
@@ -496,7 +497,7 @@ class DiscountModal extends React.Component {
     this.setState({valeur:null, nom:''});
   }
   changeHandler(event) {
-   // logger.log('CommentModal.changeHandler()', event.target.value);
+   // logger.info('CommentModal.changeHandler()', event.target.value);
     this.setState({valeur:Math.abs(event.target.value), nom:event.target.nom});
   }
   setDiscount(discount) {
@@ -509,11 +510,11 @@ class DiscountModal extends React.Component {
     const { discountid, item, ingredient, dsclib, closeHandler, discountval, discountnom, open } = this.props;
     const { valeur, nom } = this.state;
 
-    console.log('dsclib',dsclib);
+    logger.info('dsclib',dsclib);
 
     const vvaleur = valeur===null ? discountval : valeur;
     const vnom = nom==='' ? discountnom : nom;
-    logger.log('discountval', discountval);
+    logger.info('discountval', discountval);
 
     // setTimeout(() => {
     //   if (this.refs.commentInput) this.refs.commentInput.focus();
@@ -703,12 +704,12 @@ class Panier extends React.Component {
 
 
         if (__forceItem) {
-          logger.log('Panier.componentDidUpdate(), modif de personnalisation DEMANDÉE', __forceItem);
+          logger.info('Panier.componentDidUpdate(), modif de personnalisation DEMANDÉE', __forceItem);
           __stepToRun = __forceItem.steps.find(step => step.checked===false );
           __item = __forceItem;
         }
          else if (__pendingItem) {
-          logger.log('Panier.componentDidUpdate(), pas de modif de personnalisation', __pendingItem);
+          logger.info('Panier.componentDidUpdate(), pas de modif de personnalisation', __pendingItem);
           __stepToRun = __pendingItem.steps.find(step => step.checked===false );
           __item = __pendingItem;
         }
@@ -783,7 +784,7 @@ class Panier extends React.Component {
   }
   addOuverture(payload) {
 
-    logger.log('addOuverture', payload);
+    logger.info('addOuverture', payload);
 
     this.props.addTresor(payload);
     this.closeOuverture();
@@ -792,14 +793,14 @@ class Panier extends React.Component {
   setSelectedIndex(index) {
     const {selectedIngredient} = this.state;
     if (!this.props.open) {
-      console.log('select item');
+      logger.info('select item');
       if (selectedIngredient===-1) {
         index = index===this.state.selectedIndex ? -1 : index;
       }
     }
 
     if (index >= 0 && this.props.open) {
-      console.log('select dans le reglt');
+      logger.info('select dans le reglt');
       const itemsCopy = [...this.props.commande.items];
       const item = itemsCopy[index];
       item.selected = !item.selected  ? true : false;
@@ -812,7 +813,7 @@ class Panier extends React.Component {
 
   // sélection / désélection du subItem
   setSelectedIngredient(index,ingidx, ingId) {
-    logger.log(`setSelectedIngredient(${index}, ${ingidx})`)
+    logger.info(`setSelectedIngredient(${index}, ${ingidx})`)
     const {selectedIndex, selectedIngredient} = this.state;
     // si l'item est déjà sélectionné
     if (index===selectedIndex) {
@@ -871,7 +872,7 @@ class Panier extends React.Component {
 
   searchHandler(event) {
     if (event.keyCode===13) {
-      logger.log(event.target.value);
+      logger.info(event.target.value);
       this.decodeQRCode(event.target.value);
       event.target.value = '';
     }    
@@ -897,12 +898,12 @@ class Panier extends React.Component {
   // TODO : faire une requête plutôt que charger la liste des commandes
   // pbm : latence de l'encaissement si on met à jour la liste des commandes
   send_to_search(value) {
-    logger.log('send_to_search',value);
+    logger.info('send_to_search',value);
     const {commandeslist } = this.props;
 
     if (commandeslist) {
       const cmd = Object.values(commandeslist).find((c)=>c.ticketId===value);
-      logger.log('s2s', cmd);
+      logger.info('s2s', cmd);
       if (cmd && cmd.status==='standby') {
         this.setState({inputfocus: false});
         this.props.getCommande(value);
@@ -983,7 +984,7 @@ class Panier extends React.Component {
     const {clavier} = this.props.parametres.entreprise;
     const {selectedIndex, selectedIngredient, ingredientid} = this.state;
 
-    logger.log('openComment selectedIngredient', selectedIngredient);
+    logger.info('openComment selectedIngredient', selectedIngredient);
 
     // récup des id d'item et d'ingrédients en fonction de la sélection du panier
     const itemid = (selectedIndex>-1) ? items[selectedIndex].itemid : null;
@@ -1030,7 +1031,7 @@ class Panier extends React.Component {
   }
 
   removeComment(itemid, ingredientid=null) {
-    console.log('removeComment', itemid, ingredientid);
+    logger.info('removeComment', itemid, ingredientid);
     const {comments} = this.props.commande;
     const cmt = comments.find(c => (c.item===itemid && c.ingredient===ingredientid));
 
@@ -1081,30 +1082,30 @@ class Panier extends React.Component {
   }
 
   openTables() {
-    logger.log('openTables()');
+    logger.info('openTables()');
   }
   closeTables() {
-    logger.log('closeTables()');
+    logger.info('closeTables()');
   }
   selectTables() {
-    logger.log('selectTables()');
+    logger.info('selectTables()');
   }
 
   openSchedule() {
-    logger.log('openSchedule()');
+    logger.info('openSchedule()');
     this.setState({scheduleOpen: true});
   }
   closeSchedule() {
-    logger.log('closeSchedule()');
+    logger.info('closeSchedule()');
     this.setState({scheduleOpen: false});
   }
   deleteSchedule() {
-    logger.log('deleteSchedule()');
+    logger.info('deleteSchedule()');
     this.props.updateCommande({scheduled:null, enproduction:false});
     this.setState({scheduleOpen: false});
   }
   setSchedule(heure) {
-    logger.log('setSchedule('+heure+')');
+    logger.info('setSchedule('+heure+')');
     
     const round_heure = `${ heure.getUTCFullYear() }-${ String(heure.getUTCMonth()+1).padStart(2,'0') }-${ String(heure.getUTCDate()).padStart(2, '0') }T${ String(heure.getUTCHours()).padStart(2, '0') }:${ String(heure.getUTCMinutes()).padStart(2, '0') }:00.000Z`;
     
@@ -1116,22 +1117,22 @@ class Panier extends React.Component {
     if (isBefore(heure,__end)) {
       __enproduction = true;
     }
-    console.log('SETSCH', __end, heure, __enproduction);
+    logger.info('SETSCH', __end, heure, __enproduction);
     
     this.props.updateCommande({scheduled:round_heure, enproduction:__enproduction});
     this.setState({scheduleOpen: false});
   }
 
   openBippers() {
-    logger.log('openBippers()');
+    logger.info('openBippers()');
     this.setState({bippersOpen: true});
   }
   closeBippers() {
-    logger.log('closeBippers()');
+    logger.info('closeBippers()');
     this.setState({bippersOpen: false});
   }
   selectBipper(bipperId) {
-    logger.log('selectBipper('+bipperId+')');
+    logger.info('selectBipper('+bipperId+')');
     this.setState({bippersOpen: false});
     this.props.updateCommande({bipper:bipperId});
   }
@@ -1218,7 +1219,7 @@ class Panier extends React.Component {
     const {debut} = dateBounds(new Date(), heure_fin);
 
 
-    logger.log('query staffmeal','{$and:[{type:"staffmeal"}, {createdAt:{$gt:'+debut+'}}, {"beneficiaire.id":"'+id+'"}]}');
+    logger.info('query staffmeal','{$and:[{type:"staffmeal"}, {createdAt:{$gt:'+debut+'}}, {"beneficiaire.id":"'+id+'"}]}');
 
     const daily_staffmeal = await getCommandesList({
       $and:[
@@ -1228,7 +1229,7 @@ class Panier extends React.Component {
       ]
     });
 
-    logger.log('daily_staffmeal', daily_staffmeal);
+    logger.info('daily_staffmeal', daily_staffmeal);
 
     if (daily_staffmeal && daily_staffmeal.commandeslist && Object.entries(daily_staffmeal.commandeslist).length>0) {
 
@@ -1330,7 +1331,7 @@ class Panier extends React.Component {
     const gestion_bippers = (parametres && parametres.commandes) ? parametres.commandes.active_bippers : false;
     const schedule_delay = (parametres && parametres.commandes) ? (parametres.commandes.schedule_delay || 15) : 15;
 
-console.log('⏰', schedule_delay);
+logger.info('⏰', schedule_delay);
 
     const commandeClient = client ? clients.find(c=>c.client_id===client.client_id) : null;
 
@@ -1343,7 +1344,7 @@ console.log('⏰', schedule_delay);
                        : true 
                      : true;
 
-    logger.log('searchval', searchval);
+    logger.info('searchval', searchval);
 
     const total = this.calculateTotal(items, modificateurs);
     const devisemonnaie = '€';
@@ -1352,7 +1353,7 @@ console.log('⏰', schedule_delay);
     const { staffmeal_active, staffmeal_modifier } = parametres.options;
 
 
-    logger.log(`index:${selectedIndex}, ingIndex:${selectedIngredient}`);
+    logger.info(`index:${selectedIndex}, ingIndex:${selectedIngredient}`);
 
 
     /* GESTION DE LA PERSONNALISATION */
@@ -1376,7 +1377,7 @@ console.log('⏰', schedule_delay);
     // gestion du focus sur le champ de recherche (scan QR code)
     clearInterval(this.interval);
 
-    logger.log('inputfocus',inputfocus);
+    logger.info('inputfocus',inputfocus);
     
     const self = this;
     if (inputfocus && (!items || items.length===0)) {      
@@ -1391,7 +1392,7 @@ console.log('⏰', schedule_delay);
 
 
     
-    // const onClickAction = (value) => { logger.log(`Action: ${value}`) };
+    // const onClickAction = (value) => { logger.info(`Action: ${value}`) };
 
     const onClickAdd = (event) => {
       updateProduit({itemid: items[selectedIndex].itemid, quantite: items[selectedIndex].quantite + 1, addPrd: true});
@@ -1470,7 +1471,7 @@ console.log('⏰', schedule_delay);
     // affichage de la popin "carte de fidelite" si la fidélité est activée
     if (null!==parametres && parametres.hasOwnProperty("financier") && parametres.financier.fidelite_activation) {      
 
-      logger.log('fidelite_Activation', parametres.financier.fidelite_activation);
+      logger.info('fidelite_Activation', parametres.financier.fidelite_activation);
       if (undefined === items || items.length===0) gotoEncaissement();
     }
 
@@ -1482,7 +1483,7 @@ console.log('⏰', schedule_delay);
     }
     const validationHandler = (event) => {
     //  if (!this.props.commande.numero) this.props.getNumero();
-   //   logger.log('validationHandler commande numero :', this.props.commande.numero);
+   //   logger.info('validationHandler commande numero :', this.props.commande.numero);
       this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1});
       if (this.props.commande.mode==="livraison") updateCommande({});
       livraisonCommande(this.props.commande, !this.props.commande.numero);
@@ -1516,7 +1517,7 @@ console.log('⏰', schedule_delay);
         const val = Math.abs(Number(String(__moditem.valeur).slice(0,-1)));
         __montant = ispc ? __itemtotal*(val/100) : val
         
-        logger.log('geDiscount', item.itemid)
+        logger.info('geDiscount', item.itemid)
       }
       return __moditem ? {...__moditem, montant: devise(__montant)} : null;
     }
@@ -1636,7 +1637,7 @@ console.log('⏰', schedule_delay);
                           }}
                           _onSubClick={ this.setSelectedIngredient }
                           _onSubDoubleClick={ (stepid) => { 
-                            logger.log('_onSubDoubleClick', stepid);
+                            logger.info('_onSubDoubleClick', stepid);
                             let __step = itm.steps.find(s=>s.id===stepid);
                             let __stepIndex = itm.steps.findIndex(s=>s.id===stepid);
                             let __previd = (__stepIndex===0) ? -1 : itm.steps[__stepIndex-1].id;
@@ -1780,7 +1781,7 @@ function DiscountListItem (props) {
   const {valeur, montant, nom, id, type, operation, onClick, className, deleteHandler, discountsurvente=true} = props;
 
   const deleteDiscount = () => {
-    logger.log('deleteDiscount',id);
+    logger.info('deleteDiscount',id);
 
     Swal.fire({
       title: strings.modules.encaissement.discount.suppression.titre,
@@ -1808,7 +1809,7 @@ function DiscountListItem (props) {
     )
   ;
 
-  logger.log('discount id', id, operation);
+  logger.info('discount id', id, operation);
 
   return (
     <ListItem className={ `discount ${className||''} ${modtype}` }>
@@ -1831,8 +1832,8 @@ class PanierListeItem extends React.Component {
     const {id, itemid, nom, quantite, prix, selected, discount, deleteDiscountHandler, openDiscountHandler, selectedIng, disabled, ingredients, composition, getComment, removeComment, steps, _onClick, _onDoubleClick, _onSubClick, _onSubDoubleClick, commandetype} = this.props;
 
 
-    // logger.log('item discount', discount);
-    // logger.log('item compo', composition)
+    // logger.info('item discount', discount);
+    // logger.info('item compo', composition)
 
     let timer = 0;
     let prevent = false;

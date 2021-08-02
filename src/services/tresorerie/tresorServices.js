@@ -1,9 +1,10 @@
 import {emit} from 'eiphop';
 
 import LodashId from 'lodash-id';
-import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 
-const logger = new Logger();
+// const logger = new Logger();
 
 export const tresorServices = {
   createTresor,
@@ -33,7 +34,7 @@ function createTresor(params) {
 }
 
 function getTresors(params) {
-  logger.log('getTresors()',params);
+  logger.info('getTresors()',params);
   return emit( "dbTresorerieGet", params );
 }
 
@@ -45,17 +46,17 @@ function getTresors(params) {
  * @param {caisseId, createdAt} params 
  */
 function getLastOuvertureAndAfter(params) {
-  logger.log('getLastOuvertureAndAfter()', params);
+  logger.info('getLastOuvertureAndAfter()', params);
   return emit( "dbTresorerieLastOuvertureAndAfter", params );
 }
 
 function getLastClotureAndAfter(params) {
-  logger.log('getLastClotureAndAfter', params);
+  logger.info('getLastClotureAndAfter', params);
   return emit( "dbTresorerieLastClotureAndAfter", params );
 }
 
 function getServiceMouvements(params) {
-  logger.log('getServiceMouvements', params);
+  logger.info('getServiceMouvements', params);
   return emit( "dbTresorerieGetServiceMouvements", params );
 }
 

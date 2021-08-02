@@ -10,9 +10,10 @@ import { devise } from './../../helpers/toolbox';
 import NumberKeyboard from '../common/NumberKeyboard';
 import Swal from 'sweetalert2';
 
-import Logger from "../../helpers/Logger";
+// import Logger from "../../helpers/Logger";
+import logger from "../../helpers/Logger";
 
-const logger = new Logger();
+// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 
@@ -49,7 +50,7 @@ class CountTool extends React.Component
 
 
   startSaisie(field) {
-    logger.log("startSaisie", field, this.state[field]);
+    logger.info("startSaisie", field, this.state[field]);
 
     const { fieldvalue, activeField } = this.state;
 
@@ -66,7 +67,7 @@ class CountTool extends React.Component
   validSaisie() {
     
     const { fieldvalue, activeField } = this.state;
-    logger.log("validSaisie", activeField, fieldvalue);
+    logger.info("validSaisie", activeField, fieldvalue);
 
     this.setState({
       fieldvalue: 0,
@@ -90,7 +91,7 @@ class CountTool extends React.Component
       : String(fieldvalue).slice(0, -1)
       ;
     }
-    console.log('keybboard', newvalue);
+    logger.info('keybboard', newvalue);
     this.setState({ fieldvalue: newvalue });
 
   }
@@ -357,7 +358,7 @@ class CountTool extends React.Component
 
 
 //   startSaisie(field, numbersOnly=false) {
-//     console.log('startSaisie',field);
+//     logger.info('startSaisie',field);
 //     this.setState({keyboardOpen: true, numbersOnly: numbersOnly, fieldval:this.state[field], activeField: field});
 //   }
 
@@ -388,11 +389,11 @@ class CountTool extends React.Component
 //     const { especes, carte, ticket, cheque, avoir } = this.getVentilation();
 
 
-//     console.log(carte.toFixed(2), Number(saisie_carte).toFixed(2));
-//     console.log(ticket.toFixed(2), Number(saisie_ticket).toFixed(2));
-//     console.log(cheque.toFixed(2), Number(saisie_cheque).toFixed(2));
-//     console.log(avoir.toFixed(2), Number(saisie_avoir).toFixed(2));
-//     console.log((especes+Number(periode.fdcaisse)).toFixed(2), Number(saisie_especes).toFixed(2));
+//     logger.info(carte.toFixed(2), Number(saisie_carte).toFixed(2));
+//     logger.info(ticket.toFixed(2), Number(saisie_ticket).toFixed(2));
+//     logger.info(cheque.toFixed(2), Number(saisie_cheque).toFixed(2));
+//     logger.info(avoir.toFixed(2), Number(saisie_avoir).toFixed(2));
+//     logger.info((especes+Number(periode.fdcaisse)).toFixed(2), Number(saisie_especes).toFixed(2));
 
 
 //     let errors = {};
@@ -437,7 +438,7 @@ class CountTool extends React.Component
 //       errors['error_avoir'] = false;
 //     }
 
-//     console.log('checkComptageBeforeValidation()',errors);
+//     logger.info('checkComptageBeforeValidation()',errors);
 
 //     this.setState(errors);
 //     return valid;

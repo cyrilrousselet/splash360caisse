@@ -10,6 +10,7 @@ import StdButton from './../common/StdButton';
 
 import 'date-fns';
 import FicheClientCont from '../../containers/FicheClientCont';
+import logger from '../../helpers/Logger';
 
 let strings = new LocalizedStrings(data);
 
@@ -35,11 +36,11 @@ class Clients extends React.Component {
 
 
   openEdit(clientid=null) {
-    console.log(clientid);
+    logger.info(clientid);
     if (clientid!==null) {
       const {clients} = this.props;
       const client = clients.find(c=>c.client_id===clientid);
-      console.log(client);
+      logger.info(client);
       this.setState({client: client, editOpen: true});
     }
     else {
@@ -51,7 +52,7 @@ class Clients extends React.Component {
   }
 
   openHistorique(clientid) {
-    console.log(clientid);
+    logger.info(clientid);
   //  this.setState({client:clients_data[clientid], historiqueOpen: true});
   }
   closeHistorique() {
@@ -100,7 +101,7 @@ class Clients extends React.Component {
                   <TableCell key={`${i}-codepostal`} className="liste-codepostal">{ row.codepostal }</TableCell>
                   <TableCell key={`${i}-ville`} className="liste-ville">{ row.ville }</TableCell>
                   {/* <TableCell key={`${i}-actions`} className="liste-actions"> */}
-                    {/* <StdButton key={`${i}-supprimer`} identifier='supprimer' elementclass="action action-supprimer" icon={ <CrossIcon /> } noStroke={true} text='' onClick={() => { console.log('confirm suppr.') }} /> */}
+                    {/* <StdButton key={`${i}-supprimer`} identifier='supprimer' elementclass="action action-supprimer" icon={ <CrossIcon /> } noStroke={true} text='' onClick={() => { logger.info('confirm suppr.') }} /> */}
                     {/* <StdButton key={`${i}-historique`} identifier='historique' elementclass="action action-historique" icon={ <HistoriqueIcon /> } noStroke={true} text='' onClick={() => { this.openHistorique(i) }} /> */}
                   {/* </TableCell> */}
                 </TableRow>

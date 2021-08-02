@@ -2,14 +2,15 @@ import { parametresActionTypes } from './parametresActionTypes';
 import { parametresServices } from './parametresServices';
 import { commandeActions } from './../commande/commandeActions';
 import { peripheralActions } from '../peripheral/peripheralActions';
-import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import schedule from 'node-schedule';
 import externalParams from '../../constants/externalParams.json';
 
 
-const logger = new Logger();
+// const logger = new Logger();
 
 
 function replaceDatabase(database) {
@@ -59,7 +60,7 @@ function update(payload) {
   return (dispatch, getState) => {
   //    dispatch({ type: parametresActionTypes.UPDATE_REQUEST });
 
-      logger.log('ParametresActions.update', payload);
+      logger.info('ParametresActions.update', payload);
 
       parametresServices.update(payload)
           .then(
@@ -103,9 +104,9 @@ function installStation() {
       parametresServices.installStation(result.value)
       .then(
         data => {
-          console.log("DATA", data);
+          logger.info("DATA", data);
           const {client_id, client_secret} = data;
-          console.log("CLIENT ID SECRET", client_id, client_secret);
+          logger.info("CLIENT ID SECRET", client_id, client_secret);
           const payload = [{
             "domaine": "entreprise",
             "cle": "restaurant_id",
@@ -146,7 +147,7 @@ function getStatus() {  // récupére le status de la station auprès du bo puis
       parametresServices.getStatus({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret})
         .then(
           data => {
-            console.log("GETSTATUS DATA", data);
+            logger.info("GETSTATUS DATA", data);
             localStorage.setItem("status", data.status);
             // dispatch(checkStatusAndConnection());
             dispatch({type: parametresActionTypes.GETALL_SUCCESS}); 
@@ -165,7 +166,7 @@ function checkStatus() {
   return (dispatch, getState) => {
     const status = localStorage.getItem("status");
 
-    console.log("checking status : ", status);
+    logger.info("checking status : ", status);
     if (status === "blocked") {
       dispatch(blockStation());
     }
@@ -183,13 +184,14 @@ function testConnection() {
       })
       .then(() => {
         // Internet
-        console.log("test co : internet");
+        logger.info("test co : internet");
         dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: 'on'});
         // dispatch(checkStatusAndConnection());
         dispatch(checkConnection());
-      }).catch(()=> {
+      }).catch((err) => {
         // Pas internet
-        console.log("test co : pas internet");
+        logger.info("test co : pas internet");
+        logger.error(err);
         dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: 'off'});
         // dispatch(checkStatusAndConnection());
         dispatch(checkConnection());
@@ -197,7 +199,7 @@ function testConnection() {
     }
     else {
       // Pas internet
-      console.log("test co : pas internet");
+      logger.info("test co : pas internet");
       dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: 'off'});
       // dispatch(checkStatusAndConnection());
       dispatch(checkConnection());
@@ -217,7 +219,7 @@ function checkConnection() {
         var _blockstation_job = schedule.scheduleJob("blockstationJob", date.toDate(), () => {
           blockStation();
         });
-        console.log("blockstationJob scheduled", _blockstation_job);
+        logger.info("blockstationJob scheduled", _blockstation_job);
       }
     }
     else if(online === 'on') {
@@ -225,7 +227,7 @@ function checkConnection() {
         localStorage.removeItem("expireDate");
         // Annuler le blockstationJob si existant
         if(typeof schedule.scheduledJobs["blockstationJob"] != 'undefined' ) {
-          console.log("GONNA CANCEL JOB BLOCK");
+          logger.info("GONNA CANCEL JOB BLOCK");
           var job = schedule.scheduledJobs["blockstationJob"];
           job.cancel();
         }
@@ -247,7 +249,7 @@ function checkConnection() {
 //         var _blockstation_job = schedule.scheduleJob("blockstationJob", date.toDate(), () => {
 //           blockStation();
 //         });
-//         console.log("blockstationJob scheduled", _blockstation_job);
+//         logger.info("blockstationJob scheduled", _blockstation_job);
 //       }
 //     }
 //     else if(status === "authorized" && online ==='on') { // if authorized and online
@@ -255,7 +257,7 @@ function checkConnection() {
 //         localStorage.removeItem("expireDate");
 //         // Annuler le blockstationJob si existant
 //         if(typeof schedule.scheduledJobs["blockstationJob"] != 'undefined' ) {
-//           console.log("GONNA CANCEL JOB BLOCK");
+//           logger.info("GONNA CANCEL JOB BLOCK");
 //           var job = schedule.scheduledJobs["blockstationJob"];
 //           job.cancel();
 

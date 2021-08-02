@@ -39,7 +39,8 @@ function createWindow() {
               path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions/lmhkpmbekcpmknklioeibfkpmmfibljd/2.17.2_0')
           );
         } catch(e) {
-          log.info('pbm devtool darwin', e.message);
+          log.warn('pbm devtool darwin');
+          log.error(e);
         }
       } else if (process.platform === 'win32') {
         try {
@@ -47,7 +48,8 @@ function createWindow() {
           path.join(os.homedir(), '\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\lmhkpmbekcpmknklioeibfkpmmfibljd\\2.17.2_0')
           );
         } catch(e) {
-          log.info('pbm devtool win', e.message);
+          log.warn('pbm devtool win');
+          log.error(e);
         }
       }
         mainWindow.webContents.openDevTools();

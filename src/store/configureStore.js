@@ -11,7 +11,7 @@ import createRootReducer from '../reducers';
 import * as generalActions from '../actions';
 import history from '../helpers/history';
 
-// import Logger from '../helpers/Logger';
+ import logger from '../helpers/Logger';
 // const logger = new Logger();
 
 
@@ -35,7 +35,7 @@ export function configureStore() {
     const reduxlogger = createLogger({
         level: 'info',
         collapsed: true,
-        // logger: Logger
+       // logger: logger
     });
 
     middleware.push(reduxlogger);

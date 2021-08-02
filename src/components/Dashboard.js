@@ -9,9 +9,10 @@ import ErrorBoundary from "./common/ErrorBoundary";
 import ConnectIcon from "./common/icon/ConnectIcon";
 import LargeButton from "./common/LargeButton";
 
-import Logger from "../helpers/Logger";
+// import Logger from "../helpers/Logger";
+import logger from "../helpers/Logger";
 
-const logger = new Logger();
+// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 
@@ -19,7 +20,7 @@ const DISABLED_MODULES = [];
 
 class Dashboard extends Component {
   componentDidMount() {
-    //  console.log('Dashboard.componentDidMount()');
+    //  logger.info('Dashboard.componentDidMount()');
     // this.props.getAllActive();
     this.props.getParametres();
   //  this.props.getTodayCommandesList();
@@ -40,13 +41,13 @@ class Dashboard extends Component {
   //   if (commandeslist) {
   //     for (let [key,value] of Object.entries(commandeslist)) {
   //       __ca += value.total;
-  //       console.log(value.caisse.id);
+  //       logger.info(value.caisse.id);
   //       if (value.caisse.id==this.props.caisse.id) __tickets++;
   //     }
   //   }
 
   //   // évaluation du chiffre d'affaire vis à vis de l'objectif défini dans les settings
-  //   console.log('TODO: set ca_eval');
+  //   logger.info('TODO: set ca_eval');
 
   //   return {chiffredaffaires: __ca, ca_eval:'good', ticketsNum: __tickets};
   // }
@@ -77,8 +78,8 @@ class Dashboard extends Component {
     const ca_eval = "good";
 
     // logger.timeEnd('clotureActions after getTodayCa');
-    logger.log(ca_eval);
-    //  console.log(ca);
+    logger.info(ca_eval);
+    //  logger.info(ca);
 
     return (
       <ErrorBoundary fallback={'Une erreur est survenue.'}>

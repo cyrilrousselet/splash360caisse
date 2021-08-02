@@ -19,9 +19,10 @@ import CloseIcon from './common/icon/CloseIcon';
 import Clavier from './common/Clavier';
 import LabelledField from './common/LabelledField';
 import SwitchCheckbox from './common/SwitchCheckbox';
-import Logger from '../helpers/Logger';
+// import Logger from '../helpers/Logger';
+import logger from '../helpers/Logger';
 
-const logger = new Logger();
+// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 
@@ -72,7 +73,7 @@ class MenuItemModal extends React.Component {
       const { id, type, item, updateItem } = this.props;
       const { valeur, couleur, asproduct } = this.state;
   
-      logger.log('updateItem('+type+')',valeur, couleur);
+      logger.info('updateItem('+type+')',valeur, couleur);
 
       let nvaleur = 0;
       let ncouleur = couleur!==null ? couleur : item.color;
@@ -81,12 +82,12 @@ class MenuItemModal extends React.Component {
       if (type==='ingredient') {
         nvaleur = valeur!==null ? valeur : item.supplement;
         nasproduct = asproduct!==null ? asproduct : false;
-        logger.log('updateItem ingredient');
+        logger.info('updateItem ingredient');
         updateItem({ingredient_id:id, update:{supplement:nvaleur, color:ncouleur, asproduct:nasproduct}})
       }
       else if (type==='produit') {
         nvaleur = valeur!==null ? valeur : item.prix;
-        logger.log('updateItem produit');
+        logger.info('updateItem produit');
         updateItem({produit_id:id, update:{prix:nvaleur, color:ncouleur}})
       }
 
@@ -98,14 +99,14 @@ class MenuItemModal extends React.Component {
       this.setState({valeur:null, couleur:null, asproduct:false});
     }
     changeHandler(params) {
-     // logger.log('CommentModal.changeHandler()', event.target.value);
+     // logger.info('CommentModal.changeHandler()', event.target.value);
       this.setState({valeur: params.value});
     }
     asprodHandler(isChecked) {
       this.setState({asproduct: isChecked });
     }
     onKeyboardChange(input) {
-      logger.log("Valeur Input changed", input);
+      logger.info("Valeur Input changed", input);
       this.setState({ valeur:input });
     };
     handleChangeCouleur(event) {
@@ -258,26 +259,26 @@ class Menu extends React.Component {
     const {categories} = this.props;
     const {categorie} = this.state;
     const defCat = categorie || categories[0].categorie_id;
-    logger.log('changeDispoProduit()', id, defCat.substr(3));
+    logger.info('changeDispoProduit()', id, defCat.substr(3));
     
     const produit = this.getProduit(id);
     this.props.updateProduit({produit_id:id, update:{active:produit.active===1?0:1}, catalogue:defCat.substr(3)});
   }
   editProduit(id) {
-    logger.log('editProduit()', id);
+    logger.info('editProduit()', id);
   }
   changeDispoIngredient(id) {
     const {categories} = this.props;
     const {categorie} = this.state;
     const defCat = categorie || categories[0].categorie_id;
-    logger.log('changeDispoIngredient()', id, defCat.substr(3));
+    logger.info('changeDispoIngredient()', id, defCat.substr(3));
 
     const {ingredients} = this.props;
     const ingredient = ingredients[id];
     this.props.updateIngredient({ingredient_id:id, update:{active:ingredient.active===1?0:1}, catalogue:defCat.substr(3)});
   }
   editIngredient(id) {
-    logger.log('editIngredient()', id);
+    logger.info('editIngredient()', id);
   }
 
   getProduit(id) {
@@ -334,7 +335,7 @@ class Menu extends React.Component {
     const defCat = categorie || categories[0].categorie_id;
 
     const produit = this.getProduit(id);
-    logger.log('produit',produit);
+    logger.info('produit',produit);
 
     if(produit.noprint === undefined || produit.noprint === null) {
       produit.noprint = [];
@@ -389,7 +390,7 @@ class Menu extends React.Component {
     const defCat = categorie || categories[0].categorie_id;
 
     const ingredient = ingredients[id];
-    logger.log('ingredient',ingredient);
+    logger.info('ingredient',ingredient);
 
     if(ingredient.noprint === undefined || ingredient.noprint === null) {
       ingredient.noprint = [];
@@ -413,7 +414,7 @@ class Menu extends React.Component {
   //   if (sub) {
   //     const produit = this.getProduit(id);
   //     const prdnoprint = produit.noprint;
-  //     logger.log('produit',produit);
+  //     logger.info('produit',produit);
   //     noprint = catalogue[produit.groupe].noprint;
   //     // s'il n'y a pas de noprint pour le produit, on se base sur celui du groupe correspondant
   //     if (prdnoprint===undefined || prdnoprint===null) {
@@ -549,7 +550,7 @@ class Menu extends React.Component {
     const {editType, categorie} = this.state;
     
     const defCat = categorie || categories[0].categorie_id;
-    logger.log('updateMenuItem()',params, defCat.substr(3))
+    logger.info('updateMenuItem()',params, defCat.substr(3))
     
     if (editType==='ingredient') {
       this.props.updateIngredient({...params, catalogue:defCat.substr(3)});
@@ -584,7 +585,7 @@ class Menu extends React.Component {
       }
     });
 
-  logger.log(inglist);
+  logger.info(inglist);
 
   const a11yProps = (index) => {
     return {

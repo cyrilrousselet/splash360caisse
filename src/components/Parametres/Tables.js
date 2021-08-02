@@ -11,12 +11,13 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LensIcon from '@material-ui/icons/Lens';
 import CloseIcon from '../common/icon/CloseIcon';
 import Clavier from '../common/Clavier';
-import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 import EditIcon from '../common/icon/EditIcon';
 import CrossIcon from '../common/icon/CrossIcon';
 import Swal from 'sweetalert2';
 
-const logger = new Logger();
+// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 
@@ -46,7 +47,7 @@ class Tables extends React.Component {
   }
 
   openSalleEdit(salleId=null) {
-    logger.log('openSalleEdit('+salleId+')');
+    logger.info('openSalleEdit('+salleId+')');
     const {salles} = this.props;
     if (salleId) {
       this.setState({salleEditOpen: true, salleId: salleId, salle: salles[salleId]});
@@ -58,7 +59,7 @@ class Tables extends React.Component {
     this.setState({salleEditOpen: false, salleId: null, salle: null});
   }
   openTableEdit(salleId, tableId=null) {
-    logger.log('openTableEdit('+salleId+', '+tableId+')');
+    logger.info('openTableEdit('+salleId+', '+tableId+')');
     const {salles} = this.props;
     if (tableId) {
       this.setState({tableEditOpen: true, salleId: salleId, tableId: tableId, table: salles[salleId].tables.find(t=>t.tableId===tableId)});
@@ -70,7 +71,7 @@ class Tables extends React.Component {
     this.setState({tableEditOpen: false, salleId: null, tableId: null, table: null});
   }
   removeSalle(salleId) {
-    logger.log('removeSalle()', salleId);
+    logger.info('removeSalle()', salleId);
 
     const {salles, deleteSalle} = this.props;
 
@@ -107,7 +108,7 @@ class Tables extends React.Component {
 
   }
   removeTable(salleId, tableId) {
-    logger.log('removeTable()', tableId);
+    logger.info('removeTable()', tableId);
 
     const {salles, deleteTable} = this.props;
 
@@ -148,7 +149,7 @@ class Tables extends React.Component {
     const { salles, activation, updateValeur, updateSalle, addSalle, updateTable, addTable } = this.props;
 
 
-    logger.log('salleEditOpen', salleEditOpen);
+    logger.info('salleEditOpen', salleEditOpen);
 
     return(
       <div className="Tables subcontent">
@@ -217,7 +218,7 @@ class SalleModal extends React.Component {
     const { salleId, salle, updateSalle, addSalle } = this.props;
     const { nom, couleur } = this.state;
 
-    logger.log('updateSalle('+salleId+')',nom, couleur);
+    logger.info('updateSalle('+salleId+')',nom, couleur);
 
     let nnom = '';
     let ncouleur = couleur!==null ? couleur : salle.couleur;
@@ -240,11 +241,11 @@ class SalleModal extends React.Component {
     this.setState({nom:null, couleur:null});
   }
   changeHandler(params) {
-   logger.log('SalleModal.changeHandler()',params);
+   logger.info('SalleModal.changeHandler()',params);
     this.setState({nom: params.value});
   }
   onKeyboardChange(input) {
-    logger.log("Valeur Input changed", input);
+    logger.info("Valeur Input changed", input);
     this.setState({ nom:input });
   };
   handleChangeCouleur(event) {
@@ -256,7 +257,7 @@ class SalleModal extends React.Component {
     const { salle, closeHandler, open, clavierOpen } = this.props;
     const { nom, couleur } = this.state;
 
-    logger.log('SalleModal', open);
+    logger.info('SalleModal', open);
 
     let vnom = '';
     let vcouleur = '';
@@ -349,7 +350,7 @@ class TableModal extends React.Component {
     const { salleId, tableId, table, updateTable, addTable } = this.props;
     const { nom } = this.state;
 
-    logger.log('updateTable('+salleId+', '+tableId+')',nom);
+    logger.info('updateTable('+salleId+', '+tableId+')',nom);
 
     let nnom = '';
     
@@ -370,11 +371,11 @@ class TableModal extends React.Component {
     this.setState({nom:null});
   }
   changeHandler(params) {
-   logger.log('TableModal.changeHandler()',params);
+   logger.info('TableModal.changeHandler()',params);
     this.setState({nom: params.value});
   }
   onKeyboardChange(input) {
-    logger.log("Valeur Input changed", input);
+    logger.info("Valeur Input changed", input);
     this.setState({ nom:input });
   };
 

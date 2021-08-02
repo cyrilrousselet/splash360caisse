@@ -2,12 +2,13 @@ import { emit } from "eiphop";
 import LodashId from "lodash-id";
 import LocalizedStrings from "react-localization";
 import { data } from "../../constants/translations";
-import Logger from "../../helpers/Logger";
+// import Logger from "../../helpers/Logger";
+import logger from "../../helpers/Logger";
 import {MODES} from '../../constants/commandeModes';
 import {add} from "date-fns";
 
 const strings = new LocalizedStrings(data);
-const logger = new Logger();
+// const logger = new Logger();
 
 
 
@@ -90,7 +91,7 @@ function getNewCommandeItemId() {
 }
 
 function getCommandeById(id) {
-  logger.log("getCommandeById", id);
+  logger.info("getCommandeById", id);
   return emit("dbCommandeGetCommande", { ticketId: id });
 }
 function deleteCommande(id, motif) {
@@ -216,14 +217,14 @@ function addIngredient(ingredient, quantite, step, item, produitSteps, tva) {
   // et on le supprime avant d'ajouter le nouvel ingrédient
   const { unique, type } = _mustBeUnique(step, ingredient);
 
-  logger.log(
+  logger.info(
     "step #" + step.step_id + " " + (unique ? "unique" : "pas unique")
   );
   if (unique) {
     let ingdustepInCmd = -1;
     // s'il n'y a aucun type précisé, on supprime l'ingrédient du step
     if (null == type) {
-      logger.log("aucun type précisé => suppression de l’ing du step");
+      logger.info("aucun type précisé => suppression de l’ing du step");
       ingdustepInCmd = ingredients.findIndex(
         (ing) => ing.fromStep === step.step_id
       );
@@ -231,7 +232,7 @@ function addIngredient(ingredient, quantite, step, item, produitSteps, tva) {
     }
     // si un type est précisé, on supprime l'ingrédient du type (et du step)
     else {
-      logger.log(
+      logger.info(
         "type " + type + " => suppression de l’ing du type et du step"
       );
       ingdustepInCmd = ingredients.findIndex(
@@ -304,7 +305,7 @@ function addIngredient(ingredient, quantite, step, item, produitSteps, tva) {
 function removeIngredient(ingredient, quantite, step, item, produitSteps) {
   const { ingredients, steps } = item;
 
-  logger.log(step);
+  logger.info(step);
 
   const ingInCmdId = ingredients.findIndex(
     (ing) => ing.ingredient === ingredient.id
@@ -358,7 +359,7 @@ function removeIngredient(ingredient, quantite, step, item, produitSteps) {
 function noIngredientForStep(step, item, produitSteps) {
   const { ingredients, steps } = item;
 
-  logger.log(step);
+  logger.info(step);
 
   ingredients.forEach((ing, i) => {
     if (ing.fromStep === step.step_id) ingredients.splice(i, 1);
@@ -410,7 +411,7 @@ function uncheckItemSteps(item, stepid) {
 }
 
 function completeStep(step, item, produitSteps) {
-  logger.log("completeStep");
+  logger.info("completeStep");
   return new Promise((resolve, reject) => {
     const { steps } = item;
 
@@ -427,9 +428,9 @@ function completeStep(step, item, produitSteps) {
       const pasfiniIndex = steps.findIndex(
         (st) => st.validated === false || st.checked === false
       );
-      logger.log("pasfiniIndex", pasfiniIndex);
+      logger.info("pasfiniIndex", pasfiniIndex);
       if (-1 === pasfiniIndex) {
-        logger.log("item completed");
+        logger.info("item completed");
         item.status = "completed";
 
         item.ingredients = _ventilationIngredientsSteps(item, produitSteps);
@@ -460,7 +461,7 @@ function updateMode(mode, commande, data_catalogue) {
     __itming = __itming.map(ing => {
 
       let __ingredient = ingredients[ing.ingredient];
-      console.log('ingredient id', ing.ingredient, __ingredient);
+      logger.info('ingredient id', ing.ingredient, __ingredient);
       return {
         ...ing,
         tva: tva[__ingredient.tvaArray[__modeid]],
@@ -505,7 +506,7 @@ function _getProduit(id, catalogue) {
 
 // on passe en revue chaque step pour déterminer le supplément pour chaque ingrédient
 function _ventilationIngredientsSteps(item, produitSteps) {
-  logger.log("_ventilationIngredientsSteps()");
+  logger.info("_ventilationIngredientsSteps()");
   // let __supplement = 0;
   let __ing = null;
 
@@ -518,7 +519,7 @@ function _ventilationIngredientsSteps(item, produitSteps) {
         step.regles[0].regle.toLowerCase().indexOf("g") > -1)
     ) {
       // on exécute le même test sur tous les types
-      logger.log(
+      logger.info(
         "on applique le test sur tous les types d’ingredients à la fois"
       );
       __ing = item.ingredients.filter((ing) => ing.fromStep === step.step_id);
@@ -542,7 +543,7 @@ function _ventilationIngredientsSteps(item, produitSteps) {
 // on attribue le montant du supplément à chaque ingrédient,
 // en fonction des règles des steps
 function _setSupplements(rule, ingredients) {
-  logger.log("_setSupplements");
+  logger.info("_setSupplements");
 
   const regle = rule.regle;
   let __ingredients = [];
@@ -597,7 +598,7 @@ function _getPrix(item, produitSteps) {
   let __supplement = 0;
   let __ing = null;
 
-  console.log('commandeServices._getPrix()', produitSteps);
+  logger.info('commandeServices._getPrix()', produitSteps);
 
   produitSteps.forEach((step) => {
     if (
@@ -606,7 +607,7 @@ function _getPrix(item, produitSteps) {
         step.regles[0].regle.toLowerCase().indexOf("g") > -1)
     ) {
       // on exécute le même test sur tous les types
-      logger.log(
+      logger.info(
         "on applique le test sur tous les types d’ingredients à la fois"
       );
       __ing = item.ingredients.filter((ing) => ing.fromStep === step.step_id);
@@ -617,7 +618,7 @@ function _getPrix(item, produitSteps) {
         __supplement += _getSupplements(regle, __ing);
       });
     }
-    logger.log("step " + step.step_id + " suppl = " + __supplement);
+    logger.info("step " + step.step_id + " suppl = " + __supplement);
   });
 
   return item.pu + __supplement;
@@ -677,7 +678,7 @@ function _checkStepRegles(step, item) {
       step.regles[0].regle.toLowerCase().indexOf("g") > -1)
   ) {
     // on exécute le même test sur tous les types
-    logger.log(
+    logger.info(
       "on applique le test sur tous les types d’ingredients à la fois"
     );
     __ing = item.ingredients.filter(
@@ -724,7 +725,7 @@ function isStepOptionnal(step) {
 }
 
 function _getSupplements(rule, ingredients) {
-  logger.log("_getSupplements");
+  logger.info("_getSupplements");
 
   const regle = rule.regle;
   let __supplement = 0;
@@ -806,7 +807,7 @@ function _testIngredient(rule, ingredients, max = false) {
  * 'global' indique si la règle s'applique à tous les types d'ingrédients de l'étape ou juste au type de l'ingrédient courant
  */
 function getRuleValues(rule) {
-  logger.log("getRuleValues(" + rule + ")");
+  logger.info("getRuleValues(" + rule + ")");
 
   let __valeurs = { min: 0, max: -1, global: false }; // par défaut, règle '*'
 
@@ -924,7 +925,7 @@ function addModificateur(payload, modificateurs) {
 }
 
 function saveCommande(commande, catalogueReducer) {
-  console.log("CmdSrv.saveCommande()", commande);
+  logger.info("CmdSrv.saveCommande()", commande);
   /*
   let __cmd = {
     commande_id: payload.ticketId,
@@ -1098,15 +1099,15 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
             // infos de l'ingrédient issues du catalogue
             const ingredient = catalogueReducer.ingredients[ing.id];
 
-            logger.log(ing.id, ingredient);
+            logger.info(ing.id, ingredient);
 
             if (ingredient) {
-              logger.log("steps", steps);
+              logger.info("steps", steps);
 
               const ingredient_step = steps.find((st) => {
                 let __istype = false;
                 st.regles.forEach((str) => {
-                  logger.log(str.type, ingredient.type);
+                  logger.info(str.type, ingredient.type);
                   if (str.type === ingredient.type) __istype = true;
                 });
                 return __istype;
@@ -1193,8 +1194,8 @@ function setCommandeFromSync(commande) {
 }
 
 function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
-  logger.log("setCommandeFromAPI -- Commande data");
-  logger.log(JSON.stringify(data));
+  logger.info("setCommandeFromAPI -- Commande data");
+  logger.info(JSON.stringify(data));
   const commande = getNewCommande(data);
   commande.status = data.status; // "standby" ou "confirmed"
   commande.mode = data.mode; // "emporter", "surplace" ou "livraison"
@@ -1361,8 +1362,8 @@ function checkMarketing(commande, reglescatalogue) {
     return active;
   });
 
-  console.log('checkMarketing', "regles actives : ",regles_actives.length);
-  console.log('checkMarketing', "items : ",commande.items.length);
+  logger.info('checkMarketing', "regles actives : ",regles_actives.length);
+  logger.info('checkMarketing', "items : ",commande.items.length);
 
   // let produits_concernes = [];
   // regles_actives.forEach(r => {
@@ -1379,7 +1380,7 @@ function checkMarketing(commande, reglescatalogue) {
     let produits = {};
     // 1. COMPTE DES PRODUITS CONCERNÉS PAR LA PROMO
 
-    console.log('checkMarketing', 'promo :', JSON.stringify(promo));
+    logger.info('checkMarketing', 'promo :', JSON.stringify(promo));
 
 
     // si la promo concerne des produits
@@ -1439,7 +1440,7 @@ function checkMarketing(commande, reglescatalogue) {
             qte_promo = Math.min(promo.quantite, qte_promo);
           }
 
-          console.log('checkMarketing','qte_promo', qte_promo);
+          logger.info('checkMarketing','qte_promo', qte_promo);
 
 
           // Récup. de l'id de l'item sur lequel appliquer la promo
@@ -1553,13 +1554,13 @@ function checkMarketing(commande, reglescatalogue) {
   
  
 
-  console.log('checkMarketing', modifiers);
+  logger.info('checkMarketing', modifiers);
 
   return modifiers;
 }
 
 function sendTicketId(ticketId, numero, response) {
-  logger.log(`commandeServices.sendTicketId(${ticketId}, ${numero})`);
+  logger.info(`commandeServices.sendTicketId(${ticketId}, ${numero})`);
   return emit("sendTicketId", { ticketId, numero, response });
 }
 

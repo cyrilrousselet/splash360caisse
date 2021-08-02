@@ -52,7 +52,6 @@ class LabelledField extends React.Component {
     const val = svalue || value;
     const voption = soption || option;
 
-    // (options && options.length>0) && console.log(value+' :: option: '+option);
 
     return (
       <div className={`labelledfield labelledfield-container ${className?className:''}${withoptionsclass}${withpostvalue}${disabledvalue}`}>

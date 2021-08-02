@@ -1,9 +1,10 @@
 import {emit} from 'eiphop';
 import externalParams from '../../constants/externalParams.json';
 import { create } from 'simple-oauth2';
-import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 
-const logger = new Logger();
+// const logger = new Logger();
 
 export const notificationServices = {
   getToken,
@@ -36,7 +37,7 @@ async function getDatabase(params) {
 
   const __splashToken = await getSplashToken(params);
 
-  logger.log('notifSrv.getDatabase()',__splashToken);
+  logger.info('notifSrv.getDatabase()',__splashToken);
 
   if (__splashToken.splash_token.access_token) {
     var __url = externalParams.synchro.getdb;
@@ -45,10 +46,10 @@ async function getDatabase(params) {
 }
 
 async function syncCommandes(params) {
-  logger.log('notifSrv.syncCommandes()','init');
+  logger.info('notifSrv.syncCommandes()','init');
   const __splashToken = await getSplashToken(params);
   
-  logger.log('notifSrv.syncCommandes()',__splashToken);
+  logger.info('notifSrv.syncCommandes()',__splashToken);
   
   if (__splashToken.splash_token.access_token) {
     var __url = externalParams.synchro.syncCommandes;
@@ -56,10 +57,10 @@ async function syncCommandes(params) {
   }
 }
 async function syncClotures(params) {
-  logger.log('notifSrv.syncClotures()','init');
+  logger.info('notifSrv.syncClotures()','init');
   const __splashToken = await getSplashToken(params);
 
-  logger.log('notifSrv.syncClotures()',__splashToken);
+  logger.info('notifSrv.syncClotures()',__splashToken);
 
   if (__splashToken.splash_token.access_token) {
     var __url = externalParams.synchro.syncClotures;
@@ -67,10 +68,10 @@ async function syncClotures(params) {
   }
 }
 async function syncCatalogue(params) {
-  logger.log('notifSrv.syncCatalogue()','init');
+  logger.info('notifSrv.syncCatalogue()','init');
   const __splashToken = await getSplashToken(params);
 
-  logger.log('notifSrv.syncCatalogue()',__splashToken);
+  logger.info('notifSrv.syncCatalogue()',__splashToken);
 
   if (__splashToken.splash_token.access_token) {
     var __url = externalParams.synchro.syncCatalogue;
@@ -78,10 +79,10 @@ async function syncCatalogue(params) {
   }
 }
 async function confirmCommande(params) {
-  logger.log('notifSrv.confirmCommande()','init');
+  logger.info('notifSrv.confirmCommande()','init');
   const __splashToken = await getSplashToken(params);
   
-  logger.log('notifSrv.confirmCommande()',__splashToken);
+  logger.info('notifSrv.confirmCommande()',__splashToken);
   
   if (__splashToken.splash_token.access_token) {
     var __url = externalParams.synchro.confirmCommande.replace('{ticket_id}', params.ticketId);
@@ -100,7 +101,7 @@ async function getSplashToken(params) {
 } 
 
 async function getUberToken(params) {
-  logger.log('getUberToken', params);
+  logger.info('getUberToken', params);
   // const url = externalParams.uber.oAuth.replace('%ID%', params.id).replace('%PWD%', params.secret).replace('%SCOPE%', params.scope);
   return emit('getUberToken', {params});
 } 
@@ -125,13 +126,13 @@ async function getUberToken(params) {
         }
       };
 
-      logger.log('credentials', credentials);
+      logger.info('credentials', credentials);
       
       const tokenConfig = {
         scope: externalParams.uber[task].scope
       };
 
-      logger.log('tokenConfig', tokenConfig);
+      logger.info('tokenConfig', tokenConfig);
 
       const uberOAuth2 = create(credentials);
 
@@ -141,12 +142,12 @@ async function getUberToken(params) {
         
      //   localStorage.setItem('uber_token', JSON.stringify(accessToken.token));
      
-        logger.log('token',accessToken);
+        logger.info('token',accessToken);
 
         resolve(accessToken.token);
         
       } catch (error) {
-        logger.log('Access token error', error.message);
+        logger.info('Access token error', error.message);
         reject(error.message);
       }
     }
@@ -159,17 +160,17 @@ async function getUberToken(params) {
 
 
 function connectToPrimary(url, caisse) {
-  logger.log('connectToPrimary()', url, caisse);
+  logger.info('connectToPrimary()', url, caisse);
   return emit('syncConnectToPrimary', { url, caisse});
 }
 
 function disconnectFromPrimary(url, caisse) {
-  logger.log('disconnectFromPrimary()');
+  logger.info('disconnectFromPrimary()');
   return emit('syncDisconnectFromPrimary', {});
 }
 
 function startSyncPrimary() {
-  logger.log('startSyncPrimary()');
+  logger.info('startSyncPrimary()');
   return emit('syncStartPrimary',{});
 }
 
@@ -208,7 +209,7 @@ async function denyOrder(provider, order) {
     scope: externalParams[provider].denyorder.scope
   });
 
-  logger.log('denyOrder token :',__denyOrdertoken);
+  logger.info('denyOrder token :',__denyOrdertoken);
 
   if (__denyOrdertoken.access_token) {
     var __url = externalParams[provider].denyorder.url.replace('{order_id}', order.id);
@@ -227,7 +228,7 @@ async function acceptOrder(provider, order) {
     scope: externalParams[provider].acceptorder.scope
   });
 
-  logger.log('acceptOrder token :',__acceptOrdertoken);
+  logger.info('acceptOrder token :',__acceptOrdertoken);
 
   if (__acceptOrdertoken.access_token) {
     var __url = externalParams[provider].acceptorder.url.replace('{order_id}', order.id);
@@ -237,14 +238,14 @@ async function acceptOrder(provider, order) {
 
 async function getOrder(provider, data) {
 
-  logger.log('notifSrv.getOrder()', `provider: ${provider}`, data);
+  logger.info('notifSrv.getOrder()', `provider: ${provider}`, data);
 
   if (provider==='clickandcollect') {
 
     
     const __splashToken = await getSplashToken(data);
 
-    logger.log('notifSrv.getOrder()',__splashToken);
+    logger.info('notifSrv.getOrder()',__splashToken);
 
     if (__splashToken.splash_token.access_token) {
       var __url = data.href;
@@ -254,7 +255,7 @@ async function getOrder(provider, data) {
   } else {
  
     // const __getOrdertoken = await getToken(provider, 'getorder');
-    logger.log('getOrder '+provider);
+    logger.info('getOrder '+provider);
 
     const __getOrdertoken = await getUberToken({
       url: externalParams.uber.oAuth,
@@ -263,7 +264,7 @@ async function getOrder(provider, data) {
       scope: externalParams[provider].getorder.scope
     });
   
-    logger.log('getOrder token :',__getOrdertoken);
+    logger.info('getOrder token :',__getOrdertoken);
     
     if (__getOrdertoken.access_token) {
       return emit('getUberOrder', {url: data.href, access_token: __getOrdertoken.access_token});
@@ -282,7 +283,7 @@ async function setPOS(provider, data) {
     scope: externalParams[provider].pos.scope
   });
 
-  logger.log('setPOS token :',__updatePOStoken);
+  logger.info('setPOS token :',__updatePOStoken);
 
   if (__updatePOStoken.access_token) {
     var __url = externalParams[provider].pos.url.replace('{store_id}', data.store_id);
@@ -293,7 +294,7 @@ async function setPOS(provider, data) {
 
 async function setRestaurantOnline(provider, data) {
 
-  logger.log('NSrv.setRestaurantOnline()');
+  logger.info('NSrv.setRestaurantOnline()');
   // const __updateRestaurantToken = await getToken(provider, 'restaurant');
 
   const __updateRestaurantToken = await getUberToken({
@@ -303,7 +304,7 @@ async function setRestaurantOnline(provider, data) {
     scope: externalParams[provider].restaurant.scope
   });
 
-  logger.log('setRestaurantOnline token :',__updateRestaurantToken);
+  logger.info('setRestaurantOnline token :',__updateRestaurantToken);
 
   if (__updateRestaurantToken.access_token) {
     var __url = externalParams[provider].restaurant.url.replace('{store_id}', data.store_id);
@@ -312,7 +313,7 @@ async function setRestaurantOnline(provider, data) {
 }
 
 async function updateProduitUber(provider, data) {
-  logger.log('NSrv.updateProduitUber()');
+  logger.info('NSrv.updateProduitUber()');
   // const __updateProduitToken = await getToken(provider, 'updateitem');
 
   const __updateProduitToken = await getUberToken({
@@ -322,7 +323,7 @@ async function updateProduitUber(provider, data) {
     scope: externalParams[provider].updateitem.scope
   });
 
-  logger.log('updateProduitUber token :',__updateProduitToken);
+  logger.info('updateProduitUber token :',__updateProduitToken);
 
   if (__updateProduitToken.access_token) {
     var __url = externalParams[provider].updateitem.url.replace('{store_id}', data.store_id).replace('{item_id}', data.item_id);

@@ -1,8 +1,9 @@
 import { isBefore, parseISO } from 'date-fns';
 import { dateBounds } from '../../helpers/toolbox';
-import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 
-const logger = new Logger();
+// const logger = new Logger();
 
 
 export const numeroServices = {
@@ -15,7 +16,7 @@ function setNumero(parametres, numero) {
   const { heure_fin } = parametres.entreprise;
   const { numerotation_start, numerotation_max, numerotation_hex } = parametres.commandes;
 
-  logger.log('NumeroServices.setNumero()');
+  logger.info('NumeroServices.setNumero()');
 
   let newvalue = null;
 

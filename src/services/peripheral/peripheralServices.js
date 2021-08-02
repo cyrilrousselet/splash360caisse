@@ -1,4 +1,5 @@
 import { emit } from 'eiphop';
+import logger from '../../helpers/Logger';
 
 export const peripheralServices = {
   printTest,
@@ -24,7 +25,7 @@ function printTest() {
 
 function printTicket(imprimante, template, contenu) {
 
-  console.log('printTicket imprimante', imprimante);
+  logger.info('printTicket imprimante', imprimante);
 
   return emit('printTicket', {imprimante, template, contenu});
 }

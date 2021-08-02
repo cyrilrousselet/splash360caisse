@@ -4,12 +4,13 @@ import React from 'react';
 
 import LocalizedStrings from 'react-localization';
 import {data} from '../constants/translations';
-import Logger from '../helpers/Logger';
+// import Logger from '../helpers/Logger';
+import logger from '../helpers/Logger';
 import { format } from 'date-fns';
 import frLocale from "date-fns/locale/fr";
 
 const strings = new LocalizedStrings(data);
-const logger = new Logger();
+// const logger = new Logger();
 
 
 
@@ -34,7 +35,7 @@ class Notifier extends React.Component {
     //   }
     // ];
 
-    logger.log('notifier stack', stack);
+    logger.info('notifier stack', stack);
 
     return (
       <>

@@ -9,6 +9,7 @@ import StdButton from '../common/StdButton';
 import { devise } from './../../helpers/toolbox';
 import Swal from 'sweetalert2';
 import { decodetable } from '../../constants/decodetable';
+import logger from '../../helpers/Logger';
 
 let strings = new LocalizedStrings(data);
 
@@ -35,7 +36,7 @@ class CountTRTool extends React.Component {
 
   trHandler(event) {
     if (event.keyCode===13) {
-      console.log(event.target.value);
+      logger.info(event.target.value);
       this.decodeQRCode(event.target.value);
       event.target.value = '';
     }
@@ -98,7 +99,7 @@ class CountTRTool extends React.Component {
     const { liste, counttotal } = this.state;
     let error = '';
 
-    console.log('parseTR()', value);
+    logger.info('parseTR()', value);
 
     const __value = String(value);
     let __trValid, __trValue;
@@ -137,7 +138,7 @@ class CountTRTool extends React.Component {
       // }
     }
 
-    console.log('tr', __trValue, __trValid);
+    logger.info('tr', __trValue, __trValid);
 
   }
 

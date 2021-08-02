@@ -1,5 +1,6 @@
 import { differenceInMilliseconds, formatISO, parseISO, format } from "date-fns";
-import Logger from "../../helpers/Logger";
+// import Logger from "../../helpers/Logger";
+import logger from "../../helpers/Logger";
 import { clotureActions } from "../cloture/clotureActions";
 import { notificationActions } from "../notification/notificationActions";
 import { peripheralActions } from "../peripheral/peripheralActions";
@@ -14,10 +15,10 @@ import LodashId from "lodash-id";
 import { clientsActionTypes } from "../clients/clientsActionTypes";
 import { add } from 'date-fns';
 
-const logger = new Logger();
+// const logger = new Logger();
 
 function getCommandesList(params = {}) {
-  logger.log("CmdA.getCommandesList()");
+  logger.info("CmdA.getCommandesList()");
 
   return (dispatch) => {
     dispatch({ type: commandeActionTypes.GET_COMMANDESLIST_REQUEST, params:params });
@@ -35,6 +36,7 @@ function getCommandesList(params = {}) {
       })
       .catch((error) => {
         // logger.timeEnd('getCommandesList');
+        logger.error(error);
         dispatch({
           type: commandeActionTypes.GET_COMMANDESLIST_FAILURE,
           error: error.toString(),
@@ -45,7 +47,7 @@ function getCommandesList(params = {}) {
 
 function getTodayCommandesList() {
   return (dispatch, getState) => {
-    logger.log("CmdA.getTodayCommandesList()");
+    logger.info("CmdA.getTodayCommandesList()");
     const { heure_fin } = getState().parametresReducer.parametres.entreprise;
 
     // *** définition de la fin de la période précédente
@@ -84,7 +86,7 @@ function persistTicketsRestaurants(liste) {
 
     commandeServices.persistTicketsRestaurants(liste, caisse.uniqid).then(
       (data) => {
-        logger.log('tr persisted', data)
+        logger.info('tr persisted', data)
         dispatch({ type: commandeActionTypes.PERSIST_TICKETRESTAU_SUCCESS, ticketsrestau: data });
       //  dispatch(getAllTicketsRestaurant());
         dispatch(notificationActions.syncDispatch("ticketrestaurant", data));
@@ -110,12 +112,12 @@ function getCommande(commandeId = null) {
       id: commandeId,
     });
 
-    logger.log("CmdA.getCommande()", commandeId);
+    logger.info("CmdA.getCommande()", commandeId);
     // sans id de commande, on crée une nouvelle commande
     if (null === commandeId) {
 
       // logger.time('getCommande (new)');
-      logger.log("on demande une nouvelle commande");
+      logger.info("on demande une nouvelle commande");
       const state = getState();
       const { user } = state.authentication;
       const { caisse } = state.parametresReducer.parametres.options;
@@ -129,7 +131,7 @@ function getCommande(commandeId = null) {
     }
     // avec id de commande, on va chercher la commande en base
     else {
-      logger.log("on va chercher la commande #" + commandeId);
+      logger.info("on va chercher la commande #" + commandeId);
 
       // logger.time('getCommande ('+commandeId+')');
       commandeServices.getCommandeById(commandeId).then(
@@ -158,7 +160,7 @@ function setChrono(payload) {
   return async (dispatch, getState) => {
     const { ticketId, endTime, careTime } = payload.commande;
 
-    logger.log("setChrono", payload);
+    logger.info("setChrono", payload);
 
     const cmd = await commandeServices.getCommandeById(ticketId);
 
@@ -228,9 +230,9 @@ function validateCommande(_payload) {
     const { commande } = getState().commandeReducer;
 
 
-    console.log('validateCommande', _payload);
+    logger.info('validateCommande', _payload);
     let payload = {...commande};
-    console.log('validateCommande commande', commande);
+    logger.info('validateCommande commande', commande);
 
     if (payload.numero == null) {
       payload.numero = getState().commandeReducer.commande.numero;
@@ -323,13 +325,13 @@ function validateCommande(_payload) {
           });
         }
         // dispatch(setNewNumero());
-        //        logger.log('commande.createdAt', payload.createdAt);
+        //        logger.info('commande.createdAt', payload.createdAt);
         // s'il y a un numéro de commande, c'est qu'on encaisse une commande déjà réglée
         // donc on met à jour la liste des commande
         if (payload.createdAt) dispatch(getTodayCommandesList());
       },
       (error) => {
-        logger.log(error);
+        logger.info(error);
         dispatch({
           type: commandeActionTypes.VALIDATE_COMMANDE_FAILURE,
           error: error,
@@ -340,7 +342,7 @@ function validateCommande(_payload) {
 }
 
 function validateCommandeAndUpdateList(payload) {
-  logger.log("commandeActions.validateCommandeAndUpdateList()");
+  logger.info("commandeActions.validateCommandeAndUpdateList()");
 
   return (dispatch) => {
     // dispatch(validateCommande(payload)).then((dataFromValidate) => {
@@ -359,10 +361,10 @@ function standByCommande(payload, needNumero) {
     payload.chrono =
       Math.round(differenceInMilliseconds(payload.end, payload.start) / 10) /
       100;
-    logger.log(payload);
+    logger.info(payload);
     const state = getState();
 
-    logger.log("standByCommande needNumero", needNumero);
+    logger.info("standByCommande needNumero", needNumero);
 
     const { parametres } = state.parametresReducer;
     if (needNumero) {
@@ -378,9 +380,9 @@ function standByCommande(payload, needNumero) {
         dispatch(numeroActions.setNewNumero());
       }
 
-      logger.log("standByCommande nn numero", payload.numero);
+      logger.info("standByCommande nn numero", payload.numero);
     }
-    logger.log("standByCommande nn numero", payload.numero);
+    logger.info("standByCommande nn numero", payload.numero);
 
     payload.localsync = [parametres.options.caisse.uniqid];
 
@@ -406,7 +408,7 @@ function standByCommande(payload, needNumero) {
         dispatch(getCommande());
       },
       (error) => {
-        logger.log(error);
+        logger.info(error);
         dispatch({
           type: commandeActionTypes.VALIDATE_COMMANDE_FAILURE,
           error: error.toString(),
@@ -429,10 +431,10 @@ function livraisonCommande(_payload, needNumero) {
     payload.chrono =
       Math.round(differenceInMilliseconds(payload.end, payload.start) / 10) /
       100;
-    logger.log(payload);
+    logger.info(payload);
     const state = getState();
 
-    logger.log("livraisonCommande needNumero", needNumero);
+    logger.info("livraisonCommande needNumero", needNumero);
 
     const { parametres } = state.parametresReducer;
     if (needNumero) {
@@ -449,10 +451,10 @@ function livraisonCommande(_payload, needNumero) {
 
       payload.numero = newnumero;
 
-      logger.log("livraisonCommande nn numero", payload.numero);
+      logger.info("livraisonCommande nn numero", payload.numero);
     }
 
-    logger.log("livraisonCommande numero", payload.numero);
+    logger.info("livraisonCommande numero", payload.numero);
 
 
     if (payload.mode==="livraison" && payload.client && !payload.lot) {
@@ -463,14 +465,14 @@ function livraisonCommande(_payload, needNumero) {
 
       const client = state.clientsReducer.clients.find(clt=>clt.client_id===payload.client.client_id);
       if (client.hasOwnProperty('secteur')) {
-        logger.log('client', client);
+        logger.info('client', client);
         const {lots} = state.commandesListReducer;
-        logger.log('lots', lots);
+        logger.info('lots', lots);
         if (lots!==undefined) {
-          logger.log('lots non undefined');
+          logger.info('lots non undefined');
 
           const lot_id = dispatch(addCommandeToLot(payload.ticketId, client.secteur));
-          console.log('livraisonCommande() lot_id', lot_id);
+          logger.info('livraisonCommande() lot_id', lot_id);
 
           payload.lot = lot_id;
 
@@ -516,7 +518,7 @@ function livraisonCommande(_payload, needNumero) {
         // dispatch(getCommandesList());
       },
       (error) => {
-        logger.log(error);
+        logger.info(error);
         dispatch({
           type: commandeActionTypes.VALIDATE_COMMANDE_FAILURE,
           error: error,
@@ -527,7 +529,7 @@ function livraisonCommande(_payload, needNumero) {
 }
 
 function _getActiveLot(secteur, lots, limit) {
-  console.log("_getActiveLot", secteur, lots, limit);
+  logger.info("_getActiveLot", secteur, lots, limit);
    const __now = new Date();
    return lots.find(lot => lot.secteur===secteur && lot.expiredAt>__now && lot.commandes.length<limit); 
 }
@@ -593,7 +595,7 @@ function addProduit(payload) {
     payload = { ...payload, composition };
 
 
-    console.log('addprd pl', payload);
+    logger.info('addprd pl', payload);
 
     const { commandeItem, mode } = commandeServices.addProduit(
       payload,
@@ -694,7 +696,7 @@ function addIngredient(payload) {
     const produitSteps = state.catalogueReducer.steps[item.produitid];
     const tva = state.catalogueReducer.tva[ingredient.tva_id];
 
-      console.log('addIngredient', payload);
+      logger.info('addIngredient', payload);
 
     const commandeItem = commandeServices.addIngredient(
       ingredient,
@@ -734,7 +736,7 @@ function removeIngredient(payload) {
 
 function noIngredientForStep(payload) {
   return (dispatch, getState) => {
-    logger.log(payload);
+    logger.info(payload);
 
     const { itemid, stepid } = payload;
     const state = getState();
@@ -757,7 +759,7 @@ function noIngredientForStep(payload) {
 
 function completeStep(payload) {
   return (dispatch, getState) => {
-    logger.log("CmdA.completeStep()", payload);
+    logger.info("CmdA.completeStep()", payload);
 
     const { itemid, stepid } = payload;
     const state = getState();
@@ -807,7 +809,7 @@ function updateMode(mode) {
 
 function updateCommande(payload, from='') {
   return (dispatch, getState) => {
-    logger.log('updateCommande()',from, payload);
+    logger.error('updateCommande()',from, payload);
 
     const {commande} = getState().commandeReducer;
     const {lots} = getState().commandesListReducer;
@@ -823,7 +825,7 @@ function updateCommande(payload, from='') {
       if (client.hasOwnProperty('secteur')) {
        
         const lot_id = dispatch(addCommandeToLot(commande.ticketId, client.secteur));
-        console.log('updateCommande() lot_id', lot_id);
+        logger.info('updateCommande() lot_id', lot_id);
 
         payload = {...payload, lot: lot_id};
         
@@ -847,7 +849,7 @@ function deleteCommande(payload) {
 
     const { ticketId, motif } = payload;
 
-    logger.log("commande à annuler", commande);
+    logger.info("commande à annuler", commande);
 
     let error = "";
     if (!commande) error = "inconnue";
@@ -976,7 +978,7 @@ function addComment(payload) {
 }
 function updateComment(payload) {
   return (dispatch, getState) => {
-    logger.log("CommandeActions.updateComment", payload);
+    logger.info("CommandeActions.updateComment", payload);
     dispatch({ type: commandeActionTypes.UPDATE_COMMENT, payload: payload });
   };
 }
@@ -1072,7 +1074,7 @@ function checkSchedules() {
 
       // s'il y a des commandes programmées à lancer...
       if (commandeslist && Object.entries(commandeslist).length>0) {
-        logger.log('⏰ '+Object.entries(commandeslist).length+' commandes en attente devant être lancées.');
+        logger.info('⏰ '+Object.entries(commandeslist).length+' commandes en attente devant être lancées.');
 
         // on lance chaque commande et on la déclare comme 'en production'
         Object.values(commandeslist).forEach(cmd => {
@@ -1084,7 +1086,7 @@ function checkSchedules() {
         });
 
       } else {
-        logger.log('⏰ aucune commande en attente 🚫');
+        logger.info('⏰ aucune commande en attente 🚫');
       }
     }
     
@@ -1104,7 +1106,7 @@ function addDiscount(payload) {
 }
 function updateDiscount(payload) {
   return (dispatch, getState) => {
-    logger.log("CommandeActions.updateDiscount", payload);
+    logger.info("CommandeActions.updateDiscount", payload);
     dispatch({ type: commandeActionTypes.UPDATE_DISCOUNT, payload: payload });
   };
 }
@@ -1129,7 +1131,7 @@ function getLots() {
 function addCommandeToLot(ticketId, secteur) {
   return (dispatch, getState) => {
 
-    console.log('📦 addCommandeToLot()');
+    logger.info('📦 addCommandeToLot()');
     
     const {lots} = getState().commandesListReducer;
     const {parametres} = getState().parametresReducer;
@@ -1146,7 +1148,7 @@ function addCommandeToLot(ticketId, secteur) {
       }
     }    
 
-    console.log("addCommandeToLot()", lot);
+    logger.info("addCommandeToLot()", lot);
     
     commandeServices
       .saveLot(lot)
@@ -1225,7 +1227,7 @@ function archiveCommands(payload) {
 function setSyncedCommands(payload) {
   return (dispatch) => {
     dispatch({ type: commandeActionTypes.SETSYNCED_REQUEST });
-    logger.log("setSyncedCommands()", payload);
+    logger.info("setSyncedCommands()", payload);
     const { id, datetime } = payload;
     commandeServices.setSyncedCommands(id, datetime).then(
       (confirm) => {
@@ -1246,7 +1248,7 @@ function setSyncedCommands(payload) {
 
 function setCommandeFromOrder(provider, payload) {
   return async (dispatch, getState) => {
-    logger.log("setCommmandeFromOrder()");
+    logger.info("setCommmandeFromOrder()");
 
     const state = getState();
 
@@ -1277,11 +1279,11 @@ function setCommandeFromOrder(provider, payload) {
     const { parametres } = getState().parametresReducer;
     const newnumero = await numeroActions._getNumero(parametres, numero);
 
-    logger.log("new numero", newnumero);
+    logger.info("new numero", newnumero);
     // dispatch({ type: numeroActionTypes.GET_NUMERO, numero: newnumero });
     dispatch(numeroActions.setNewNumero());
 
-    // logger.log(data);
+    // logger.info(data);
     const commande = commandeServices.setCommandeFromOrder(
       data,
       state.catalogueReducer,
@@ -1330,7 +1332,7 @@ function setCommandeFromOrder(provider, payload) {
         //  dispatch({ type: commandeActionTypes.NEW_NUMERO, numero });
       },
       (error) => {
-        logger.log(error);
+        logger.info(error);
         dispatch({
           type: commandeActionTypes.VALIDATE_COMMANDE_FAILURE,
           error: error.toString(),
@@ -1409,16 +1411,16 @@ function setCommandeFromAPI(payload) {
       }
 
       // et on l'ajoute à la commande
-      logger.log('cmdAct->API client', client);
+      logger.info('cmdAct->API client', client);
       data.client = {nom: client._clt.nom, prenom: client._clt.prenom, client_id: client._clt.client_id};
       
     }
 
-    logger.log("new numero", newnumero);
+    logger.info("new numero", newnumero);
     // dispatch({ type: numeroActionTypes.GET_NUMERO, numero: newnumero });
     dispatch(numeroActions.setNewNumero());
 
-    logger.log(data);
+    logger.info(data);
     const commande = commandeServices.setCommandeFromAPI(
       data,
       state.catalogueReducer,
@@ -1426,11 +1428,11 @@ function setCommandeFromAPI(payload) {
       newnumero
     );
 
-    console.warn('data.provider',data.provider);
+    logger.warn('data.provider',data.provider);
 
     // si la commande vient du Click & Collect
     if (data.provider==="clickandcollect") {
-      console.log('donc on envoie le numero de cmd au BO');
+      logger.info('donc on envoie le numero de cmd au BO');
       dispatch(notificationActions.confirmCommande({ticketId: data.ticket_id, numero: commande.numero}));
     } 
     // sinon la commande vient de la borne
@@ -1485,7 +1487,7 @@ function setCommandeFromAPI(payload) {
         }
       },
       (error) => {
-        logger.log(error);
+        logger.info(error);
         dispatch({
           type: commandeActionTypes.VALIDATE_COMMANDE_FAILURE,
           error: error.toString(),
@@ -1556,12 +1558,12 @@ function setCommandeFromSync(commande) {
               type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_FAILURE,
               error: err,
             });
-            logger.log("sync cmd err", err);
+            logger.error(err);
             
           }
 
-          // console.log('num',`${cmdNum}/${data.length}`);
-          // console.log('commandesIds',commandesIds);
+          // logger.info('num',`${cmdNum}/${data.length}`);
+          // logger.info('commandesIds',commandesIds);
 
           if (cmdNum===data.length) {
             
@@ -1661,7 +1663,7 @@ function setCommandeFromSync(commande) {
           type: commandeActionTypes.SET_COMMANDE_FROM_SYNC_FAILURE,
           error: error,
         });
-        logger.log("sync cmd err", error);
+        logger.info("sync cmd err", error);
       }
       
       
@@ -1717,7 +1719,7 @@ function archiveCommandesFromSync(payload) {
 function setSyncedCommandsFromSync(payload) {
   return (dispatch) => {
     dispatch({ type: commandeActionTypes.SETSYNCED_FROM_SYNC_REQUEST });
-    logger.log("setSyncedCommandsFromSync()", payload);
+    logger.info("setSyncedCommandsFromSync()", payload);
     const { id, datetime } = payload.data;
     commandeServices.setSyncedCommands(id, datetime).then(
       (confirm) => {
@@ -1782,7 +1784,7 @@ function setTicketRestaurantFromSync(ticketrestaurant) {
               type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_FAILURE,
               error: err,
             });
-            logger.log("sync tr err", err);
+            logger.info("sync tr err", err);
           }
 
           if (trNum===data.length) {
@@ -1851,7 +1853,7 @@ function setTicketRestaurantFromSync(ticketrestaurant) {
             type: commandeActionTypes.PERSIST_TICKETRESTAU_FROM_SYNC_FAILURE,
             error: error,
           });
-          logger.log("sync tr err", error);
+          logger.info("sync tr err", error);
       }
     }
   };

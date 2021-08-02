@@ -11,8 +11,9 @@ import CloseIcon from '../common/icon/CloseIcon';
 import StdButton from '../common/StdButton';
 import AddIcon from '../common/icon/AddIcon';
 import Clavier from '../common/Clavier';
-import Logger from '../../helpers/Logger';
-const logger = new Logger();
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
+// const logger = new Logger();
 let strings = new LocalizedStrings(data);
 
 
@@ -114,7 +115,7 @@ class CommandesCommentaires extends React.Component {
 
   updateMessage(event) {
     const {value} = event.target;
-    console.log('updateMessage',value);
+    logger.info('updateMessage',value);
    // if (value!=='') {
       this.setState({
         editmessage: String(value).toUpperCase()
@@ -127,14 +128,14 @@ class CommandesCommentaires extends React.Component {
     const {comment_predefini} = data;
     const {editmessage} = this.state;
 
-    logger.log('saveCommentaire', id);
+    logger.info('saveCommentaire', id);
     
     if (editmessage!=='') {
       
       let cmt = {id: new Date().getTime(), message: editmessage};
       let nvcomment_predefini = comment_predefini;
       
-      logger.log('saveCommentaire', cmt);
+      logger.info('saveCommentaire', cmt);
 
       // nouveau commentaire
       if (id===-1) {

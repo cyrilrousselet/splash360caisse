@@ -43,7 +43,7 @@ export function peripheralReducer(state = initialState, action) {
       const paramsprinter = action.imprimante;
       const updated_printer = imprimantes[action.imprimante.printer_id];
       const newprinter = {...updated_printer, ...paramsprinter};
-      console.log('newprinter',action.imprimante.printer_id, newprinter);
+      // console.log('newprinter',action.imprimante.printer_id, newprinter);
       return {
         ...state,
         imprimantes: {

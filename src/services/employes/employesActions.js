@@ -1,6 +1,7 @@
 import { employesActionTypes } from "./employesActionTypes";
 import { employesServices } from "./employesServices";
 import { notificationActions } from "../notification/notificationActions";
+import logger from "../../helpers/Logger";
 
 function getPointagesList(params={}) {
 
@@ -27,7 +28,10 @@ function getShiftsList(params={}) {
         data => { dispatch({ type: employesActionTypes.GET_SHIFTS_LIST_SUCCESS, ...data }) }
     )
     .catch(
-      error => { dispatch({ type: employesActionTypes.GET_SHIFTS_LIST_FAILURE, error: error.toString() }) }
+      error => { 
+        logger.error(error);
+        dispatch({ type: employesActionTypes.GET_SHIFTS_LIST_FAILURE, error: error.toString() }) 
+      }
     );
   }
 }
@@ -44,7 +48,10 @@ function createShift(payload) {
         dispatch({ type: employesActionTypes.CREATE_SHIFT_SUCCESS, ...data });
         dispatch(getShiftsList());
       },
-      error => dispatch({ type: employesActionTypes.CREATE_SHIFT_FAILURE, error: error.toString() })
+      error => {
+        logger.error(error);
+        dispatch({ type: employesActionTypes.CREATE_SHIFT_FAILURE, error: error.toString() })
+      }
     );
   }
 }
@@ -63,7 +70,10 @@ function updateShift(payload) {
         dispatch({ type: employesActionTypes.UPDATE_SHIFT_SUCCESS, ...data });
         dispatch(getShiftsList());
       },
-      error => dispatch({ type: employesActionTypes.UPDATE_SHIFT_FAILURE, error: error.toString() })
+      error => {
+        logger.error(error);
+        dispatch({ type: employesActionTypes.UPDATE_SHIFT_FAILURE, error: error.toString() })
+      }
     );
   }
 }
@@ -78,7 +88,10 @@ function deleteShift(payload) {
         dispatch({ type: employesActionTypes.DELETE_SHIFT_SUCCESS, ...data });
         dispatch(getShiftsList());
       },
-      error => dispatch({ type: employesActionTypes.DELETE_SHIFT_FAILURE, error: error.toString() })
+      error => {
+        logger.error(error);
+        dispatch({ type: employesActionTypes.DELETE_SHIFT_FAILURE, error: error.toString() })
+      }
     );
   }
 }
@@ -95,7 +108,10 @@ function getTimeadjustsList(params={}) {
         data => { dispatch({ type: employesActionTypes.GET_TIMEADJUSTS_LIST_SUCCESS, ...data }) }
     )
     .catch(
-      error => { dispatch({ type: employesActionTypes.GET_TIMEADJUSTS_LIST_FAILURE, error: error.toString() }) }
+      error => { 
+        logger.error(error);
+        dispatch({ type: employesActionTypes.GET_TIMEADJUSTS_LIST_FAILURE, error: error.toString() }) 
+      }
     );
   }
 }
@@ -110,7 +126,10 @@ function createTimeadjust(payload) {
         dispatch({ type: employesActionTypes.CREATE_TIMEADJUST_SUCCESS, ...data });
         dispatch(getTimeadjustsList());
       },
-      error => dispatch({ type: employesActionTypes.CREATE_TIMEADJUST_FAILURE, error: error.toString() })
+      error => {
+        logger.error(error);
+        dispatch({ type: employesActionTypes.CREATE_TIMEADJUST_FAILURE, error: error.toString() })
+      }
     );
   }
 }
@@ -129,7 +148,10 @@ function updateTimeadjust(payload) {
         dispatch({ type: employesActionTypes.UPDATE_TIMEADJUST_SUCCESS, ...data });
         dispatch(getTimeadjustsList());
       },
-      error => dispatch({ type: employesActionTypes.UPDATE_TIMEADJUST_FAILURE, error: error.toString() })
+      error => {
+        logger.error(error);
+        dispatch({ type: employesActionTypes.UPDATE_TIMEADJUST_FAILURE, error: error.toString() })
+      }
     );
   }
 }
@@ -144,7 +166,10 @@ function deleteTimeadjust(payload) {
         dispatch({ type: employesActionTypes.DELETE_TIMEADJUST_SUCCESS, ...data });
         dispatch(getTimeadjustsList());
       },
-      error => dispatch({ type: employesActionTypes.DELETE_TIMEADJUST_FAILURE, error: error.toString() })
+      error => {
+        logger.error(error);
+        dispatch({ type: employesActionTypes.DELETE_TIMEADJUST_FAILURE, error: error.toString() })
+      }
     );
   }
 }
@@ -166,7 +191,10 @@ function setClockIn(payload) {
         dispatch(notificationActions.syncDispatch('pointage', data));
         dispatch(getPointagesList());
       },
-      error => dispatch({type:employesActionTypes.CLOCKIN_FAILURE, error: error.toString()})
+      error => {
+        logger.error(error);
+        dispatch({type:employesActionTypes.CLOCKIN_FAILURE, error: error.toString()})
+      }
     );
 
   }
@@ -190,7 +218,10 @@ function setClockOut(payload) {
         dispatch(notificationActions.syncDispatch('pointage', data));
         dispatch(getPointagesList());
       },
-      error => dispatch({type:employesActionTypes.CLOCKOUT_FAILURE, error: error.toString()})
+      error => {
+        logger.error(error);
+        dispatch({type:employesActionTypes.CLOCKOUT_FAILURE, error: error.toString()})
+      }
     );
 
   }

@@ -1,8 +1,9 @@
 import {emit} from 'eiphop';
 import canonicalizeString from '@pelevesque/canonicalize-string';
 import LodashId from 'lodash-id';
-import Logger from '../../helpers/Logger';
-const logger = new Logger();
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
+// const logger = new Logger();
 
 export const clientsServices = {
   getClientsList,
@@ -49,7 +50,7 @@ function createClient(payload) {
     secteur: payload.secteur
   }
 
-  logger.log('CltSv.createClient()', client);
+  logger.info('CltSv.createClient()', client);
 
   return emit('dbClientPersist', {client:client});
 }

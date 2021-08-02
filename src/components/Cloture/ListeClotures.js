@@ -27,11 +27,12 @@ import PrinterIcon from '../common/icon/PrinterIcon';
 import { Modal, Fab } from '@material-ui/core';
 import CloseIcon from '../common/icon/CloseIcon';
 
-import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 import {devise, dateBounds} from '../../helpers/toolbox';
 import {last} from 'lodash';
 
-const logger = new Logger();
+// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 
@@ -49,8 +50,8 @@ function TicketX(props) {
   const __strimp = strings.modules.cloture.impression;
   const { periode, ecarts, comptage, prelevement, mouvements } = cloture;
 
-  console.log('ticket X');
-  console.log(cloture);
+  logger.info('ticket X');
+  logger.info(cloture);
 
 
   let vndvnt = 0, vndrmb = 0, vndtotal = 0;
@@ -372,7 +373,7 @@ class ListeClotures extends React.Component {
   }
     
   componentDidMount() {
-    logger.log('ListeClotures.componentDidMount()');
+    logger.info('ListeClotures.componentDidMount()');
     this.getBoundedClotureList();
   }
 
@@ -406,7 +407,7 @@ class ListeClotures extends React.Component {
       this.setState({endDate:f});
     }
 
-    console.log(
+    logger.info(
       'setSelectedDate('+bound+')', 
       '('+format(d, "dd/MM/yyyy HH:mm")+' -> '+format(f, "dd/MM/yyyy HH:mm")+')'
     );
@@ -422,7 +423,7 @@ class ListeClotures extends React.Component {
     const {fonddecaisse_activation, getServiceMouvements, clotureslist} = this.props;
     const cloture = clotureslist[cloid];
 
-    console.log('clolist : fonddecaisse_activation',fonddecaisse_activation);
+    logger.info('clolist : fonddecaisse_activation',fonddecaisse_activation);
 
     const { tresorslist } = fonddecaisse_activation ? await getServiceMouvements( {caisseId: cloture.periode.caisse.uniqid, debut: new Date(cloture.periode.debut).getTime()} ) : {tresorslist: null};
 
@@ -438,7 +439,7 @@ class ListeClotures extends React.Component {
   }
 
   printCloture(cloture) {
-    logger.log('printCloture()');
+    logger.info('printCloture()');
     if (cloture) {
       this.props.printCloture(cloture);
     } else {
@@ -447,7 +448,7 @@ class ListeClotures extends React.Component {
   }
 
   printClotureId(cloid) {
-    logger.log('printClotureId()', cloid);
+    logger.info('printClotureId()', cloid);
     const cloture = this.props.clotureslist[cloid];
     if (cloture) {
       // changement du format des dates :
@@ -462,7 +463,7 @@ class ListeClotures extends React.Component {
   }
 
   getSynthese(clotures) {
- //   logger.log('getSynthese()', clotures);
+ //   logger.info('getSynthese()', clotures);
 
 
     if (clotures.length>0) {
@@ -502,7 +503,7 @@ class ListeClotures extends React.Component {
       clotures.forEach(cl => {
         const {periode, ecarts, comptage, prelevement} = this.props.clotureslist[cl.id];
 
-        logger.log('ecarts', ecarts);
+        logger.info('ecarts', ecarts);
         
         // récup des dates extrêmes de la liste des clotures
         if ( isBefore(new Date(periode.debut), __start) ) __start = new Date(periode.debut);

@@ -8,11 +8,6 @@ import { notificationActions } from '../services/notification/notificationAction
 import { tresorActions } from '../services/tresorerie/tresorActions';
 import { tresorServices } from '../services/tresorerie/tresorServices';
 
-// import {data} from '../constants/translations';
-// import LocalizedStrings from 'react-localization';
-// let strings = new LocalizedStrings(data);
-
-
 
 const mapStateToProps = (state) => {
   return {
@@ -46,7 +41,6 @@ const mapDispatchToProps = (dispatch) => {
   };
 }
 
-console.log('CLOTURE SELECTEUR');
 
 const ClotureCont = connect(
   mapStateToProps,

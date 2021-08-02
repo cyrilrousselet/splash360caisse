@@ -14,6 +14,7 @@ import Popper from '@material-ui/core/Popper';
 import PillButton from '../common/PillButton';
 import DeliveryIcon from '../common/icon/DeliveryIcon';
 import Clavier from '../common/Clavier';
+import logger from '../../helpers/Logger';
 let strings = new LocalizedStrings(data);
 
 const passphrase_length = 6; // nombre de caractères pour l'identifiant
@@ -24,7 +25,7 @@ let identifiant_tmo = -1; // id de timeout pour corriger la longueur de l'identi
 class EditUtilisateurPopin extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props);
+    logger.info(props);
     this.state = {
       focusInput: 'nom',
       user_id: null,
@@ -61,19 +62,19 @@ class EditUtilisateurPopin extends React.Component {
       coordonnees: this.props.utilisateur && this.props.utilisateur.coordonnees,
       taux_horaire: this.props.utilisateur && this.props.utilisateur.taux_horaire
     }
-    console.log('componentDidMount', st);
+    logger.info('componentDidMount', st);
     
     this.setState(st);
   }
 
   updateValue(value) {
-    console.log(value);
+    logger.info(value);
     this.setState(value);
   }
 
   updateStatus(status) {
 
-    console.log('updateStatus', status);
+    logger.info('updateStatus', status);
     this.setState({...status});
 
   }
@@ -102,7 +103,7 @@ class EditUtilisateurPopin extends React.Component {
 
   updateDroit(droit) {
 
-    console.log('updateDroit', droit);
+    logger.info('updateDroit', droit);
 
     let { droits } = this.props.utilisateur || {droits:{}};
 
@@ -158,12 +159,12 @@ class EditUtilisateurPopin extends React.Component {
   getValues() {
     
     const { droits, nom, identifiant, status, livreur, coordonnees, taux_horaire } = this.props.utilisateur || {droits:{}, nom:null, identifiant:null, status:'active', livreur:null, coordonnees:null, taux_horaire:null};
-    console.log('getValues()', this.props.utilisateur);
-    console.log('getValues() droits', droits);
+    logger.info('getValues()', this.props.utilisateur);
+    logger.info('getValues() droits', droits);
     // si aucun droit n'est défini (cas d'un nouvel utilisateur)
     // on crée un objet à partir de clés
     if (Object.keys(droits).length===0) {
-      console.log('remplissage des droits à partir de clés');
+      logger.info('remplissage des droits à partir de clés');
       Object.keys(strings.modules.parametres.submodules.utilisateurs.edition.droits).forEach( drt => { droits[drt] = false; });
     }
     // si un nouveau droit a été ajouté depuis la création de l'utilisateur
@@ -230,12 +231,12 @@ class EditUtilisateurPopin extends React.Component {
     // si aucun droit n'est défini (cas d'un nouvel utilisateur)
     // on crée un objet à partir de clés
     if (state.droits===null || state.droits===undefined || Object.keys(state.droits).length===0) {
-      console.log('remplissage des droits à partir de clés');
+      logger.info('remplissage des droits à partir de clés');
       let droits = {};
       Object.keys(strings.modules.parametres.submodules.utilisateurs.edition.droits).forEach( drt => { droits[drt] = false; });
       state = {...state, droits:droits};
     }
-    console.log('saveUtilisateur', state);
+    logger.info('saveUtilisateur', state);
 
     this.props.saveUtilisateur(user_id, state);
     this.resetPopin();
@@ -243,23 +244,23 @@ class EditUtilisateurPopin extends React.Component {
   }
 
   checkAllDroits(droits) {
-    console.log('checkAllDroits : ', droits);
+    logger.info('checkAllDroits : ', droits);
 
     if (droits!==null) {
 
       let droitsactifs = Object.values(droits).filter(drt=>drt);
       let all = Object.keys(droits).length === droitsactifs.length;
-      console.log(Object.keys(droits).length+' == '+droitsactifs.length);
+      logger.info(Object.keys(droits).length+' == '+droitsactifs.length);
       Object.keys(droits).forEach(k=>{ droits[k] = !all });
-      console.log(droits);  
+      logger.info(droits);  
       this.setState({droits:droits});
     }
-    console.log('<== checkAllDroits');
+    logger.info('<== checkAllDroits');
 
   }
 
   setFocus(event, obj) {
-    console.log('setFocus', event.target.name);
+    logger.info('setFocus', event.target.name);
     if (obj) {
       this.setState({focusInput: obj.name});
     } else {
@@ -270,24 +271,24 @@ class EditUtilisateurPopin extends React.Component {
   onKeyboardChange(input) {
     const {focusInput} = this.state;
     this.setState({ [focusInput]:input });
-    console.log(`"${focusInput}" changed`, input);
+    logger.info(`"${focusInput}" changed`, input);
   };
 
 
   render() {
     const { utilisateur, editOpen, closeHandler, clavierOpen } = this.props;
     const { nom, identifiant, droits, allchecked, status, livreur, coordonnees, taux_horaire } = this.getValues();
-    console.log("utilisateur: ", utilisateur);
-    console.log('status',status);
+    logger.info("utilisateur: ", utilisateur);
+    logger.info('status',status);
     const {focusInput} = this.state;
  
     // const a_nom = nom || utilisateur && utilisateur.nom;
     // const a_identifiant = identifiant || utilisateur && utilisateur.identifiant;
     // const a_droits = droits || utilisateur && utilisateur.droits;
-    console.log("droits",droits)
+    logger.info("droits",droits)
 
     const incomplete = !nom || !identifiant || identifiant.length<passphrase_length || this.state.error_identifiant;
-    console.log('incomplete', incomplete);
+    logger.info('incomplete', incomplete);
 
 
     const inputs = {
@@ -512,7 +513,7 @@ class Utilisateurs extends React.Component {
   }
 
   openEdit(usrid=null) {
-    console.log('openEdit '+usrid);
+    logger.info('openEdit '+usrid);
     const {users} = this.props;
     if (usrid!==null) {
       this.setState({utilisateur:users[usrid], editOpen: true});

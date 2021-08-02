@@ -1,13 +1,14 @@
 import { catalogueActionTypes } from './catalogueActionTypes';
 import { catalogueServices } from './catalogueServices';
-import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 import { notificationActions } from '../notification/notificationActions';
 
 import { parametresActions } from '../parametres/parametresActions';
 import { parametresActionTypes } from '../parametres/parametresActionTypes';
 // import { result } from 'lodash';
 
-const logger = new Logger();
+// const logger = new Logger();
 
 
 function replaceDatabase(database) {
@@ -48,7 +49,7 @@ function getAllActive() {
       dispatch({ type: catalogueActionTypes.GETALL_ACTIVE_REQUEST });
 
 
-      logger.log('getAllActive()');
+      logger.info('getAllActive()');
 
       catalogueServices.getAllActive()
           .then(
@@ -79,7 +80,7 @@ function updateProduit(payload) {
     const {produit_id, update, catalogue} = payload;
     const {caisse} = getState().parametresReducer.parametres.options;
 
-    console.log("produit_id", produit_id);
+    logger.info("produit_id", produit_id);
 
     // const catalogue = getState().catalogueReducer.catalogue;
     // let produit = {};
@@ -201,7 +202,7 @@ function updateMultipleProduits(payload) {
       prdGrouped.push({...filtered_update, produit_id, localsync:[caisse.uniqid]});
     })
 
-    console.log("prdGrouped", prdGrouped);
+    logger.info("prdGrouped", prdGrouped);
 
     catalogueServices.updateMultipleProduits(prdGrouped) // Envoyer tableau de produits
     .then(
@@ -237,7 +238,7 @@ function updateMultipleIngredients(payload) {
       ingGrouped.push({...filtered_update, ingredient_id, localsync:[caisse.uniqid]});
     })
 
-    console.log("ingGrouped", ingGrouped);
+    logger.info("ingGrouped", ingGrouped);
 
     catalogueServices.updateMultipleIngredients(ingGrouped) // Envoyer tableau de produits
     .then(
@@ -285,7 +286,7 @@ function updateGroupe(payload) {
 
 function setSyncedCatalogue(payload) {
   return (dispatch, getState) => {
-    logger.log('TODO: set synced');
+    logger.info('TODO: set synced');
   }
 }
 
@@ -437,7 +438,7 @@ function setProduitsFromSync(payload) {
     const {data, emitter, response} = payload;
     
     const {caisse} = getState().parametresReducer.parametres.options;
-    console.log(data);
+    logger.info(data);
     // const {produits} = data;
     const __produits = [];
 

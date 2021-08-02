@@ -23,7 +23,8 @@ import { notificationActions } from './services/notification/notificationActions
 import './index.scss';
 import registerServiceWorker from './registerServiceWorker';
 import { clientsActions } from './services/clients/clientsActions';
-import Logger from './helpers/Logger';
+// import Logger from './helpers/Logger';
+import logger from './helpers/Logger';
 import { marketingActions } from './services/marketing/marketingActions';
 import { userActions } from './services/user/userActions';
 import { employesActions } from './services/employes/employesActions';
@@ -41,10 +42,10 @@ if (!isDev) {
     dsn: "https://44cf9ec6a90c43e4a7027cc997b83919@o511169.ingest.sentry.io/5607891" 
   });
 } else {
-  console.info('mode DEV')
+  logger.info('mode DEV')
 }
 
-const logger = new Logger();
+// const logger = new Logger();
 
 //const {store, persistor} = configureStore();
 const {store} = configureStore();
@@ -54,17 +55,18 @@ const {store} = configureStore();
 setupFrontendListener(electron);
 
 
-console.log(process.env.REACT_APP_PRODUCT_NAME);
-console.log(process.env.REACT_APP_PRODUCT_AUTHOR);
+logger.info(process.env.REACT_APP_PRODUCT_NAME);
+logger.info(process.env.REACT_APP_PRODUCT_AUTHOR);
 
 // listener sur la réception de commande via '/public/server.js'
 ipcRenderer.on('setCommande', (event, commande) => {
+  logger.info('ipc: setCommande()');
   commandeActions.setCommandeFromAPI(commande)(store.dispatch, store.getState);
 });
 
 // listener sur la réception de notification (depuis le serveur mercure)
 ipcRenderer.on('getNotification', (event, data) => {
-  console.log('getNotification()', event, data);
+  logger.info('ipc: getNotification()', event, data);
   
   notificationActions.treatment(data)(store.dispatch, store.getState);
 
@@ -72,116 +74,116 @@ ipcRenderer.on('getNotification', (event, data) => {
 
 // listener sur la demande de numero de commande (via '/public/server.js')
 ipcRenderer.on('getNumero', (event, data) => {
-  logger.log('getNumero()', event, data);
+  logger.info('ipc: getNumero()', event, data);
   numeroActions.getNumeroAPI(data)(store.dispatch, store.getState);
 })
 
 // ipcRenderer.on('setProductionChrono', (event, data) => {
-//   logger.log('setProductionChrono()', event, data);
+//   logger.info('setProductionChrono()', event, data);
 //   commandeActions.setProductionChrono(data)(store.dispatch, store.getState);
 // });
 
 
 // listener sur la réception de commande via '/public/server.js'
 ipcRenderer.on('setCommandeSync', (event, commande) => {
-  logger.log('renderer: setCommandeSync', commande);
+  logger.info('ipc: setCommandeSync', commande);
   commandeActions.setCommandeFromSync(commande)(store.dispatch, store.getState);
 });
 
 // listener sur l'archivage de commandes via '/public/server.js'
 ipcRenderer.on('archiveCommandesSync', (event, commandes) => {
-  logger.log('renderer: archiveCommandesSync', commandes);
+  logger.info('ipc: archiveCommandesSync', commandes);
   commandeActions.archiveCommandesFromSync(commandes)(store.dispatch, store.getState);
 });
 
 
 ipcRenderer.on('setSynchedCommandesSync', (event, commandes) => {
-  logger.log('renderer: setSynchedCommandesSync', commandes);
+  logger.info('ipc: setSynchedCommandesSync', commandes);
   commandeActions.setSyncedCommandsFromSync(commandes)(store.dispatch, store.getState);
 });
 
 
 ipcRenderer.on('setClientSync', (event, client) => {
-  logger.log('renderer: setClientSync', client);
+  logger.info('ipc: setClientSync', client);
   clientsActions.setClientFromSync(client)(store.dispatch, store.getState);
 });
 
 ipcRenderer.on('setAvoirSync', (event, avoir) => {
-  logger.log('renderer: setAvoirSync', avoir);
+  logger.info('ipc: setAvoirSync', avoir);
   marketingActions.setAvoirFromSync(avoir)(store.dispatch, store.getState);
 });
 
 ipcRenderer.on('deleteAvoirSync', (event, avoir) => {
-  logger.log('renderer: deleteAvoirSync', avoir);
+  logger.info('ipc: deleteAvoirSync', avoir);
   marketingActions.deleteAvoirFromSync(avoir)(store.dispatch, store.getState);
 });
 
 ipcRenderer.on('setTicketRestaurantSync', (event, ticketrestaurant) => {
-  logger.log('renderer: setTicketRestaurantSync', ticketrestaurant);
+  logger.info('ipc: setTicketRestaurantSync', ticketrestaurant);
   commandeActions.setTicketRestaurantFromSync(ticketrestaurant)(store.dispatch, store.getState);
 });
 
 ipcRenderer.on('setPointageSync', (event, pointage) => {
-  logger.log('renderer: setPointageSync', pointage);
+  logger.info('ipc: setPointageSync', pointage);
   employesActions.setPointageFromSync(pointage)(store.dispatch, store.getState);
 });
 
 
 
 ipcRenderer.on('setProduitSync', (event, produit) => {
-  logger.log('renderer: setProduitSync', produit);
+  logger.info('ipc: setProduitSync', produit);
   catalogueActions.setProduitFromSync(produit)(store.dispatch, store.getState);
 });
 ipcRenderer.on('setGroupeSync', (event, groupe) => {
-  logger.log('renderer: setGroupeSync', groupe);
+  logger.info('ipc: setGroupeSync', groupe);
   catalogueActions.setGroupeFromSync(groupe)(store.dispatch, store.getState);
 });
 ipcRenderer.on('setIngredientSync', (event, ingredient) => {
-  logger.log('renderer: setIngredientSync', ingredient);
+  logger.info('ipc: setIngredientSync', ingredient);
   catalogueActions.setIngredientFromSync(ingredient)(store.dispatch, store.getState);
 });
 ipcRenderer.on('setIngredientTypeSync', (event, ingredienttype) => {
-  logger.log('renderer: setIngredientTypeSync', ingredienttype);
+  logger.info('ipc: setIngredientTypeSync', ingredienttype);
   catalogueActions.setIngredientTypeFromSync(ingredienttype)(store.dispatch, store.getState);
 });
 ipcRenderer.on('setProduitsSync', (event, produits) => {
-  logger.log('renderer: setProduitsSync', produits);
+  logger.info('ipc: setProduitsSync', produits);
   catalogueActions.setProduitsFromSync(produits)(store.dispatch, store.getState);
 });
 ipcRenderer.on('setIngredientsSync', (event, ingredients) => {
-  logger.log('renderer: setIngredientsSync', ingredients);
+  logger.info('ipc: setIngredientsSync', ingredients);
   catalogueActions.setIngredientsFromSync(ingredients)(store.dispatch, store.getState);
 });
 
 
 ipcRenderer.on('setTimeadjustSync', (event, timeadjust) => {
-  logger.log('renderer: setTimeadjustSync', timeadjust);
+  logger.info('ipc: setTimeadjustSync', timeadjust);
  // commandeActions.setTicketRestaurantFromSync(ticketrestaurant)(store.dispatch, store.getState);
 });
 
 ipcRenderer.on('setClotureSync', (event, cloture) => {
-  logger.log('renderer: setClotureSync', cloture);
+  logger.info('ipc: setClotureSync', cloture);
   clotureActions.setClotureFromSync(cloture)(store.dispatch, store.getState);
 });
 
 ipcRenderer.on('setTresorSync', (event, tresor) => {
-  logger.log('renderer: setTresorSync', tresor);
+  logger.info('ipc: setTresorSync', tresor);
   tresorActions.setTresorFromSync(tresor)(store.dispatch, store.getState);
 });
 
 ipcRenderer.on('setUserSync', (event, user) => {
-  logger.log('renderer: setUserSync', user);
+  logger.info('ipc: setUserSync', user);
   userActions.setUserFromSync(user)(store.dispatch, store.getState);
 });
 
 ipcRenderer.on('chrono', (event, commande) => {
-  logger.log('renderer: chrono', commande);
-  logger.log('⚠️ setChrono désactivé')
+  logger.info('ipc: chrono', commande);
+  logger.info('⚠️ setChrono désactivé')
   //  commandeActions.setChrono(commande)(store.dispatch, store.getState);
 });
 
 ipcRenderer.on('printticket', (event, print) => {
-  logger.log('renderer: printticket', print);
+  logger.info('ipc: printticket', print);
   peripheralActions.printTicketFromAPI(print)(store.dispatch, store.getState);
 });
 

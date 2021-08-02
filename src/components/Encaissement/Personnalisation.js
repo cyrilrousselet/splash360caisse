@@ -3,7 +3,8 @@ import PropTypes from "prop-types";
 import React from "react";
 import LocalizedStrings from "react-localization";
 import { data } from "../../constants/translations";
-import Logger from "../../helpers/Logger";
+// import Logger from "../../helpers/Logger";
+import logger from "../../helpers/Logger";
 import { commandeServices } from "../../services/commande/commandeServices";
 import CloseIcon from "../common/icon/CloseIcon";
 import MinusIcon from "../common/icon/MinusIcon";
@@ -11,7 +12,7 @@ import LoadingSpinner from "../common/LoadingSpinner";
 import StdButton from "../common/StdButton";
 
 let strings = new LocalizedStrings(data);
-const logger = new Logger();
+// const logger = new Logger();
 
 const IngredientBtn = ({
   id,
@@ -125,7 +126,7 @@ class Personnalisation extends React.Component {
     // sinon on teste individuellement les types
     else {
       for (let [key, value] of Object.entries(intypes)) {
-        logger.log(value.num + ">=" + value.max);
+        logger.info(value.num + ">=" + value.max);
         typeMax[key] = value.num >= value.max;
       }
     }

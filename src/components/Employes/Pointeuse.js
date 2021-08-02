@@ -18,6 +18,7 @@ import LargeButton from '../common/LargeButton';
 
 import LoginCont from '../../containers/LoginCont';
 import Swal from 'sweetalert2';
+import logger from '../../helpers/Logger';
 
 let strings = new LocalizedStrings(data);
 
@@ -83,7 +84,7 @@ class Pointeuse extends React.Component {
     }
   }
   componentWillUnmount() {
-    console.log('pointeuse clearinterval');
+    logger.info('pointeuse clearinterval');
       clearInterval(this.intervalID);
       this.intervalID = null;
   }
@@ -113,7 +114,7 @@ class Pointeuse extends React.Component {
   
 
   validClock(payload) {
-    console.log('validClock()', payload);
+    logger.info('validClock()', payload);
 
     const {clocktype, time, identifiant} = payload;
     const { users, pointages, setClockIn, setClockOut } = this.props;
@@ -133,7 +134,7 @@ class Pointeuse extends React.Component {
       if (pointages.length) {
         __pnt = pointages.find(p => p.status==='opened' && p.employe===__usr.user_id);
       }
-      console.log('validClock, pointage', __pnt, clocktype);
+      logger.info('validClock, pointage', __pnt, clocktype);
 
 
       if (clocktype==='in') {
@@ -194,11 +195,11 @@ class Pointeuse extends React.Component {
   // const { users } = this.props;
   const { jour, heure, popinOpen, clocktype, time, error, error_detail } = this.state;
 
- // console.log('pointage', this.state);
+ // logger.info('pointage', this.state);
   const self = this;
 
   if (error) {
-    console.log('error_detail', error_detail);
+    logger.info('error_detail', error_detail);
     Swal.fire({
       title: strings.modules.employes.pointeuse.erreur[error_detail].titre,
       text: strings.modules.employes.pointeuse.erreur[error_detail].texte,

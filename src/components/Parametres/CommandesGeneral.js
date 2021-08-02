@@ -9,6 +9,7 @@ import LabelledField from '../common/LabelledField';
 import StdButton from '../common/StdButton';
 import CloseIcon from '../common/icon/CloseIcon';
 import AddIcon from '../common/icon/AddIcon';
+import logger from '../../helpers/Logger';
 let strings = new LocalizedStrings(data);
 
 const data_types = [
@@ -43,7 +44,7 @@ function TableTypes(props) {
                 isChecked={ row.activation } 
                 key={`${i}-activation-switch`}
                 name={ 'activation' } 
-                onChange={ console.log } 
+                onChange={ logger.info } 
                 label="" 
               />
             </TableCell>
@@ -59,7 +60,7 @@ function TableTypes(props) {
 class EditTypePopin extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props);
+    logger.info(props);
     this.state = {
       nom: props.commandtype && props.commandtype.nom,
       identifiant: props.commandtype && props.commandtype.identifiant, 
@@ -179,7 +180,7 @@ class CommandesGeneral extends React.Component {
   }
  
   openEdit(typeid=null) {
-    console.log(typeid);
+    logger.info(typeid);
     if (typeid!==null) {
       this.setState({commandtype:data_types[typeid], editOpen: true});
     }
@@ -191,14 +192,14 @@ class CommandesGeneral extends React.Component {
     this.setState({editOpen: false});
   }
   saveType(type) {
-    console.log(type);
+    logger.info(type);
   //  this.setState({editOpen: false});
   }
   numerotationHexaUpdate(isChecked) {
     const { updateValeur, data } = this.props;
     const { numerotation_max } = data;
     let nummax = isChecked ? parseInt(numerotation_max) + 1000 : parseInt(numerotation_max) - 1000;
-    console.log(numerotation_max, nummax);
+    logger.info(numerotation_max, nummax);
     updateValeur([
       {
         domaine: 'commandes',
@@ -284,7 +285,7 @@ class CommandesGeneral extends React.Component {
                 placeholder='0' 
                 type='text' 
                 readOnly={ true } 
-                onChange={()=>{console.log('click')}}
+                onChange={()=>{logger.info('click')}}
                 label={ strings.modules.parametres.submodules.commandes.general.numero.label.compteur }
                 />
               {!num_not_editable && <div className="btn-reset" onClick={()=>{ resetNumero() }}>{ strings.modules.parametres.submodules.commandes.general.numero.label.reset }</div>}

@@ -24,8 +24,9 @@ import BackIcon from '../common/icon/BackIcon';
 import LockIcon from '../common/icon/LockIcon';
 import LockOpenIcon from '../common/icon/LockOpenIcon';
 
-import Logger from '../../helpers/Logger';
-const logger = new Logger();
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
+// const logger = new Logger();
 
 
 
@@ -93,7 +94,7 @@ class ShiftEditModal extends React.Component {
       date: this.props.shift && this.props.shift.date,
       recurrence: this.props.shift && this.props.shift.recurrence
     }
-    logger.log('componentDidMount', st);
+    logger.info('componentDidMount', st);
     this.setState(st);
   }
 
@@ -123,18 +124,18 @@ class ShiftEditModal extends React.Component {
 
 
   updateValue(value) {
-    logger.log('updateValue', value);
+    logger.info('updateValue', value);
     this.setState(value);
   }
 
   updateRecurrence(value) {
-    logger.log('updateRecurrence', value);
+    logger.info('updateRecurrence', value);
     const {recurrence} = this.getValues();
 
     if (recurrence.periode!=='none') {
       this.setState({recurrence:{...recurrence, ...value}});
     } else {
-      logger.log('uu rr',{...value, rythme:1, jours:[], limite:null});
+      logger.info('uu rr',{...value, rythme:1, jours:[], limite:null});
       this.setState({recurrence:{...value, rythme:1, jours:[], limite:null}});
     }
   }
@@ -264,7 +265,7 @@ class ShiftEditModal extends React.Component {
     const readytovalidate = (poste && employe && start && end && recurrence && recurrence.periode);
     
 
-    logger.log('recurrence', recurrence, shift && shift.recurrence);
+    logger.info('recurrence', recurrence, shift && shift.recurrence);
     
     return (
       <Modal
@@ -469,8 +470,8 @@ class PlanningSemaine extends React.Component {
       jour.shifts.forEach(shift => {
         const start = shift.start.split(':');
         const end = shift.end.split(':');
-        logger.log('start-end', start, end);
-        logger.log('shift poste tps', shift.poste);
+        logger.info('start-end', start, end);
+        logger.info('shift poste tps', shift.poste);
         if (shift.poste.tps) {
           total += add(startOfToday(), {hours:Number(end[0]), minutes:Number(end[1])}).getTime() - add(startOfToday(), {hours:Number(start[0]), minutes:Number(start[1])}).getTime();
         }
@@ -537,7 +538,7 @@ class PlanningSemaine extends React.Component {
   }
 
   setPosteToShift(shifts) {
-    logger.log(shifts.length);
+    logger.info(shifts.length);
     const {shifttypes} = this.props;
     return shifts.map(sh=>{ return {...sh, poste:shifttypes.find(st=>st.id===sh.poste)} });
   }
@@ -578,7 +579,7 @@ class PlanningSemaine extends React.Component {
       return `${s} ${dh}h${(dm!=='00'?dm:'')}`;
     }
 
-    logger.log('planning', planning);
+    logger.info('planning', planning);
 
     return(
       <TableContainer className="planning-week">

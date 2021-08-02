@@ -1,10 +1,11 @@
 import { numeroActionTypes } from './numeroActionTypes';
 import { numeroServices } from './numeroServices';
-import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 import { notificationActions } from '../notification/notificationActions';
 import { notificationServices } from '../notification/notificationServices';
 
-const logger = new Logger();
+// const logger = new Logger();
 
 
 
@@ -25,7 +26,7 @@ function setNewNumero(defaultValue=null) {
 
   return (dispatch, getState) => {
 
-    logger.log('NumeroActions.setNewNumero',defaultValue);
+    logger.info('NumeroActions.setNewNumero',defaultValue);
 
     const numero = defaultValue!==null ? {value: defaultValue-1, updated: new Date()} : getState().commandeReducer.numero; 
 
@@ -50,7 +51,7 @@ function getNumeroAPI(response) {
 
   return async (dispatch, getState) => {
 
-    logger.log('NumeroActions.getNumeroAPI()');
+    logger.info('NumeroActions.getNumeroAPI()');
 
     const {parametres} = getState().parametresReducer;
     const {numero} = getState().commandeReducer;
@@ -83,7 +84,7 @@ function getNumeroAPI(response) {
 function takeNumero() {
   return async (dispatch, getState) => {
     
-    logger.log('numeroActions.takeNumero()');
+    logger.info('numeroActions.takeNumero()');
 
     const {parametres} = getState().parametresReducer;
     const {numero} = getState().commandeReducer;
@@ -106,17 +107,17 @@ function takeNumero() {
 
 async function _getNumero(parametres, numero) {
 
-  logger.log('NumeroActions._getNumero', numero);
+  logger.info('NumeroActions._getNumero', numero);
 
   if (parametres.options.role==="secondary") {
-    logger.log('NumeroActions._getNumero() from primary');
+    logger.info('NumeroActions._getNumero() from primary');
     const conf = await notificationServices.askNumero(parametres.options.primary)
     return conf.numero;
   }
   else {
     const nnumero = numeroServices.setNumero( parametres, numero);
     // const nnumero = commandeServices.getNewNumero( parametres, null);
-    logger.log('NumeroActions._getNumero() from primary', nnumero);
+    logger.info('NumeroActions._getNumero() from primary', nnumero);
     return nnumero;
   }
 

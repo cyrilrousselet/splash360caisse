@@ -1,11 +1,12 @@
 import { clientsActionTypes } from './clientsActionTypes';
 import { clientsServices } from './clientsServices';
 import { commandeActions } from './../commande/commandeActions';
-import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 import { notificationActions } from '../notification/notificationActions';
 import { secteursActionTypes } from './secteursActionTypes';
 
-const logger = new Logger();
+// const logger = new Logger();
 
 function getClientsList(params={}) {
 
@@ -17,7 +18,10 @@ function getClientsList(params={}) {
       data => { dispatch({ type: clientsActionTypes.GETALL_SUCCESS, ...data}) },
     )
     .catch(
-      error => { dispatch({ type: clientsActionTypes.GETALL_FAILURE, error: error.toString() }) }
+      error => { 
+        logger.error(error);
+        dispatch({ type: clientsActionTypes.GETALL_FAILURE, error: error.toString() }) 
+      }
     );
   }
 }
@@ -72,7 +76,7 @@ function updateClient(payload) {
 
 function setClientFromAPI(payload) {
   return (dispatch, getState) => {
-    logger.log('CltA.setClientFromAPI()');
+    logger.info('CltA.setClientFromAPI()');
   }
 }
 

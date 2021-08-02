@@ -406,7 +406,8 @@ const actions = {
           __token = { splash_token: JSON.parse(__confirmation.join(""))};
         } catch(err) {
           __token = { error: err.message };
-          log.error("token JSON error", err);
+          log.warn("token JSON error");
+          log.error(err);
         }
         res.send(__token);
         
@@ -414,7 +415,8 @@ const actions = {
     });
 
     __request.on('error', (error) => {
-      log.error('getSplashToken ERROR', error);
+      log.warn('getSplashToken ERROR');
+      log.error(error);
       res.error(error);
     });
 

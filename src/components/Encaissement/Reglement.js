@@ -7,7 +7,8 @@ import LocalizedStrings from "react-localization";
 import Swal from "sweetalert2";
 import { decodetable } from "../../constants/decodetable";
 import { data } from "../../constants/translations";
-import Logger from "../../helpers/Logger";
+// import Logger from "../../helpers/Logger";
+import logger from "../../helpers/Logger";
 import CarteIcon from "../common/icon/CarteIcon";
 import ChequeIcon from "../common/icon/ChequeIcon";
 import CloseIcon from "../common/icon/CloseIcon";
@@ -18,7 +19,7 @@ import PillButton from "../common/PillButton";
 import StdButton from "../common/StdButton";
 import Calculette from "./Calculette";
 
-const logger = new Logger();
+// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 
@@ -57,13 +58,13 @@ class Reglement extends React.Component {
 
   componentDidMount() {
     const { getCommande, commandeId } = this.props;
-    console.log("commandeId", commandeId);
+    logger.info("commandeId", commandeId);
     if (commandeId) getCommande(commandeId);
   }
 
   addValeur(value) {
     let __t = Number(this.state.total) + Number(value);
-    console.log("addValeur : +" + value);
+    logger.info("addValeur : +" + value);
     this.setState({ total: __t, input: true });
     this.toAddReglement("especes", value);
   }
@@ -85,7 +86,7 @@ class Reglement extends React.Component {
       default:
         __t = Number(((__t * 10) + (value / 100)).toFixed(2));
     }
-    console.log('total', __t, value);
+    logger.info('total', __t, value);
     this.setState({ total: __t, input: __i });
   }
 
@@ -129,12 +130,12 @@ class Reglement extends React.Component {
   }
 
   beforeCloseReglement() {
-    logger.log("beforeCloseReglement()");
+    logger.info("beforeCloseReglement()");
 
     const { modif } = this.props;
     const { reste, rendu } = this.updateValeurs();
     const { trlist } = this.state;
-    console.log(reste, rendu);
+    logger.info(reste, rendu);
     let closeReglementAtEnd = true;
 
     const itemsCopy = [...this.props.commande.items];
@@ -178,9 +179,9 @@ class Reglement extends React.Component {
         // this.props.printCommandeTicket(__tpl, {...this.props.commande, status:'confirmed'});
         this.props.printTicket(__tpl);
       } else {
-        logger.log("reglement modif", modif);
+        logger.info("reglement modif", modif);
         closeReglementAtEnd = modif;
-        logger.log("reglement closeReglementAtEnd", closeReglementAtEnd);
+        logger.info("reglement closeReglementAtEnd", closeReglementAtEnd);
         // this.props.commande.status = "confirmed";
 
         // on imprime tous les tickets (sauf si on modifie juste les réglements)
@@ -321,7 +322,7 @@ class Reglement extends React.Component {
 
   scanHandler(event) {
     if (event.keyCode === 13) {
-      console.log(event.target.value);
+      logger.info(event.target.value);
       const decoded_string = this.decodeQRCode(event.target.value);
 
       if (decoded_string.substr(0, 3) === "cdt") {
@@ -386,11 +387,11 @@ class Reglement extends React.Component {
     }
 
 
-    console.log("tr", __value, __trValue, __trValid, error);
+    logger.info("tr", __value, __trValue, __trValid, error);
   }
 
   parseAvoir(value) {
-    console.log("avoirID", value);
+    logger.info("avoirID", value);
 
     const { avoirs, updateAvoir } = this.props;
     let error = "";

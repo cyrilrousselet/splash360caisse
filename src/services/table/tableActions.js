@@ -1,14 +1,15 @@
 import { tableActionTypes } from './tableActionTypes';
 import { tableServices } from './tableServices';
 
-import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 
 
-const logger = new Logger();
+// const logger = new Logger();
 
 function getSallesList(params={}) {
 
-  logger.log('tabA.getSallesList()');
+  logger.info('tabA.getSallesList()');
 
   return dispatch => {
     dispatch({ type: tableActionTypes.GET_ALL_REQUEST });
@@ -18,7 +19,10 @@ function getSallesList(params={}) {
       data => { dispatch({ type: tableActionTypes.GET_ALL_SUCCESS, ...data }) }
     )
     .catch(
-      error => { dispatch({ type: tableActionTypes.GET_ALL_FAILURE, error: error })}
+      error => { 
+        logger.error(error);
+        dispatch({ type: tableActionTypes.GET_ALL_FAILURE, error: error })
+      }
     );
   }
 

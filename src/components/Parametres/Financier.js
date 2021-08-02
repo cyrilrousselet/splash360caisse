@@ -8,6 +8,7 @@ import AddIcon from '../common/icon/AddIcon';
 import SwitchCheckbox from '../common/SwitchCheckbox';
 // import _ from 'lodash';
 import LoadingSpinner from '../common/LoadingSpinner';
+import logger from '../../helpers/Logger';
 
 let strings = new LocalizedStrings(data);
 
@@ -91,7 +92,7 @@ class Financier extends React.Component {
                 placeholder={ field.nom } 
                 type='number' 
                 readOnly={ false } 
-                onChange={()=>{console.log('click')}}
+                onChange={()=>{logger.info('click')}}
                 label={ field.nom }
                 postvalue='%'
               />
@@ -166,7 +167,7 @@ class Financier extends React.Component {
             value={ happyhour_data.debut } 
             type='text' 
             readOnly={ false } 
-            onChange={()=>{console.log('click')}}
+            onChange={()=>{logger.info('click')}}
             label={ strings.modules.parametres.submodules.financier.happyhours.debut }
             />
           <LabelledField 
@@ -177,7 +178,7 @@ class Financier extends React.Component {
             value={ happyhour_data.fin } 
             type='text' 
             readOnly={ false } 
-            onChange={()=>{console.log('click')}}
+            onChange={()=>{logger.info('click')}}
             label={ strings.modules.parametres.submodules.financier.happyhours.fin }
           />
           <div className="liste-jours">
@@ -187,7 +188,7 @@ class Financier extends React.Component {
               key={ `happyhour-jour-${ i }` }
               name={ `happyhour-jour-${ i }` } 
               className="happyhour-jour" 
-              onChange={ console.log } 
+              onChange={ logger.info } 
               labelLeft={ true }
               small={ true }
               label={ jour } 
@@ -202,7 +203,7 @@ class Financier extends React.Component {
               placeholder=''
               type='number' 
               readOnly={ false } 
-              onChange={()=>{console.log('click')}}
+              onChange={()=>{logger.info('click')}}
               label={ strings.modules.parametres.submodules.financier.happyhours.remise }
               postvalue='%'
             />
@@ -251,7 +252,7 @@ class Financier extends React.Component {
             type='number' 
             disabled={ !data.fidelite_activation }
             readOnly={ !data.fidelite_activation } 
-            onChange={()=>{console.log('click')}}
+            onChange={()=>{logger.info('click')}}
             label={ strings.modules.parametres.submodules.financier.fidelite.valeur }
             postvalue='€'
           />
@@ -266,7 +267,7 @@ class Financier extends React.Component {
             type='number' 
             disabled={ !data.fidelite_activation }
             readOnly={ !data.fidelite_activation } 
-            onChange={()=>{console.log('click')}}
+            onChange={()=>{logger.info('click')}}
             label={ strings.modules.parametres.submodules.financier.fidelite.seuil.split(';')[0] }
             postvalue={ strings.modules.parametres.submodules.financier.fidelite.seuil.split(';')[1] }
           />

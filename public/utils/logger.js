@@ -1,5 +1,5 @@
 const { createLogger, format, transports } = require('winston');
-const { combine, timestamp, printf, colorize } = format;
+const { combine, timestamp, printf, colorize, label, errors } = format;
 require('winston-daily-rotate-file');
 
 const { app } = require('electron');
@@ -19,19 +19,22 @@ const checkDirectorySync = (directory) => {
 checkDirectorySync(`${app.getPath('userData')}/logs`);
 
 let consoleOut = format.combine(
-  colorize({
-  }),
+  errors({stack: true}),
+  colorize({}),
   timestamp({
       format:"HH:MM:SS.SSS"
   }),
+  label({label:'[MAIN]'}),
   printf(
-      info => `${info.timestamp}  >  ${info.level} : ${info.message}`
+      info => `${info.timestamp} ${info.label} >  ${info.level} : ${info.message}${(info.stack ? ' - '+info.stack : '')}`
   )
 );
 const fileOut = format.combine(
+  errors({stack: true}),
   timestamp(),
+  label({label:'[MAIN]'}),
   printf(
-      info => `${info.timestamp}  >  ${info.level} : ${info.message}`
+      info => `${info.timestamp} ${info.label} >  ${info.level} : ${info.message}${(info.stack ? ' - '+info.stack : '')}`
   )
 );
 
@@ -50,6 +53,7 @@ const errorTransport = new transports.DailyRotateFile({
   datePattern: 'YYDDD',
   zippedArchive: true,
   maxSize: '20m',
+
   level: 'error',
   format: fileOut
 });

@@ -35,21 +35,6 @@ const gotoCloture = () => {
 
   history.push(paths.CLOTURE);
 
-  // Swal.fire({
-  //   title: 'Souhaitez-vous',
-  //   focusConfirm: false,
-  //   showCancelButton: true,
-  //   customClass: 'cloturePopin',
-  //   confirmButtonText: 'Clôturer votre caisse',
-  //   cancelButtonText: 'Liste des rapports',
-  //   buttonsStyling: false 
-  // }).then((result)=> {
-  //   if (result.value) {
-  //     history.push(paths.CLOTURE);
-  //   } else {
-  //     console.log('goto liste clotures');
-  //   }
-  // });
 }
 
 

@@ -44,9 +44,10 @@ import EditIcon from './common/icon/EditIcon';
 import { decodetable } from '../constants/decodetable';
 import { dateBounds } from '../helpers/toolbox';
 
-import Logger from '../helpers/Logger';
+// import Logger from '../helpers/Logger';
+import logger from '../helpers/Logger';
 
-const logger = new Logger();
+// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 
@@ -233,7 +234,7 @@ class ListeCommandes extends React.Component {
   search_tmo = -1;
   
   componentDidMount() {
-    logger.log('ListeCommandes.componentDidMount()');
+    logger.info('ListeCommandes.componentDidMount()');
     this.getBoundedCommandesList();
     this.props.getAllActive();
     this.props.getClientsList();
@@ -270,7 +271,7 @@ class ListeCommandes extends React.Component {
       this.setState({endDate:f});
     }
 
-    console.log(
+    logger.info(
       'setSelectedDate('+bound+')', 
       '('+format(d, "dd/MM/yyyy HH:mm")+' -> '+format(f, "dd/MM/yyyy HH:mm")+')'
     );
@@ -280,7 +281,7 @@ class ListeCommandes extends React.Component {
 
   
   closeReglement() {
-    logger.log('ListeCmd.closeReglement()');
+    logger.info('ListeCmd.closeReglement()');
     this.props.deleteCurrentCommande();
     this.setState({reglementOpen: false, commandeId: null});
   }
@@ -291,7 +292,7 @@ class ListeCommandes extends React.Component {
   }
 
   repriseHandle(value) {
-    logger.log('repriseHandle('+value+')');
+    logger.info('repriseHandle('+value+')');
     this.props.getCommande(value);
     history.push(paths.ENCAISSEMENT);
   }
@@ -308,13 +309,13 @@ class ListeCommandes extends React.Component {
     this.setState({printOpen:false, commandeId: null});
   }
   launchTicket(ticket, cmdid) {
-    logger.log(`print ticket '${ticket}' pour #${cmdid}`);
+    logger.info(`print ticket '${ticket}' pour #${cmdid}`);
   }
 
 
   searchHandler(event) {
     if (event.keyCode===13) {
-      logger.log(event.target.value);
+      logger.info(event.target.value);
       this.decodeQRCode(event.target.value);
       event.target.value = '';
     }    
@@ -330,7 +331,7 @@ class ListeCommandes extends React.Component {
   }
 
   send_to_search(value) {
-    logger.log('send_to_search',value);
+    logger.info('send_to_search',value);
     this.setState({searchval: value});
   }
 
@@ -439,7 +440,7 @@ class ListeCommandes extends React.Component {
         if (value.type==="staffmeal") stmeallist.push({id: key, commande: cmd});
       }
     }
-    logger.log('searchval :',searchval!=='');
+    logger.info('searchval :',searchval!=='');
     
   
     if(loading) {

@@ -17,7 +17,6 @@ import { commandeActions } from '../services/commande/commandeActions';
 
 
 const gotoDashboard = () => {
-  console.log('gotoDashboard()');
   history.push(paths.DASHBOARD);
 
 }

@@ -19,6 +19,7 @@ import Clavier from '../common/Clavier';
 import SwitchCheckbox from '../common/SwitchCheckbox';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import { clientsServices } from '../../services/clients/clientsServices';
+import logger from '../../helpers/Logger';
 
 let strings = new LocalizedStrings(data);
 
@@ -117,7 +118,7 @@ class FicheClient extends React.Component {
   }
 
   setFocus(event, obj) {
-    console.log('setFocus', event.target.name);
+    logger.info('setFocus', event.target.name);
     if (obj) {
       this.setState({focusInput: obj.name});
     } else {
@@ -128,11 +129,11 @@ class FicheClient extends React.Component {
   onKeyboardChange(input) {
     const {focusInput} = this.state;
     this.setState({ [focusInput]:input });
-    console.log(`"${focusInput}" changed`, input);
+    logger.info(`"${focusInput}" changed`, input);
   };
 
   updateValue(value) {
-    console.log('updateValue', value);
+    logger.info('updateValue', value);
     this.setState(value);
   }
   resetPopin() {
@@ -167,7 +168,7 @@ class FicheClient extends React.Component {
     let params = this.getValeurs();
     params = {...params, autoselect:selection};
 
-    console.log('saveClient', client);
+    logger.info('saveClient', client);
 
     // si on modifie la fiche client depuis l'Encaissement,
     // on demande la mise à jour des infos du client pour la commande en cours
@@ -214,21 +215,21 @@ class FicheClient extends React.Component {
   }
 
   getRecherche(value) {
-     console.log('recherche', value);
+     logger.info('recherche', value);
      this.setState({innermode:'fiche',  search: value, ...value});
   }
   getRechercheCp(value) {
-    console.log('FicheClient.getRechercheCp() value', value);
+    logger.info('FicheClient.getRechercheCp() value', value);
     if (value && value.length>1) {
      
       clientsServices.searchSecteurs({zip:value})
       .then(
         data => {
-          console.log('FicheClient.getRechercheCp()', data.secteurs);
+          logger.info('FicheClient.getRechercheCp()', data.secteurs);
           this.setState({cpliste: data.secteurs});
         },
         error => {
-          console.log('FicheClient.getRecherche()', "aucun secteur");
+          logger.info('FicheClient.getRecherche()', "aucun secteur");
           this.setState({cpliste: []});
         }
       );
@@ -236,7 +237,7 @@ class FicheClient extends React.Component {
     }
   }
   getRechercheVille(value) {
-    console.log('FicheClient.getRechercheVille() value', value);
+    logger.info('FicheClient.getRechercheVille() value', value);
     if (value && value.length>1) {
 
       let __value = canonicalizeString(value).toUpperCase();
@@ -246,11 +247,11 @@ class FicheClient extends React.Component {
       clientsServices.searchSecteurs({nom:__value})
       .then(
         data => {
-          console.log('FicheClient.getRechercheVille()', data.secteurs);
+          logger.info('FicheClient.getRechercheVille()', data.secteurs);
           this.setState({cpliste: data.secteurs});
         },
         error => {
-          console.log('FicheClient.getRechercheVille()', "aucun secteur");
+          logger.info('FicheClient.getRechercheVille()', "aucun secteur");
           this.setState({cpliste: []});
         }
       );
@@ -303,9 +304,9 @@ class FicheClient extends React.Component {
       'commentaire': commentaire
     };
 
-    // console.log(focusInput, inputs[focusInput]);
+    // logger.info(focusInput, inputs[focusInput]);
 
-console.log('cpliste', cpliste);
+logger.info('cpliste', cpliste);
 
     return (
       <div>
@@ -360,7 +361,7 @@ console.log('cpliste', cpliste);
                       placeholder='' 
                       type='text' 
                       readOnly={ true } 
-                      onChange={ console.log }
+                      onChange={ logger.info }
                       label={ strings.modules.clients.edition.code }
                   />
                   <LabelledField 
@@ -371,7 +372,7 @@ console.log('cpliste', cpliste);
                       placeholder='' 
                       type='text' 
                       readOnly={ true } 
-                      onChange={ console.log }
+                      onChange={ logger.info }
                       label={ strings.modules.clients.edition.inscription }
                   />
                   <SwitchCheckbox 
@@ -392,7 +393,7 @@ console.log('cpliste', cpliste);
                         placeholder='' 
                         type='text' 
                         readOnly={ true } 
-                        onChange={ console.log }
+                        onChange={ logger.info }
                         label={ strings.modules.clients.edition.total }
                     />
                     <LabelledField 
@@ -403,7 +404,7 @@ console.log('cpliste', cpliste);
                         placeholder='' 
                         type='text' 
                         readOnly={ true } 
-                        onChange={ console.log }
+                        onChange={ logger.info }
                         label={ strings.modules.clients.edition.points }
                     />
                     <LabelledField 
@@ -414,7 +415,7 @@ console.log('cpliste', cpliste);
                         placeholder='' 
                         type='text' 
                         readOnly={ true } 
-                        onChange={ console.log }
+                        onChange={ logger.info }
                         label={ strings.modules.clients.edition.utilises }
                     />
                   </div> */}
@@ -513,7 +514,7 @@ console.log('cpliste', cpliste);
                     value={codepostal}
                     noOptionsText={ strings.modules.clients.edition.aucune_sugg }
                     onChange={(event, newValue, reason) => {
-                      console.log('onChange', newValue, reason);
+                      logger.info('onChange', newValue, reason);
                       if (reason==="select-option") {
                         this.updateValue({
                           codepostal: newValue.zip.toString(),
@@ -530,7 +531,7 @@ console.log('cpliste', cpliste);
                     getOptionLabel={(option) => option.hasOwnProperty('zip') ? option.zip : option }
                     inputValue={codepostal}
                     renderOption={(props, option) => {
-                      console.log('option', props);
+                      logger.info('option', props);
                       return (
                         <React.Fragment>
                           { props.zip+' '+props.nom+' '+props.ligne5 }
@@ -579,7 +580,7 @@ console.log('cpliste', cpliste);
                   value={ville}
                   noOptionsText={ strings.modules.clients.edition.aucune_sugg }
                   onChange={(event, newValue, reason) => {
-                    console.log('onChange', newValue, reason);
+                    logger.info('onChange', newValue, reason);
                     if (reason==="select-option") {
                       this.updateValue({
                         codepostal: newValue.zip.toString(),
@@ -596,7 +597,7 @@ console.log('cpliste', cpliste);
                   getOptionLabel={(option) => option.hasOwnProperty('nom') ? option.nom : option }
                   inputValue={ville}
                   renderOption={(props, option) => {
-                    console.log('option', props);
+                    logger.info('option', props);
                     return (
                       <React.Fragment>
                         { props.zip+' '+props.nom+' '+props.ligne5 }

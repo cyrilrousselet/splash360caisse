@@ -12,7 +12,8 @@ import Swal from 'sweetalert2';
 import { formatISO, differenceInMilliseconds, parseISO } from 'date-fns';
 // import DateFnsUtils from '@date-io/date-fns';
 // import frLocale from "date-fns/locale/fr";
- import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 import { commandeActionTypes } from '../commande/commandeActionTypes';
 // import { catalogueActionTypes } from '../catalogue/catalogueActionTypes';
 import { catalogueActions } from '../catalogue/catalogueActions';
@@ -20,13 +21,13 @@ import { parametresActions } from '../parametres/parametresActions';
 import { parametresActionTypes } from '../parametres/parametresActionTypes';
 import { peripheralActions } from '../peripheral/peripheralActions';
 // const strings = new LocalizedStrings(data);
- const logger = new Logger();
+//  const logger = new Logger();
 
 function initSSE() {
   return (dispatch, getState) => {
     const { restaurant_id } = getState().parametresReducer.parametres.entreprise;
 
-    logger.log('notificationActions.initSSE()');
+    logger.info('notificationActions.initSSE()');
 
     if (restaurant_id) {
       notificationServices.initSSE(restaurant_id)
@@ -35,7 +36,7 @@ function initSSE() {
         error => dispatch({ type: notificationActionTypes.INIT_SSE_FAILURE, error:error.msg })
       );
     } else {
-      logger.log('restaurant_id unknown');
+      logger.info('restaurant_id unknown');
     }
   }
 }
@@ -48,10 +49,10 @@ function setPOS(value) {
       notificationServices.setPOS('uber', {store_id: store_id, integration: value})
                           .then(
                             success => dispatch({type: notificationActionTypes.SET_POS, integration: value}),
-                            error => console.log('POS integration error')
+                            error => logger.info('POS integration error')
                           )
     } else {
-      logger.log('store_id unknown');
+      logger.info('store_id unknown');
     }
 
   }
@@ -62,16 +63,16 @@ function setRestaurantOnline(value) {
     const { store_id, restaurant_online } = getState().parametresReducer.parametres.commandes;
 
 
-    logger.log('setRestaurantOnline', value, `avant: ${restaurant_online}`);
+    logger.info('setRestaurantOnline', value, `avant: ${restaurant_online}`);
 
     if (store_id && (undefined!==restaurant_online)) {
       notificationServices.setRestaurantOnline('uber', {store_id: store_id, online: value})
                           .then(
                             success => dispatch({type: notificationActionTypes.SET_RESTAURANT_ONLINE, online: value}),
-                            error => logger.log('Uber Restaurant online error')
+                            error => logger.info('Uber Restaurant online error')
                           )
     } else {
-      logger.log('store_id unknown');
+      logger.info('store_id unknown');
     }
 
   }
@@ -81,20 +82,20 @@ function initSync() {
   return (dispatch, getState) => {
     const { options } = getState().parametresReducer.parametres;
 
-    logger.log('initSync', options);
-    logger.log('role', options.role, (options.role==='secondary'));
+    logger.info('initSync', options);
+    logger.info('role', options.role, (options.role==='secondary'));
 
 
     if (options.role==='secondary') {
       notificationServices.connectToPrimary(options.primary, options.caisse)
       .then(result => {
-        logger.log('initSync secondary', result);
+        logger.info('initSync secondary', result);
         dispatch({type: notificationActionTypes.CONNECT_TO_PRIMARY});
       })
     } else if (options.role==='primary') {
       notificationServices.startSyncPrimary()
       .then(result => {
-        logger.log('initSync primary', result);
+        logger.info('initSync primary', result);
         dispatch({type: notificationActionTypes.START_PRIMARY});
       })
     }
@@ -108,11 +109,11 @@ function syncDispatch(db, data, emitter=null) {
     delete data._id;
     delete data.__v;
 
-    console.log('NAct.syncDispatch()', db, data);
+    logger.info('NAct.syncDispatch()', db, data);
     if (options.role==='primary') {
       notificationServices.syncDispatch(db, data, emitter)
       .then(result => {
-        logger.log('syncDispatch (primary)', result);
+        logger.info('syncDispatch (primary)', result);
       });
 
       if ((['ingredient','produit']).includes(db)) {
@@ -132,7 +133,7 @@ function syncDispatch(db, data, emitter=null) {
     else if (options.role==='secondary') {
       notificationServices.syncPrimary(db, data, options.caisse, options.primary)
       .then(result => {
-        logger.log('syncDispatch (secondary)', result);
+        logger.info('syncDispatch (secondary)', result);
       })
     }
 
@@ -172,7 +173,7 @@ function treatment(data) {
           if (auto_accept_order) dispatch(acceptOrder('uber', reponse.order));
           else {
 
-            logger.log('ORDER:', reponse.order);
+            logger.info('ORDER:', reponse.order);
 
 
             dispatch({ type: notificationActionTypes.ADD_TO_STACK, cmdcandidate: reponse.order });
@@ -200,7 +201,7 @@ function treatment(data) {
           }
           
         },
-        error => logger.log('Token error', error)
+        error => logger.info('Token error', error)
       );
     }
     else if (data.eventType==='newcommande') {
@@ -214,7 +215,7 @@ function treatment(data) {
         response => {
           dispatch(commandeActions.setCommandeFromAPI( {data:{...response, provider:'clickandcollect'}} ))
         }
-      //   error => logger.log('C&C getCommande Error')
+      //   error => logger.info('C&C getCommande Error')
       )
 
     }
@@ -238,7 +239,7 @@ function treatment(data) {
 }
 
 function acceptOrder(provider, order) {
-  logger.log('acceptOrder');
+  logger.info('acceptOrder');
   return dispatch => {
     dispatch({ type: notificationActionTypes.ACCEPT_ORDER, id: order.display_id });
     notificationServices.acceptOrder(provider, order)
@@ -263,7 +264,7 @@ function confirmCommande(payload) {
   return (dispatch, getState) => {
     const { entreprise } = getState().parametresReducer.parametres; 
 
-    logger.log('notAct.confirmCommande()');
+    logger.info('notAct.confirmCommande()');
 
     notificationServices.confirmCommande({
       id: entreprise.restaurant_id,
@@ -284,7 +285,7 @@ function getToken(provider, task) {
     notificationServices.getToken(provider, task)
     .then(
       data => dispatch({ type: notificationActionTypes.GET_TOKEN_SUCCESS, data}),
-      error => logger.log('ça va pas', error)
+      error => logger.info('ça va pas', error)
     )
 
   }
@@ -304,7 +305,7 @@ function syncConfirm(response, data=null) {
   //  if (options.role==='primary') {      
       notificationServices.syncConfirm(response, data)
       .then(
-        confirm => { logger.log('notificationAction','synchro confirm sent')}
+        confirm => { logger.info('notificationAction','synchro confirm sent')}
       );
    // }
   }
@@ -316,7 +317,7 @@ function syncConfirmToPrimary(data) {
     if (options.role==='secondary') {
       notificationServices.syncConfirmToPrimary(options.primary, data)
       .then(
-        confirm => { logger.log('notificationAction','synchro confirm sent to primary')}
+        confirm => { logger.info('notificationAction','synchro confirm sent to primary')}
       );
     }
   }
@@ -327,7 +328,7 @@ function sendNumero(payload) {
     const {numero, response} = payload;
     notificationServices.sendNumero(numero, response)
     .then(
-      confirm => { logger.log('sendNumero','numero sent') }
+      confirm => { logger.info('sendNumero','numero sent') }
     )
   }
 }
@@ -338,7 +339,7 @@ function getNewNumero() {
     const { options } = getState().parametresReducer.parametres;
     notificationServices.askNumero(options.primary)
     .then(conf => {
-      console.log('NAct.getNewNumero()', conf.numero);
+      logger.info('NAct.getNewNumero()', conf.numero);
       dispatch({type: commandeActionTypes.GET_NUMERO, numero: conf.numero});
       dispatch(commandeActions.setNewNumero(conf.numero.value));
     })
@@ -350,7 +351,7 @@ function getDatabase() {
   return (dispatch, getState) => {
 
 
-    logger.log('getDatabase()');
+    logger.info('getDatabase()');
 
     dispatch({type: notificationActionTypes.GET_DATABASE_REQUEST});
     const { entreprise } = getState().parametresReducer.parametres; 
@@ -415,11 +416,11 @@ function initSyncCommandes() {
         results => {
           const {commandes, chronos} = results;
 
-          logger.log('initSyncCommandes chronos', chronos);
-          logger.log('initSyncCommandes', commandes.length);
+          logger.info('initSyncCommandes chronos', chronos);
+          logger.info('initSyncCommandes', commandes.length);
           if (commandes.length>0) {
 
-            logger.log('preparation des commandes à envoyer au backo');
+            logger.info('preparation des commandes à envoyer au backo');
 
             const chrcommandes = commandes.map(c => {
               const chr = chronos ? chronos.find(h=>h.ticketId===c.ticketId) : undefined;
@@ -450,7 +451,7 @@ function initSyncCommandes() {
         }
       )
     } else {
-      logger.log('role secondary : pas de synchro commandes');
+      logger.info('role secondary : pas de synchro commandes');
     }
   };
 }
@@ -474,7 +475,7 @@ function syncCommandes(commandes) {
         }
       )
     } else {
-      logger.log('role secondary : pas de synchro commandes');
+      logger.info('role secondary : pas de synchro commandes');
     }
   }
 }
@@ -486,7 +487,7 @@ function resync(liste) {
 
     notificationServices.resync(liste, caisse.uniqid)
     .then(
-      response => { logger.log('resync', response) }
+      response => { logger.info('resync', response) }
     )
   }
 }
@@ -501,7 +502,7 @@ function checkStation() {
     .then(
       response => {
 
-        logger.log('station status', response);
+        logger.info('station status', response);
 
         // si la réponse est négative
         if (response.status==='error') {
@@ -551,10 +552,10 @@ function initSyncClotures() {
         results => {
           const {clotures} = results;
 
-          logger.log('initSyncClotures', clotures.length);
+          logger.info('initSyncClotures', clotures.length);
           if (clotures.length>0) {
 
-            logger.log('preparation des clotures à envoyer au backo');
+            logger.info('preparation des clotures à envoyer au backo');
 
             const cloturesWOcmdtoarchive = clotures.map(c => {
                 return {...c,
@@ -571,7 +572,7 @@ function initSyncClotures() {
         }
       )
     } else {
-      logger.log('role secondary : pas de synchro clotures');
+      logger.info('role secondary : pas de synchro clotures');
     }
   };
 }
@@ -595,7 +596,7 @@ function syncClotures(clotures) {
         }
       )
     } else {
-      logger.log('role secondary : pas de synchro clotures');
+      logger.info('role secondary : pas de synchro clotures');
     }
   }
 }

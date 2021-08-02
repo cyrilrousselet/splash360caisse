@@ -10,11 +10,12 @@ import Swal from 'sweetalert2';
 
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
-import Logger from '../../helpers/Logger';
+// import Logger from '../../helpers/Logger';
+import logger from '../../helpers/Logger';
 import Calculette from '../Encaissement/Calculette';
 import {devise} from '../../helpers/toolbox';
 
-const logger = new Logger();
+// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 
@@ -105,7 +106,7 @@ class MouvementPopin extends React.Component {
     } else {
       this.setState({origine: selcaisse});
     }
-    logger.log('_selectCaisse', (type === "entree") ? `-> ${ selcaisse.nom}` : `${ selcaisse.nom} ->`);
+    logger.info('_selectCaisse', (type === "entree") ? `-> ${ selcaisse.nom}` : `${ selcaisse.nom} ->`);
   }
 
   _selectExternal(event) {
@@ -118,13 +119,13 @@ class MouvementPopin extends React.Component {
     } else {
       this.setState({destination: event.target.value});
     }
-    logger.log('_selectExternal', (type === "entree") ? `${ event.target.value } ->` : `-> ${ event.target.value }` );
+    logger.info('_selectExternal', (type === "entree") ? `${ event.target.value } ->` : `-> ${ event.target.value }` );
   }
 
   _calculetteClick(value) {
     let __t = this.state.montant;
     let __i = true;
-    console.log('montant avt', __t);
+    logger.info('montant avt', __t);
 
     switch (value) {
       case "c":
@@ -140,7 +141,7 @@ class MouvementPopin extends React.Component {
       default:
         __t = Number(((__t * 10) + (value / 100)).toFixed(2));
     }
-    console.log('montant', __t, value);
+    logger.info('montant', __t, value);
     this.setState({ montant: __t, input: __i });
   }
 
@@ -165,7 +166,7 @@ class MouvementPopin extends React.Component {
     
     if (type==="ouverture" && caisse) _destination = caisse;
     
-    console.log('type dest/orig', type, _destination, origine);
+    logger.info('type dest/orig', type, _destination, origine);
 
     const _disableValidation = _destination===null || origine===null;
 
@@ -180,7 +181,7 @@ class MouvementPopin extends React.Component {
       if ((mouvement.lastMontant/100) !== montant) {
         _ecart = true;
       }
-      logger.log('ecart ouverture ?', mouvement.lastMontant/100, montant, _ecart);
+      logger.info('ecart ouverture ?', mouvement.lastMontant/100, montant, _ecart);
     }
 
     return (
@@ -306,7 +307,7 @@ class MouvementPopin extends React.Component {
                         buttonsStyling: false,
                         reverseButtons: true,
                       }).then((result)=> {
-                        console.log('alerte', result)
+                        logger.warn('alerte', result)
                         if (result.isConfirmed) {
                           this._saveMouvement();
                         }
