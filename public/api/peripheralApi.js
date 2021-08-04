@@ -317,7 +317,8 @@ function _openDrawer(imprimante, template, contenu) {
 
   device.open(function(error) {
     if (error) {
-      log.error(`ERREUR IMPRIMANTE->TIROIR (${imprimante.connexion}: ${imprimante.param}) =>`, error.message);
+      log.warn(`ERREUR IMPRIMANTE->TIROIR (${imprimante.connexion}: ${imprimante.param})`);
+      log.error(error.message);
     } else {
       log.info('device open -> cashdraw()');
       printerOpen = true;
@@ -367,7 +368,7 @@ function _doPrintTicket(imprimante, template, contenu) {
     
   } catch(e) {
     log.warn(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`);
-    log.error(e);
+    log.error(e.message);
   }
 
   log.info('printTicket start');
@@ -392,7 +393,8 @@ function _doPrintTicket(imprimante, template, contenu) {
         device.open(async function(error) {
 
           if (error) {
-            log.error(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`, error.message);
+            log.warn(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`);
+            log.error(error.message);
           } else {
             
             printerOpen = true;
@@ -426,7 +428,8 @@ function _doPrintTicket(imprimante, template, contenu) {
       device.open(function(error) {
 
         if (error) {
-          log.error(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`, error.message);
+          log.warn(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`);
+          log.error(error.message);
         } else {
 
           log.info(`DEVICE OPEN (${imprimante.connexion}: ${imprimante.param})`);
