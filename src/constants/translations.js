@@ -788,14 +788,14 @@ const data = {
                     ingredient: {
                         titre: 'Édition d’ingrédient',
                         nom: 'Nom :',
-                        valeur: 'Supplement :',
+                        valeur: 'Supplement TTC :',
                         couleur: 'Couleur :',
                         asproduct: 'Afficher comme un produit'
                     },
                     produit: {
                         titre: 'Édition de produit',
                         nom: 'Nom :',
-                        valeur: 'Prix :',
+                        valeur: 'Prix TTC :',
                         couleur: 'Couleur :'
                     },
                     couleurs: {

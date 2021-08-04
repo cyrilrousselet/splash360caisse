@@ -78,7 +78,7 @@ class Dashboard extends Component {
     const ca_eval = "good";
 
     // logger.timeEnd('clotureActions after getTodayCa');
-    logger.info(ca_eval);
+    logger.dump("ca_eval",ca_eval);
     //  logger.info(ca);
 
     return (

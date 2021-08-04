@@ -118,6 +118,37 @@ function syncDispatch(db, data, emitter=null) {
 
       if ((['ingredient','produit']).includes(db)) {
         // update Produit / Ingredient sur BO
+
+        // si le prixArray / supplementArray a des valeurs sous forme de chaîne, c'est qu'on est en euros.
+        // on doit donc créer un prixArray_c / supplementArray_c en centimes à partir de ces valeurs.
+
+        if (db === "produit") {
+          let prixArray_c = data.prixArray;
+          if (typeof data.prixArray[0].ttc === 'string') {
+            prixArray_c = data.prixArray.map(prix => (
+              {
+                ttc: Math.round(Number(prix.ttc) * 100),
+                ht: Math.round(Number(prix.ht) * 100),
+                tva: Math.round(Number(prix.ttc) * 100) - Math.round(Number(prix.ht) * 100)
+              }
+            ));
+          }
+          data = {...data, prixArray_c};
+        }
+        else if (db === "ingredient") {
+          let supplementArray_c = data.supplementArray;
+          if (typeof data.supplementArray[0].ttc === 'string') {
+            supplementArray_c = data.supplementArray.map(supp => (
+              {
+                ttc: Math.round(Number(supp.ttc) * 100),
+                ht: Math.round(Number(supp.ht) * 100),
+                tva: Math.round(Number(supp.ttc) * 100) - Math.round(Number(supp.ht) * 100)
+              }
+            ));
+          }
+          data = {...data, supplementArray_c};
+        }
+
         notificationServices.syncCatalogue({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret, catalogue:{db:db, data:data}})
         .then(
           response => {

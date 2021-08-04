@@ -71,6 +71,10 @@ import {remote} from 'electron';
 import mkdirp from 'mkdirp';
 import { LEVEL, MESSAGE }  from 'triple-beam';
 
+import { get, parse } from 'stack-trace';
+const trace = get();
+// const stack = parse({stack:trace});
+
 const {app} = remote;
 const { combine, timestamp, printf, colorize, label } = format;
 
@@ -142,7 +146,19 @@ const errors = format((einfo, { stack }) => {
 });
 
 
+// const getStack = format(info=>{
+//   // const stack = stackTrace.get();
+//   let __o = {};
+//   Error.captureStackTrace(__o);
+//   const __tr = __o.stack;
 
+//   let formattedTrace = '\nStack:\n |  '+__tr;
+//   // let formattedTrace = '\nStack:\n |  '+__tr[0].properties;
+//   // let formattedTrace = '\nStack:\n |  '+__tr.map(t=>t.toString()).filter(s=>!s.includes('__webpack_require__')).join('\n |  ');
+
+//   info.stack = formattedTrace;
+//   return info;
+// });
 
 
 let consoleOut = format.combine(
@@ -153,6 +169,7 @@ let consoleOut = format.combine(
       format:"HH:MM:SS.SSS"
   }),
   label({label:'[REND.]'}),
+  // getStack(),
   printf(
       info => `${info.timestamp} ${info.label} >  ${info.level} : ${info.message}${(info.stack ? ' - '+info.stack : '')}`
   )
@@ -161,6 +178,7 @@ const fileOut = format.combine(
   errors({stack: true}),
   timestamp(),
   label({label:'[REND.]'}),
+  // getStack(),
   printf(
       info => `${info.timestamp} ${info.label} >  ${info.level} : ${info.message}${(info.stack ? ' - '+info.stack : '')}`
   )
@@ -209,14 +227,36 @@ const logger = {
     } else { 
       winstonlogger.log(...args);
     }
+    if (process.env.NODE_ENV !== 'production') {
+      console.trace(...args);
+    }
   },
-  info:  (...args) => { winstonlogger.info(...args)  },
-  warn:  (...args) => { winstonlogger.warn(...args)  },
-  error: (...args) => { winstonlogger.error(...args) },
+  info:  (...args) => { 
+   
+    winstonlogger.info(JSON.stringify([...args], null, 2));  
+    if (process.env.NODE_ENV !== 'production') {
+      console.trace(...args);
+    }
+  },
+  warn:  (...args) => { 
+    winstonlogger.warn(JSON.stringify(...args, null, 2));
+    if (process.env.NODE_ENV !== 'production') {
+      console.trace(...args);
+    }
+  },
+  error: (...args) => { 
+    winstonlogger.error(...args);
+    if (process.env.NODE_ENV !== 'production') {
+      console.trace(...args);
+    }
+  },
   profile: (...args) => { winstonlogger.profile(...args) },
   startTimer: (...args) => { winstonlogger.startTimer(...args) },
   done: (...args) => { winstonlogger.done(...args) },
   winston: () => winstonlogger,
+  dump: (msg, ...args) => {
+    winstonlogger.info(msg+' => '+JSON.stringify(...args, null, 2));
+  }
 }
 
 

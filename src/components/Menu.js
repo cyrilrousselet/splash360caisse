@@ -58,7 +58,9 @@ class MenuItemModal extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
-        valeur: null,
+        valeur_p: null,
+        valeur_e: null,
+        valeur_l: null,
         couleur: null
       };
       this.updateItem = this.updateItem.bind(this);
@@ -70,25 +72,59 @@ class MenuItemModal extends React.Component {
     }
   
     updateItem() {
-      const { id, type, item, updateItem } = this.props;
-      const { valeur, couleur, asproduct } = this.state;
+      const { id, type, item, tva, updateItem } = this.props;
+      const { valeur_p, valeur_e, valeur_l, couleur, asproduct } = this.state;
   
-      logger.info('updateItem('+type+')',valeur, couleur);
+      logger.dump('updateItem('+type+')',valeur_p, valeur_e, valeur_l, couleur);
 
-      let nvaleur = 0;
+      let nvaleur_p = 0;
+      let nvaleur_e = 0;
+      let nvaleur_l = 0;
       let ncouleur = couleur!==null ? couleur : item.color;
       let nasproduct = null;
       
       if (type==='ingredient') {
-        nvaleur = valeur!==null ? valeur : item.supplement;
+
+        nvaleur_p = valeur_p!==null ? valeur_p : item.supplementArray[0].ttc;
+        nvaleur_e = valeur_e!==null ? valeur_e : item.supplementArray[1].ttc;
+        nvaleur_l = valeur_l!==null ? valeur_l : item.supplementArray[2].ttc;
         nasproduct = asproduct!==null ? asproduct : false;
+
         logger.info('updateItem ingredient');
-        updateItem({ingredient_id:id, update:{supplement:nvaleur, color:ncouleur, asproduct:nasproduct}})
+
+        const tva_p = Number(tva[item.tvaArray[0]].valeur);
+        const tva_e = Number(tva[item.tvaArray[1]].valeur);
+        const tva_l = Number(tva[item.tvaArray[2]].valeur);
+
+        const __supp = [
+          {ttc: Number(nvaleur_p).toFixed(2), ht: (nvaleur_p / ( 1 + tva_p )).toFixed(2)},
+          {ttc: Number(nvaleur_e).toFixed(2), ht: (nvaleur_e / ( 1 + tva_e )).toFixed(2)},
+          {ttc: Number(nvaleur_l).toFixed(2), ht: (nvaleur_l / ( 1 + tva_l )).toFixed(2)}
+        ]
+
+        updateItem({ingredient_id:id, update:{supplementArray:__supp, color:ncouleur, asproduct:nasproduct}});
+
       }
       else if (type==='produit') {
-        nvaleur = valeur!==null ? valeur : item.prix;
-        logger.info('updateItem produit');
-        updateItem({produit_id:id, update:{prix:nvaleur, color:ncouleur}})
+
+        nvaleur_p = valeur_p!==null ? valeur_p : item.prixArray[0].ttc;
+        nvaleur_e = valeur_e!==null ? valeur_e : item.prixArray[1].ttc;
+        nvaleur_l = valeur_l!==null ? valeur_l : item.prixArray[2].ttc;
+
+        logger.dump('updateItem produit',nvaleur_p,nvaleur_e,nvaleur_l);
+
+        const tva_p = Number(tva[item.tvaArray[0]].valeur);
+        const tva_e = Number(tva[item.tvaArray[1]].valeur);
+        const tva_l = Number(tva[item.tvaArray[2]].valeur);
+
+        const __prix = [
+          {ttc: Number(nvaleur_p).toFixed(2), ht: (nvaleur_p / ( 1 + tva_p )).toFixed(2)},
+          {ttc: Number(nvaleur_e).toFixed(2), ht: (nvaleur_e / ( 1 + tva_e )).toFixed(2)},
+          {ttc: Number(nvaleur_l).toFixed(2), ht: (nvaleur_l / ( 1 + tva_l )).toFixed(2)}
+        ];
+
+        updateItem({produit_id:id, update:{prixArray:__prix, color:ncouleur}});
+
       }
 
       this.resetPopin();
@@ -96,17 +132,17 @@ class MenuItemModal extends React.Component {
   
     }
     resetPopin() {
-      this.setState({valeur:null, couleur:null, asproduct:false});
+      this.setState({valeur_p:null, valeur_e:null, valeur_l:null, couleur:null, asproduct:false});
     }
-    changeHandler(params) {
-     // logger.info('CommentModal.changeHandler()', event.target.value);
-      this.setState({valeur: params.value});
+    changeHandler(name,value) {
+      logger.dump('MenuItemModal.changeHandler()', value);
+      this.setState({[name]: Number(value)});
     }
     asprodHandler(isChecked) {
       this.setState({asproduct: isChecked });
     }
     onKeyboardChange(input) {
-      logger.info("Valeur Input changed", input);
+      logger.dump("Valeur Input changed", input);
       this.setState({ valeur:input });
     };
     handleChangeCouleur(event) {
@@ -116,15 +152,20 @@ class MenuItemModal extends React.Component {
     render() {
   
       const { item, type, closeHandler, open, clavierOpen } = this.props;
-      const { valeur, couleur, asproduct } = this.state;
+      const { valeur_p, valeur_e, valeur_l, couleur, asproduct } = this.state;
   
-      let vvaleur = '';
+      let vvaleur_p = '';
+      let vvaleur_e = '';
+      let vvaleur_l = '';
       let vcouleur = '';
       let vasproduct = false;
+      console.log('MenuItemModal.render() type',type)
       if (item) {
-        vvaleur = (valeur===null || valeur===undefined) ? (type==='ingredient') ? item.supplement : item.prix : valeur;
+        vvaleur_p = (valeur_p===null || valeur_p===undefined) ? ((type==='ingredient') ? item.supplementArray[0].ttc : item.prixArray[0].ttc) : valeur_p;
+        vvaleur_e = (valeur_e===null || valeur_e===undefined) ? ((type==='ingredient') ? item.supplementArray[1].ttc : item.prixArray[1].ttc) : valeur_e;
+        vvaleur_l = (valeur_l===null || valeur_l===undefined) ? ((type==='ingredient') ? item.supplementArray[2].ttc : item.prixArray[2].ttc) : valeur_l;
         vcouleur = (couleur===null || couleur===undefined) ? item.color : couleur;
-        vasproduct = (asproduct===null || asproduct===undefined) ? (type==='ingredient') ? item.asproduct : false : asproduct;
+        vasproduct = (asproduct===null || asproduct===undefined) ? ((type==='ingredient') ? item.asproduct : false) : asproduct;
         if (vasproduct===null || vasproduct===undefined) vasproduct = false;
       }
   
@@ -148,13 +189,31 @@ class MenuItemModal extends React.Component {
               <div className="item-nom">{ item.nom }</div>
               <div className="form-group">
                   <LabelledField
-                      label={ strings.modules.menu.edit[type].valeur}
-                      name="valeur"
+                      label={ strings.modules.menu.edit[type].valeur+' '+strings.modules.encaissement.panier.mode.surplace }
+                      name="valeur_p"
                       className="valeur-input"
-                      value={vvaleur}
+                      value={vvaleur_p}
                       postvalue="€"
                       type="text"
-                      onChange={this.changeHandler}
+                      onChange={({value}) => {this.changeHandler('valeur_p',value)}}
+                    />
+                  <LabelledField
+                      label={ strings.modules.menu.edit[type].valeur+' '+strings.modules.encaissement.panier.mode.emporter }
+                      name="valeur_e"
+                      className="valeur-input"
+                      value={vvaleur_e}
+                      postvalue="€"
+                      type="text"
+                      onChange={({value}) => {this.changeHandler('valeur_e',value)}}
+                    />
+                  <LabelledField
+                      label={ strings.modules.menu.edit[type].valeur+' '+strings.modules.encaissement.panier.mode.livraison }
+                      name="valeur_l"
+                      className="valeur-input"
+                      value={vvaleur_l}
+                      postvalue="€"
+                      type="text"
+                      onChange={({value}) => {this.changeHandler('valeur_l',value)}}
                     />
               </div>
               <div className="form-group color">
@@ -199,7 +258,7 @@ class MenuItemModal extends React.Component {
           </Fab>
         </div>
       </Modal>  
-      {(clavierOpen && open) && <Clavier onChange={this.onKeyboardChange} className="ClavierMenuItem" defaultLayout="numeric" baseClass="KBComment" inputName="valeur" inputVal={vvaleur} open={open && clavierOpen} />}
+      {/* (clavierOpen && open) && <Clavier onChange={this.onKeyboardChange} className="ClavierMenuItem" defaultLayout="numeric" baseClass="KBComment" inputName="valeur" inputVal={vvaleur} open={open && clavierOpen} /> */}
       </div>
       );
     }
@@ -259,26 +318,26 @@ class Menu extends React.Component {
     const {categories} = this.props;
     const {categorie} = this.state;
     const defCat = categorie || categories[0].categorie_id;
-    logger.info('changeDispoProduit()', id, defCat.substr(3));
+    logger.dump('changeDispoProduit()', id, defCat.substr(3));
     
     const produit = this.getProduit(id);
     this.props.updateProduit({produit_id:id, update:{active:produit.active===1?0:1}, catalogue:defCat.substr(3)});
   }
   editProduit(id) {
-    logger.info('editProduit()', id);
+    logger.dump('editProduit()', id);
   }
   changeDispoIngredient(id) {
     const {categories} = this.props;
     const {categorie} = this.state;
     const defCat = categorie || categories[0].categorie_id;
-    logger.info('changeDispoIngredient()', id, defCat.substr(3));
+    logger.dump('changeDispoIngredient()', id, defCat.substr(3));
 
     const {ingredients} = this.props;
     const ingredient = ingredients[id];
     this.props.updateIngredient({ingredient_id:id, update:{active:ingredient.active===1?0:1}, catalogue:defCat.substr(3)});
   }
   editIngredient(id) {
-    logger.info('editIngredient()', id);
+    logger.dump('editIngredient()', id);
   }
 
   getProduit(id) {
@@ -335,7 +394,7 @@ class Menu extends React.Component {
     const defCat = categorie || categories[0].categorie_id;
 
     const produit = this.getProduit(id);
-    logger.info('produit',produit);
+    logger.dump('produit',produit);
 
     if(produit.noprint === undefined || produit.noprint === null) {
       produit.noprint = [];
@@ -390,7 +449,7 @@ class Menu extends React.Component {
     const defCat = categorie || categories[0].categorie_id;
 
     const ingredient = ingredients[id];
-    logger.info('ingredient',ingredient);
+    logger.dump('ingredient',ingredient);
 
     if(ingredient.noprint === undefined || ingredient.noprint === null) {
       ingredient.noprint = [];
@@ -550,7 +609,7 @@ class Menu extends React.Component {
     const {editType, categorie} = this.state;
     
     const defCat = categorie || categories[0].categorie_id;
-    logger.info('updateMenuItem()',params, defCat.substr(3))
+    logger.dump('updateMenuItem()',params, defCat.substr(3))
     
     if (editType==='ingredient') {
       this.props.updateIngredient({...params, catalogue:defCat.substr(3)});
@@ -562,7 +621,7 @@ class Menu extends React.Component {
 
  render() {
 
-  const { catalogue, categories, ingredients, ingredientTypes, tickets, clavier, updateIngredientType, noprintAllowed } = this.props;
+  const { catalogue, tva, categories, ingredients, ingredientTypes, tickets, clavier, updateIngredientType, noprintAllowed } = this.props;
   const { openTab, categorie, itemId, editItem, editOpen, editType } = this.state;
 
   const defCat = categorie || categories[0].categorie_id;
@@ -585,7 +644,7 @@ class Menu extends React.Component {
       }
     });
 
-  logger.info(inglist);
+  logger.dump('inglist',inglist);
 
   const a11yProps = (index) => {
     return {
@@ -627,7 +686,7 @@ class Menu extends React.Component {
             </TabPanel>
           </div>
       </div>
-      <MenuItemModal id={itemId} type={editType} item={editItem} clavierOpen={clavier} open={editOpen} closeHandler={this.closeEdit} updateItem={this.updateMenuItem} />
+      <MenuItemModal id={itemId} type={editType} tva={tva} item={editItem} clavierOpen={clavier} open={editOpen} closeHandler={this.closeEdit} updateItem={this.updateMenuItem} />
     </div>
     );
   }
@@ -763,7 +822,7 @@ function MenuListe(props) {
               <ListItemIcon>
                 <LensIcon className={`couleur ${p.color}`} />
               </ListItemIcon>
-              <ListItemText id={p.id} onClick={ () => { editOpen('produit', p.id) } } primary={p.nom} secondary={ `${devise(Number(p.prix))} €`} />
+              <ListItemText id={p.id} onClick={ () => { editOpen('produit', p.id) } } primary={p.nom} secondary={ `${ strings.modules.encaissement.panier.mode.surplace } : ${devise(Number(p.prixArray[0].ttc))} € - ${ strings.modules.encaissement.panier.mode.emporter } : ${devise(Number(p.prixArray[1].ttc))} € - ${ strings.modules.encaissement.panier.mode.livraison } : ${devise(Number(p.prixArray[2].ttc))} €`} />
               <ListItemSecondaryAction>
                 <div className="cont-print">
                   {(noprintAllowed) && tickets.map(tck=>

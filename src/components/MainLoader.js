@@ -107,8 +107,8 @@ class MainLoader extends React.Component {
               let date = moment(expDate);
               let today = moment();
         
-              logger.info("expDate", date);
-              logger.info("today", today);
+              logger.dump("expDate", date);
+              logger.dump("today", today);
         
               if (date.isBefore(today)) {// if expire date < now
                 logger.info("date expiration dépassé, station doit etre bloquée");
@@ -121,7 +121,7 @@ class MainLoader extends React.Component {
                     blockStation();
                   })
                 }
-                logger.info("JOB BLOCK STATION", this._blockstation_job);
+                logger.dump("JOB BLOCK STATION", this._blockstation_job);
               }
             }
 

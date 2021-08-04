@@ -9,6 +9,7 @@ import { parametresActions } from '../services/parametres/parametresActions';
 const mapStateToProps = (state) => {
   return {
     catalogue: state.catalogueReducer.catalogue,
+    tva: state.catalogueReducer.tva,
     categories: state.catalogueReducer.categories,
     ingredients: state.catalogueReducer.ingredients,
     ingredientTypes: state.catalogueReducer.ingredientTypes,
