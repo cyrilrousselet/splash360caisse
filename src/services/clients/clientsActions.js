@@ -1,12 +1,10 @@
 import { clientsActionTypes } from './clientsActionTypes';
 import { clientsServices } from './clientsServices';
 import { commandeActions } from './../commande/commandeActions';
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 import { notificationActions } from '../notification/notificationActions';
 import { secteursActionTypes } from './secteursActionTypes';
 
-// const logger = new Logger();
 
 function getClientsList(params={}) {
 

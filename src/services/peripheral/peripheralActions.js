@@ -15,10 +15,8 @@ import {data} from '../../constants/translations';
 // import { commandeActions } from '../commande/commandeActions';
 import { remove } from 'diacritics';
 import { lowerCase } from 'lodash';
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 import { commandeServices } from '../commande/commandeServices';
-// const logger = new Logger();
 const removeDiacritics = remove;
 const strings = new LocalizedStrings(data);
 

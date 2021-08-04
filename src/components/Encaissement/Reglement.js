@@ -7,7 +7,6 @@ import LocalizedStrings from "react-localization";
 import Swal from "sweetalert2";
 import { decodetable } from "../../constants/decodetable";
 import { data } from "../../constants/translations";
-// import Logger from "../../helpers/Logger";
 import logger from "../../helpers/Logger";
 import CarteIcon from "../common/icon/CarteIcon";
 import ChequeIcon from "../common/icon/ChequeIcon";
@@ -19,7 +18,6 @@ import PillButton from "../common/PillButton";
 import StdButton from "../common/StdButton";
 import Calculette from "./Calculette";
 
-// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 

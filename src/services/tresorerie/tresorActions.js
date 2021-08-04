@@ -5,10 +5,8 @@ import { isBefore } from "date-fns";
 
 import { notificationActions } from '../notification/notificationActions';
 
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 import { commandeServices } from "../commande/commandeServices";
-// const logger = new Logger();
 
 
 function addTresor(payload) {

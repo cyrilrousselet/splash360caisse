@@ -1,6 +1,5 @@
 import { catalogueActionTypes } from './catalogueActionTypes';
 import { catalogueServices } from './catalogueServices';
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 import { notificationActions } from '../notification/notificationActions';
 
@@ -8,7 +7,6 @@ import { parametresActions } from '../parametres/parametresActions';
 import { parametresActionTypes } from '../parametres/parametresActionTypes';
 // import { result } from 'lodash';
 
-// const logger = new Logger();
 
 
 function replaceDatabase(database) {

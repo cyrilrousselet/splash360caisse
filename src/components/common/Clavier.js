@@ -4,10 +4,8 @@ import KeyboardReact from 'react-simple-keyboard';
 import layout from 'simple-keyboard-layouts/build/layouts/french';
 import 'react-simple-keyboard/build/css/index.css';
 import { Drawer } from '@material-ui/core';
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 
-// const logger = new Logger();
 
 
 const NUMERIC_LAYOUT = {

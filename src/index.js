@@ -45,7 +45,6 @@ if (!isDev) {
   logger.info('mode DEV')
 }
 
-// const logger = new Logger();
 
 //const {store, persistor} = configureStore();
 const {store} = configureStore();

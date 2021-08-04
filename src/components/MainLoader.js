@@ -1,14 +1,12 @@
 import React from 'react';
 
 import LoadingSpinner from './common/LoadingSpinner';
-// import Logger from '../helpers/Logger';
 import logger from '../helpers/Logger';
 import Swal from 'sweetalert2';
 import schedule from 'node-schedule';
 // import { data } from '../constants/translations';
 import moment from 'moment';
 
-// const logger = new Logger();
 
 
 
@@ -61,7 +59,7 @@ class MainLoader extends React.Component {
       online
     } = this.props;
 
-    logger.info("DEBUT checkInstallation");
+    logger.dump("DEBUT checkInstallation");
 
   
 
@@ -71,12 +69,12 @@ class MainLoader extends React.Component {
     let readytolaunch = dbupdated || null;
 
     if (!paramLoaded) {
-      logger.info("GONNA GET PARAMETRES");
+      logger.dump("GONNA GET PARAMETRES");
       this.props.getParametres();
     }
 
     if(paramLoaded) {
-      logger.info("PARAM LOADED");
+      logger.dump("PARAM LOADED");
 
       
 
@@ -85,12 +83,12 @@ class MainLoader extends React.Component {
       // }
  
       if(paramsEntreprise.restaurant_id==="" || paramsEntreprise.restaurant_secret==="") {
-        logger.info("NO ID SECRET, GONNA INSTALL STATION");
+        logger.dump("NO ID SECRET, GONNA INSTALL STATION");
         // installStation
         this.props.installStation(); // popin + requête au bo + update id et secret
       }
       else {
-        logger.info("ID SECRET OK");
+        logger.dump("ID SECRET OK");
         
         if (statuschecked===false) {
           getStatus();
@@ -100,7 +98,7 @@ class MainLoader extends React.Component {
             testConnection();
           }
           else { 
-            logger.info("GONNA CHECK EXPIRE DATE");
+            logger.dump("GONNA CHECK EXPIRE DATE");
         
             let expDate = localStorage.getItem("expireDate");
             if (expDate != null) { // if expiredate != null
@@ -111,24 +109,23 @@ class MainLoader extends React.Component {
               logger.dump("today", today);
         
               if (date.isBefore(today)) {// if expire date < now
-                logger.info("date expiration dépassé, station doit etre bloquée");
+                logger.dump("date expiration dépassé, station doit etre bloquée");
                 blockStation();// block station
               }
               else { // schedule block
-                logger.info("schedule block");
+                logger.dump("schedule block");
                 if(this._blockstation_job===null) {
                   this._blockstation_job = schedule.scheduleJob("blockstationJob", expDate, () => {
                     blockStation();
                   })
                 }
-                logger.dump("JOB BLOCK STATION", this._blockstation_job);
               }
             }
 
             const status = localStorage.getItem('status');
           
             if (sseInit===false) {
-              logger.info("GONNA INIT SSE");
+              logger.dump("GONNA INIT SSE");
               first_start = params.first_start;
               this.props.initSSE();
               this.props.setPOS();
@@ -138,7 +135,7 @@ class MainLoader extends React.Component {
             }
         
             if (status==="authorized" && first_start===true && dbgetInit===false){
-              logger.info("GONNA GET DATABASE");
+              logger.dump("GONNA GET DATABASE");
               this.props.getDatabase();
             }
             else if(status === null || status === "pending"){
@@ -211,7 +208,6 @@ class MainLoader extends React.Component {
   }
 
   componentDidMount() {
-    logger.info("componentDidMount");
 
     const { 
       checkFinDeService,
@@ -233,7 +229,7 @@ class MainLoader extends React.Component {
     }
 
     if (this._getstatus_job===null) {
-      logger.info("GONNA START SCHEDULE");
+      logger.dump("GONNA START SCHEDULE");
       this._getstatus_job = schedule.scheduleJob('0 0 6 * * *', () => { //récupérer le status de la caisse sur le bo
         getStatus();
       })
@@ -242,7 +238,7 @@ class MainLoader extends React.Component {
     if(this._checkinternetconnection_job===null) {
       this._checkinternetconnection_job = schedule.scheduleJob('*/1 * * * *', () => {
         // check internet with ping to bo
-        logger.info("job test connection");
+        logger.dump("job test connection");
         testConnection();
       });
     }
@@ -251,7 +247,6 @@ class MainLoader extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    logger.info("componentDidUpdate");
     this.checkInstallation("update");
   }
 

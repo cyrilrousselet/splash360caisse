@@ -23,7 +23,6 @@ import Clavier from '../common/Clavier';
 import {devise} from '../../helpers/toolbox';
 import TableIcon from '../common/icon/TableIcon';
 import BellIcon from '../common/icon/BellIcon';
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 import CommentRemoveIcon from '../common/icon/CommentRemoveIcon';
 import NumberKeyboard from '../common/NumberKeyboard';
@@ -35,7 +34,7 @@ import { decodetable } from '../../constants/decodetable';
 import MouvementPopin from '../Cloture/MouvementPopin';
 import EmployeIcon from '../common/icon/EmployeIcon';
 import LoginCont from '../../containers/LoginCont';
-import { dateBounds } from '../../helpers/toolbox';
+import { dateBounds, toEuros, toCentimes } from '../../helpers/toolbox';
 import frLocale from "date-fns/locale/fr";
 import { MuiPickersUtilsProvider, TimePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
@@ -45,7 +44,6 @@ import { add, isBefore } from 'date-fns';
 
 
 let strings = new LocalizedStrings(data);
-// const logger = new Logger();
 
 
 class LocalizedDayUtils extends DateFnsUtils {
@@ -363,7 +361,7 @@ class CommentModal extends React.Component {
 
   onKeyboardChange(input) {
     this.setState({ texte:input });
-    logger.info("Comment Input changed", input);
+    logger.dump("Comment Input changed", input);
   };
 
   render() {
@@ -510,11 +508,11 @@ class DiscountModal extends React.Component {
     const { discountid, item, ingredient, dsclib, closeHandler, discountval, discountnom, open } = this.props;
     const { valeur, nom } = this.state;
 
-    logger.info('dsclib',dsclib);
+    logger.dump('dsclib',dsclib);
 
     const vvaleur = valeur===null ? discountval : valeur;
     const vnom = nom==='' ? discountnom : nom;
-    logger.info('discountval', discountval);
+    logger.dump('discountval', discountval);
 
     // setTimeout(() => {
     //   if (this.refs.commentInput) this.refs.commentInput.focus();
@@ -704,12 +702,12 @@ class Panier extends React.Component {
 
 
         if (__forceItem) {
-          logger.info('Panier.componentDidUpdate(), modif de personnalisation DEMANDÉE', __forceItem);
+          logger.dump('Panier.componentDidUpdate(), modif de personnalisation DEMANDÉE', __forceItem);
           __stepToRun = __forceItem.steps.find(step => step.checked===false );
           __item = __forceItem;
         }
          else if (__pendingItem) {
-          logger.info('Panier.componentDidUpdate(), pas de modif de personnalisation', __pendingItem);
+          logger.dump('Panier.componentDidUpdate(), pas de modif de personnalisation', __pendingItem);
           __stepToRun = __pendingItem.steps.find(step => step.checked===false );
           __item = __pendingItem;
         }
@@ -842,8 +840,8 @@ class Panier extends React.Component {
             // __itemtotal *= (100 - val) / 100;
             __itemtotal *= __moditem.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
           } else {
-            // __itemtotal -= val;
-            __itemtotal = __moditem.operation>0 ? __itemtotal + val : __itemtotal - val;
+            // ATTENTION : les valeurs numéraires des modificateurs sont en euros
+            __itemtotal = __moditem.operation>0 ? __itemtotal + toCentimes(val) : __itemtotal - toCentimes(val);
           }
         }
         __total += __itemtotal;
@@ -861,7 +859,8 @@ class Panier extends React.Component {
       if (ispc) {
         __total *= modpanier.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
       } else {
-        __total = modpanier.operation>0 ? __total + val : __total - val;
+        // ATTENTION : les valeurs numéraires des modificateurs sont en euros
+        __total = modpanier.operation>0 ? __total + toCentimes(val) : __total - toCentimes(val);
       }
     }
     
@@ -984,7 +983,7 @@ class Panier extends React.Component {
     const {clavier} = this.props.parametres.entreprise;
     const {selectedIndex, selectedIngredient, ingredientid} = this.state;
 
-    logger.info('openComment selectedIngredient', selectedIngredient);
+    logger.dump('openComment selectedIngredient', selectedIngredient);
 
     // récup des id d'item et d'ingrédients en fonction de la sélection du panier
     const itemid = (selectedIndex>-1) ? items[selectedIndex].itemid : null;
@@ -1031,7 +1030,7 @@ class Panier extends React.Component {
   }
 
   removeComment(itemid, ingredientid=null) {
-    logger.info('removeComment', itemid, ingredientid);
+    logger.dump('removeComment', itemid, ingredientid);
     const {comments} = this.props.commande;
     const cmt = comments.find(c => (c.item===itemid && c.ingredient===ingredientid));
 
@@ -1117,7 +1116,7 @@ class Panier extends React.Component {
     if (isBefore(heure,__end)) {
       __enproduction = true;
     }
-    logger.info('SETSCH', __end, heure, __enproduction);
+    logger.dump('SETSCH', __end, heure, __enproduction);
     
     this.props.updateCommande({scheduled:round_heure, enproduction:__enproduction});
     this.setState({scheduleOpen: false});
@@ -1229,7 +1228,7 @@ class Panier extends React.Component {
       ]
     });
 
-    logger.info('daily_staffmeal', daily_staffmeal);
+    logger.dump('daily_staffmeal', daily_staffmeal);
 
     if (daily_staffmeal && daily_staffmeal.commandeslist && Object.entries(daily_staffmeal.commandeslist).length>0) {
 
@@ -1331,7 +1330,7 @@ class Panier extends React.Component {
     const gestion_bippers = (parametres && parametres.commandes) ? parametres.commandes.active_bippers : false;
     const schedule_delay = (parametres && parametres.commandes) ? (parametres.commandes.schedule_delay || 15) : 15;
 
-logger.info('⏰', schedule_delay);
+logger.dump('⏰', schedule_delay);
 
     const commandeClient = client ? clients.find(c=>c.client_id===client.client_id) : null;
 
@@ -1344,7 +1343,7 @@ logger.info('⏰', schedule_delay);
                        : true 
                      : true;
 
-    logger.info('searchval', searchval);
+    logger.dump('searchval', searchval);
 
     const total = this.calculateTotal(items, modificateurs);
     const devisemonnaie = '€';
@@ -1377,7 +1376,7 @@ logger.info('⏰', schedule_delay);
     // gestion du focus sur le champ de recherche (scan QR code)
     clearInterval(this.interval);
 
-    logger.info('inputfocus',inputfocus);
+    logger.dump('inputfocus',inputfocus);
     
     const self = this;
     if (inputfocus && (!items || items.length===0)) {      
@@ -1517,7 +1516,7 @@ logger.info('⏰', schedule_delay);
         const val = Math.abs(Number(String(__moditem.valeur).slice(0,-1)));
         __montant = ispc ? __itemtotal*(val/100) : val
         
-        logger.info('geDiscount', item.itemid)
+        logger.dump('getDiscount', item.itemid)
       }
       return __moditem ? {...__moditem, montant: devise(__montant)} : null;
     }
@@ -1897,7 +1896,7 @@ class PanierListeItem extends React.Component {
             { /*<div className="nom">{ `${nom} (${itemid.substr(0,5)})` }</div> */ }
             <div className="nom">{ `${nom}` }</div> 
             <div className="quantite">{quantite}</div> 
-            <div className="prix">{ prix.toFixed(2).replace('.',',') }</div>
+            <div className="prix">{ toEuros(prix) }</div>
           </div>
           {comment && <div className="litm-comment">{ `* ${comment} *` }<div className="cmtdel" onClick={()=>{removeComment(itemid)}}><CommentRemoveIcon htmlColor="#FF2D55" /></div></div>}
         </ListItem>
@@ -1993,7 +1992,7 @@ class PanierListeSubItem extends React.Component {
       <div className="lsitm row">
         <div className="nom">{ nom }</div>
         <div className="quantite">{ quantite }</div>
-        <div className="prix">{ prix.toFixed(2).replace('.',',') }</div>
+        <div className="prix">{ toEuros(prix) }</div>
       </div>
       {comment && <div className="lsitm-comment">{ `* ${comment} *` }<div className="cmtdel" onClick={_removeComment}><CommentRemoveIcon htmlColor="#FF2D55" /></div></div>}
     </ListItem>

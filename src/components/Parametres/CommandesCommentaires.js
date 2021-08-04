@@ -11,9 +11,8 @@ import CloseIcon from '../common/icon/CloseIcon';
 import StdButton from '../common/StdButton';
 import AddIcon from '../common/icon/AddIcon';
 import Clavier from '../common/Clavier';
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
-// const logger = new Logger();
+
 let strings = new LocalizedStrings(data);
 
 

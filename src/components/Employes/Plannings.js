@@ -24,9 +24,7 @@ import BackIcon from '../common/icon/BackIcon';
 import LockIcon from '../common/icon/LockIcon';
 import LockOpenIcon from '../common/icon/LockOpenIcon';
 
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
-// const logger = new Logger();
 
 
 

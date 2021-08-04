@@ -10,12 +10,10 @@ import Swal from 'sweetalert2';
 
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 import Calculette from '../Encaissement/Calculette';
 import {devise} from '../../helpers/toolbox';
 
-// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 

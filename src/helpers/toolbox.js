@@ -2,6 +2,9 @@ import { add, sub, endOfToday, endOfYesterday } from "date-fns";
 import { isInteger } from "lodash";
 
 export const devise = value => Number(value).toFixed(2).replace('.',',');
+
+export const toEuros = value => (Number(value)/100).toFixed(2).replace('.',',');
+export const toCentimes = value => Number(String(value).replace(',','.'))*100;
 // export const devise = (value, debug=false) => { 
 //   const dev = Number(value).toFixed(2).replace('.',',');
 //   return dev;

@@ -1,10 +1,8 @@
 import {emit} from 'eiphop';
 import externalParams from '../../constants/externalParams.json';
 import { create } from 'simple-oauth2';
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 
-// const logger = new Logger();
 
 export const notificationServices = {
   getToken,

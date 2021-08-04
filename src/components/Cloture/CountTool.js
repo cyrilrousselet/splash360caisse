@@ -10,10 +10,8 @@ import { devise } from './../../helpers/toolbox';
 import NumberKeyboard from '../common/NumberKeyboard';
 import Swal from 'sweetalert2';
 
-// import Logger from "../../helpers/Logger";
 import logger from "../../helpers/Logger";
 
-// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 

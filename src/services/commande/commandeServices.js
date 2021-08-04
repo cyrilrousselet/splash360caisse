@@ -2,13 +2,11 @@ import { emit } from "eiphop";
 import LodashId from "lodash-id";
 import LocalizedStrings from "react-localization";
 import { data } from "../../constants/translations";
-// import Logger from "../../helpers/Logger";
 import logger from "../../helpers/Logger";
 import {MODES} from '../../constants/commandeModes';
 import {add} from "date-fns";
 
 const strings = new LocalizedStrings(data);
-// const logger = new Logger();
 
 
 
@@ -72,6 +70,7 @@ function getNewCommande(params) {
     end: null,
     chrono: 0,
     total: 0,
+    ventilationTva: {},
     printnum: 0,
     mode: "surplace",
     status: "pending",
@@ -124,12 +123,12 @@ function getCommandesCaisses() {
 function addProduit(payload, tva, items, steps) {
   const { produitid, nom, prix, composition, customizable } = payload;
 
-  let mode = "";
+  let addmode = "";
   let item = {};
 
   // s'il s'agit d'un produit customisable, on crée un autre item
   if (customizable) {
-    mode = "add";
+    addmode = "add";
 
     let steps_list = [];
     steps.forEach((step) => {
@@ -163,7 +162,7 @@ function addProduit(payload, tva, items, steps) {
       return itm.produitid === produitid;
     });
     // si aucun item ne correspond, on l'ajoute
-    mode = "add";
+    addmode = "add";
     if (undefined === item) {
       item = {
         produitid: produitid,
@@ -181,11 +180,11 @@ function addProduit(payload, tva, items, steps) {
     // sinon on modifie la quantité de l'item
     else {
       item.quantite += 1;
-      mode = "update";
+      addmode = "update";
     }
   }
 
-  return { commandeItem: item, mode: mode };
+  return { commandeItem: item, addmode: addmode };
 }
 
 function updateProduit(payload, item) {

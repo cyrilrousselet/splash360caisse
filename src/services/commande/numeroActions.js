@@ -1,11 +1,9 @@
 import { numeroActionTypes } from './numeroActionTypes';
 import { numeroServices } from './numeroServices';
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 import { notificationActions } from '../notification/notificationActions';
 import { notificationServices } from '../notification/notificationServices';
 
-// const logger = new Logger();
 
 
 

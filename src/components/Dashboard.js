@@ -9,10 +9,8 @@ import ErrorBoundary from "./common/ErrorBoundary";
 import ConnectIcon from "./common/icon/ConnectIcon";
 import LargeButton from "./common/LargeButton";
 
-// import Logger from "../helpers/Logger";
 import logger from "../helpers/Logger";
 
-// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 

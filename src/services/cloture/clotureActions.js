@@ -8,7 +8,6 @@ import { peripheralActions } from '../peripheral/peripheralActions';
 // import LocalizedStrings from 'react-localization';
 // import {data} from '../../constants/translations';
 // import Swal from 'sweetalert2';
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 import { commandeServices } from '../commande/commandeServices';
 import { dateBounds, asyncForEach } from '../../helpers/toolbox';
@@ -16,7 +15,6 @@ import { notificationActions } from '../notification/notificationActions';
 // import { dateBounds } from '../../helpers/toolbox';
 // const strings = new LocalizedStrings(data);
 
-// const logger = new Logger();
 
 
 function getLast() {

@@ -8,6 +8,7 @@ import {MODES} from '../../constants/commandeModes';
 
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
+import { toEuros } from '../../helpers/toolbox';
 import logger from '../../helpers/Logger';
 let strings = new LocalizedStrings(data);
 
@@ -26,7 +27,7 @@ const ProduitBtn = ({ id, nom, prix, composition, color, onClick, disabled }) =>
     onClick={ () => {  if (!disabled) onClick(id)} }
   ><div className="btnlabel">
     <div className="nom">{ nom }</div>
-    <div className="supplt">{ Number(prix).toFixed(2).replace('.',',') }&nbsp;€</div>
+    <div className="supplt">{ toEuros(prix) }&nbsp;€</div>
     </div>
   </div>
 );

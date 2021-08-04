@@ -29,11 +29,9 @@ import StdButton from '../common/StdButton';
 import MouvementPopin from './MouvementPopin';
 import { dateBounds } from '../../helpers/toolbox';
 
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 // import {devise} from '../../helpers/toolbox';
 
-// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 

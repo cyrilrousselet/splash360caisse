@@ -15,7 +15,6 @@ import Swal from "sweetalert2";
 import paths from "../../constants/routes";
 import { data } from "../../constants/translations";
 import history from "../../helpers/history";
-// import Logger from "../../helpers/Logger";
 import logger from "../../helpers/Logger";
 import CarteIcon from "../common/icon/CarteIcon";
 import ChequeIcon from "../common/icon/ChequeIcon";
@@ -32,7 +31,6 @@ import CountTool from "./CountTool";
 import CountTRTool from "./CountTRTool";
 
 
-// const logger = new Logger();
 let strings = new LocalizedStrings(data);
 
 // class LocalizedUtils extends DateFnsUtils {

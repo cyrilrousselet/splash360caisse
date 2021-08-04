@@ -20,10 +20,8 @@ import NextIcon from '../common/icon/NextIcon';
 
 import {devise} from '../../helpers/toolbox';
 
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 
-// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 

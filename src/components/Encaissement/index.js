@@ -5,10 +5,8 @@ import SelecteurCont from '../../containers/SelecteurCont';
 import PanierCont from '../../containers/PanierCont';
 import ReglementCont from '../../containers/ReglementCont';
 import PersonnalisationCont from '../../containers/PersonnalisationCont';
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 
-// const logger = new Logger();
 
 class Encaissement extends React.Component {
 
@@ -24,6 +22,7 @@ class Encaissement extends React.Component {
       personnalisationPreviousStep: -1,
       personnalisationNextStep: -1,
       commandeItemToPersonnalize: null,
+      commandeMode: null,
       lockEncaissement: true,
     };
     this.openReglement = this.openReglement.bind(this);
@@ -119,6 +118,7 @@ class Encaissement extends React.Component {
             closePersonnalisation={ this.closePersonnalisation } 
             openPersonnalisation={ this.openPersonnalisation }
             layout={layout}
+            mode={ this.state.commandeMode }
           />
         </div>
       </div>

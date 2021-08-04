@@ -1,11 +1,9 @@
 import { tableActionTypes } from './tableActionTypes';
 import { tableServices } from './tableServices';
 
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 
 
-// const logger = new Logger();
 
 function getSallesList(params={}) {
 

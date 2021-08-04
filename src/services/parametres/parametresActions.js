@@ -2,7 +2,6 @@ import { parametresActionTypes } from './parametresActionTypes';
 import { parametresServices } from './parametresServices';
 import { commandeActions } from './../commande/commandeActions';
 import { peripheralActions } from '../peripheral/peripheralActions';
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 import Swal from 'sweetalert2';
 import moment from 'moment';
@@ -10,7 +9,6 @@ import schedule from 'node-schedule';
 import externalParams from '../../constants/externalParams.json';
 
 
-// const logger = new Logger();
 
 
 function replaceDatabase(database) {

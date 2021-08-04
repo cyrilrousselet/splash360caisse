@@ -71,9 +71,6 @@ import {remote} from 'electron';
 import mkdirp from 'mkdirp';
 import { LEVEL, MESSAGE }  from 'triple-beam';
 
-import { get, parse } from 'stack-trace';
-const trace = get();
-// const stack = parse({stack:trace});
 
 const {app} = remote;
 const { combine, timestamp, printf, colorize, label } = format;
@@ -147,7 +144,6 @@ const errors = format((einfo, { stack }) => {
 
 
 // const getStack = format(info=>{
-//   // const stack = stackTrace.get();
 //   let __o = {};
 //   Error.captureStackTrace(__o);
 //   const __tr = __o.stack;

@@ -3,9 +3,7 @@ import {emit} from 'eiphop';
 import { startOfDay, startOfToday, isAfter, isBefore } from 'date-fns';
 // import { dateBounds } from '../../helpers/toolbox';
 import LodashId from 'lodash-id';
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
-// const logger = new Logger();
 
 export const clotureServices = {
   getCurrentPeriode,

@@ -1,5 +1,4 @@
 import { differenceInMilliseconds, formatISO, parseISO, format } from "date-fns";
-// import Logger from "../../helpers/Logger";
 import logger from "../../helpers/Logger";
 import { clotureActions } from "../cloture/clotureActions";
 import { notificationActions } from "../notification/notificationActions";
@@ -15,7 +14,6 @@ import LodashId from "lodash-id";
 import { clientsActionTypes } from "../clients/clientsActionTypes";
 import { add } from 'date-fns';
 
-// const logger = new Logger();
 
 function getCommandesList(params = {}) {
   logger.info("CmdA.getCommandesList()");
@@ -544,7 +542,7 @@ function deleteCurrentCommande() {
 function addProduit(payload) {
   return (dispatch, getState) => {
     const state = getState();
-    const items = state.commandeReducer.commande.items;
+    const {items, mode} = state.commandeReducer.commande.items;
     const tva = state.catalogueReducer.tva[payload.tva_id];
     const steps = state.catalogueReducer.steps[payload.produitid];
 
@@ -575,7 +573,7 @@ function addProduit(payload) {
               state.catalogueReducer.tva[
                 state.catalogueReducer.ingredients[ingid].tva_id
               ],
-            prix: Number(state.catalogueReducer.ingredients[ingid].supplement),
+            prix: Number(state.catalogueReducer.ingredients[ingid].supplementArray[mode]),
             nom: state.catalogueReducer.ingredients[ingid].nom,
             fromStep: null,
           }
@@ -597,16 +595,16 @@ function addProduit(payload) {
 
     logger.info('addprd pl', payload);
 
-    const { commandeItem, mode } = commandeServices.addProduit(
+    const { commandeItem, addmode } = commandeServices.addProduit(
       payload,
       tva,
       items,
       steps
     );
 
-    if ("add" === mode)
+    if ("add" === addmode)
       dispatch({ type: commandeActionTypes.ADD_PRODUIT, commandeItem });
-    if ("update" === mode)
+    if ("update" === addmode)
       dispatch({ type: commandeActionTypes.UPDATE_PRODUIT, commandeItem });
 
     dispatch(checkMarketing());

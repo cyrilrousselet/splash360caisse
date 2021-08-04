@@ -27,12 +27,10 @@ import PrinterIcon from '../common/icon/PrinterIcon';
 import { Modal, Fab } from '@material-ui/core';
 import CloseIcon from '../common/icon/CloseIcon';
 
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 import {devise, dateBounds} from '../../helpers/toolbox';
 import {last} from 'lodash';
 
-// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 

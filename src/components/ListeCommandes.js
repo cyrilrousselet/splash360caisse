@@ -44,10 +44,8 @@ import EditIcon from './common/icon/EditIcon';
 import { decodetable } from '../constants/decodetable';
 import { dateBounds } from '../helpers/toolbox';
 
-// import Logger from '../helpers/Logger';
 import logger from '../helpers/Logger';
 
-// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 

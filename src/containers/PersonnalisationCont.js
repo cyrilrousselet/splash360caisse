@@ -17,6 +17,11 @@ import Personnalisation from '../components/Encaissement/Personnalisation';
 //   return __total;
 // }
 
+const MODES = {
+  'surplace': 0,
+  'emporter': 1,
+  'livraison': 2
+};
 
 const _findStep = (state, stepId) => {
   if (stepId===-1) return null;
@@ -36,6 +41,7 @@ const _getIngredientTypes = (state, stepId) => {
   if (stepId===-1) return null;
   
   const stepObj = _findStep(state, stepId);
+  const {mode} = state.commandeReducer.commande;
   let ingredientTypes = {};
   if (stepObj) {
     const allIng = getIngredients(state);
@@ -47,7 +53,7 @@ const _getIngredientTypes = (state, stepId) => {
         rglType.ingredients.push({
           id: ingid,
           nom: allIng[ingid].nom,
-          supplement: allIng[ingid].supplement,
+          supplement: allIng[ingid].supplementArray[MODES[mode]].ttc,
           color: allIng[ingid].color,
           weight:  allIng[ingid].weight,
           active: allIng[ingid].active

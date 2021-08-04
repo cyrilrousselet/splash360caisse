@@ -12,7 +12,6 @@ import Swal from 'sweetalert2';
 import { formatISO, differenceInMilliseconds, parseISO } from 'date-fns';
 // import DateFnsUtils from '@date-io/date-fns';
 // import frLocale from "date-fns/locale/fr";
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 import { commandeActionTypes } from '../commande/commandeActionTypes';
 // import { catalogueActionTypes } from '../catalogue/catalogueActionTypes';
@@ -21,7 +20,6 @@ import { parametresActions } from '../parametres/parametresActions';
 import { parametresActionTypes } from '../parametres/parametresActionTypes';
 import { peripheralActions } from '../peripheral/peripheralActions';
 // const strings = new LocalizedStrings(data);
-//  const logger = new Logger();
 
 function initSSE() {
   return (dispatch, getState) => {

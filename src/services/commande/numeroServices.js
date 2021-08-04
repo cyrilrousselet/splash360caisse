@@ -1,9 +1,7 @@
 import { isBefore, parseISO } from 'date-fns';
 import { dateBounds } from '../../helpers/toolbox';
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 
-// const logger = new Logger();
 
 
 export const numeroServices = {

@@ -11,13 +11,11 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LensIcon from '@material-ui/icons/Lens';
 import CloseIcon from '../common/icon/CloseIcon';
 import Clavier from '../common/Clavier';
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 import EditIcon from '../common/icon/EditIcon';
 import CrossIcon from '../common/icon/CrossIcon';
 import Swal from 'sweetalert2';
 
-// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 

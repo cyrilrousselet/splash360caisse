@@ -3,16 +3,15 @@ import PropTypes from "prop-types";
 import React from "react";
 import LocalizedStrings from "react-localization";
 import { data } from "../../constants/translations";
-// import Logger from "../../helpers/Logger";
 import logger from "../../helpers/Logger";
 import { commandeServices } from "../../services/commande/commandeServices";
 import CloseIcon from "../common/icon/CloseIcon";
 import MinusIcon from "../common/icon/MinusIcon";
 import LoadingSpinner from "../common/LoadingSpinner";
 import StdButton from "../common/StdButton";
+import { toEuros } from "../../helpers/toolbox";
 
 let strings = new LocalizedStrings(data);
-// const logger = new Logger();
 
 const IngredientBtn = ({
   id,
@@ -41,7 +40,7 @@ const IngredientBtn = ({
       <div className="nom">{nom}</div>
       {supplement > 0 && (
         <div className="supplt">
-          {Number(supplement).toFixed(2).replace(".", ",")}&nbsp;€
+          { toEuros(supplement) }&nbsp;€
         </div>
       )}
     </div>
@@ -149,7 +148,8 @@ class Personnalisation extends React.Component {
       previousstep,
       __previd,
       __nextStep.validated,
-      "previousbtn"
+      "previousbtn",
+      null
     );
   }
 
@@ -225,7 +225,7 @@ class Personnalisation extends React.Component {
                           id={ingredient.id}
                           nom={ingredient.nom}
                           color={ingredient.color}
-                          supplement={ingredient.supplement}
+                          supplement={toEuros(ingredient.supplement)}
                           step={step}
                           disabled={isTypesMax[id] || ingredient.active === 0}
                           // withbuttons={ (!RegExp('^(\\?|\\{1\\}|\\{0\\}|\\{0,1\\})').test(type.regle)) || this.getIngredientQuantity(ingredient.id)>0 }

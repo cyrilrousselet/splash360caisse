@@ -16,13 +16,11 @@ import {devise} from '../helpers/toolbox';
 import { withStyles } from '@material-ui/core/styles';
 import StdButton from './common/StdButton';
 import CloseIcon from './common/icon/CloseIcon';
-import Clavier from './common/Clavier';
+// import Clavier from './common/Clavier';
 import LabelledField from './common/LabelledField';
 import SwitchCheckbox from './common/SwitchCheckbox';
-// import Logger from '../helpers/Logger';
 import logger from '../helpers/Logger';
 
-// const logger = new Logger();
 
 let strings = new LocalizedStrings(data);
 
@@ -151,7 +149,7 @@ class MenuItemModal extends React.Component {
   
     render() {
   
-      const { item, type, closeHandler, open, clavierOpen } = this.props;
+      const { item, type, closeHandler, open } = this.props;
       const { valeur_p, valeur_e, valeur_l, couleur, asproduct } = this.state;
   
       let vvaleur_p = '';

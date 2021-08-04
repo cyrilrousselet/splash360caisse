@@ -1,11 +1,9 @@
 import {emit} from 'eiphop';
 
 import LodashId from 'lodash-id';
-// import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 
 
-// const logger = new Logger();
 
 
 export const tableServices = {
