@@ -14,6 +14,7 @@ import { clientsServices } from "../clients/clientsServices";
 import LodashId from "lodash-id";
 import { clientsActionTypes } from "../clients/clientsActionTypes";
 import { add } from 'date-fns';
+import { da } from "date-fns/locale";
 
 // const logger = new Logger();
 
@@ -1359,7 +1360,7 @@ function setCommandeFromAPI(payload) {
         caisse: {id:'clickandcollect', nom:'clickandcollect'}
       };
       if (data.reglements) {
-        data.reglements = data.reglements.map(r => ({...r, reglementId: LodashId.createId()}) );
+        data.reglements = data.reglements.map(r => ( (r.reglementId) ? {...r} : {...r, reglementId: LodashId.createId()}) );
       }
     } else {
       if (data.status === "confirmed") {
@@ -1497,6 +1498,28 @@ function setCommandeFromAPI(payload) {
     return commande.ticketId;
   };
 }
+
+// function updateCommandeReglementsCC(payload) {
+//   return async (dispatch, getState) => {
+
+//     const state = getState();
+//     const { parametres } = getState().parametresReducer;
+//     let { data } = payload;
+//     console.log("data : ", data);
+//     commandeServices.getCommandeById(data.ticket_id).then(
+//       (response) => {
+//         const commande = response._cmd;
+   
+//         const reglements = data.reglements.map(r => ({...r, reglementId: LodashId.createId()}) );
+
+//         const newCommande = {...commande, reglements, status: "confirmed", localsync: [parametres.options.caisse.uniqid] };
+
+//         commandeServices.persistCommande(newCommande);
+//       }
+//     );
+
+//   }
+// }
 
 function getCommandesCaisses() {
   return async (dispatch) => {

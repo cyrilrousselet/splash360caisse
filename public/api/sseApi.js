@@ -42,7 +42,7 @@ const actions = {
 
     // const es = new EventSource('http://api.splash360.fr:3030/.well-known/mercure?topic=819b4b71-bb93-4a91-9503-3c7af1e4e622');
     const es = new EventSource(
-      "http://api.splash360.fr:3030/.well-known/mercure?topic=" + restaurant_id
+      "http://apidev.splash360.fr:3030/.well-known/mercure?topic=" + restaurant_id
     );
 
     es.onmessage = (evt) => {
@@ -789,6 +789,47 @@ const actions = {
 
     __request.on('error', (error) => {
       log.error('getStatus ERROR', error);
+      res.error(error);
+    });
+
+    __request.end();
+  },
+
+  confirmDispo: (req, res) => {
+    const { url, access_token } = req.payload;
+
+    let data = '';
+
+    const __request = net.request({
+      url: url,
+      method: "post",
+    });
+    __request.setHeader("Authorization", "Bearer " + access_token);
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/json");
+
+    __request.on("response", (response) => {
+      log.info(`confirmDispo STATUS: ${response.statusCode}`);
+
+      response.on("data", (chunk) => {
+        log.info(`confirmDispo BODY: ${chunk}`);
+        data += chunk;
+      });
+      response.on("end", () => {
+        let __conf = {};
+        try {
+          __conf = JSON.parse(data);
+          console.log("data", data);
+        } catch (e) {
+          __conf = { error: e.message };
+          log.error("confirmDispo JSON error", e);
+        }
+        res.send(__conf);
+      });
+    });
+
+    __request.on('error', (error) => {
+      log.error('confirmDispo ERROR', error);
       res.error(error);
     });
 

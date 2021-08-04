@@ -10,6 +10,7 @@ export const notificationServices = {
   getToken,
   denyOrder,
   acceptOrder,
+  confirmDispo,
   getOrder,
   setPOS,
   setRestaurantOnline,
@@ -233,6 +234,20 @@ async function acceptOrder(provider, order) {
   if (__acceptOrdertoken.access_token) {
     var __url = externalParams[provider].acceptorder.url.replace('{order_id}', order.id);
     return emit('acceptUberOrder', {url: __url, access_token: __acceptOrdertoken.access_token});
+  }
+}
+
+async function confirmDispo(provider, data) {
+
+  if(provider === 'clickandcollect') {
+    const __splashToken = await getSplashToken(data);
+
+    logger.log('notifSrv.confirmDispo()',__splashToken);
+
+    if (__splashToken.splash_token.access_token) {
+      var __url = data.href;
+      return emit('confirmDispo', {url: __url, access_token: __splashToken.splash_token.access_token});
+    }
   }
 }
 

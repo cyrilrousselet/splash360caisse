@@ -236,6 +236,15 @@ function treatment(data) {
       );
     }
     else if (data.eventType==='newcommande') {
+      const { entreprise } = getState().parametresReducer.parametres;
+
+      dispatch({ type: notificationActionTypes.GET_NOTIFICATION, notif: data.eventType });
+
+      notificationServices.confirmDispo( 'clickandcollect', {...data, id: entreprise.restaurant_id, secret: entreprise.restaurant_secret});
+
+    }
+    
+    else if (data.eventType==='commandeready') {
 
       const { entreprise } = getState().parametresReducer.parametres; 
 
@@ -248,8 +257,37 @@ function treatment(data) {
         }
       //   error => logger.info('C&C getCommande Error')
       )
-
     }
+    // else if (data.eventType==='newcommande') {
+
+    //   const { entreprise } = getState().parametresReducer.parametres; 
+
+    //   dispatch({ type: notificationActionTypes.GET_NOTIFICATION, notif: data.eventType });
+
+    //   notificationServices.getOrder( 'clickandcollect', {...data, id: entreprise.restaurant_id, secret: entreprise.restaurant_secret} )
+    //   .then(
+    //     response => {
+    //       dispatch(commandeActions.setCommandeFromAPI( {data:{...response, provider:'clickandcollect'}} ))
+    //     }
+    //   //   error => logger.log('C&C getCommande Error')
+    //   )
+
+    // }
+
+    // else if (data.eventType==="commandepayee") {
+    //   const { entreprise } = getState().parametresReducer.parametres;
+
+    //   dispatch({ type: notificationActionTypes.GET_NOTIFICATION, notif: data.eventType });
+
+    //   notificationServices.getOrder( 'clickandcollect', {...data, id: entreprise.restaurant_id, secret: entreprise.restaurant_secret} )
+    //   .then(
+    //     response => {
+    //       dispatch(commandeActions.updateCommandeReglementsCC({data:{...response.commande}}))
+    //     }
+    //   //   error => logger.log('C&C getCommande Error')
+    //   )
+
+    // }
     else if (data.eventType==="statuschange") {
       // parametre status dans parametres, par défaut null ?
 
