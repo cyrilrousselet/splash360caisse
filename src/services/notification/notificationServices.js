@@ -242,7 +242,7 @@ async function confirmDispo(provider, data) {
   if(provider === 'clickandcollect') {
     const __splashToken = await getSplashToken(data);
 
-    logger.log('notifSrv.confirmDispo()',__splashToken);
+    logger.dump('notifSrv.confirmDispo()',__splashToken);
 
     if (__splashToken.splash_token.access_token) {
       var __url = data.href;
