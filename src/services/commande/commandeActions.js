@@ -542,7 +542,7 @@ function deleteCurrentCommande() {
 function addProduit(payload) {
   return (dispatch, getState) => {
     const state = getState();
-    const {items, mode} = state.commandeReducer.commande.items;
+    const {items, mode} = state.commandeReducer.commande;
     const tva = state.catalogueReducer.tva[payload.tva_id];
     const steps = state.catalogueReducer.steps[payload.produitid];
 
@@ -684,6 +684,7 @@ function addIngredient(payload) {
   return (dispatch, getState) => {
     const { itemid, stepid, ingredientid, quantite } = payload;
     const state = getState();
+    const { mode } = state.commandeReducer.commande;
     const item = state.commandeReducer.commande.items.find(
       (itm) => itm.itemid === itemid
     );
@@ -702,7 +703,8 @@ function addIngredient(payload) {
       step,
       item,
       produitSteps,
-      tva
+      tva,
+      mode
     );
     dispatch({ type: commandeActionTypes.ADD_INGREDIENT, commandeItem });
   };
@@ -712,6 +714,7 @@ function removeIngredient(payload) {
   return (dispatch, getState) => {
     const { itemid, stepid, ingredientid, quantite } = payload;
     const state = getState();
+    const {mode} = state.commandeReducer.commande;
     const item = state.commandeReducer.commande.items.find(
       (itm) => itm.itemid === itemid
     );
@@ -726,7 +729,8 @@ function removeIngredient(payload) {
       quantite,
       step,
       item,
-      produitSteps
+      produitSteps,
+      mode
     );
     dispatch({ type: commandeActionTypes.REMOVE_INGREDIENT, commandeItem });
   };
@@ -738,6 +742,7 @@ function noIngredientForStep(payload) {
 
     const { itemid, stepid } = payload;
     const state = getState();
+    const {mode} = state.commandeReducer.commande;
     const item = state.commandeReducer.commande.items.find(
       (itm) => itm.itemid === itemid
     );
@@ -749,7 +754,8 @@ function noIngredientForStep(payload) {
     const commandeItem = commandeServices.noIngredientForStep(
       step,
       item,
-      produitSteps
+      produitSteps,
+      mode
     );
     dispatch({ type: commandeActionTypes.STEP_NOINGREDIENT, commandeItem });
   };
@@ -761,6 +767,7 @@ function completeStep(payload) {
 
     const { itemid, stepid } = payload;
     const state = getState();
+    const { mode } = state.commandeReducer.commande;
     const item = state.commandeReducer.commande.items.find(
       (itm) => itm.itemid === itemid
     );
@@ -770,7 +777,7 @@ function completeStep(payload) {
     const produitSteps = state.catalogueReducer.steps[item.produitid];
 
     commandeServices
-      .completeStep(step, item, produitSteps)
+      .completeStep(step, item, produitSteps, mode)
       .then((commandeItem) => {
         dispatch({ type: commandeActionTypes.STEP_COMPLETE, commandeItem });
       });

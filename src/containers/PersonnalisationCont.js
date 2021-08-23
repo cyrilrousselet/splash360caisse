@@ -17,11 +17,8 @@ import Personnalisation from '../components/Encaissement/Personnalisation';
 //   return __total;
 // }
 
-const MODES = {
-  'surplace': 0,
-  'emporter': 1,
-  'livraison': 2
-};
+import {MODES} from '../constants/commandeModes';
+
 
 const _findStep = (state, stepId) => {
   if (stepId===-1) return null;
