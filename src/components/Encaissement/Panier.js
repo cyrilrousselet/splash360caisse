@@ -903,10 +903,12 @@ class Panier extends React.Component {
 
     if (commandeslist) {
       const cmd = Object.values(commandeslist).find((c)=>c.ticketId===value);
-      logger.info('s2s', cmd);
       if (cmd && cmd.status==='standby') {
+        logger.info('s2s commande trouvée', value);
         this.setState({inputfocus: false});
         this.props.getCommande(value);
+      } else {
+        logger.info('s2s aucune commande standby avec ce ticketId', value);
       }
     }
 

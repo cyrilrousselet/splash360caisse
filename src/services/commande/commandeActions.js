@@ -14,7 +14,6 @@ import { clientsServices } from "../clients/clientsServices";
 import LodashId from "lodash-id";
 import { clientsActionTypes } from "../clients/clientsActionTypes";
 import { add } from 'date-fns';
-import { da } from "date-fns/locale";
 
 // const logger = new Logger();
 
@@ -231,7 +230,7 @@ function validateCommande(_payload) {
     const { commande } = getState().commandeReducer;
 
 
-    logger.info('validateCommande', _payload);
+    // logger.info('validateCommande', _payload);
     let payload = {...commande};
     logger.info('validateCommande commande', commande);
 
@@ -342,16 +341,16 @@ function validateCommande(_payload) {
   };
 }
 
-function validateCommandeAndUpdateList(payload) {
-  logger.info("commandeActions.validateCommandeAndUpdateList()");
+// function validateCommandeAndUpdateList(payload) {
+//   logger.info("commandeActions.validateCommandeAndUpdateList()");
 
-  return (dispatch) => {
-    // dispatch(validateCommande(payload)).then((dataFromValidate) => {
-    //   dispatch(getCommandesList())
-    // })
-    dispatch(validateCommande(payload));
-  };
-}
+//   return (dispatch) => {
+//     // dispatch(validateCommande(payload)).then((dataFromValidate) => {
+//     //   dispatch(getCommandesList())
+//     // })
+//     dispatch(validateCommande(payload));
+//   };
+// }
 
 function standByCommande(payload, needNumero) {
   return async (dispatch, getState) => {
@@ -810,7 +809,7 @@ function updateMode(mode) {
 
 function updateCommande(payload, from='') {
   return (dispatch, getState) => {
-    logger.error('updateCommande()',from, payload);
+    logger.dump('updateCommande()',{from, payload});
 
     const {commande} = getState().commandeReducer;
     const {lots} = getState().commandesListReducer;
@@ -1891,7 +1890,7 @@ export const commandeActions = {
   getCommande,
   setChrono,
   validateCommande,
-  validateCommandeAndUpdateList,
+  // validateCommandeAndUpdateList,
   standByCommande,
   livraisonCommande,
   deleteCurrentCommande,

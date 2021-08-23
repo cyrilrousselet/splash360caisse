@@ -111,16 +111,6 @@ const mapDispatchToProps = (dispatch) => {
     noIngredientForStep: commandeActions.noIngredientForStep,
     updateProduit: commandeActions.updateProduit,
     completeStep: commandeActions.completeStep
-    // getCommande: commandeActions.getCommande,
-    // updateCommande: commandeActions.updateCommande,
-    // addReglement: commandeActions.addReglement,
-    // removeReglement: commandeActions.removeReglement,
-    // addRendu: commandeActions.addRendu,
-    // validateCommande: commandeActions.validateCommandeAndUpdateList,
-    // printTest: peripheralActions.printTest,
-    // printTicket: peripheralActions.printTicket,
-    // openDrawer: peripheralActions.openDrawer,
-    // closeDrawer: peripheralActions.closeDrawer,
   }, dispatch);
 
 }

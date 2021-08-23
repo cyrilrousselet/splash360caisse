@@ -11,7 +11,7 @@ import createRootReducer from '../reducers';
 import * as generalActions from '../actions';
 import history from '../helpers/history';
 
- import logger from '../helpers/Logger';
+//  import logger from '../helpers/Logger';
 // const logger = new Logger();
 
 

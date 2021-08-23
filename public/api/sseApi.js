@@ -50,9 +50,8 @@ const actions = {
       const data = JSON.parse(evt.data);
       _webContents.send("getNotification", { ...data });
     };
-    es.onerror = (err) => {
-      log.info("es.onerror err", err);
-      log.info("es.onerror msg", err.message);
+    es.onerror = () => {
+      log.info("es.onerror err");
       res.send({ msg: "ca va pas" });
       // es.close();
     };
