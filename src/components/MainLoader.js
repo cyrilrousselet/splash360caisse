@@ -121,7 +121,7 @@ class MainLoader extends React.Component {
                     blockStation();
                   })
                 }
-                logger.dump("JOB BLOCK STATION", this._blockstation_job);
+                logger.dump("JOB BLOCK STATION");
               }
             }
 
