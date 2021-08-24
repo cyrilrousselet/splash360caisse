@@ -42,7 +42,7 @@ const actions = {
 
     // const es = new EventSource('http://api.splash360.fr:3030/.well-known/mercure?topic=819b4b71-bb93-4a91-9503-3c7af1e4e622');
     const es = new EventSource(
-      "http://apidev.splash360.fr:3030/.well-known/mercure?topic=" + restaurant_id
+      "http://api.splash360.fr:3030/.well-known/mercure?topic=" + restaurant_id
     );
 
     es.onmessage = (evt) => {
