@@ -1085,8 +1085,8 @@ function checkSchedules() {
           });
         });
 
-      } else {
-        logger.info('⏰ aucune commande en attente 🚫');
+      // } else {
+      //   logger.info('⏰ aucune commande en attente 🚫');
       }
     }
     

@@ -234,7 +234,7 @@ class ListeCommandes extends React.Component {
   search_tmo = -1;
   
   componentDidMount() {
-    logger.info('ListeCommandes.componentDidMount()');
+    // logger.info('ListeCommandes.componentDidMount()');
     this.getBoundedCommandesList();
     this.props.getAllActive();
     this.props.getClientsList();
@@ -271,10 +271,10 @@ class ListeCommandes extends React.Component {
       this.setState({endDate:f});
     }
 
-    logger.info(
-      'setSelectedDate('+bound+')', 
-      '('+format(d, "dd/MM/yyyy HH:mm")+' -> '+format(f, "dd/MM/yyyy HH:mm")+')'
-    );
+    // logger.info(
+    //   'setSelectedDate('+bound+')', 
+    //   '('+format(d, "dd/MM/yyyy HH:mm")+' -> '+format(f, "dd/MM/yyyy HH:mm")+')'
+    // );
 
     this.getBoundedCommandesList(d,f);
   }
@@ -315,7 +315,7 @@ class ListeCommandes extends React.Component {
 
   searchHandler(event) {
     if (event.keyCode===13) {
-      logger.info(event.target.value);
+      // logger.info(event.target.value);
       this.decodeQRCode(event.target.value);
       event.target.value = '';
     }    
@@ -331,7 +331,7 @@ class ListeCommandes extends React.Component {
   }
 
   send_to_search(value) {
-    logger.info('send_to_search',value);
+    // logger.info('send_to_search',value);
     this.setState({searchval: value});
   }
 
@@ -440,7 +440,7 @@ class ListeCommandes extends React.Component {
         if (value.type==="staffmeal") stmeallist.push({id: key, commande: cmd});
       }
     }
-    logger.info('searchval :',searchval!=='');
+    // logger.info('searchval :',searchval!=='');
     
   
     if(loading) {

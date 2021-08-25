@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const CommandeSchema = mongoose.Schema(
   {
     id: String,
-    ticketId: { type: [String], index: true },
+    ticketId: String,
     status: String,
     total: Number,
     createdAt: Number,

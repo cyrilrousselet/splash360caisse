@@ -184,9 +184,8 @@ function testConnection() {
       })
       .then(() => {
         // Internet
-        logger.info("test co : internet");
+        // logger.info("test co : internet");
         dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: 'on'});
-        // dispatch(checkStatusAndConnection());
         dispatch(checkConnection());
       }).catch((err) => {
         // Pas internet
@@ -216,10 +215,13 @@ function checkConnection() {
         let date = moment().add(7, 'd'); // expiredate = now + 1 week
         localStorage.setItem("expireDate", date); 
         //Schedule blockstationJob
-        var _blockstation_job = schedule.scheduleJob("blockstationJob", date.toDate(), () => {
+        schedule.scheduleJob("blockstationJob", date.toDate(), () => {
           blockStation();
         });
-        logger.info("blockstationJob scheduled", _blockstation_job);
+        // var _blockstation_job = schedule.scheduleJob("blockstationJob", date.toDate(), () => {
+        //   blockStation();
+        // });
+        // logger.info("blockstationJob scheduled", _blockstation_job);
       }
     }
     else if(online === 'on') {
