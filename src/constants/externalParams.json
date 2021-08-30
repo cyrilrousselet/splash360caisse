@@ -1,5 +1,5 @@
 {
-  "notification": "http://apidev.splash360.fr:3030/.well-known/mercure?topic=",
+  "notification": "http://api.splash360.fr:3030/.well-known/mercure?topic=",
   "uber": {
     "oAuth": "https://login.uber.com/oauth/v2/token",
     "clientid": "kcKN_qhiHlwgG22qCqWPyWxNl10MKLwf",

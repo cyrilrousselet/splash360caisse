@@ -636,8 +636,9 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
     if (tckToPrint.length===0) {
       // si la commande a déjà été persistée
-      if (cmd.createdAt) {
-        commandeServices.persistCommande({...cmd, enproduction: true});
+      if (cmd.createdAt) {          
+        
+        commandeServices.persistCommande({ticketId: cmd.ticketId, enproduction: true});
       }
     } else {
       

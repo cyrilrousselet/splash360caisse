@@ -107,6 +107,9 @@ const server = {
         commandeid: "c" + __d.getTime().toString(),
       });
     });
+    api_server.get("/ping", (req,res) => {
+      res.json({status: "success", request:"ping"});
+    });
     api_server.post("/", (req, res) => {
       log.info("POST : " + req.body.data);
       let __d = new Date();
