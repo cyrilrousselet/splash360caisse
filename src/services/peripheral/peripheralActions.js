@@ -1482,22 +1482,25 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           )
           dispatch({ type: peripheralActionTypes.PRINT_TICKET });
 
-          // on déclare la commande comme étant lancée en production
-          let updateCmdAfterPrint = {ticketId: cmd.ticketId, enproduction: true};
-
-          // pour les tickets commande, on met à jour le nombre d'impressions
-          if (ticket.template==='commande') {
-            updateCmdAfterPrint.printnum = Number(cmd.printnum)+1;
-          }
-
-          // si la commande a déjà été persistée
-          if (cmd.createdAt) {
-            commandeServices.persistCommande(updateCmdAfterPrint);
-          }
         }
 
 
       });
+
+
+      // on déclare la commande comme étant lancée en production
+      let updateCmdAfterPrint = {ticketId: cmd.ticketId, enproduction: true};
+
+      // // pour les tickets commande, on met à jour le nombre d'impressions
+      // if (tckToPrint.find(ticket => ticket.template==='commande')) {
+      //   updateCmdAfterPrint.printnum = Number(cmd.printnum)+1;
+      // }
+
+      // si la commande a déjà été persistée
+      if (cmd.enproduction===false) {
+   //     commandeServices.persistCommande(updateCmdAfterPrint);
+      }
+
     }
 
   }

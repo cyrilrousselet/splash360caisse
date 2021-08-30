@@ -212,6 +212,7 @@ class ListeCommandes extends React.Component {
     this.openLivreurs = this.openLivreurs.bind(this);
     this.closeLivreurs = this.closeLivreurs.bind(this);
     this.getBoundedCommandesList = this.getBoundedCommandesList.bind(this);
+    this.printTicketHandler = this.printTicketHandler.bind(this);
 
     const {heure_fin} = props;
     const __todayBounds = dateBounds(new Date(), heure_fin);
@@ -391,8 +392,17 @@ class ListeCommandes extends React.Component {
     this.setState({livreurOpen:false, commandeId: null});
   }
 
+  printTicketHandler(tck) {
+    const { addPrintnum, printTicket, tickets } = this.props;
+    const { commandeId } = this.state;
+    if (tck==='all' || (tck.hasOwnProperty('ids') && Array.isArray(tck.ids) && tickets.find(t => t.ticket_id===tck.ids[0]).template==="commande")) {
+      addPrintnum({commandeId:commandeId});
+    }
+    printTicket(tck);
+  }
+
   render() {
-    const { commandeslist, loading, tickets, printTicket, thiscash, livreurs, setLivreur } = this.props;
+    const { commandeslist, loading, tickets, thiscash, livreurs, setLivreur } = this.props;
 
     const { startDate, endDate, openTab, commandeId, printOpen, searchval, inputfocus, keyboardOpen, livreurOpen } = this.state;
 
@@ -527,8 +537,8 @@ class ListeCommandes extends React.Component {
 
         <ReglementCont open={ this.state.reglementOpen } contClass="ListeCommandeReglement" commandeId={ this.state.commandeId } closeReglement={ this.closeReglement } modif={openTab===2} />
         <NumberKeyboard open={keyboardOpen} numbersOnly={true} buttonHandler={this.keyboardButtonHandler} closeHandler={this.closeKeyboard} />
-        <ImpressionTicketPopin tickets={tickets} printOpen={printOpen} closeHandler={this.closePrint} commandeId={ this.state.commandeId } launchTicket={printTicket} />
-        <LivreurPopin livreurs={livreurs} livreurOpen={livreurOpen} setLivreur={setLivreur} closeHandler={this.closeLivreurs} commandeId={ this.state.commandeId } commandeLivreur={commandeLivreur} launchTicket={printTicket} />
+        <ImpressionTicketPopin tickets={tickets} printOpen={printOpen} closeHandler={this.closePrint} commandeId={ this.state.commandeId } launchTicket={this.printTicketHandler} />
+        <LivreurPopin livreurs={livreurs} livreurOpen={livreurOpen} setLivreur={setLivreur} closeHandler={this.closeLivreurs} commandeId={ this.state.commandeId } commandeLivreur={commandeLivreur} />
       </div>
     </div>
     );

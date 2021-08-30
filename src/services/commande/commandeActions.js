@@ -831,7 +831,7 @@ function updateCommande(payload, from='') {
         
       }
     }
-    dispatch({ type: commandeActionTypes.UPDATE_COMMANDE, payload: payload, contexte:'updateCommande' });
+    dispatch({ type: commandeActionTypes.UPDATE_COMMANDE, payload: payload, contexte: from });
     dispatch(checkMarketing());
     
 
@@ -888,6 +888,40 @@ function deleteCommande(payload) {
       );
     }
   };
+}
+
+function addPrintnum(payload) {
+  return (dispatch, getState) => {
+    const {commandeId} = payload;
+    const { commandeslist } = getState().commandesListReducer;
+    const commande = Object.values(commandeslist).find(
+      (cmd) => cmd.ticketId === commandeId
+    );
+
+    const printnum = Number(commande.printnum) + 1;
+    
+    commandeServices.persistCommande({ ...commande, printnum: printnum }).then(
+      (data) => {
+        dispatch({
+          type: commandeActionTypes.UPDATE_COMMANDE,
+          payload: { printnum: printnum },
+          contexte: 'addPrintnum'
+        });
+        dispatch(
+          notificationActions.syncDispatch("commande", {
+            ...commande,
+            printnum: printnum
+          })
+        );
+        dispatch(getTodayCommandesList());
+      },
+      (error) =>
+        dispatch({
+          type: commandeActionTypes.UPDATE_COMMANDE_ERROR,
+          error: error,
+        })
+    );
+  }
 }
 
 function setLivreur(payload) {
@@ -1904,6 +1938,7 @@ export const commandeActions = {
   updateCommande,
   updateMode,
   deleteCommande,
+  addPrintnum,
   setLivreur,
   getCommandesCaisses,
   // setProductionChrono,

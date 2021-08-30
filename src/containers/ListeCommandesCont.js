@@ -42,6 +42,7 @@ const mapDispatchToProps = (dispatch) => {
       printTicket: peripheralActions.printTicket,
       setLivreur: commandeActions.setLivreur,
       getUsers: userActions.getAll,
+      addPrintnum: commandeActions.addPrintnum,
       deleteCurrentCommande: commandeActions.deleteCurrentCommande
   }, dispatch);
   return {
