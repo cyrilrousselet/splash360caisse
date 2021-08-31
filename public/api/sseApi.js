@@ -47,8 +47,13 @@ const actions = {
 
     es.onmessage = (evt) => {
       log.info("onmessage", evt);
-      const data = JSON.parse(evt.data);
-      _webContents.send("getNotification", { ...data });
+      try {
+        const data = JSON.parse(evt.data);
+        _webContents.send("getNotification", { ...data });
+      } catch(error) {
+        log.info("es.onmessage erreur : " + error.message);
+        res.send({ msg: 'es.onmessage erreur, pbm JSON : ' + error.message });
+      }
     };
     es.onerror = () => {
       log.info("es.onerror err");
