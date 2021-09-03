@@ -122,7 +122,7 @@ function getCommandesCaisses() {
 }
 
 function addProduit(payload, tva, items, steps) {
-  const { produitid, nom, prix, composition, customizable } = payload;
+  const { produitid, nom, prix, composition, customizable, status } = payload;
 
   let mode = "";
   let item = {};
@@ -153,7 +153,7 @@ function addProduit(payload, tva, items, steps) {
       stepslength: steps.length,
       quantite: 1,
       itemid: _newCommandeItemId(),
-      status: "pending",
+      status: status || "pending",
     };
   }
   // s'il s'agit d'un produit non customisable,

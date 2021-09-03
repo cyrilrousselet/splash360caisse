@@ -1489,7 +1489,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
 
       // on déclare la commande comme étant lancée en production
-      let updateCmdAfterPrint = {ticketId: cmd.ticketId, enproduction: true};
+      // let updateCmdAfterPrint = {ticketId: cmd.ticketId, enproduction: true};
 
       // // pour les tickets commande, on met à jour le nombre d'impressions
       // if (tckToPrint.find(ticket => ticket.template==='commande')) {

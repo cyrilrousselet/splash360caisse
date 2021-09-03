@@ -637,7 +637,8 @@ function updateProduit(payload) {
         composition: item.composition,
         compo: [],
         customizable: true,
-        tva_id: item.tva.tva_id
+        tva_id: item.tva.tva_id,
+        status: 'confirmed'
       };
 
       const { commandeItem } = commandeServices.addProduit(

@@ -422,7 +422,7 @@ function getDatabase() {
 
     logger.info('getDatabase()');
 
-    dispatch({type: notificationActionTypes.GET_DATABASE_REQUEST});
+    dispatch({type: notificationActionTypes.GET_DATABASE_REQUEST, msg:'NAct.getDatabase()'});
     const { entreprise } = getState().parametresReducer.parametres; 
 
     if (entreprise.restaurant_id==='' || entreprise.restaurant_secret==='') {
@@ -460,8 +460,8 @@ function getDatabase() {
 
       notificationServices.getDatabase({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret})
       .then(database => {
-        dispatch({type: notificationActionTypes.GET_DATABASE_SUCCESS});
-        dispatch({type: parametresActionTypes.INSTALL_DATABASE, value:[]});
+        dispatch({type: notificationActionTypes.GET_DATABASE_SUCCESS, msg:'NAct.getDatabase()'});
+        dispatch({type: parametresActionTypes.INSTALL_DATABASE, value:[], msg:'NAct.getDatabase()'});
         dispatch(catalogueActions.replaceDatabase(database));
         dispatch(parametresActions.replaceDatabase(database));
       },
@@ -469,6 +469,32 @@ function getDatabase() {
         dispatch({type: notificationActionTypes.GET_DATABASE_FAILURE, error: error});
       });
     }
+  }
+}
+
+function replaceCatalogueDatabase() {
+
+  return (dispatch, getState) => {
+    logger.info('replaceCatalogueDatabase()');
+
+    dispatch({type: notificationActionTypes.GET_DATABASE_REQUEST, msg:'NAct.replaceCatalogueDatabase()'});
+    const { entreprise } = getState().parametresReducer.parametres; 
+
+    if (entreprise.restaurant_id!=='' && entreprise.restaurant_secret!=='') {
+
+     
+      notificationServices.getDatabase({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret})
+      .then(database => {
+        dispatch({type: notificationActionTypes.GET_DATABASE_SUCCESS, msg:'NAct.replaceCatalogueDatabase()'});
+        dispatch({type: parametresActionTypes.INSTALL_DATABASE, value:[]});
+        dispatch(catalogueActions.replaceDatabase(database));
+      },
+      error => {
+        dispatch({type: notificationActionTypes.GET_DATABASE_FAILURE, error: error});
+      });
+
+    }
+
   }
 }
 
@@ -688,6 +714,7 @@ export const notificationActions = {
   sendNumero,
   getNewNumero,
   getDatabase,
+  replaceCatalogueDatabase,
   confirmCommande,
   initSyncCommandes,
   syncCommandes,

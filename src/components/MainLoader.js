@@ -61,7 +61,7 @@ class MainLoader extends React.Component {
       online
     } = this.props;
 
-    logger.info("DEBUT checkInstallation");
+    console.log("DEBUT checkInstallation");
 
   
 
@@ -71,12 +71,12 @@ class MainLoader extends React.Component {
     let readytolaunch = dbupdated || null;
 
     if (!paramLoaded) {
-      logger.info("GONNA GET PARAMETRES");
+      console.log("GONNA GET PARAMETRES");
       this.props.getParametres();
     }
 
     if(paramLoaded) {
-      logger.info("PARAM LOADED");
+      console.log("PARAM LOADED");
 
       
 
@@ -85,7 +85,7 @@ class MainLoader extends React.Component {
       // }
  
       if(paramsEntreprise.restaurant_id==="" || paramsEntreprise.restaurant_secret==="") {
-        logger.info("NO ID SECRET, GONNA INSTALL STATION");
+        console.log("NO ID SECRET, GONNA INSTALL STATION");
         // installStation
         this.props.installStation(); // popin + requête au bo + update id et secret
       }
@@ -100,7 +100,7 @@ class MainLoader extends React.Component {
             testConnection();
           }
           else { 
-            logger.info("GONNA CHECK EXPIRE DATE");
+            console.log("GONNA CHECK EXPIRE DATE");
         
             let expDate = localStorage.getItem("expireDate");
             if (expDate != null) { // if expiredate != null
@@ -138,7 +138,7 @@ class MainLoader extends React.Component {
             }
         
             if (status==="authorized" && first_start===true && dbgetInit===false){
-              logger.info("GONNA GET DATABASE");
+              console.log("GONNA GET DATABASE");
               this.props.getDatabase();
             }
             else if(status === null || status === "pending"){
@@ -211,7 +211,7 @@ class MainLoader extends React.Component {
   }
 
   componentDidMount() {
-    logger.info("componentDidMount");
+    console.log("componentDidMount");
 
     const { 
       checkFinDeService,
@@ -233,7 +233,7 @@ class MainLoader extends React.Component {
     }
 
     if (this._getstatus_job===null) {
-      logger.info("GONNA START SCHEDULE");
+      console.log("GONNA START SCHEDULE");
       this._getstatus_job = schedule.scheduleJob('0 0 6 * * *', () => { //récupérer le status de la caisse sur le bo
         getStatus();
       })
@@ -242,7 +242,7 @@ class MainLoader extends React.Component {
     if(this._checkinternetconnection_job===null) {
       this._checkinternetconnection_job = schedule.scheduleJob('*/1 * * * *', () => {
         // check internet with ping to bo
-        logger.info("job test connection");
+        console.log("job test connection");
         testConnection();
       });
     }

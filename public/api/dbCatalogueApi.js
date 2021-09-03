@@ -22,7 +22,14 @@ const actions = {
     const proxies = await _getAll();
       
   //  log.info(proxies);
+
+  if (proxies==='error') {
+    res.error({msg: 'data missing'});
+  }
+  else {
     res.send(proxies);
+  }
+  
 
   },
 
@@ -229,6 +236,8 @@ async function _getAll() {
   
   let __rawdata = await _findCatalogue();
   
+  if (__rawdata==='error') return __rawdata;
+
   return _parseCatalogue(__rawdata);
 }
 
@@ -412,6 +421,11 @@ async function _findCatalogue(prd_criteriae={}) {
   const _ing = await (await db.ingredients).get('ingredients').sortBy('weight').value();
   const _prd = await (await db.produits).get('produits').filter(prd_criteriae).value();
   const _stp = await (await db.steps).get('steps').sortBy('weight').value();
+
+  if (_cat.length===0 || _grp.length===0 || _igt.length===0 || _ing.length===0 || _prd.length===0) {
+    return 'error';
+  }
+
   return { _cat, _grp, _tva, _igt, _ing, _prd, _stp };
 }
 

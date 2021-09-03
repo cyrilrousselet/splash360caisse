@@ -6,6 +6,8 @@ import { notificationActions } from '../notification/notificationActions';
 
 import { parametresActions } from '../parametres/parametresActions';
 import { parametresActionTypes } from '../parametres/parametresActionTypes';
+import { peripheralActions } from '../peripheral/peripheralActions';
+import Swal from 'sweetalert2';
 // import { result } from 'lodash';
 
 // const logger = new Logger();
@@ -38,7 +40,7 @@ function replaceDatabase(database) {
 
 
       },
-      error => dispatch({type: catalogueActionTypes.REPLACE_DATABASE_SUCCESS})
+      error => dispatch({type: catalogueActionTypes.REPLACE_DATABASE_FAILURE})
 
     )
   }
@@ -54,7 +56,24 @@ function getAllActive() {
       catalogueServices.getAllActive()
           .then(
               data => dispatch({ type: catalogueActionTypes.GETALL_ACTIVE_SUCCESS, ...data }),
-              error => dispatch({ type: catalogueActionTypes.GETALL_ACTIVE_FAILURE, error: error.toString() })
+              error => {
+                dispatch({ type: catalogueActionTypes.GETALL_ACTIVE_FAILURE, error: error });
+
+                Swal.fire({
+                  title:'Base catalogue corrompue',
+                  text: 'Le catalogue va être rechargé depuis le serveur.',
+                  showCancelButton: false,
+                  focusConfirm: true,
+                  allowEscapeKey: false,
+                  allowOutsideClick: false
+                }).then((result)=> {
+                  if (result.isConfirmed) {
+                     dispatch(notificationActions.getDatabase());
+                  } else {
+                    dispatch(peripheralActions.quitApp());
+                  }
+                });
+              }
           );
   }
 };
