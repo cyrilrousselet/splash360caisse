@@ -1074,6 +1074,7 @@ function checkSchedules() {
   return async (dispatch, getState) => {
     // const {schedules} = getState().commandesListReducer;
 
+    console.log('checkSchedules()');
 
     const { options } = getState().parametresReducer.parametres;
 
@@ -1084,6 +1085,7 @@ function checkSchedules() {
       const __now = new Date();
       let __heure = __now;
       // let __heure = (__now.getHours() * 100) + __now.getMinutes();
+
       
       if (commandes.hasOwnProperty('schedule_delay')) {
         __heure = add(__now, {minutes: commandes.schedule_delay});
@@ -1099,34 +1101,51 @@ function checkSchedules() {
 
       // récupération commandes programmées à lancer
       const { commandeslist } = await commandeServices.getCommandesList({
-        $and: [
-          {createdAt: { $gt: lastperiode_end } },
-          {scheduled: { $exists: true }},
-          // {scheduled: { $lte: __heure.getTime()}},
-          {scheduled: { $lte: __heure}},
-          {$or: [
-            {enproduction: { $exists: false }},
-            {enproduction: false}
-          ]}
-        ]
+        // $and: [
+        //   {createdAt: { $gt: lastperiode_end } },
+        //   {scheduled: { $exists: true }},
+        //   {scheduled: { $lte: __heure}},
+        //   {$or: [
+        //     {enproduction: { $exists: false }},
+        //     {enproduction: false}
+        //   ]}
+        // ]
+          '$and': [
+            {'createdAt': { '$gt': lastperiode_end }}, 
+            {'scheduled': { '$exists': true }},
+            {'scheduled': { '$lte': __heure }},
+            {'$or': [
+              {'enproduction': { '$exists': false }}, 
+              {'enproduction': false}
+            ]}
+          ]
       });
+
+
+      console.log('checkSchedules()',commandeslist);
 
       // s'il y a des commandes programmées à lancer...
       if (commandeslist && Object.entries(commandeslist).length>0) {
-        logger.info('⏰ '+Object.entries(commandeslist).length+' commandes en attente devant être lancées.');
+        // logger.info('⏰ '+Object.entries(commandeslist).length+' commandes en attente devant être lancées.');
+        console.log('⏰ '+Object.entries(commandeslist).length+' commandes en attente devant être lancées.');
 
         // on lance chaque commande et on la déclare comme 'en production'
         Object.values(commandeslist).forEach(cmd => {
           dispatch(peripheralActions.printCommandeTicket('production', {...cmd, enproduction: true}));
+          commandeServices.persistCommande({ ticketId: cmd.ticketId, enproduction: true });
           dispatch({
             type: commandeActionTypes.DELETE_SCHEDULE,
             schedule: cmd.ticketId
           });
         });
 
-      // } else {
-      //   logger.info('⏰ aucune commande en attente 🚫');
+      } else {
+        // logger.info('⏰ aucune commande en attente 🚫');
+        console.log('⏰ aucune commande en attente 🚫');
       }
+    }
+    else {
+      console.log('schedules : la caisse n’est pas `primary`')
     }
     
   }

@@ -260,7 +260,8 @@ async function _getCommandesToSync(limit = null) {
 }
 
 async function _getCommandes(criteriae = {}) {
-  log.info("CmdAPI._getCommandes()", criteriae);
+  log.info("CmdAPI._getCommandes()");
+  log.info(JSON.stringify(criteriae));
 
   const mongo = await connect();
   if (!mongo) return false;
@@ -269,11 +270,13 @@ async function _getCommandes(criteriae = {}) {
   if (criteriae.hasOwnProperty('where')) {
     __criteriae = { $where: criteriae.where };
   }
-  log.info('criteriae', __criteriae);
+  log.info('criteriae');
+  log.info(JSON.stringify(__criteriae));
   // const _rawdata = (await CommandeModel.find(__criteriae)).values();
   const _rawdata = await CommandeModel.find( criteriae ).lean().exec();
  
-//  log.info('_getCommandes', _rawdata);
+ log.info('_getCommandes', _rawdata);
+ log.info(JSON.stringify(_rawdata));
  
   // await mongo.disconnect();
   return  _parseCommandes(_rawdata);

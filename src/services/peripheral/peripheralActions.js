@@ -258,6 +258,7 @@ function createTicket(payload) {
 function _getTicketsToPrint(filtre, tickets) {
 
   logger.info('_getTicketsToPrint',filtre);
+  logger.info(JSON.stringify(tickets,null,2));
 
   let liste;
   if (filtre==='all') {

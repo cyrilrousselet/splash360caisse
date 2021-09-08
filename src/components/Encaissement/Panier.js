@@ -1109,7 +1109,7 @@ class Panier extends React.Component {
   setSchedule(heure) {
     logger.info('setSchedule('+heure+')');
     
-    const round_heure = `${ heure.getUTCFullYear() }-${ String(heure.getUTCMonth()+1).padStart(2,'0') }-${ String(heure.getUTCDate()).padStart(2, '0') }T${ String(heure.getUTCHours()).padStart(2, '0') }:${ String(heure.getUTCMinutes()).padStart(2, '0') }:00.000Z`;
+    const round_heure = new Date(`${ heure.getUTCFullYear() }-${ String(heure.getUTCMonth()+1).padStart(2,'0') }-${ String(heure.getUTCDate()).padStart(2, '0') }T${ String(heure.getUTCHours()).padStart(2, '0') }:${ String(heure.getUTCMinutes()).padStart(2, '0') }:00.000Z`);
     
     // si l'heure programmée est dans les 15 prochaines minutes -> enproduction=true
     const {parametres} = this.props;

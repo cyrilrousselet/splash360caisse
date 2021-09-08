@@ -18,6 +18,7 @@ const fs = require('fs');
 const getPixels = require('get-pixels');
 
 const QRCode = require('qrcode');
+const { logger } = require('@sentry/utils');
 
 let printerOpen = false;
 let waitInterval = null;
@@ -782,71 +783,115 @@ function _printProduits(printer, data, strings) {
 
 // informations commande sur le ticket
 function _printInfo(printer, data, strings) {
-  printer
-    .font('A')
-    .align('CT')
-    .style('B')
-    // .size(1,2)
-    .fontSize('2height')
-    .text(data.nomticket)
-    // .fontSize('4square')
-    .fontSize('normal')
-    .drawLine()
-    .style('B')
-    // .size(2,2)
-    .fontSize('4square')
-    .text(`#${data.commande.numero}`)
-    // .fontSize('4square');
-    .fontSize('normal');
 
-  if (data.commande.client!==null) {
-
+  try {
     printer
       .font('A')
+      .align('CT')
+      .style('B')
+      // .size(1,2)
+      .fontSize('2height')
+      .text(data.nomticket)
       // .fontSize('4square')
       .fontSize('normal')
-      .feed(1)
-      .style('NORMAL')
-      .tableCustom([
-        {text: `${strings.client.titre} ${data.commande.client.prenom} ${data.commande.client.nom}`, cols:42, align:'CENTER'}
-      ]);
-  }
-
-
-  printer
-    .drawLine()
-    .style('NORMAL')
-    .text(`${strings.numero}${data.commande.id}`)
-    .text(`${strings.creation}${data.info.date} à ${data.info.heure}`)
-    // .size(2,2)
-    .fontSize('4square')
-    .text(`*** ${strings.mode[data.commande.mode]} ***`)
-    .fontSize('normal');
-
-  if (data.commande.bipper) {
-    printer
-      .fontSize('normal')
-      .drawLine()
-      .style('NORMAL')
-      .fontSize('4square')
-      .text(`--- ${strings.bipper}${data.commande.bipper} ---`)
-      .fontSize('normal');
-  }
-  if (data.commande.status==="standby") {
-    printer
       .drawLine()
       .style('B')
-      .fontSize('2width')
-      .setReverseColors(true)
-      .text(printer._completeRaw(String(strings.status[data.commande.status]).toUpperCase(), "center", {width:21}))
-      .fontSize('normal')
-      .setReverseColors(false)
-      .style('NORMAL');
+      // .size(2,2)
+      .fontSize('4square')
+      .text(`#${data.commande.numero}`)
+      // .fontSize('4square');
+      .fontSize('normal');
   }
-  printer
-    .fontSize('2height')
-    .drawLine()
-    .fontSize('normal');
+  catch(e) {
+    logger.error('_printInfo() error, nom + numero');
+    throw(e);
+  }
+
+
+  try {
+    if (data.commande.client!==null) {
+
+      printer
+        .font('A')
+        // .fontSize('4square')
+        .fontSize('normal')
+        .feed(1)
+        .style('NORMAL')
+        .tableCustom([
+          {text: `${strings.client.titre} ${data.commande.client.prenom} ${data.commande.client.nom}`, cols:42, align:'CENTER'}
+        ]);
+    }
+  }
+  catch(e) {
+    logger.error('_printInfo() error, client');
+    throw(e);
+  }
+
+
+  try {
+    printer
+      .drawLine()
+      .style('NORMAL')
+      .text(`${strings.numero}${data.commande.id}`)
+      .text(`${strings.creation}${data.info.date} à ${data.info.heure}`)
+      // .size(2,2)
+      .fontSize('4square')
+      .text(`*** ${strings.mode[data.commande.mode]} ***`)
+      .fontSize('normal');
+  }
+  catch(e) {
+    logger.error('_printInfo() error, commandeid, date/heure, mode');
+    throw(e);
+  }
+
+
+  try {
+
+    if (data.commande.bipper) {
+      printer
+        .fontSize('normal')
+        .drawLine()
+        .style('NORMAL')
+        .fontSize('4square')
+        .text(`--- ${strings.bipper}${data.commande.bipper} ---`)
+        .fontSize('normal');
+    }
+  }
+  catch(e) {
+    logger.error('_printInfo() error, bipper');
+    throw(e);
+  }
+
+
+  try {
+    if (data.commande.status==="standby") {
+      printer
+        .drawLine()
+        .style('B')
+        .fontSize('2width')
+        .setReverseColors(true)
+        .text(printer._completeRaw(String(strings.status[data.commande.status]).toUpperCase(), "center", {width:21}))
+        .fontSize('normal')
+        .setReverseColors(false)
+        .style('NORMAL');
+    }
+  }
+  catch(e) {
+    logger.error('_printInfo() error, standby');
+    throw(e);
+  }
+
+
+  try {
+    printer
+      .fontSize('2height')
+      .drawLine()
+      .fontSize('normal');
+  }
+  catch(e) {
+    logger.error('_printInfo() error end');
+    throw(e);
+  }
 }
 
 
