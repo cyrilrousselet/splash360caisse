@@ -458,6 +458,15 @@ const data = {
                 livreurs: {
                     titre: "Sélection d'un livreur",
                     aucun: "aucun"
+                },
+                livraison: {
+                    titre: {
+                        encours: "La commande est en cours de livraison",
+                        terminee: "La commande a été livrée"
+                    },
+                    depuis: "En cours de livraison depuis : ",
+                    livree: "Livrée le : ",
+                    chrono: " en : "
                 }
             },
             cloture: { 

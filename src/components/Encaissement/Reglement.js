@@ -1,5 +1,5 @@
 import { Fab, List, ListItem, Modal } from "@material-ui/core";
-import { differenceInMilliseconds, endOfDay, isBefore } from "date-fns";
+import { differenceInMilliseconds, endOfDay, formatISO, parseISO, isBefore } from "date-fns";
 import { endOfToday } from "date-fns/esm";
 import PropTypes from "prop-types";
 import React from "react";
@@ -168,6 +168,11 @@ class Reglement extends React.Component {
       // on ne réimprime pas les tickets de production (ms seulmt 'commande')
       if (__previousstatus === "a_encaisser") {
         // this.props.commande.status = "confirmed";
+
+        if(this.props.commande.mode === "livraison"){
+          const now = new Date();
+          this.props.updateCommande({shippedAt: formatISO(now), chronoLivraison: Math.round(differenceInMilliseconds(parseISO(this.props.commande.shippedAt),parseISO(this.props.commande.pickedAt)) / 10) / 100}, 'beforeCloseReglement (livraison)');
+        }
 
         // this.props.printCommandeTicket({ templates: ["commande"] }, {...this.props.commande, status:'confirmed'});
         this.props.updateCommande({printnum: Number(this.props.commande.printnum)+1}, 'beforeCloseReglement');

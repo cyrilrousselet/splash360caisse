@@ -10,8 +10,9 @@ import history from '../helpers/history';
 import paths from './../constants/routes.json';
 
 import 'date-fns';
-import { format, compareAsc, compareDesc } from "date-fns";
+import { format, compareAsc, compareDesc,differenceInMilliseconds,  parseISO } from "date-fns";
 import DateFnsUtils from '@date-io/date-fns';
+import moment from 'moment';
 import frLocale from "date-fns/locale/fr";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 
@@ -40,6 +41,7 @@ import DeliveryIcon from './common/icon/DeliveryIcon';
 import PaymentIcon from './common/icon/PaymentIcon';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from './common/icon/EditIcon';
+import AccessTimeIcon from '@material-ui/icons/AccessTime';
 
 import { decodetable } from '../constants/decodetable';
 import { dateBounds } from '../helpers/toolbox';
@@ -112,14 +114,28 @@ function TableCommandes(props) {
           {liste.map((row, i) => (
             <TableRow key={row.id} className={ `${(i%2)?'odd':'even'} color-${(row.commande.caisse.id===thiscash.id)?'0':'autre'} ${(row.commande.centre==='uber'?'autrecentre':'')}${(row.commande.archived?' cmd-archived':'')}` }>
               <TableCell key={`${row.id}-date`} className="liste-date">{ row.commande.date }</TableCell>
-              <TableCell key={`${row.id}-heure`} className="liste-heure">{ row.commande.heure }</TableCell>
+              <TableCell key={`${row.id}-heure`} className="liste-heure">
+                { (row.commande.scheduled) ? 
+                  <div className= {`heure-scheduled ${(id==="a_encaisser") && "highlited"}`}>
+                  <p>{row.commande.scheduled}</p>
+                  <AccessTimeIcon /> 
+                  </div>
+                : 
+                  row.commande.heure 
+                }
+              </TableCell>
               <TableCell key={`${row.id}-numero`} className="liste-numero">{ row.commande.numero }</TableCell>
               <TableCell key={`${row.id}-montant`} className="liste-montant">{ row.commande.montant }</TableCell>
               <TableCell key={`${row.id}-caisse`} className="liste-caisse">{ row.commande.caisse.nom }</TableCell>
               <TableCell key={`${row.id}-client`} className="liste-client">{ (id!=='staffmeals') ? row.commande.client : row.commande.beneficiaire.nom }</TableCell>
-              <TableCell key={`${row.id}-mode`} className="liste-mode">{ strings.modules.listecommandes.liste.modes[row.commande.mode] }</TableCell>
+              <TableCell key={`${row.id}-mode`} className="liste-mode">
+                { strings.modules.listecommandes.liste.modes[row.commande.mode] }
+                {( ((id==="a_encaisser" || id==="confirmed") && row.commande.livreur !== null) && row.commande.mode==='livraison') && 
+                  <LivraisonStatus status={id} commande={row.commande}/>
+                }
+              </TableCell>
               <TableCell key={`${row.id}-actions`} className="liste-actions">
-                {(row.commande.mode==='livraison' && id!=='standby') && <StdButton key={`${row.id}-livreur`} identifier='livreur' elementclass={ `action action-livreur${(row.commande.livreur?' lvr-active':'')}` } icon={ <DeliveryIcon htmlColor={(row.commande.livreur?'#FF2D55':'#666666')} /> } noStroke={true} text='' onClick={() => { openLivreurs(row.id) }} />}
+                {(row.commande.mode==='livraison' && id!=='standby') && <StdButton key={`${row.id}-livreur`} identifier='livreur' elementclass={ `action action-livreur${(row.commande.livreur?' lvr-active':'')}` } icon={ <DeliveryIcon htmlColor={(row.commande.livreur?'#FF2D55':'#666666')} /> } disabled={id==='confirmed'} noStroke={true} text='' onClick={() => { openLivreurs(row.id) }} />}
                 <StdButton key={`${row.id}-encaissement`} identifier='encaissement' elementclass="action action-encaissement" icon={ <PaymentIcon htmlColor="#ffffff" /> } disabled={row.commande.archived} noStroke={true} text={ '' } onClick={ () => { openReglement(row.id) } } />
                 <StdButton key={`${row.id}-annuler`} identifier='annuler' elementclass="action action-annuler" icon={ <DeleteIcon htmlColor="#ffffff" /> } disabled={id==='confirmed'} noStroke={true} text={ '' } onClick={() => { deleteCommande(row.id) }} />
                 <StdButton key={`${row.id}-reprise`} identifier='reprise' elementclass="action action-reprise" icon={ <EditIcon htmlColor="#ffffff" /> } disabled={id==='confirmed' || (row.commande.livreur!==null && row.commande.livreur!==undefined)} noStroke={true} text={ '' } onClick={() => { openReprise(row.id) }} />
@@ -160,6 +176,109 @@ function LivreurPopin(props) {
   );
 }
 
+// class LivraisonStatusPopin extends React.Component {
+
+//   constructor(props) {
+//     super(props);
+//     this.state = {
+//       time : ''
+//     };
+//   }
+
+//   componentDidMount() {
+//     this.interval = setInterval(() => this.setState({ time: Date.now() }), 1000);
+//   }
+
+//   calculateChrono(pickedAt) {
+
+//     const ms = Math.round(differenceInMilliseconds(this.state.time, parseISO(pickedAt)));
+
+//     return this.msToFormat(ms);
+//   }
+
+//   msToFormat(msTime) {
+
+//     var tempTime = moment.duration(msTime);
+
+//     var hours = tempTime.hours();
+//     var minutes = "0" + tempTime.minutes();
+//     var seconds = "0" + tempTime.seconds()
+
+//     return hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+//   }
+
+//   render() {
+//     const { commandeId, livraisonStatusOpen, closeHandler, commande } = this.props;
+//     const {time} = this.state;
+
+//     const chrono = (commande.status === 'a_encaisser' && livraisonStatusOpen) ? this.calculateChrono(commande.pickedAt) : null ;
+      
+//     return (
+//       <Modal
+//         open={ livraisonStatusOpen }
+//         >
+//         <div className="ScheduleModal">
+//           <div className="Modal-container">
+//             <div className="header">
+//               <div className="title">{ (commande.status === 'a_encaisser') ? strings.modules.listecommandes.livraison.titre.encours : strings.modules.listecommandes.livraison.titre.terminee }</div>
+//             </div>
+//             <div className="body">
+//               { (commande.status === 'a_encaisser') && strings.modules.listecommandes.livraison.depuis + chrono }
+//               { (commande.chronoLivraison !== 0) && strings.modules.listecommandes.livraison.livree + format(parseISO(commande.shippedAt), "dd MMMM 'à' hh:mm ", {locale: frLocale}) + strings.modules.listecommandes.livraison.chrono + this.msToFormat(commande.chronoLivraison*1000)}
+//             </div>
+//           </div>
+//           <Fab aria-label="close" size="small" className="close-button" onClick={ closeHandler }>
+//             <CloseIcon />
+//           </Fab>
+//         </div>
+//       </Modal>
+//     );
+//   }
+// }
+
+class LivraisonStatus extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      time :  Date.now()
+    };
+  }
+
+  componentDidMount() {
+    this.interval = setInterval(() => this.setState({ time: Date.now() }), 1000);
+  }
+
+  calculateChrono(pickedAt) {
+    console.log("pickedAt : ", pickedAt);
+
+    const ms = Math.round(differenceInMilliseconds(this.state.time, parseISO(pickedAt)));
+    console.log("ms : ", ms);
+
+    return this.msToFormat(ms);
+  }
+
+  msToFormat(msTime) {
+
+    var tempTime = moment.duration(msTime);
+
+    var hours = tempTime.hours();
+    var minutes = "0" + tempTime.minutes();
+    var seconds = "0" + tempTime.seconds()
+
+    return hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+  }
+
+  render() {
+    const {status, commande} = this.props;
+
+    const chrono = (status === 'a_encaisser') ? this.calculateChrono(commande.pickedAt) : this.msToFormat(commande.chronoLivraison*1000) ;
+      
+    return (
+      <span> {chrono} </span>
+    );
+  }
+}
 
 function ImpressionTicketPopin(props) {
   const { tickets, printOpen, closeHandler, launchTicket } = props;
@@ -211,6 +330,8 @@ class ListeCommandes extends React.Component {
     this.deleteCommande = this.deleteCommande.bind(this);
     this.openLivreurs = this.openLivreurs.bind(this);
     this.closeLivreurs = this.closeLivreurs.bind(this);
+    this.openLivraisonStatus = this.openLivraisonStatus.bind(this);
+    this.closeLivraisonStatus = this.closeLivraisonStatus.bind(this);
     this.getBoundedCommandesList = this.getBoundedCommandesList.bind(this);
     this.printTicketHandler = this.printTicketHandler.bind(this);
 
@@ -227,7 +348,8 @@ class ListeCommandes extends React.Component {
       searchval:'',
       inputfocus: true,
       keyboardOpen: false,
-      livreurOpen: false
+      livreurOpen: false,
+      livraisonStatusOpen: false
     };
   }
   
@@ -401,6 +523,14 @@ class ListeCommandes extends React.Component {
     printTicket(tck);
   }
 
+  openLivraisonStatus(cmdid) {
+    this.props.getCommande(cmdid);
+    this.setState({commandeId:cmdid, livraisonStatusOpen:true});
+  }
+  closeLivraisonStatus(cmdid) {
+    this.setState({livraisonStatusOpen:false, commandeId:null});
+  }
+
   render() {
     const { commandeslist, loading, tickets, thiscash, livreurs, setLivreur } = this.props;
 
@@ -438,8 +568,11 @@ class ListeCommandes extends React.Component {
         beneficiaire : value.beneficiaire ? value.beneficiaire : null, 
         centre: value.centre_revenu ? value.centre_revenu : 'restaurant',
         archived: value.hasOwnProperty('archived') && value.archived!==null,
-        scheduled: value.hasOwnProperty('scheduled') && value.scheduled,
+        scheduled: value.scheduled && format(new Date(value.scheduled), "H:mm:ss"),
         enproduction: value.hasOwnProperty('enproduction') && value.enproduction,
+        pickedAt: value.pickedAt,
+        shippedAt: value.shippedAt,
+        chronoLivraison: value.chronoLivraison
       };
       let __start = compareAsc(new Date(value.createdAt), startDate);
       let __end = compareAsc(new Date(value.createdAt), endDate);
@@ -525,10 +658,10 @@ class ListeCommandes extends React.Component {
             <TableCommandes className="standby" id="standby" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } liste={standbylist} />
           </TabPanel>
           <TabPanel className="panel" value={openTab} index={1}>
-            <TableCommandes className="a_encaisser" id="a_encaisser" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } openLivreurs={ this.openLivreurs } liste={a_encaisserlist} />
+            <TableCommandes className="a_encaisser" id="a_encaisser" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } deleteCommande={ this.deleteCommande } openLivreurs={ this.openLivreurs } openLivraisonStatus={ this.openLivraisonStatus } liste={a_encaisserlist} />
           </TabPanel>
           <TabPanel className="panel" value={openTab} index={2}>
-            <TableCommandes className="confirmed" id="confirmed" thiscash={thiscash} openReglement={ this.encaissementHandle } openPrint={ this.openPrint } openLivreurs={ this.openLivreurs } liste={confirmedlist} />
+            <TableCommandes className="confirmed" id="confirmed" thiscash={thiscash} openReglement={ this.encaissementHandle } openPrint={ this.openPrint } openLivreurs={ this.openLivreurs } openLivraisonStatus={ this.openLivraisonStatus } liste={confirmedlist} />
           </TabPanel>
           <TabPanel className="panel" value={openTab} index={3}>
             <TableCommandes className="staffmeals" id="staffmeals" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } openLivreurs={ this.openLivreurs } liste={stmeallist} />
@@ -539,6 +672,7 @@ class ListeCommandes extends React.Component {
         <NumberKeyboard open={keyboardOpen} numbersOnly={true} buttonHandler={this.keyboardButtonHandler} closeHandler={this.closeKeyboard} />
         <ImpressionTicketPopin tickets={tickets} printOpen={printOpen} closeHandler={this.closePrint} commandeId={ this.state.commandeId } launchTicket={this.printTicketHandler} />
         <LivreurPopin livreurs={livreurs} livreurOpen={livreurOpen} setLivreur={setLivreur} closeHandler={this.closeLivreurs} commandeId={ this.state.commandeId } commandeLivreur={commandeLivreur} />
+
       </div>
     </div>
     );

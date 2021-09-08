@@ -139,6 +139,13 @@
       .liste-actions {
         background-color: $blanc-fonce;
       }
+      .liste-heure .heure-scheduled {
+        display: flex;
+        align-items: center;
+        &.highlited p{
+          background:$jaune;
+       }
+      }
       .MuiTableCell-body {
         font-size: 12px;
         position: relative;
@@ -243,6 +250,9 @@
     }
     .action-reprise {
       background-color: $primary;
+    }
+    .action-schedule {
+      background-color: $orange;
     }
   } // --- /.listes
 }

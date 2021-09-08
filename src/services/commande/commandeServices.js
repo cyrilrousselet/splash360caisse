@@ -82,6 +82,7 @@ function getNewCommande(params) {
     lot: null,
     enproduction: params.enproduction ? params.enproduction : false,
     shippedAt: null,
+    chronoLivraison: 0,
     beneficiaire: params.beneficiaire ? params.beneficiaire : null,
   };
 }
