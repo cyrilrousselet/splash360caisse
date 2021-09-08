@@ -1047,7 +1047,7 @@ const data = {
                                 }
                             },
                             tickets: {
-                                titre: 'Tickets',
+                                titre: 'Tickets de production',
                                 liste: {
                                     id: 'Id',
                                     nom: 'Nom',

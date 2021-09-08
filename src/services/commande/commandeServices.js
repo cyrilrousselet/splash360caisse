@@ -122,7 +122,7 @@ function getCommandesCaisses() {
 }
 
 function addProduit(payload, tva, items, steps) {
-  const { produitid, nom, prix, composition, customizable, status } = payload;
+  const { produitid, nom, prix, puht, composition, customizable, status } = payload;
 
   let mode = "";
   let item = {};
@@ -146,6 +146,7 @@ function addProduit(payload, tva, items, steps) {
       nom: nom,
       prix: prix,
       pu: prix,
+      puht: puht,
       tva: tva,
       composition: composition,
       ingredients: [...composition],
@@ -170,6 +171,7 @@ function addProduit(payload, tva, items, steps) {
         nom: nom,
         prix: prix,
         pu: prix,
+        puht: puht,
         tva: tva,
         composition: composition,
         ingredients: [...composition],
@@ -209,7 +211,7 @@ function updateProduit(payload, item) {
  * @param {*} produitSteps : steps du produit
  * @param {*} tva          : objet TVA lié à l'ingrédient
  */
-function addIngredient(ingredient, quantite, step, item, produitSteps, tva) {
+function addIngredient(ingredient, quantite, step, item, produitSteps, tva, commandeMode) {
   const { ingredients, steps } = item;
 
   // si la règle du step impose un seul ingrédient
@@ -251,7 +253,8 @@ function addIngredient(ingredient, quantite, step, item, produitSteps, tva) {
       ingredient: ingredient.id,
       type: ingredient.type,
       qte: 1,
-      prix: Number(ingredient.supplement),
+      prix: Number(ingredient.supplementArray[MODES[commandeMode]].ttc),
+      ht: Number(ingredient.supplementArray[MODES[commandeMode]].ht),
       nom: ingredient.nom,
       fromStep: step.step_id,
       tva: tva,
@@ -461,15 +464,18 @@ function updateMode(mode, commande, data_catalogue) {
     __itming = __itming.map(ing => {
 
       let __ingredient = ingredients[ing.ingredient];
-      logger.info('ingredient id', ing.ingredient, __ingredient);
+      logger.info('ingredient id', ing.ingredient, __ingredient, 'ht='+Number(__ingredient.supplementArray[__modeid].ht));
       return {
         ...ing,
         tva: tva[__ingredient.tvaArray[__modeid]],
-        supplement: Number(__ingredient.supplementArray[__modeid].ttc)
+      //  supplement: Number(__ingredient.supplementArray[__modeid].ttc),
+        prix: Number(__ingredient.supplementArray[__modeid].ttc),
+        ht: Number(__ingredient.supplementArray[__modeid].ht)
       };
     });
+    
 
-    const __ritm = {
+    let __ritm = {
       ...itm,
       tva: tva[__produit.tvaArray[__modeid]],
       pu: Number(__produit.prixArray[__modeid].ttc),
@@ -477,6 +483,11 @@ function updateMode(mode, commande, data_catalogue) {
     };
 
     let __stepsDuProduit = steps[itm.produitid];
+    
+    if (__stepsDuProduit) {  
+      __ritm.ingredients = _ventilationIngredientsSteps(__ritm, __stepsDuProduit);
+    }
+
     // __ritm.prix = __stepsDuProduit ? _getPrix(__ritm, __stepsDuProduit) : (__ritm.pu * __ritm.quantite);
     __ritm.prix = __stepsDuProduit ? _getPrix(__ritm, __stepsDuProduit) : __ritm.pu;
     __cmdtotal += __ritm.prix;
@@ -564,11 +575,14 @@ function _setSupplements(rule, ingredients) {
       // compte les suppléments à partir du minimum des critères
       ingredients.forEach((ing) => {
         ing.supplement = 0;
+        ing.supplementht = 0;
         for (let j = 0; j < ing.qte; j++) {
           ing.supplement += Number(ing.prix);
+          ing.supplementht += Number(ing.ht);
           if (__stack >= __supvaleurs.min - 1) {
             // ing.supplement += Number(ing.prix)>0 ? Number(ing.prix) : Number(rule.supplement);
             ing.supplement += Number(rule.supplement);
+            ing.supplementht += Number( ( Number(rule.supplement) /  1 + Number(ing.tva.valeur) ).toFixed(2) );
           }
           __stack++;
         }
@@ -579,14 +593,18 @@ function _setSupplements(rule, ingredients) {
       // on compte uniquement le prix des ingrédients
       ingredients.forEach((ing) => {
         ing.supplement = 0;
+        ing.supplementht = 0;
         ing.supplement += Number(ing.prix) * ing.qte;
+        ing.supplementht += Number(ing.ht) * ing.qte;
         __ingredients.push(ing);
       });
     }
   } else {
     ingredients.forEach((ing) => {
       ing.supplement = 0;
+      ing.supplementht = 0;
       ing.supplement += (Number(ing.prix) + Number(rule.supplement)) * ing.qte;
+      ing.supplementht += (Number(ing.ht) + Number(rule.supplement)) * ing.qte;
       __ingredients.push(ing);
     });
   }
@@ -924,34 +942,14 @@ function addModificateur(payload, modificateurs) {
   };
 }
 
+
+
+
+
+
 function saveCommande(commande, catalogueReducer) {
   logger.info("CmdSrv.saveCommande()", commande);
-  /*
-  let __cmd = {
-    commande_id: payload.ticketId,
-    operator: {id: payload.operator.id, nom: payload.operator.nom},
-    caisse: payload.caisse,
-    mode: payload.mode,
-    status: payload.status,
-    items: [],
-    reglements: []
-  };
-  payload.items.forEach(itm => {
-    let __itm = {
-      item_id: itm.itemid,
-      produit_id: itm.produitid,
-      prix: itm.prix,
-      quantite: itm.quantite,
-      composition: []
-    };
-    if (itm.composition.length>0) {
-      itm.composition.forEach( cmp => {
-        __itm.composition.push(cmp);
-      });
-    }
-    __cmd.items.push(__itm)
-  });
-  */
+
   let items = [];
 
   // on met tous les produits dans le même array
@@ -997,8 +995,202 @@ function saveCommande(commande, catalogueReducer) {
     total: _getCommandeTotal(commande.items, commande.modificateurs),
   };
 
-  return emit("dbCommandePersist", { commande: __c });
+
+  const __commandeVentilee = _getVentilation(__c);
+
+  return emit("dbCommandePersist", { commande: __commandeVentilee });
 }
+
+
+// si la commande est confirmée,
+// on ventile la TVA au sein de chaque item et au sein de la commande
+// et on récapitule les Discounts
+function _getVentilation(commande) {
+
+  let __cmd = commande;
+
+  if (commande.status==="confirmed") {
+
+
+    let __ventilation = {};
+    let __basecmd = 0;
+
+    // pour chaque item de commande
+    __cmd.items.forEach( (itm, i) => {
+
+      // (le TTC = pu (prix unique) * quantite)
+      let __ttc = itm.pu * itm.quantite;
+      let __ht = itm.puht * itm.quantite;
+      // le prix correspond au montant du produit avec les ingrédients
+      let __baseprix = itm.prix * itm.quantite;
+      
+      if (!__cmd.centimes) {
+        __ttc = Math.round(__ttc * 100);
+        __ht = Math.round(__ht * 100);
+        __baseprix = Math.round(__baseprix * 100);
+      } 
+      
+      __basecmd += __baseprix;
+
+      // on récupère la tva de l'item et on déduit les montants HT, TVA et TTC au niveau de l'item
+      const __tx = Number(itm.tva.valeur);
+      let __itmventil = {
+        [itm.tva.id]: {
+          taux: __tx,
+          code: itm.tva.code,
+          ttc: __ttc,
+          ht: __ht,
+          tva: __ttc - __ht
+          // ht: Math.round(__ttc / (1 + __tx)),
+          // tva: Math.round((__ttc / (1 + __tx)) * __tx)
+        }
+      };
+
+      // s'il y a au moins un ingredient
+      itm.ingredients.forEach(ing => {
+
+        // on récupère la tva de l'ingredient et on déduit les montants HT, TVA et TTC
+        // (le TTC = supplement)
+        const __itx = Number(ing.tva.valeur);
+        const __ittc = (!__cmd.centimes) ? Math.round(ing.supplement * 100) : ing.supplement;
+        const __iht = (!__cmd.centimes) ? Math.round(ing.supplementht * 100) : ing.supplementht;
+
+        if (__ittc>0) {
+
+          if (!__itmventil.hasOwnProperty(ing.tva.id)) {
+            __itmventil[ing.tva.id] = {
+              taux: __itx,
+              code: ing.tva.code,
+              ttc: 0,
+              ht: 0,
+              tva: 0
+            };
+          }
+        
+          Object.assign(__itmventil[ing.tva.id], {
+            ttc: __itmventil[ing.tva.id].ttc + __ittc,
+            ht: __itmventil[ing.tva.id].ht + __iht,
+            tva: __itmventil[ing.tva.id].tva + (__ittc - __iht)
+            // ht: __itmventil[ing.tva.id].ht + Math.round(__ittc / (1 + __itx)),
+            // tva: __itmventil[ing.tva.id].tva + Math.round((__ittc / (1 + __itx)) * __itx)
+          });
+        
+        }
+
+      });
+
+
+      // s'il y a un modificateur au niveau de l'item, on l'applique à la ventilation
+      const moditem = _getModificateurForItem(__cmd.modificateurs, itm.itemid);
+      if (moditem) {
+        console.log('modificateur item '+itm.itemid);
+        const __itm_modif = _applyModificateur(moditem, __itmventil, __baseprix, !__cmd.centimes);
+        __itmventil = __itm_modif.ventilation;
+        __cmd.items[i].discount = __itm_modif.discount;
+      }
+
+
+      __cmd.items[i].ventilation = __itmventil;
+
+      Object.entries(__itmventil).forEach(([k,v]) => {
+        if (!__ventilation.hasOwnProperty(k)) {
+          __ventilation[k] = {
+            taux: v.taux,
+            code: v.code,
+            ttc: 0,
+            ht: 0,
+            tva: 0
+          };
+        }
+        Object.assign(__ventilation[k], {
+          ttc: __ventilation[k].ttc + v.ttc,
+          ht: __ventilation[k].ht +v.ht,
+          tva: __ventilation[k].tva +v.tva
+        });
+      }); 
+
+    });  
+
+    // s'il y a un modificateur au niveau de la commande, on l'applique à la ventilation
+    const modcmd = _getModificateurForCmd(__cmd.modificateurs);
+    if (modcmd) {
+      console.log('modificateur commande');
+      const __cmd_modif = _applyModificateur(modcmd, __ventilation, __basecmd, !__cmd.centimes);   
+      __ventilation = __cmd_modif.ventilation;
+      __cmd.discount = __cmd_modif.discount;
+    }
+    __cmd.ventilation = __ventilation;
+
+  }
+
+  return __cmd;
+
+
+}
+
+
+function _getModificateurForItem(modificateurs, itemid) {
+  return modificateurs.find(mod => mod.item===itemid);
+}
+
+function _getModificateurForCmd(modificateurs) {
+  return modificateurs.find(mod => mod.item===null);
+}
+
+
+/**
+ * 
+ * @param {*} modificateur 
+ * @param {*} ventilation 
+ * @param {*} ttc       montant total de la commande en centimes
+ * @param {*} useeuros  si les montants sont enregistrés en euros, il faut convertir le montant du modificateur
+ * @returns 
+ */
+function _applyModificateur(modificateur, ventilation, ttc, useeuros) {
+  // is percentage?
+  const ispc = String(modificateur.valeur).substr(-1,1)==='%';
+  // recup valeur numérique
+  let val = Math.abs(Number(String(modificateur.valeur).slice(0,-1)));
+
+  let taux = 1;
+
+  // si le modificateur est en pourcentage, on traduit le taux en facteur
+  if (ispc) {
+    taux = modificateur.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
+  } 
+  // si le modificateur est en numéraire, on calcule le facteur en comparant le total TTC avec la valeur du modificateur
+  else {
+    if (useeuros) {
+      val *= 100;
+    }
+    taux = modificateur.operation<0 ? (ttc - val) / ttc : (ttc + val) / ttc;
+  }
+
+  let __modventil = {};
+  Object.entries(ventilation).forEach(([k,v]) => {
+    __modventil[k] = {
+      taux: v.taux,
+      code: v.code,
+      ttc: Math.round(v.ttc * taux),
+      ht: Math.round(v.ht * taux),
+      tva: Math.round(v.tva * taux)
+    };
+  });
+
+  return {
+    ventilation: __modventil, 
+    discount: {
+      base: ttc, 
+      montant: ttc - Math.round(ttc * taux), 
+      taux: (modificateur.operation>0?'+':'-') + (100 - (taux * 100)).toFixed(1) + '%'
+    }
+  };
+}
+
+
+
+
+
 
 function persistCommande(commande) {
   return emit("dbCommandePersist", { commande: commande });

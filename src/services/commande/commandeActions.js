@@ -246,6 +246,8 @@ function validateCommande(_payload) {
     const payloadcopy = { ...payload, localsync: [caisse.uniqid] };
     dispatch(getCommande());
 
+
+
     commandeServices.saveCommande(payloadcopy, catalogueReducer).then(
       (confirm) => {
 
@@ -690,6 +692,7 @@ function addIngredient(payload) {
     const item = state.commandeReducer.commande.items.find(
       (itm) => itm.itemid === itemid
     );
+    const commandeMode = state.commandeReducer.commande.mode;
     const step = state.catalogueReducer.steps[item.produitid].find(
       (step) => step.step_id === stepid
     );
@@ -705,7 +708,8 @@ function addIngredient(payload) {
       step,
       item,
       produitSteps,
-      tva
+      tva,
+      commandeMode
     );
     dispatch({ type: commandeActionTypes.ADD_INGREDIENT, commandeItem });
   };
@@ -1177,11 +1181,12 @@ function addCommandeToLot(ticketId, secteur) {
     let mode = 'add';
     if (!lot) {
       lot = commandeServices.createLot(secteur, param_exp);
-      if (!lot.commandes.includes(ticketId)) {
-        lot.commandes.push(ticketId);
-        mode = 'create';
-      }
+      mode = 'create';
     }    
+    
+    if (!lot.commandes.includes(ticketId)) {
+      lot.commandes.push(ticketId);
+    }
 
     logger.info("addCommandeToLot()", lot);
     
