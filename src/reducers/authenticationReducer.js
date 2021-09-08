@@ -6,16 +6,19 @@ const initialState = user ? { loggedIn: true, user, superuserMode: false } : {lo
 export function authentication(state = initialState, action) {
 
   switch (action.type) {
+
     case userActionTypes.LOGIN_REQUEST:
       return {
         loggingIn: true,
         user: action.user
       };
+
     case userActionTypes.LOGIN_SUCCESS:
       return {
         loggedIn: true,
         user: action.user
       };
+
     case userActionTypes.LOGIN_FAILURE:
     case userActionTypes.LOGIN_ERROR:
     case userActionTypes.LOGIN_DENIED:
@@ -23,18 +26,19 @@ export function authentication(state = initialState, action) {
         loggedIn: false,
         error: action.payload
       };
+
     case userActionTypes.RESET_LOGIN_ERROR:
       return {
         ...state,
         error: null
       };
+
     case userActionTypes.LOGOUT:
-      
       return {loggedIn: false};
+
     case userActionTypes.UPDATE_SUCCESS:
-      return {
-        user: action.user
-      }
+      return (user.user_id === action.user.user_id) ? {...state, user: action.user} : state;
+
     case userActionTypes.TOGGLE_SUPERUSER_MODE:
       return {
         ...state,

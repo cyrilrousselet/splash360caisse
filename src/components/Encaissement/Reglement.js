@@ -171,7 +171,8 @@ class Reglement extends React.Component {
 
         if(this.props.commande.mode === "livraison"){
           const now = new Date();
-          this.props.updateCommande({shippedAt: formatISO(now), chronoLivraison: Math.round(differenceInMilliseconds(parseISO(this.props.commande.shippedAt),parseISO(this.props.commande.pickedAt)) / 10) / 100}, 'beforeCloseReglement (livraison)');
+          const __shippedAt = formatISO(now);
+          this.props.updateCommande({shippedAt: __shippedAt, chronoLivraison: Math.round( differenceInMilliseconds( parseISO(__shippedAt), parseISO(this.props.commande.pickedAt) ) / 10 ) / 100}, 'beforeCloseReglement (livraison)');
         }
 
         // this.props.printCommandeTicket({ templates: ["commande"] }, {...this.props.commande, status:'confirmed'});

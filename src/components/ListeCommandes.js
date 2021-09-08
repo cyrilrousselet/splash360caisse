@@ -163,7 +163,7 @@ function LivreurPopin(props) {
           </div>
           <div className="body">
           { livreurs.map((lvr,i) =>
-            <StdButton identifier={ lvr.user_id } key={i} elementclass={ `livreur${((commandeLivreur && commandeLivreur.id===lvr.user_id)?' activated':'')}`} icon={ false } noStroke={true} text={ `${lvr.nom}${(lvr.coordonnees && ` (${lvr.coordonnees})`)}` } onClick={(value) => { setLivreur({commandeId:commandeId, livreur:{nom:lvr.nom, id:lvr.user_id}}); closeHandler(); }} />
+            <StdButton identifier={ lvr.user_id } key={i} elementclass={ `livreur${((commandeLivreur && commandeLivreur.id===lvr.user_id)?' activated':'')}`} icon={ false } noStroke={true} text={ `${lvr.nom}${((lvr.coordonnees!==undefined) ? ` (${lvr.coordonnees})` : '')}` } onClick={(value) => { setLivreur({commandeId:commandeId, livreur:{nom:lvr.nom, id:lvr.user_id}}); closeHandler(); }} />
             )}
             <StdButton identifier="none" key={livreurs.length} elementclass="livreur livreur-none" icon={ false } noStroke={true} text={ strings.modules.listecommandes.livreurs.aucun } onClick={(value) => { setLivreur({commandeId:commandeId, livreur:null}); closeHandler(); }} />
           </div>
@@ -176,65 +176,6 @@ function LivreurPopin(props) {
   );
 }
 
-// class LivraisonStatusPopin extends React.Component {
-
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//       time : ''
-//     };
-//   }
-
-//   componentDidMount() {
-//     this.interval = setInterval(() => this.setState({ time: Date.now() }), 1000);
-//   }
-
-//   calculateChrono(pickedAt) {
-
-//     const ms = Math.round(differenceInMilliseconds(this.state.time, parseISO(pickedAt)));
-
-//     return this.msToFormat(ms);
-//   }
-
-//   msToFormat(msTime) {
-
-//     var tempTime = moment.duration(msTime);
-
-//     var hours = tempTime.hours();
-//     var minutes = "0" + tempTime.minutes();
-//     var seconds = "0" + tempTime.seconds()
-
-//     return hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-//   }
-
-//   render() {
-//     const { commandeId, livraisonStatusOpen, closeHandler, commande } = this.props;
-//     const {time} = this.state;
-
-//     const chrono = (commande.status === 'a_encaisser' && livraisonStatusOpen) ? this.calculateChrono(commande.pickedAt) : null ;
-      
-//     return (
-//       <Modal
-//         open={ livraisonStatusOpen }
-//         >
-//         <div className="ScheduleModal">
-//           <div className="Modal-container">
-//             <div className="header">
-//               <div className="title">{ (commande.status === 'a_encaisser') ? strings.modules.listecommandes.livraison.titre.encours : strings.modules.listecommandes.livraison.titre.terminee }</div>
-//             </div>
-//             <div className="body">
-//               { (commande.status === 'a_encaisser') && strings.modules.listecommandes.livraison.depuis + chrono }
-//               { (commande.chronoLivraison !== 0) && strings.modules.listecommandes.livraison.livree + format(parseISO(commande.shippedAt), "dd MMMM 'à' hh:mm ", {locale: frLocale}) + strings.modules.listecommandes.livraison.chrono + this.msToFormat(commande.chronoLivraison*1000)}
-//             </div>
-//           </div>
-//           <Fab aria-label="close" size="small" className="close-button" onClick={ closeHandler }>
-//             <CloseIcon />
-//           </Fab>
-//         </div>
-//       </Modal>
-//     );
-//   }
-// }
 
 class LivraisonStatus extends React.Component {
 
@@ -253,7 +194,6 @@ class LivraisonStatus extends React.Component {
     console.log("pickedAt : ", pickedAt);
 
     const ms = Math.round(differenceInMilliseconds(this.state.time, parseISO(pickedAt)));
-    console.log("ms : ", ms);
 
     return this.msToFormat(ms);
   }
