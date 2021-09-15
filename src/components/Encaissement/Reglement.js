@@ -118,6 +118,8 @@ class Reglement extends React.Component {
 
     let __reste = __total - __paye + __rendu;
 
+    // console.log('Reglement.updateValeurs()', __paye, __total, __reste, __rendu, __especes, (__reste < 0 && __especes + __reste > 0));
+
     // payé, montant à payer et reste à payer (ou rendu monnaie si négatif)
     // s'il y a un trop perçu, peut-on le rendre sur les especes ?
     return {

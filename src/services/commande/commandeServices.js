@@ -1864,7 +1864,7 @@ const _getCommandeTotal = (items, modificateurs) => {
         }
       }
 
-      __total += articletotal;
+      __total += Math.round(articletotal * 100) / 100;
     });
   }
 
@@ -1884,5 +1884,5 @@ const _getCommandeTotal = (items, modificateurs) => {
     }
   }
 
-  return __total;
+  return Math.round(__total * 100) / 100;
 };

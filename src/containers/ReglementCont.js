@@ -50,7 +50,7 @@ const getCommandeTotal = (items, modificateurs) => {
             __itemtotal = __moditem.operation>0 ? __itemtotal + val : __itemtotal - val;
           }
         }
-        __total += __itemtotal;
+        __total += Math.round(__itemtotal * 100) / 100;
       });
     }
 
