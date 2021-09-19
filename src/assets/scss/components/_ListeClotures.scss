@@ -146,6 +146,19 @@
         background-color: $blanc-fonce;
       }
     }
+    .MuiTableRow-root.outofdate {
+      .liste-station,
+      .liste-fin,
+      .liste-ventes,
+      .liste-actions,
+      .liste-date,
+      .liste-debut,
+      .liste-ht,
+      .liste-nombre {
+        background-color: $wheel2;
+        color: $blanc;
+      }
+    }
   }
 
   .MuiTableContainer-root {
@@ -197,6 +210,9 @@
 
     .blocwrapper {
       width: 100%;
+    }
+    &.outofdate .ticket-x {
+      border: 3px solid $rouge;
     }
 
   }

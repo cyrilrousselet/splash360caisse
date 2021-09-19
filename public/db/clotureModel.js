@@ -53,9 +53,9 @@ const ClotureSchema = mongoose.Schema(
       vendeurs: [],
       ventes: Number,
       ventilation: {
-        moyen: [],
-        tva: [],
-        vendeur: [],
+        moyen: {},
+        tva: {},
+        vendeur: {},
       },
     },
     prelevement: Number,

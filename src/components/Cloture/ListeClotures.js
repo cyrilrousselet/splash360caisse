@@ -55,7 +55,7 @@ function TicketX(props) {
 
 
   let vndvnt = 0, vndrmb = 0, vndtotal = 0;
-  periode.ventilation.vendeur.forEach(vendeur => {
+  Object.values(periode.ventilation.vendeur).forEach(vendeur => {
       vndvnt += vendeur.ventes;
       vndrmb += vendeur.remboursements;
       vndtotal += (vendeur.ventes-vendeur.remboursements);
@@ -63,14 +63,14 @@ function TicketX(props) {
 
 
   let tvaht = 0, tvamnt = 0, tvattc = 0;
-  periode.ventilation.tva.forEach(tva => { 
+  Object.values(periode.ventilation.tva).forEach(tva => { 
       tvaht += tva.ht;
-      tvamnt += tva.montant;
+      tvamnt += tva.tva;
       tvattc += tva.ttc;
   });
 
   let moytotal = 0;
-  periode.ventilation.moyen.forEach(moyen => { 
+  Object.values(periode.ventilation.moyen).forEach(moyen => { 
       moytotal += moyen.valeur;
   });
   moytotal -= periode.emission;
@@ -152,19 +152,19 @@ function TicketX(props) {
         <div className="ventil-intit" key="ventil-vendeur-intit3">{__strimp.caption.remboursements_short}</div>
         <div className="ventil-intit" key="ventil-vendeur-intit4">{__strimp.caption.ca_short}</div>
       </div>
-      {periode.ventilation.vendeur.map(vendeur => (
+      {Object.values(periode.ventilation.vendeur).map(vendeur => (
         <div className="ventil ventil-vendeur" key={`vnd-${vendeur.id}`}>
           <div className="ventil-nom" key={`vnd-${vendeur.id}-nom`}>{ vendeur.nom }</div>
-          <div className="ventil-val" key={`vnd-${vendeur.id}-val1`}>{devise(vendeur.ventes)}</div>
-          <div className="ventil-val" key={`vnd-${vendeur.id}-val2`}>{`-${devise(vendeur.remboursements)}`}</div>
-          <div className="ventil-val" key={`vnd-${vendeur.id}-val3`}>{devise(vendeur.ventes-vendeur.remboursements)}</div>
+          <div className="ventil-val" key={`vnd-${vendeur.id}-val1`}>{devise(vendeur.ventes / 100)}</div>
+          <div className="ventil-val" key={`vnd-${vendeur.id}-val2`}>{`-${devise(vendeur.remboursements / 100)}`}</div>
+          <div className="ventil-val" key={`vnd-${vendeur.id}-val3`}>{devise((vendeur.ventes - vendeur.remboursements) / 100)}</div>
         </div>
       ))}
       <div className="ventil ventil-vendeur total" key="ventil-vendeur-total">
         <div className="ventil-nom" key="ventil-vendeur-total-nom">{__strimp.caption.total}</div>
-        <div className="ventil-val" key="ventil-vendeur-total-val1">{devise(vndvnt)}</div>
-        <div className="ventil-val" key="ventil-vendeur-total-val2">{`-${devise(vndrmb)}`}</div>
-        <div className="ventil-val" key="ventil-vendeur-total-val3">{devise(vndtotal)}</div>
+        <div className="ventil-val" key="ventil-vendeur-total-val1">{devise(vndvnt / 100)}</div>
+        <div className="ventil-val" key="ventil-vendeur-total-val2">{`-${devise(vndrmb / 100)}`}</div>
+        <div className="ventil-val" key="ventil-vendeur-total-val3">{devise(vndtotal / 100)}</div>
       </div>
       <div className="titre" key="ventil-tva-ttl">
         { __strimp.ventilation.tva }
@@ -175,20 +175,20 @@ function TicketX(props) {
         <div className="ventil-intit" key="ventil-tva-intit3">{__strimp.caption.tva}</div>
         <div className="ventil-intit" key="ventil-tva-intit4">{__strimp.caption.ttc}</div>
       </div>
-      {periode.ventilation.tva.map(tva => (
+      {Object.values(periode.ventilation.tva).map(tva => (
         <div className="ventil ventil-vendeur" key={ `ventil-tva-${tva.id}` }>
           {/* <div className="ventil-nom">{`${devise(tva.taux*100)}%`}</div> */}
-          <div className="ventil-nom" key={`ventil-tva-${tva.id}-nom`}>{tva.taux}</div>
-          <div className="ventil-val" key={`ventil-tva-${tva.id}-val1`}>{devise(tva.ht)}</div>
-          <div className="ventil-val" key={`ventil-tva-${tva.id}-val2`}>{devise(tva.montant)}</div>
-          <div className="ventil-val" key={`ventil-tva-${tva.id}-val3`}>{devise(tva.ttc)}</div>
+          <div className="ventil-nom" key={`ventil-tva-${tva.id}-nom`}>{tva.taux * 100}%</div>
+          <div className="ventil-val" key={`ventil-tva-${tva.id}-val1`}>{devise(tva.ht/100)}</div>
+          <div className="ventil-val" key={`ventil-tva-${tva.id}-val2`}>{devise(tva.tva/100)}</div>
+          <div className="ventil-val" key={`ventil-tva-${tva.id}-val3`}>{devise(tva.ttc/100)}</div>
         </div>
       ))}
       <div className="ventil ventil-vendeur total" key="ventil-tva-total">
         <div className="ventil-nom" key="ventil-tva-total-nom">{__strimp.caption.total}</div>
-        <div className="ventil-val" key="ventil-tva-total-val1">{devise(tvaht)}</div>
-        <div className="ventil-val" key="ventil-tva-total-val2">{devise(tvamnt)}</div>
-        <div className="ventil-val" key="ventil-tva-total-val3">{devise(tvattc)}</div>
+        <div className="ventil-val" key="ventil-tva-total-val1">{devise(tvaht / 100)}</div>
+        <div className="ventil-val" key="ventil-tva-total-val2">{devise(tvamnt / 100)}</div>
+        <div className="ventil-val" key="ventil-tva-total-val3">{devise(tvattc / 100)}</div>
       </div>
       <div className="titre" key="ventil-moyen-ttl">
         { __strimp.ventilation.moyen }
@@ -199,7 +199,7 @@ function TicketX(props) {
         <div className="ventil-intit" key="ventil-moyen-intit3">{__strimp.caption.moyens_th.comptage}</div>
         <div className="ventil-intit" key="ventil-moyen-intit4">{__strimp.caption.moyens_th.ecart}</div>
       </div>
-      {periode.ventilation.moyen.map(moyen => {
+      {Object.values(periode.ventilation.moyen).map(moyen => {
 
         const __moy_ecart = (ecarts && ecarts.hasOwnProperty(moyen.moyen) && ecarts[moyen.moyen]!==null) ? ecarts[moyen.moyen].valeur : 0;
         
@@ -279,9 +279,9 @@ function CloturePopin(props) {
       <div className="ViewCloturePopin">
         <div className="Modal-container">
           <div className="header">
-            <div className="title">{ strings.modules.listeclotures.view.titre }</div>
+            <div className="title">{ (cloture && (!cloture.cloupd?'⚠️  ':'')) + strings.modules.listeclotures.view.titre + (cloture && (!cloture.cloupd?'  ⚠️':'')) }</div>
           </div>
-          <div className="body">
+          <div className={ `body${(cloture && (!cloture.cloupd?' outofdate':''))}`}>
             {cloture && <TicketX cloture={cloture} className="ticket-x" />}
           </div>
           <div className="footer">
@@ -324,7 +324,7 @@ function TableClotures(props) {
         </TableHead>
         <TableBody>
           {liste.map((row, i) => (
-            <TableRow key={row.id} className={ `${(i%2)?'odd':'even'}` }>
+            <TableRow key={row.id} className={ `${(i%2)?'odd':'even'}${(row.cloupd ? '' : ' outofdate')}` }>
               <TableCell key={`${row.id}-date`} className="liste-date">{ format(new Date(row.date), "d MMM yyyy à HH:mm", { locale: frLocale }) }</TableCell>
               <TableCell key={`${row.id}-station`} className="liste-station">{ row.caisse }</TableCell>
               <TableCell key={`${row.id}-debut`} className="liste-debut">{ format(new Date(row.cloture.debut), "d MMM yyyy à HH:mm", { locale: frLocale }) }</TableCell>
@@ -501,132 +501,134 @@ class ListeClotures extends React.Component {
          ;
 
       clotures.forEach(cl => {
-        const {periode, ecarts, comptage, prelevement} = this.props.clotureslist[cl.id];
+        const { periode, ecarts, comptage, prelevement, cloupd } = this.props.clotureslist[cl.id];
 
-        logger.info('ecarts', ecarts);
+        // logger.info('ecarts', ecarts);
+
+        if (cloupd) {
         
-        // récup des dates extrêmes de la liste des clotures
-        if ( isBefore(new Date(periode.debut), __start) ) __start = new Date(periode.debut);
-        if ( isAfter(new Date(periode.fin), __end) ) __end = new Date(periode.fin);
+          // récup des dates extrêmes de la liste des clotures
+          if ( isBefore(new Date(periode.debut), __start) ) __start = new Date(periode.debut);
+          if ( isAfter(new Date(periode.fin), __end) ) __end = new Date(periode.fin);
 
-        // récup de la liste des vendeurs
-        // s'il n'y a qu'un seul vendeur dans la période et dans la liste
-        // on vérifie si c'est le même
-        if ((periode.vendeurs && periode.vendeurs.length===1) && __vnd.length===1) {
-          let __v = __vnd.filter(v => v.id===periode.vendeurs[0].id);
-          if (__v) __vnd = __v;
-        } else {
-          __vnd = __vnd.concat(periode.vendeurs);
-        }
-
-
-        // récup de la liste des caisses
-        // s'il n'y a qu'une seule caisses dans la période et dans la liste
-        // on vérifie si c'est la même
-
-        // if ((periode.caisses && periode.caisses.length===1) && __csh.length===1) {
-        //   let __c = __csh.filter(c => c.id===periode.caisses[0].id);
-        //   if (__c) __csh = __c;
-        // } else {
-        //   __csh = __csh.concat(periode.caisses);
-        // }
-
-        if (periode.caisse) {
-          if (!__csh.includes(periode.caisse.nom)) __csh = [...__csh, periode.caisse.nom];
-        }
-
-        // addition des dépenses
-        __dep += periode.depenses;
-        // addition des remboursements
-        __rmb += periode.remboursements;
-        // addition des ventes
-        __vnt += periode.ventes;
-        // addition des montants caisse
-        // __mtc += periode.mtcaisse;
-        __mtc += periode.ca;
-        // addition des chiffres d'affaires
-        __ca += periode.ca;
-        // addition du nombre de tickets
-        __ntk += periode.numtickets;
-        // addition des valeurs du ticket moyen
-        __tkm += periode.ticket_moyen;
-        // addition des prélèvements
-        __prv += prelevement;
-
-        // compilation des ventilations
-
-        // ventilation vendeurs
-        periode.ventilation.vendeur.forEach(v => {
-
-          let __vv = __vvnd.find(vv => vv.id===v.id);
-          let __vvi = __vvnd.findIndex(vv => vv.id===v.id);
-          // si le vendeur n'est pas encore récupéré, on l'ajoute
-          if (__vv===undefined) {
-            __vvnd.push({...v});
+          // récup de la liste des vendeurs
+          // s'il n'y a qu'un seul vendeur dans la période et dans la liste
+          // on vérifie si c'est le même
+          if ((periode.vendeurs && periode.vendeurs.length===1) && __vnd.length===1) {
+            let __v = __vnd.filter(v => v.id===periode.vendeurs[0].id);
+            if (__v) __vnd = __v;
+          } else {
+            __vnd = __vnd.concat(periode.vendeurs);
           }
-          // si le vendeur est déjà récupéré, on additionne les valeurs des clôtures
-           else {
-            __vv.ventes += v.ventes;
-            __vv.remboursements += v.remboursements;
-            __vvnd[__vvi] = __vv;
-          }
-        });
 
-        // ventilation tva
-        periode.ventilation.tva.forEach(t => {
 
-          let __tt = __vtva.find(tt => tt.id===t.id);
-          let __tti = __vtva.findIndex(tt => tt.id===t.id);
-          // si la tva n'est pas encore récupérée, on l'ajoute
-          if (__tt===undefined) {
-            __vtva.push({...t});
-          }
-          // si la tva est déjà récupérée, on additionne les valeurs des clôtures
-           else {
-            __tt.ht += t.ht;
-            __tt.montant += t.montant;
-            __tt.ttc += t.ttc;
-            __vtva[__tti] = __tt;
-          }
-        });
+          // récup de la liste des caisses
+          // s'il n'y a qu'une seule caisses dans la période et dans la liste
+          // on vérifie si c'est la même
 
-        // ventilation moyens de paiement
-        periode.ventilation.moyen.forEach(m => {
+          // if ((periode.caisses && periode.caisses.length===1) && __csh.length===1) {
+          //   let __c = __csh.filter(c => c.id===periode.caisses[0].id);
+          //   if (__c) __csh = __c;
+          // } else {
+          //   __csh = __csh.concat(periode.caisses);
+          // }
 
-          let __mm = __vmoy.find(mm => mm.moyen===m.moyen);
-          let __mmi = __vmoy.findIndex(mm => mm.moyen===m.moyen);
-          // si le moyen n'est pas encore récupéré, on l'ajoute
-          if (__mm===undefined) {
-            __vmoy.push({...m});
+          if (periode.caisse) {
+            if (!__csh.includes(periode.caisse.nom)) __csh = [...__csh, periode.caisse.nom];
           }
-          // si le moyen est déjà récupéré, on additionne les valeurs des clôtures
-           else {
-            __mm.valeur += m.valeur;
-            __vmoy[__mmi] = __mm;
-          }
-        });
 
-        if (comptage) {
-          Object.entries(comptage).forEach(([moyen,valeur])=> {
-            if (!__comptage.hasOwnProperty(moyen)) {
-              __comptage[moyen] = 0;
+          // addition des dépenses
+          __dep += periode.depenses;
+          // addition des remboursements
+          __rmb += periode.remboursements;
+          // addition des ventes
+          __vnt += periode.ventes;
+          // addition des montants caisse
+          // __mtc += periode.mtcaisse;
+          __mtc += periode.ca;
+          // addition des chiffres d'affaires
+          __ca += periode.ca;
+          // addition du nombre de tickets
+          __ntk += periode.numtickets;
+          // addition des valeurs du ticket moyen
+          __tkm += periode.ticket_moyen;
+          // addition des prélèvements
+          __prv += prelevement;
+
+          // compilation des ventilations
+
+          // ventilation vendeurs
+          Object.values(periode.ventilation.vendeur).forEach(v => {
+
+            let __vv = __vvnd.find(vv => vv.id===v.id);
+            let __vvi = __vvnd.findIndex(vv => vv.id===v.id);
+            // si le vendeur n'est pas encore récupéré, on l'ajoute
+            if (__vv===undefined) {
+              __vvnd.push({...v});
             }
-            __comptage[moyen] += valeur
+            // si le vendeur est déjà récupéré, on additionne les valeurs des clôtures
+            else {
+              __vv.ventes += v.ventes;
+              __vv.remboursements += v.remboursements;
+              __vvnd[__vvi] = __vv;
+            }
           });
-        }
-        if (ecarts) {
-          Object.entries(ecarts).forEach(([moyen,val])=> {
-            if (val) {
-              if (!__ecarts[moyen]) {
-                __ecarts[moyen] = {valeur: 0, motif: ''};
+
+          // ventilation tva
+          Object.values(periode.ventilation.tva).forEach(t => {
+
+            let __tt = __vtva.find(tt => tt.id===t.id);
+            let __tti = __vtva.findIndex(tt => tt.id===t.id);
+            // si la tva n'est pas encore récupérée, on l'ajoute
+            if (__tt===undefined) {
+              __vtva.push({...t});
+            }
+            // si la tva est déjà récupérée, on additionne les valeurs des clôtures
+            else {
+              __tt.ht += t.ht;
+              __tt.montant += t.montant;
+              __tt.ttc += t.ttc;
+              __vtva[__tti] = __tt;
+            }
+          });
+
+          // ventilation moyens de paiement
+          Object.values(periode.ventilation.moyen).forEach(m => {
+
+            let __mm = __vmoy.find(mm => mm.moyen===m.moyen);
+            let __mmi = __vmoy.findIndex(mm => mm.moyen===m.moyen);
+            // si le moyen n'est pas encore récupéré, on l'ajoute
+            if (__mm===undefined) {
+              __vmoy.push({...m});
+            }
+            // si le moyen est déjà récupéré, on additionne les valeurs des clôtures
+            else {
+              __mm.valeur += m.valeur;
+              __vmoy[__mmi] = __mm;
+            }
+          });
+
+          if (comptage) {
+            Object.entries(comptage).forEach(([moyen,valeur])=> {
+              if (!__comptage.hasOwnProperty(moyen)) {
+                __comptage[moyen] = 0;
               }
-              __ecarts[moyen].valeur += val.valeur;
-            }
-          });
-        }
+              __comptage[moyen] += valeur
+            });
+          }
+          if (ecarts) {
+            Object.entries(ecarts).forEach(([moyen,val])=> {
+              if (val) {
+                if (!__ecarts[moyen]) {
+                  __ecarts[moyen] = {valeur: 0, motif: ''};
+                }
+                __ecarts[moyen].valeur += val.valeur;
+              }
+            });
+          }
 
-        __emission += periode.emission;
-      
+          __emission += periode.emission;
+        }
       })
       
       let synthese = {
@@ -653,6 +655,7 @@ class ListeClotures extends React.Component {
       this.openCloture({
         periode: synthese,
         ecarts: __ecarts,
+        cloupd: true,
         comptage: __comptage,
         prelevement: __prv,
         mouvements: null
@@ -681,12 +684,17 @@ class ListeClotures extends React.Component {
         ) {
           
           let clotureht = 0;
-          value.periode.ventilation.tva.forEach(t => { clotureht += t.hasOwnProperty('ht') ? t.ht : 0; });
+          if (value.caht) {
+            clotureht = value.caht;
+          } else {
+            Object.values(value.periode.ventilation.tva).forEach(t => { clotureht += t.hasOwnProperty('ht') ? t.ht/100 : 0; });
+          }
           
           clotures.push({
             id:key,
             date: value.createdAt,
             caisse: value.periode.hasOwnProperty('caisse') ? value.periode.caisse.nom : '',
+            cloupd: value.cloupd,
             cloture: {
               clotureId: value.clotureId,
               debut: value.periode.debut,

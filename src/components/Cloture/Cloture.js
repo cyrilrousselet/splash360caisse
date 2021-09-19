@@ -465,16 +465,12 @@ class Cloture extends React.Component {
         avoir = 0;
 
     if (ventilation && ventilation.moyen) {
-      const esp = ventilation.moyen.find(moy=>moy.moyen==='especes');
-      if (esp) especes = esp.valeur;
-      const cb = ventilation.moyen.find(moy=>moy.moyen==='carte');
-      if (cb) carte = cb.valeur;
-      const tr = ventilation.moyen.find(moy=>moy.moyen==='ticket');
-      if (tr) ticket = tr.valeur - emission; // on retire des TR le montant des avoirs émis
-      const chq = ventilation.moyen.find(moy=>moy.moyen==='cheque');
-      if (chq) cheque = chq.valeur;
-      const avr = ventilation.moyen.find(moy=>moy.moyen==='avoir');
-      if (avr) avoir = avr.valeur;
+      if (ventilation.moyen.hasOwnProperty('especes')) especes = ventilation.moyen.especes.valeur;
+      if (ventilation.moyen.hasOwnProperty('carte')) carte = ventilation.moyen.carte.valeur;
+      // note : on retire des TR le montant des avoirs émis
+      if (ventilation.moyen.hasOwnProperty('ticket')) ticket = ventilation.moyen.ticket.valeur  - emission;
+      if (ventilation.moyen.hasOwnProperty('cheque')) cheque = ventilation.moyen.cheque.valeur;
+      if (ventilation.moyen.hasOwnProperty('avoir')) avoir = ventilation.moyen.avoir.valeur;
     }
 
     return {especes, carte, ticket, cheque, avoir};
@@ -519,9 +515,9 @@ class Cloture extends React.Component {
       const { comptage } = this.state;
       const { periode } = this.props;
 
-      const ventil_esp = periode.ventilation.moyen.find(m=>m.moyen==='especes');
+      const ventil_esp = periode.ventilation.moyen.hasOwnProperty('especes') ? Number(periode.ventilation.moyen.especes.valeur) : 0;
 
-      let __cpt = comptage ? comptage.especes : Number(ventil_esp.valeur);
+      let __cpt = comptage ? comptage.especes : ventil_esp;
 
 
       logger.info('chech prelev', 'fdc['+periode.fdcaisse+'] + comptage['+__cpt+'] - val['+Number(value)+']', (periode.fdcaisse + __cpt - Number(value)));
