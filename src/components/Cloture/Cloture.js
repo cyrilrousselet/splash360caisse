@@ -508,7 +508,7 @@ class Cloture extends React.Component {
 
       logger.info('comptage', __field, __comptage);
 
-      this.setState({comptage: {...__comptage, [__field]: Number(value), total:totalcomptage}});
+      this.setState({comptage: {...__comptage, [__field]: Number(value), total:(Math.round(totalcomptage*100) / 100)}});
 
     } else if (fieldname==="saisie_prelevement") {
 

@@ -623,6 +623,7 @@ function updateProduit(payload) {
       (itm) => itm.itemid === itemid
     );
     const steps = state.catalogueReducer.steps[item.produitid];
+    const tvaCat = state.catalogueReducer.tva;
 
     // s'il s'agit d'un produit customisable et si on augmente la quantité
     if (addPrd && steps) {
@@ -659,7 +660,8 @@ function updateProduit(payload) {
           itemid: commandeItem.itemid,
           stepid: ing.fromStep,
           ingredientid: ing.ingredient,
-          quantite: ing.qte
+          quantite: ing.qte,
+          tvaCat
         }));
       });
 
@@ -698,6 +700,7 @@ function addIngredient(payload) {
     );
     const ingredient = state.catalogueReducer.ingredients[ingredientid];
     const produitSteps = state.catalogueReducer.steps[item.produitid];
+    const tvaCat = state.catalogueReducer.tva;
     const tva = state.catalogueReducer.tva[ingredient.tva_id];
 
       logger.info('addIngredient', payload);
@@ -709,7 +712,8 @@ function addIngredient(payload) {
       item,
       produitSteps,
       tva,
-      commandeMode
+      commandeMode,
+      tvaCat
     );
     dispatch({ type: commandeActionTypes.ADD_INGREDIENT, commandeItem });
   };

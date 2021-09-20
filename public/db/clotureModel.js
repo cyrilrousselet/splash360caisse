@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const ClotureSchema = mongoose.Schema(
   {
-    archived: String,
+    // archived: String,
     archivedcommandesid: [String],
     clotureId: String,
     cmdtoarchive: [],
@@ -17,10 +17,10 @@ const ClotureSchema = mongoose.Schema(
     periode: {
       ca: Number,
       caisses: [],
-      debut: String,
+      // debut: String,
       depenses: Number,
       editeur: {
-        createdAt: String,
+        // createdAt: String,
         droits: {
           cartes: Boolean,
           clients: Boolean,
@@ -39,12 +39,12 @@ const ClotureSchema = mongoose.Schema(
         identifiant: String,
         nom: String,
         status: String,
-        updatedAt: String,
+        // updatedAt: String,
         user_id: String,
       },
       emission: Number,
       fdcaisse: Number,
-      fin: String,
+      // fin: String,
       mtcaisse: Number,
       numtickets: Number,
       paramfdcaisse: Number,
