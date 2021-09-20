@@ -480,9 +480,9 @@ class ListeClotures extends React.Component {
          ,__ntk = 0
          ,__tkm = 0
          ,__prv = 0
-         ,__vvnd = []
-         ,__vtva = []
-         ,__vmoy = []
+         ,__vvnd = {}
+         ,__vtva = {}
+         ,__vmoy = {}
          ,__ecarts = {
             especes: null,
             carte: null,
@@ -558,54 +558,64 @@ class ListeClotures extends React.Component {
           // compilation des ventilations
 
           // ventilation vendeurs
-          Object.values(periode.ventilation.vendeur).forEach(v => {
+          Object.entries(periode.ventilation.vendeur).forEach(([kv, v]) => {
 
-            let __vv = __vvnd.find(vv => vv.id===v.id);
-            let __vvi = __vvnd.findIndex(vv => vv.id===v.id);
-            // si le vendeur n'est pas encore récupéré, on l'ajoute
-            if (__vv===undefined) {
-              __vvnd.push({...v});
+            if (!__vvnd.hasOwnProperty(kv)) {
+              __vvnd[kv] = {
+                id: v.id,
+                nom: v.nom,
+                ventes: 0,
+                remboursements: 0
+              };
             }
-            // si le vendeur est déjà récupéré, on additionne les valeurs des clôtures
-            else {
-              __vv.ventes += v.ventes;
-              __vv.remboursements += v.remboursements;
-              __vvnd[__vvi] = __vv;
-            }
+
+            Object.assign(__vvnd[kv],{
+              id: __vvnd[kv].id,
+              nom: __vvnd[kv].nom,
+              ventes: __vvnd[kv].ventes + v.ventes,
+              remboursements: __vvnd[kv].remboursements + v.remboursements
+            });
+
           });
 
           // ventilation tva
-          Object.values(periode.ventilation.tva).forEach(t => {
+          Object.entries(periode.ventilation.tva).forEach(([kt, t]) => {
 
-            let __tt = __vtva.find(tt => tt.id===t.id);
-            let __tti = __vtva.findIndex(tt => tt.id===t.id);
-            // si la tva n'est pas encore récupérée, on l'ajoute
-            if (__tt===undefined) {
-              __vtva.push({...t});
+            if (!__vtva.hasOwnProperty(kt)) {
+              __vtva[kt] = {
+                taux: t.taux,
+                code: t.code,
+                ttc: 0,
+                ht: 0,
+                tva: 0
+              };
             }
-            // si la tva est déjà récupérée, on additionne les valeurs des clôtures
-            else {
-              __tt.ht += t.ht;
-              __tt.montant += t.montant;
-              __tt.ttc += t.ttc;
-              __vtva[__tti] = __tt;
-            }
+
+            Object.assign(__vtva[kt],{
+              taux: __vtva[kt].taux,
+              code: __vtva[kt].code,
+              ttc: __vtva[kt].ttc + t.ttc,
+              ht: __vtva[kt].ht + t.ht,
+              tva: __vtva[kt].tva + t.tva
+            });
+
+
           });
 
           // ventilation moyens de paiement
-          Object.values(periode.ventilation.moyen).forEach(m => {
+          Object.entries(periode.ventilation.moyen).forEach(([km, m]) => {
 
-            let __mm = __vmoy.find(mm => mm.moyen===m.moyen);
-            let __mmi = __vmoy.findIndex(mm => mm.moyen===m.moyen);
-            // si le moyen n'est pas encore récupéré, on l'ajoute
-            if (__mm===undefined) {
-              __vmoy.push({...m});
+            if (!__vmoy.hasOwnProperty(km)) {
+              __vmoy[km] = {
+                moyen: m.moyen,
+                valeur: 0
+              };
             }
-            // si le moyen est déjà récupéré, on additionne les valeurs des clôtures
-            else {
-              __mm.valeur += m.valeur;
-              __vmoy[__mmi] = __mm;
-            }
+
+            Object.assign(__vmoy[km],{
+              moyen: __vmoy[km].moyen,
+              valeur: Math.round((__vmoy[km].valeur + m.valeur) * 100) / 100
+            });
           });
 
           if (comptage) {

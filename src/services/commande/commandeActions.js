@@ -637,6 +637,7 @@ function updateProduit(payload) {
         produitid: item.produitid,
         nom: item.nom,
         prix: item.pu,
+        puht: item.puht,
         composition: item.composition,
         compo: [],
         customizable: true,
