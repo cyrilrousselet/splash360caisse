@@ -1248,7 +1248,8 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
             ingredient: ingid,
             type: c_ing.type,
             qte: qte,
-            prix: Number(c_ing.supplement),
+            prix: Number(c_ing.supplementArray[MODES[commande.mode]].ttc),
+            ht: Number(c_ing.supplementArray[MODES[commande.mode]].ht),
             nom: c_ing.nom,
             fromStep: null,
           };
@@ -1262,6 +1263,7 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
         //        prix: itm.quantity*Number(prd.prix),
         prix: Number(itm.price.unit_price.amount / 100),
         pu: Number(itm.price.unit_price.amount / 100),
+        puht: Number(prd.puht),
         tva: { ...catalogueReducer.tva[prd.tva_id] },
         composition: complist,
         ingredients: [],
@@ -1312,8 +1314,10 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
                 type: ingredient.type,
                 qte: ing.quantity,
                 prix: Number(ing.price.unit_price.amount / 100),
+                puht: Number(ingredient.supplementArray[MODES[commande.mode]].ht),
                 nom: ingredient.nom,
                 fromStep: ingredient_step.step_id,
+                tva: catalogueReducer.tva[ingredient.tvaArray[MODES[commande.mode]]]
               });
               // item.ingredients.push({ingredient: ing.id, type: ingredient.type, qte: ing.quantity, prix: Number(ing.price.unit_price.amount/100), nom: ingredient.nom });
             }
@@ -1329,6 +1333,7 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
         );
       }
       item.prix = Number((itm.price.total_price.amount / itm.quantity ) / 100);
+      item.puht = Number(prd.puht);
       commande.items.push(item);
     }
   });
@@ -1435,10 +1440,11 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
             ingredient: ingid,
             type: c_ing.type,
             qte: qte,
-            prix: Number(c_ing.supplement),
+            prix: Number(c_ing.supplementArray[MODES[commande.mode]].ttc),
+            ht: Number(c_ing.supplementArray[MODES[commande.mode]].ht),
             nom: c_ing.nom,
             fromStep: null,
-            tva: catalogueReducer.tva[c_ing.tva_id]
+            tva: catalogueReducer.tva[c_ing.tvaArray[MODES[commande.mode]]]
           };
         });
       }
@@ -1462,8 +1468,9 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
           produitid: itm.produitid,
           nom: prd.nom,
           prix: __itmqte * Number(prd.prix),
-          pu: Number(prd.prix),
-          tva: { ...catalogueReducer.tva[prd.tva_id] },
+          pu: Number(prd.prixArray[MODES[commande.mode]].ttc),
+          puht: Number(prd.prixArray[MODES[commande.mode]].ht),
+          tva: { ...catalogueReducer.tva[prd.tvaArray[MODES[commande.mode]]] },
           composition: complist,
           ingredients: [],
           steps: steps_list,
@@ -1502,7 +1509,8 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
               ingredient: ing.ingredient,
               type: ingredient.type,
               qte: ing.qte,
-              prix: Number(ingredient.supplement),
+              prix: Number(ingredient.supplementArray[MODES[commande.mode]].ttc),
+              ht: Number(ingredient.supplementArray[MODES[commande.mode]].ht),
               supplement: Number(ingredient.supplement),
               nom: ingredient.nom,
               fromStep: ingredient_step ? ingredient_step.step_id : null,

@@ -310,7 +310,6 @@ class CommandesGeneral extends React.Component {
                 name={ `active_bippers` } 
                 labelLeft={ true }
                 onChange={ (name, isChecked) => {
-                // this.numerotationHexaUpdate(isChecked);
                   updateValeur({
                     domaine: 'commandes',
                     cle: 'active_bippers',
@@ -328,7 +327,6 @@ class CommandesGeneral extends React.Component {
                 name={ `print_standby` } 
                 labelLeft={ true }
                 onChange={ (name, isChecked) => {
-                // this.numerotationHexaUpdate(isChecked);
                   updateValeur({
                     domaine: 'commandes',
                     cle: 'print_standby',
@@ -336,6 +334,23 @@ class CommandesGeneral extends React.Component {
                   })
                 } } 
                 label={ strings.modules.parametres.submodules.commandes.general.printstandby.label.activation } 
+              />
+            </div>
+            <div className="popinmode-wrapper">
+              <div className="subttl">{ strings.modules.parametres.submodules.commandes.general.popinmode.nom }</div>
+              <SwitchCheckbox
+                isChecked={ data.popinmode===undefined ? false : data.popinmode } 
+                key={`popinmode`}
+                name={ `popinmode` } 
+                labelLeft={ true }
+                onChange={ (name, isChecked) => {
+                  updateValeur({
+                    domaine: 'commandes',
+                    cle: 'popinmode',
+                    valeur: isChecked
+                  })
+                } } 
+                label={ strings.modules.parametres.submodules.commandes.general.popinmode.label.activation } 
               />
             </div>
           </div>

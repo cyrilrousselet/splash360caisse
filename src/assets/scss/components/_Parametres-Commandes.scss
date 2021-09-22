@@ -259,10 +259,11 @@
           align-items: center;
         }
         .bipper-wrapper,
-        .printstandby-wrapper {
+        .printstandby-wrapper,
+        .popinmode-wrapper {
           display: inline-flex;
           flex-direction: column;
-          width: calc(50% - 7px);
+          width: calc(30% - 7px);
         }
     }
     .CommandesCommentaires {

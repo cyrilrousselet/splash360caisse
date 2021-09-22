@@ -174,6 +174,9 @@ const data = {
                         bouton: "Aucun bipper"
                     }
                 },
+                popinmode: {
+                    titre: "Mode de Commande"
+                },
                 reglement: {
                     titre: "Encaissement",
                     liste: {
@@ -1129,9 +1132,15 @@ const data = {
                                 }
                             },
                             printstandby: {
-                                nom: 'Commandes en attente',
+                                nom: 'Commandes en attente',
                                 label: {
                                     activation: 'Imprimer'
+                                }
+                            },
+                            popinmode: {
+                                nom: 'Demander le choix du mode',
+                                label: {
+                                    activation: 'Activation'
                                 }
                             }
                         },

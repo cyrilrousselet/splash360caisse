@@ -216,6 +216,8 @@ class MainLoader extends React.Component {
     const { 
       checkFinDeService,
       checkScheduledCommandes,
+      resetNumero,
+      getTodayCa,
       getStatus,
       testConnection,
     } = this.props;
@@ -223,6 +225,8 @@ class MainLoader extends React.Component {
     if (this._findeservice_job===null) {  
       this._findeservice_job = schedule.scheduleJob('0 30 5 * * *', () => {
         checkFinDeService();
+        resetNumero();
+        getTodayCa();
       });
     } 
 

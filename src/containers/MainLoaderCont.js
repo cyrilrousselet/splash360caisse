@@ -13,6 +13,7 @@ import MainLoader from '../components/MainLoader';
 import { peripheralActions } from '../services/peripheral/peripheralActions';
 import { tresorActions } from '../services/tresorerie/tresorActions';
 import { commandeActions } from '../services/commande/commandeActions';
+import { numeroActions } from '../services/commande/numeroActions';
 
 
 
@@ -60,6 +61,7 @@ const mapDispatchToProps = (dispatch) => {
     initSyncClotures: notificationActions.initSyncClotures,
     quitApp: peripheralActions.quitApp,
     checkFinDeService: tresorActions.checkFinDeService,
+    resetNumero: numeroActions.resetNumero,
     checkScheduledCommandes: commandeActions.checkSchedules,
     installStation: parametresActions.installStation,
     paramUpdate: parametresActions.update,

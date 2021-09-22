@@ -100,6 +100,31 @@ const BeneficiaireModal = ({open, getBeneficiaire, closePopin}) => (
 );
 
 
+
+const CmdModeModal = ({open, setMode, closePopin}) => (
+
+  <Modal open={open}>
+    <div className="CmdModeModal">
+      <div className="Modal-container">
+        <div className="header">
+          <div className="title">{ strings.modules.encaissement.popinmode.titre }</div>
+        </div>
+        <div className="body">
+          <div className="modes">
+            <StdButton identifier='surplace' elementclass={ `mode mode-surplace` } icon={ false } text={ strings.modules.encaissement.panier.mode.surplace } onClick={(value) => { setMode(value) }} />
+            <StdButton identifier='emporter' elementclass={ `mode mode-emporter` } icon={ false } text={ strings.modules.encaissement.panier.mode.emporter } onClick={(value) => { setMode(value) }} />
+            <StdButton identifier='livraison' elementclass={ `mode mode-livraison` } icon={ false } text={ strings.modules.encaissement.panier.mode.livraison } onClick={(value) => { setMode(value) }} />
+          </div>
+        </div>
+      </div>
+      <Fab aria-label="close" size="small" className="close-button" onClick={ closePopin }>
+        <CloseIcon />
+      </Fab>
+    </div>
+  </Modal>
+);
+
+
 class ScheduleModal extends React.Component {
 
   constructor(props) {
@@ -619,6 +644,8 @@ class Panier extends React.Component {
       bippersOpen: false,
       scheduleOpen: false,
       ouvertureOpen: false,
+      cmdModeOpen: false,
+      cmdMode: null,
       solde: 0
     }
     this.setSelectedIndex = this.setSelectedIndex.bind(this);
@@ -661,6 +688,10 @@ class Panier extends React.Component {
     this.setStaffmeal = this.setStaffmeal.bind(this);
     this.getBeneficiaire = this.getBeneficiaire.bind(this);
     this.cancelStaffmeal = this.cancelStaffmeal.bind(this);
+
+    this.openCmdMode = this.openCmdMode.bind(this);
+    this.setCmdMode = this.setCmdMode.bind(this);
+    this.closeCmdMode = this.closeCmdMode.bind(this);
 
   }
 
@@ -737,6 +768,13 @@ class Panier extends React.Component {
       this.setState({bippersOpen: true});
     }
 
+    const {cmdModeOpen, cmdMode } = this.state;
+    const popinmode = (parametres && parametres.commandes) ? parametres.commandes.popinmode : false;
+    console.log('popinmode', popinmode, cmdModeOpen, cmdMode);
+    if (!cmdModeOpen && popinmode && cmdMode===null && this.props.commande.items.length===0) {
+      console.log('on ouvre la popin de mode');
+      this.setState({cmdModeOpen: true});
+    }
 
     // liste panier se cale en bas (sur le dernier produit ajouté)
     this.listewrapper.scrollTop = this.listewrapper.scrollHeight;
@@ -1279,6 +1317,17 @@ class Panier extends React.Component {
     this.props.updateCommande({beneficiaire:null, type:'vente'});
   }
 
+  openCmdMode() {
+    this.setState({cmdModeOpen: true});
+  }
+  setCmdMode(mode) {
+    this.props.updateMode(mode);
+    this.setState({cmdMode:mode, cmdModeOpen: false});
+  }
+  closeCmdMode() {
+    this.setState({cmdMode:true, cmdModeOpen: false});
+  }
+
   interval = 0;
 
   render() {
@@ -1312,6 +1361,7 @@ class Panier extends React.Component {
            bippersOpen,
            ouvertureOpen,
            scheduleOpen,
+           cmdModeOpen,
            solde,
           } = this.state;
 
@@ -1486,7 +1536,7 @@ logger.info('⏰', schedule_delay);
     const validationHandler = (event) => {
     //  if (!this.props.commande.numero) this.props.getNumero();
    //   logger.info('validationHandler commande numero :', this.props.commande.numero);
-      this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1});
+      this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1, cmdMode:null});
       if (this.props.commande.mode==="livraison") updateCommande({});
       livraisonCommande(this.props.commande, !this.props.commande.numero);
     }
@@ -1501,7 +1551,7 @@ logger.info('⏰', schedule_delay);
 
     const openReglementHandler = () => {
       if (!this.props.commande.numero) this.props.getNumero();
-      this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1});
+      this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1, cmdMode:null});
       openReglement();
     }
 
@@ -1754,6 +1804,11 @@ logger.info('⏰', schedule_delay);
           saveMouvement={ this.addOuverture }
         />
         {(staffmeal_active && staffmeal_modifier) && (<BeneficiaireModal closePopin={ this.cancelStaffmeal } getBeneficiaire={ this.getBeneficiaire } open={ type==="staffmeal" && !beneficiaire } />)}
+        <CmdModeModal
+          open={ cmdModeOpen }
+          setMode={ this.setCmdMode }
+          closePopin={ this.closeCmdMode }
+        />
       </div>
     );
   }

@@ -123,7 +123,7 @@ function getCommande(commandeId = null) {
       const { caisse } = state.parametresReducer.parametres.options;
       const commande = commandeServices.getNewCommande({
         operator: user,
-        caisse: caisse,
+        caisse: caisse
       });
       // logger.timeEnd('getCommande (new)');
       dispatch({ type: commandeActionTypes.GET_COMMANDE_SUCCESS, commande });
