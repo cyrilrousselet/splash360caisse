@@ -16,6 +16,7 @@ export const notificationServices = {
   setRestaurantOnline,
   updateProduitUber,
   initSSE,
+  ackitNotification,
   connectToPrimary,
   disconnectFromPrimary,
   startSyncPrimary,
@@ -234,6 +235,18 @@ async function acceptOrder(provider, order) {
   if (__acceptOrdertoken.access_token) {
     var __url = externalParams[provider].acceptorder.url.replace('{order_id}', order.id);
     return emit('acceptUberOrder', {url: __url, access_token: __acceptOrdertoken.access_token});
+  }
+}
+
+async function ackitNotification(params) {
+
+  const __splashToken = await getSplashToken(params);
+  
+  logger.dump('notifSrv.ackitNotification()',__splashToken);
+
+  if (__splashToken.splash_token.access_token) {
+    var __url = externalParams.synchro.ackitNotif;
+    return emit('ackitNotification', {url: __url, access_token: __splashToken.splash_token.access_token, uniqid: params.uniqid});
   }
 }
 

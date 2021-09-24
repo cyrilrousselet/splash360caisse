@@ -57,8 +57,8 @@ const actions = {
     };
     es.onerror = () => {
       log.info("es.onerror err");
-      res.send({ msg: "ca va pas" });
-      // es.close();
+      es.close();
+      res.send({ msg: "ca_va_pas" });
     };
     res.send({ msg: "sse listening" });
   },
@@ -834,6 +834,52 @@ const actions = {
 
     __request.on('error', (error) => {
       log.error('confirmDispo ERROR', error);
+      res.error(error);
+    });
+
+    __request.end();
+  },
+
+  ackitNotification: (req, res) => {
+    const { url, access_token, uniqid } = req.payload;
+
+    let data = '';
+
+    const __request = net.request({
+      url: url,
+      method: "post",
+    });
+    __request.setHeader("Authorization", "Bearer " + access_token);
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/json");
+
+    const form = JSON.stringify({
+      uniqid: uniqid
+    });
+    __request.write(form);
+
+    __request.on("response", (response) => {
+      log.info(`ackitNotification STATUS: ${response.statusCode}`);
+
+      response.on("data", (chunk) => {
+        log.info(`ackitNotification BODY: ${chunk}`);
+        data += chunk;
+      });
+      response.on("end", () => {
+        let __conf = {};
+        try {
+          __conf = JSON.parse(data);
+          console.log("data", data);
+        } catch (e) {
+          __conf = { error: e.message };
+          log.error("ackitNotification JSON error", e);
+        }
+        res.send(__conf);
+      });
+    });
+
+    __request.on('error', (error) => {
+      log.error('ackitNotification ERROR', error);
       res.error(error);
     });
 

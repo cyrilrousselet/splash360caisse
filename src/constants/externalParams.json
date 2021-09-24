@@ -38,6 +38,8 @@
     "getStatus": "https://api.splash360.fr/api/export/stationstatus",
     "confirmCommande": "https://api.splash360.fr/api/import/confirmcommande/{ticket_id}",
     "installStation" : "https://api.splash360.fr/api/licence/createStation",
-    "ping" : "https://admin.splash360.fr"
+    "ping" : "https://admin.splash360.fr",
+    "checkNotif" : "https://api.splash360.fr/checknotif/{client_id}",
+    "ackitNotif" : "https://api.splash360.fr/ackitnotification"
   }
 }

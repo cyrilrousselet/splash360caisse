@@ -32,7 +32,12 @@ function initSSE() {
     if (restaurant_id) {
       notificationServices.initSSE(restaurant_id)
       .then(
-        data => dispatch({ type: notificationActionTypes.INIT_SSE, confirm: data.msg }),
+        data => {
+          dispatch({ type: notificationActionTypes.INIT_SSE, confirm: data.msg });
+          if (data.msg==="ca_va_pas") {
+            dispatch(initSSE());
+          }
+        },
         error => dispatch({ type: notificationActionTypes.INIT_SSE_FAILURE, error:error.msg })
       );
     } else {
@@ -186,6 +191,8 @@ function syncDispatch(db, data, emitter=null) {
   }
 }
 
+
+
 function treatment(data) {
 
   return (dispatch, getState) => {
@@ -195,45 +202,29 @@ function treatment(data) {
 
     if (data.eventType==='orders.notification') {
 
+      const {restaurant_id, restaurant_secret} = getState().parametresReducer.parametres.entreprise;
+
       dispatch({ type: notificationActionTypes.GET_NOTIFICATION, notif: data.eventType });
+      notificationServices.ackitNotification({id: restaurant_id, secret: restaurant_secret, uniqid: data.uniqid});
+      
+      if (data.provider==='uber') {
+        notificationServices.getOrder('uber', data)
+        .then(
+          reponse => {
 
-      notificationServices.getOrder('uber', data)
-      .then(
-        reponse => {
+            if (auto_accept_order) dispatch(acceptOrder('uber', reponse.order));
+            else {
 
-          if (auto_accept_order) dispatch(acceptOrder('uber', reponse.order));
-          else {
+              logger.info('ORDER:', reponse.order);
 
-            logger.info('ORDER:', reponse.order);
+              dispatch({ type: notificationActionTypes.ADD_TO_STACK, cmdcandidate: reponse.order });
 
-
-            dispatch({ type: notificationActionTypes.ADD_TO_STACK, cmdcandidate: reponse.order });
-
+            }
             
-            // Swal.fire({
-            //   title: strings.notification.accept.uber.titre,
-            //   html: strings.notification.accept.uber.texte+'<br />'+strings.notification.accept.uber.detail.replace('%NUMERO%',reponse.order.display_id).replace('%DATEHEURE%', format(new Date(reponse.order.estimated_ready_for_pickup_at), "d MMM yyyy à HH:mm", { locale: frLocale })),
-            //   focusConfirm: true,
-            //   showCancelButton: true,
-            //   customClass: 'ubernotification',
-            //   allowOutsideClick: false,
-            //   allowEscapeKey: false,
-            //   confirmButtonText: strings.general.dialog.accept,
-            //   cancelButtonText: strings.general.dialog.deny,
-            //   buttonsStyling: false 
-            // }).then((result)=> {
-            //   if (result.value===true) {
-            //     dispatch(acceptOrder('uber', reponse.order));
-            //    } else {
-            //      dispatch(denyOrder('uber', reponse.order));
-            //   }
-            // });
-
-          }
-          
-        },
-        error => logger.info('Token error', error)
-      );
+          },
+          error => logger.info('Token error', error)
+        );
+      }
     }
     else if (data.eventType==='newcommande') {
       const { entreprise } = getState().parametresReducer.parametres;
