@@ -660,15 +660,18 @@ function _printEtiquettes(printer, data, config) {
   let __w = params.width * _mm;
   let __h = params.height * _mm;
 
-  log.info('width',__w);
-  log.info('height',__h);
+  log.info('width: '+__w);
+  log.info('height: '+__h);
 
   let __job = [];
 
+  const totalarticles = data.articles.length;
+  let currentarticle = 1;
+
   data.articles.forEach(art => {
 
-    let i = 0, __artqte = art.quantite;
-    for (i;i<__artqte;i++) {
+    // let i = 0, __artqte = art.quantite;
+    // for (i;i<__artqte;i++) {
 
       const inglist = art.ingredients.map(ing => ing.qte+'x '+ing.nom.toLowerCase());
 
@@ -687,7 +690,7 @@ function _printEtiquettes(printer, data, config) {
 
       __printlist.push('BAR 10,50,' + (__w - 20) + ',4');
 
-      const __prd = ('TEXT 10,70,"2",0,2,2,"%PRD%"').replace('%PRD%',art.nom);
+      const __prd = ('TEXT 10,70,"2",0,2,2,"%PRD%"').replace('%PRD%', '('+currentarticle+'/'+totalarticles+') '+art.nom);
       __printlist.push(__prd);
 
       let __y = 115;
@@ -709,7 +712,8 @@ function _printEtiquettes(printer, data, config) {
     
       __job = [...__job, ...__printlist];
 
-    }
+    // }
+    currentarticle++;
   });
 
   const feed = iconv.encode(__job.join("\n"),"Cp850"); 

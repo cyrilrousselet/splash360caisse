@@ -123,10 +123,10 @@ class Reglement extends React.Component {
     // payé, montant à payer et reste à payer (ou rendu monnaie si négatif)
     // s'il y a un trop perçu, peut-on le rendre sur les especes ?
     return {
-      paye: __paye,
-      apayer: __total,
-      reste: __reste,
-      rendu: __rendu,
+      paye: Math.round(__paye * 100) / 100,
+      apayer: Math.round(__total * 100) / 100,
+      reste: Math.round(__reste * 100) / 100,
+      rendu: Math.round(__rendu * 100) / 100,
       rendable: __reste < 0 && __especes + __reste > 0,
     };
   }

@@ -63,6 +63,7 @@ const mapDispatchToProps = (dispatch) => {
     checkFinDeService: tresorActions.checkFinDeService,
     resetNumero: numeroActions.resetNumero,
     checkScheduledCommandes: commandeActions.checkSchedules,
+    checkNotif: notificationActions.checkNotif,
     installStation: parametresActions.installStation,
     paramUpdate: parametresActions.update,
     getStatus: parametresActions.getStatus,

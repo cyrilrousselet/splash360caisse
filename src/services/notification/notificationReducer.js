@@ -5,6 +5,7 @@ const initialState = {
   sseInit: false,
   getdbInit: false,
   getdbLoaded: false,
+  testtoken: null,
   stack: []
 }
 
@@ -44,6 +45,20 @@ export function notificationReducer(state = initialState, action) {
         ...state,
         stack : stack.filter(s=>s.id!==action.cmdcandidateid)
       };
+    
+    case notificationActionTypes.TEST_NOTIF_REQUEST:
+      return {
+        ...state,
+        testtoken: action.testtoken
+      };
+    
+    case notificationActionTypes.TEST_NOTIF_SUCCESS:
+    case notificationActionTypes.TEST_NOTIF_FAILURE:
+      return {
+        ...state,
+        testtoken: null
+      };
+
     default:
       return state;
   }

@@ -8,6 +8,7 @@ const qs = require('qs');
 // const externalUrls = require('../../src/constants/externalUrls.json');
 
 let _webContents = null;
+let es;
 
 const sse = {
   init: (webContents) => {
@@ -40,8 +41,15 @@ const actions = {
       "http://api.splash360.fr:3030/.well-known/mercure?topic=" + restaurant_id
     );
 
+
+    if (es) {
+      es.close();
+      es = null;
+    }
+
+
     // const es = new EventSource('http://api.splash360.fr:3030/.well-known/mercure?topic=819b4b71-bb93-4a91-9503-3c7af1e4e622');
-    const es = new EventSource(
+    es = new EventSource(
       "http://api.splash360.fr:3030/.well-known/mercure?topic=" + restaurant_id
     );
 
@@ -880,6 +888,52 @@ const actions = {
 
     __request.on('error', (error) => {
       log.error('ackitNotification ERROR', error);
+      res.error(error);
+    });
+
+    __request.end();
+  },
+
+  checkNotif: (req, res) => {
+    const { url, access_token, token } = req.payload;
+
+    let data = '';
+
+    const __request = net.request({
+      url: url,
+      method: "post",
+    });
+    __request.setHeader("Authorization", "Bearer " + access_token);
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/json");
+
+    const form = JSON.stringify({
+      token: token
+    });
+    __request.write(form);
+
+    __request.on("response", (response) => {
+      log.info(`checkNotif STATUS: ${response.statusCode}`);
+
+      response.on("data", (chunk) => {
+        log.info(`checkNotif BODY: ${chunk}`);
+        data += chunk;
+      });
+      response.on("end", () => {
+        let __conf = {};
+        try {
+          __conf = JSON.parse(data);
+          console.log("data", data);
+        } catch (e) {
+          __conf = { error: e.message };
+          log.error("checkNotif JSON error", e);
+        }
+        res.send(__conf);
+      });
+    });
+
+    __request.on('error', (error) => {
+      log.error('checkNotif ERROR', error);
       res.error(error);
     });
 

@@ -20,6 +20,7 @@ import { catalogueActions } from '../catalogue/catalogueActions';
 import { parametresActions } from '../parametres/parametresActions';
 import { parametresActionTypes } from '../parametres/parametresActionTypes';
 import { peripheralActions } from '../peripheral/peripheralActions';
+import LodashId from 'lodash-id';
 // const strings = new LocalizedStrings(data);
 //  const logger = new Logger();
 
@@ -43,6 +44,36 @@ function initSSE() {
     } else {
       logger.info('restaurant_id unknown');
     }
+  }
+}
+
+function checkNotif() {
+  return (dispatch, getState) => {
+    const { testtoken } = getState().notificationReducer;
+    const {restaurant_id, restaurant_secret} = getState().parametresReducer.parametres.entreprise;
+
+    // si le token n'est pas null, c'est qu'un test est en cours mais sans réponse
+    if (testtoken) {
+      // on demande donc le redémarrage du SSE
+      dispatch({ type: notificationActionTypes.TEST_NOTIF_FAILURE });
+      notificationServices.resetSSE(restaurant_id);
+    } 
+    //
+    else {
+      const newtesttoken = 'tt_'+LodashId.createId();
+      dispatch({ type: notificationActionTypes.TEST_NOTIF_REQUEST, testtoken: newtesttoken });
+      notificationServices.checkNotif({ id: restaurant_id, secret: restaurant_secret, testtoken: newtesttoken });
+      
+      // on attend 3 sec. pour voir si le serveur à répondu en envoyant une notif
+      setTimeout(()=>{
+        // si le serveur n'a pas répondu, on demande le redémarrage du SSE
+        if (getState().notificationReducer.testtoken !== null) {
+          dispatch({ type: notificationActionTypes.TEST_NOTIF_FAILURE });
+          notificationServices.resetSSE(restaurant_id);
+        }
+      }, 4500);
+    }
+
   }
 }
 
@@ -246,53 +277,25 @@ function treatment(data) {
         response => {
           dispatch(commandeActions.setCommandeFromAPI( {data:{...response, provider:'clickandcollect'}} ))
         }
-      //   error => logger.info('C&C getCommande Error')
       )
     }
-    // else if (data.eventType==='newcommande') {
-
-    //   const { entreprise } = getState().parametresReducer.parametres; 
-
-    //   dispatch({ type: notificationActionTypes.GET_NOTIFICATION, notif: data.eventType });
-
-    //   notificationServices.getOrder( 'clickandcollect', {...data, id: entreprise.restaurant_id, secret: entreprise.restaurant_secret} )
-    //   .then(
-    //     response => {
-    //       dispatch(commandeActions.setCommandeFromAPI( {data:{...response, provider:'clickandcollect'}} ))
-    //     }
-    //   //   error => logger.log('C&C getCommande Error')
-    //   )
-
-    // }
-
-    // else if (data.eventType==="commandepayee") {
-    //   const { entreprise } = getState().parametresReducer.parametres;
-
-    //   dispatch({ type: notificationActionTypes.GET_NOTIFICATION, notif: data.eventType });
-
-    //   notificationServices.getOrder( 'clickandcollect', {...data, id: entreprise.restaurant_id, secret: entreprise.restaurant_secret} )
-    //   .then(
-    //     response => {
-    //       dispatch(commandeActions.updateCommandeReglementsCC({data:{...response.commande}}))
-    //     }
-    //   //   error => logger.log('C&C getCommande Error')
-    //   )
-
-    // }
     else if (data.eventType==="statuschange") {
       // parametre status dans parametres, par défaut null ?
 
       dispatch({ type: notificationActionTypes.GET_NOTIFICATION, notif: data.eventType });
 
-      // const payload = [{
-      //   "domaine": "options",
-      //   "cle": "status",
-      //   "valeur": data.status
-      // }];
-
-      // dispatch(parametresActions.update(payload));
       localStorage.setItem("status", data.status);
       dispatch(parametresActions.checkStatus());
+
+    }
+    else if (data.eventType==="check.notification") {
+
+      const { testtoken } = getState().notificationReducer;
+      if (data.token===testtoken) {
+        dispatch({ type: notificationActionTypes.TEST_NOTIF_SUCCESS });
+      } else {
+        console.log('check.notification: bad token', data.token, testtoken);
+      }
 
     }
   } 
@@ -692,6 +695,7 @@ function syncClotures(clotures) {
 
 export const notificationActions = {
   initSSE,
+  checkNotif,
   setPOS,
   setRestaurantOnline,
   getToken,

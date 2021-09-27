@@ -542,6 +542,8 @@ logger.info('cpliste', cpliste);
                       <TextField 
                           {...params}
                           variant="filled"
+                          name="clt-cp-recherche"
+                          onClick={this.setFocus}
                           label={ strings.modules.clients.edition.codepostal }
                       />
                     )}
@@ -574,6 +576,7 @@ logger.info('cpliste', cpliste);
                   <Autocomplete
                   className="recherche-ville-input"
                   id="clt-ville-recherche"
+                  name="clt-ville-recherche"
                   filterOptions={(x)=>x}
                   options={cpliste}
                   autoComplete
@@ -608,6 +611,8 @@ logger.info('cpliste', cpliste);
                     <TextField 
                         {...params}
                         variant="filled"
+                        name="clt-ville-recherche"
+                        onClick={this.setFocus}
                         label={ strings.modules.clients.edition.ville }
                     />
                   )}

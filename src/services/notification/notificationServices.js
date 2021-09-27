@@ -16,7 +16,9 @@ export const notificationServices = {
   setRestaurantOnline,
   updateProduitUber,
   initSSE,
+  resetSSE,
   ackitNotification,
+  checkNotif,
   connectToPrimary,
   disconnectFromPrimary,
   startSyncPrimary,
@@ -250,6 +252,18 @@ async function ackitNotification(params) {
   }
 }
 
+async function checkNotif(params) {
+
+  const __splashToken = await getSplashToken(params);
+  
+  logger.dump('notifSrv.checkNotif()',__splashToken);
+
+  if (__splashToken.splash_token.access_token) {
+    var __url = externalParams.synchro.checkNotif.replace('{client_id}', params.id);
+    return emit('checkNotif', {url: __url, access_token: __splashToken.splash_token.access_token, token: params.testtoken});
+  }
+}
+
 async function confirmDispo(provider, data) {
 
   if(provider === 'clickandcollect') {
@@ -361,5 +375,9 @@ async function updateProduitUber(provider, data) {
 
 
 function initSSE(restaurant_id) {
+  return emit('sseInit', {restaurant_id: restaurant_id});
+}
+
+function resetSSE(restaurant_id) {
   return emit('sseInit', {restaurant_id: restaurant_id});
 }
