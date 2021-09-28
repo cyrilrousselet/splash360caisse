@@ -268,6 +268,8 @@ function addIngredient(ingredient, quantite, step, item, produitSteps, tva, comm
     item.ingredients = [...ingredients];
   }
 
+console.log('SndSrv.addIngredient ingre : ',item.ingredients);
+
   // test du step (validation et supplément)
   const { completed, validated } = _checkStepRegles(step, item);
   // on vérifie si l'ajout est raccord avec la liste
@@ -278,6 +280,8 @@ function addIngredient(ingredient, quantite, step, item, produitSteps, tva, comm
   steps[itemstepid].checked = validated && completed;
   item.steps = [...steps];
 
+  console.log('CmdSrv.addIngredient validated', validated);
+
   if (validated) {
     // si tous les steps sont "validated" (dans les règles) et "checked" (personnalisé)
     // on passe le status de l'item de "pending" à "completed"
@@ -286,8 +290,11 @@ function addIngredient(ingredient, quantite, step, item, produitSteps, tva, comm
         (st) => st.validated === false || st.checked === false
       ) === -1
     ) {
+      console.log('OUI ! tous les steps sont validated')
       item.status = "completed";
       item.ingredients = _ventilationIngredientsSteps(item, produitSteps, tvaCat);
+    } else {
+      console.log('NON ! tous les steps ne sont pas validated');
     }
   }
 
@@ -641,7 +648,7 @@ function _getPrix(item, produitSteps) {
     logger.info("step " + step.step_id + " suppl = " + __supplement);
   });
 
-  return item.pu + __supplement;
+  return Math.round((item.pu + __supplement) * 100) / 100;
 }
 
 function _mustBeUnique(step, ingredient) {

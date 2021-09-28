@@ -664,6 +664,10 @@ function updateProduit(payload) {
           quantite: ing.qte,
           tvaCat
         }));
+        dispatch(completeStep({
+          itemid: commandeItem.itemid,
+          stepid: ing.fromStep
+        }));
       });
 
     }
@@ -704,7 +708,7 @@ function addIngredient(payload) {
     const tvaCat = state.catalogueReducer.tva;
     const tva = state.catalogueReducer.tva[ingredient.tva_id];
 
-      logger.info('addIngredient', payload);
+      console.log('CmdAct.addIngredient', payload);
 
     const commandeItem = commandeServices.addIngredient(
       ingredient,
