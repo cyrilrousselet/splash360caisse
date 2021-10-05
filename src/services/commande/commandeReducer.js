@@ -1,3 +1,4 @@
+import { formatISO } from 'date-fns';
 import { commandeActionTypes } from './commandeActionTypes';
 import { numeroActionTypes } from './numeroActionTypes';
 
@@ -52,7 +53,7 @@ export function commandeReducer(state = initialState, action) {
 
       items = commande.items;
       let start = commande.start;
-      if (items.length===0) start = new Date();
+      if (items.length===0) start = formatISO(new Date());
       items.push(action.commandeItem);
 
 

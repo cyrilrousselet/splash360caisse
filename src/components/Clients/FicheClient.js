@@ -34,6 +34,8 @@ class FicheClient extends React.Component {
     this.state = {
       search: '',
       cpliste: [],
+      cpOpen: true,
+      villeOpen: true,
       focusInput: props.contexte==='encaissement'?'search':'nom',
       innermode: null,
       client_id: null,
@@ -118,7 +120,7 @@ class FicheClient extends React.Component {
   }
 
   setFocus(event, obj) {
-    logger.info('setFocus', event.target.name);
+    console.log('setFocus', event.target.name);
     if (obj) {
       this.setState({focusInput: obj.name});
     } else {
@@ -128,12 +130,26 @@ class FicheClient extends React.Component {
 
   onKeyboardChange(input) {
     const {focusInput} = this.state;
-    this.setState({ [focusInput]:input });
-    logger.info(`"${focusInput}" changed`, input);
+    
+    console.log(`${focusInput} changed`, input);
+
+    if (focusInput==='codepostal') {
+      console.log('inKeyboardChange -> codepostal');
+      this.getRechercheCp(input);
+      this.setState({ [focusInput]:input, cpOpen:true });
+    } 
+    else if (focusInput==='ville') {
+      console.log('inKeyboardChange -> ville');
+      this.getRechercheVille(input);
+      this.setState({ [focusInput]:input, villeOpen:true });
+    } 
+    else {
+      this.setState({ [focusInput]:input });
+    }
   };
 
   updateValue(value) {
-    logger.info('updateValue', value);
+    console.log('updateValue', value);
     this.setState(value);
   }
   resetPopin() {
@@ -219,17 +235,17 @@ class FicheClient extends React.Component {
      this.setState({innermode:'fiche',  search: value, ...value});
   }
   getRechercheCp(value) {
-    logger.info('FicheClient.getRechercheCp() value', value);
+    console.log('FicheClient.getRechercheCp() value', value);
     if (value && value.length>1) {
      
       clientsServices.searchSecteurs({zip:value})
       .then(
         data => {
-          logger.info('FicheClient.getRechercheCp()', data.secteurs);
+          console.log('FicheClient.getRechercheCp()', data.secteurs);
           this.setState({cpliste: data.secteurs});
         },
         error => {
-          logger.info('FicheClient.getRecherche()', "aucun secteur");
+          console.error('FicheClient.getRecherche()', "aucun secteur");
           this.setState({cpliste: []});
         }
       );
@@ -237,7 +253,7 @@ class FicheClient extends React.Component {
     }
   }
   getRechercheVille(value) {
-    logger.info('FicheClient.getRechercheVille() value', value);
+    console.log('FicheClient.getRechercheVille() value', value);
     if (value && value.length>1) {
 
       let __value = canonicalizeString(value).toUpperCase();
@@ -247,11 +263,11 @@ class FicheClient extends React.Component {
       clientsServices.searchSecteurs({nom:__value})
       .then(
         data => {
-          logger.info('FicheClient.getRechercheVille()', data.secteurs);
+          console.log('FicheClient.getRechercheVille()', data.secteurs);
           this.setState({cpliste: data.secteurs});
         },
         error => {
-          logger.info('FicheClient.getRechercheVille()', "aucun secteur");
+          console.error('FicheClient.getRechercheVille()', "aucun secteur");
           this.setState({cpliste: []});
         }
       );
@@ -277,7 +293,7 @@ class FicheClient extends React.Component {
 
     const liste = clients.filter(c=>( (!c.hasOwnProperty('bloque')) || (!c.bloque) ));
 
-    const { focusInput, search, cpliste } = this.state;
+    const { focusInput, search, cpliste, cpOpen, villeOpen } = this.state;
 
     const readytovalidate = nom!=='' || prenom!=='' || telephone!=='' || telephone2!=='' || EMAIL_REG.test(email);
     const mapid = 'map-none';
@@ -306,7 +322,9 @@ class FicheClient extends React.Component {
 
     // logger.info(focusInput, inputs[focusInput]);
 
-logger.info('cpliste', cpliste);
+// logger.info('cpliste', cpliste);
+    console.log('cpOpen', cpOpen);
+    console.log('villeOpen', villeOpen);
 
     return (
       <div>
@@ -509,22 +527,28 @@ logger.info('cpliste', cpliste);
                     className="recherche-cp-input"
                     id="clt-cp-recherche"
                     filterOptions={(x)=>x}
+                    freeSolo
+                    open={cpOpen}
                     options={cpliste}
                     autoComplete
+                    disablePortal={clavierOpen}
                     value={codepostal}
                     noOptionsText={ strings.modules.clients.edition.aucune_sugg }
                     onChange={(event, newValue, reason) => {
-                      logger.info('onChange', newValue, reason);
+                      console.log('onChange', newValue, reason);
                       if (reason==="select-option") {
                         this.updateValue({
                           codepostal: newValue.zip.toString(),
                           secteur: newValue.secteur,
-                          ville: (newValue.ligne5!=="") ? newValue.ligne5+' '+newValue.nom : newValue.nom
+                          ville: (newValue.ligne5!=="") ? newValue.ligne5+' '+newValue.nom : newValue.nom,
+                          cpOpen: false,
+                          villeOpen: false
                         }) 
                       }
                     }}
                     getOptionSelected={ (option,value)=>option.zip.toString()===value }
                     onInputChange={(e,value,r) => { 
+                      console.log('inInputChange', e, value, r);
                       this.updateValue({codepostal:value}) 
                       this.getRechercheCp(value);
                     }}
@@ -542,7 +566,7 @@ logger.info('cpliste', cpliste);
                       <TextField 
                           {...params}
                           variant="filled"
-                          name="clt-cp-recherche"
+                          name="codepostal"
                           onClick={this.setFocus}
                           label={ strings.modules.clients.edition.codepostal }
                       />
@@ -578,17 +602,22 @@ logger.info('cpliste', cpliste);
                   id="clt-ville-recherche"
                   name="clt-ville-recherche"
                   filterOptions={(x)=>x}
+                  freeSolo
                   options={cpliste}
                   autoComplete
+                  open={villeOpen}
+                  disablePortal={clavierOpen}
                   value={ville}
                   noOptionsText={ strings.modules.clients.edition.aucune_sugg }
                   onChange={(event, newValue, reason) => {
-                    logger.info('onChange', newValue, reason);
+                    console.log('onChange', newValue, reason);
                     if (reason==="select-option") {
                       this.updateValue({
                         codepostal: newValue.zip.toString(),
                         secteur: newValue.secteur,
-                        ville: (newValue.ligne5!=="") ? newValue.ligne5+' '+newValue.nom : newValue.nom
+                        ville: (newValue.ligne5!=="") ? newValue.ligne5+' '+newValue.nom : newValue.nom,
+                        villeOpen: false,
+                        cpOpen: false
                       }) 
                     }
                   }}
@@ -600,7 +629,7 @@ logger.info('cpliste', cpliste);
                   getOptionLabel={(option) => option.hasOwnProperty('nom') ? option.nom : option }
                   inputValue={ville}
                   renderOption={(props, option) => {
-                    logger.info('option', props);
+                    console.log('option', props);
                     return (
                       <React.Fragment>
                         { props.zip+' '+props.nom+' '+props.ligne5 }
@@ -611,7 +640,7 @@ logger.info('cpliste', cpliste);
                     <TextField 
                         {...params}
                         variant="filled"
-                        name="clt-ville-recherche"
+                        name="ville"
                         onClick={this.setFocus}
                         label={ strings.modules.clients.edition.ville }
                     />

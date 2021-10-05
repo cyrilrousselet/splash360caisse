@@ -172,7 +172,7 @@ function setChrono(payload) {
 
       // si la commande a déjà été synchronisée avec le Backend
       let cmdToSync = {};
-      if (commande.hasOwnProperty("sync")) {
+      if (commande.hasOwnProperty("sync") && commande.sync!==null) {
         cmdToSync = {
           id: commande.id,
           ticketId: commande.ticketId,
