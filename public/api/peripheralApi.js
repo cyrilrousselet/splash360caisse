@@ -690,10 +690,13 @@ function _printEtiquettes(printer, data, config) {
 
       __printlist.push('BAR 10,50,' + (__w - 20) + ',4');
 
-      const __prd = ('TEXT 10,70,"2",0,2,2,"%PRD%"').replace('%PRD%', '('+currentarticle+'/'+totalarticles+') '+art.nom);
+      const __frc = ('TEXT 10,70,"2",0,1,1,"%FRACTION%"').replace('%FRACTION%', currentarticle+'/'+totalarticles);
+      __printlist.push(__frc);
+
+      const __prd = ('TEXT 10,90,"2",0,1,2,"%PRD%"').replace('%PRD%', art.nom);
       __printlist.push(__prd);
 
-      let __y = 115;
+      let __y = 135;
 
       if (art.comment!=='') {
         const __cmt = ('TEXT 15,%Y%,"2",0,1,1,"-- %CMT% --"').replace('%Y%', __y).replace('%CMT%',art.comment);
