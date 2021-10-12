@@ -488,15 +488,22 @@ function livraisonCommande(_payload, needNumero) {
     // }
 
     const payloadcopy = { ...payload, localsync: [parametres.options.caisse.uniqid] };
+
+    dispatch({
+      type: commandeActionTypes.UPDATE_COMMANDE,
+      commande: payloadcopy
+    });
    
     // si la commande à encaisser est PROGRAMMÉE,
     // on n'imprime que le ticket commande
     if (payload.scheduled && payload.enproduction===false) {
-      dispatch(peripheralActions.printTicket({templates:["commande"]}));
+      // dispatch(peripheralActions.printTicket({templates:["commande"]}));
+      dispatch(peripheralActions.printCommandeTicket({templates:["commande"]}, payloadcopy));
     }
     // sinon on imprime tout
     else {
-      dispatch(peripheralActions.printTicket("all"));
+      // dispatch(peripheralActions.printTicket("all"));
+      dispatch(peripheralActions.printCommandeTicket("all", payloadcopy));
     }
 
     dispatch(getCommande());
