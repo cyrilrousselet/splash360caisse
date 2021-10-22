@@ -53,10 +53,10 @@ const actions = {
     }
     const _lastc = await _findLastCloture(payload.caisseId);
 
-    log.info('dbTresorerieLastClotureAndAfter C=', _lastc);
+    log.info('dbTresorerieLastClotureAndAfter C=' + JSON.stringify(_lastc));
 
     // s'il y a une cloture, on cherche s'il y a une ouverture APRÈS
-    if (_lastc.length>0) {
+    if (_lastc && _lastc.length>0) {
       log.info('--- il y a une cloture ---');
       proxies.cloture = _lastc[0];
       const _clotureCreatedAt = _lastc[0].createdAt;
