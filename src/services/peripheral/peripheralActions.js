@@ -394,7 +394,7 @@ function _setCommandeToKDS(ticketsListe, cmd, state) {
       city: clt ? `${clt.ville}`: '',
       mode: cmd.mode, // attention
       comment: __cmt ? __cmt.texte : '',
-      timestamp: cmd.createdAt,
+      timestamp: cmd.createdAt ? cmd.createdAt : (new Date()).getTime(),
       status: 0,
       commande_status: cmd.status,
       endTime: '',
