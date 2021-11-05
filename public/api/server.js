@@ -176,6 +176,7 @@ const server = {
       wcont.send("printticket", {
         ticketId: req.body.ticket_id,
         zoneId: req.body.zone_id,
+        isSortie: req.body.is_sortie
       });
       res.json({ status: "success" });
     });
