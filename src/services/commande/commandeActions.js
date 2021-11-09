@@ -473,10 +473,11 @@ function livraisonCommande(_payload, needNumero) {
         if (lots!==undefined) {
           logger.info('lots non undefined');
 
-          const lot_id = dispatch(addCommandeToLot(payload.ticketId, client.secteur));
+          const {lot_id, lot_timestamp} = dispatch(addCommandeToLot(payload.ticketId, client.secteur));
           logger.info('livraisonCommande() lot_id', lot_id);
 
           payload.lot = lot_id;
+          payload.timestamplot = lot_timestamp.getTime();
 
         }
       }
@@ -845,10 +846,10 @@ function updateCommande(payload, from='') {
       const client = getState().clientsReducer.clients.find(clt=>clt.client_id===commande.client.client_id);
       if (client.hasOwnProperty('secteur')) {
        
-        const lot_id = dispatch(addCommandeToLot(commande.ticketId, client.secteur));
+        const {lot_id, lot_timestamp} = dispatch(addCommandeToLot(commande.ticketId, client.secteur));
         logger.info('updateCommande() lot_id', lot_id);
 
-        payload = {...payload, lot: lot_id};
+        payload = {...payload, lot: lot_id, timestamplot: lot_timestamp.getTime()};
         
       }
     }
@@ -1235,8 +1236,8 @@ function addCommandeToLot(ticketId, secteur) {
         }
       });
     
-    return lot.lot_id;
-  }
+      return {lot_id: lot.lot_id, lot_timestamp: lot.createdAt};
+    }
 }
 
 function checkMarketing() {

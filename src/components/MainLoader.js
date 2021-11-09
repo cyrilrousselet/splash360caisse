@@ -225,6 +225,7 @@ class MainLoader extends React.Component {
 
     if (this._findeservice_job===null) {  
       this._findeservice_job = schedule.scheduleJob('0 30 5 * * *', () => {
+      // this._findeservice_job = schedule.scheduleJob('0 20 11 * * *', () => {
         checkFinDeService();
         resetNumero();
         getTodayCa();

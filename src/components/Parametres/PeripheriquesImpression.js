@@ -316,7 +316,7 @@ class EditTicketPopin extends React.Component {
               <div className="title">{ ticket==null ? strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.new : strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.edit+' #'+ticket_id }</div>
             </div>
             <div className="body">
-              <LabelledField
+              {(ticket && ticket.ticket_id!=='tck1') && (<LabelledField
                 id="nom"
                 name="nom"
                 className="fieldnom"
@@ -326,15 +326,15 @@ class EditTicketPopin extends React.Component {
                 readOnly={ false }
                 onChange={(val)=>{ this.updateValue({nom:val.value}) }}
                 label={ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.nom }
-              />
-              <FormControl variant="outlined" className="selecteur-group selecteur-template">
+              />)}
+              {(ticket && ticket.ticket_id!=='tck1') && (<FormControl variant="outlined" className="selecteur-group selecteur-template">
                 <div className="select-label">{ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.template }</div>
                 <Select value={template} onChange={(event) => { this.updateValue({template: event.target.value}) }} className="selecteur selecteur-template">
                   {Object.entries(strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.template_liste).map(([tplid, tplval]) => (
                     <MenuItem key={ `cashitm${tplid}`} value={ tplid }>{ tplval }</MenuItem>
                     ))}
                 </Select>
-              </FormControl>
+              </FormControl>)}
               {(template && (["partiel","principal"]).includes(template)) && (
                 <div className="template-variante">
                 <SwitchCheckbox 
@@ -349,7 +349,7 @@ class EditTicketPopin extends React.Component {
                     />
               </div>
               )}
-              <div className="imprimantes-liste">
+              {(ticket && ticket.ticket_id!=='tck1') && (<div className="imprimantes-liste">
                 <div className="liste-label">{ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.imprimantes }</div>
                 <div className="liste-liste">
                   {allprinters.map(prnt => (
@@ -365,9 +365,9 @@ class EditTicketPopin extends React.Component {
                       />
                     ))}
                 </div>
-              </div>
+              </div>)}
               <div className="kds">
-                <div class="kds-activation">
+              {(ticket && ticket.ticket_id!=='tck1') && (<div class="kds-activation">
                   <div className="liste-label">{ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.kds }</div>
                   <div className="liste-liste">
                     <SwitchCheckbox 
@@ -381,16 +381,16 @@ class EditTicketPopin extends React.Component {
                       label={ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.kds_active } 
                       />
                   </div>
-                </div>
+                </div>)}
                 <div class="indirect">
-                  <div className={ `liste-label${(kds?'':' disabled')}`}>{ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.indirect }</div>
+                  <div className={ `liste-label${((kds || (ticket && ticket.ticket_id==='tck1'))?'':' disabled')}`}>{ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.indirect }</div>
                   <div className="liste-liste">
                     <SwitchCheckbox 
                       isChecked={ (indirect===null || indirect===undefined) ? false : indirect } 
                       key={ `select-indirect` }
                       name={ `indirect` } 
                       className="indirect-checkbox"
-                      disabled={!kds}
+                      disabled={!kds && (ticket && ticket.ticket_id!=='tck1')}
                       small={ true }
                       labelLeft={ false }
                       onChange={ (name,checked) => { this.updateValue({[name]: checked}) }} 
@@ -558,7 +558,8 @@ class PeripheriquesImpression extends React.Component {
         };
     });
     tickets_liste = tickets_liste.sort((a,b)=>a.weight-b.weight);
-    tickets_liste = tickets_liste.filter(tck=>(['commande','cloture_x','cloture_z','avoir']).indexOf(tck.type)===-1);
+    // tickets_liste = tickets_liste.filter(tck=>(['commande','cloture_x','cloture_z','avoir']).indexOf(tck.type)===-1);
+    tickets_liste = tickets_liste.filter(tck=>(['cloture_x','cloture_z','avoir']).indexOf(tck.type)===-1);
 
     return (
     <div className="PeripheriquesImpression sectioncontent">

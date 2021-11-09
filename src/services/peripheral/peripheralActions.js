@@ -383,7 +383,7 @@ function _setCommandeToKDS(ticketsListe, cmd, state) {
     // URL de réponse du kds : 
     // si caisse secondary : url de la primary
     // si caisse primary : caisse_ip ou à défaut localhost
-    const __responseurl = options.role==='secondary' ? options.primary : (options.caisse.url || 'http://localhost');
+    const __responseurl = options.role==='secondary' ? options.primary : (options.caisse.url || 'http://localhost');    
 
     let kdsCmd = {
       id: cmd.ticketId,
@@ -394,13 +394,14 @@ function _setCommandeToKDS(ticketsListe, cmd, state) {
       city: clt ? `${clt.ville}`: '',
       mode: cmd.mode, // attention
       comment: __cmt ? __cmt.texte : '',
-      timestamp: 1,
+      timestamp: cmd.createdAt ? cmd.createdAt : (new Date()).getTime(),
       status: 0,
       commande_status: cmd.status,
       endTime: '',
       careTime: '',
       items: [],
       lot: cmd.lot,
+      timestamplot: cmd.timestamplot,
       confirmurl: __responseurl+':3300/chrono',
       printurl: __responseurl+':3300/printticket',
     }
@@ -534,25 +535,39 @@ function _setCommandeToKDS(ticketsListe, cmd, state) {
 function printTicketFromAPI(payload) {
   return async (dispatch, getState) => {
 
-    const { ticketId, zoneId } = payload;
+    const { ticketId, zoneId, isSortie } = payload;
 
     const { tickets } = getState().peripheralReducer;
 
     const _tck = tickets[zoneId];
 
+    let __tickets_a_imprimer = [];
+
+    // si c'est la fin de la production et que le ticket commande est indirect
+    if (isSortie && tickets.tck1.hasOwnProperty('indirect') && tickets.tck1.indirect===true) {
+      // on l'ajoute à la liste des tickets à imprimer
+      __tickets_a_imprimer.push('tck1');
+    }
+
+    // si le ticket de la zone doit être imprimé via le KDS
     if (_tck.hasOwnProperty('indirect') && _tck.indirect===true) { 
+      // on l'ajoute à la liste des tickets à imprimer
+      __tickets_a_imprimer.push(zoneId);
+    }
+
+    if (__tickets_a_imprimer.length>0) {
       try {
         const commande = await commandeServices.getCommandeById(ticketId);
         logger.info('peripheralActions.printTicketFromAPI()', commande);
-        dispatch(printCommandeTicket({ids:[zoneId]}, commande._cmd, true));
+        dispatch(printCommandeTicket({ids:__tickets_a_imprimer}, commande._cmd, true));
       }
       catch(error) {
         logger.info('printTicketFromAPI', `commande #${ticketId} introuvable`);
         logger.error(error);
       }
     } else {
-      logger.info('printTicketFromAPI', 'pas d’impression indirecte pour ce ticket');
-    }
+        logger.info('printTicketFromAPI', 'pas d’impression indirecte pour ce ticket');
+      }
 
   }
 }
