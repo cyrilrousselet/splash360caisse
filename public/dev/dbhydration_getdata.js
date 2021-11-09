@@ -61,6 +61,17 @@ const hydration = {
   salles: [],
   tables: [],
 
+  moyens: [
+    { id: 'especes', nom: 'Espèces', abbr: 'Espèces', classe: 'especes', icone: 'EspecesIcon' },
+    { id: 'carte', nom: 'Carte Bleue', abbr: 'Carte', classe: 'carte', icone: 'CarteIcon' },
+    { id: 'ticket', nom: 'Ticket Restau', abbr: 'Ticket', classe: 'ticket', icone: 'TicketIcon' },
+    { id: 'cheque', nom: 'Chèques', abbr: 'Chèques', classe: 'cheque', icone: 'ChequeIcon' },
+    { id: 'avoir', nom: 'Avoir', abbr: 'Avoir', classe: 'avoir', icone: 'QRCodeIcon' },
+    { id: 'chequevacances', nom: 'Chèque Vacances', abbr: 'Chq. Vac.', classe: 'chequevacances', icone: 'TicketIcon' },
+    { id: 'trcb', nom: 'TR numérique', abbr: 'TR Num.', classe: 'trcb', icone: 'CarteIcon' },
+    { id: 'uber', nom: 'UberEats', abbr: 'Uber', classe: 'uber', icone: '' }
+  ],
+  
   parametres: [
     { domaine: 'options', cle: 'first_start', valeur: true },
     { domaine: 'entreprise', cle: 'restaurant_id', valeur: '' },

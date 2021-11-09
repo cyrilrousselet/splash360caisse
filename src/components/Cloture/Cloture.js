@@ -93,6 +93,8 @@ class Cloture extends React.Component {
       saisie_carte: '',
       saisie_ticket: '',
       saisie_cheque: '',
+      saisie_chequevacances: '',
+      saisie_trcb: '',
       saisie_especes: '',
       saisie_avoir: '',
 
@@ -291,6 +293,8 @@ class Cloture extends React.Component {
       saisie_carte: '',
       saisie_cheque: '',
       saisie_avoir: '',
+      saisie_chequevacances: '',
+      saisie_trcb: '',
       saisie_prelevement: ''
     };
 
@@ -380,6 +384,8 @@ class Cloture extends React.Component {
       motif_carte,
       motif_ticket,
       motif_cheque,
+      motif_chequevacances,
+      motif_trcb,
       motif_avoir
 
     } = this.state;
@@ -389,7 +395,9 @@ class Cloture extends React.Component {
       ecart_carte,
       ecart_ticket,
       ecart_cheque,
-      ecart_avoir
+      ecart_avoir,
+      ecart_chequevacances,
+      ecart_trcb
     } = this.getEcarts(periode);
     
     let params = {};
@@ -405,6 +413,8 @@ class Cloture extends React.Component {
       carte: ecart_carte ? { valeur: ecart_carte, motif: motif_carte} : null,
       ticket: ecart_ticket ? { valeur: ecart_ticket, motif: motif_ticket} : null,
       cheque: ecart_cheque ? { valeur: ecart_cheque, motif: motif_cheque} : null,
+      chequevacances: ecart_chequevacances ? { valeur: ecart_chequevacances, motif: motif_chequevacances} : null,
+      trcb: ecart_trcb ? { valeur: ecart_trcb, motif: motif_trcb} : null,
       avoir: ecart_avoir ? { valeur: ecart_avoir, motif: motif_avoir} : null
     }
 
@@ -462,6 +472,8 @@ class Cloture extends React.Component {
         carte = 0,
         ticket = 0,
         cheque = 0,
+        chequevacances = 0,
+        trcb = 0,
         avoir = 0;
 
     if (ventilation && ventilation.moyen) {
@@ -471,9 +483,11 @@ class Cloture extends React.Component {
       if (ventilation.moyen.hasOwnProperty('ticket')) ticket = ventilation.moyen.ticket.valeur  - emission;
       if (ventilation.moyen.hasOwnProperty('cheque')) cheque = ventilation.moyen.cheque.valeur;
       if (ventilation.moyen.hasOwnProperty('avoir')) avoir = ventilation.moyen.avoir.valeur;
+      if (ventilation.moyen.hasOwnProperty('chequevacances')) chequevacances = ventilation.moyen.chequevacances.valeur;
+      if (ventilation.moyen.hasOwnProperty('trcb')) trcb = ventilation.moyen.trcb.valeur;
     }
 
-    return {especes, carte, ticket, cheque, avoir};
+    return {especes, carte, ticket, cheque, avoir, chequevacances, trcb};
   }
 
   validComptage(fieldname, value) {
@@ -485,7 +499,9 @@ class Cloture extends React.Component {
       "saisie_ticket", 
       "saisie_cheque", 
       "saisie_especes", 
-      "saisie_avoir"
+      "saisie_avoir",
+      "saisie_chequevacances",
+      "saisie_trcb"
     ]).includes(fieldname)) {
       
       const { comptage } = this.state;
@@ -571,7 +587,7 @@ class Cloture extends React.Component {
 
     let __ecarts = {};
 
-    (['especes', 'carte', 'ticket', 'cheque', 'avoir']).forEach(moyen => {
+    (['especes', 'carte', 'ticket', 'cheque', 'chequevacances', 'trcb', 'avoir']).forEach(moyen => {
       if (comptage && comptage[moyen]!== ventilation[moyen]) __ecarts['ecart_'+moyen] = comptage[moyen] - ventilation[moyen];
     });
 
@@ -586,6 +602,7 @@ class Cloture extends React.Component {
       catalogue,
       caisses,
       user,
+      moyens,
     } = this.props;
 
     const {
@@ -609,11 +626,15 @@ class Cloture extends React.Component {
       saisie_cheque, 
       saisie_especes, 
       saisie_avoir,
+      saisie_chequevacances,
+      saisie_trcb,
 
       motif_especes,
       motif_carte,
       motif_cheque,
       motif_ticket,
+      motif_chequevacances,
+      motif_trcb,
       motif_avoir,
 
       processing,
@@ -658,6 +679,8 @@ class Cloture extends React.Component {
 
     const operators = this.getListeVendeurs();
 
+    const _moyens = Object.values(moyens).filter( m => !(['uber']).includes(m.id) );
+
           
     // logger.info('fdcaisse_new', periode_z.periode.fdcaisse+' + ('+comptage_fv+' - '+Number(prelevement_fv.replace(",", "."))+')');
     // logger.info('operators', operators);
@@ -700,23 +723,27 @@ class Cloture extends React.Component {
     let saisie_ticket_fv = activeField==='saisie_ticket' ? String(fieldvalue).replace(',','.') : saisie_ticket;
     let saisie_cheque_fv = activeField==='saisie_cheque' ? String(fieldvalue).replace(',','.') : saisie_cheque;
     let saisie_especes_fv = activeField==='saisie_especes' ? String(fieldvalue).replace(',','.') : saisie_especes;
+    let saisie_chequevacances_fv = activeField==='saisie_chequevacances' ? String(fieldvalue).replace(',','.') : saisie_chequevacances;
+    let saisie_trcb_fv = activeField==='saisie_trcb' ? String(fieldvalue).replace(',','.') : saisie_trcb;
     let saisie_avoir_fv = activeField==='saisie_avoir' ? String(fieldvalue).replace(',','.') : saisie_avoir;
 
 
     // récup de la ventilation par moyen de paiement (TR - avoirs émis)
     // NB. pour récupérer le total TR, il faut aller chercher periode_z.periode.ventilation.moyen.find(m=>m.moyen==='ticket').valeur
     const _ventilation = this.getVentilation(periode_z.periode);
-    const { especes, carte, ticket, cheque, avoir } = _ventilation;
+    const { especes, carte, ticket, cheque, avoir, chequevacances, trcb } = _ventilation;
 
     // total des encaissements (on soustrait les avoirs émis du total des TR)
     const _encaissement = Object.values(_ventilation).reduce((a,b)=>a+b,0);
     
-    const { ecart_especes, ecart_carte, ecart_ticket, ecart_cheque, ecart_avoir } = this.getEcarts(periode_z.periode);
+    const { ecart_especes, ecart_carte, ecart_ticket, ecart_cheque, ecart_avoir, ecart_chequevacances, ecart_trcb } = this.getEcarts(periode_z.periode);
 
     let ecart_especes_fv = !ecart_especes ? (saisie_especes_fv ? saisie_especes_fv - especes : 0) : ecart_especes;
     let ecart_carte_fv = !ecart_carte ? (saisie_carte_fv ? saisie_carte_fv - carte : 0) : ecart_carte;
     let ecart_ticket_fv = !ecart_ticket ? (saisie_ticket_fv ? saisie_ticket_fv - ticket : 0) : ecart_ticket;
     let ecart_cheque_fv = !ecart_cheque ? (saisie_cheque_fv ? saisie_cheque_fv - cheque : 0) : ecart_cheque;
+    let ecart_chequevacances_fv = !ecart_chequevacances ? (saisie_chequevacances_fv ? saisie_chequevacances_fv - chequevacances : 0) : ecart_chequevacances;
+    let ecart_trcb_fv = !ecart_trcb ? (saisie_trcb_fv ? saisie_trcb_fv - trcb : 0) : ecart_trcb;
     let ecart_avoir_fv = !ecart_avoir ? (saisie_avoir_fv ? saisie_avoir_fv - avoir : 0) : ecart_avoir;
 
 
@@ -811,10 +838,10 @@ class Cloture extends React.Component {
                   <div className="ecarts-label">{ strings.modules.cloture.comptage.captions.ecarts }</div>
                   <div className="motif-label">{ strings.modules.cloture.comptage.captions.motif }</div>
                 </div>
-                <div className={ `cptitem cptitem-esp${(ecart_especes_fv!==0 ? (motif_especes ? ' warning' : ' error') : '')}`}>
+                {(_moyens.find(m=>m.id==='especes') && !moyens.especes.inactive) && (<div className={ `cptitem cptitem-esp${(ecart_especes_fv!==0 ? (motif_especes ? ' warning' : ' error') : '')}`}>
                   <div className="item-label">
                     <EspecesIcon htmlColor="#ffffff" />
-                    { strings.modules.cloture.comptage.moyens.especes }
+                    { moyens.especes.nom }
                   </div>
                   <div className="valeur valeur-static">{ `${devise(especes)} €` }</div>
                   <div className="valeur valeur-input" onClick={()=>{ this.startSaisie('saisie_especes') }}>
@@ -826,11 +853,11 @@ class Cloture extends React.Component {
                     <div className="motif" onClick={()=>{ this.openMotifModal('motif_especes') }}>{ motif_especes }</div>
                   </>)}
                   {(ecart_especes_fv===0) && (<div className="ecart">-</div>)}
-                </div>
-                <div className={ `cptitem cptitem-cb${(ecart_carte_fv!==0 ? (motif_carte ? ' warning' : ' error') : '')}` }>
+                </div>)}
+                {(_moyens.find(m=>m.id==='carte') && !moyens.carte.inactive) && (<div className={ `cptitem cptitem-cb${(ecart_carte_fv!==0 ? (motif_carte ? ' warning' : ' error') : '')}` }>
                   <div className="item-label">
                     <CarteIcon htmlColor="#ffffff" />
-                    { strings.modules.cloture.comptage.moyens.carte }
+                    { moyens.carte.nom }
                   </div>
                   <div className="valeur valeur-static">{ `${devise(carte)} €` }</div>
                   <div className="valeur valeur-input" onClick={()=>{ this.startSaisie('saisie_carte') }}>
@@ -842,11 +869,11 @@ class Cloture extends React.Component {
                     <div className="motif" onClick={()=>{ this.openMotifModal('motif_carte') }}>{ motif_carte }</div>
                   </>)}
                   {(ecart_carte_fv===0) && (<div className="ecart">-</div>)}
-                </div>
-                <div className={ `cptitem cptitem-tr${(ecart_ticket_fv!==0 ? (motif_ticket ? ' warning' : ' error') : '')}` }>
+                </div>)}
+                {(_moyens.find(m=>m.id==='ticket') && !moyens.ticket.inactive) && (<div className={ `cptitem cptitem-tr${(ecart_ticket_fv!==0 ? (motif_ticket ? ' warning' : ' error') : '')}` }>
                   <div className="item-label">
                     <TicketIcon htmlColor="#ffffff" />
-                    { strings.modules.cloture.comptage.moyens.ticket }
+                    { moyens.ticket.nom }
                   </div>
                   <div className="valeur valeur-static">{ `${devise(ticket)} €` }</div>
                   <div className="valeur valeur-input" onClick={()=>{ this.startSaisie('saisie_ticket') }}>
@@ -858,11 +885,11 @@ class Cloture extends React.Component {
                     <div className="motif" onClick={()=>{ this.openMotifModal('motif_ticket') }}>{ motif_ticket }</div>
                   </>)}
                   {(ecart_ticket_fv===0) && (<div className="ecart">-</div>)}
-                </div>
-                <div className={ `cptitem cptitem-chq${(ecart_cheque_fv!==0 ? (motif_cheque ? ' warning' : ' error') :'')}` }>
+                </div>)}
+                {(_moyens.find(m=>m.id==='cheque') && !moyens.cheque.inactive) && (<div className={ `cptitem cptitem-chq${(ecart_cheque_fv!==0 ? (motif_cheque ? ' warning' : ' error') :'')}` }>
                   <div className="item-label">
                     <ChequeIcon htmlColor="#ffffff" />
-                    { strings.modules.cloture.comptage.moyens.cheque }
+                    { moyens.cheque.nom }
                   </div>
                   <div className="valeur valeur-static">{ `${devise(cheque)} €` }</div>
                   <div className="valeur valeur-input" onClick={()=>{ this.startSaisie('saisie_cheque') }}>
@@ -874,8 +901,40 @@ class Cloture extends React.Component {
                     <div className="motif" onClick={()=>{ this.openMotifModal('motif_cheque') }}>{ motif_cheque }</div>
                   </>)}
                   {(ecart_cheque_fv===0) && (<div className="ecart">-</div>)}
-                </div>
-                <div className={ `cptitem cptitem-avr${(ecart_avoir_fv!==0 ? (motif_avoir ? ' warning' : ' error') : '')}` }>
+                </div>)}
+                {(_moyens.find(m=>m.id==='chequevacances') && !moyens.chequevacances.inactive) && (<div className={ `cptitem cptitem-chq${(ecart_chequevacances_fv!==0 ? (motif_chequevacances ? ' warning' : ' error') :'')}` }>
+                  <div className="item-label">
+                    <TicketIcon htmlColor="#ffffff" />
+                    { moyens.chequevacances.nom }
+                  </div>
+                  <div className="valeur valeur-static">{ `${devise(chequevacances)} €` }</div>
+                  <div className="valeur valeur-input" onClick={()=>{ this.startSaisie('saisie_chequevacances') }}>
+                    <div className="label">{ strings.modules.cloture.comptage.saisie.caption }</div>
+                    <div className="input">{ `${(saisie_chequevacances_fv!=='' ? devise(saisie_chequevacances_fv)+' €' : '')}` }</div>
+                  </div>
+                  {(ecart_chequevacances_fv!==0) && (<>
+                    <div className="ecart">{ `${ecart_chequevacances_fv>0 ? '+':''} ${devise(ecart_chequevacances_fv)} €` }</div>
+                    <div className="motif" onClick={()=>{ this.openMotifModal('motif_chequevacances') }}>{ motif_chequevacances }</div>
+                  </>)}
+                  {(ecart_cheque_fv===0) && (<div className="ecart">-</div>)}
+                </div>)}
+                {(_moyens.find(m=>m.id==='trcb') && !moyens.trcb.inactive) && (<div className={ `cptitem cptitem-chq${(ecart_trcb_fv!==0 ? (motif_trcb ? ' warning' : ' error') :'')}` }>
+                  <div className="item-label">
+                    <CarteIcon htmlColor="#ffffff" />
+                    { moyens.trcb.nom }
+                  </div>
+                  <div className="valeur valeur-static">{ `${devise(trcb)} €` }</div>
+                  <div className="valeur valeur-input" onClick={()=>{ this.startSaisie('saisie_trcb') }}>
+                    <div className="label">{ strings.modules.cloture.comptage.saisie.caption }</div>
+                    <div className="input">{ `${(saisie_trcb_fv!=='' ? devise(saisie_trcb_fv)+' €' : '')}` }</div>
+                  </div>
+                  {(ecart_trcb_fv!==0) && (<>
+                    <div className="ecart">{ `${ecart_trcb_fv>0 ? '+':''} ${devise(ecart_trcb_fv)} €` }</div>
+                    <div className="motif" onClick={()=>{ this.openMotifModal('motif_trcb') }}>{ motif_trcb }</div>
+                  </>)}
+                  {(ecart_trcb_fv===0) && (<div className="ecart">-</div>)}
+                </div>)}
+                {(_moyens.find(m=>m.id==='avoir') && !moyens.avoir.inactive) && (<div className={ `cptitem cptitem-avr${(ecart_avoir_fv!==0 ? (motif_avoir ? ' warning' : ' error') : '')}` }>
                   <div className="item-label">
                     <QRCodeIcon htmlColor="#ffffff" />
                     { strings.modules.cloture.comptage.moyens.avoir }
@@ -890,7 +949,7 @@ class Cloture extends React.Component {
                     <div className="motif" onClick={()=>{ this.openMotifModal('motif_avoir') }}>{ motif_avoir }</div>
                   </>)}
                   {(ecart_avoir_fv===0) && (<div className="ecart">-</div>)}
-                </div>
+                </div>)}
 
               </div>{/* -- /.clo-gauche-top -- */}
 

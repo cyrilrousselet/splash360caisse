@@ -19,6 +19,7 @@ const mapStateToProps = (state) => {
     stations: state.parametresReducer.parametres.options,
     user: state.authentication.user,
     mouvements: state.tresorReducer.tresors,
+    moyens: state.parametresReducer.moyens,
     fonddecaisse_activation: state.parametresReducer.parametres.financier && state.parametresReducer.parametres.financier.fonddecaisse_activation,
     fonddecaissetheo: (state.parametresReducer.parametres.financier && state.parametresReducer.parametres.financier.fonddecaisse_activation) ? state.parametresReducer.parametres.financier.fonddecaisse_montant : 0 
   };

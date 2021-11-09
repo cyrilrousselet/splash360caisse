@@ -15,6 +15,9 @@
         border-radius: 15px;
         padding: 0 20px;
     }
+    &.modal-haute .Modal-container {
+        height: 590px;
+    }
     .close-button {
         background-color: $blanc;
         position: absolute;
@@ -180,6 +183,7 @@
                 flex-direction: row;
                 justify-content: space-between;
                 line-height: 1.0em !important;
+                
                 .moyen {
                     width: 110px;
                     background-color: $prairie;
@@ -207,6 +211,9 @@
                 }
             }
         }
+    }
+    &.modal-haute .body .moyens {
+        flex-wrap: wrap;
     }
     .ReglementListeItem,
     .RenduListeItem {

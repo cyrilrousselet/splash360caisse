@@ -89,7 +89,8 @@ const mapStateToProps = (...args) => {
     commande: getCommande(state),
     error: getCommandeError(state),
     params: getParametres(state).entreprise,
-    avoirs: state.marketingReducer.avoirs
+    avoirs: state.marketingReducer.avoirs,
+    moyens: state.parametresReducer.moyens,
   };
 }
 

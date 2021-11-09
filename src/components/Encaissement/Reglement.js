@@ -25,6 +25,14 @@ let strings = new LocalizedStrings(data);
 
 const RACCOURCIS = [5, 10, 20, 50];
 
+const icones = {
+  CarteIcon: CarteIcon,
+  ChequeIcon: ChequeIcon,
+  EspecesIcon: EspecesIcon,
+  QRCodeIcon: QRCodeIcon,
+  TicketIcon: TicketIcon
+}
+
 class Reglement extends React.Component {
   constructor(props) {
     super(props);
@@ -459,6 +467,7 @@ class Reglement extends React.Component {
       tiroirOuvert,
       params,
       modif,
+      moyens,
     } = this.props;
     const { reglements, rendus } = this.props.commande;
     const { reste, rendable } = this.updateValeurs();
@@ -492,9 +501,16 @@ class Reglement extends React.Component {
       this.interval = 0;
     }
 
+    const _moyens = Object.values(moyens).filter(m => (!(['avoir', 'uber']).includes(m.id) && !m.inactive ));
+
+    // function MoyenIcon(icone) {
+    //   const MoyenIconVar = icone;
+    //   return <MoyenIconVar />
+    // } 
+
     return (
       <Modal open={open}>
-        <div className={`Reglement ${contClass}`}>
+        <div className={`Reglement ${contClass}${(_moyens.length>5 ? ' modal-haute' : '')}`}>
           <div className="Modal-container">
             <div className="header">
               <div className="title">
@@ -534,6 +550,7 @@ class Reglement extends React.Component {
                               reglementid={rgl.reglementId.toString()}
                               key={i}
                               moyen={rgl.moyen}
+                              moyens={moyens}
                               valeur={rgl.valeur}
                               info={rgl.info}
                               removeItem={this.toRemoveReglement}
@@ -608,6 +625,16 @@ class Reglement extends React.Component {
                   ))}
                 </div>
                 <div className="moyens">
+                { _moyens.map(moyen => (<StdButton
+                    identifier={moyen.id}
+                    elementclass="moyen"
+                    icon={ React.createElement(icones[moyen.icone]) }
+                    text={moyen.abbr}
+                    onClick={(value) => {
+                      this.toAddReglement(value);
+                    }}
+                  />)) }
+                 { /*
                   <StdButton
                     identifier="especes"
                     elementclass="moyen"
@@ -643,7 +670,7 @@ class Reglement extends React.Component {
                     onClick={(value) => {
                       this.toAddReglement(value);
                     }}
-                  />
+                 /> */}
                   {params && params.avoirs && (
                     <StdButton
                       identifier="avoir"
@@ -745,6 +772,7 @@ const ReglementListeItem = ({
   id,
   reglementid,
   moyen,
+  moyens,
   valeur,
   info,
   removeItem,
@@ -752,7 +780,7 @@ const ReglementListeItem = ({
   <div className="ReglementListeItem">
     <ListItem disableGutters>
       <div className="ritm moyen">
-        {strings.modules.encaissement.reglement.moyens[moyen]}
+        {moyens[moyen].nom}
       </div>
       <div className="ritm valeur">{valeur.toFixed(2).replace(".", ",")}</div>
       <Fab
@@ -773,6 +801,7 @@ ReglementListeItem.propTypes = {
   id: PropTypes.number.isRequired,
   reglementid: PropTypes.string.isRequired,
   moyen: PropTypes.string.isRequired,
+  moyens: PropTypes.object.isRequired,
   valeur: PropTypes.number,
   info: PropTypes.string,
   _onClick: PropTypes.func,

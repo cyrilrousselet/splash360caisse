@@ -2,6 +2,7 @@ const db = require('../db.js');
 const lodashId = require('lodash-id');
 // const log = require('electron-log');
 const log = require('../utils/logger');
+const { default: logger } = require('redux-logger');
 
 
 const actions = {
@@ -13,6 +14,7 @@ const actions = {
     (await db.parametres)._.mixin(lodashId);
     (await db.imprimantes)._.mixin(lodashId);
     (await db.tickets)._.mixin(lodashId);
+    (await db.moyens)._.mixin(lodashId);
     const proxies = await _getAll();
     res.send(proxies);
 
@@ -90,8 +92,9 @@ async function _getAll() {
   const __rawp = await _findParametres();
   const __rawi = await _findImprimantes();
   const __rawt = await _findTickets();
+  const __rawm = await _findMoyens();
   
-  return _parseParametres({...__rawp, ...__rawi, ...__rawt});
+  return _parseParametres({...__rawp, ...__rawi, ...__rawt, ...__rawm});
 }
 
 
@@ -146,6 +149,15 @@ function _parseTickets(_rawtck) {
   return __tck;
 }
 
+function _parseMoyens(_rawmoy) {
+  log.info(JSON.stringify(_rawmoy));
+  const __moy = {};
+  _rawmoy.forEach(m => {
+    __moy[m.id] = m;
+  });
+  return __moy;
+}
+
 
 /** 
  * 
@@ -171,8 +183,9 @@ function _parseParametres(_rawdata) {
   });
   const __impr = _parseImprimantes(_rawdata._impr);
   const __tck = _parseTickets(_rawdata._tck);
+  const __moy = _parseMoyens(_rawdata._moy);
 
-  return {parametres: __param, imprimantes: __impr, tickets: __tck};
+  return {parametres: __param, imprimantes: __impr, tickets: __tck, moyens: __moy};
 }
 
 
@@ -180,17 +193,22 @@ function _parseParametres(_rawdata) {
 /**
  * Get all catalogue data from DB
  */
-async function _findParametres(prd_criteriae={}) {
+async function _findParametres(p_criteriae={}) {
   const _param = await (await db.parametres).get('parametres').value();
   return { _param };
 }
-async function _findImprimantes(prd_criteriae={}) {
+async function _findImprimantes(i_criteriae={}) {
   const _impr = await (await db.imprimantes).get('imprimantes').value();
   return { _impr };
 }
-async function _findTickets(prd_criteriae={}) {
+async function _findTickets(tt_criteriae={}) {
   const _tck = await (await db.tickets).get('tickets').value();
   return { _tck };
+}
+async function _findMoyens(m_criteriae={}) {
+  const _moy = await (await db.moyens).get('moyens').value();
+  log.info(JSON.stringify(_moy))
+  return { _moy };
 }
 
 

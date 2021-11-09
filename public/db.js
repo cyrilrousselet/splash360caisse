@@ -15,7 +15,7 @@ const hydration = require(`./dev/dbhydration.js`);
 
 const {categories, groupes, tva, types, ingredients, produits, steps} = hydration;
 const {clients, ticketsrestau} = hydration;
-const {parametres, imprimantes, tickets, secteurs, lots} = hydration;
+const {parametres, imprimantes, tickets, secteurs, lots, moyens} = hydration;
 const {users} = hydration;
 const {pointages, shifts, timeadjusts} = hydration;
 const {avoirs, reglescatalogue, reglespanier} = hydration;
@@ -62,6 +62,7 @@ const db = {
  pointages: dbFactory('pointages.json', {pointages: pointages}),
  shifts: dbFactory('shifts.json', {shifts: shifts}),
  timeadjusts: dbFactory('timeadjusts.json', {timeadjusts: timeadjusts}),
+ moyens: dbFactory('moyens.json', {moyens: moyens}),
  avoirs: dbFactory('avoirs.json', {avoirs: avoirs}),
  reglescatalogue: dbFactory('reglescatalogue.json', {reglescatalogue: reglescatalogue}),
  reglespanier: dbFactory('reglespanier.json', {reglespanier: reglespanier}),

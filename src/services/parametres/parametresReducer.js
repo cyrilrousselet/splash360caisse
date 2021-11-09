@@ -3,6 +3,7 @@ import { parametresActionTypes } from './parametresActionTypes';
 const initialState = {
   loading: false,
   parametres: {},
+  moyens: {},
   error: null,
   statuschecked: false,
   online: null
@@ -11,7 +12,7 @@ const initialState = {
 
 export function parametresReducer(state=initialState, action) {
 
-  let { parametres } = state;
+  let { parametres, moyens } = state;
 
   switch (action.type) {
 
@@ -31,14 +32,16 @@ export function parametresReducer(state=initialState, action) {
     case parametresActionTypes.GETALL_SUCCESS:
 
       let newparams = action.parametres;
-
+      let newmoyens = action.moyens;
       
-
+      console.log('newparams', newparams);
+      
       return {
         ...state,
         loading: false,
         error: null,
-        parametres: {...parametres, ...newparams}
+        parametres: {...parametres, ...newparams},
+        moyens: {...moyens, ...newmoyens}
       };
 
     case parametresActionTypes.GETALL_FAILURE:
