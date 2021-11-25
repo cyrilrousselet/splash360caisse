@@ -166,7 +166,7 @@ function checkStatus() {
   return (dispatch, getState) => {
     const status = localStorage.getItem("status");
 
-    logger.info("checking status : ", status);
+    console.log("checking status : ", status);
     if (status === "blocked") {
       dispatch(blockStation());
     }

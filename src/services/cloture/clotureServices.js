@@ -1,6 +1,6 @@
 import {emit} from 'eiphop';
 
-import { startOfDay, startOfToday, isAfter, isBefore } from 'date-fns';
+import { startOfDay, startOfToday, isAfter, isBefore, endOfToday } from 'date-fns';
 // import { dateBounds } from '../../helpers/toolbox';
 import LodashId from 'lodash-id';
 // import Logger from '../../helpers/Logger';
@@ -32,30 +32,15 @@ function getTodayCa(heure_fin) {
 
 function getCurrentPeriode(commandes, catalogue, params) {
 
- logger.info('clotureServices.getCurrentPeriode()', params);
+ logger.info('clotureServices.getCurrentPeriode()', commandes, params);
 
   let __dep = 0
-    //  ,__vnt = 0
      ,__remb = 0
-    //  ,__ca = 0
-    //  ,__tickets = 0
-    //  ,__mtcaisse = 0
-    //  ,__ventil = {
-    //    vendeur:[], 
-    //    tva:[], 
-    //    moyen: [
-    //      {moyen: 'especes', valeur: 0},
-    //      {moyen: 'carte', valeur: 0},
-    //      {moyen: 'ticket', valeur: 0},
-    //      {moyen: 'cheque', valeur: 0},
-    //      {moyen: 'avoir', valeur: 0},
-    //     ]
-    //   }
      ,__numStandby = 0
      ,__fdcaisse_courant = Number(params.fdcaisse)
      ,__emission = 0
      ,__start = startOfToday()
-     ,__end = startOfDay(new Date('2000-01-01'))
+     ,__end = endOfToday() //startOfDay(new Date('2000-01-01'))
      ;
 
 
@@ -97,19 +82,6 @@ function getCurrentPeriode(commandes, catalogue, params) {
       } 
         
 
-      // periode
- //     let createdAt = parseJSON(cmd.createdAt);
- //     if (params.extract==='x') {
- //       if (isAfter(createdAt, params.fin) || isBefore(createdAt, params.debut)) __valid = false;
- //     } 
- //     else if (params.extract==='z') {
-      // --- /!\ on récupère aussi les commandes non clôturées des périodes précédentes (pour n'en laisser aucune)
-      // (donc on invalide uniquement les commandes ultérieures)
-      //  if (isAfter(createdAt, params.fin)) __valid = false;
- //     }
-
-
-
       // status
       if (cmd.status!=='confirmed') __valid = false;
 
@@ -117,9 +89,11 @@ function getCurrentPeriode(commandes, catalogue, params) {
       return __valid;
     });
 
-    logger.info('après deleted', numvalid, '/', Object.values(commandes).length);
+    console.log('après deleted', numvalid, '/', Object.values(commandes).length);
+    // logger.info('après deleted', numvalid, '/', Object.values(commandes).length);
 
-    logger.info('filtererd_cmd', __filtered_cmd.length);
+    console.log('filtererd_cmd', __filtered_cmd.length);
+    // logger.info('filtererd_cmd', __filtered_cmd.length);
 
 
 
@@ -141,10 +115,6 @@ function getCurrentPeriode(commandes, catalogue, params) {
 
     // récup des différentes valeurs :
     __filtered_cmd.forEach(cmd => {
-      // __vnt += cmd.total;
-      // __remb += (cmd.remboursements) ? cmd.remboursements : 0;
-      // __tickets++;
-
 
       let cmdtotal = 0;
       // compilation des ventilations TVA
@@ -186,7 +156,8 @@ function getCurrentPeriode(commandes, catalogue, params) {
         Object.assign(ventilation.moyen[rgt.moyen], {
           valeur: Math.round(( ventilation.moyen[rgt.moyen].valeur + rgt.valeur ) * 100) / 100
         });
-        logger.info('reglements', `${rgt.moyen} : ${__vmo} + ${rgt.valeur} = ${ventilation.moyen[rgt.moyen].valeur}`);
+        console.log('reglements', `${rgt.moyen} : ${__vmo} + ${rgt.valeur} = ${ventilation.moyen[rgt.moyen].valeur}`);
+        // logger.info('reglements', `${rgt.moyen} : ${__vmo} + ${rgt.valeur} = ${ventilation.moyen[rgt.moyen].valeur}`);
         
       });
 
@@ -206,7 +177,8 @@ function getCurrentPeriode(commandes, catalogue, params) {
           Object.assign(ventilation.moyen[rnd.moyen], {
             valeur: Math.round(( ventilation.moyen[rnd.moyen].valeur - rnd.valeur) * 100 ) / 100
           });
-          logger.info('rendus', `${rnd.moyen} : ${__vmo} - ${rnd.valeur} = ${ventilation.moyen[rnd.moyen].valeur}`);
+          console.log('rendus', `${rnd.moyen} : ${__vmo} - ${rnd.valeur} = ${ventilation.moyen[rnd.moyen].valeur}`);
+          // logger.info('rendus', `${rnd.moyen} : ${__vmo} - ${rnd.valeur} = ${ventilation.moyen[rnd.moyen].valeur}`);
 
 
           // si le rendu monnaie est supérieur au montant des réglements en espèces, 
@@ -248,272 +220,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
       if ( isBefore(new Date(cmd.createdAt), __start) ) __start = new Date(cmd.createdAt);
       if ( isAfter(new Date(cmd.createdAt), __end) ) __end = new Date(cmd.createdAt);
 
-  
-      // // ventilation par vendeurs
-      // let __vId = __ventil.vendeur.findIndex(vnd => vnd.id===cmd.operator_encaissement.id);
-      
-      // // si le vendeur n'est pas enregistré ds la liste
-      // if (__vId===-1) {
-      //   // on ajoute un objet pour le vendeur dans le tableau
-      //   // et on récupère son index (length - 1)
-      //   __vId = __ventil.vendeur.push({
-      //                     id: cmd.operator_encaissement ? cmd.operator_encaissement.id : cmd.operator.id,
-      //                     nom: cmd.operator_encaissement ? cmd.operator_encaissement.nom : cmd.operator.nom,
-      //                     ventes: 0, remboursements: 0
-      //                   }) - 1;
-      // }
-      // // on récupère l'objet pour le mettre à jour avec les valeurs de la commande
-      // const __vendeur = __ventil.vendeur[__vId];
-      // const { ventes, remboursements } = __ventil.vendeur[__vId];
-      
-      // __ventil.vendeur[__vId] = {
-      //     ...__vendeur, 
-      //     ventes:(ventes+cmd.total), 
-      //     remboursements:(remboursements+(cmd.remboursements?cmd.remboursements:0))
-      //   };
-
-
-
-      // // ventilation par moyens de paiement
-      // cmd.reglements.forEach(rgl => {
-
-      //   let __mId = __ventil.moyen.findIndex(moy => moy.moyen===rgl.moyen);
-
-      //   // si le moyen de paiement n'est pas enregistré ds la liste
-      //   if (__mId===-1) {
-      //     // on ajoute un objet pour le moyen de paiement dans le tableau
-      //     // et on récupère son index (length - 1)
-      //     __mId = __ventil.moyen.push({
-      //                       moyen: rgl.moyen,
-      //                       valeur: 0
-      //                     }) - 1;
-      //   }
-      //   // on récupère l'objet pour le mettre à jour avec les valeurs de la commande
-      //   const __moyen = __ventil.moyen[__mId];
-      //   const { valeur } = __ventil.moyen[__mId];
-
-      //   __ventil.moyen[__mId] = {
-      //       ...__moyen, 
-      //       valeur:(valeur+rgl.valeur)
-      //     };
-      // });
-
-
-      // rendus: 
-      // - monnaie (déduit de la ventilation 'espèces' si possible, sinon déduit du fond de caisse)
-      // - avoirs
-      // cmd.rendus.forEach(rnd => {
-
-      //   if (rnd.moyen==='especes') {
-          
-      //     let __mId = __ventil.moyen.findIndex(moy => moy.moyen==='especes');
-
-      //     // si le moyen de paiement "espèces" n'est pas enregistré ds la liste
-      //     if (__mId===-1) {
-      //       // on ajoute un objet pour le moyen de paiement dans le tableau
-      //       // et on récupère son index (length - 1)
-      //       __mId = __ventil.moyen.push({
-      //                         moyen: 'especes',
-      //                         valeur: 0
-      //                       }) - 1;
-      //     }
-      //     // on récupère l'objet pour le mettre à jour avec les valeurs de la commande
-      //     const __moyen = __ventil.moyen[__mId];
-      //     const { valeur } = __ventil.moyen[__mId];
-
-      //     let __valeur_c = valeur-rnd.valeur;
-      //     if (__valeur_c<0) {
-      //       __ventil.moyen[__mId] = { 
-      //         ...__moyen, 
-      //         valeur:0
-      //       };
-      //       __fdcaisse_courant += Number(__valeur_c);
-      //     } else {
-      //       __ventil.moyen[__mId] = { 
-      //         ...__moyen, 
-      //         valeur:(__valeur_c)
-      //       };
-      //     }
-      //   } else if (rnd.moyen==='avoir') {
-      //     __emission += Number(rnd.valeur);
-      //   }
-      // });
-
-
-
-
-
-
-      // // VENTILATION PAR TVA
-      // const cmdTva = {};
-      // let __modificateur = null;
-      // let total = 0;
-      // let articletotal = 0;
-      // cmd.items.forEach(itm => {
-
-
-      //   const artTva = {};
-      //   articletotal = itm.quantite * itm.prix;
-
-      //   itm.ingredients.forEach(ing => {
-      //     let artIngTva = ing.tva;
-      //     // ajout et calcul de la tva pour l'ingrédient
-      //     if (!artTva.hasOwnProperty(artIngTva.code)) {
-      //       Object.defineProperty(artTva, artIngTva.code, {
-      //         value: {taux:`${(Number.parseFloat(artIngTva.valeur)*100)} %`, montant: 0, ht: 0, ttc: 0},
-      //         writable: true,
-      //         enumerable: true
-      //       });
-      //     }
-
-
-      //     if (ing.supplement===null || ing.supplement===undefined) logger.error('aucun supplement pour ing dans item id', itm.itemid);
-
-      //     // let iht = (Number(ing.prix)*ing.qte) / (1 + Number(ing.tva.valeur));
-      //     let iht = Number(itm.quantite * ing.supplement) / (1 + Number(artIngTva.valeur));
-
-      //     artTva[artIngTva.code] = Object.assign(artTva[artIngTva.code], {
-      //       montant: artTva[artIngTva.code].montant + (iht * Number(artIngTva.valeur)),
-      //       ht: artTva[artIngTva.code].ht + iht,
-      //       ttc: artTva[artIngTva.code].ttc + Number(itm.quantite * ing.supplement)
-      //     });
-      //   });
-
-
-      //   __modificateur = cmd.modificateurs.find(m => m.item===itm.itemid && (m.ingredient===null || m.ingredient===undefined));
-      //   let amodtx = 1;
-      //   if (__modificateur) {
-      //    // total += Number(__modificateur.valeur);
-
-      //     const ispc = String(__modificateur.valeur).substr(-1,1)==='%';
-      //     const val = Math.abs(Number(String(__modificateur.valeur).slice(0,-1)));
-
-      //     // conversion du modificateur en coefficient
-      //     amodtx = (ispc) ? (100 - val) / 100 : 1 - (val/articletotal);
-
-      //     if (ispc) {
-      //       articletotal *= (100 - val) / 100;
-      //     } else {
-      //       articletotal -= val;
-      //     }
-      
-      //   }
-
-      //   // modificateur au niveau de la tva pour les ingrédients de l'article
-      //   if (__modificateur) {
-      //     Object.keys(artTva).forEach(k => {
-      //       artTva[k].montant *= amodtx;
-      //       artTva[k].ht *= amodtx;
-      //       artTva[k].ttc *= amodtx;
-      //     });
-      //   } 
-
-
-      //   // ajout et calcul de la tva pour l'article
-      //   if (!cmdTva.hasOwnProperty(itm.tva.code)) {
-      //     Object.defineProperty(cmdTva, itm.tva.code, {
-      //       value: {taux:`${(Number.parseFloat(itm.tva.valeur)*100)} %`, montant: 0, ht: 0, ttc: 0},
-      //       writable: true,
-      //       enumerable: true
-      //     });
-      //   }
-
-      //   // let ht = (Number(article.pu)*article.quantite) / (1 + Number(article.tva.valeur));
-      //   let ht = (Number(itm.pu)*itm.quantite)*amodtx / (1 + Number(itm.tva.valeur));
-
-      //   cmdTva[itm.tva.code] = Object.assign(cmdTva[itm.tva.code], {
-      //     montant: cmdTva[itm.tva.code].montant + (ht * Number(itm.tva.valeur)),
-      //     ht: cmdTva[itm.tva.code].ht + ht,
-      //     ttc: cmdTva[itm.tva.code].ttc + ((Number(itm.pu)*itm.quantite)*amodtx)
-      //   });
-
-      //   // ajout des tva des ingrédients de l'article
-      //   Object.entries(artTva).forEach(([k,v]) => {
-                    
-      //     // si le taux n'est pas listé dans les TVA
-      //     // on l'ajoute et on lui assigne les valeurs enregistrées pour les ingrédients
-      //     if (!cmdTva.hasOwnProperty(k)) {
-      //       Object.defineProperty(cmdTva, k, {
-      //         value: {taux:v.taux, montant: v.montant, ht: v.ht, ttc: v.ttc},
-      //         writable: true,
-      //         enumerable: true
-      //       });
-
-      //     } 
-      //     // si le taux est déjà listé,
-      //     // on additionne avec les valeurs enregistrées pour les ingrédients
-      //     else {
-      //       cmdTva[k] = Object.assign(cmdTva[k], {
-      //         montant: cmdTva[k].montant + v.montant,
-      //         ht: cmdTva[k].ht + v.ht,
-      //         ttc: cmdTva[k].ttc + v.ttc
-      //       });
-      //     }
-      //   });
-
-      //   total += articletotal;
-
-      // });
-
-      //  // modificateurs pour la commande
-      //  __modificateur = cmd.modificateurs.find(c => (c.item===null || c.item===undefined) && (c.ingredient===null || c.ingredient===undefined));
-      //  if (__modificateur) {
-      // //   total += Number(__modificateur.valeur);
-
-      //    const ispc = String(cmd.modificateurs[0].valeur).substr(-1,1)==='%';
-      //    const val = Math.abs(Number(String(cmd.modificateurs[0].valeur).slice(0,-1)));
-
-      //    // conversion du modificateur en coefficient
-      //    const modtx = (ispc) ? (100 - val) / 100 : 1 - (val/total);
-
-      //    if (ispc) {
-      //      total *= (100 - val) / 100;
-      //    } else {
-      //      total -= val;
-      //    }
-
-
-      //    // application de la réduction aux taux de tva
-      //    Object.entries(cmdTva).forEach(([key, value])=> {
-      //      cmdTva[key].montant *= modtx; 
-      //      cmdTva[key].ht *= modtx; 
-      //      cmdTva[key].ttc *= modtx; 
-      //    });
-
-      //  } 
-
-    //   let __tId = -1;
-    //   Object.entries(cmdTva).forEach(([key,value]) => {
-    //     __tId = __ventil.tva.findIndex(t => t.id===key);
-
-    //     // si la tva n'est pas enregistrée ds la liste
-    //     if (__tId===-1) {
-    //       // on ajoute un objet pour le moyen de paiement dans le tableau
-    //       // et on récupère son index (length - 1)
-    //       __tId = __ventil.tva.push({
-    //                     id: key,
-    //                     taux: value.taux,
-    //                     montant: 0,
-    //                     ht: 0,
-    //                     ttc: 0
-    //                   }) - 1;
-    //     }
-    //     // on récupère l'objet pour le mettre à jour avec les valeurs de la commande
-    //     const __tva = __ventil.tva[__tId];
-    //     const { ht, montant, ttc } = __tva;
-
-    //     __ventil.tva[__tId] = {
-    //         ...__tva, 
-    //         ht:(ht + value.ht),
-    //         montant:(montant + value.montant),
-    //         ttc:(ttc + value.ttc)
-    //       };
-    //   })
     });
-
-    // __ca = __vnt - (__remb + __dep);
-
-    // __mtcaisse = params.fdcaisse + __ca;
 
     // numtickets
     numtickets += __filtered_cmd.length;
@@ -521,7 +228,8 @@ function getCurrentPeriode(commandes, catalogue, params) {
     // ticket_moyen
     ticket_moyen = numtickets===0 ? 0  : (ca/100) / numtickets;
 
-    logger.info('periode ticket_moyen: '+ticket_moyen.toFixed(2), ca, numtickets);
+    // logger.info('periode ticket_moyen: '+ticket_moyen.toFixed(2), ca, numtickets);
+    console.log('periode ticket_moyen: '+ticket_moyen.toFixed(2), ca, numtickets);
 
 
 
@@ -560,7 +268,7 @@ function makeCloture(commandes, catalogue, params) {
 
   // récup des données
   const { periode, cmdtoarchive } = getCurrentPeriode(commandes, catalogue, params);
-
+console.log('makeCloture', periode, cmdtoarchive);
 
   return {
     clotureId: _newClotureId(),

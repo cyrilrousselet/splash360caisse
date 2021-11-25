@@ -132,11 +132,6 @@ export function parametresReducer(state=initialState, action) {
         error: action.error
       };
 
-    case parametresActionTypes.GET_STATUS_SUCCESS:
-      return state;
-
-    case parametresActionTypes.GET_STATUS_FAILURE:
-      return state;
 
     case parametresActionTypes.STATUS_CHECKED:
       return {
@@ -150,6 +145,8 @@ export function parametresReducer(state=initialState, action) {
         online: action.value
       };
 
+    case parametresActionTypes.GET_STATUS_SUCCESS:
+    case parametresActionTypes.GET_STATUS_FAILURE:
     default:
       return state;
   }

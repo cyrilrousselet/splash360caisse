@@ -24,10 +24,14 @@ export function peripheralReducer(state = initialState, action) {
         drawerOpen: false
       };
     case parametresActionTypes.GETALL_SUCCESS:
-      return {
-        ...state,
-        imprimantes: action.imprimantes,
-        tickets: action.tickets
+      if (action.imprimantes || action.tickets) {
+        return {
+          ...state,
+          imprimantes: action.imprimantes,
+          tickets: action.tickets
+        }
+      } else {
+        return state;
       }
     case peripheralActionTypes.GETALL_IMPRIMANTE_SUCCESS:
       return {

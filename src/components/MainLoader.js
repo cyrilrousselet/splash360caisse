@@ -228,7 +228,7 @@ class MainLoader extends React.Component {
 
     if (this._findeservice_job===null) {  
       this._findeservice_job = schedule.scheduleJob('0 30 5 * * *', () => {
-      // this._findeservice_job = schedule.scheduleJob('0 20 11 * * *', () => {
+      // this._findeservice_job = schedule.scheduleJob('0 34 21 * * *', () => {
         checkFinDeService();
         resetNumero();
         getTodayCa();
@@ -245,6 +245,7 @@ class MainLoader extends React.Component {
     if (this._getstatus_job===null) {
       console.log("GONNA START SCHEDULE");
       this._getstatus_job = schedule.scheduleJob('0 0 6 * * *', () => { //récupérer le status de la caisse sur le bo
+      // this._getstatus_job = schedule.scheduleJob('0 2 20 * * *', () => { //récupérer le status de la caisse sur le bo
         getStatus();
       })
     }

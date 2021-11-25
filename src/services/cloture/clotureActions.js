@@ -221,9 +221,9 @@ function makeCloture(params={}) {
         { archived: {"$exists": false} },
         { status: { $ne: "deleted" } },
         { $or: [
-          { "caisse_encaissement.uniqid": params.caisse.uniqid },
+          { "caisse_encaissement.id": params.caisse.id },
           { $and: [
-            { "caisse.uniqid": params.caisse.uniqid },
+            { "caisse.id": params.caisse.id },
             { status: { $in: ["standby", "a_encaisser"]} }
           ]},
         ]},
