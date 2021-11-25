@@ -186,7 +186,7 @@ function getAllTickets() {
 
       peripheralServices.getAllTickets()
         .then(
-            users => dispatch({ type: peripheralActionTypes.GETALL_TICKET_SUCCESS, ...users }),
+            tickets => dispatch({ type: peripheralActionTypes.GETALL_TICKET_SUCCESS, ...tickets }),
             error => dispatch({ type: peripheralActionTypes.GETALL_TICKET_FAILURE, payload: error.toString() })
         );
   }

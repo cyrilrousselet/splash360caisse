@@ -12,12 +12,12 @@ import { notificationServices } from '../notification/notificationServices';
 
 function resetNumero(val) {
   return (dispatch, getState) => {
-    const {commande} = getState().commandeReducer;
-    const { numerotation_start } = getState().parametresReducer.parametres.commandes;
-    dispatch(setNewNumero(numerotation_start));
-    if (commande.hasOwnProperty('ticketId')) {
-      dispatch(takeNumero());
-    }
+  //  const {commande} = getState().commandeReducer;
+  //  const { numerotation_start } = getState().parametresReducer.parametres.commandes;
+ //   dispatch(setNewNumero(numerotation_start));
+ //   if (commande.hasOwnProperty('ticketId')) {
+      dispatch(takeNumero(true));
+ //   }
   }
 }
 
@@ -81,22 +81,22 @@ function getNumeroAPI(response) {
 
 
 
-function takeNumero() {
+function takeNumero(defaultnumero=false) {
   return async (dispatch, getState) => {
     
-    logger.info('numeroActions.takeNumero()');
+    logger.info('numeroActions.takeNumero()',defaultnumero);
 
     const {parametres} = getState().parametresReducer;
     const {numero} = getState().commandeReducer;
 
-    _getNumero(parametres, numero)
+    _getNumero(parametres, defaultnumero ? null : numero)
     .then(newnumero => {
 
       dispatch({type: numeroActionTypes.GET_NUMERO, numero: newnumero});
       if (parametres.options.role==="secondary") {
         dispatch(setNewNumero(newnumero.value));
       } else {  
-        dispatch(setNewNumero());
+        dispatch(setNewNumero(newnumero));
       }
       
     });

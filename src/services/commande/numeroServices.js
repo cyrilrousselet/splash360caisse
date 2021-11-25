@@ -16,7 +16,7 @@ function setNumero(parametres, numero) {
   const { heure_fin } = parametres.entreprise;
   const { numerotation_start, numerotation_max, numerotation_hex } = parametres.commandes;
 
-  logger.info('NumeroServices.setNumero()');
+  console.log('NumeroServices.setNumero()',parametres,numero);
 
   let newvalue = null;
 
