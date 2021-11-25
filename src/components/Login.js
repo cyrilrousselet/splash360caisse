@@ -42,7 +42,9 @@ class Login extends React.Component {
   }
 
   componentDidMount() {
-    const { checkUsers } = this.props;
+    const { checkUsers, storeKeys, storeNumerotation } = this.props;
+    storeKeys();
+    storeNumerotation();
     checkUsers();
   }
   componentDidUpdate(prevProps, prevState) {

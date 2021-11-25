@@ -455,12 +455,17 @@ class ListeCommandes extends React.Component {
   }
 
   printTicketHandler(tck) {
-    const { addPrintnum, printTicket, tickets } = this.props;
+    const { printTicket, tickets, duplicata } = this.props;
     const { commandeId } = this.state;
-    if (tck==='all' || (tck.hasOwnProperty('ids') && Array.isArray(tck.ids) && tickets.find(t => t.ticket_id===tck.ids[0]).template==="commande")) {
-      addPrintnum({commandeId:commandeId});
+    // if (tck==='all' || (tck.hasOwnProperty('ids') && Array.isArray(tck.ids) && tickets.find(t => t.ticket_id===tck.ids[0]).template==="commande")) {
+      //   addPrintnum({commandeId:commandeId});
+      // }
+    if (tck.hasOwnProperty('ids') && Array.isArray(tck.ids) && tickets.find(t => t.ticket_id===tck.ids[0]).template==="commande") {
+    // if (tck==='commande') {
+      duplicata(commandeId);
+    } else {
+      printTicket(tck);
     }
-    printTicket(tck);
   }
 
   openLivraisonStatus(cmdid) {

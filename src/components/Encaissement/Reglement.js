@@ -153,6 +153,7 @@ class Reglement extends React.Component {
 
 
     this.props.updateCommande({items: itemsCopy, status:'confirmed'}, 'beforeCloseReglement')
+    let _tpl = {templates:['commande']};
 
     if (reste === 0) {
       if (this.props.commande.status === "pending") {
@@ -169,7 +170,6 @@ class Reglement extends React.Component {
       // si on encaisse une commande déjà produite,
       // on ne réimprime pas les tickets de production (ms seulmt 'commande')
       if (__previousstatus === "a_encaisser") {
-        // this.props.commande.status = "confirmed";
 
         if(this.props.commande.mode === "livraison"){
           const now = new Date();
@@ -177,32 +177,28 @@ class Reglement extends React.Component {
           this.props.updateCommande({shippedAt: __shippedAt, chronoLivraison: Math.round( differenceInMilliseconds( parseISO(__shippedAt), parseISO(this.props.commande.pickedAt) ) / 10 ) / 100}, 'beforeCloseReglement (livraison)');
         }
 
-        // this.props.printCommandeTicket({ templates: ["commande"] }, {...this.props.commande, status:'confirmed'});
-        this.props.updateCommande({printnum: Number(this.props.commande.printnum)+1}, 'beforeCloseReglement');
-        this.props.printTicket({ templates: ["commande"] });
-
       } else if (__previousstatus === "standby") {
-        // this.props.commande.status = "confirmed";
 
-        const __tpl = (this.props.commande.scheduled && this.props.commande.enproduction===false) ? { templates: ["commande"]} : "all";
-        this.props.updateCommande({printnum: Number(this.props.commande.printnum)+1}, 'beforeCloseReglement');
-        // this.props.printCommandeTicket(__tpl, {...this.props.commande, status:'confirmed'});
-        this.props.printTicket(__tpl);
+        if (!this.props.commande.scheduled || this.props.commande.enproduction===true) {
+          _tpl = 'all';
+        }
+
       } else {
+
         logger.info("reglement modif", modif);
         closeReglementAtEnd = modif;
         logger.info("reglement closeReglementAtEnd", closeReglementAtEnd);
-        // this.props.commande.status = "confirmed";
 
         // on imprime tous les tickets (sauf si on modifie juste les réglements)
-        const __tpl = (this.props.commande.scheduled && this.props.commande.enproduction===false) ? { templates: ["commande"]} : "all";
-        this.props.updateCommande({printnum: Number(this.props.commande.printnum)+1}, 'beforeCloseReglement');
-        if (!modif) this.props.printTicket(__tpl);
+        if (!this.props.commande.scheduled || this.props.commande.enproduction===true) {
+          _tpl = 'all';
+        }
+
       }
 
       // enregistrement des TR en base (pour contrôle ultérieur)
       if (trlist.length > 0) this.props.persistTicketsRestaurants(trlist);
-      this.props.validateCommande(this.props.commande);
+      this.props.validateCommande(this.props.commande, _tpl);
     }
     
     // reset du state avant fermeture
@@ -712,8 +708,6 @@ Reglement.propTypes = {
   getCommande: PropTypes.func.isRequired,
   addReglement: PropTypes.func.isRequired,
   addRendu: PropTypes.func.isRequired,
-  printTest: PropTypes.func.isRequired,
-  printTicket: PropTypes.func.isRequired,
   openDrawer: PropTypes.func.isRequired,
   closeDrawer: PropTypes.func,
 };

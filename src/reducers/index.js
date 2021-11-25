@@ -14,6 +14,8 @@ import { peripheralReducer } from "./../services/peripheral/peripheralReducer";
 import { tableReducer } from "./../services/table/tableReducer";
 import { tresorReducer } from './../services/tresorerie/tresorReducer';
 import { userReducer } from "./../services/user/userReducer";
+import { signatureReducer } from "./../services/signature/signatureReducer";
+import { numerotationReducer } from "./../services/signature/numerotationReducer";
 import { authentication } from "./authenticationReducer";
 
 export default function createRootReducer(history) {
@@ -32,6 +34,8 @@ export default function createRootReducer(history) {
     tableReducer,
     tresorReducer,
     clientsReducer,
+    signatureReducer,
+    numerotationReducer,
     authentication,
   });
 }

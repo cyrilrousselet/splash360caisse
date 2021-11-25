@@ -2,6 +2,9 @@ const db = require('../db.js');
 const lodashId = require('lodash-id');
 // const log = require('electron-log');
 const log = require('../utils/logger');
+const connect = require("../db/mongodb");
+const AvoirModel = require("../db/avoirModel");
+const { uuid } = require("uuidv4");
 
 
 const actions = {
@@ -9,7 +12,6 @@ const actions = {
     // const {payload} = req;
     log.info("dbAvoirGetAll() in API");
     
-    (await db.avoirs)._.mixin(lodashId);
     const proxies = await _getAllAvoir();
       
     res.send(proxies);
@@ -17,7 +19,6 @@ const actions = {
   dbAvoirGetAvoir: async (req,res) => {
     const {payload} = req;
     log.info("dbAvoirGetAvoir("+payload.avoir_id+") in API");
-    (await db.avoirs)._.mixin(lodashId);
     const proxies = await _findAvoir({avoir_id: payload.avoir_id});
     log.info(proxies);
     res.send(proxies);
@@ -26,7 +27,6 @@ const actions = {
       const {payload} = req;
       log.info("dbAvoirPersist() in API");
 
-      (await db.avoirs)._.mixin(lodashId);
       const confirm = await _persistAvoir(payload.avoir);
 
       res.send(confirm);
@@ -35,7 +35,6 @@ const actions = {
     const {payload} = req;
     log.info("dbAvoirDelete() in API");
 
-    (await db.avoirs)._.mixin(lodashId);
     const confirm = await _deleteAvoir(payload.avoir_id);
 
     res.send(confirm);
@@ -104,10 +103,7 @@ const actions = {
   dbGetItems: async (itemtype, ids) => {
     let response = [];
     if (itemtype==="avoirs") {
-      (await db.avoirs)._.mixin(lodashId);
-      response = await (await db.avoirs).get('avoirs')
-                                        .filter( c => ids.includes(c.avoir_id) )
-                                        .value();
+      response = await _findAvoir({avoir_id: {$in: ids}});
     }
     else if (itemtype==="reglespanier") {
       (await db.reglespanier)._.mixin(lodashId);
@@ -126,15 +122,15 @@ const actions = {
 
   dbMarketingSummary: async (stationid) => {
 
-    (await db.avoirs)._.mixin(lodashId);
     (await db.reglespanier)._.mixin(lodashId);
     (await db.reglescatalogue)._.mixin(lodashId);
 
-    const _avr = await (await db.avoirs).get('avoirs')
-                                        .filter( a => {
-                                          return (a.localsync === undefined) || !a.localsync.includes(stationid);
-                                        })
-                                        .value();
+    const _avr = await _findAvoir({
+      $or: [
+        { localsync: { $exists: false } },
+        { localsync: { $ne: stationid } },
+      ],
+    });
 
     const _rpn = await (await db.reglespanier).get('reglespanier')
                                               .filter( p => {
@@ -166,13 +162,12 @@ const actions = {
 async function _addLocalSync(db, ids, store_id) {
 
   if (db==="avoirs") {
-    await (await db.avoirs)
-              .get("avoirs")
-              .filter(t => ( ids.includes(t.avoir_id) && !t.localsync.includes(store_id)) )
-              .get('localsync')
-              .push(store_id)
-              // .assign({localsync: [...localsync, store_id]})
-              .write();
+    const mongo = await connect();
+    if (!mongo) return false;
+    await AvoirModel.updateMany(
+      {avoir_id: {$in: ids}, localsync: { $ne: store_id }},
+      {$push: {localsync: store_id}}
+    );
   } 
   else if (db==="reglespanier") {
    await (await db.reglespanier)
@@ -207,39 +202,46 @@ async function _getAllAvoir() {
  */
 async function _findAvoir(criteriae={}) {
   log.info(criteriae);
-  let _avr = [];
-  if ("avoir_id" in criteriae) {
-    _avr = await (await db.avoirs).get('avoirs')
-                                    .find(criteriae)
-                                    .value();
-  } else {
-    _avr = await (await db.avoirs).get('avoirs')
-                                    .value();
-  }
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  const _avr = await AvoirModel.find(criteriae).lean().sort({createdAt: 1}).exec();
+
+  // let _avr = [];
+  // if ("avoir_id" in criteriae) {
+  //   _avr = await (await db.avoirs).get('avoirs')
+  //                                   .find(criteriae)
+  //                                   .value();
+  // } else {
+  //   _avr = await (await db.avoirs).get('avoirs')
+  //                                   .value();
+  // }
   return { _avr };
 }
 
 async function _persistAvoir(payload) {
 
   const __now = new Date().getTime();
-  let _avr = await (await db.avoirs).get('avoirs')
-                                    .find({avoir_id: payload.avoir_id})
-                                    .value();
-  log.info(_avr);
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  let _avr = await AvoirModel.where({avoir_id: payload.avoir_id})
+                             .findOne()
+                             .lean()
+                             .exec();
+
+  // log.info(_avr);
   if (_avr) {
     log.info('avr existe, donc on update');
-    let __upd = {..._avr, ...payload, updatedAt: __now};
-    _avr = await (await db.avoirs).get('avoirs')
-                                  .find({avoir_id: payload.avoir_id})
-                                  .assign(__upd)
-                                  .write();
+    _avr = {..._avr, ...payload, updatedAt: __now};
+    _avr = await AvoirModel.updateOne({avoir_id: payload.avoir_id}, _avr).exec();
+
   }
   else {
     log.info('pas de avr donc on insert');
     let __ins = {...payload, createdAt: __now, updatedAt: __now};
-    _avr = await (await db.avoirs).get('avoirs')
-                                  .insert(__ins)
-                                  .write();
+    _avr = await AvoirModel.create(__ins);
+    _avr = __ins;
   }
 
   return _avr;
@@ -256,11 +258,11 @@ function _parseAvoir(_rawdata) {
 }
 
 async function _deleteAvoir(avoir_id) {
+  const mongo = await connect();
+  if (!mongo) return false;
 
-  const _avr = await (await db.avoirs).get('avoirs')
-                                      .remove({ avoir_id: avoir_id })
-                                      .write();
-  return _avr.length>0;
+  const _avr = await AvoirModel.deleteOne({avoir_id: avoir_id});
+  return _avr.deleteCount>0;
 
 }
 

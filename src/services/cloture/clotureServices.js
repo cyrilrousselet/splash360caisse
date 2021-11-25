@@ -76,6 +76,9 @@ function getCurrentPeriode(commandes, catalogue, params) {
       // on ne considère pas les commandes en attente annulées :
       if (cmd.status==='deleted') __valid = false;
 
+      // on ne conidère pas les commandes sans ventilation de TVA :
+      if (!cmd.ventilation) __valid = false;
+
       // on ne récupère que les cmd non archivées (cas du Z)
       if (cmd.archived!==undefined && cmd.archived!==null) __valid = false;
       if (__valid) numvalid++;

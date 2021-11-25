@@ -1,9 +1,9 @@
-const db = require("../db.js");
-const lodashId = require("lodash-id");
 // const log = require("electron-log");
 const log = require('../utils/logger');
 const connect = require("../db/mongodb");
 const CommandeModel = require("../db/commandeModel");
+const TicketrestauModel = require("../db/ticketrestauModel");
+const CmdchronoModel = require("../db/cmdchronoModel");
 const { uuid } = require("uuidv4");
 
 const actions = {
@@ -141,7 +141,6 @@ const actions = {
   dbTicketsRestauGetAll: async (req, res) => {
     log.info("dbTicketsRestauGetAll() in API");
 
-    (await db.ticketsrestau)._.mixin(lodashId);
     const proxies = await _getAllTicketsRestau();
 
     res.send(proxies);
@@ -150,7 +149,6 @@ const actions = {
     const { payload } = req;
     log.info("dbTicketsRestauGetOne(" + payload.id + ") in API");
 
-    (await db.ticketsrestau)._.mixin(lodashId);
     const proxies = await _findTicketRestau({
       id: payload.id,
     });
@@ -161,7 +159,6 @@ const actions = {
     const { payload } = req;
     log.info("dbTicketsRestauPersist() in API");
 
-    (await db.ticketsrestau)._.mixin(lodashId);
     const confirm = await _persistTicketRestau(payload.payload);
 
 
@@ -178,15 +175,15 @@ const actions = {
   },
 
   dbCommandesSummary: async (mongoquery, stationid) => {
-    (await db.ticketsrestau)._.mixin(lodashId);
 
     const _cmd = await _findCommande(mongoquery);
 
-    const _tkr = await (await db.ticketsrestau).get("ticketsrestau")
-                                               .filter( t => {
-                                                 return (t.localsync === undefined) || !t.localsync.includes(stationid);
-                                               })
-                                               .value();
+    const _tkr = await _findTicketRestau({
+      $or: [
+        { localsync: { $exists: false } },
+        { localsync: { $ne: stationid } },
+      ],
+    });
 
     return {
       commande: _cmd,
@@ -248,10 +245,7 @@ async function _getCommandesToSync(limit = null) {
 
   const ids = _cmd.map((c) => c.ticketId);
 
-  const _chr = await (await db.cmdchrono)
-    .get("cmdchrono")
-    .find((c) => ids.includes(c.ticketId))
-    .value();
+  const _chr = await CmdchronoModel.find({ticketId: {$in: ids}}).lean().exec();
 
   return {
     commandes: _cmd,
@@ -310,13 +304,14 @@ async function _addCommandesLocalSync(ids, store_id) {
 
 async function _addTicketsLocalSync(ids, store_id) {
 
-  await (await db.paramticketsrestauetres)
-            .get("ticketsrestau")
-            .filter(t => ( ids.includes(t.id) && !t.localsync.includes(store_id)) )
-            .get('localsync')
-            .push(store_id)
-            // .assign({localsync: [...localsync, store_id]})
-            .write();
+
+
+  const mongo = await connect();
+  if (!mongo) return false;
+  await TicketrestauModel.updateMany(
+    {id: {$in: ids}, localsync: { $ne: store_id }},
+    {$push: {localsync: store_id}}
+  );
 
   return ids.length;
 }
@@ -446,14 +441,11 @@ async function _getAllTicketsRestau() {
  */
 async function _findTicketRestau(criteriae = {}) {
   log.info(criteriae);
-  let _tr = [];
-  if ("id" in criteriae) {
-    _tr = await (await db.ticketsrestau).get("ticketsrestau")
-                                        .find(criteriae)
-                                        .value();
-  } else {
-    _tr = await (await db.ticketsrestau).get("ticketsrestau").value();
-  }
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  const _tr = await TicketrestauModel.find(criteriae).lean().sort({createdAt: 1}).exec();
+
   return { _tr };
 }
 
@@ -468,29 +460,29 @@ async function _findTicketRestau(criteriae = {}) {
 async function _doPersistTR(payload) {
 
   const __now = new Date().getTime();
+  const mongo = await connect();
+  if (!mongo) return false;
 
-  const _trtest = await (await db.ticketsrestau).get("ticketsrestau")
-                                                .find({ id: payload.id })
-                                                .value();
+  let _tr = await TicketrestauModel.where({id: payload.id})
+                             .findOne()
+                             .lean()
+                             .exec();
 
-  if (_trtest) {
+  if (_tr) {
+
     log.info("_tr existe, donc on update");
-    const __upd = { ..._trtest, ...payload, updatedAt: __now };
-
-    const _tru = await (await db.ticketsrestau).get("ticketsrestau")
-                                          .find({ id: payload.id })
-                                          .assign(__upd)
-                                          .write();
-
-    return _tru;
-
+    _tr = {..._tr, ...payload, updatedAt: __now};
+    _tr = await TicketrestauModel.updateOne({id: payload.id}, _tr).exec();
+    
   } else {
 
     log.info("pas de _tr donc on insert");
-    const _tri = _insertTicketRestau(payload);
-
-    return _tri;
+    let __ins = {...payload, createdAt: __now, updatedAt: __now};
+    _tr = await TicketrestauModel.create(__ins);
+    _tr = __ins;
   }
+
+  return _tr;
 }
 
 
@@ -509,46 +501,7 @@ async function _persistTicketRestau(payload) {
 
   
   if (Array.isArray(payload)) {
-    // let count = 0;
-    
-    // const start = async () => {
-    //   const __resfe = await asyncForEach(payload, async (obj) => {
-    //     let _tr = await (await db.ticketsrestau).get("ticketsrestau")
-    //                                             .find({ id: payload.id })
-    //                                             .value();
-
-    //     if (_tr) {
-    //       log.info("_tr existe, donc on update");
-    //       let __upd = { ..._tr, ...obj, updatedAt: __now };
-    //       _tr = await (await db.paramticketsrestauetres).get("ticketsrestau")
-    //                                                     .find({ id: payload.id })
-    //                                                     .assign(__upd)
-    //                                                     .write();
-    //       if (_tr != null) count++;
-    //       log.info('_persistTR after update:', _tr);
-    //       response.push(_tr);
-    //     } else {
-
-    //       _tr = await _insertTicketRestau(obj);
-    //       log.info('_persistTR after insert:', _tr);
-    //       if (_tr != null) count++;
-    //       response.push(_tr);
-
-    //     }
-    //     log.info('boucle',count,payload.length);
-    //     if (count>=payload.length) {
-    //       return response;
-    //     }
-    //   });
-    //   log.info('boucle de persist TR', __resfe)
-    //   return __resfe;
-  
-    // };
-
-    // const confirm = await start();
-    // log.info('fin de la boucle de persist TR:',confirm);
-    // return confirm;
-
+ 
     let response = await Promise.all(payload.map(async (tr) => {
       const __tr_a = await _doPersistTR(tr);
       return __tr_a;
@@ -564,16 +517,7 @@ async function _persistTicketRestau(payload) {
   }
 }
 
-async function _insertTicketRestau(payload) {
-  log.info("_insertTicketRestau()");
-  const __now = new Date().getTime();
-  const __ins = { ...payload, createdAt: __now, updatedAt: __now };
-  const _tr = await (await db.ticketsrestau).get("ticketsrestau")
-                                            .insert(__ins)
-                                            .write();
-  // log.info("new tr", _tr);
-  return _tr;
-}
+
 
 async function _generateCommandId() {
   let id;

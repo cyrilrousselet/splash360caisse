@@ -1005,7 +1005,15 @@ function saveCommande(commande, catalogueReducer) {
   };
 
 
-  const __commandeVentilee = _getVentilation(__c);
+  let __commandeVentilee = __c;
+
+  // uniquement sur une commande confirmée :
+  if (__c.status==="confirmed") {
+
+    // ventilation de la TVA
+    __commandeVentilee = _getVentilation(__c, catalogueReducer.tva);
+
+  }
 
   return emit("dbCommandePersist", { commande: __commandeVentilee });
 }
@@ -1014,7 +1022,7 @@ function saveCommande(commande, catalogueReducer) {
 // si la commande est confirmée,
 // on ventile la TVA au sein de chaque item et au sein de la commande
 // et on récapitule les Discounts
-function _getVentilation(commande) {
+function _getVentilation(commande, cataloguetva) {
 
   let __cmd = commande;
 
@@ -1128,6 +1136,15 @@ function _getVentilation(commande) {
       __ventilation = __cmd_modif.ventilation;
       __cmd.discount = __cmd_modif.discount;
     }
+    // __cmd.ventilation = __ventilation;
+
+    const fraiscmd = _getFraisForCmd(__cmd.modificateurs);
+    if (fraiscmd) {
+      const __cmd_frais = _applyFrais(fraiscmd, __ventilation, __basecmd, cataloguetva, !__cmd.centimes);
+      __ventilation = __cmd_frais.ventilation;
+      __cmd.frais = __cmd_frais.frais;
+      console.log('frais commande', __cmd_frais.ventilation);
+    }
     __cmd.ventilation = __ventilation;
 
   }
@@ -1143,7 +1160,10 @@ function _getModificateurForItem(modificateurs, itemid) {
 }
 
 function _getModificateurForCmd(modificateurs) {
-  return modificateurs.find(mod => mod.item===null);
+  return modificateurs.find(mod => (mod.item===null && mod.type!=='frais'));
+}
+function _getFraisForCmd(modificateurs) {
+  return modificateurs.find(mod => (mod.item===null && mod.type==='frais'));
 }
 
 
@@ -1197,6 +1217,101 @@ function _applyModificateur(modificateur, ventilation, ttc, useeuros) {
 }
 
 
+/**
+ * 
+ * @param {*} frais 
+ * @param {*} ventilation 
+ * @param {*} ttc       montant total de la commande en centimes
+ * @param {*} useeuros  si les montants sont enregistrés en euros, il faut convertir le montant du modificateur
+ * @returns 
+ */
+ function _applyFrais(frais, ventilation, ttc, cataloguetva, useeuros) {
+
+  console.log('CmdSrv._applyFrais()', frais, ventilation, ttc);
+
+
+  // is percentage?
+  const ispc = String(frais.valeur).substr(-1,1)==='%';
+  // recup valeur numérique
+  let val = Math.abs(Number(String(frais.valeur).slice(0,-1)));
+
+  let frais_ttc = 0;
+  let frais_taux = 1;
+
+  // si le modificateur est en pourcentage, on calcule le montant par rapport au total de la commande
+  if (ispc) {
+    frais_ttc = Math.round(ttc * (val/100));
+    frais_taux = val / 100;
+    if (useeuros) {
+      frais_taux = Math.round(frais_taux * 100);
+    }
+  } 
+  else {
+    frais_ttc = val;
+    if (useeuros) {
+      frais_ttc = Math.round(frais_ttc * 100);
+    }
+    frais_taux = (ttc + frais_ttc) / ttc;
+  }
+
+  const frais_ht = Math.round(frais_ttc / (1+frais.taux));
+  const frais_tva = frais_ttc - frais_ht;
+
+  // mise à jour de la ventilation de TVA correspondant au frais
+  let __modventil = {};
+
+  
+  const cattvafrais = Object.values(cataloguetva).find(v => {
+    let vv = Number(v.valeur);
+    let fv = Number(frais.taux);
+    console.log('TVA',vv,fv);
+    return vv===fv;
+  });
+
+
+  
+  const __tvafrais = {
+    taux: frais.taux,
+    code: cattvafrais.code,
+    ttc: frais_ttc,
+    ht: frais_ht,
+    tva: frais_tva
+  };
+
+  console.log('frais tva',cattvafrais.tva_id, __tvafrais);
+
+  if (ventilation.hasOwnProperty(cattvafrais.tva_id)) {
+  
+    Object.entries(ventilation).forEach(([k,v]) => {
+      if (k===cattvafrais.tva_id) {
+        __modventil[k] = {
+          taux: v.taux,
+          code: v.code,
+          ttc: Math.round(v.ttc + frais_ttc),
+          ht: Math.round(v.ht + frais_ht),
+          tva: Math.round(v.tva + frais_tva)
+        };
+      } else {
+        __modventil[k] = v;
+      }
+    });
+  }
+  else {
+    __modventil = {
+      ...ventilation,
+      [cattvafrais.tva_id]: __tvafrais
+    };
+  }
+
+  return {
+    ventilation: __modventil, 
+    frais: {
+      base: ttc, 
+      montant: frais_ttc,
+      taux: '+' + (frais_taux * 100).toFixed(1) + '%'
+    }
+  };
+}
 
 
 
@@ -1554,6 +1669,8 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
     }
   });
 
+  if (data.modificateurs) commande.modificateurs = data.modificateurs;
+
   commande.total = _getCommandeTotal(commande.items, []);
   return commande;
 }
@@ -1770,9 +1887,9 @@ function checkMarketing(commande, reglescatalogue) {
   return modifiers;
 }
 
-function sendTicketId(ticketId, numero, response) {
-  logger.info(`commandeServices.sendTicketId(${ticketId}, ${numero})`);
-  return emit("sendTicketId", { ticketId, numero, response });
+function sendTicketId(ticketId, signature, ticket, numero, response) {
+  console.log(`commandeServices.sendTicketId(${ticketId}, ${signature}, ${ticket}, ${numero})`);
+  return emit("sendTicketId", { ticketId, signature, ticket, numero, response });
 }
 
 function getCommandesToSync(limit = null) {

@@ -1,6 +1,5 @@
 const hydration = {
   
-  parametres: [],
   categories: [],
   groupes: [],
   tva: [],
@@ -60,6 +59,25 @@ const hydration = {
 
   salles: [],
   tables: [],
+
+  numerotation: [
+    { cle: 'ticket', valeur: 1 },
+    { cle: 'duplicata', valeur: 1 },
+    { cle: 'grandtotal', valeur: 1 },
+    { cle: 'cloture', valeur: 1 },
+    { cle: 'archivefiscale', valeur: 1 },
+    { cle: 'pistedaudit', valeur: 1 },
+    { cle: 'jet', valeur: 1 }
+  ],
+
+  signatures: [
+    { cle: 'tickets', collection:[] },
+    { cle: 'duplicatas', collection:[] },
+    { cle: 'grandstotaux', collection:[] },
+    { cle: 'archivesfiscales', collection:[] },
+    { cle: 'pistedaudit', collection:[] },
+    { cle: 'jet', collection:[] }
+  ],
 
   parametres: [
     { domaine: 'options', cle: 'first_start', valeur: true },

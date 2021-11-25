@@ -257,7 +257,7 @@ const welcomeTreatment = async (station_uniqid) => {
   };
 
   // const catalogue_sum = await dbCatalogueApi.dbCatalogueSummary(station_uniqid);
-  // const clients_sum = await dbClientsApi.dbClientsSummary(station_uniqid);
+  // const clients_sum = await dbClientsApi.dbClientsSummary(mongo_query);
   const clotures_sum = await dbCloturesApi.dbCloturesSummary(mongo_query);
   const commandes_sum = await dbCommandesApi.dbCommandesSummary(mongocmd_query, station_uniqid);
   // const employes_sum = await dbEmployesApi.dbEmployesSummary(station_uniqid);
@@ -401,11 +401,13 @@ const welcomeTreatment = async (station_uniqid) => {
 const actions = {
   // renvoie le ticketId et le numero de la commande synchronisée par une borne
   sendTicketId: (req, res) => {
-    const { ticketId, numero, response } = req.payload;
+    const { ticketId, signature, ticket, numero, response } = req.payload;
     // log.info(response);
     responses[response].json({
       status: "success",
       commandeid: ticketId,
+      signature: signature,
+      ticket: ticket,
       numero: numero,
     });
 
@@ -588,7 +590,7 @@ const actions = {
                 listeNum++;
               } else if ("clients" === entity) {
                 const clients_sum = await dbClientsApi.dbClientsSummary(
-                  ldb_query
+                  mongo_query
                 );
                 __summary = { ...__summary, ...clients_sum };
                 listeNum++;

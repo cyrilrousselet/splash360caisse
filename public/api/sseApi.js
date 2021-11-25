@@ -582,7 +582,7 @@ const actions = {
     __request.setHeader("Content-Type", "application/json");
 
     const data = JSON.stringify({ commandes: commandes });
-    log.info("Sync commandes req data: ", data);
+  //  log.info("Sync commandes req data: ", data);
     __request.write(data);
 
     __request.on("response", (response) => {

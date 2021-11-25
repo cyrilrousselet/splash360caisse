@@ -493,7 +493,8 @@ function _launchPrint(template, printer, contenu, config={}) {
     }
     else if ('commande' === section) {
       try {
-        _printCommande(printer, contenu.commande, contenu.strings.commande);
+        const cmdcont = contenu.commande;
+        _printCommande(printer, {...cmdcont, dupli: contenu.legal.duplicataid!==''}, contenu.strings.commande);
       } catch(e) {
         _printErrorHandler(e, '_printCommande', printer);
       }
@@ -507,7 +508,8 @@ function _launchPrint(template, printer, contenu, config={}) {
     }
     else if ('legal' === section) {
       try {
-        _printLegal(printer, contenu.legal, contenu.strings);
+        const legalcont = contenu.legal;
+        _printLegal(printer, {...legalcont, status: contenu.commande.status}, contenu.strings);
       } catch(e) {
         _printErrorHandler(e, '_printLegal', printer);
       }
@@ -1423,6 +1425,15 @@ function _printCommande(printer, data, strings) {
     .text(data.date)
     ;
 
+    if (data.dupli) {
+
+      printer
+      .align('CT')
+      .fontSize('2width')
+      .feed(1)
+      .text(`DUPLICATA`);
+    }
+
   printer
     .align('CT')
     .feed(1)
@@ -1665,6 +1676,8 @@ function _printCommande(printer, data, strings) {
       {text: `${strings.detail.nbr_lignes} ${_linecount}`, cols:42, align:'LEFT'}
     ]);
 
+  if (data.status==='confirmed') {
+
   // tva
   printer
     .align('CT')
@@ -1701,7 +1714,7 @@ function _printCommande(printer, data, strings) {
     ]);
   }
 
-
+  }
   // reglements
   if (data.reglements.length>0) {
     
@@ -2188,15 +2201,35 @@ function _printMessage(printer, data, strings) {
 
 // mentions légales sur le ticket
 function _printLegal(printer, data, strings) {
+
+  printer.align('LT')
+
+  if (data.status==='confirmed') {
+    printer.text(`Opération : ${data.type}`);
+  }
+
   printer
-    .align('LT')
-    .text(`Opération : ${data.type}`)
     .text(`Vendeur : ${data.vendeur}`)
-    .text(`Caisse : ${data.caisse}`)
-    .text(`C.Paiement : ${data.centre}`)
-    .text(`Version : ${data.version}`)
-    .text(`ticket : ${data.ticketid}`)
-    .text(`Nombre d'impressions : ${data.printid}`)
+    .text(`Caisse : ${data.caisse}`);
+  
+  if (data.status==='confirmed') {
+    printer
+      .text(`C.Paiement : ${data.centre}`);
+    
+    if (data.duplicataid!=='') {
+      printer
+      .text(`Version : ${data.version} - B0000 - ${data.duplicatasignature}`)
+      .text(`Duplicata : ${data.duplicataid}`)
+      .text(`Ticket original : ${data.ticketid} (${data.signature})`);
+    }
+    else {
+      printer
+      .text(`Version : ${data.version} - B0000 - ${data.signature}`)
+      .text(`Ticket : ${data.ticketid}`);
+    }
+    printer.text(`Nombre d'impressions : ${data.printid}`);
+  }
+  printer
     .align('CT')
     .text(data.date);
 }

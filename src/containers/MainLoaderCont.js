@@ -14,6 +14,7 @@ import { peripheralActions } from '../services/peripheral/peripheralActions';
 import { tresorActions } from '../services/tresorerie/tresorActions';
 import { commandeActions } from '../services/commande/commandeActions';
 import { numeroActions } from '../services/commande/numeroActions';
+import { signatureActions } from '../services/signature/signatureActions';
 
 
 
@@ -68,7 +69,9 @@ const mapDispatchToProps = (dispatch) => {
     paramUpdate: parametresActions.update,
     getStatus: parametresActions.getStatus,
     blockStation: parametresActions.blockStation,
-    testConnection: parametresActions.testConnection
+    testConnection: parametresActions.testConnection,
+    storeKeys: signatureActions.storeKeys,
+    storeNumerotation: signatureActions.storeNumerotation
     // loadNumero: commandeActions.loadNumero
   }, dispatch);
   return {

@@ -14,7 +14,7 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 // import { commandeActions } from '../commande/commandeActions';
 import { remove } from 'diacritics';
-import { lowerCase } from 'lodash';
+import { last, lowerCase } from 'lodash';
 // import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 import { commandeServices } from '../commande/commandeServices';
@@ -592,7 +592,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
     const {print_standby} = state.parametresReducer.parametres.commandes;
 
 
-    logger.info('peripheralAction.printCommandeTicket()',cmd);
+    // logger.info('peripheralAction.printCommandeTicket()',cmd);
+    console.log('🖨 printCommandeTicket', quelstickets, cmd);
     // logger.info(clients);
 
     const caisse = cmd.caisse;
@@ -929,6 +930,29 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           const siret = entreprise.siret;
           const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
 
+          let _extrait_sign = '';
+          // caractères 3, 7, 13, 19 de la signature
+          if (cmd.signature) {
+            _extrait_sign += cmd.signature.substring(2,3);
+            _extrait_sign += cmd.signature.substring(6,7);
+            _extrait_sign += cmd.signature.substring(12,13);
+            _extrait_sign += cmd.signature.substring(18,19);
+          }
+
+          // traitement du duplicata
+          let _dupli_sign = '';
+          let _dupli_id = '';
+          let _numPrint = 1;
+          if (cmd.duplicatas && cmd.duplicatas.length>0) {
+            const _lastDupli = last(cmd.duplicatas);
+            _dupli_id = _lastDupli.id;
+            _dupli_sign += _lastDupli.signature.substring(2,3);
+            _dupli_sign += _lastDupli.signature.substring(6,7);
+            _dupli_sign += _lastDupli.signature.substring(12,13);
+            _dupli_sign += _lastDupli.signature.substring(18,19);
+            _numPrint += cmd.duplicatas.length;
+          }
+
           // contenu :
           contenu = {
             // -> logo
@@ -951,8 +975,11 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               caisse: caisse.id,
               centre: 'Rest.01',
               version: '0.1.0',
-              ticketid: `T${caisse.id}-${Number(cmd.printnum)+1}`,
-              printid: Number(cmd.printnum)+1,
+              ticketid: cmd.ticket ? cmd.ticket : null,
+              signature: cmd.signature ? _extrait_sign : '',
+              duplicataid: _dupli_id,
+              duplicatasignature: _dupli_sign,
+              printid: _numPrint,
               date: `${date} - ${heure}`
             },
             nomticket: ticket.nom,

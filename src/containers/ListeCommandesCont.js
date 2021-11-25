@@ -41,6 +41,7 @@ const mapDispatchToProps = (dispatch) => {
       getClientsList: clientsActions.getClientsList,
       deleteCommande: commandeActions.deleteCommande,
       printTicket: peripheralActions.printTicket,
+      duplicata: commandeActions.duplicata,
       setLivreur: commandeActions.setLivreur,
       getUsers: userActions.getAll,
       addPrintnum: commandeActions.addPrintnum,

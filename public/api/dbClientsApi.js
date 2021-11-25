@@ -1,7 +1,10 @@
-const db = require('../db.js');
-const lodashId = require('lodash-id');
+// const db = require('../db.js');
+// const lodashId = require('lodash-id');
 // const log = require('electron-log');
 const log = require('../utils/logger');
+const connect = require("../db/mongodb");
+const ClientModel = require("../db/clientModel");
+const { uuid } = require("uuidv4");
 
 
 const actions = {
@@ -9,7 +12,6 @@ const actions = {
     // const {payload} = req;
     log.info("dbClientsGetAll() in API");
     
-    (await db.clients)._.mixin(lodashId);
     const proxies = await _getAllClients();
       
     res.send(proxies);
@@ -17,7 +19,6 @@ const actions = {
   dbClientsGetClient: async (req,res) => {
     const {payload} = req;
     log.info("dbClientsGetClient("+payload.client_id+") in API");
-    (await db.clients)._.mixin(lodashId);
     const proxies = await _findClient({client_id: payload.client_id});
     log.info(proxies);
     res.send(proxies);
@@ -27,7 +28,6 @@ const actions = {
 
     const {payload} = req;
     log.info("dbClientsFindClient("+payload+") in API");
-    (await db.clients)._.mixin(lodashId);
     const proxies = await _findClient(payload);
     log.info("dbClientsFindClient", proxies);
     res.send(proxies);
@@ -37,7 +37,6 @@ const actions = {
       const {payload} = req;
       log.info("dbClientPersist() in API");
 
-      (await db.clients)._.mixin(lodashId);
       const confirm = await _persistClient(payload.client);
 
       res.send(confirm);
@@ -46,7 +45,6 @@ const actions = {
     const {payload} = req;
     log.info("dbClientDelete() in API");
 
-    (await db.clients)._.mixin(lodashId);
     const confirm = await _deleteClient(payload.client_id);
 
     res.send(confirm);
@@ -54,23 +52,13 @@ const actions = {
 
   dbGetItems: async (itemtype, ids) => {
 
-    (await db.clients)._.mixin(lodashId);
-    const response = await (await db.clients).get('clients')
-                                             .filter( c => ids.includes(c.client_id) )
-                                             .value();
-    
-    return response;
+    const _clt = await _findClient({client_id: {$in: ids}});
+    return _clt;
   },
 
-  dbClientsSummary: async (stationid) => {
+  dbClientsSummary: async (query) => {
 
-    (await db.clients)._.mixin(lodashId);
-
-    const _clt = await (await db.clients).get('clients')
-                                         .filter( c => {
-                                           return (c.localsync === undefined) || !c.localsync.includes(stationid);
-                                         })
-                                         .value();
+    const _clt = await _findClient(query);
 
     return {
       client: _clt
@@ -92,17 +80,18 @@ async function _getAllClients() {
   return _parseClient(__rawdata);
 }
 
+
 async function _addLocalSync(ids, store_id) {
+  const mongo = await connect();
+  if (!mongo) return false;
 
-  await (await db.clients)
-            .get("clients")
-            .filter(t => ( ids.includes(t.client_id) && !t.localsync.includes(store_id)) )
-            .get('localsync')
-            .push(store_id)
-            // .assign({localsync: [...localsync, store_id]})
-            .write();
+  const _clts = await ClientModel.updateMany(
+    {client_id: {$in: ids}, localsync: { $ne: store_id }},
+    {$push: {localsync: store_id}}
+  );
 
-  return ids.length;
+  return _clts.n;
+
 }
 
 
@@ -111,47 +100,50 @@ async function _addLocalSync(ids, store_id) {
  */
 async function _findClient(criteriae={}) {
   log.info(criteriae);
-  let _clt = [];
-  if ("client_id" in criteriae) {
-    _clt = await (await db.clients).get('clients')
-                                   .find(criteriae)
-                                   .value();
-  } else if ("telephone" in criteriae) {
-    _clt = await (await db.clients).get('clients')
-                                   .find((c) => (
-                                      (criteriae.telephone!=="" && (c.telephone===criteriae.telephone || c.telephone2===criteriae.telephone)) ||  
-                                      (criteriae.telephone2!=="" && (c.telephone===criteriae.telephone2 || c.telephone2===criteriae.telephone2)) || 
-                                      (criteriae.email!=="" && (String(c.email).toLowerCase()===String(criteriae.email).toLowerCase()))
-                                   ))
-                                   .value();
-  } else {
-    _clt = await (await db.clients).get('clients')
-                                   .value();
-  }
+  const mongo = await connect();
+  if (!mongo) return false;
+  // let _clt = [];
+ // if ("client_id" in criteriae) {
+    // _clt = await (await db.clients).get('clients')
+    //                                .find(criteriae)
+    //                                .value();
+    const _clt = await ClientModel.find(criteriae).lean().sort({nom: 1, prenom: 1}).exec();
+
+  // } else if ("telephone" in criteriae) {
+  //   _clt = await (await db.clients).get('clients')
+  //                                  .find((c) => (
+  //                                     (criteriae.telephone!=="" && (c.telephone===criteriae.telephone || c.telephone2===criteriae.telephone)) ||  
+  //                                     (criteriae.telephone2!=="" && (c.telephone===criteriae.telephone2 || c.telephone2===criteriae.telephone2)) || 
+  //                                     (criteriae.email!=="" && (String(c.email).toLowerCase()===String(criteriae.email).toLowerCase()))
+  //                                  ))
+  //                                  .value();
+  // } else {
+  //   _clt = await (await db.clients).get('clients')
+  //                                  .value();
+  // }
   return { _clt };
 }
 
 async function _persistClient(payload) {
 
   const __now = new Date().getTime();
-  let _clt = await (await db.clients).get('clients')
-                                    .find({client_id: payload.client_id})
-                                    .value();
-  log.info(_clt);
+  const mongo = await connect();
+  if (!mongo) return false;
+  let _clt = await ClientModel.where({client_id: payload.client_id})
+                              .findOne()
+                              .lean()
+                              .exec();
   if (_clt) {
     log.info('clt existe, donc on update');
-    let __upd = {..._clt, ...payload, updatedAt: __now};
-    _clt = await (await db.clients).get('clients')
-                                  .find({client_id: payload.client_id})
-                                  .assign(__upd)
-                                  .write();
+    _clt = {..._clt, ...payload, updatedAt: __now};
+    _clt = await ClientModel.updateOne({client_id: payload.client_id}, _clt).exec();
   }
   else {
     log.info('pas de clt donc on insert');
-    let __ins = {...payload, createdAt: __now, updatedAt: __now};
-    _clt = await (await db.clients).get('clients')
-                                  .insert(__ins)
-                                  .write();
+    const id = await _generateClientId();
+    let __ins = {...payload, id: id, createdAt: __now, updatedAt: __now};
+    _clt = await ClientModel.create(__ins);
+    _clt = __ins;
   }
 
   return _clt;
@@ -168,12 +160,23 @@ function _parseClient(_rawdata) {
 }
 
 async function _deleteClient(client_id) {
+  const mongo = await connect();
+  if (!mongo) return false;
 
-  const _clt = await (await db.clients).get('clients')
-                                      .remove({ client_id: client_id })
-                                      .write();
-  return _clt.length>0;
+  const _clt = await ClientModel.deleteOne({client_id: client_id});
+  return _clt.deleteCount>0;
 
+}
+
+
+async function _generateClientId() {
+  let id;
+
+  do {
+    id = uuid();
+  } while (await ClientModel.exists({ id: id }));
+
+  return id;
 }
 
 module.exports = actions;

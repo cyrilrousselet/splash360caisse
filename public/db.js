@@ -14,11 +14,10 @@ const FileAsync = require('lowdb/adapters/FileAsync');
 const hydration = require(`./dev/dbhydration.js`);
 
 const {categories, groupes, tva, types, ingredients, produits, steps} = hydration;
-const {clients, ticketsrestau} = hydration;
 const {parametres, imprimantes, tickets, secteurs, lots} = hydration;
 const {users} = hydration;
 const {pointages, shifts, timeadjusts} = hydration;
-const {avoirs, reglescatalogue, reglespanier} = hydration;
+const {reglescatalogue, reglespanier} = hydration;
 const {salles, tables} = hydration;
 
 
@@ -51,8 +50,6 @@ const db = {
  ingredients: dbFactory('ingredients.json', {ingredients: ingredients}),
  produits: dbFactory('produits.json', {produits: produits}),
  steps: dbFactory('steps.json', {steps: steps}),
- clients: dbFactory('clients.json', {clients: clients}),
- ticketsrestau: dbFactory('ticketsrestau.json', {ticketsrestau: ticketsrestau}),
  imprimantes: dbFactory('imprimantes.json', {imprimantes: imprimantes}),
  tickets: dbFactory('tickets.json', {tickets: tickets}),
  parametres: dbFactory('parametres.json', {parametres: parametres}),
@@ -62,11 +59,9 @@ const db = {
  pointages: dbFactory('pointages.json', {pointages: pointages}),
  shifts: dbFactory('shifts.json', {shifts: shifts}),
  timeadjusts: dbFactory('timeadjusts.json', {timeadjusts: timeadjusts}),
- avoirs: dbFactory('avoirs.json', {avoirs: avoirs}),
  reglescatalogue: dbFactory('reglescatalogue.json', {reglescatalogue: reglescatalogue}),
  reglespanier: dbFactory('reglespanier.json', {reglespanier: reglespanier}),
  tables: dbFactory('tables.json', {salles: salles, tables: tables}),
- cmdchrono: dbFactory('cmdchrono.json',{cmdchrono:[]}),
 };
 
 module.exports = db;

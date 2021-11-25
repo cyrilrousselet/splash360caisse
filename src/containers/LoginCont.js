@@ -3,6 +3,7 @@ import { userActions } from '../services/user/userActions';
 import { hasUsers } from '../services/user/userReducer';
 import Login from '../components/Login';
 import { bindActionCreators } from 'redux';
+import { signatureActions } from '../services/signature/signatureActions';
 
 const mapStateToProps = (state) => { 
   return {
@@ -18,7 +19,9 @@ const mapDispatchToProps = (dispatch) => {
     loginSU: userActions.loginSU,
     checkUsers: userActions.checkUsers,
     setAdmin: userActions.setAdmin,
-    resetError: userActions.resetError
+    resetError: userActions.resetError,
+    storeKeys: signatureActions.storeKeys,
+    storeNumerotation: signatureActions.storeNumerotation
   }, dispatch);
   return {
     ...bound,

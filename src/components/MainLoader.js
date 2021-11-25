@@ -58,14 +58,17 @@ class MainLoader extends React.Component {
       getStatus,
       blockStation,
       testConnection,
-      online
+      online,
+      storeKeys,
+      storeNumerotation
     } = this.props;
 
     console.log("DEBUT checkInstallation");
 
   
 
-    
+    storeKeys();
+    storeNumerotation();
 
     let first_start = params ? params.first_start : null;
     let readytolaunch = dbupdated || null;
