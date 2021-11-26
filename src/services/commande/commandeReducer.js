@@ -19,6 +19,7 @@ export function commandeReducer(state = initialState, action) {
     , reglements = []
     , rglIndex = -1
     , rendus = []
+    , troppercu = []
     , rndIndex = -1
     , comments = []
     , cmtIndex = -1
@@ -306,6 +307,15 @@ export function commandeReducer(state = initialState, action) {
     //       loading: true,
     //       error: null
     //     };
+
+    case commandeActionTypes.ADD_TROP_PERCU:
+      troppercu = commande.troppercu;
+      troppercu.push(action.troppercu);
+
+      return {
+        ...state,
+        commande: {...commande, troppercu}
+      };
 
     case commandeActionTypes.VALIDATE_COMMANDE_FAILURE:
         return {

@@ -1017,22 +1017,23 @@ function removeReglement(payload) {
 }
 
 function addRendu(payload) {
-  return (dispatch, getState) => {
-    const state = getState();
-    const rendus = state.commandeReducer.commande.rendus;
-
-    const rendu = commandeServices.addRendu(payload, rendus);
+  return dispatch => {
+    const rendu = commandeServices.addRendu(payload);
     dispatch({ type: commandeActionTypes.ADD_RENDU, rendu });
   };
 }
 function removeRendu(payload) {
-  return (dispatch, getState) => {
-    //  commandeServices.removeReglement(reglementId);
-
+  return dispatch => {
     dispatch({
       type: commandeActionTypes.REMOVE_RENDU,
       renduId: payload.renduId,
     });
+  };
+}
+function addTroppercu(payload) {
+  return dispatch => {
+    const troppercu = commandeServices.addTroppercu(payload);
+    dispatch({ type: commandeActionTypes.ADD_TROP_PERCU, troppercu });
   };
 }
 
@@ -2142,6 +2143,7 @@ export const commandeActions = {
   removeReglement,
   addRendu,
   removeRendu,
+  addTroppercu,
   archiveCommands,
   setSyncedCommands,
   addComment,

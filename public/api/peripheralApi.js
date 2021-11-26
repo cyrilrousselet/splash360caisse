@@ -1762,6 +1762,19 @@ function _printCommande(printer, data, strings) {
       ]);
     });
   }
+  if (data.troppercu.length>0) {
+    printer
+      .drawLine();
+
+    data.troppercu.forEach(troppercu => {
+      printer.style('NORMAL').tableCustom([
+        {text:'', cols:1},
+        {text: strings.troppercu.titre, cols:28, align:'LEFT'},
+        {text:'', cols:1},
+        {text: `${troppercu.valeur.toFixed(2).replace('.',',')} ${strings.troppercu.monnaie}`, cols:12, align:'RIGHT'}
+      ]);
+    });
+  }
 
   printer.drawLine();
   
@@ -2117,6 +2130,17 @@ function _printPeriodeZ(printer, data, strings, printx=false) {
         {text: Number(cpttotal).toFixed(2).replace('.',','), col:10, align:'RIGHT'},
         {text: Number(ecarttotal).toFixed(2).replace('.',','), col:8, align:'RIGHT'},
       ]);
+
+    // trop perçu
+    if (data.troppercu>0) {
+      printer
+        .feed(1)
+        .drawLine()
+        .tableCustom([
+          {text: strings.caption.troppercu, cols:24, align:'LEFT'},
+          {text: Number(data.troppercu).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
+        ]);
+    }
 
     // émission d'avoirs
     if (data.emission>0) {

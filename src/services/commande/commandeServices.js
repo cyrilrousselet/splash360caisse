@@ -23,6 +23,7 @@ export const commandeServices = {
   updateProduit,
   addReglement,
   addRendu,
+  addTroppercu,
   addComment,
   addModificateur,
   saveCommande,
@@ -68,6 +69,7 @@ function getNewCommande(params) {
     reglements: params.reglements || [],
     modificateurs: [],
     rendus: [],
+    troppercu: [],
     start: null,
     end: null,
     chrono: 0,
@@ -906,13 +908,27 @@ function addReglement(payload, reglements) {
  * Retourne un nouveau rendu avec les paramètres envoyés
  *
  * @param {Object} payload : paramètres du rendu
- * @param {Array} rendus : liste des rendus de la commande
  */
-function addRendu(payload, rendus) {
+function addRendu(payload) {
   const { moyen, valeur } = payload;
 
   return {
     renduId: _newRenduId(),
+    moyen: moyen,
+    valeur: valeur,
+  };
+}
+
+/**
+ * Retourne un nouveau troppercu avec les paramètres envoyés
+ *
+ * @param {Object} payload : paramètres du trop-perçu
+ */
+function addTroppercu(payload) {
+  const { moyen, valeur } = payload;
+
+  return {
+    troppercuId: _newTroppercuId(),
     moyen: moyen,
     valeur: valeur,
   };
@@ -1927,38 +1943,27 @@ function deleteLot(lot_id) {
 
 
 const _newCommandeId = () => {
-  // let __d = new Date();
-  // return __d.getTime().toString();
   return LodashId.createId();
 };
 const _newReglementId = () => {
-  // let __d = new Date();
-  // return __d.getTime().toString();
   return LodashId.createId();
 };
 const _newRenduId = () => {
-  // let __d = new Date();
-  // return __d.getTime().toString();
+  return LodashId.createId();
+};
+const _newTroppercuId = () => {
   return LodashId.createId();
 };
 const _newCommandeItemId = () => {
-  // let __d = new Date();
-  // return __d.getTime().toString();
   return LodashId.createId();
 };
 const _newCommentId = () => {
-  // let __d = new Date();
-  // return __d.getTime().toString();
   return LodashId.createId();
 };
 const _newModificateurId = () => {
-  // let __d = new Date();
-  // return __d.getTime().toString();
   return LodashId.createId();
 };
 const _newLotId = () => {
-  // let __d = new Date();
-  // return __d.getTime().toString();
   return LodashId.createId();
 };
 
@@ -1976,25 +1981,17 @@ const _getCommandeTotal = (items, modificateurs) => {
       __modificateur = modificateurs.find(
         (m) => m.item === itm.itemid && m.ingredient === null
       );
-      //  let amodtx = 1;
-      //  let __montant = 0;
+
       if (__modificateur) {
-        // total += Number(__modificateur.valeur);
 
         const ispc = String(__modificateur.valeur).substr(-1, 1) === "%";
         const val = Math.abs(
           Number(String(__modificateur.valeur).slice(0, -1))
         );
-        //  let __montant = ispc ? articletotal*(val/100) : val;
-
-        // conversion du modificateur en coefficient
-        // let amodtx = (ispc) ? (100 - val) / 100 : 1 - (val/articletotal);
 
         if (ispc) {
-          // articletotal *= (100 - val) / 100;
           articletotal *= __modificateur.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
         } else {
-          // articletotal -= val;
           articletotal = __modificateur.operation>0 ? articletotal + val : articletotal - val;
         }
       }
@@ -2011,10 +2008,8 @@ const _getCommandeTotal = (items, modificateurs) => {
     const ispc = String(modificateurs[0].valeur).substr(-1, 1) === "%";
     const val = Math.abs(Number(String(modificateurs[0].valeur).slice(0, -1)));
     if (ispc) {
-      // __total *= (100 - val) / 100;
       __total *= __modificateur.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
     } else {
-      // __total -= val;
       __total = __modificateur.operation>0 ? articletotal + val : articletotal - val;
     }
   }
