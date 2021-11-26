@@ -101,6 +101,7 @@ const mapDispatchToProps = (dispatch) => {
     removeReglement: commandeActions.removeReglement,
     addRendu: commandeActions.addRendu,
     removeRendu: commandeActions.removeRendu,
+    addTroppercu: commandeActions.addTroppercu,
     validateCommande: commandeActions.validateCommande,
     printTest: peripheralActions.printTest,
     printTicket: peripheralActions.printTicket,

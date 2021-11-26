@@ -920,6 +920,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             bipper: cmd.bipper || null,
             reglements: cmd.reglements,
             rendus: cmd.rendus,
+            troppercu: cmd.troppercu,
             comment: __comment ? __comment.texte : '',
             modificateur: __modificateur ? {valeur: __modificateur.valeur, montant: __modificateur.montant, operation: __modificateur.operation, nom: __modificateur.nom} : null,
             client: cmd.client && clients.find(c=>c.client_id===cmd.client.client_id)

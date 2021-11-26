@@ -39,6 +39,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
      ,__numStandby = 0
      ,__fdcaisse_courant = Number(params.fdcaisse)
      ,__emission = 0
+     ,__troppercu = 0
      ,__start = startOfToday()
      ,__end = endOfToday() //startOfDay(new Date('2000-01-01'))
      ;
@@ -194,6 +195,12 @@ function getCurrentPeriode(commandes, catalogue, params) {
         }
 
       });
+
+      if (cmd.hasOwnProperty('troppercu')) {
+        cmd.troppercu.forEach(tp => {
+          __troppercu += Math.round(Number(tp.valeur) * 100) / 100;
+        })
+      }
       
       
       // compilation des vendeurs
@@ -250,7 +257,8 @@ function getCurrentPeriode(commandes, catalogue, params) {
         numtickets: numtickets,
         ticket_moyen: ticket_moyen,
         ventilation: ventilation,
-        emission: __emission
+        emission: __emission,
+        troppercu: __troppercu
       },
       cmdtoarchive: __filtered_cmd.map(c=>c.ticketId),
       standby: __numStandby

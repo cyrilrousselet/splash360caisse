@@ -95,7 +95,7 @@ class Reglement extends React.Component {
   }
 
   updateValeurs() {
-    const { reglements, rendus } = this.props.commande;
+    const { reglements, rendus, troppercu } = this.props.commande;
 
     // déjà payé (réglements)
     let __paye = 0;
@@ -112,11 +112,17 @@ class Reglement extends React.Component {
         __rendu += rnd.valeur;
       });
     }
+    let __troppercu = 0;
+    if (undefined !== troppercu) {
+      troppercu.forEach(tp => {
+        __troppercu += tp.valeur;
+      });
+    }
 
     // montant à payer (somme des items)
     let __total = this.props.valueToPay;
 
-    let __reste = __total - __paye + __rendu;
+    let __reste = __total - __paye + __rendu + __troppercu;
 
     // console.log('Reglement.updateValeurs()', __paye, __total, __reste, __rendu, __especes, (__reste < 0 && __especes + __reste > 0));
 
@@ -127,6 +133,7 @@ class Reglement extends React.Component {
       apayer: Math.round(__total * 100) / 100,
       reste: Math.round(__reste * 100) / 100,
       rendu: Math.round(__rendu * 100) / 100,
+      troppercu: Math.round(__troppercu * 100) / 100,
       rendable: __reste < 0 && __especes + __reste > 0,
     };
   }
@@ -135,7 +142,7 @@ class Reglement extends React.Component {
     logger.info("beforeCloseReglement()");
 
     const { modif } = this.props;
-    const { reste, rendu } = this.updateValeurs();
+    const { reste, rendu, troppercu } = this.updateValeurs();
     const { trlist } = this.state;
     logger.info(reste, rendu);
     let closeReglementAtEnd = true;
@@ -327,7 +334,38 @@ class Reglement extends React.Component {
     this.props.closeDrawer();
     const { reste } = this.updateValeurs();
 
-    if (reste < 0) this.props.addRendu({ moyen: "especes", valeur: -reste });
+    // s'il y a un trop perçu (reste < 0)
+
+    // on déclare un "troppercu" dans la commande
+    
+    if (reste < 0) {
+      
+      // si le trop perçu (valeur absolue) est supérieur aux réglements en espèces
+      // DONC si le trop perçu concerne en priorité un(des) réglement(s) en TR
+      let __especes = 0;
+
+      this.props.commande.reglements.forEach(r => {
+        __especes += r.moyen==="especes" ? r.valeur : 0 
+      });
+
+      const troppercu = (reste + __especes);
+
+      console.log('closeTiroir', reste, __especes, troppercu);
+
+      if (troppercu < 0) {
+        console.log('il reste un trop perçu, on l’enregistre', -troppercu);
+        this.props.addTroppercu({moyen: "ticket", valeur: -troppercu});
+        
+        console.log('(reste - troppercu)',(reste - troppercu));
+        if ((reste - troppercu)!==0) {
+          console.log('on peut rendre la monnaie', -(reste - troppercu));
+          this.props.addRendu({ moyen: "especes", valeur: -(reste - troppercu) });
+        }
+      } else {
+        console.log('pas de trop perçu (suffisamment d’especes), donc on peut rendre la monnaie')
+        this.props.addRendu({ moyen: "especes", valeur: -reste });
+      }
+    }
     this.beforeCloseReglement();
   }
 

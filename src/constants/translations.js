@@ -531,6 +531,7 @@ const data = {
                             avoir: 'Avoirs'
                         },
                         emission: 'Avoirs émis : ',
+                        troppercu: 'Trop perçu :',
                         ecart: {
                             nom: 'ECART :',
                             motif: 'Motif ecart :'
@@ -1319,6 +1320,10 @@ const data = {
                     livraison: 'LIVRAISON',
                     surplace: 'SUR PLACE',
                     emporter: 'A EMPORTER'
+                },
+                troppercu: {
+                    titre: "TROP PERCU :",
+                    monnaie: "EUR"
                 },
                 client: {
                     titre: 'Client :',
