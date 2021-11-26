@@ -20,8 +20,8 @@ function storeKeys() {
     const {privateKey, publicKey} = getState().signatureReducer;
 
     if (!publicKey && !privateKey) {
-      const {cleprivee, clepublique} = signatureServices.checkAndCreateKeys();
-      dispatch({ type: signatureActionTypes.STORE_KEYS_SUCCESS, privateKey: cleprivee, publicKey: clepublique });
+      const keys = signatureServices.checkAndCreateKeys();
+      dispatch({ type: signatureActionTypes.STORE_KEYS_SUCCESS, ...keys });
     }
 
   }

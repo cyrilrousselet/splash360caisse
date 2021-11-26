@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import {remote} from 'electron';
 import mkdirp from 'mkdirp';
 import base64url from 'base64url';
+import { uuid } from "uuidv4";
 
 const { app } = remote;
 
@@ -37,10 +38,12 @@ function checkAndCreateKeys() {
 
   let privateKey = "";
   let publicKey = "";
+  let trousseauId = null;
 
   try {
     privateKey = fs.readFileSync(`${app.getPath('userData')}/cert/prv.pem`);
     publicKey = fs.readFileSync(`${app.getPath('userData')}/cert/pub.pem`);
+    trousseauId = fs.readFileSync(`${app.getPath('userData')}/cert/trousseau.data`);
   } catch(e) {
 
     const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
@@ -48,6 +51,7 @@ function checkAndCreateKeys() {
       publicKeyEncoding: { type: 'spki', format: 'pem' },
       privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
     });
+    trousseauId = uuid();
 
     fs.writeFile(`${app.getPath('userData')}/cert/prv.pem`, privateKey, function(err) {
         if (err) throw err
@@ -56,9 +60,14 @@ function checkAndCreateKeys() {
     fs.writeFile(`${app.getPath('userData')}/cert/pub.pem`, publicKey, function(err) {
         if (err) throw err
     });
+  
+    fs.writeFile(`${app.getPath('userData')}/cert/trousseau.data`, trousseauId, function(err) {
+        if (err) throw err
+    });
+    
   }
 
-  return { cleprivee:privateKey, clepublique:publicKey };
+  return { privateKey, publicKey, trousseauId:trousseauId.toString() };
 }
 
 function getTicketSignature(commande, privateKey, lastSignature = null) {
@@ -96,6 +105,10 @@ function getTicketSignature(commande, privateKey, lastSignature = null) {
   const hashstring = hashfeed.join(',');
 
   console.log('ticket hashfeed',hashfeed);
+
+  const hash = crypto.createHash('SHA256');
+  hash.update(hashstring);
+  hash.end();
 
   const sign = crypto.createSign('SHA256');
   sign.update(hashstring);

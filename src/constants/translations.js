@@ -183,7 +183,7 @@ const data = {
                         titre: "Règlement",
                         ticket: "Ticket Restaurant",
                         especes: "Espece",
-                        carte: "Carte Bleue",
+                        carte: "CB",
                         cheque: "Chèque",
                         avoir: "Avoir",
                         rendre: "À rendre :",
@@ -193,7 +193,7 @@ const data = {
                     moyens: {
                         ticket: "Ticket restau",
                         especes: "Espèces",
-                        carte: "Carte Bleue",
+                        carte: "CB",
                         cheque: "Chèque",
                         avoir: "Avoir",
                         uber: "Uber"
@@ -525,7 +525,7 @@ const data = {
                         },
                         moyens: {
                             especes: 'Especes',
-                            carte: 'Cartes',
+                            carte: 'CB',
                             ticket: 'Tickets R.',
                             cheque: 'Chèques',
                             avoir: 'Avoirs'

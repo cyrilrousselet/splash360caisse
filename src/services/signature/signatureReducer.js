@@ -9,6 +9,7 @@ const initialState = {
   jet: [],
   privateKey: null,
   publicKey: null,
+  trousseauId: null
 }
 
 export function signatureReducer(state = initialState, action) {
@@ -56,7 +57,8 @@ export function signatureReducer(state = initialState, action) {
       return {
         ...state,
         privateKey: action.privateKey,
-        publicKey: action.publicKey
+        publicKey: action.publicKey,
+        trousseauId: action.trousseauId
       }
         
     default:

@@ -960,8 +960,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             // -> entreprise
             entreprise: {
               nom: removeDiacritics(String(entreprise.denomination).toUpperCase()),
-              coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, entreprise.telephone, entreprise.site_web ],
-              fiscal: [ siret_formatted ]
+              coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, removeDiacritics(entreprise.pays), entreprise.telephone, entreprise.site_web ],
+              fiscal: [ siret_formatted, entreprise.ape, entreprise.tva ]
             },
             // -> commande (id, date, articles, remises, totaux, tva, réglements)
             commande: commande,

@@ -2218,13 +2218,13 @@ function _printLegal(printer, data, strings) {
     
     if (data.duplicataid!=='') {
       printer
-      .text(`Version : ${data.version} - B0000 - ${data.duplicatasignature}`)
+      .text(`(NF525) B0000 - ${data.duplicatasignature} - Splash ${data.version}`)
       .text(`Duplicata : ${data.duplicataid}`)
       .text(`Ticket original : ${data.ticketid} (${data.signature})`);
     }
     else {
       printer
-      .text(`Version : ${data.version} - B0000 - ${data.signature}`)
+      .text(`(NF525) B0000 - ${data.signature} - Splash ${data.version}`)
       .text(`Ticket : ${data.ticketid}`);
     }
     printer.text(`Nombre d'impressions : ${data.printid}`);
