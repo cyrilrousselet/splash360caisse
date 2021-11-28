@@ -7,6 +7,8 @@ import { peripheralActions } from "../peripheral/peripheralActions";
 import { commandeActionTypes } from "./commandeActionTypes";
 import { commandeServices } from "./commandeServices";
 import { numeroActions } from "./numeroActions";
+import { numeroServices } from "./numeroServices";
+import { notificationServices } from "../notification/notificationServices";
 import { numeroActionTypes } from "./numeroActionTypes";
 import frLocale from "date-fns/locale/fr";
 import { dateBounds, asyncForEach } from "../../helpers/toolbox";
@@ -249,7 +251,7 @@ function validateCommande(_payload) {
 
 
     commandeServices.saveCommande(payloadcopy, catalogueReducer).then(
-      (confirm) => {
+      async (confirm) => {
 
         dispatch({
           type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS,
@@ -372,14 +374,17 @@ function standByCommande(payload, needNumero) {
     if (needNumero) {
       const { numero } = state.commandeReducer;
 
-      const newnumero = await numeroActions._getNumero(parametres, numero);
-      payload.numero = newnumero;
-
-      dispatch({ type: numeroActionTypes.GET_NUMERO, numero: newnumero });
-      if (parametres.options.role === "secondary") {
-        dispatch(numeroActions.setNewNumero(newnumero.value));
-      } else {
-        dispatch(numeroActions.setNewNumero());
+      // cf. détail du process dans './src/services/commande/numeroActions.js > takeNumero()'
+      if (parametres.options.role==="secondary") {
+        const conf = await notificationServices.askNumero(parametres.options.primary)
+        payload.numero = conf.numero;
+        dispatch({type: numeroActionTypes.GET_NUMERO, numero: conf.numero});
+      }
+      else {
+        const conf_numero = await numeroServices.getNumero(numero, parametres);
+        payload.numero = conf_numero;
+        dispatch({type: numeroActionTypes.GET_NUMERO, numero: conf_numero});
+        dispatch(numeroActions.setNextNumero());
       }
 
       logger.info("standByCommande nn numero", payload.numero);
@@ -442,16 +447,18 @@ function livraisonCommande(_payload, needNumero) {
     if (needNumero) {
       const { numero } = state.commandeReducer;
 
-      const newnumero = await numeroActions._getNumero(parametres, numero);
-
-      dispatch({ type: numeroActionTypes.GET_NUMERO, numero: newnumero });
-      if (parametres.options.role === "secondary") {
-        dispatch(numeroActions.setNewNumero(newnumero.value));
-      } else {
-        dispatch(numeroActions.setNewNumero());
+      // cf. détail du process dans './src/services/commande/numeroActions.js > takeNumero()'
+      if (parametres.options.role==="secondary") {
+        const conf = await notificationServices.askNumero(parametres.options.primary)
+        payload.numero = conf.numero;
+        dispatch({type: numeroActionTypes.GET_NUMERO, numero: conf.numero});
       }
-
-      payload.numero = newnumero;
+      else {
+        const conf_numero = await numeroServices.getNumero(numero, parametres);
+        payload.numero = conf_numero;
+        dispatch({type: numeroActionTypes.GET_NUMERO, numero: conf_numero});
+        dispatch(numeroActions.setNextNumero());
+      }
 
       logger.info("livraisonCommande nn numero", payload.numero);
     }
@@ -1354,8 +1361,10 @@ function setCommandeFromOrder(provider, payload) {
 
     const { numero } = getState().commandeReducer;
     const { parametres } = getState().parametresReducer;
-    const newnumero = await numeroActions._getNumero(parametres, numero);
 
+    const newnumero = await numeroServices.getNumero(numero, parametres);
+    dispatch(numeroActions.setNextNumero());
+    
     logger.info("new numero", newnumero);
     // dispatch({ type: numeroActionTypes.GET_NUMERO, numero: newnumero });
     dispatch(numeroActions.setNewNumero());
@@ -1462,8 +1471,7 @@ function setCommandeFromAPI(payload) {
 
     const { numero } = getState().commandeReducer;
     const { parametres } = getState().parametresReducer;
-    const newnumero = await numeroActions._getNumero(parametres, numero);
-
+    const newnumero = await numeroServices.getNumero(numero, parametres);
 
     // si un client est renseigné
     if (data.client) {
@@ -1494,8 +1502,7 @@ function setCommandeFromAPI(payload) {
     }
 
     logger.info("new numero", newnumero);
-    // dispatch({ type: numeroActionTypes.GET_NUMERO, numero: newnumero });
-    dispatch(numeroActions.setNewNumero());
+    dispatch(numeroActions.setNextNumero());
 
     logger.info(data);
     const commande = commandeServices.setCommandeFromAPI(
@@ -1961,8 +1968,6 @@ function setTicketRestaurantFromSync(ticketrestaurant) {
 export const commandeActions = {
   getCommandesList,
   getTodayCommandesList,
-  // setNewNumero,
-  // resetNumero,
   checkMarketing,
   getCommande,
   setChrono,
@@ -2009,7 +2014,4 @@ export const commandeActions = {
   archiveCommandesFromSync,
   setTicketRestaurantFromSync,
   setSyncedCommandsFromSync,
-  // getNumeroAPI,
-  // getNumero,
-  // loadNumero
 };

@@ -396,19 +396,19 @@ function sendNumero(payload) {
   }
 }
 
-function getNewNumero() {
-  return (dispatch, getState) => {
+// function getNewNumero() {
+//   return (dispatch, getState) => {
 
-    const { options } = getState().parametresReducer.parametres;
-    notificationServices.askNumero(options.primary)
-    .then(conf => {
-      logger.info('NAct.getNewNumero()', conf.numero);
-      dispatch({type: commandeActionTypes.GET_NUMERO, numero: conf.numero});
-      dispatch(commandeActions.setNewNumero(conf.numero.value));
-    })
+//     const { options } = getState().parametresReducer.parametres;
+//     notificationServices.askNumero(options.primary)
+//     .then(conf => {
+//       logger.info('NAct.getNewNumero()', conf.numero);
+//       dispatch({type: commandeActionTypes.GET_NUMERO, numero: conf.numero});
+//       dispatch(commandeActions.setNewNumero(conf.numero.value));
+//     })
 
-  }
-}
+//   }
+// }
 
 function getDatabase() {
   return (dispatch, getState) => {
@@ -707,7 +707,7 @@ export const notificationActions = {
   syncConfirm,
   syncConfirmToPrimary,
   sendNumero,
-  getNewNumero,
+  // getNewNumero,
   getDatabase,
   replaceCatalogueDatabase,
   confirmCommande,

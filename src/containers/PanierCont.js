@@ -63,7 +63,6 @@ const mapDispatchToProps = (dispatch) => {
     standByCommande: commandeActions.standByCommande,
     livraisonCommande: commandeActions.livraisonCommande,
     deleteCommande: commandeActions.deleteCurrentCommande,
-    // setNewNumero: commandeActions.setNewNumero,
     getNumero: numeroActions.takeNumero,
     uncheckItemSteps: commandeActions.uncheckItemSteps,
     openDrawer: peripheralActions.openDrawer,

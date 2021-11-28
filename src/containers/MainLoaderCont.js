@@ -69,7 +69,6 @@ const mapDispatchToProps = (dispatch) => {
     getStatus: parametresActions.getStatus,
     blockStation: parametresActions.blockStation,
     testConnection: parametresActions.testConnection
-    // loadNumero: commandeActions.loadNumero
   }, dispatch);
   return {
     ...bound,

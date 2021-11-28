@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import CommandesGeneral from '../components/Parametres/CommandesGeneral';
 import { parametresActions } from '../services/parametres/parametresActions';
 import { commandeActions } from '../services/commande/commandeActions';
+import { numeroActions } from '../services/commande/numeroActions';
 
 
 const mapStateToProps = (state) => {
@@ -18,8 +19,7 @@ const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({
     getAll: parametresActions.getAll,
     updateValeur: parametresActions.update,
-  //  setNewNumero: commandeActions.setNewNumero,
-    resetNumero: commandeActions.resetNumero
+    resetNumero: numeroActions.resetNumero
   },dispatch);
 }
 
