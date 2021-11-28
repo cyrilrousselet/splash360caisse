@@ -1529,21 +1529,16 @@ logger.info('⏰', schedule_delay);
 
 
     const attenteHandler = (event) => {
-    //  if (!this.props.commande.numero) this.props.getNumero();
       this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1});
       standByCommande(this.props.commande, !this.props.commande.numero);
     }
     const validationHandler = (event) => {
-    //  if (!this.props.commande.numero) this.props.getNumero();
    //   logger.info('validationHandler commande numero :', this.props.commande.numero);
       this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1, cmdMode:null});
       if (this.props.commande.mode==="livraison") updateCommande({});
       livraisonCommande(this.props.commande, !this.props.commande.numero);
     }
 
-    // const repriseHandler = (event) => {
-    //   gotoListeCommandes();
-    // }
 
     const tiroirHandler = (event) => {
       openDrawer();

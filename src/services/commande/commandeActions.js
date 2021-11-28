@@ -16,6 +16,9 @@ import { clientsActionTypes } from "../clients/clientsActionTypes";
 import { add } from 'date-fns';
 import { signatureActions } from "../signature/signatureActions";
 import { signatureServices } from "../signature/signatureServices";
+import { clotureServices } from "../cloture/clotureServices";
+import { numeroServices } from "./numeroServices";
+import { notificationServices } from "../notification/notificationServices";
 
 // const logger = new Logger();
 
@@ -253,7 +256,7 @@ function validateCommande(_payload, printTemplates) {
 
 
     commandeServices.saveCommande(payloadcopy, catalogueReducer).then(
-      (confirm) => {
+      async (confirm) => {
 
         dispatch({
           type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS,
@@ -267,23 +270,28 @@ function validateCommande(_payload, printTemplates) {
 
         if (!confirm.signature && !confirm.ticket) {
 
-          const lastSignature = signatureServices.getLastSignature('tickets');
-          const newTicket = 'T-'+format(new Date(),'yy-MM-') + 'c' + caisse.id + '-' + ticket.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
-          const newSignature = signatureServices.getTicketSignature({...confirm, ticket: newTicket}, privateKey, lastSignature);
+          const lastSignature = await signatureServices.getLastSignature('tickets');
+          const newTicket = 'T'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + ticket.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
+          const {source, hash, signature} = signatureServices.getTicketSignature({...confirm, ticket: newTicket}, privateKey, lastSignature);
           
           confirm = {
             ...confirm,
             ticket: newTicket,
-            signature: newSignature
+            hashsource: source,
+            hash: hash,
+            signature: signature
           }
           
           commandeServices.persistCommande(confirm);
+
+          dispatch(clotureActions.createGrandTotalTicket(confirm));
+          
 
           console.log('🖨 commande', confirm);
           
           dispatch(peripheralActions.printCommandeTicket(printTemplates, confirm));
           
-          dispatch( signatureActions.updateSignature('tickets', newSignature) );
+          dispatch( signatureActions.updateSignature('tickets', signature) );
           dispatch( signatureActions.updateNumerotation('ticket', ticket+1) );
           
         }
@@ -354,8 +362,7 @@ function validateCommande(_payload, printTemplates) {
             );
           });
         }
-        // dispatch(setNewNumero());
-        //        logger.info('commande.createdAt', payload.createdAt);
+
         // s'il y a un numéro de commande, c'est qu'on encaisse une commande déjà réglée
         // donc on met à jour la liste des commande
         if (payload.createdAt) dispatch(getTodayCommandesList());
@@ -388,16 +395,21 @@ function standByCommande(payload, needNumero) {
 
     const { parametres } = state.parametresReducer;
     if (needNumero) {
+
+
       const { numero } = state.commandeReducer;
 
-      const newnumero = await numeroActions._getNumero(parametres, numero);
-      payload.numero = newnumero;
-
-      dispatch({ type: numeroActionTypes.GET_NUMERO, numero: newnumero });
-      if (parametres.options.role === "secondary") {
-        dispatch(numeroActions.setNewNumero(newnumero.value));
-      } else {
-        dispatch(numeroActions.setNewNumero());
+      // cf. détail du process dans './src/services/commande/numeroActions.js > takeNumero()'
+      if (parametres.options.role==="secondary") {
+        const conf = await notificationServices.askNumero(parametres.options.primary)
+        payload.numero = conf.numero;
+        dispatch({type: numeroActionTypes.GET_NUMERO, numero: conf.numero});
+      }
+      else {
+        const conf_numero = await numeroServices.getNumero(numero, parametres);
+        payload.numero = conf_numero;
+        dispatch({type: numeroActionTypes.GET_NUMERO, numero: conf_numero});
+        dispatch(numeroActions.setNextNumero());
       }
 
       logger.info("standByCommande nn numero", payload.numero);
@@ -460,16 +472,18 @@ function livraisonCommande(_payload, needNumero) {
     if (needNumero) {
       const { numero } = state.commandeReducer;
 
-      const newnumero = await numeroActions._getNumero(parametres, numero);
-
-      dispatch({ type: numeroActionTypes.GET_NUMERO, numero: newnumero });
-      if (parametres.options.role === "secondary") {
-        dispatch(numeroActions.setNewNumero(newnumero.value));
-      } else {
-        dispatch(numeroActions.setNewNumero());
+      // cf. détail du process dans './src/services/commande/numeroActions.js > takeNumero()'
+      if (parametres.options.role==="secondary") {
+        const conf = await notificationServices.askNumero(parametres.options.primary)
+        payload.numero = conf.numero;
+        dispatch({type: numeroActionTypes.GET_NUMERO, numero: conf.numero});
       }
-
-      payload.numero = newnumero;
+      else {
+        const conf_numero = await numeroServices.getNumero(numero, parametres);
+        payload.numero = conf_numero;
+        dispatch({type: numeroActionTypes.GET_NUMERO, numero: conf_numero});
+        dispatch(numeroActions.setNextNumero());
+      }
 
       logger.info("livraisonCommande nn numero", payload.numero);
     }
@@ -1079,15 +1093,20 @@ function duplicata(ticketId) {
 
         let _duplis = (Array.isArray(duplicatas)) ? duplicatas : [];
 
-        const lastSignature = signatureServices.getLastSignature('duplicatas');
-        const newDuplicata = 'D-'+format(new Date(),'yy-MM-') + 'c' + caisse.id + '-' + duplicata.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
-        const newSignature = signatureServices.getDuplicataSignature({...commande, duplicata: newDuplicata}, privateKey, lastSignature);
+        const lastSignature = await signatureServices.getLastSignature('duplicatas');
+        const newDuplicata = 'D'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + duplicata.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
+        const {source, hash, signature} = signatureServices.getDuplicataSignature({...commande, duplicata: newDuplicata}, privateKey, lastSignature);
         
         commande = {
           ...commande,
           duplicatas: [
             ..._duplis,
-            {id: newDuplicata, signature: newSignature}
+            { 
+              id: newDuplicata, 
+              hashsource: source,
+              hash: hash,
+              signature: signature
+            }
           ],
           updatedAt: formatISO(new Date())
         }
@@ -1098,7 +1117,7 @@ function duplicata(ticketId) {
         
         dispatch(peripheralActions.printCommandeTicket({templates:['commande']}, commande));
         
-        dispatch( signatureActions.updateSignature('duplicatas', newSignature) );
+        dispatch( signatureActions.updateSignature('duplicatas', signature) );
         dispatch( signatureActions.updateNumerotation('duplicata', duplicata+1) );
 
         // synchro avec les autres caisses du restaurant
@@ -1430,11 +1449,10 @@ function setCommandeFromOrder(provider, payload) {
     const { parametres } = getState().parametresReducer;
     const { ticket } = getState().numerotationReducer;
     const { privateKey } = getState().signatureReducer;
-    const newnumero = await numeroActions._getNumero(parametres, numero);
+  
 
-    logger.info("new numero", newnumero);
-    // dispatch({ type: numeroActionTypes.GET_NUMERO, numero: newnumero });
-    dispatch(numeroActions.setNewNumero());
+    const newnumero = await numeroServices.getNumero(numero, parametres);
+    dispatch(numeroActions.setNextNumero());
 
     // logger.info(data);
     const commande = commandeServices.setCommandeFromOrder(
@@ -1447,7 +1465,7 @@ function setCommandeFromOrder(provider, payload) {
     // dispatch(numeroActions.takeNumero());
 
     commandeServices.saveCommande({...commande, localsync: [parametres.options.caisse.uniqid]}, state.catalogueReducer).then(
-      (confirm) => {
+      async (confirm) => {
 
         // met à jour la liste des schedules (ajoute ou supprime la commande)
         dispatch({
@@ -1457,20 +1475,22 @@ function setCommandeFromOrder(provider, payload) {
 
         if (!confirm.signature && !confirm.ticket) {
 
-          const lastSignature = signatureServices.getLastSignature('tickets');
-          const newTicket = 'T-'+format(new Date(),'yy-MM-') + 's-' + ticket.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
-          const newSignature = signatureServices.getTicketSignature({...confirm, ticket: newTicket}, privateKey, lastSignature);
+          const lastSignature = await signatureServices.getLastSignature('tickets');
+          const newTicket = 'T'+format(new Date(),'yyMM-') + 's-' + ticket.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
+          const {source, hash, signature} = signatureServices.getTicketSignature({...confirm, ticket: newTicket}, privateKey, lastSignature);
           
           confirm = {
             ...confirm,
             ticket: newTicket,
-            signature: newSignature
+            hashsource: source,
+            hash: hash,
+            signature: signature
           }
           
           
         //  dispatch(peripheralActions.printCommandeTicket(printTemplates, confirm));
           
-          dispatch( signatureActions.updateSignature('tickets', newSignature) );
+          dispatch( signatureActions.updateSignature('tickets', signature) );
           dispatch( signatureActions.updateNumerotation('ticket', ticket+1) );
           
         }
@@ -1567,8 +1587,9 @@ function setCommandeFromAPI(payload) {
 
     const { numero } = getState().commandeReducer;
     const { parametres } = getState().parametresReducer;
-    const newnumero = await numeroActions._getNumero(parametres, numero);
 
+    const newnumero = await numeroServices.getNumero(numero, parametres);
+      
 
     // si un client est renseigné
     if (data.client) {
@@ -1599,8 +1620,7 @@ function setCommandeFromAPI(payload) {
     }
 
     logger.info("new numero", newnumero);
-    // dispatch({ type: numeroActionTypes.GET_NUMERO, numero: newnumero });
-    dispatch(numeroActions.setNewNumero());
+    dispatch(numeroActions.setNextNumero());
 
     logger.info(data);
     const commande = commandeServices.setCommandeFromAPI(
@@ -1625,7 +1645,7 @@ function setCommandeFromAPI(payload) {
   
 
     commandeServices.saveCommande({...commande, localsync: [parametres.options.caisse.uniqid]}, state.catalogueReducer).then(
-      (confirm) => {
+      async (confirm) => {
         // met à jour la liste des schedules (ajoute ou supprime la commande)
         dispatch({
           type: (commande.scheduled) ? commandeActionTypes.SET_SCHEDULE : commandeActionTypes.DELETE_SCHEDULE,
@@ -1636,10 +1656,10 @@ function setCommandeFromAPI(payload) {
         if (confirm.status === "confirmed") {
           if (!confirm.signature && !confirm.ticket) {
 
-            const lastSignature = signatureServices.getLastSignature('tickets');
-            let newTicket = 'T-'+format(new Date(),'yy-MM-') + '%ORIGIN%-' + ticket.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
-            const newSignature = signatureServices.getTicketSignature({...confirm, ticket: newTicket}, privateKey, lastSignature);
-           
+            const lastSignature = await signatureServices.getLastSignature('tickets');
+            let newTicket = 'T'+format(new Date(),'yyMM-') + '%ORIGIN%-' + ticket.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
+            const {source, hash, signature} = signatureServices.getTicketSignature({...confirm, ticket: newTicket}, privateKey, lastSignature);
+            
             if (data.provider==="clickandcollect") {
               newTicket = newTicket.replace('%ORIGIN%', 'cc');
             }
@@ -1650,11 +1670,13 @@ function setCommandeFromAPI(payload) {
             confirm = {
               ...confirm,
               ticket: newTicket,
-              signature: newSignature
+              hashsource: source,
+              hash: hash,
+              signature: signature
             }
             commandeServices.persistCommande(confirm);
             
-            dispatch( signatureActions.updateSignature('tickets', newSignature) );
+            dispatch( signatureActions.updateSignature('tickets', signature) );
             dispatch( signatureActions.updateNumerotation('ticket', ticket+1) );
           }
 
@@ -2114,8 +2136,6 @@ function setTicketRestaurantFromSync(ticketrestaurant) {
 export const commandeActions = {
   getCommandesList,
   getTodayCommandesList,
-  // setNewNumero,
-  // resetNumero,
   checkMarketing,
   getCommande,
   setChrono,
@@ -2162,7 +2182,4 @@ export const commandeActions = {
   archiveCommandesFromSync,
   setTicketRestaurantFromSync,
   setSyncedCommandsFromSync,
-  // getNumeroAPI,
-  // getNumero,
-  // loadNumero
 };

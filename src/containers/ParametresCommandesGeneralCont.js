@@ -18,7 +18,6 @@ const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({
     getAll: parametresActions.getAll,
     updateValeur: parametresActions.update,
-  //  setNewNumero: commandeActions.setNewNumero,
     resetNumero: commandeActions.resetNumero
   },dispatch);
 }

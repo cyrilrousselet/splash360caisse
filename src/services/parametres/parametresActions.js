@@ -1,6 +1,5 @@
 import { parametresActionTypes } from './parametresActionTypes';
 import { parametresServices } from './parametresServices';
-import { commandeActions } from './../commande/commandeActions';
 import { peripheralActions } from '../peripheral/peripheralActions';
 // import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
@@ -8,6 +7,8 @@ import Swal from 'sweetalert2';
 import moment from 'moment';
 import schedule from 'node-schedule';
 import externalParams from '../../constants/externalParams.json';
+import { numeroServices } from '../commande/numeroServices';
+import { numeroActionTypes } from '../commande/numeroActionTypes';
 
 
 // const logger = new Logger();
@@ -64,7 +65,7 @@ function update(payload) {
 
       parametresServices.update(payload)
           .then(
-              data => {
+              async data => {
                 dispatch({ type: parametresActionTypes.UPDATE_SUCCESS, ...data });
                 
                 // si dans le payload on traite de la numérotation des commandes
@@ -78,8 +79,16 @@ function update(payload) {
                 else {
                   in_numerotation = (payload.domaine==="commandes" && __numkeys.indexOf(payload.cle)>-1);
                 }
-                const { numerotation_start } = getState().parametresReducer.parametres.commandes;
-                if (in_numerotation) dispatch(commandeActions.setNewNumero(numerotation_start));
+                if (in_numerotation) {
+                  // on vérifie que le numéro du reducer est en accord avec les nouveaux params
+                  const {parametres} = getState().parametresReducer;
+                  const {numero} = getState().commandeReducer;
+
+                  const conf_numero = await numeroServices.getNumero(numero, parametres);
+                  dispatch({ type: numeroActionTypes.SET_NEW_NUMERO, numero: conf_numero });
+                  localStorage.setItem('numero', JSON.stringify(conf_numero));
+
+                }
 
               },
               error => dispatch({ type: parametresActionTypes.UPDATE_FAILURE, error: error.toString() })

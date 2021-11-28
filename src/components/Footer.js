@@ -80,7 +80,7 @@ class Footer extends React.Component {
                     </div>
                 )}
             /> */}
-            <div className="build-version" onClick={ (this.props.location.pathname === '/login') ? toggleMode : undefined }>{ `Splash360 Build v. ${packageJson.version}` } </div>
+            <div className="build-version" onClick={ (this.props.location.pathname === '/login') ? toggleMode : undefined }>{ `Splash360 Build v. ${packageJson.version} NF` } </div>
             <div className="right">
               <div className="date">{ this.state.date }</div>
               <div className="heure">{ this.state.heure }</div>

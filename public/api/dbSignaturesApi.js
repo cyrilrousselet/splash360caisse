@@ -4,7 +4,7 @@ const { last } = require('lodash');
 const connect = require("../db/mongodb");
 const SignatureModel = require("../db/signatureModel");
 const NumerotationModel = require("../db/numerotationModel");
-const { uuid } = require("uuidv4");
+// const { uuid } = require("uuidv4");
 
 
 const actions = {
@@ -54,7 +54,7 @@ async function _getAllSignatures() {
 }
 
 
-async function _findSignatures(criteriae={}, last=false) {
+async function _findSignatures(criteriae={}, lastitem=false) {
   log.info('dbSignaturesApi._findSignatures() c='+JSON.stringify(criteriae));
   const mongo = await connect();
   if (!mongo) return false;
@@ -69,9 +69,11 @@ async function _findSignatures(criteriae={}, last=false) {
   
   const _sgn = await SignatureModel.find(criteriae).lean().exec();
   
+  log.info('_sgn :'+JSON.stringify(_sgn));
 
-  if ("last" in criteriae) {
-    return last(_sgn.liste);
+  if (lastitem) {
+    if (!_sgn[0]) return null;
+    return last(_sgn[0].liste);
   }
 
   return { _sgn };

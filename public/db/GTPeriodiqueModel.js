@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
-const GrandtotalticketSchema = mongoose.Schema(
+const GTPeriodiqueSchema = mongoose.Schema(
   {
     grandtotal_id: String,
-    numeroTicket: String,
+    periode: String,
     tva_ttc: String,
     tva_ht: String,
     tva_taux: String,
@@ -15,9 +15,9 @@ const GrandtotalticketSchema = mongoose.Schema(
     source_hash: String,
     hash_ticket: String,
     trousseauId: String,
-    signature_ticket: String
+    signatureTicket: String
   },
   { strict: false }
 );
 
-module.exports = mongoose.model("grandstotauxtickets", GrandtotalticketSchema);
+module.exports = mongoose.model("grandstotauxperiodiques", GTPeriodiqueSchema);

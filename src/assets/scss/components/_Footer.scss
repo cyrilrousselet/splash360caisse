@@ -10,6 +10,12 @@
     right: 0;
     height: $footer-height;
     background-color: $blanc;
+
+    background: linear-gradient(90deg, #3366CC 0%, #3366CC 30%, #FFFFFF 30%, #FFFFFF 70%, #CC0000 70%);
+    background-size: 100% 4px;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+
     font-family: $f_med;
     font-size: 16px;
     color: $noir;

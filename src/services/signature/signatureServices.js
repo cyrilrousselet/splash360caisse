@@ -14,6 +14,7 @@ export const signatureServices = {
   checkAndCreateKeys,
   getTicketSignature, 
   getDuplicataSignature,
+  getGrandtotalSignature,
   getAllSignatures,
   getLastSignature,
   getAllNumerotation,
@@ -102,23 +103,11 @@ function getTicketSignature(commande, privateKey, lastSignature = null) {
   const __last = (lastSignature===null) ? ' ' : lastSignature;
   hashfeed.push(__last);
 
-  const hashstring = hashfeed.join(',');
+  const hashsource = hashfeed.join(',');
 
   console.log('ticket hashfeed',hashfeed);
 
-  const hash = crypto.createHash('SHA256');
-  hash.update(hashstring);
-  hash.end();
-
-  const sign = crypto.createSign('SHA256');
-  sign.update(hashstring);
-  sign.end();
-
-  const signature = sign.sign(privateKey);
-
-  const signstring = Buffer.from(signature).toString('base64');
-
-  return base64url.fromBase64(signstring);
+  return _createSignature(hashsource, privateKey);
 
 }
 
@@ -155,20 +144,99 @@ function getDuplicataSignature(commande, privateKey, lastSignature = null) {
   const __last = (lastSignature===null) ? ' ' : lastSignature;
   hashfeed.push(__last);
 
-  const hashstring = hashfeed.join(',');
+  const hashsource = hashfeed.join(',');
 
   console.log('duplicata hashfeed',hashfeed);
 
+  return _createSignature(hashsource, privateKey);
+
+}
+
+
+function getGrandtotalSignature(source, GTPCA, privateKey, lastSignature = null) {
+
+  let hashfeed = [];
+  if (source.type==="ticket") {
+
+    // compilation de la ventilation de TVA de la commande
+    let __tva = Object.values(source.commande.ventilation).map(tva => {
+      let __tx = tva.taux * 10000;
+      if (__tx<1000) __tx = '0'+__tx;
+      return __tx + ':' + tva.ttc;
+    });
+    hashfeed.push(__tva.join('|'));
+    
+    // montant total de la commande
+    let __ttc = Math.round(source.commande.total * 100);
+    hashfeed.push(__ttc);
+  }
+  else {
+    // compilation de la ventilation de TVA de la période
+    let __tva = source.periode.ventilation.tva.map(tva => {
+      let __tx = tva.taux * 10000;
+      if (__tx<1000) __tx = '0'+__tx;
+      return __tx + ':' + tva.ttc;
+    });
+    hashfeed.push(__tva.join('|'));
+
+    // CA de la période
+    let __ttc = Math.round(source.periode.ca * 100);
+    hashfeed.push(__ttc);
+  }
+  
+  // Grand Total Perpétuel Cumul Algébrique
+  hashfeed.push(GTPCA);
+
+  // horodatage
+  let __datetime = format(new Date(source.commande.createdAt), 'yyyyMMddHHmmss');
+  hashfeed.push(__datetime);
+    
+  if (source.type==="ticket") {
+    // numerotation du ticket
+    let __numero = source.commande.ticket;
+    hashfeed.push(__numero);
+  } else {
+    // identification de la période
+    let __debut = format(new Date(source.periode.debut), 'yyyyMMddHHmmss'); 
+    let __fin = format(new Date(source.periode.fin), 'yyyyMMddHHmmss');
+    hashfeed.push(__debut+'|'+__fin);
+  }
+  
+  const __report = (lastSignature===null) ? 'N' : 'O';
+  hashfeed.push(__report);
+
+  const __last = (lastSignature===null) ? ' ' : lastSignature;
+  hashfeed.push(__last);
+
+  const hashsource = hashfeed.join(',');
+
+  console.log('grand total hashfeed',hashfeed);
+
+  return _createSignature(hashsource, privateKey);
+
+}
+
+
+function _createSignature(hashsource, privateKey) {
+
+  const hash = crypto.createHash('SHA256');
+  hash.update(hashsource);
+  hash.end();
+  const hashstring = Buffer.from(hashsource).toString('base64');
+
   const sign = crypto.createSign('SHA256');
-  sign.update(hashstring);
+  sign.update(hashsource);
   sign.end();
 
   const signature = sign.sign(privateKey);
 
   const signstring = Buffer.from(signature).toString('base64');
 
-  return base64url.fromBase64(signstring);
-
+  return {
+    source: hashsource,
+    hash: base64url.fromBase64(hashstring),
+    signature: base64url.fromBase64(signstring)
+  };
 }
 
 

@@ -71,8 +71,8 @@ const mapDispatchToProps = (dispatch) => {
     blockStation: parametresActions.blockStation,
     testConnection: parametresActions.testConnection,
     storeKeys: signatureActions.storeKeys,
-    storeNumerotation: signatureActions.storeNumerotation
-    // loadNumero: commandeActions.loadNumero
+    storeNumerotation: signatureActions.storeNumerotation,
+    getGTP: clotureActions.getGTP,
   }, dispatch);
   return {
     ...bound,

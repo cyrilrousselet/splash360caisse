@@ -4,6 +4,9 @@
 const log = require('../utils/logger');
 const connect = require("../db/mongodb");
 const ClotureModel = require("../db/clotureModel");
+const GTPerpetuelModel = require("../db/GTPerpetuelModel");
+const GTTicketModel = require("../db/GTTicketModel");
+const GTPeriodiqueModel = require("../db/GTPeriodiqueModel");
 const { uuid } = require("uuidv4");
 
 const actions = {
@@ -58,6 +61,47 @@ const actions = {
   },
 
 
+  dbClotureGetGrandTotalTicket: async (req, res) => {
+    const { payload } = req;
+    const proxies = await _getGrandTotalTicket(payload);
+    res.send(proxies);
+  },
+
+
+  dbCloturePersistGrandTotalTicket: async (req, res) => {
+    const { payload } = req;
+    const confirm = await _persistGrandTotalTicket(payload);
+    res.send(confirm);
+  },
+  dbClotureGetGrandTotalPeriodique: async (req, res) => {
+    const { payload } = req;
+    const proxies = await _getGrandTotalPeriodique(payload);
+    res.send(proxies);
+  },
+
+
+  dbCloturePersistGrandTotalPeriodique: async (req, res) => {
+    const { payload } = req;
+    const confirm = await _persistGrandTotalPeriodique(payload);
+    res.send(confirm);
+  },
+
+  dbClotureGetGTP: async (req, res) => {
+    const proxies = await _getGrandTotalPerpetuel();
+    res.send(proxies);
+  },
+
+  dbCloturePersistGTP: async (req, res) => {
+    const { payload } = req;
+    const confirm = await _persistGrandTotalPerpetuel(payload.gtpca, payload.gtpva);
+    
+    if (confirm) {
+      res.send(payload);
+    }
+    else {
+      res.error('error');
+    }
+  },
 
   dbGetItems: async (itemtype, ids) => {
 
@@ -277,6 +321,98 @@ async function _setSynced(ids, datetime) {
   log.info("_clo", _clotures.length);
   return _clotures != null && _clotures.length;
 }
+
+async function _getGrandTotalTicket(criteriae={}) {
+
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  let __gtt = await GTTicketModel.find(criteriae).lean().exec();
+
+  return __gtt;
+
+}
+
+async function _persistGrandTotalTicket(payload) {
+
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  const __gtt = await GTTicketModel.create(payload);
+
+  return true;
+  
+}
+
+async function _getGrandTotalPeriodique(criteriae={}) {
+
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  let __gtp = await GTPeriodiqueModel.find(criteriae).lean().exec();
+
+  return __gtp;
+}
+
+
+async function _persistGrandTotalPeriodique(payload) {
+
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  const __gtp = await GTPeriodiqueModel.create(payload);
+
+  return true;
+  
+}
+
+async function _getGrandTotalPerpetuel() {
+
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  let __gtp = await GTPerpetuelModel.find({id:1}).lean().exec();
+
+  if (__gtp.length<1) {
+
+    __gtp = [{
+      id:1,
+      calculAlgebrique:0, 
+      valeurAbsolue:0
+    }];
+    _persistGrandTotalPerpetuel(__gtp[0].calculAlgebrique, __gtp[0].valeurAbsolue, true);
+  }
+
+  return {gtpca:__gtp[0].calculAlgebrique, gtpva:__gtp[0].valeurAbsolue};
+
+}
+
+
+async function _persistGrandTotalPerpetuel(gtpca, gtpva, insert=false) {
+  
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  let __gtp = null;
+  if (insert) {
+    __gtp = await GTPerpetuelModel.create({
+      id: 1,
+      calculAlgebrique: gtpca, 
+      valeurAbsolue: gtpva,
+      updatedAt: (new Date()).getTime()
+    });
+  } else {
+    __gtp = await GTPerpetuelModel.updateOne({id: 1}, {
+      calculAlgebrique: gtpca, 
+      valeurAbsolue: gtpva,
+      updatedAt: (new Date()).getTime()
+    }).exec();
+  }
+
+  return __gtp ? true : false;
+  
+}
+
 
 async function _generateClotureId() {
   let id;

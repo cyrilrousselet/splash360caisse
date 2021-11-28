@@ -142,9 +142,9 @@ class Reglement extends React.Component {
     logger.info("beforeCloseReglement()");
 
     const { modif } = this.props;
-    const { reste, rendu, troppercu } = this.updateValeurs();
+    const { reste } = this.updateValeurs();
     const { trlist } = this.state;
-    logger.info(reste, rendu);
+    // logger.info(reste, rendu);
     let closeReglementAtEnd = true;
 
     const itemsCopy = [...this.props.commande.items];

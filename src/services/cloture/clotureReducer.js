@@ -5,6 +5,8 @@ const initialState = {
   error: null,
   periode: {},
   clotures: {},
+  gtpca: 0,
+  gtpva: 0,
   today_ca: 0,
   today_numtickets: 0
 }
@@ -18,6 +20,7 @@ export function clotureReducer(state = initialState, action) {
         ...state,
         loading: true
       };
+
     case clotureActionTypes.GET_CURRENT_PERIODE:
       return {
         ...state,
@@ -25,18 +28,29 @@ export function clotureReducer(state = initialState, action) {
         periode: action.periode,
         error: action.error
       };
+      
     case clotureActionTypes.GET_CLOTURES_LIST_SUCCESS:
       return {
         ...state,
         loading: false,
         clotures: action.clotureslist
       };
+
     case clotureActionTypes.GET_TODAY_CA:
       return {
         ...state,
         today_ca: action.ca,
         today_numtickets: action.numtickets
-      }
+      };
+
+    case clotureActionTypes.GET_GTP_SUCCESS:
+    case clotureActionTypes.UPDATE_GTP_SUCCESS:
+      return {
+        ...state,
+        gtpca: action.gtpca,
+        gtpva: action.gtpva
+      };
+
     default:
       return state;
   }

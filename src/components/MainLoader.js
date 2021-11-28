@@ -58,17 +58,16 @@ class MainLoader extends React.Component {
       getStatus,
       blockStation,
       testConnection,
-      online,
-      storeKeys,
-      storeNumerotation
+      online
     } = this.props;
 
     console.log("DEBUT checkInstallation");
 
   
 
-    storeKeys();
-    storeNumerotation();
+    // storeKeys();
+    // storeNumerotation();
+    // getGTP();
 
     let first_start = params ? params.first_start : null;
     let readytolaunch = dbupdated || null;
@@ -173,10 +172,6 @@ class MainLoader extends React.Component {
         this.props.getCatalogue();
         this.props.getLastClotureAndAfter();
       }
-    //   if (paramLoaded===true && sseInit===true && catLoaded===true) {
-    //  //   this.props.getTodayCommandesList();
-    //     // this.props.loadNumero();
-    //   }
       if (paramLoaded===true && sseInit===true && catLoaded===true && 
           cloLoaded===false) {
         this.props.getCloturesList();
@@ -224,7 +219,15 @@ class MainLoader extends React.Component {
       getTodayCa,
       getStatus,
       testConnection,
+      storeKeys,
+      storeNumerotation,
+      getGTP,
     } = this.props;
+
+    
+      storeKeys();
+      storeNumerotation();
+      getGTP();
 
     if (this._findeservice_job===null) {  
       this._findeservice_job = schedule.scheduleJob('0 30 5 * * *', () => {

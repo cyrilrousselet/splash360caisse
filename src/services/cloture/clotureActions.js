@@ -13,6 +13,8 @@ import logger from '../../helpers/Logger';
 import { commandeServices } from '../commande/commandeServices';
 import { dateBounds, asyncForEach } from '../../helpers/toolbox';
 import { notificationActions } from '../notification/notificationActions';
+import { signatureServices } from '../signature/signatureServices';
+import { format } from 'date-fns';
 // import { dateBounds } from '../../helpers/toolbox';
 // const strings = new LocalizedStrings(data);
 
@@ -379,11 +381,116 @@ function setClotureFromSync(cloture) {
 }
 
 
+function getGTP() {
+  return async dispatch => {
+
+    try {
+      const {gtpca, gtpva} = await clotureServices.getGTP(); 
+      dispatch({ type: clotureActionTypes.GET_GTP_SUCCESS, gtpca, gtpva })
+    }
+    catch(e) {
+      dispatch({ type: clotureActionTypes.GET_GTP_FAILURE, error:e })
+    }
+  }
+}
+
+
+function updateGTP(valeur) {
+  return async (dispatch, getState) => {
+    const {gtpca, gtpva} = getState().clotureReducer;
+    try {
+      const __gtp = await clotureServices.updateGTP(valeur, gtpca, gtpva);
+      dispatch({ type: clotureActionTypes.UPDATE_GTP_SUCCESS, gtpca: __gtp.gtpca, gtpva: __gtp.gtpva });
+    }
+    catch(e) {
+      dispatch({ type: clotureActionTypes.UPDATE_GTP_FAILURE, error:e });
+    }
+  }
+}
+
+function createGrandTotalTicket(commande) {
+  return async (dispatch, getState) => {
+
+    console.log('createGrandTotalTicket()');
+
+    // const { grandtotal } = getState().numerotationReducer;
+    // const { caisse, role } = getState().parametresReducer.parametres.options;
+    const { trousseauId } = getState().signatureReducer; 
+    let __gtp = null;
+    try {
+      const {gtpca, gtpva} = await clotureServices.getGTP();
+      __gtp = await clotureServices.updateGTP(Math.round(commande.total*100), gtpca, gtpva);
+      dispatch({ type: clotureActionTypes.UPDATE_GTP_SUCCESS, gtpca: __gtp.gtpca, gtpva: __gtp.gtpva });
+    }
+    catch(e) {
+      dispatch({ type: clotureActionTypes.UPDATE_GTP_FAILURE, error:e });
+    }
+
+    // const lastSignature = await signatureServices.getLastSignature('grandstotaux');
+    // const newTicket = 'GTT'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + grandtotal.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
+    // const {source, hash, signature} = signatureServices.getGrandtotalSignature({commande: commande}, gtpca, privateKey, lastSignature);
+  
+    // const source_ar = source.split(',');
+
+    
+    let __tva_ttc = Object.values(commande.ventilation).map(tva => {
+      let __tx = tva.taux * 10000;
+      if (__tx<1000) __tx = '0'+__tx;
+      return __tx + ':' + tva.ttc;
+    });
+    let __tva_ht = Object.values(commande.ventilation).map(tva => {
+      let __tx = tva.taux * 10000;
+      if (__tx<1000) __tx = '0'+__tx;
+      return __tx + ':' + tva.ht;
+    });
+    let __tva_tva = Object.values(commande.ventilation).map(tva => {
+      let __tx = tva.taux * 10000;
+      if (__tx<1000) __tx = '0'+__tx;
+      return __tx + ':' + tva.tva;
+    });
+    let __total_ttc = 0
+    let __total_ht = 0;
+    Object.values(commande.ventilation).forEach(tva => {
+      __total_ttc += tva.ttc;
+      __total_ht += tva.ht;
+    });
+
+    const __gtt = {
+      numeroTicket: commande.ticket,
+      tva_ttc: __tva_ttc.join('|'),
+      tva_ht: __tva_ht.join('|'),
+      tva_taux: __tva_tva.join('|'),
+      total_ttc: __total_ttc,
+      total_ht: __total_ht,
+      gtpca: __gtp.gtpca,
+      gtpva: __gtp.gtpva,
+      createdAt: format(new Date(commande.createdAt), 'yyyyMMddHHmmss'),
+      source_hash: commande.hashsource,
+      hash_ticket: commande.hash,
+      trousseauId: trousseauId,
+      signature_ticket: commande.signature
+    };
+
+    try {
+      const confirm = await clotureServices.persistGTTicket(__gtt);
+      dispatch({ type: clotureActionTypes.PERSIST_GTTICKET_REQUEST, gtt: __gtt });
+    }
+    catch(e) {
+      dispatch({ type: clotureActionTypes.PERSIST_GTTICKET_FAILURE, error: e })
+    }
+
+  }
+}
+
+
 export const clotureActions = {
   getLast,
   getCurrentPeriode,
   loadCloture,
   makeCloture,
+  getGTP,
+  updateGTP,
+  createGrandTotalTicket,
   getCloturesList,
   getBoundedClotures,
   setSyncedClotures,

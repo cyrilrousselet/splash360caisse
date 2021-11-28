@@ -16,7 +16,6 @@ export const commandeServices = {
   getNewCommande,
   getCommandeById,
   getCommandesList,
-  //  getNewNumero,
   checkMarketing,
   getCommandesCaisses,
   addProduit,
@@ -1348,7 +1347,7 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
   commande.centre_revenu = "uber";
   commande.status = "confirmed"; // "standby" ou "confirmed"
   commande.mode = "livraison"; // "emporter", "surplace" ou "livraison"
-  commande.numero = numero; //getNewNumero(parametres, numero);
+  commande.numero = numero;
 
   // on met tous les produits dans le même array
   let produits = [];
@@ -1537,7 +1536,7 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
   const commande = getNewCommande(data);
   commande.status = data.status; // "standby" ou "confirmed"
   commande.mode = data.mode; // "emporter", "surplace" ou "livraison"
-  commande.numero = numero; // || getNewNumero(parametres, numero);
+  commande.numero = numero;
 
   // on met tous les produits dans le même array
   let produits = [];

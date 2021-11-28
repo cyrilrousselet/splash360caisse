@@ -12,37 +12,23 @@ import { notificationServices } from '../notification/notificationServices';
 
 function resetNumero(val) {
   return (dispatch, getState) => {
-  //  const {commande} = getState().commandeReducer;
-  //  const { numerotation_start } = getState().parametresReducer.parametres.commandes;
- //   dispatch(setNewNumero(numerotation_start));
- //   if (commande.hasOwnProperty('ticketId')) {
-      dispatch(takeNumero(true));
- //   }
-  }
-}
 
-
-function setNewNumero(defaultValue=null) {
-
-  return (dispatch, getState) => {
-
-    logger.info('NumeroActions.setNewNumero',defaultValue);
-
-    const numero = defaultValue!==null ? {value: defaultValue-1, updated: new Date()} : getState().commandeReducer.numero; 
-
-    const newnumero = numeroServices.setNumero( getState().parametresReducer.parametres, numero);
+    const newnumero = numeroServices.setNumero( null, getState().parametresReducer.parametres);
     dispatch({ type: numeroActionTypes.SET_NEW_NUMERO, newnumero });
 
   }
 }
 
 
+function setNextNumero() {
+  return async (dispatch, getState) => {
 
-function loadNumero() {
-  return (dispatch, getState) => {
-    const {numero} = getState().commandeReducer;
+    const { numero } = getState().commandeReducer;
+    const { parametres } = getState().parametresReducer;
 
-    if (null!==numero) dispatch(takeNumero());
+    const newnumero = numeroServices.setNumero(numero, parametres);
+    dispatch({ type: numeroActionTypes.SET_NEW_NUMERO, numero: newnumero });
+
   }
 }
 
@@ -56,25 +42,14 @@ function getNumeroAPI(response) {
     const {parametres} = getState().parametresReducer;
     const {numero} = getState().commandeReducer;
 
-    const newnumero = await _getNumero(parametres, numero);
 
-  //  dispatch({type: numeroActionTypes.GET_NUMERO, numero: newnumero});
-    // const {commande} = getState().commandeReducer;
+    const conf_numero = await numeroServices.getNumero(numero, parametres);
+      
+    // on renvoie le numéro à la caisse secondary
+    dispatch(notificationActions.sendNumero({numero: conf_numero, response}));
 
-    dispatch(notificationActions.sendNumero({numero: newnumero, response}));
-    // if (parametres.options.role==="secondary") {
-    //   dispatch(setNewNumero(newnumero.value));
-    // } else {  
-      dispatch(setNewNumero());
-    // }
-
-    // if (commande.hasOwnProperty('ticketId')) {
-    //   dispatch(takeNumero());
-    // } else {
-    //   dispatch(setNewNumero());
-    // }
-
-
+    // puis on appelle le numero suivant (à stocker dans le reducer et le localStorage)
+    dispatch(setNextNumero());
 
   }
 }
@@ -89,45 +64,38 @@ function takeNumero(defaultnumero=false) {
     const {parametres} = getState().parametresReducer;
     const {numero} = getState().commandeReducer;
 
-    _getNumero(parametres, defaultnumero ? null : numero)
-    .then(newnumero => {
 
-      dispatch({type: numeroActionTypes.GET_NUMERO, numero: newnumero});
-      if (parametres.options.role==="secondary") {
-        dispatch(setNewNumero(newnumero.value));
-      } else {  
-        dispatch(setNewNumero(newnumero));
-      }
+    // si la caisse est une secondary
+    if (parametres.options.role==="secondary") {
+
+      // on demande le numero à la caisse primary
+      const conf = await notificationServices.askNumero(parametres.options.primary)
+
+      // et on attribue le numéro à la commande
+      dispatch({type: numeroActionTypes.GET_NUMERO, numero: conf.numero});
       
-    });
+    }
+    // si la caisse est une primary
+    else {
+      // on demande confirmation du numero :
+      // - avons-nous changé de jour ?
+      // - sommes-nous arrivés au numéro maximal ?
+      const conf_numero = await numeroServices.getNumero(numero, parametres);
+      
+      // et on attribue le numéro à la commande
+      dispatch({type: numeroActionTypes.GET_NUMERO, numero: conf_numero});
+
+      // puis on appelle le numero suivant (à stocker dans le reducer et le localStorage)
+      dispatch(setNextNumero());
+    }
+
   }
 }
 
-
-
-async function _getNumero(parametres, numero) {
-
-  logger.info('NumeroActions._getNumero', numero);
-
-  if (parametres.options.role==="secondary") {
-    logger.info('NumeroActions._getNumero() from primary');
-    const conf = await notificationServices.askNumero(parametres.options.primary)
-    return conf.numero;
-  }
-  else {
-    const nnumero = numeroServices.setNumero( parametres, numero);
-    // const nnumero = commandeServices.getNewNumero( parametres, null);
-    logger.info('NumeroActions._getNumero() from primary', nnumero);
-    return nnumero;
-  }
-
-}
 
 export const numeroActions = {
-  setNewNumero,
   resetNumero,
   getNumeroAPI,
   takeNumero,
-  _getNumero,
-  loadNumero
+  setNextNumero
 }

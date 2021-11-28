@@ -1,6 +1,6 @@
 import {emit} from 'eiphop';
 
-import { startOfDay, startOfToday, isAfter, isBefore, endOfToday } from 'date-fns';
+import { startOfToday, isAfter, isBefore, endOfToday } from 'date-fns';
 // import { dateBounds } from '../../helpers/toolbox';
 import LodashId from 'lodash-id';
 // import Logger from '../../helpers/Logger';
@@ -16,6 +16,10 @@ export const clotureServices = {
   getCloturesList,
   setSyncedClotures,
   getCloturesToSync,
+  getGTP,
+  updateGTP,
+  persistGTTicket,
+  persistGTPeriodique,
   getTodayCa,
   getBoundedClotures
 };
@@ -315,8 +319,23 @@ function getBoundedClotures(params) {
   return emit('dbClotureGetBoundedClotures', params);
 }
 
+function getGTP() {
+  return emit('dbClotureGetGTP',{});
+}
 
+function updateGTP(valeur, gtpca, gtpva) {
+  return emit('dbCloturePersistGTP', {
+    gtpca: Number(gtpva)+Number(valeur), 
+    gtpva: Number(gtpva)+Math.abs(Number(valeur))
+  });
+}
 
+function persistGTTicket(gtt) {
+  return emit('dbCloturePersistGrandTotalTicket', gtt );
+}
+function persistGTPeriodique(gtp) {
+  return emit('dbCloturePersistGrandTotalPeriodique', gtp );
+}
 
 const _newClotureId = () => {
   return 'clo'+LodashId.createId();
