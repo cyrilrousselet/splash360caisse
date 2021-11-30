@@ -2,11 +2,10 @@ const mongoose = require("mongoose");
 
 const GTTicketSchema = mongoose.Schema(
   {
-    // grandtotal_id: String,
     numeroTicket: String,
     tva_ttc: String,
     tva_ht: String,
-    tva_taux: String,
+    tva_taxe: String,
     total_ttc: Number,
     total_ht: Number,
     gtpca: Number,

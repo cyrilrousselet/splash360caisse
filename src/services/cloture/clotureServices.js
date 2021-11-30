@@ -1,6 +1,6 @@
 import {emit} from 'eiphop';
 
-import { startOfToday, isAfter, isBefore, endOfToday } from 'date-fns';
+import { startOfToday, isAfter, isBefore, endOfToday, set, format, sub } from 'date-fns';
 // import { dateBounds } from '../../helpers/toolbox';
 import LodashId from 'lodash-id';
 // import Logger from '../../helpers/Logger';
@@ -18,10 +18,14 @@ export const clotureServices = {
   getCloturesToSync,
   getGTP,
   updateGTP,
+  getGTTicket,
   persistGTTicket,
+  getGTPeriodique,
   persistGTPeriodique,
   getTodayCa,
-  getBoundedClotures
+  getBoundedClotures,
+  getLastGTPeriodique
+  // checkYesterdayGTT,
 };
 
 
@@ -330,12 +334,47 @@ function updateGTP(valeur, gtpca, gtpva) {
   });
 }
 
+function getGTTicket(params) {
+  return emit('dbClotureGetGrandTotalTicket', params);
+}
 function persistGTTicket(gtt) {
   return emit('dbCloturePersistGrandTotalTicket', gtt );
+}
+function getGTPeriodique(params) {
+  return emit('dbClotureGetGrandTotalPeriodique', params);
 }
 function persistGTPeriodique(gtp) {
   return emit('dbCloturePersistGrandTotalPeriodique', gtp );
 }
+
+function getLastGTPeriodique(param) {
+  return emit('dbClotureGetLastGrandTotalPeriodique', {type: param});
+}
+
+// function checkGTPeriodique(type, start, end){
+
+//   return emit('dbClotureCheckGrandTotalPeriodique', {
+//     type: type, 
+//     start: start,
+//     end: end
+//   });
+    
+// }
+
+// function checkGTPeriodique(type, start, end){
+
+
+
+//   return emit('dbClotureCheckGrandTotalTicket', {
+//     "$expr" : 
+//       {"$and":[ 
+//         {"$gte" : [{"$toDouble" :"$createdAt"} , start]},
+//         {"$lt" : [{"$toDouble" :"$createdAt"} , end]},
+//       ]}
+//     });
+  
+  
+// }
 
 const _newClotureId = () => {
   return 'clo'+LodashId.createId();

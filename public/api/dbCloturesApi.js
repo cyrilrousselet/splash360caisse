@@ -79,6 +79,11 @@ const actions = {
     res.send(proxies);
   },
 
+  dbClotureGetLastGrandTotalPeriodique: async (req, res) => {
+    const { payload } = req;
+    const proxies = await _getLastGrandTotalPeriodique(payload.type);
+    res.send(proxies);
+  },
 
   dbCloturePersistGrandTotalPeriodique: async (req, res) => {
     const { payload } = req;
@@ -411,6 +416,14 @@ async function _persistGrandTotalPerpetuel(gtpca, gtpva, insert=false) {
 
   return __gtp ? true : false;
   
+}
+
+async function _getLastGrandTotalPeriodique(periodetype) {
+
+  const __gtp = await GTPeriodiqueModel.find({type: periodetype}).lean().sort({createdAt:-1}).limit(1);
+
+  return __gtp;
+
 }
 
 

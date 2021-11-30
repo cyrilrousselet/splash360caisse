@@ -171,35 +171,36 @@ function getGrandtotalSignature(source, GTPCA, privateKey, lastSignature = null)
     hashfeed.push(__ttc);
   }
   else {
-    // compilation de la ventilation de TVA de la période
-    let __tva = source.periode.ventilation.tva.map(tva => {
-      let __tx = tva.taux * 10000;
-      if (__tx<1000) __tx = '0'+__tx;
-      return __tx + ':' + tva.ttc;
-    });
-    hashfeed.push(__tva.join('|'));
+    // Ventilation de TVA de la période
+    hashfeed.push(source.tva);
 
     // CA de la période
-    let __ttc = Math.round(source.periode.ca * 100);
-    hashfeed.push(__ttc);
+    hashfeed.push(source.ttc);
   }
   
   // Grand Total Perpétuel Cumul Algébrique
   hashfeed.push(GTPCA);
 
-  // horodatage
-  let __datetime = format(new Date(source.commande.createdAt), 'yyyyMMddHHmmss');
-  hashfeed.push(__datetime);
-    
+  
   if (source.type==="ticket") {
+
+    // horodatage
+    let __datetime = format(new Date(source.commande.createdAt), 'yyyyMMddHHmmss');
+    hashfeed.push(__datetime);
+
     // numerotation du ticket
     let __numero = source.commande.ticket;
     hashfeed.push(__numero);
+
   } else {
+
+    // horodatage
+    let __datetime = format(new Date(), 'yyyyMMddHHmmss');
+    hashfeed.push(__datetime);
+
     // identification de la période
-    let __debut = format(new Date(source.periode.debut), 'yyyyMMddHHmmss'); 
-    let __fin = format(new Date(source.periode.fin), 'yyyyMMddHHmmss');
-    hashfeed.push(__debut+'|'+__fin);
+    hashfeed.push(source.periode);
+
   }
   
   const __report = (lastSignature===null) ? 'N' : 'O';

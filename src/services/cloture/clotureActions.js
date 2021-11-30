@@ -14,7 +14,8 @@ import { commandeServices } from '../commande/commandeServices';
 import { dateBounds, asyncForEach } from '../../helpers/toolbox';
 import { notificationActions } from '../notification/notificationActions';
 import { signatureServices } from '../signature/signatureServices';
-import { format } from 'date-fns';
+import { format, set, sub } from 'date-fns';
+import isBefore from 'date-fns/isBefore';
 // import { dateBounds } from '../../helpers/toolbox';
 // const strings = new LocalizedStrings(data);
 
@@ -426,12 +427,6 @@ function createGrandTotalTicket(commande) {
       dispatch({ type: clotureActionTypes.UPDATE_GTP_FAILURE, error:e });
     }
 
-    // const lastSignature = await signatureServices.getLastSignature('grandstotaux');
-    // const newTicket = 'GTT'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + grandtotal.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
-    // const {source, hash, signature} = signatureServices.getGrandtotalSignature({commande: commande}, gtpca, privateKey, lastSignature);
-  
-    // const source_ar = source.split(',');
-
     
     let __tva_ttc = Object.values(commande.ventilation).map(tva => {
       let __tx = tva.taux * 10000;
@@ -443,7 +438,7 @@ function createGrandTotalTicket(commande) {
       if (__tx<1000) __tx = '0'+__tx;
       return __tx + ':' + tva.ht;
     });
-    let __tva_tva = Object.values(commande.ventilation).map(tva => {
+    let __tva_taxe = Object.values(commande.ventilation).map(tva => {
       let __tx = tva.taux * 10000;
       if (__tx<1000) __tx = '0'+__tx;
       return __tx + ':' + tva.tva;
@@ -459,7 +454,7 @@ function createGrandTotalTicket(commande) {
       numeroTicket: commande.ticket,
       tva_ttc: __tva_ttc.join('|'),
       tva_ht: __tva_ht.join('|'),
-      tva_taux: __tva_tva.join('|'),
+      tva_taxe: __tva_taxe.join('|'),
       total_ttc: __total_ttc,
       total_ht: __total_ht,
       gtpca: __gtp.gtpca,
@@ -483,6 +478,265 @@ function createGrandTotalTicket(commande) {
 }
 
 
+/**
+ * 
+ * @param {String} intervalle ['jour','mois','annee']
+ * @param {Array} grandstotaux 
+ * @returns 
+ */
+function createGrandTotalPeriodique(intervalle, grandstotaux) {
+  return async (dispatch, getState) => {
+
+    console.log('createGrandTotalPeriodique(' + intervalle + ') L=' + grandstotaux.length);
+
+    const { grandtotal } = getState().numerotationReducer;
+    const { caisse, role } = getState().parametresReducer.parametres.options;
+    const { privateKey, trousseauId } = getState().signatureReducer; 
+    
+    const {gtpca, gtpva} = await clotureServices.getGTP();
+
+
+    let __tva_ttc = {};
+    let __tva_ht = {};
+    let __tva_taxe = {};
+    let __total_ttc = 0
+    let __total_ht = 0;
+    let __start = null;
+    let __end = null;
+
+
+    grandstotaux.forEach(gt => {
+
+      // tva ttc
+      const gt_tvattc = gt.tva_ttc.split('|');
+      gt_tvattc.forEach(t => {
+        let cpl = t.split(':');
+        if (!__tva_ttc.hasOwnProperty(cpl[0])) __tva_ttc[cpl[0]] = 0;
+        __tva_ttc[cpl[0]] += parseInt(cpl[1]);
+      });
+
+      // tva ht
+      const gt_tvaht = gt.tva_ht.split('|');
+      gt_tvaht.forEach(t => {
+        let cpl = t.split(':');
+        if (!__tva_ht.hasOwnProperty(cpl[0])) __tva_ht[cpl[0]] = 0;
+        __tva_ht[cpl[0]] += parseInt(cpl[1]);
+      });
+
+      // tva taxe
+      const gt_tvataxe = gt.tva_taxe.split('|');
+      gt_tvataxe.forEach(t => {
+        let cpl = t.split(':');
+        if (!__tva_taxe.hasOwnProperty(cpl[0])) __tva_taxe[cpl[0]] = 0;
+        __tva_taxe[cpl[0]] += parseInt(cpl[1]);
+      });
+
+      __total_ttc += gt.total_ttc;
+      __total_ht += gt.total_ht;
+
+
+      let __evalstart, __evalend;
+      // si le grandtotal est un GTPeriodique (type 'jour' ou 'mois')
+      if (gt.hasOwnProperty('periode')) {
+
+        let periode_ar = gt.periode.split('|');
+        __evalstart = parseInt(periode_ar[0]);
+        __evalend = parseInt(periode_ar[1]);
+
+      } 
+      // si le grandtotal est un GTTicket
+      else {
+        __evalstart = parseInt(gt.createdAt);
+        __evalend = parseInt(gt.createdAt);
+      }
+
+
+      if (__start) {
+        __start = Math.min(__evalstart, __start);
+      } else {
+        __start = __evalstart;
+      }
+      if (__end) {
+        __end = Math.max(__evalend, __end);
+      } else {
+        __end = __evalend;
+      }
+
+    });
+    
+    // formattage des ventilations de tva
+    let __alltva_ttc = Object.entries(__tva_ttc).map(([taux,valeur]) => {
+      return taux + ':' + valeur;
+    });
+    let __alltva_ht = Object.entries(__tva_ht).map(([taux,valeur]) => {
+      return taux + ':' + valeur;
+    });
+    let __alltva_taxe = Object.entries(__tva_taxe).map(([taux,valeur]) => {
+      return taux + ':' + valeur;
+    });
+   
+    // formattage de l'horodatage (de int -> str)
+    let __start_str = __start.toString();
+    while(__start_str.length<14) {
+      __start_str = __start_str + '0';
+    }
+    let __end_str = __end.toString();
+    while(__end_str.length<14) {
+      __end_str = __end_str + '0';
+    }
+
+
+    const source_signature = {
+      tva: __alltva_ttc.join('|'),
+      ttc: __total_ttc,
+      periode: __start_str+'|'+__end_str
+    }
+
+
+    const lastSignature = await signatureServices.getLastSignature('grandstotaux');
+    const newTicket = 'GTP'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + grandtotal.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
+    const {source, hash, signature} = signatureServices.getGrandtotalSignature({...source_signature, type:"periode"}, gtpca, privateKey, lastSignature);
+ 
+
+    const __grandtotalperiodique = {
+      type: intervalle,
+      grandtotal_id: newTicket,
+      periode: __start_str+'|'+__end_str,
+      tva_ttc: __alltva_ttc.join('|'),
+      tva_ht: __alltva_ht.join('|'),
+      tva_taxe: __alltva_taxe.join('|'),
+      total_ttc: __total_ttc,
+      total_ht: __total_ht,
+      gtpca: gtpca,
+      gtpva: gtpva,
+      createdAt: format(new Date(), 'yyyyMMddHHmmss'),
+      source_hash: source,
+      hash: hash,
+      trousseauId: trousseauId,
+      signature: signature
+    };
+
+    try {
+      const confirm = await clotureServices.persistGTPeriodique(__grandtotalperiodique);
+      dispatch({ type: clotureActionTypes.PERSIST_GTPERIODIQUE_SUCCESS, gtp: __grandtotalperiodique });
+    }
+    catch(e) {
+      dispatch({ type: clotureActionTypes.PERSIST_GTPERIODIQUE_FAILURE, error: e })
+    }
+
+  }
+}
+
+
+function testGTPeriodique() {
+  return async dispatch => {
+
+    const __today =  new Date();
+
+    // y a-t-il un GTJ pour hier ?
+
+    // si la date de test est après 5h00, le créneau de recherche correspond à [(today-1)@6h00 -> today@5h00]  
+    let start = format(sub(__today,{days:1}), 'yyyyMMdd060000');
+    let end = format(__today,'yyyyMMdd050000');
+
+    // si la date de test est avant 5h00, le créneau de recherche correspond à [(today-2)@6h00 -> (today-1)@5h00]
+    if (isBefore(__today, set(__today,{hours:5}))) {
+      start = format(sub(__today,{days:2}), 'yyyyMMdd060000');
+      end = format(sub(__today,{days:1}), 'yyyyMMdd050000');
+    }
+
+
+    let __GTT_query = null;
+
+    try {
+
+
+      // const GTJ_query = {
+      //   "$expr": {
+      //     "$and": [
+      //       {"$type": "jour"},
+      //       {"$gte": [
+      //         {"$toDouble":
+      //           {"$arrayElemAt":[
+      //             {"$split":["$periode","|"]}, 
+      //             0
+      //           ]}
+      //         }, 
+      //         parseInt(start)
+      //       ]},
+      //       {"$gte": [
+      //         {"$toDouble":
+      //           {"$arrayElemAt":[
+      //             {"$split":["$periode","|"]}, 
+      //             1
+      //           ]}
+      //         }, 
+      //         parseInt(end)
+      //       ]},
+      //     ]
+      //   }
+      // };
+
+      // on récupère le GTJ le plus récent
+      const __lastGTJ = await clotureServices.getLastGTPeriodique("jour");
+      
+      console.log('GTJ', __lastGTJ);
+
+      if (__lastGTJ.length>0) {
+        // fin de periode
+        const last_fin = parseInt(__lastGTJ[0].periode.split("|")[1]);
+
+        console.log('fin de la période du GTJ', last_fin, parseInt(end));
+
+        // si la date de fin de la période du dernier GTJ 
+        // est antérieure à la date de fin du dernier service
+        if (last_fin < parseInt(end)) {
+          console.log('date de fin de la période du GTJ antérieure à la fin du dernier service');
+          // on va chercher les éventuels GTTickets créés entre les deux dates
+          __GTT_query = {
+            "$expr" : {
+              "$and":[ 
+                {"$gt" : [{"$toDouble" :"$createdAt"} , last_fin]},
+                {"$lt" : [{"$toDouble" :"$createdAt"} , parseInt(end)]}
+              ]
+            }
+          };
+        } else {
+          console.log('date de fin de la période du GTJ n’est pas antérieure à la fin du dernier service');
+        }
+      }
+      // s'il n'y a pas de GTJ avant aujourd'hui
+      else {
+        console.log('pas de GTJ antérieur')
+        // on va chercher tous les GTTickets antérieurs au service d'aujourd'≠hui≠
+        __GTT_query = {"$expr" : {"$lt" : [{"$toDouble" :"$createdAt"} , parseInt(end)]}};
+      }
+    }
+    catch(e) {
+      console.error('last GTJ ERROR', e);
+    }
+
+    // on va chercher les GTTickets si besoin
+    // et on crée un GTJ avec
+    if (__GTT_query) {
+      console.log('on va chercher les GTTickets', __GTT_query);
+      try {
+        const liste_GTT = await clotureServices.getGTTicket(__GTT_query);
+        dispatch(createGrandTotalPeriodique('jour',liste_GTT));
+      }
+      catch(e) {
+        console.error('liste GTT ERROR', e);
+      }
+    }
+
+//     // y a-t-il un GTM pour le mois dernier ?
+
+//     // y a-t-il un GTA pour l'année dernière ?
+
+  }
+}
+
+
 export const clotureActions = {
   getLast,
   getCurrentPeriode,
@@ -491,9 +745,11 @@ export const clotureActions = {
   getGTP,
   updateGTP,
   createGrandTotalTicket,
+  createGrandTotalPeriodique,
   getCloturesList,
   getBoundedClotures,
   setSyncedClotures,
   setClotureFromSync,
-  getTodayCa
+  getTodayCa,
+  testGTPeriodique
 };

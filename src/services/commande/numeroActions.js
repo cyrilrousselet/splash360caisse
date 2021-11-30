@@ -14,7 +14,7 @@ function resetNumero(val) {
   return (dispatch, getState) => {
 
     const newnumero = numeroServices.setNumero( null, getState().parametresReducer.parametres);
-    dispatch({ type: numeroActionTypes.SET_NEW_NUMERO, newnumero });
+    dispatch({ type: numeroActionTypes.SET_NEW_NUMERO, numero: newnumero });
 
   }
 }
