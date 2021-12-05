@@ -1917,11 +1917,15 @@ function _printPeriodeZ(printer, data, strings, printx=false) {
 
   // CORPS
     // titre0
+
+    let titre = printx ? strings.titre.x : strings.titre.z;
+    titre = titre.replace('%TYPE%', strings.type[data.ztype]);
+
     printer
       .drawLine()
       .align('CT')
       .style('B')
-      .text(printx ? strings.titre.x : strings.titre.z)
+      .text(titre)
       .drawLine();
     
     // recap :
@@ -2038,12 +2042,12 @@ function _printPeriodeZ(printer, data, strings, printx=false) {
           {text:'', cols:3},
           {text: Number(tva.ht/100).toFixed(2).replace('.',','), cols:8, align:'RIGHT'},
           {text:'', cols:3},
-          {text: Number(tva.tva/100).toFixed(2).replace('.',','), cols:8, align:'RIGHT'},
+          {text: Number(tva.taxe/100).toFixed(2).replace('.',','), cols:8, align:'RIGHT'},
           {text:'', cols:3},
           {text: Number(tva.ttc/100).toFixed(2).replace('.',','), cols:8, align:'RIGHT'}
         ]);
         tvaht += tva.ht;
-        tvamnt += tva.tva;
+        tvamnt += tva.taxe;
         tvattc += tva.ttc;
     });
 

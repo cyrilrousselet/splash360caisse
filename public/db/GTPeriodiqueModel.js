@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const GTPeriodiqueSchema = mongoose.Schema(
   {
-    type: String,
+    gttype: String,
     grandtotal_id: String,
     periode: String,
     tva_ttc: String,

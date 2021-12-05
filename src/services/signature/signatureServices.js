@@ -15,6 +15,7 @@ export const signatureServices = {
   getTicketSignature, 
   getDuplicataSignature,
   getGrandtotalSignature,
+  getZdecaisseSignature,
   getAllSignatures,
   getLastSignature,
   getAllNumerotation,
@@ -218,6 +219,111 @@ function getGrandtotalSignature(source, GTPCA, privateKey, lastSignature = null)
 }
 
 
+function getZdecaisseSignature(zdecaisse, privateKey, lastSignature = null) {
+  let hashfeed = [];
+
+  // id de Z de caisse
+  hashfeed.push(zdecaisse.zid);
+
+  // type de Z de caisse
+  hashfeed.push(zdecaisse.type);
+
+  // chiffre d'affaire
+  hashfeed.push(zdecaisse.ca);
+
+  // liste des caisses du Z
+  const __caissesId = Object.values(zdecaisse.ventilation.caisse).map(c => c.id);
+  hashfeed.push(__caissesId.join('|'));
+  
+  // depenses
+  hashfeed.push(zdecaisse.depenses);
+  
+  // nombre d'avoirs émis
+  hashfeed.push(zdecaisse.emission);
+  
+  // fdcaisse
+  hashfeed.push(zdecaisse.fdcaisse);
+  
+  // mtcaisse
+  hashfeed.push(zdecaisse.mtcaisse);
+  
+  // nombre de commandes
+  hashfeed.push(zdecaisse.numtickets);
+  
+  // paramfdcaisse
+  hashfeed.push(zdecaisse.paramfdcaisse);
+  
+  // remboursements
+  hashfeed.push(zdecaisse.remboursements);
+  
+  // valeur moyenne d'une commande
+  hashfeed.push(zdecaisse.ticket_moyen);
+  
+  // ventes
+  hashfeed.push(zdecaisse.ventes);
+
+  // ventilation moyens:
+  let __vent_moyens = Object.values(zdecaisse.ventilation.moyen).map(m => (m.moyen+':'+m.valeur));
+  hashfeed.push(__vent_moyens.join('|'));
+
+  // ventilation tvattc:
+  let __vent_tvattc = Object.values(zdecaisse.ventilation.tva).map(t => {
+    let __tx = t.taux * 100;
+    if (__tx<1000) __tx = '0'+__tx;
+    return __tx+':'+t.ttc;
+  });
+  hashfeed.push(__vent_tvattc.join('|'));
+
+  // ventilation tvaht:
+  let __vent_tvaht = Object.values(zdecaisse.ventilation.tva).map(t => {
+    let __tx = t.taux * 100;
+    if (__tx<1000) __tx = '0'+__tx;
+    return __tx+':'+t.ht;
+  });
+  hashfeed.push(__vent_tvaht.join('|'));
+
+  // ventilation tvataxe:
+  let __vent_tvataxe = Object.values(zdecaisse.ventilation.tva).map(t => {
+    let __tx = t.taux * 100;
+    if (__tx<1000) __tx = '0'+__tx;
+    return __tx+':'+t.taxe;
+  });
+  hashfeed.push(__vent_tvataxe.join('|'));
+  
+  
+  // ventilation moyens:
+  let __vent_vendeurs = Object.values(zdecaisse.ventilation.vendeur).map(v => (v.id+':'+(v.ventes - v.remboursements)));
+  hashfeed.push(__vent_vendeurs.join('|'));
+  
+  // ventilation caisses:
+  let __vent_caisses = Object.values(zdecaisse.ventilation.caisse).map(c => (c.id+':'+c.ca));
+  hashfeed.push(__vent_caisses.join('|'));
+  
+  // prelevement
+  hashfeed.push(zdecaisse.prelevement);
+
+
+  // periode
+  hashfeed.push(zdecaisse.periode);
+
+  // horodatage
+  const __datetime = format(new Date(zdecaisse.createdAt), 'yyyyMMddHHmmss');
+  hashfeed.push(__datetime);
+
+  // report de signature
+  const __report = (lastSignature===null) ? 'N' : 'O';
+  hashfeed.push(__report);
+
+  // signature précédente
+  const __last = (lastSignature===null) ? ' ' : lastSignature;
+  hashfeed.push(__last);
+
+  const hashsource = hashfeed.join(',');
+
+  return _createSignature(hashsource, privateKey);
+}
+
+
 function _createSignature(hashsource, privateKey) {
 
   const hash = crypto.createHash('SHA256');
@@ -263,6 +369,7 @@ function getNumerotation(type) {
          'duplicata',
          'grandtotal',
          'cloture',
+         'zdecaisse',
          'archivefiscale',
          'pistedaudit',
          'jet']).includes(type)) {
@@ -275,6 +382,7 @@ function getLastSignature(type) {
   if (!(['tickets', 
          'duplicatas', 
          'grandstotaux', 
+         'zdecaisse', 
          'archivesfiscales']).includes(type)) {
     throw new Error('Type de signature inconnu');
   }

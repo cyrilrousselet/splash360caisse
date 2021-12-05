@@ -1,10 +1,11 @@
 import {emit} from 'eiphop';
 
-import { startOfToday, isAfter, isBefore, endOfToday, set, format, sub } from 'date-fns';
+import { startOfToday, isAfter, isBefore, endOfToday, formatISO } from 'date-fns';
 // import { dateBounds } from '../../helpers/toolbox';
 import LodashId from 'lodash-id';
 // import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
+import format from 'date-fns/format';
 // const logger = new Logger();
 
 export const clotureServices = {
@@ -24,7 +25,10 @@ export const clotureServices = {
   persistGTPeriodique,
   getTodayCa,
   getBoundedClotures,
-  getLastGTPeriodique
+  getLastGTPeriodique,
+  getZCaisse,
+  getLastZCaisse,
+  persistZCaisse
   // checkYesterdayGTT,
 };
 
@@ -38,9 +42,9 @@ function getTodayCa(heure_fin) {
 //   return {ca, numtickets};
 // }
 
-function getCurrentPeriode(commandes, catalogue, params) {
+function getCurrentPeriode(commandes, gtt, catalogue, params) {
 
- logger.info('clotureServices.getCurrentPeriode()', commandes, params);
+ logger.info('clotureServices.getCurrentPeriode() '+Object.values(commandes).length+', '+JSON.stringify(params));
 
   let __dep = 0
      ,__remb = 0
@@ -65,16 +69,16 @@ function getCurrentPeriode(commandes, catalogue, params) {
       let __valid = true;
 
       // on ne considère pas les commandes des autres centres de revenus
-      if (cmd.hasOwnProperty('centre_revenu') && cmd.centre_revenu!=='restaurant') __valid = false;
+      if (cmd.hasOwnProperty('centre_revenu') && cmd.centre_revenu!=='restaurant') {__valid = false; console.warn('cmd filtrée centre_revenu',cmd.centre_revenu)}
 
       // on ne considère pas les commandes en attente annulées :
-      if (cmd.status==='deleted') __valid = false;
+      if (cmd.status==='deleted') {__valid = false; console.warn('cmd filtrée status',cmd.status)};
 
       // on ne conidère pas les commandes sans ventilation de TVA :
-      if (!cmd.ventilation) __valid = false;
+      if (!cmd.ventilation) {__valid = false; console.warn('cmd.filtrée ventilation absente')};
 
       // on ne récupère que les cmd non archivées (cas du Z)
-      if (cmd.archived!==undefined && cmd.archived!==null) __valid = false;
+      if (cmd.archived!==undefined && cmd.archived!==null) {__valid = false; console.warn("cmd filtrée déjà archivée")}
       if (__valid) numvalid++;
 
 
@@ -82,23 +86,23 @@ function getCurrentPeriode(commandes, catalogue, params) {
 
       // si un vendeur est précisé
       if (vendeur) {
-        if (!cmd.operator_encaissement || (cmd.operator_encaissement && vendeur.id !== cmd.operator_encaissement.id)) __valid = false;
+        if (!cmd.operator_encaissement || (cmd.operator_encaissement && vendeur.id !== cmd.operator_encaissement.id)) {__valid = false; console.warn('cmd filtrée operateur', cmd.operator_encaissement, vendeur.id)}
       } 
 
       // si une caisse est précisée
-      if (caisse) {
-        if (!cmd.caisse_encaissement || (caisse.id !== cmd.caisse_encaissement.id)) __valid = false;
-      } 
+      // if (caisse) {
+      //   if (!cmd.caisse_encaissement || (caisse.id !== cmd.caisse_encaissement.id)) {__valid = false; console.warn('cmd filtrée, caisse',cmd.caisse_encaissement, caisse.id)}
+      // } 
         
 
       // status
-      if (cmd.status!=='confirmed') __valid = false;
+      if (cmd.status!=='confirmed') {__valid = false; console.warn('cmd filtrée : non confirmed')};
 
     //  logger.info('cmd valid='+__valid,cmd);
       return __valid;
     });
 
-    console.log('après deleted', numvalid, '/', Object.values(commandes).length);
+    // console.log('après deleted', numvalid, '/', Object.values(commandes).length);
     // logger.info('après deleted', numvalid, '/', Object.values(commandes).length);
 
     console.log('filtererd_cmd', __filtered_cmd.length);
@@ -109,15 +113,14 @@ function getCurrentPeriode(commandes, catalogue, params) {
     let ventilation = {
       moyen: {},
       tva: {},
-      vendeur: {}
+      vendeur: {},
+      caisse: {},
     };
     let ca = 0;
     let caht = 0;
     let numtickets = 0;
     let ticket_moyen = 0;
-
-
-
+    let staffmeals = 0;
 
 
 
@@ -126,46 +129,97 @@ function getCurrentPeriode(commandes, catalogue, params) {
     __filtered_cmd.forEach(cmd => {
 
       let cmdtotal = 0;
-      // compilation des ventilations TVA
-      Object.entries(cmd.ventilation).forEach( ([k, v]) => {
-        if (!ventilation.tva.hasOwnProperty(k)) {
-          ventilation.tva[k] = {
-            taux: v.taux,
-            code: v.code,
-            ttc: 0,
-            ht: 0,
-            tva: 0
-          };
-        }
 
-        Object.assign(ventilation.tva[k], {
-          ttc: ventilation.tva[k].ttc + v.ttc,
-          ht: ventilation.tva[k].ht + v.ht,
-          tva: ventilation.tva[k].tva +v.tva
+
+      // analyse des données du Grand Total Ticket correspondant à la commande
+      const __gtt = gtt[cmd.ticket];
+      if (__gtt) {
+        const gt_tvattc = __gtt.tva_ttc.split('|');
+        gt_tvattc.forEach(t => {
+          let cpl = t.split(':');
+
+          if (!ventilation.tva.hasOwnProperty(cpl[0])) {
+            ventilation.tva[cpl[0]] = {
+              taux: parseInt(cpl[0]) / 100,
+              ttc: 0,
+              ht: 0,
+              taxe: 0
+            };
+          }
+
+          Object.assign(ventilation.tva[cpl[0]], {
+            ttc: ventilation.tva[cpl[0]].ttc + parseInt(cpl[1])
+          });
+
+          // compilation du CA TTC
+          ca += parseInt(cpl[1]);
+          cmdtotal += parseInt(cpl[1]);
         });
 
-        // compilation du CA (ht et ttc)
-        caht += v.ht;
-        ca += v.ttc;
-        cmdtotal += v.ttc;
-      });
+        const gt_tvaht = __gtt.tva_ht.split('|');
+        gt_tvaht.forEach(t => {
+          let cpl = t.split(':');
+
+          Object.assign(ventilation.tva[cpl[0]], {
+            ht: ventilation.tva[cpl[0]].ht + parseInt(cpl[1])
+          });
+
+          // compilation du CA Hors Taxe
+          caht += parseInt(cpl[1]);
+        });
+
+        const gt_tvataxe = __gtt.tva_taxe.split('|');
+        gt_tvataxe.forEach(t => {
+          let cpl = t.split(':');
+
+          Object.assign(ventilation.tva[cpl[0]], {
+            taxe: ventilation.tva[cpl[0]].taxe + parseInt(cpl[1])
+          });
+        }); 
+      }
+
+      // // compilation des ventilations TVA
+      // Object.entries(cmd.ventilation).forEach( ([k, v]) => {
+      //   if (!ventilation.tva.hasOwnProperty(k)) {
+      //     ventilation.tva[k] = {
+      //       taux: v.taux,
+      //       code: v.code,
+      //       ttc: 0,
+      //       ht: 0,
+      //       tva: 0
+      //     };
+      //   }
+
+      //   Object.assign(ventilation.tva[k], {
+      //     ttc: ventilation.tva[k].ttc + v.ttc,
+      //     ht: ventilation.tva[k].ht + v.ht,
+      //     tva: ventilation.tva[k].tva +v.tva
+      //   });
+
+      //   // compilation du CA (ht et ttc)
+      //   caht += v.ht;
+      //   ca += v.ttc;
+      //   cmdtotal += v.ttc;
+      // });
 
 
 
       // compilation des moyens de paiement
       cmd.reglements.forEach( rgt => {
 
-        if (!ventilation.moyen.hasOwnProperty(rgt.moyen)) {
-          ventilation.moyen[rgt.moyen] = {
-            moyen: rgt.moyen,
+        let __moyen = cmd.caisse_encaissement.type==="caisse" ? rgt.moyen : rgt.moyen+"_"+cmd.caisse_encaissement.type;
+
+        if (!ventilation.moyen.hasOwnProperty(__moyen)) {
+          ventilation.moyen[__moyen] = {
+            moyen: __moyen,
             valeur: 0
           };
         }
-        const __vmo = ventilation.moyen[rgt.moyen].valeur;
-        Object.assign(ventilation.moyen[rgt.moyen], {
-          valeur: Math.round(( ventilation.moyen[rgt.moyen].valeur + rgt.valeur ) * 100) / 100
+        // const __vmo = ventilation.moyen[__moyen].valeur;
+        Object.assign(ventilation.moyen[__moyen], {
+          valeur: Math.round(( ventilation.moyen[__moyen].valeur + rgt.valeur ) * 100) / 100
         });
-        console.log('reglements', `${rgt.moyen} : ${__vmo} + ${rgt.valeur} = ${ventilation.moyen[rgt.moyen].valeur}`);
+        // console.log('reglements', `${__moyen} : ${__vmo} + ${rgt.valeur} = ${ventilation.moyen[__moyen].valeur}`);
         // logger.info('reglements', `${rgt.moyen} : ${__vmo} + ${rgt.valeur} = ${ventilation.moyen[rgt.moyen].valeur}`);
         
       });
@@ -186,7 +240,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
           Object.assign(ventilation.moyen[rnd.moyen], {
             valeur: Math.round(( ventilation.moyen[rnd.moyen].valeur - rnd.valeur) * 100 ) / 100
           });
-          console.log('rendus', `${rnd.moyen} : ${__vmo} - ${rnd.valeur} = ${ventilation.moyen[rnd.moyen].valeur}`);
+          // console.log('rendus', `${rnd.moyen} : ${__vmo} - ${rnd.valeur} = ${ventilation.moyen[rnd.moyen].valeur}`);
           // logger.info('rendus', `${rnd.moyen} : ${__vmo} - ${rnd.valeur} = ${ventilation.moyen[rnd.moyen].valeur}`);
 
 
@@ -228,6 +282,24 @@ function getCurrentPeriode(commandes, catalogue, params) {
         ventes: ventilation.vendeur[cmd.operator_encaissement.id].ventes + cmdtotal,
         remboursements: 0
       });
+
+
+      // compilation des caisses
+      if (!ventilation.caisse.hasOwnProperty(cmd.caisse_encaissement.id)) {
+        ventilation.caisse[cmd.caisse_encaissement.id] = {
+          id: cmd.caisse_encaissement.id,
+          nom: cmd.caisse_encaissement.nom,
+          ca: 0
+        };
+      }
+
+      Object.assign(ventilation.caisse[cmd.caisse_encaissement.id], {
+        ca: ventilation.caisse[cmd.caisse_encaissement.id].ca + cmdtotal
+      });
+
+
+      // repas employés
+      staffmeals += 0;
             
             
 
@@ -244,7 +316,7 @@ function getCurrentPeriode(commandes, catalogue, params) {
     ticket_moyen = numtickets===0 ? 0  : (ca/100) / numtickets;
 
     // logger.info('periode ticket_moyen: '+ticket_moyen.toFixed(2), ca, numtickets);
-    console.log('periode ticket_moyen: '+ticket_moyen.toFixed(2), ca, numtickets);
+    // console.log('periode ticket_moyen: '+ticket_moyen.toFixed(2), ca, numtickets);
 
 
 
@@ -252,8 +324,8 @@ function getCurrentPeriode(commandes, catalogue, params) {
 
     return {
       periode: {
-        debut: __start, //startOfToday(),
-        fin: __end,   //endOfToday(),
+        debut: format(__start,'yyyy-MM-dd HH:mm:ss.SSS'), //startOfToday(),
+        fin: format(__end,'yyyy-MM-dd HH:mm:ss.SSS'),   //endOfToday(),
         editeur: params.user,
         caisse: params.caisse,
         vendeur: params.vendeur,
@@ -269,7 +341,8 @@ function getCurrentPeriode(commandes, catalogue, params) {
         ticket_moyen: ticket_moyen,
         ventilation: ventilation,
         emission: __emission,
-        troppercu: __troppercu
+        troppercu: __troppercu,
+        staffmeals: staffmeals
       },
       cmdtoarchive: __filtered_cmd.map(c=>c.ticketId),
       standby: __numStandby
@@ -280,17 +353,18 @@ function getCurrentPeriode(commandes, catalogue, params) {
   }
 }
 
-function makeCloture(commandes, catalogue, params) {
+function makeCloture(commandes, gtt, catalogue, params) {
 
   // récup des données
-  const { periode, cmdtoarchive } = getCurrentPeriode(commandes, catalogue, params);
+  const { periode, cmdtoarchive } = getCurrentPeriode(commandes, gtt, catalogue, params);
 console.log('makeCloture', periode, cmdtoarchive);
 
   return {
-    clotureId: _newClotureId(),
+    clotureId: params.clotureId,
     periode: periode,
     cmdtoarchive: [],
     archived: new Date(),
+    reportca: params.reportca,
     comptage: params.comptage,
     ecarts: params.ecarts,
     prelevement: params.prelevement,
@@ -348,34 +422,16 @@ function persistGTPeriodique(gtp) {
 }
 
 function getLastGTPeriodique(param) {
-  return emit('dbClotureGetLastGrandTotalPeriodique', {type: param});
+  return emit('dbClotureGetLastGrandTotalPeriodique', {gttype: param});
+}
+function getZCaisse(params) {
+  return emit('dbClotureGetZCaisse', params);
+}
+function persistZCaisse(zdecaisse) {
+  return emit('dbCloturePersistZCaisse', zdecaisse );
 }
 
-// function checkGTPeriodique(type, start, end){
-
-//   return emit('dbClotureCheckGrandTotalPeriodique', {
-//     type: type, 
-//     start: start,
-//     end: end
-//   });
-    
-// }
-
-// function checkGTPeriodique(type, start, end){
-
-
-
-//   return emit('dbClotureCheckGrandTotalTicket', {
-//     "$expr" : 
-//       {"$and":[ 
-//         {"$gte" : [{"$toDouble" :"$createdAt"} , start]},
-//         {"$lt" : [{"$toDouble" :"$createdAt"} , end]},
-//       ]}
-//     });
-  
-  
-// }
-
-const _newClotureId = () => {
-  return 'clo'+LodashId.createId();
+function getLastZCaisse() {
+  return emit('dbClotureGetLastZCaisse', {});
 }
+

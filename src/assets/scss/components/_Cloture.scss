@@ -43,6 +43,9 @@
       }
     }
   }
+  .MainZone {
+    height: calc(100% - 110px);
+  }
 
 }
 
@@ -354,6 +357,7 @@
     }
   }
 
+  .cptautre,
   .total-fdc,
   .total-encaissement,
   .total-caisse {
@@ -375,6 +379,10 @@
       width: 135px;
       text-align: right;
     }
+  }
+  .cptautre label{
+    font-family: $f_blk;
+    color: $vert;
   }
   .total-caisse {
     background-image: linear-gradient($noir 0%, $noir 100%);

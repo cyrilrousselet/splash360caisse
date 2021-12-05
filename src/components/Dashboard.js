@@ -140,7 +140,6 @@ Dashboard.propTypes = {
   getTodayCommandesList: PropTypes.func,
   getAllActive: PropTypes.func.isRequired,
   getParametres: PropTypes.func.isRequired,
-  getCurrentPeriode: PropTypes.func,
   commandeslist: PropTypes.object,
   loading: PropTypes.bool,
   error: PropTypes.object,

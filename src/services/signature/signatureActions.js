@@ -48,6 +48,9 @@ function updateSignature(type, signature) {
       case 'archivesfiscales':
         dispatch({ type: signatureActionTypes.CREATE_SIGNATURE_ARCHIVEFISCALE, archivefiscale: signature });
         break;
+        case 'zdecaisse':
+          dispatch({ type: signatureActionTypes.CREATE_SIGNATURE_Z, zdecaisse: signature });
+          break;
       case 'pistedaudit':
         dispatch({ type: signatureActionTypes.CREATE_SIGNATURE_PISTEDAUDIT, pistedaudit: signature });
         break;

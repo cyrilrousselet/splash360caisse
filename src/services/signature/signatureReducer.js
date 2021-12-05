@@ -6,6 +6,7 @@ const initialState = {
   grandstotaux: [],
   archivesfiscales: [],
   pistedaudit: [],
+  zdecaisse: [],
   jet: [],
   privateKey: null,
   publicKey: null,
@@ -14,7 +15,7 @@ const initialState = {
 
 export function signatureReducer(state = initialState, action) {
   
-  let { tickets, duplicatas, grandstotaux, archivesfiscales, pistedaudit, jet } = state;
+  let { tickets, duplicatas, grandstotaux, archivesfiscales, pistedaudit, zdecaisse, jet } = state;
   
   switch (action.type) {
     case signatureActionTypes.CREATE_SIGNATURE_TICKET:
@@ -52,6 +53,12 @@ export function signatureReducer(state = initialState, action) {
         ...state,
         jet: [...jet, action.jet]
       }
+
+      case signatureActionTypes.CREATE_SIGNATURE_Z:
+        return {
+          ...state,
+          zdecaisse: [...zdecaisse, action.zdecaisse]
+        }
     
     case signatureActionTypes.STORE_KEYS_SUCCESS:
       return {

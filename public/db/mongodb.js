@@ -13,25 +13,31 @@ async function connect() {
     // useUnifiedTopology: true,
     poolSize: 10,
   };
-  log.info('cnx', mongoose.connection!==null);
+  // log.info('cnx '+JSON.stringify(mongoose.connection!==null));
   
   if (db===null) {
-    db = mongoose.connect("mongodb://localhost/splash", mongooseOpts);
+  
+    try {
+      db = await mongoose.connect("mongodb://localhost/splash", mongooseOpts);
+      log.info('App connected to mongo');
+      return db;
+    }
+    catch(e) {
+      log.error("Cannot connect to mongo: ", e);
+      return false;
+    }
   } else {
     return db;
   }
   
-  mongoose.connection.on("error", function (error) {
-    console.error("Cannot connect to mongo: ", error);
-  });
+  // mongoose.connection.on("error", function (error) {
+  //   log.error("Cannot connect to mongo: ", error);
+  // });
 
-  mongoose.connection.on("connected", function() {
-    return db;
-  });
-  
-  mongoose.connection.on("connected", function() {
-    return db;
-  });
+  // mongoose.connection.on("connected", function() {
+  //   log.info('App connected to mongo');
+  //   return db;
+  // });
 
 }
 

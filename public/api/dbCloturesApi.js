@@ -7,6 +7,8 @@ const ClotureModel = require("../db/clotureModel");
 const GTPerpetuelModel = require("../db/GTPerpetuelModel");
 const GTTicketModel = require("../db/GTTicketModel");
 const GTPeriodiqueModel = require("../db/GTPeriodiqueModel");
+const ZCaisseModel = require("../db/zdecaisseModel");
+
 const { uuid } = require("uuidv4");
 
 const actions = {
@@ -81,13 +83,31 @@ const actions = {
 
   dbClotureGetLastGrandTotalPeriodique: async (req, res) => {
     const { payload } = req;
-    const proxies = await _getLastGrandTotalPeriodique(payload.type);
+    const proxies = await _getLastGrandTotalPeriodique(payload.gttype);
     res.send(proxies);
   },
 
   dbCloturePersistGrandTotalPeriodique: async (req, res) => {
     const { payload } = req;
     const confirm = await _persistGrandTotalPeriodique(payload);
+    res.send(confirm);
+  },
+
+
+  dbClotureGetLastZCaisse: async (req, res) => {
+    const proxies = await _getLastZCaisse();
+    res.send(proxies);
+  },
+
+  dbClotureGetZCaisse: async (req, res) => {
+    const { payload } = req;
+    const proxies = await _getZCaisse(payload);
+    res.send(proxies);
+  },
+
+  dbCloturePersistZCaisse: async (req, res) => {
+    const { payload } = req;
+    const confirm = await _persistZCaisse(payload);
     res.send(confirm);
   },
 
@@ -365,7 +385,7 @@ async function _persistGrandTotalPeriodique(payload) {
   const mongo = await connect();
   if (!mongo) return false;
 
-  const __gtp = await GTPeriodiqueModel.create(payload);
+  await GTPeriodiqueModel.create(payload);
 
   return true;
   
@@ -380,13 +400,17 @@ async function _getGrandTotalPerpetuel() {
 
   if (__gtp.length<1) {
 
+    
     __gtp = [{
       id:1,
       calculAlgebrique:0, 
       valeurAbsolue:0
     }];
+    log.info('pas de GTP, donc persistance des valeurs par défaut.');
     _persistGrandTotalPerpetuel(__gtp[0].calculAlgebrique, __gtp[0].valeurAbsolue, true);
   }
+  
+  log.info('GTP: '+JSON.stringify(__gtp));
 
   return {gtpca:__gtp[0].calculAlgebrique, gtpva:__gtp[0].valeurAbsolue};
 
@@ -420,12 +444,46 @@ async function _persistGrandTotalPerpetuel(gtpca, gtpva, insert=false) {
 
 async function _getLastGrandTotalPeriodique(periodetype) {
 
-  const __gtp = await GTPeriodiqueModel.find({type: periodetype}).lean().sort({createdAt:-1}).limit(1);
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  const __gtp = await GTPeriodiqueModel.find({gttype: periodetype}).lean().sort({createdAt:-1}).limit(1);
 
   return __gtp;
 
 }
 
+async function _getLastZCaisse() {
+
+  const mongo = await connect();
+  if (!mongo) return false;
+  
+  const __zc = await ZCaisseModel.find({}).lean().sort({createdAt:-1}).limit(1);
+
+  return __zc;
+}
+
+async function _getZCaisse(criteriae={}) {
+
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  let __zc = await ZCaisseModel.find(criteriae).lean().exec();
+
+  return __zc;
+
+}
+
+async function _persistZCaisse(payload) {
+  
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  await ZCaisseModel.create(payload);
+
+  return true;
+  
+}
 
 async function _generateClotureId() {
   let id;

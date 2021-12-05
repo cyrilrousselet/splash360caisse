@@ -74,6 +74,7 @@ const mapDispatchToProps = (dispatch) => {
     storeNumerotation: signatureActions.storeNumerotation,
     getGTP: clotureActions.getGTP,
     testGTPeriodique: clotureActions.testGTPeriodique,
+    testCloturesAuto: clotureActions.testCloturesAuto,
   }, dispatch);
   return {
     ...bound,

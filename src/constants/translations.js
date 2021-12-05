@@ -480,12 +480,17 @@ const data = {
                 impression: {
                     titre: {
                         x: '< Ticket X Caisse >',
-                        z: '< Ticket Z Caisse >'
+                        z: '< Ticket Z Caisse %TYPE%>'
                     },
                     periode: {
                         titre: 'Période',
                         du: 'du ',
                         au: ' au '
+                    },
+                    type: {
+                        intermediaire: "INTERMEDIAIRE",
+                        jour: 'JOURNALIER',
+                        mois: 'MENSUEL'
                     },
                     editeur: 'Éditeur : ',
                     vendeurs: ['Vendeur : ', 'Vendeurs : '],

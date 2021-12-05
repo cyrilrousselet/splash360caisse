@@ -100,6 +100,7 @@ async function _findNumerotation(criteriae=null) {
       {cle:"duplicata", valeur:1},
       {cle:"grandtotal", valeur:1},
       {cle:"cloture", valeur:1},
+      {cle:"zdecaisse", valeur:1},
       {cle:"archivefiscale", valeur:1},
       {cle:"pistedaudit", valeur:1},
       {cle:"jet", valeur:1}

@@ -2,18 +2,10 @@ const mongoose = require("mongoose");
 
 const ClotureSchema = mongoose.Schema(
   {
-    // archived: String,
-    archivedcommandesid: [String],
     clotureId: String,
-    cmdtoarchive: [],
-    comptage: {
-      avoir: Number,
-      carte: Number,
-      cheque: Number,
-      especes: Number,
-      ticket: Number,
-      total: Number,
-    },
+    ctype: String,
+    archivedcommandesid: [String],
+    comptage: {},
     periode: {
       ca: Number,
       caisses: [],

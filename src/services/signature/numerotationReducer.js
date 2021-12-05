@@ -5,6 +5,7 @@ const initialState = {
   duplicata: 0,
   grandtotal: 0,
   cloture: 0,
+  zdecaisse: 0,
   archivefiscale: 0,
   pistedaudit: 0,
   jet: 0,
@@ -20,6 +21,7 @@ export function numerotationReducer(state = initialState, action) {
         duplicata: action.duplicata,
         grandtotal: action.grandtotal,
         cloture: action.cloture,
+        zdecaisse: action.zdecaisse,
         archivefiscale: action.archivefiscale,
         pistedaudit: action.pistedaudit,
         jet: action.jet

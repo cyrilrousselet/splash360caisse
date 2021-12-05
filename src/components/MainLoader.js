@@ -58,7 +58,8 @@ class MainLoader extends React.Component {
       getStatus,
       blockStation,
       testConnection,
-      online
+      online,
+      testCloturesAuto
     } = this.props;
 
     console.log("DEBUT checkInstallation");
@@ -80,7 +81,6 @@ class MainLoader extends React.Component {
     if(paramLoaded) {
       console.log("PARAM LOADED");
 
-      
 
       // if(online === null) { // if connexion pas
       //   testConnection();
@@ -169,6 +169,8 @@ class MainLoader extends React.Component {
     if (first_start===false) {
       if (paramLoaded===true && sseInit===true && 
           catLoaded===false) {
+
+        testCloturesAuto();
         this.props.getCatalogue();
         this.props.getLastClotureAndAfter();
       }
@@ -223,6 +225,7 @@ class MainLoader extends React.Component {
       storeNumerotation,
       getGTP,
       testGTPeriodique,
+      testCloturesAuto,
     } = this.props;
 
     
@@ -238,6 +241,7 @@ class MainLoader extends React.Component {
         resetNumero();
         getTodayCa();
         testGTPeriodique();
+        testCloturesAuto();
       });
     } 
 

@@ -1,5 +1,5 @@
 // import DateFnsUtils from "@date-io/date-fns";
-import { Fab, FormControl, MenuItem, Modal, Select } from "@material-ui/core";
+import { Fab, Modal } from "@material-ui/core";
 // import {
 //   KeyboardDatePicker,
 //   MuiPickersUtilsProvider,
@@ -146,13 +146,14 @@ class Cloture extends React.Component {
       $and: [
         { archived: {"$exists": false} },
         { status: { $ne: "deleted" } },
-        { $or: [
-          { "caisse_encaissement.id": caisse.id },
-          { $and: [
-            { "caisse.id": caisse.id },
-            { status: { $in: ["standby", "a_encaisser"]} }
-          ]},
-        ]},
+        // { $or: [
+        //   { "caisse_encaissement.id": caisse.id },
+        //   { $and: [
+        //     { "caisse.id": caisse.id },
+        //     { status: { $in: ["standby", "a_encaisser"]} }
+        //   ]},
+        // ]},
+        { getcommandlist: {$exists: false}},
         { $or: [
           { centre_revenu: {"$exists": false} },
           { centre_revenu: "restaurant" }
@@ -170,12 +171,9 @@ class Cloture extends React.Component {
 
     //parametres :
     let params = {};
-    const {
-      selection_caisse,
-      selection_operator,
-    } = this.state;
+    const {selection_operator } = this.state;
 
-    params["caisse"] = selection_caisse;
+  //  params["caisse"] = selection_caisse;
 
     if (selection_operator.id !== "allope")
       params["vendeur"] = selection_operator;
@@ -185,7 +183,7 @@ class Cloture extends React.Component {
   }
 
   componentDidUpdate() {
-    logger.info('update Cloture');
+    // logger.info('update Cloture');
   }
 
   shouldComponentRender() {
@@ -276,6 +274,7 @@ class Cloture extends React.Component {
             { "caisse.id": selection.id },
             { status: { $in: ["standby", "a_encaisser"]} }
           ]},
+          { selectcaisse: {$exists: false} }
         ]},
         { $or: [
           { centre_revenu: {"$exists": false} },
@@ -372,7 +371,6 @@ class Cloture extends React.Component {
 
   prepareCloture(prelevement, newfdcaisse, periode) {
     const {
-      selection_operator,
       selection_caisse,
       comptage,
 
@@ -393,10 +391,11 @@ class Cloture extends React.Component {
     } = this.getEcarts(periode);
     
     let params = {};
-      params["caisse"] = selection_caisse;
-      params["vendeur"] = null;
-    if (selection_operator.id !== "allope")
-      params["vendeur"] = selection_operator;
+    params["type"] = "manuelle";
+      // params["caisse"] = selection_caisse;
+      // params["vendeur"] = null;
+    // if (selection_operator.id !== "allope")
+    //   params["vendeur"] = selection_operator;
     params["comptage"] = comptage;
     params["prelevement"] = prelevement;
     params["fdcaisse"] = newfdcaisse;
@@ -462,7 +461,8 @@ class Cloture extends React.Component {
         carte = 0,
         ticket = 0,
         cheque = 0,
-        avoir = 0;
+        avoir = 0,
+        autres = [];
 
     if (ventilation && ventilation.moyen) {
       if (ventilation.moyen.hasOwnProperty('especes')) especes = ventilation.moyen.especes.valeur;
@@ -471,9 +471,20 @@ class Cloture extends React.Component {
       if (ventilation.moyen.hasOwnProperty('ticket')) ticket = ventilation.moyen.ticket.valeur  - emission;
       if (ventilation.moyen.hasOwnProperty('cheque')) cheque = ventilation.moyen.cheque.valeur;
       if (ventilation.moyen.hasOwnProperty('avoir')) avoir = ventilation.moyen.avoir.valeur;
+      Object.entries(ventilation.moyen).forEach(([k,v]) => {
+        // console.log('VENTILATION',periode.numtickets, k);
+        if (k.includes('_')) {
+          let m = k.split('_');
+          autres.push({
+            moyen: m[0],
+            station: m[1],
+            valeur: v.valeur
+          });
+        }
+      });
     }
 
-    return {especes, carte, ticket, cheque, avoir};
+    return {especes, carte, ticket, cheque, avoir, autres};
   }
 
   validComptage(fieldname, value) {
@@ -626,7 +637,7 @@ class Cloture extends React.Component {
         nom: user.nom,
         user_id: user.user_id,
       },
-      caisse: selection_caisse,
+    //  caisse: selection_caisse,
       vendeur: null,
       fdcaisse: fonddecaisse,
       debut: startDate,
@@ -635,8 +646,8 @@ class Cloture extends React.Component {
     };
 
     if (periode) {
-      params.debut = periode.debut;
-      params.fin = periode.fin;
+      params.debut = (new Date(periode.debut)).getTime();
+      params.fin = (new Date(periode.fin)).getTime();
     }
 
 
@@ -645,6 +656,7 @@ class Cloture extends React.Component {
 
     const periode_z = clotureServices.getCurrentPeriode(
       listeCommandes,
+      {},
       catalogue,
       params
     );
@@ -661,7 +673,7 @@ class Cloture extends React.Component {
           
     // logger.info('fdcaisse_new', periode_z.periode.fdcaisse+' + ('+comptage_fv+' - '+Number(prelevement_fv.replace(",", "."))+')');
     // logger.info('operators', operators);
-     logger.info('******* caisses', caisses);
+    //  logger.info('******* caisses', caisses);
 
     if (processing) {
 
@@ -706,10 +718,21 @@ class Cloture extends React.Component {
     // récup de la ventilation par moyen de paiement (TR - avoirs émis)
     // NB. pour récupérer le total TR, il faut aller chercher periode_z.periode.ventilation.moyen.find(m=>m.moyen==='ticket').valeur
     const _ventilation = this.getVentilation(periode_z.periode);
-    const { especes, carte, ticket, cheque, avoir } = _ventilation;
+    const { especes, carte, ticket, cheque, avoir, autres } = _ventilation;
+
+    // console.log('AUTRES', autres);
 
     // total des encaissements (on soustrait les avoirs émis du total des TR)
-    const _encaissement = Object.values(_ventilation).reduce((a,b)=>a+b,0);
+    const _encaissement = Object.values(_ventilation).reduce((a,b)=>{ 
+      if (Array.isArray(b)) {
+        let tb = 0;
+        b.forEach(m => tb += m.valeur );
+        return a + tb;
+      } else {
+        return a + b;
+      } 
+    },0);
+
     
     const { ecart_especes, ecart_carte, ecart_ticket, ecart_cheque, ecart_avoir } = this.getEcarts(periode_z.periode);
 
@@ -757,7 +780,7 @@ class Cloture extends React.Component {
         <div className="MainZone">
           <div className="clo-top">
             <StdButton identifier="btnretour" elementclass="btnretour" key="btnretour" text={ strings.general.dialog.back } onClick={ () => { history.push(paths.CLOTURE) }} />
-            <div className="zone-selecteur">
+            { /* <div className="zone-selecteur">
               <div className="label">
                 {strings.modules.cloture.selection.caisse}
               </div>
@@ -790,14 +813,14 @@ class Cloture extends React.Component {
                   ))}
                 </Select>
               </FormControl>
-            </div>
+                  </div> */}
             <div className="periode">
               <div className="titre">{strings.modules.cloture.selection.titre}</div>
               <div className="dates">
                 { `${strings.modules.cloture.selection.debut} 
-                   ${format(periode.debut, "d MMM yyyy (HH'h'mm)", { locale: frLocale })} 
+                   ${ format(new Date(periode.debut), "d MMM yyyy (HH'h'mm)", { locale: frLocale }) } 
                    ${strings.modules.cloture.selection.fin} 
-                   ${ format(periode.fin, "d MMM yyyy (HH'h'mm)", { locale: frLocale })}
+                   ${ format(new Date(periode.fin), "d MMM yyyy (HH'h'mm)", { locale: frLocale }) }
                 `}
               </div>
             </div>
@@ -891,10 +914,18 @@ class Cloture extends React.Component {
                   </>)}
                   {(ecart_avoir_fv===0) && (<div className="ecart">-</div>)}
                 </div>
-
               </div>{/* -- /.clo-gauche-top -- */}
 
               <div className="clo-gauche-btm">
+
+                {(autres.length>0 && autres.map(am => (
+                  <div key={`cptautre-${am.station}`} className="cptautre">
+                    <label>{ `${strings.modules.cloture.comptage.moyens[am.moyen]} (${am.station})` }</label>
+                    <div className="input">{`${devise(
+                      am.valeur
+                    )} €`}</div>
+                  </div>
+                )))}
                 <div key={`total-encaissement`} className="total-encaissement">
                   <label>{strings.modules.cloture.comptage.especes.total_encaissement}</label>
                   <div className="input">{`${devise(

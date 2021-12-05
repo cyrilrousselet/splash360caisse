@@ -1551,64 +1551,64 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 }
 
 
-function printPeriodeX(payload={}) {
+// function printPeriodeX(payload={}) {
 
-  return (dispatch, getState) => {
+//   return (dispatch, getState) => {
 
-      // -> template ticket
-      const template = [
-        'entreprise', 
-        'periode_x'
-      ];
+//       // -> template ticket
+//       const template = [
+//         'entreprise', 
+//         'periode_x'
+//       ];
 
-      let periode = {};
-      if (Object.values(payload).length===0) {
-        periode = getState().clotureReducer.periode;
-      } else {
-        periode = payload.periode;
-      }
+//       let periode = {};
+//       if (Object.values(payload).length===0) {
+//         periode = getState().clotureReducer.periode;
+//       } else {
+//         periode = payload.periode;
+//       }
 
-      const { impression } = strings.modules.cloture;
-      const { imprimantes, tickets } = getState().peripheralReducer;
-      const { entreprise } = getState().parametresReducer.parametres;
+//       const { impression } = strings.modules.cloture;
+//       const { imprimantes, tickets } = getState().peripheralReducer;
+//       const { entreprise } = getState().parametresReducer.parametres;
 
-      // récup des préf. du ticket et de l'imprimante correspondante
-      let ticket = Object.values(tickets).find(tck=>tck.template==='cloture_x');
-      let imprimante = Object.values(imprimantes).find(imp=>imp.printer_id===ticket.imprimantes[0]);
+//       // récup des préf. du ticket et de l'imprimante correspondante
+//       let ticket = Object.values(tickets).find(tck=>tck.template==='cloture_x');
+//       let imprimante = Object.values(imprimantes).find(imp=>imp.printer_id===ticket.imprimantes[0]);
 
-      const { debut, fin } = periode;
-      const __debut = format(debut, "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
-      const __fin = format(fin, "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
+//       const { debut, fin } = periode;
+//       const __debut = format(debut, "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
+//       const __fin = format(fin, "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
 
 
-      const __periode = {...periode, 
-                 debut: __debut, 
-                 fin: __fin};
+//       const __periode = {...periode, 
+//                  debut: __debut, 
+//                  fin: __fin};
 
-      const siret = entreprise.siret;
-      const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
+//       const siret = entreprise.siret;
+//       const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
 
-      const contenu = {
-        // -> entreprise
-        entreprise: {
-          nom: removeDiacritics(String(entreprise.denomination).toUpperCase()),
-          coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, entreprise.site_web ],
-          fiscal: [ siret_formatted ]
-        },
-        periode: __periode,
-        strings: impression
-      };
+//       const contenu = {
+//         // -> entreprise
+//         entreprise: {
+//           nom: removeDiacritics(String(entreprise.denomination).toUpperCase()),
+//           coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, entreprise.site_web ],
+//           fiscal: [ siret_formatted ]
+//         },
+//         periode: __periode,
+//         strings: impression
+//       };
 
-    peripheralServices.printTicket(imprimante, template, contenu)
-    .then(
-      response => {
-        logger.info('print X');
-      }
-    )
-    dispatch({ type: peripheralActionTypes.PRINT_PERIODE_X });
+//     peripheralServices.printTicket(imprimante, template, contenu)
+//     .then(
+//       response => {
+//         logger.info('print X');
+//       }
+//     )
+//     dispatch({ type: peripheralActionTypes.PRINT_PERIODE_X });
 
-  }
-}
+//   }
+// }
 
 function printCloture(payload={}) {
   return async (dispatch, getState) => {  
@@ -1698,6 +1698,75 @@ function printCloture(payload={}) {
   }
 }
 
+function printZCaisse(zdecaisse) {
+  return async (dispatch, getState) => {
+
+    const template = templates.cloture;
+    
+    logger.info('printZCaisse()', zdecaisse);
+
+    const { impression } = strings.modules.cloture;
+    const { imprimantes, tickets } = getState().peripheralReducer;
+    const { financier, entreprise, options } = getState().parametresReducer.parametres;
+    const { caisse } = options;
+
+    // récup des préf. du ticket et de l'imprimante correspondante
+    let ticket = Object.values(tickets).find(tck=>tck.template==='cloture_z');
+    let imprimante = Object.values(imprimantes).find(imp=>imp.printer_id===ticket.imprimantes[0]);
+
+    const { periode } = zdecaisse;
+    const p = periode.split('|');
+    const debut = p[0].substring(0,4)+"-"+p[0].substring(4,6)+"-"+p[0].substring(6,8)+' '+p[0].substring(8,10)+':'+p[0].substring(10,12)+':'+p[0].substring(12,14);
+    const fin = p[1].substring(0,4)+"-"+p[1].substring(4,6)+"-"+p[1].substring(6,8)+' '+p[1].substring(8,10)+':'+p[1].substring(10,12)+':'+p[1].substring(12,14);
+
+    const __debut = format(new Date(debut), "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
+    const __fin = format(new Date(fin), "dd/MM/yyyy-HH:mm:ss", { locale: frLocale });
+
+
+    const __periode = {...zdecaisse, 
+                debut: __debut, 
+                fin: __fin};
+
+    const siret = entreprise.siret;
+    const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
+
+    
+    const { tresorslist } = 
+      financier.fonddecaisse_activation 
+      ? ( caisse 
+        ? await tresorServices.getServiceMouvements( {caisseId: caisse.uniqid, debut: new Date(debut).getTime()} ) 
+        : {tresorslist: null} ) 
+      : {tresorslist: null};
+
+
+
+    const contenu = {
+      // -> entreprise
+      entreprise: {
+        nom: removeDiacritics(String(entreprise.denomination).toUpperCase()),
+        coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, entreprise.site_web ],
+        fiscal: [ siret_formatted ]
+      },
+      periode: __periode,
+      prelevement: zdecaisse.prelevement,
+      comptage: zdecaisse.comptage,
+      ecarts: zdecaisse.ecarts,
+      strings: impression,
+      mouvements: tresorslist
+    };
+
+    logger.info('peripheralActions.printZCaisse contenu:', contenu);
+
+    peripheralServices.printTicket(imprimante, template, contenu)
+    .then(
+      response => {
+        logger.info('print Z');
+      }
+    )
+    dispatch({ type: peripheralActionTypes.PRINT_PERIODE_Z });
+  }
+}
+
 function quitApp() {
   return dispatch => {
     dispatch({type: peripheralActionTypes.QUIT_APP});
@@ -1721,7 +1790,8 @@ export const peripheralActions = {
   printTicketFromAPI,
   printCommandeTicket,
   printTicket,
-  printPeriodeX,
+  // printPeriodeX,
   printCloture,
+  printZCaisse,
   quitApp
 };

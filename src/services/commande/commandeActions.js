@@ -1492,6 +1492,8 @@ function setCommandeFromOrder(provider, payload) {
           
           dispatch( signatureActions.updateSignature('tickets', signature) );
           dispatch( signatureActions.updateNumerotation('ticket', ticket+1) );
+
+          dispatch(clotureActions.createGrandTotalTicket(confirm));
           
         }
 
@@ -1556,9 +1558,11 @@ function setCommandeFromAPI(payload) {
         enproduction: true,
         provider: data.provider,
         operator: {id:'clickandcollect', nom:'clickandcollect'},
-        caisse: {id:'clickandcollect', nom:'clickandcollect'}
+        caisse: {id:'clickandcollect', nom:'clickandcollect', type:'clickandcollect'}
       };
       if (data.reglements) {
+        data.operator = {id:'clickandcollect', nom:'clickandcollect'};
+        data.caisse = {id:'clickandcollect', nom:'clickandcollect', type:'clickandcollect'};
         data.reglements = data.reglements.map(r => ( (r.reglementId) ? {...r} : {...r, reglementId: LodashId.createId()}) );
       }
     } 
@@ -1568,6 +1572,8 @@ function setCommandeFromAPI(payload) {
 
         if (!data.operator.hasOwnProperty('uniqid')) data.operator.uniqid = data.operator.id;
         if (!data.caisse.hasOwnProperty('uniqid')) data.caisse.uniqid = data.caisse.id;
+
+        if (!data.caisse.hasOwnProperty('type')) data.caisse.type = "borne";
 
         data = {
           ...data,
@@ -1678,6 +1684,8 @@ function setCommandeFromAPI(payload) {
             
             dispatch( signatureActions.updateSignature('tickets', signature) );
             dispatch( signatureActions.updateNumerotation('ticket', ticket+1) );
+
+            dispatch(clotureActions.createGrandTotalTicket(confirm));
           }
 
         }
