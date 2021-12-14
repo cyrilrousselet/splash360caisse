@@ -595,14 +595,14 @@ class Cloture extends React.Component {
       periode,
       listeCommandes,
       catalogue,
-      caisses,
+      // caisses,
       user,
     } = this.props;
 
     const {
       saisie_prelevement,
       activeField,
-      selection_caisse,
+      // selection_caisse,
       selection_operator,
       keyboardOpen,
       fieldvalue,
@@ -668,7 +668,7 @@ class Cloture extends React.Component {
 
     const readyToCloture = this.testStandbyCommandes(periode_z);
 
-    const operators = this.getListeVendeurs();
+    // const operators = this.getListeVendeurs();
 
           
     // logger.info('fdcaisse_new', periode_z.periode.fdcaisse+' + ('+comptage_fv+' - '+Number(prelevement_fv.replace(",", "."))+')');

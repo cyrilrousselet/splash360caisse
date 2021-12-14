@@ -6,7 +6,7 @@ import 'date-fns';
 import { format, parseJSON } from "date-fns";
 import frLocale from "date-fns/locale/fr";
 
-import { devise } from "../../helpers/toolbox";
+import { asyncForEach, devise } from "../../helpers/toolbox";
 
 import { templates } from '../../constants/templates';
 
@@ -18,6 +18,7 @@ import { last, lowerCase } from 'lodash';
 // import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 import { commandeServices } from '../commande/commandeServices';
+import { journalActions } from '../journal/journalActions';
 // const logger = new Logger();
 const removeDiacritics = remove;
 const strings = new LocalizedStrings(data);
@@ -574,7 +575,7 @@ function printTicketFromAPI(payload) {
 
 
 function printCommandeTicket(quelstickets, cmd, nokds=false) {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
 
     const state = getState();
 
@@ -661,7 +662,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
       
 
       let noarticle = false;
-      tckToPrint.forEach(ticket => {
+      // tckToPrint.forEach(async ticket => {
+      await  asyncForEach(tckToPrint, async ticket => {
 
       //  impression_ordre = impression.find(it => it.ticket===ticket.ticket_id);
         target_imprimantes = Object.values(imprimantes).filter((imp)=>(ticket.imprimantes.indexOf(imp.printer_id)>-1));
@@ -1517,14 +1519,21 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           // logger.timeEnd('printCommandeTicket()');
         } else {
 
-          peripheralServices.printTicket(target_imprimantes[0], template, contenu)
-          .then(
-            response => {
-              // logger.timeEnd('printCommandeTicket()');
-              logger.info(response);
+          try {
+            const response = await peripheralServices.printTicket(target_imprimantes[0], template, contenu);
+            logger.info(response);
+            dispatch({ type: peripheralActionTypes.PRINT_TICKET });
+            
+            if (template==='commande' && cmd.duplicatas && cmd.duplicatas.length>1) {
+              dispatch(journalActions.log('155', cmd.duplicataid));
             }
-          )
-          dispatch({ type: peripheralActionTypes.PRINT_TICKET });
+          } 
+          catch(e) {
+            // log de non édition d'une note dans le cas du ticket "commande" original (note)
+            if (template==='commande' && (!cmd.duplicatas || cmd.duplicatas.length<1)) {
+              dispatch(journalActions.log('329', e));
+            }
+          }
 
         }
 
@@ -1748,11 +1757,12 @@ function printZCaisse(zdecaisse) {
         fiscal: [ siret_formatted ]
       },
       periode: __periode,
-      prelevement: zdecaisse.prelevement,
-      comptage: zdecaisse.comptage,
-      ecarts: zdecaisse.ecarts,
+      prelevement: zdecaisse.prelevement || 0,
+      comptage: zdecaisse.comptage || null,
+      ecarts: zdecaisse.ecarts || null,
       strings: impression,
-      mouvements: tresorslist
+      mouvements: tresorslist,
+      createdAt: format(new Date(zdecaisse.createdAt),'yyyy/MM/dd HH:mm:ss')
     };
 
     logger.info('peripheralActions.printZCaisse contenu:', contenu);
@@ -1770,6 +1780,7 @@ function printZCaisse(zdecaisse) {
 function quitApp() {
   return dispatch => {
     dispatch({type: peripheralActionTypes.QUIT_APP});
+    dispatch(journalActions.log('40','extinction'));
     peripheralServices.quitApp();
   }
 }

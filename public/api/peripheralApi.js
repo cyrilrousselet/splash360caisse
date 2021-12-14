@@ -23,26 +23,25 @@ const { logger } = require('@sentry/utils');
 let printerOpen = false;
 let waitInterval = null;
 
+
+let webContents = null;
+
 let printSpool = [];
 
 
-const actions = {
+const peripheral = {
+  init: (wcont) => {
+    log.info("peripheralApi.init()");
+    webContents = wcont;
+  }
+};
 
+const actions = {
+  
   quitApp: (req,res) => {
     log.info('QUIT APP');
     app.quit();
   },
-
-  printLabel: (req, res) => {
-
-    // const { imprimante } = req.payload;
-
-    log.info('printLabel');
-
-    
-
-  },
-
 
   printTicket: (req, res) => {
 
@@ -56,23 +55,6 @@ const actions = {
       template: template,
       contenu: contenu
     });
-
-    // if (printerOpen) {
-    //   clearInterval(waitInterval);
-    //   waitInterval = setInterval(function() {
-    //     log.info('wait for printer close', printerOpen, 'actions.printTicket()');
-    //     if (!printerOpen) {
-    //       log.info('at last, printer closed', printerOpen, 'actions.printTicket()');
-    //       clearInterval(waitInterval);
-    //       _doPrintTicket(imprimante, template, contenu);
-    //     }
-    //   },200);
-    // }
-    // else {
-    //   _doPrintTicket(imprimante, template, contenu);
-    // }
-
-   
 
     res.send({msg: 'ticket printed'});
   },
@@ -320,12 +302,15 @@ function _openDrawer(imprimante, template, contenu) {
     if (error) {
       log.warn(`ERREUR IMPRIMANTE->TIROIR (${imprimante.connexion}: ${imprimante.param})`);
       log.error(error.message);
+      webContents.send('jet', {code:'150', description: `erreur imprimante (${imprimante.connexion}: ${imprimante.param})`});
     } else {
       log.info('device open -> cashdraw()');
       printerOpen = true;
       printer
         .cashdraw()
         .cashdraw();
+
+      webContents.send('jet', {code:'901', description: ''}); // evenement 'ouverture du tiroir-caisse'
         
       setTimeout(() => {
         log.info('printer.close()', '_openDrawer() 2');
@@ -369,6 +354,10 @@ function _doPrintTicket(imprimante, template, contenu) {
     
   } catch(e) {
     log.warn(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`);
+    webContents.send('jet', {code: '150', description: `erreur imprimante (${imprimante.connexion}: ${imprimante.param})`});
+    if (template==='commande' && (!contenu.legal || contenu.legal.printid===1)) {
+      webContents.send('jet', {code: '329', description: ''});
+    }
     log.error(e.message);
   }
 
@@ -395,7 +384,11 @@ function _doPrintTicket(imprimante, template, contenu) {
 
           if (error) {
             log.warn(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`);
+            webContents.send('jet', {code: '150', description: `erreur imprimante (${imprimante.connexion}: ${imprimante.param})`});
             log.error(error.message);
+            if (template==='commande' && (!contenu.legal || contenu.legal.printid===1)) {
+              webContents.send('jet', {code: '329', description: ''});
+            }
           } else {
             
             printerOpen = true;
@@ -408,13 +401,17 @@ function _doPrintTicket(imprimante, template, contenu) {
 
             // une fois le logo chargé on lance l'impression des sections du tickets
             if (printimage) {
-            _launchPrint(template, printer, contenu, imprimante.config);
+              _launchPrint(template, printer, contenu, imprimante.config);
             }
           }
 
         });
       } else {
         log.error('impression impossible');
+        webContents.send('jet', {code: '150', description: `impression impossible`});
+        if (template==='commande' && (!contenu.legal || contenu.legal.printid===1)) {
+          webContents.send('jet', {code: '329', description: ''});
+        }
       }
 
     });
@@ -430,7 +427,11 @@ function _doPrintTicket(imprimante, template, contenu) {
 
         if (error) {
           log.warn(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`);
+          webContents.send('jet', {code: '150', description: `erreur imprimante (${imprimante.connexion}: ${imprimante.param})`});
           log.error(error.message);
+          if (template==='commande' && (!contenu.legal || contenu.legal.printid===1)) {
+            webContents.send('jet', {code: '329', description: ''});
+          }
         } else {
 
           log.info(`DEVICE OPEN (${imprimante.connexion}: ${imprimante.param})`);
@@ -441,6 +442,10 @@ function _doPrintTicket(imprimante, template, contenu) {
       });
     } else {
       log.error('impression impossible');
+      webContents.send('jet', {code: '150', description: `impression impossible`});
+      if (template==='commande' && (!contenu.legal || contenu.legal.printid===1)) {
+        webContents.send('jet', {code: '329', description: ''});
+      }
     }
   }
     
@@ -1872,6 +1877,7 @@ function _printPeriodeZ(printer, data, strings, printx=false) {
       .tableCustom([{text: strings.periode.titre, cols:42, align:'LEFT'}])
       .tableCustom([{text: data.debut+' -> '+data.fin, cols:42, align:'CENTER'}])
       .tableCustom([{text: strings.editeur+data.editeur.nom, cols:42, align:'LEFT'}])
+      .tableCustom([{text: strings.edited+data.createdAt, cols:42, align:'LEFT'}])
       .feed(1)
       ;
     // vendeur :
@@ -1886,8 +1892,9 @@ function _printPeriodeZ(printer, data, strings, printx=false) {
     }
     // caisse :
     if (data.caisse) {
+      const __caisseid = data.caisse.id ? data.caisse.id : data.caisse; 
       printer.tableCustom([
-        {text: strings.caisses[0]+data.caisse.nom, cols:42, align:'LEFT'}
+        {text: strings.caisses[0]+__caisseid, cols:42, align:'LEFT'}
       ]).feed(1);
       
     } else {
@@ -2008,6 +2015,41 @@ function _printPeriodeZ(printer, data, strings, printx=false) {
         {text: Number(vndtotal/100).toFixed(2).replace('.',','), cols:9, align:'RIGHT'}
       ]);
 
+      // ventilation par station
+      printer
+        .align('CT')
+        .style('B')
+        .setReverseColors(true)
+        .text(printer._completeRaw(strings.ventilation.caisse, "center"))
+        .setReverseColors(false)
+        .drawLine();
+  
+      let cashtotal = 0;
+  
+      printer
+        .tableCustom([
+          {text: '', cols:24, align:'LEFT'},
+          {text: strings.caption.ca_short, cols:18, align:'RIGHT'}
+        ]);
+  
+      Object.values(data.ventilation.caisse).forEach(caisse => {
+        
+        printer
+          .style('NORMAL')
+          .tableCustom([
+            {text: caisse.nom+' ('+caisse.id+')', cols:24, align:'LEFT'},
+            {text: Number(caisse.ca/100).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
+          ]);
+          cashtotal += caisse.ca;
+      });
+  
+      printer
+        .feed(1)
+        .tableCustom([
+          {text: strings.caption.total, cols:24, align:'LEFT'},
+          {text: Number(cashtotal/100).toFixed(2).replace('.',','), cols:9, align:'RIGHT'}
+        ]);
+
     // ventilation par TVA
     printer
       .drawLine()
@@ -2093,12 +2135,19 @@ function _printPeriodeZ(printer, data, strings, printx=false) {
     Object.values(data.ventilation.moyen).forEach(moyen => { 
 
       let __moy = moyen.moyen;
+      let __moy_o = '';
+      if (moyen.moyen.includes('_')) {
+        let m_r = moyen.moyen.split('_');
+        __moy = m_r[0];
+        __moy_o = ` (${m_r[1]})`;
+      }
       let __val = moyen.valeur;
+      let __ctg = data.comptage ? data.comptage[__moy] : 0;
 
       // on déduit le montant des avoirs émis du total des TR
-      if (moyen.moyen==='ticket') __val -= data.emission;
+      if (__moy==='ticket') __val -= data.emission;
 
-      const __moy_ecart = (data.ecarts.hasOwnProperty(__moy) && data.ecarts[__moy]!==null) ? data.ecarts[__moy].valeur : 0;
+      const __moy_ecart = (data.ecarts && data.ecarts.hasOwnProperty(__moy) && data.ecarts[__moy]!==null) ? data.ecarts[__moy].valeur : 0;
 
       moytotal += __val;
       ecarttotal += __moy_ecart;
@@ -2106,9 +2155,9 @@ function _printPeriodeZ(printer, data, strings, printx=false) {
       printer
         .style('NORMAL')
         .tableCustom([
-          {text: strings.caption.moyens[moyen.moyen], col:14, align:'LEFT'},
+          {text: strings.caption.moyens[__moy]+__moy_o, col:14, align:'LEFT'},
           {text: Number(__val).toFixed(2).replace('.',','), col:10, align:'RIGHT'},
-          {text: Number(data.comptage[__moy]).toFixed(2).replace('.',','), col:10, align:'RIGHT'},
+          {text: Number(__ctg).toFixed(2).replace('.',','), col:10, align:'RIGHT'},
           __moy_ecart===0 ? {text: '', col:8} : {text: `${(Number(__moy_ecart)>0) ? '+':''}${ Number(__moy_ecart).toFixed(2).replace('.',',') }`, cols:8, align:'RIGHT'}
         ]);
       if (__moy_ecart!==0) {
@@ -2264,4 +2313,4 @@ function _printLegal(printer, data, strings) {
 
 
 
-module.exports = actions;
+module.exports = {...peripheral, ...actions};

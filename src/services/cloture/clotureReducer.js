@@ -5,6 +5,7 @@ const initialState = {
   error: null,
   periode: {},
   clotures: {},
+  zcaisse: [],
   gtpca: 0,
   gtpva: 0,
   today_ca: 0,
@@ -50,6 +51,12 @@ export function clotureReducer(state = initialState, action) {
         gtpca: action.gtpca,
         gtpva: action.gtpva
       };
+
+    case clotureActionTypes.GET_ZCAISSE_SUCCESS:
+      return {
+        ...state,
+        zcaisse: action.zcaisse
+      }
 
     default:
       return state;

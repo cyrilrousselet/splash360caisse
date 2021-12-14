@@ -95,7 +95,8 @@ const actions = {
 
 
   dbClotureGetLastZCaisse: async (req, res) => {
-    const proxies = await _getLastZCaisse();
+    const { payload } = req;
+    const proxies = await _getLastZCaisse(payload);
     res.send(proxies);
   },
 
@@ -363,7 +364,7 @@ async function _persistGrandTotalTicket(payload) {
   const mongo = await connect();
   if (!mongo) return false;
 
-  const __gtt = await GTTicketModel.create(payload);
+  await GTTicketModel.create(payload);
 
   return true;
   
@@ -453,12 +454,12 @@ async function _getLastGrandTotalPeriodique(periodetype) {
 
 }
 
-async function _getLastZCaisse() {
+async function _getLastZCaisse(query={}) {
 
   const mongo = await connect();
   if (!mongo) return false;
   
-  const __zc = await ZCaisseModel.find({}).lean().sort({createdAt:-1}).limit(1);
+  const __zc = await ZCaisseModel.find(query).lean().sort({createdAt:-1}).limit(1);
 
   return __zc;
 }

@@ -14,13 +14,14 @@ import { formatISO, differenceInMilliseconds, parseISO } from 'date-fns';
 // import frLocale from "date-fns/locale/fr";
 // import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
-import { commandeActionTypes } from '../commande/commandeActionTypes';
+// import { commandeActionTypes } from '../commande/commandeActionTypes';
 // import { catalogueActionTypes } from '../catalogue/catalogueActionTypes';
 import { catalogueActions } from '../catalogue/catalogueActions';
 import { parametresActions } from '../parametres/parametresActions';
 import { parametresActionTypes } from '../parametres/parametresActionTypes';
 import { peripheralActions } from '../peripheral/peripheralActions';
 import LodashId from 'lodash-id';
+import { journalActions } from '../journal/journalActions';
 // const strings = new LocalizedStrings(data);
 //  const logger = new Logger();
 
@@ -184,6 +185,9 @@ function syncDispatch(db, data, emitter=null) {
           }
           data = {...data, supplementArray_c};
         }
+
+
+        dispatch(journalActions.log('110', 'synchronisation catalogue backend'));
 
         notificationServices.syncCatalogue({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret, catalogue:{db:db, data:data}})
         .then(
@@ -458,6 +462,7 @@ function getDatabase() {
         dispatch({type: parametresActionTypes.INSTALL_DATABASE, value:[], msg:'NAct.getDatabase()'});
         dispatch(catalogueActions.replaceDatabase(database));
         dispatch(parametresActions.replaceDatabase(database));
+        dispatch(journalActions.log('140', 'importation database'));
       },
       error => {
         dispatch({type: notificationActionTypes.GET_DATABASE_FAILURE, error: error});
@@ -553,6 +558,8 @@ function syncCommandes(commandes) {
     const { options } = getState().parametresReducer.parametres;
 
     if (options.role!=="secondary") {
+
+      dispatch(journalActions.log('110', 'synchronisation commandes backend'));
 
       notificationServices.syncCommandes({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret, commandes:commandes})
       .then(
@@ -674,6 +681,8 @@ function syncClotures(clotures) {
     const { options } = getState().parametresReducer.parametres;
 
     if (options.role!=="secondary") {
+
+      dispatch(journalActions.log('110', 'synchronisation clotures backend'));
 
       notificationServices.syncClotures({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret, clotures:clotures})
       .then(

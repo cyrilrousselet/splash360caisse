@@ -9,6 +9,7 @@ import schedule from 'node-schedule';
 import externalParams from '../../constants/externalParams.json';
 import { numeroServices } from '../commande/numeroServices';
 import { numeroActionTypes } from '../commande/numeroActionTypes';
+import { journalActions } from '../journal/journalActions';
 
 
 // const logger = new Logger();
@@ -127,6 +128,8 @@ function installStation() {
             "valeur": client_secret
           }];
 
+          dispatch(journalActions.log('260', 'installation de la station'));
+
           parametresServices.update(payload)
             .then(
               data => {
@@ -187,6 +190,8 @@ function testConnection() {
   return (dispatch, getState) => {
     const condition = navigator.onLine ? 'online' : 'offline';
 
+    const {online} = getState().parametresReducer;
+
     if(condition === 'online') {
       fetch(externalParams.synchro.ping, {
         mode: 'no-cors',
@@ -194,12 +199,16 @@ function testConnection() {
       .then(() => {
         // Internet
         // logger.info("test co : internet");
+        if (online==='off') {
+          dispatch(journalActions.log('120', 'connexion active'));
+        }
         dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: 'on'});
         dispatch(checkConnection());
       }).catch((err) => {
         // Pas internet
         logger.info("test co : pas internet");
         logger.error(err);
+        dispatch(journalActions.log('70','hors connexion'));
         dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: 'off'});
         // dispatch(checkStatusAndConnection());
         dispatch(checkConnection());
@@ -208,6 +217,7 @@ function testConnection() {
     else {
       // Pas internet
       logger.info("test co : pas internet");
+      dispatch(journalActions.log('70','hors connexion'));
       dispatch({type: parametresActionTypes.CONNECTION_TESTED, value: 'off'});
       // dispatch(checkStatusAndConnection());
       dispatch(checkConnection());

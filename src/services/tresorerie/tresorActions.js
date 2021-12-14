@@ -8,6 +8,7 @@ import { notificationActions } from '../notification/notificationActions';
 // import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 import { commandeServices } from "../commande/commandeServices";
+import { journalActions } from "../journal/journalActions";
 // const logger = new Logger();
 
 
@@ -44,6 +45,7 @@ function addTresor(payload) {
           if (data.origine===caisse.uniqid) __isOuverture = false;
         }
 
+        dispatch( journalActions.log('170', `creation '${data.type}' #${tresor.tresorId}`) );
 
         dispatch({
           type: tresorActionTypes.ADD_SUCCESS,
@@ -282,6 +284,8 @@ function updateTresor(payload) {
 
       data => {
 
+
+        dispatch( journalActions.log('170', `mise à jour '${data.type}' #${data.tresorId}`) );
 
         let __isOuverture = null;
         if (data.destination===caisse.uniqid) {

@@ -62,7 +62,7 @@
 
 
 
-import { createLogger, format, transports } from 'winston';
+import { loggers, format, transports } from 'winston';
 import 'winston-daily-rotate-file';
 
 
@@ -97,6 +97,7 @@ const checkDirectorySync = (directory) => {
 }
 
 checkDirectorySync(`${app.getPath('userData')}/logs`);
+checkDirectorySync(`${app.getPath('userData')}/compta`);
 
 
 // const errorStackTracerFormat = format(info => {
@@ -201,15 +202,47 @@ const errorTransport = new transports.DailyRotateFile({
 });
 
 
+const paTransport = new transports.DailyRotateFile({
+  filename: '%DATE%-pistedaudit.json',
+  dirname: `${app.getPath('userData')}/compta`,
+  datePattern: 'YYDDD',
+  zippedArchive: true,
+  maxSize: '20m',
+  level: 'info',
+  format: format.json()
+});
 
 
-const winstonlogger = createLogger({
+const jetTransport = new transports.DailyRotateFile({
+  filename: '%DATE%-jet.json',
+  dirname: `${app.getPath('userData')}/compta`,
+  datePattern: 'YYDDD',
+  zippedArchive: true,
+  maxSize: '20m',
+  level: 'info',
+  format: format.json()
+});
+
+loggers.add('winstonlogger', {
   transports: [
     outTransport,
     errorTransport
   ]
 });
+loggers.add('pa', {
+  transports: [
+    paTransport
+  ]
+});
+loggers.add('jet', {
+  transports: [
+    jetTransport
+  ]
+});
 
+const winstonlogger = loggers.get('winstonlogger');
+const pa = loggers.get('pa');
+const jet = loggers.get('jet');
 
 if (process.env.NODE_ENV !== 'production') {
   winstonlogger.add(new transports.Console({
@@ -253,7 +286,9 @@ const logger = {
   winston: () => winstonlogger,
   dump: (msg, ...args) => {
     winstonlogger.info(msg+' => '+JSON.stringify(...args, null, 2));
-  }
+  },
+  pa: (evt, ...args) => { pa.log('info', evt) },
+  jet: (evt, ...args) => { jet.log('info', evt) },
 }
 
 

@@ -14,9 +14,9 @@ import { commandeServices } from '../commande/commandeServices';
 import { dateBounds, asyncForEach } from '../../helpers/toolbox';
 import { notificationActions } from '../notification/notificationActions';
 import { signatureServices } from '../signature/signatureServices';
-import { format, set, sub } from 'date-fns';
-import isBefore from 'date-fns/isBefore';
+import { format, set, sub, isBefore, add } from 'date-fns';
 import { signatureActions } from '../signature/signatureActions';
+import { journalActions } from '../journal/journalActions';
 // import { dateBounds } from '../../helpers/toolbox';
 // const strings = new LocalizedStrings(data);
 
@@ -164,15 +164,6 @@ function  createZCaisse(cloture, intervalle, mode) {
     const { user } = getState().authentication;
     console.log('createZCaisse', periode);
 
-    try {
-      const lastZ = await clotureServices.getLastZCaisse();
-
-    } catch(e) {
-      console.error('getLastZ Error', e);
-      // dispatch({ type: clotureActionTypes.UPDATE_GTP_FAILURE, error:e });
-    }
-
-
     let intervalleId = (intervalle==="intermediaire") ? 'I' : ((intervalle==="jour") ? 'J' : 'M');
 
     console.log('📅 DEBUT',periode.debut)
@@ -221,6 +212,9 @@ function  createZCaisse(cloture, intervalle, mode) {
     try {
       await clotureServices.persistZCaisse(__zdecaisse);
       dispatch(peripheralActions.printZCaisse(__zdecaisse));
+
+      dispatch(journalActions.log('50', intervalle));
+      dispatch(journalActions.log('160', 'Z de Caisse #'+__zdecaisse.zId));
 
       dispatch( signatureActions.updateSignature('zdecaisse', signature) );
       dispatch( signatureActions.updateNumerotation('zdecaisse', zdecaisse+1) );
@@ -500,6 +494,8 @@ function setClotureFromSync(cloture) {
 function testCloturesAuto(intervalle) {
   return async (dispatch, getState) => {
 
+    console.log('testCloturesAuto('+intervalle+')');
+
     const __today =  new Date();
     let end;
 
@@ -522,6 +518,9 @@ function testCloturesAuto(intervalle) {
     if (__cmdnonconfirmees.hasOwnProperty('commandeslist') && __cmdnonconfirmees.commandeslist.length > 0) {
       const __cmdnonconfirmees_ids = Object.values(__cmdnonconfirmees.commandeslist).map(c => c.ticketId);
 
+      console.log('commandes inachevées à supprimer (service passé) => ',__cmdnonconfirmees_ids, end);
+
+
       let cmdnum = 0;
 
       await asyncForEach(__cmdnonconfirmees_ids, async (id) => {
@@ -536,6 +535,9 @@ function testCloturesAuto(intervalle) {
         if(cmdnum===__cmdnonconfirmees_ids.length) return true;
 
       });
+    }
+    else {
+      console.log('aucune commande inachevée dans un service passé', end);
     }
 
 
@@ -555,6 +557,24 @@ function testCloturesAuto(intervalle) {
   }
 }
 
+function getZCaisse(params) {
+  return async (dispatch, getState) => {
+    dispatch({ type: clotureActionTypes.GET_ZCAISSE_REQUEST, criterias:params });
+
+    try {
+
+      const data = await clotureServices.getZCaisse(params);      
+      dispatch({ type: clotureActionTypes.GET_ZCAISSE_SUCCESS, zcaisse: [...data] }) 
+
+    } catch(error) { 
+
+      logger.error(error);
+      dispatch({ type: clotureActionTypes.GET_ZCAISSE_FAILURE, error: error.toString() }) 
+   
+    }
+  }
+}
+
 function testZCaisse(intervalle) {
 
   return async (dispatch, getState) => {
@@ -563,7 +583,7 @@ function testZCaisse(intervalle) {
     let start;
     let end;
 
-    console.log('testZCaisse('+intervalle+')');
+    console.trace('testZCaisse('+intervalle+')');
 
     // -------------- Z de caisse Journalier (ZJ) -------------- 
     if (intervalle==="jour") {
@@ -579,7 +599,35 @@ function testZCaisse(intervalle) {
         end = format(sub(__today,{days:1}), 'yyyyMMdd050000');
       }
 
+      try {
+        // récup le dernier Z de caisse intermédiaire
+        const __lastZI = await clotureServices.getLastZCaisse({
+          "$expr" : {
+            "$and":[ 
+              {"$eq":["$ztype", "intermediaire"]},
+              {"$lt" : [
+                {"$toDouble": 
+                  {"$arrayElemAt":[
+                    {"$split":["$periode","|"]}, 
+                    1
+                  ]}
+                }, 
+                parseInt(end)
+              ]}
+            ]
+          }
+        });
+      
 
+        console.log('__lastZI', __lastZI);
+
+      } catch(e) {
+        console.error(e);
+      }
+
+
+
+      console.log('testZCaisse, jour', start, end);
       const __ZJ_query = {
         "$expr" : {
           "$and":[ 
@@ -644,9 +692,16 @@ function testZCaisse(intervalle) {
         };
         const zi_hier = await clotureServices.getZCaisse(__ZI_query);
 
-        const zj_synth = _getZSynthese(zi_hier, "jour");
+        console.log('TZC zi_hier',zi_hier);
 
-        dispatch(createZCaisse(zj_synth, "jour", "auto"));
+        if (zi_hier.length>0) {
+          const zj_synth = _getZSynthese(zi_hier, "jour");
+          dispatch(createZCaisse(zj_synth, "jour", "auto"));
+        }
+        else {
+          console.log('TZC jour : pas de ZCaisse pour ce jour, on lance le test pour le mois');
+          dispatch(testZCaisse('mois'));
+        }
 
       } 
       // s'il y en a un, on lance le test mensuel
@@ -663,6 +718,8 @@ function testZCaisse(intervalle) {
 
       start = format(set(sub(__today,{months:1}), {date:1}),'yyyyMMdd050000');
       end = format(sub(set(__today, {date:1}), {days:1}),'yyyyMMdd050000');
+
+      console.log('testZCaisse, jour', start, end);
 
       const __ZM_query = {
         "$expr" : {
@@ -693,7 +750,7 @@ function testZCaisse(intervalle) {
       // y a-t-il un ZM pour le mois dernier ?
       const zm_mois = await clotureServices.getZCaisse(__ZM_query);
 
-      console.log('zm_mois',zm_mois);
+      console.log('TZC zm_mois',zm_mois);
 
       // s'il n'y en a pas, on lance sa création
       if (zm_mois.length<1) {
@@ -728,9 +785,13 @@ function testZCaisse(intervalle) {
         };
         const zj_mois = await clotureServices.getZCaisse(__ZJ_query);
 
-        const zm_synth = _getZSynthese(zj_mois, "mois");
-
-        dispatch(createZCaisse(zm_synth, "mois", "auto"));
+        console.log('TZC zj_mois',zj_mois);
+        if (zj_mois.length>0) {
+          const zm_synth = _getZSynthese(zj_mois, "mois");
+          dispatch(createZCaisse(zm_synth, "mois", "auto"));
+        } else {
+          console.log('aucun ZJ pour faire le Z du mois, on s’arrête là !');
+        }
 
       } else {
         console.log('il y a un ZM pour le mois dernier, tout va bien, on s’arrête là !');
@@ -828,8 +889,9 @@ function createGrandTotalTicket(commande) {
     };
 
     try {
-      const confirm = await clotureServices.persistGTTicket(__gtt);
+      await clotureServices.persistGTTicket(__gtt);
       dispatch({ type: clotureActionTypes.PERSIST_GTTICKET_REQUEST, gtt: __gtt });
+      dispatch(journalActions.log('160', 'Grand Total Ticket #'+__gtt.numeroTicket));
     }
     catch(e) {
       console.error(e);
@@ -852,7 +914,7 @@ function createGrandTotalPeriodique(intervalle, grandstotaux) {
     console.log('createGrandTotalPeriodique(' + intervalle + ') L=' + grandstotaux.length);
 
     const { grandtotal } = getState().numerotationReducer;
-    const { caisse, role } = getState().parametresReducer.parametres.options;
+    const { caisse } = getState().parametresReducer.parametres.options;
     const { privateKey, trousseauId } = getState().signatureReducer; 
     
     const {gtpca, gtpva} = await clotureServices.getGTP();
@@ -981,6 +1043,8 @@ function createGrandTotalPeriodique(intervalle, grandstotaux) {
     try {
       const confirm = await clotureServices.persistGTPeriodique(__grandtotalperiodique);
       dispatch({ type: clotureActionTypes.PERSIST_GTPERIODIQUE_SUCCESS, gtp: __grandtotalperiodique });
+
+      dispatch(journalActions.log('160', `Grand Total Periodique (${intervalle}) #${__grandtotalperiodique.grandtotal_id}`));
 
       dispatch( signatureActions.updateSignature('grandstotaux', signature) );
       dispatch( signatureActions.updateNumerotation('grandtotal', grandtotal+1) );
@@ -1281,6 +1345,207 @@ function testGTPeriodique(intervalle) {
   }
 }
 
+function exportFEC(target, debut, fin) {
+  return async (dispatch, getState) => {
+
+
+    let fec = {
+      header:[   
+        {id: 'date', title: 'date'},
+        {id: 'cattc', title: 'cattc'},
+        {id: 'especes', title: 'especes'},
+        {id: 'cheques', title: 'cheques'},
+        {id: 'cartes', title: 'cartes'},
+        {id: 'tickets', title: 'tickets'},
+        {id: 'avoirs', title: 'avoirs'},
+        {id: 'caht', title: 'caht'},
+        {id: 'tva0200', title: 'tva0200'},
+        {id: 'tva0100', title: 'tva0100'},
+        {id: 'tva0055', title: 'tva0055'},
+        {id: 'nbrecmd', title: 'nbrecmd'}
+      ],
+      data:[]
+    };
+
+    const start = format(debut, 'yyyyMMdd050000');
+    const end = format(fin, 'yyyyMMdd050000');
+    
+    dispatch(journalActions.log('180', `Journal de caisse du ${format(debut, 'dd/MM/yyyy')} au ${format(fin, 'dd/MM/yyyy')}`));
+
+    const __query = {
+      "$expr" : {
+        "$and":[ 
+          {"$eq":["$ztype", "jour"]},
+          {"$gte" : [
+            {"$toDouble": 
+              {"$arrayElemAt":[
+                {"$split":["$periode","|"]}, 
+                0
+              ]}
+            },
+            parseInt(start)
+          ]},
+          {"$lt" : [
+            {"$toDouble": 
+              {"$arrayElemAt":[
+                {"$split":["$periode","|"]}, 
+                1
+              ]}
+            }, 
+            parseInt(end)
+          ]}
+        ]
+      }
+    };
+
+    console.log('exportFEC',__query);
+    const liste = await clotureServices.getZCaisse(__query);
+
+    let jour = debut;
+    while(isBefore(jour, fin)) {
+      fec.data.push({
+        date: format(jour, 'dd/MM/yyyy'),
+        cattc: 0,
+        especes: 0,
+        cheques: 0,
+        cartes: 0,
+        tickets: 0,
+        avoirs: 0,
+        caht: 0,
+        tva0200: 0,
+        tva0100: 0,
+        tva0055: 0,
+        nbrecmd: 0
+      });
+      jour = add(jour, {days:1});
+    }
+
+
+    let __total = {
+      date: 0,
+      cattc: 0,
+      especes: 0,
+      cheques: 0,
+      cartes: 0,
+      tickets: 0,
+      avoirs: 0,
+      caht: 0,
+      tva0200: 0,
+      tva0100: 0,
+      tva0055: 0,
+      nbrecmd: 0
+    };
+
+    if (liste) {
+      liste.forEach(zj => {
+
+        const p = zj.periode.split('|');
+        const j = p[0].substring(0,4)+"-"+p[0].substring(4,6)+"-"+p[0].substring(6,8)+' '+p[0].substring(8,10)+':'+p[0].substring(10,12)+':'+p[0].substring(12,14);
+        
+
+        let __especes = 0,
+            __cheques = 0,
+            __cartes = 0,
+            __tickets = 0,
+            __avoirs = 0
+          ;
+        // ventilation moyens de paiement
+        Object.entries(zj.ventilation.moyen).forEach(([k,m]) => {
+
+          let moy = k;
+          if (k.includes('_')) {
+            moy = k.split('_')[0];
+          }
+
+          if (moy==='especes') __especes += m.valeur;
+          if (moy==='cheque') __cheques += m.valeur;
+          if (moy==='carte') __cartes += m.valeur;
+          if (moy==='ticket') __tickets += m.valeur;
+          if (moy==='avoir') __avoirs += m.valeur;
+        });
+
+
+        // ventilation TVA + CAHT
+        let __caht = 0, 
+            __tva0100 = 0,
+            __tva0200 = 0,
+            __tva0055 = 0
+            ;
+        Object.entries(zj.ventilation.tva).forEach(([k,t]) => { 
+          __caht += t.hasOwnProperty('ht') ? t.ht : 0; 
+          if (k==='2000') __tva0200 += t.taxe;
+          if (k==='1000') __tva0100 += t.taxe;
+          if (k==='0550') __tva0055 += t.taxe;
+        });
+
+        let fecdata_id = fec.data.findIndex(d => d.date===format(new Date(j), 'dd/MM/yyyy'));
+
+        if (fecdata_id > -1) {
+
+          fec.data[fecdata_id].cattc += zj.ca;
+          fec.data[fecdata_id].especes += __especes;
+          fec.data[fecdata_id].cheques += __cheques;
+          fec.data[fecdata_id].cartes += __cartes;
+          fec.data[fecdata_id].tickets += __tickets;
+          fec.data[fecdata_id].avoirs += __avoirs;
+          fec.data[fecdata_id].caht += __caht;
+          fec.data[fecdata_id].tva0200 += __tva0200;
+          fec.data[fecdata_id].tva0100 += __tva0100;
+          fec.data[fecdata_id].tva0055 += __tva0055;
+          fec.data[fecdata_id].nbrecmd += zj.numtickets;
+    
+          __total.date += 1;
+          __total.cattc += zj.ca;
+          __total.especes += __especes;
+          __total.cheques += __cheques;
+          __total.cartes += __cartes;
+          __total.tickets += __tickets;
+          __total.avoirs += __avoirs;
+          __total.caht += __caht;
+          __total.tva0200 += __tva0200;
+          __total.tva0100 += __tva0100;
+          __total.tva0055 += __tva0055;
+          __total.nbrecmd += zj.numtickets;
+
+        }
+  
+      });
+
+      fec.data.push(__total);
+
+      fec.data.forEach((d,i) => {
+
+        fec.data[i].cattc = fec.data[i].cattc.toFixed(2);
+        fec.data[i].especes = fec.data[i].especes.toFixed(2);
+        fec.data[i].cheques = fec.data[i].cheques.toFixed(2);
+        fec.data[i].cartes = fec.data[i].cartes.toFixed(2);
+        fec.data[i].tickets = fec.data[i].tickets.toFixed(2);
+        fec.data[i].avoirs = fec.data[i].avoirs.toFixed(2);
+        fec.data[i].caht = (fec.data[i].caht / 100).toFixed(2);
+        fec.data[i].tva0200 = (fec.data[i].tva0200 / 100).toFixed(2);
+        fec.data[i].tva0100 = (fec.data[i].tva0100 / 100).toFixed(2);
+        fec.data[i].tva0055 = (fec.data[i].tva0055 / 100).toFixed(2);
+
+      });
+
+    }
+
+
+    try {
+      await clotureServices.exportFEC(target, fec);
+      dispatch({type: clotureActionTypes.EXPORT_FEC_SUCCESS});
+      dispatch(journalActions.log('290',target));
+    }
+    catch(e) {
+      dispatch({type: clotureActionTypes.EXPORT_FEC_FAILURE, error: e});
+    }
+
+
+  }
+}
+
+
+
 function _getZSynthese(zliste, type) {
 
   let __periode_debut = new Date();
@@ -1443,6 +1708,7 @@ export const clotureActions = {
   makeCloture,
   getGTP,
   updateGTP,
+  getZCaisse,
   createGrandTotalTicket,
   createGrandTotalPeriodique,
   getCloturesList,
@@ -1452,5 +1718,6 @@ export const clotureActions = {
   getTodayCa,
   testCloturesAuto,
   testZCaisse,
-  testGTPeriodique
+  testGTPeriodique,
+  exportFEC,
 };

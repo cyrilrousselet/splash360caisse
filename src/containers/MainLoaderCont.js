@@ -15,6 +15,7 @@ import { tresorActions } from '../services/tresorerie/tresorActions';
 import { commandeActions } from '../services/commande/commandeActions';
 import { numeroActions } from '../services/commande/numeroActions';
 import { signatureActions } from '../services/signature/signatureActions';
+import { journalActions } from '../services/journal/journalActions';
 
 
 
@@ -75,6 +76,7 @@ const mapDispatchToProps = (dispatch) => {
     getGTP: clotureActions.getGTP,
     testGTPeriodique: clotureActions.testGTPeriodique,
     testCloturesAuto: clotureActions.testCloturesAuto,
+    log: journalActions.log,
   }, dispatch);
   return {
     ...bound,

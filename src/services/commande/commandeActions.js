@@ -16,9 +16,10 @@ import { clientsActionTypes } from "../clients/clientsActionTypes";
 import { add } from 'date-fns';
 import { signatureActions } from "../signature/signatureActions";
 import { signatureServices } from "../signature/signatureServices";
-import { clotureServices } from "../cloture/clotureServices";
+// import { clotureServices } from "../cloture/clotureServices";
 import { numeroServices } from "./numeroServices";
 import { notificationServices } from "../notification/notificationServices";
+import { journalActions } from "../journal/journalActions";
 
 // const logger = new Logger();
 
@@ -718,6 +719,7 @@ function updateProduit(payload) {
       }
       if ("delete" === mode) {
         dispatch({ type: commandeActionTypes.DELETE_PRODUIT, commandeItem });
+        dispatch( journalActions.log('323', `suppression du produit ${itemid}`) );
       }
 
     }
@@ -918,7 +920,7 @@ function deleteCommande(payload) {
             createdAt: formatISO(data.createdAt),
             updatedAt: formatISO(data.updatedAt),
           };
-
+          dispatch( journalActions.log('320', `abandon de la commande #${ticketId}`) );
           dispatch(notificationActions.syncCommandes([cmdtosync]));
 
         //  dispatch(getTodayCommandesList());
@@ -1464,6 +1466,7 @@ function setCommandeFromOrder(provider, payload) {
 
     // dispatch(numeroActions.takeNumero());
 
+
     commandeServices.saveCommande({...commande, localsync: [parametres.options.caisse.uniqid]}, state.catalogueReducer).then(
       async (confirm) => {
 
@@ -1489,6 +1492,8 @@ function setCommandeFromOrder(provider, payload) {
           
           
         //  dispatch(peripheralActions.printCommandeTicket(printTemplates, confirm));
+
+          dispatch( journalActions.log('140', `service externe : ${data.caisse.type} #${newTicket}`) );
           
           dispatch( signatureActions.updateSignature('tickets', signature) );
           dispatch( signatureActions.updateNumerotation('ticket', ticket+1) );
@@ -1658,6 +1663,7 @@ function setCommandeFromAPI(payload) {
           schedule: commande.ticketId
         });
 
+        dispatch( journalActions.log('140', `station tierce: ${data.caisse.type} (ticketId: ${commande.ticketId}, status:${commande.status})`) );
 
         if (confirm.status === "confirmed") {
           if (!confirm.signature && !confirm.ticket) {

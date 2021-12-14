@@ -35,6 +35,9 @@ import packageJson from '../package.json';
 
 import * as Sentry from '@sentry/react';
 import { peripheralActions } from './services/peripheral/peripheralActions';
+import { signatureActions } from './services/signature/signatureActions';
+import { journalActions } from './services/journal/journalActions';
+import { evenements } from './constants/evenements';
 
 if (!isDev) {
   Sentry.init({ 
@@ -185,6 +188,12 @@ ipcRenderer.on('chrono', (event, commande) => {
 ipcRenderer.on('printticket', (event, print) => {
   logger.info('ipc: printticket', print);
   peripheralActions.printTicketFromAPI(print)(store.dispatch, store.getState);
+});
+
+
+ipcRenderer.on('jet', (event, evenement) => {
+  logger.info('ipc: jet', evenement);
+  journalActions.log(evenement.code, evenement.description)(store.dispatch, store.getState);
 });
 
 // log.transports.file.level = 'info';

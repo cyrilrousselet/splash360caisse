@@ -69,7 +69,7 @@ async function _findSignatures(criteriae={}, lastitem=false) {
   
   const _sgn = await SignatureModel.find(criteriae).lean().exec();
   
-  log.info('_sgn :'+JSON.stringify(_sgn));
+  // log.info('_sgn :'+JSON.stringify(_sgn));
 
   if (lastitem) {
     if (!_sgn[0]) return null;

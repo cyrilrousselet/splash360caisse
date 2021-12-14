@@ -1,0 +1,436 @@
+.ListeZCaisse {
+  .caption {
+    font-family: $f_blk;
+    font-size: 18px;
+    color: $noir;
+    letter-spacing: 0;
+  }
+  .dates {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding-bottom: 20px;
+   
+    .date-pickers {
+      width: calc(100% - 200px);
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+    }
+    .btnsynthese {
+      flex-grow: unset;
+      flex-shrink: unset;
+      background-color: $prairie;
+      .StdButton-text {
+        color: $blanc;
+      }
+    }
+    .caption.space-left {
+      margin-left: 30px;
+    }
+    .MuiFormControl-marginNormal {
+      margin: 0 10px;
+      width: 200px;
+      &:hover .MuiInput-underline:before,
+      &:hover .MuiInput-underline:after,
+      .MuiInput-underline:before,
+      .MuiInput-underline:after {
+        border: 0;
+      }
+      .MuiInput-formControl {
+        background-color: $blanc;
+        border-radius: 2px;
+        padding: 2px 0px 2px 5px;
+      }
+      input {
+        color: $primary;
+        font-family: $f_blk;
+        font-size: 18px;
+        text-align: center;
+      }
+    }
+  } // --- /.dates
+  .btnretour {
+    flex-grow: unset;
+    flex-shrink: unset;
+    background-color: $gris-bleu;
+    .StdButton-text {
+      text-decoration: underline;
+      color: $blanc;
+    }
+  }
+  .listes {
+    height: calc(100% - 40px);
+  }
+  .date {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-content: center;
+    padding-bottom: 10px;
+    .prevmonth,
+    .nextmonth,
+    .prevyear,
+    .nextyear  {
+      background-color: $gris-bleu;
+      .StdButton-text {
+        color: $blanc;
+      }
+    }
+    .btnfec {
+      background-color: $primary;
+      .StdButton-text {
+        color: $blanc;
+      }
+    }
+    .currentmonth,
+    .currentyear {
+      font-family: $f_hea;
+      text-transform: capitalize;
+      text-align: center;
+    }
+  }
+  .panel {
+    height: calc(100% - 25px);
+    .MuiBox-root {
+      height: 100%;
+    }
+    .table-cont {
+      height: 100%;
+    }
+  }
+  header {
+    box-shadow: none;
+    background-color: transparent;
+    flex-direction: row;
+    justify-content: space-between;
+    .MuiButtonBase-root {
+      font-family: $f_hea;
+      font-size: 18px;
+      background-color: $gris-clair;
+      border-radius: 15px 15px 0 0;
+      color: $noir;
+      margin-right: 2px;
+      padding: 8px 25px;
+      &.Mui-selected {
+        background-color: $blanc;
+        color: $primary;
+        font-family: $f_blk;
+      }
+    }
+    .MuiTabs-fixed {
+      width: auto;
+    }
+    .MuiTabs-indicator {
+      background-color: transparent;
+    }
+    .MuiTabs-flexContainer {
+      display: inline-flex;
+    }
+    .MuiBadge-badge {
+      top: 5px !important;
+      right: -10px !important;
+    }
+    .displayId {
+      height: 40px;
+      background-color: $blanc;
+      padding-left: 20px;
+      width: 280px;
+      input {
+        height: 40px;
+        width: 200px;
+        margin-top: 0;
+        font-size: 15px;
+        font-family: $f_hea;
+        letter-spacing: 0;
+      }
+      .innerButton {
+        height: 40px;
+        &.btn-keyboard {
+          background-image: url('./../../images/numberkeyboard.svg');
+        }
+      }
+    }
+  }
+
+
+  .MuiTypography-root {
+    height: 100%;
+    background-color: $blanc;
+    border-radius: 0 0 15px 15px;
+  }
+
+  .liste-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 0;
+  }
+  .StdButton {
+    margin: 0 2px !important;
+    padding: 0 10px!important;
+    min-width: 40px;
+    min-height: 25px;
+    border-radius: 8px !important;
+  }
+  .StdButton-text {
+    text-transform: uppercase;
+    font-size: 12px;
+    font-family: $f_blk;
+  }
+  .StdButton-icon {
+    height: 20px;
+    width: 20px;
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .action-view {
+    background-color: $prairie;
+  }
+  .action-print {
+    background-color: $primary;
+  }
+
+  .MuiTableCell-root {
+    font-family: $f_med;
+    border: none;
+  }
+  .MuiTableCell-stickyHeader {
+    background-color: $gris-clair;
+  }
+  thead {
+    background-color: $noir_010;
+  }
+  tbody {
+    .liste-date,
+    .liste-debut,
+    .liste-ht,
+    .liste-nombre {
+      background-color: $blanc-fonce;
+    }
+    .liste-ht,
+    .liste-ventes {
+      text-align: right;
+    }
+    .MuiTableCell-body {
+      font-size: 12px;
+    }
+    .MuiTableRow-root.odd {
+      
+      .liste-date,
+      .liste-debut,
+      .liste-ht,
+      .liste-nombre {
+        background-color: $gris-pale;
+      }
+    } 
+    
+    .liste-station,
+    .liste-fin,
+    .liste-ventes,
+    .liste-actions
+    {
+      background-color: $blanc;
+    }
+    .MuiTableRow-root.odd {
+      .liste-station,
+    .liste-fin,
+    .liste-ventes,
+    .liste-actions {
+        background-color: $blanc-fonce;
+      }
+    }
+    .MuiTableRow-root.outofdate {
+      .liste-station,
+      .liste-fin,
+      .liste-ventes,
+      .liste-actions,
+      .liste-date,
+      .liste-debut,
+      .liste-ht,
+      .liste-nombre {
+        background-color: $wheel2;
+        color: $blanc;
+      }
+    }
+  }
+
+  .MuiTableContainer-root {
+    height: calc(100% - 40px);
+  }
+
+}
+
+.ViewZCaissePopin {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none;
+  .Modal-container {
+      background-color: $blanc;
+      width: 500px;
+      border-radius: 15px;
+      padding: 0 20px;
+  }
+  .close-button {
+      background-color: $blanc;
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 30px;
+      height: 30px;
+      min-height: 30px;
+  }
+  .header {
+      height: 55px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      .title {
+          font-family: $f_blk;
+          font-size: 18px;
+          color: $noir;
+          text-align: center;
+          text-transform: uppercase;
+      }
+  }
+  .body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-bottom: 30px;
+
+    .blocwrapper {
+      width: 100%;
+    }
+    &.outofdate .ticket-x {
+      border: 3px solid $rouge;
+    }
+
+  }
+
+  .footer {
+    text-align: right;
+    .print-cloture {
+        background-color:$primary;
+        width: 45%;
+        min-height: 30px;
+        .StdButton-text {
+            font-family: $f_blk;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+    }
+  }
+  .ticket-x {
+    box-shadow: none;
+    height: 550px;
+    width: 100%;
+    border: 1px dashed $noir;
+    padding: 20px;
+    font-family: $f_boo;
+    font-size: 12px;
+    @include font-smoothing(on);
+
+    overflow-y: scroll;
+
+    .wrapper {
+      height: 100%;
+      width: 100%;
+    }
+    .periode {
+      .val {
+        text-align: center;
+      }
+      padding-bottom: 10px;
+    }
+    .sel {
+      padding-bottom: 10px;
+    }
+
+    .recap {
+      .recap-item {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      padding-bottom: 10px;
+    }
+
+    .titre {
+      text-align: center;
+      border-top: 1px solid $noir;
+      border-bottom: 1px solid $noir;
+      padding: 5px 0;
+      margin: 10px 0 5px;
+    }
+    .detail {
+      .detail-item {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        &.pre-filet {
+          margin-top: 5px;
+          padding-top: 5px;
+          border-top: 1px solid $noir;
+        }
+        &.post-space {
+          padding-bottom: 10px;
+        }
+        &.total {
+          padding-left: 20px;
+        }
+      }
+    }
+    .ventil {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      .ventil-nom,
+      .ventil-intit:nth-child(1) {
+        width: 30%;
+      }
+      &.total {
+        padding-top: 10px;
+      }
+      &.intit {
+        padding-bottom: 5px;
+      }
+      &.ventil-moyen {
+        .ventil-intit:not(:nth-child(1)) {
+          width: 23%;
+          text-align: right;
+        }
+        .ventil-val {
+          width: 23%;
+          text-align: right;
+        }
+      }
+      .ventil-ecart-motif {
+        width: 100%;
+        text-align: center;
+        padding-bottom: 5px;
+      }
+      &.ventil-mouvement {
+        .ventil-val:nth-child(1) {
+          width: 30%;
+        }
+        .ventil-val:not(:nth-child(1)) {
+          width: 23%;
+          text-align: right;
+        }
+      }
+    }
+
+  }
+}

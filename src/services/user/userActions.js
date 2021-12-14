@@ -7,6 +7,7 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import { notificationActions } from '../notification/notificationActions';
 import logger from '../../helpers/Logger';
+import { journalActions } from '../journal/journalActions';
 let strings = new LocalizedStrings(data);
 
 function resetError() {
@@ -34,7 +35,7 @@ function login(passphrase) {
                   dispatch({ type: userActionTypes.LOGIN_SUCCESS, user });
                   // store user details and jwt token in local storage to keep user logged in between page refreshes
                   localStorage.setItem('user', JSON.stringify(user));
-                  
+                  dispatch(journalActions.log('80','ouverture de session'));
                   history.push(paths.DASHBOARD);
                 }
                 
@@ -60,7 +61,7 @@ function setAdmin(passphrase) {
         user => {
             dispatch({ type: userActionTypes.SET_ADMIN_SUCCESS, user });
             dispatch({ type: userActionTypes.LOGIN_SUCCESS, user });
-
+            dispatch(journalActions.log('130', 'Set Administrateur'));
             // store user details and jwt token in local storage to keep user logged in between page refreshes
             localStorage.setItem('user', JSON.stringify(user));
 
@@ -108,6 +109,7 @@ function updateUser(payload) {
       if (key==='status' && value==='deleted') updated_data['identifiant'] = '';
     });
 
+    console.log('updated_data', updated_data);
     
     user = {...user, ...updated_data, localsync: [caisse.uniqid]};
     logger.info(user);
@@ -120,6 +122,11 @@ function updateUser(payload) {
         user => {
           dispatch({ type: userActionTypes.UPDATE_SUCCESS, user });
           dispatch(notificationActions.syncDispatch('user', user));
+
+          if (updated_data.hasOwnProperty('droits')) {
+            dispatch(journalActions.log('130','Changement droits utilisateur #'+user.user_id));
+          }
+
           localStorage.setItem('user', JSON.stringify(user));
           dispatch(getAll());
         },
@@ -148,6 +155,7 @@ function createUser(payload) {
         user => {
           dispatch({ type: userActionTypes.CREATE_SUCCESS, user });
           dispatch(notificationActions.syncDispatch('user', user));
+          dispatch(journalActions.log('130','Nouvel utilisateur #'+user.user_id));
           dispatch(getAll());
         },
         error => dispatch({ type: userActionTypes.CREATE_FAILURE, payload: error.toString() })
@@ -179,7 +187,10 @@ function _delete(id) {
 
       userServices.delete(id)
                   .then(
-                      user => dispatch({ type: userActionTypes.DELETE_SUCCESS, id }),
+                      user => {
+                        dispatch({ type: userActionTypes.DELETE_SUCCESS, id });
+                        dispatch(journalActions.log('130','Suppression utilisateur #'+id));
+                      },
                       error => dispatch({ type: userActionTypes.DELETE_FAILURE, id, payload: error.toString() })
                   );
   }
@@ -249,7 +260,7 @@ function loginSU(passphrase) {
                   dispatch({ type: userActionTypes.LOGIN_SUCCESS, user });
                   // store user details and jwt token in local storage to keep user logged in between page refreshes
                   localStorage.setItem('user', JSON.stringify(user));
-                  
+                  dispatch(journalActions.log('80','ouverture de session SUPERUSER'));
                   history.push(paths.DASHBOARD);
                 }
                 

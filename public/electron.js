@@ -9,6 +9,7 @@ const isDev = require('electron-is-dev');
 require('./api/index.js');
 const server = require('./api/server.js');
 const sse = require('./api/sseApi.js');
+const peripheral = require('./api/peripheralApi.js');
 // const kds = require('./api/kitchenDisplayServer.js');
 //const Sentry = require('@sentry/electron');
 // const packageJson = require('../package.json');
@@ -68,6 +69,7 @@ function createWindow() {
 
     server.init(mainWindow.webContents);
     sse.init(mainWindow.webContents);
+    peripheral.init(mainWindow.webContents);
     // kds.init(mainWindow.webContents);
 
 }
@@ -98,6 +100,7 @@ if (!gotTheLock) {
       mainWindow.webContents.executeJavaScript('localStorage.removeItem("user");', true);
 
       if (process.platform !== 'darwin') {
+          mainWindow.webContents.send('jet',{code:'40', description:'extinction'})
           app.quit();
       }
     });

@@ -13,6 +13,7 @@ import MarketingCont from './../containers/MarketingCont';
 import ClotureHomeCont from './../containers/ClotureHomeCont';
 import ClotureCont from './../containers/ClotureCont';
 import ListeCloturesCont from './../containers/ListeCloturesCont';
+import ListeZCaisseCont from './../containers/ListeZCaisseCont';
 import EmployesCont from './../containers/EmployesCont';
 import DepensesCont from './../containers/DepensesCont';
 import ListeCommandesCont from './../containers/ListeCommandesCont';
@@ -38,6 +39,7 @@ const Routes = () => (
       <PrivateRoute path={ paths.CLOTURE } component={ClotureHomeCont} />
       <PrivateRoute exact path={ paths.CLOTURE_COMPTAGE } component={ClotureCont} />
       <PrivateRoute path={ paths.LISTECLOTURES } component={ListeCloturesCont} />
+      <PrivateRoute path={ paths.LISTEZCAISSE } component={ListeZCaisseCont} />
       <PrivateRoute exact path={ paths.CLOTURE_TRESOR } component={TresorerieCont} />
       <PrivateRoute path={ paths.STOCKS } component={StocksCont} />
       <PrivateRoute path={ paths.STATISTIQUES } component={StatistiquesCont} />

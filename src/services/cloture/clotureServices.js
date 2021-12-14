@@ -1,11 +1,13 @@
 import {emit} from 'eiphop';
 
-import { startOfToday, isAfter, isBefore, endOfToday, formatISO } from 'date-fns';
+import { startOfToday, isAfter, isBefore, endOfToday } from 'date-fns';
 // import { dateBounds } from '../../helpers/toolbox';
-import LodashId from 'lodash-id';
+// import LodashId from 'lodash-id';
 // import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
 import format from 'date-fns/format';
+import { createObjectCsvWriter } from 'csv-writer';
+
 // const logger = new Logger();
 
 export const clotureServices = {
@@ -28,7 +30,8 @@ export const clotureServices = {
   getLastGTPeriodique,
   getZCaisse,
   getLastZCaisse,
-  persistZCaisse
+  persistZCaisse,
+  exportFEC,
   // checkYesterdayGTT,
 };
 
@@ -58,12 +61,12 @@ function getCurrentPeriode(commandes, gtt, catalogue, params) {
 
 
   const vendeur = params.vendeur || null;
-  const caisse = params.caisse || null;
+  // const caisse = params.caisse || null;
   
 
   // filtrage de la liste des commandes
   if (commandes) {
-    let numvalid = 0;
+    // let numvalid = 0;
     const __filtered_cmd = Object.values(commandes).filter(cmd => {
 
       let __valid = true;
@@ -79,7 +82,7 @@ function getCurrentPeriode(commandes, gtt, catalogue, params) {
 
       // on ne récupère que les cmd non archivées (cas du Z)
       if (cmd.archived!==undefined && cmd.archived!==null) {__valid = false; console.warn("cmd filtrée déjà archivée")}
-      if (__valid) numvalid++;
+      // if (__valid) numvalid++;
 
 
       if (__valid && cmd.status!=='confirmed') __numStandby++;
@@ -236,7 +239,7 @@ function getCurrentPeriode(commandes, gtt, catalogue, params) {
               valeur: 0
             };
           }
-          const __vmo = ventilation.moyen[rnd.moyen].valeur;
+          // const __vmo = ventilation.moyen[rnd.moyen].valeur;
           Object.assign(ventilation.moyen[rnd.moyen], {
             valeur: Math.round(( ventilation.moyen[rnd.moyen].valeur - rnd.valeur) * 100 ) / 100
           });
@@ -431,7 +434,20 @@ function persistZCaisse(zdecaisse) {
   return emit('dbCloturePersistZCaisse', zdecaisse );
 }
 
-function getLastZCaisse() {
-  return emit('dbClotureGetLastZCaisse', {});
+function getLastZCaisse(requete) {
+  return emit('dbClotureGetLastZCaisse', requete);
+}
+
+function exportFEC(target, fec) {
+
+  console.log('exportFEC', fec);
+  
+  const csvWriter = createObjectCsvWriter({
+    path: target,
+    header: fec.header
+  });
+
+  return csvWriter.writeRecords(fec.data);
+
 }
 

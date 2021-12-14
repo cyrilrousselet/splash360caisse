@@ -493,6 +493,7 @@ const data = {
                         mois: 'MENSUEL'
                     },
                     editeur: 'Éditeur : ',
+                    edited: 'Édité le : ',
                     vendeurs: ['Vendeur : ', 'Vendeurs : '],
                     vendeurs_all: 'Tous les vendeurs',
                     caisses: ['Caisse : ', 'Caisses : '],
@@ -506,6 +507,7 @@ const data = {
                     ticket_moyen: 'Ticket moyen',
                     ventilation: {
                         vendeur: 'Ventilation par vendeur',
+                        caisse: 'Ventilation par station',
                         tva: 'Ventilation par TVA',
                         moyen: 'Ventilation par moyen de paiement'
                     },
@@ -745,7 +747,7 @@ const data = {
                 }
             },
             listeclotures: {
-                nom: "Liste Clotures",
+                nom: "Liste Clôtures",
                 dates: {
                     start: "Liste des clôtures du ",
                     end: " au "
@@ -769,6 +771,39 @@ const data = {
                     print: "Imprimer",
                     synthese: "Synthèse",
                     print_recap: "Imprimer Récap."
+                }
+            },
+            listezcaisse: {
+                nom: "Liste Z de Caisse",
+                intervalle: {
+                    intermediaire: "Intermédiaires",
+                    jour: "Journaliers",
+                    mois: "Mensuels"
+                },
+                dates: {
+                    start: "Liste des z de caisse du ",
+                    end: " au "
+                },
+                liste: {
+                    id: "Id",
+                    station: "Station",
+                    date: "Date",
+                    debut: "Première cmd",
+                    fin: "Dernière cmd",
+                    ht: "Total HT",
+                    ventes: "Ventes",
+                    nombre: 'Nbr. cmd',
+                    actions: "Actions"
+                },
+                view: {
+                    titre: "Ticket Z"
+                },
+                actions: {
+                    view: "Visualiser",
+                    print: "Imprimer",
+                    fec: "Exporter le FEC",
+                    print_recap: "Imprimer Récap.",
+                    dest: "Choisir un dossier de destination"
                 }
             },
             stocks: { nom: "Stocks" },

@@ -7,6 +7,7 @@ import {remote} from 'electron';
 import mkdirp from 'mkdirp';
 import base64url from 'base64url';
 import { uuid } from "uuidv4";
+import canonicalizeString from "@pelevesque/canonicalize-string";
 
 const { app } = remote;
 
@@ -15,6 +16,7 @@ export const signatureServices = {
   getTicketSignature, 
   getDuplicataSignature,
   getGrandtotalSignature,
+  getJETSignature,
   getZdecaisseSignature,
   getAllSignatures,
   getLastSignature,
@@ -324,6 +326,45 @@ function getZdecaisseSignature(zdecaisse, privateKey, lastSignature = null) {
 }
 
 
+function getJETSignature(source, privateKey, lastSignature = null) {
+
+  let hashfeed = [];
+
+  // Identifiant de l'évènement (TAG-JET-NID)
+  hashfeed.push(source['JET-NID']);
+
+  // Code de l'évènement (TAG-JET-COD)
+  hashfeed.push(source['JET-EVT-NUM']);
+  
+  // Information complémentaire contextuelle à l'évènement (TAG-JET-LIB)
+  hashfeed.push(canonicalizeString(source['JET-INF']));
+  
+  // Date et Heure de l’opération (TAG-JET-HOR-GDH)
+  hashfeed.push(source['JET-GDH']);
+  
+  // Code opérateur (TAG-JET-OPS-NID)
+  hashfeed.push(source['JET-OPE-NID']);
+  
+  // Code caisse (TAG-JET-CAI-NID)
+  hashfeed.push(source.caisse.id);
+  
+  // Indication du report de la signature précédente (TAG-JET-OEN)
+  const __report = (lastSignature===null) ? 'N' : 'O';
+  hashfeed.push(__report);
+  
+  // Signature électronique précédente (TAG-JET-SIG)
+  const __last = (lastSignature===null) ? ' ' : lastSignature;
+  hashfeed.push(__last);
+
+  const hashsource = hashfeed.join(',');
+
+  console.log('JET hashfeed',hashfeed);
+
+  return _createSignature(hashsource, privateKey);
+
+}
+
+
 function _createSignature(hashsource, privateKey) {
 
   const hash = crypto.createHash('SHA256');
@@ -383,7 +424,9 @@ function getLastSignature(type) {
          'duplicatas', 
          'grandstotaux', 
          'zdecaisse', 
-         'archivesfiscales']).includes(type)) {
+         'archivesfiscales',
+         'pistedaudit',
+         'jet']).includes(type)) {
     throw new Error('Type de signature inconnu');
   }
   return emit('dbSignaturesGetLast', type);

@@ -11,6 +11,9 @@ import LargeButton from "./common/LargeButton";
 
 // import Logger from "../helpers/Logger";
 import logger from "../helpers/Logger";
+import Swal from "sweetalert2";
+import history from "../helpers/history";
+import paths from "../constants/routes.json";
 
 // const logger = new Logger();
 
@@ -19,6 +22,12 @@ let strings = new LocalizedStrings(data);
 const DISABLED_MODULES = [];
 
 class Dashboard extends Component {
+
+  constructor(props) {
+    super(props);
+    this.userLogout = this.userLogout.bind(this);
+  }
+
   componentDidMount() {
     //  logger.info('Dashboard.componentDidMount()');
     // this.props.getAllActive();
@@ -28,8 +37,8 @@ class Dashboard extends Component {
     this.props.getAvoirsList();
     this.props.getReglesPanierList();
     this.props.getReglesCatalogueList();
-    // this.props.deleteCurrentCommande();
     this.props.getCommande();
+
   }
 
   // calculeCA(){
@@ -52,13 +61,28 @@ class Dashboard extends Component {
   //   return {chiffredaffaires: __ca, ca_eval:'good', ticketsNum: __tickets};
   // }
 
+  userLogout() {
+    Swal.fire({
+      type: 'warning',
+      title: strings.dashboard.logout.titre,
+      text: strings.dashboard.logout.texte,
+      showCancelButton: true,
+      focusCancel: true,
+      focusConfirm: false
+    }).then((result)=> {
+      if (result.value) {
+        this.props.log('40', 'fermeture de session');
+        history.push(paths.LOGIN);
+      }
+    });
+  }
+
   render() {
     const {
       cashname,
       username,
       modules,
       devise,
-      userLogout,
       onClickModule,
       today_ca,
       today_numtickets,
@@ -91,7 +115,7 @@ class Dashboard extends Component {
               aria-label="disconnect"
               size="small"
               className="disconnect-button"
-              onClick={userLogout}
+              onClick={this.userLogout}
             >
               <ConnectIcon />
             </Fab>

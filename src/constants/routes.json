@@ -11,6 +11,7 @@
     "CLOTURE_TRESOR": "/tresorerie",
     "CLOTURE_COMPTAGE": "/cloture/comptage",
     "LISTECLOTURES": "/listeclotures",
+    "LISTEZCAISSE": "/listezcaisse",
     "STOCKS": "/stocks",
     "STATISTIQUES": "/statistiques",
     "MENU": "/menu",

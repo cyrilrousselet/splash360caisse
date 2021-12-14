@@ -339,6 +339,7 @@ export function commandeReducer(state = initialState, action) {
         }
     
     case numeroActionTypes.SET_NEW_NUMERO:
+    case numeroActionTypes.SET_NUMERO:
         return {
           ...state,
           numero: action.numero

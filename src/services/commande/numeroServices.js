@@ -1,7 +1,7 @@
 import { isBefore, parseISO } from 'date-fns';
 import { dateBounds } from '../../helpers/toolbox';
 // import Logger from '../../helpers/Logger';
-import logger from '../../helpers/Logger';
+// import logger from '../../helpers/Logger';
 
 // const logger = new Logger();
 
@@ -60,7 +60,7 @@ function _checkNumero(numero, parametres) {
   const { heure_fin } = parametres.entreprise;
   const { numerotation_max } = parametres.commandes;
 
-  console.log('NumeroServices.setNumero()',parametres,numero);
+  console.log('NumeroServices.setNumero() (_checkNumero())',parametres,numero);
 
   let isValid = true;
 
@@ -80,7 +80,7 @@ function _checkNumero(numero, parametres) {
     // sinon on continue la numérotation
     else {
       // si la valeur du numéro est sous la valeur maximum
-      if (parseInt(numero.value) < parseInt(numerotation_max)) {
+      if (parseInt(numero.value) <= parseInt(numerotation_max)) {
         isValid = true;
       }
       // sinon on repart de la valeur du début

@@ -18,6 +18,7 @@ import { tresorServices } from '../services/tresorerie/tresorServices';
 import { tresorActions } from '../services/tresorerie/tresorActions';
 import { userServices } from '../services/user/userServices';
 import { commandeServices } from '../services/commande/commandeServices';
+import { journalActions } from '../services/journal/journalActions';
 
 
 const gotoListeCommandes = () => {
@@ -76,6 +77,7 @@ const mapDispatchToProps = (dispatch) => {
     getClientsList: clientsActions.getClientsList,
     getSallesList: tableActions.getSallesList,
     addTresor: tresorActions.addTresor,
+    log: journalActions.log,
   }, dispatch);
   return {
     ...bound,

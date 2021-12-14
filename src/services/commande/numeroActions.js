@@ -84,6 +84,9 @@ function takeNumero(defaultnumero=false) {
       
       // et on attribue le numéro à la commande
       dispatch({type: numeroActionTypes.GET_NUMERO, numero: conf_numero});
+      if (numero!==conf_numero) {
+        dispatch({type: numeroActionTypes.SET_NUMERO, numero: conf_numero});
+      }
 
       // puis on appelle le numero suivant (à stocker dans le reducer et le localStorage)
       dispatch(setNextNumero());

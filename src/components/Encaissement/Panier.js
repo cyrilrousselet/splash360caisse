@@ -1349,6 +1349,7 @@ class Panier extends React.Component {
             caisse, 
             blocage_encaissement,
             // caisses,
+            log,
            } = this.props;
 
     const { comments, modificateurs, items, ticketId, mode, client, bipper, type, beneficiaire } = this.props.commande;
@@ -1467,6 +1468,7 @@ logger.info('⏰', schedule_delay);
           this.setSelectedIndex(-1, -1);
           this.setState({inputfocus: true});
           deleteCommande();
+          log('320', 'abandon de la commande en cours');
         }
       });
     }

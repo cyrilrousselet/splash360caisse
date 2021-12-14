@@ -81,6 +81,7 @@ class MainLoader extends React.Component {
     if(paramLoaded) {
       console.log("PARAM LOADED");
 
+      
 
       // if(online === null) { // if connexion pas
       //   testConnection();
@@ -136,7 +137,8 @@ class MainLoader extends React.Component {
               this.props.setPOS();
               this.props.initSync();
         
-              checkFinDeService();   
+              checkFinDeService();  
+              this.props.log('80','demarrage'); 
             }
         
             if (status==="authorized" && first_start===true && dbgetInit===false){
