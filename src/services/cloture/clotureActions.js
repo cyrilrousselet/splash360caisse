@@ -1444,12 +1444,14 @@ function checkArchive(filename) {
     }
     if (__afcont) {
 
-      const { hmac } = await signatureServices.createArchiveFiscaleSignature(__afcont.toString(), privateKey); 
+      const { hmac, signature } = await signatureServices.createArchiveFiscaleSignature(__afcont.toString(), privateKey); 
 
       console.log('fichier',hmac);
       console.log('base',afdata['TAG-ARC-HASH']);
 
-      const isVerif = hmac===afdata['TAG-ARC-HASH'];
+      // const isVerif = signatureServices.verifyBuffer(__afcont, afdata['TAG-ARC-SIG'], publicKey);
+      // const isVerif = hmac===afdata['TAG-ARC-HASH'];
+      const isVerif = signature===afdata['TAG-ARC-SIG'];
       dispatch({ type: clotureActionTypes.QUALIFY_ARCHIVE_FISCALE, archive: {...afdata, verif: isVerif} });
     }
 
@@ -2151,7 +2153,7 @@ function archiveFiscale(intervalle, debut, fin) {
           
         let fjour = parseInt(f.substring(0,5));
         console.log(debut_aj, fjour, fin_aj);
-        if (fjour <= debut_aj && fjour >= fin_aj) {
+        if (fjour >= debut_aj && fjour <= fin_aj) {
           console.log('inclu', f);
           const __gz = (last(f.split('.'))==='gz');
           
@@ -2183,7 +2185,7 @@ function archiveFiscale(intervalle, debut, fin) {
 
     // Génération du fichier d'information
 
-    const __contenu_archive = __data.map(d => ` - ${d.file}`);
+    const __contenu_archive = __data.map(d => [` - ${d.file}`]);
 
     const __infos = [
       [`EMETTEUR: ${ user.user_id }`],
@@ -2194,7 +2196,7 @@ function archiveFiscale(intervalle, debut, fin) {
       [`PERIODE: ${ start }|${ end }`],
       [`CONTENU:`],
       [` - INFOS.txt`],
-      [...__contenu_archive.join("\n")]
+      ...__contenu_archive
     ].join("\n");
 
     __data.push({ type: 'txt', data: __infos, file: 'INFOS.txt'});
@@ -2218,10 +2220,26 @@ function archiveFiscale(intervalle, debut, fin) {
 
     await clotureServices.persistArchiveFiscale(__afdata);
 
-    dispatch(getArchivesFiscales());
+    dispatch({ type: clotureActionTypes.ADD_ARCHIVE_FISCALE, archive: __afdata });
     
 
   } 
+}
+
+function exportArchive(target, filename) {
+  return async dispatch => {
+
+
+    const origin = `${app.getPath('userData')}/archives_fiscales/${filename}`;
+    try {
+      await fs.copyFile(origin, target);
+      console.log(`${origin} was copied to ${target}`);
+      dispatch(journalActions.log('440',`Exportation de ${filename} vers ${target}`));
+    } catch {
+      console.log(`The file ${origin} could not be copied`);
+    }
+
+  }
 }
 
 
@@ -2590,6 +2608,7 @@ export const clotureActions = {
   testZCaisse,
   testGTPeriodique,
   getArchivesFiscales,
+  exportArchive,
   checkArchive,
   archiveFiscale,
   exportComptable,

@@ -28,6 +28,7 @@ export const signatureServices = {
   persistSignature,
   persistNumerotation,
   verify,
+  verifyBuffer,
 };
 
 
@@ -408,6 +409,18 @@ function verify(hashsource, signature, publicKey) {
 
   const data = Buffer.from(hashsource);
   const sign = base64url.toBase64(signature);
+  // const sign = signature;
+
+  const isVerified = crypto.verify('SHA256', data, publicKey, Buffer.from(sign));
+
+  return isVerified;
+
+}
+function verifyBuffer(hashsourcebuffer, signature, publicKey) {
+
+  const data = hashsourcebuffer;
+  const sign = base64url.toBase64(signature);
+  // const sign = signature;
 
   const isVerified = crypto.verify('SHA256', data, publicKey, Buffer.from(sign));
 

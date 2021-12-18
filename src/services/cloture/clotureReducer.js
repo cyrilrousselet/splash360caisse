@@ -87,6 +87,12 @@ export function clotureReducer(state = initialState, action) {
         archives_fiscales: [...archives_fiscales]
       };
 
+    case clotureActionTypes.ADD_ARCHIVE_FISCALE:
+      return {
+        ...state,
+        archives_fiscales: [...archives_fiscales, action.archive]
+      };
+
     default:
       return state;
   }

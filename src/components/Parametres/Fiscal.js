@@ -8,14 +8,25 @@ import { endOfYear, startOfYear } from 'date-fns';
 import { Table, TableCell, TableRow, TableHead, TableBody } from '@material-ui/core';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import format from 'date-fns/format';
+import { remote } from 'electron';
+
+const { app, dialog } = remote;
+const win = remote.getCurrentWindow();
 
 let strings = new LocalizedStrings(data);
+
+const dialogOptions = {
+  title: strings.modules.parametres.submodules.fiscal.archive.destination,
+  defaultPath: `${ app.getPath('desktop') }/`,
+  buttonLabel: strings.modules.parametres.submodules.fiscal.archive.exporter
+}
 
 class Fiscal extends React.Component {
 
   constructor(props) {
     super(props);
     this.generateArchive = this.generateArchive.bind(this);
+    this.exportArchive = this.exportArchive.bind(this);
   }
   componentDidMount() {
     this.props.getArchivesFiscales();
@@ -23,6 +34,18 @@ class Fiscal extends React.Component {
 
   generateArchive(intervalle) {
     this.props.archiveFiscale(intervalle, startOfYear(new Date()), endOfYear(new Date()));
+  }
+
+  async exportArchive(filename) {
+    const __opt = {
+      ...dialogOptions,
+      defaultPath: dialogOptions.defaultPath + filename
+    };
+    
+    const __target = await dialog.showSaveDialog(win, __opt);
+    console.log('⬇️ Export Archive Fiscale : ',__target.filePath);
+    
+    this.props.exportArchive(__target.filePath, filename);
   }
 
  
@@ -67,8 +90,8 @@ class Fiscal extends React.Component {
               const fin = p[1].substring(0,4)+"-"+p[1].substring(4,6)+"-"+p[1].substring(6,8)+' '+p[1].substring(8,10)+':'+p[1].substring(10,12)+':'+p[1].substring(12,14);      
 
               return (row.status!=='deleted' && row.status!=='superuser') && (<TableRow key={row.id} className={(i%2)?'odd':'even'}>
-                <TableCell key={`${i}-annee`} className={ `liste-annee` }>{ p[0].substring(0,4)+' '+row.verif?'oui':'non' }</TableCell>
-                <TableCell key={`${i}-fichier`} className={ `liste-fichier` }>{ row['TAG-ARC-DOC'] }</TableCell>
+                <TableCell key={`${i}-annee`} className={ `liste-annee` }>{ p[0].substring(0,4) }</TableCell>
+                <TableCell key={`${i}-fichier`} className={ `liste-fichier` }><div onClick={()=>{this.exportArchive(row['TAG-ARC-DOC']) }}>{ row['TAG-ARC-DOC'] }</div></TableCell>
                 <TableCell key={`${i}-caisse`} className="liste-caisse">{ row['TAG-ARC-CAI-NID'] }</TableCell>
                 <TableCell key={`${i}-ouverture`} className="liste-ouverture">{ debut }</TableCell>
                 <TableCell key={`${i}-cloture`} className="liste-cloture">{ fin }</TableCell>

@@ -244,6 +244,7 @@ const winstonlogger = loggers.get('winstonlogger');
 const pa = loggers.get('pa');
 const jet = loggers.get('jet');
 
+
 if (process.env.NODE_ENV !== 'production') {
   winstonlogger.add(new transports.Console({
     format: combine(colorize(), consoleOut)

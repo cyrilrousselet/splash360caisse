@@ -97,6 +97,10 @@
         background-color: $rouge;
       }
     }
+    .liste-fichier {
+      text-decoration: underline;
+      font-family: $f_blk;
+    }
 
   }
 }

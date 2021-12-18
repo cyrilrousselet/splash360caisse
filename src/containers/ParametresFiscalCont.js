@@ -20,7 +20,8 @@ const mapDispatchToProps = (dispatch) => {
     updateValeur: parametresActions.update,
     archiveFiscale: clotureActions.archiveFiscale,
     getArchivesFiscales: clotureActions.getArchivesFiscales,
-    checkArchive: clotureActions.checkArchive
+    checkArchive: clotureActions.checkArchive,
+    exportArchive: clotureActions.exportArchive
   },dispatch);
 }
 
