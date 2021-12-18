@@ -12,6 +12,7 @@ import ParametresTablesCont from './../../containers/ParametresTablesCont';
 import Commandes from './Commandes';
 import ParametresOptionsCont from './../../containers/ParametresOptionsCont';
 import ParametresUtilisateursCont from './../../containers/ParametresUtilisateursCont';
+import ParametresFiscalCont from './../../containers/ParametresFiscalCont';
 import Peripheriques from './Peripheriques';
 
 import {data} from '../../constants/translations';
@@ -37,6 +38,7 @@ class Parametres extends React.Component {
             <PrivateRoute exact path={ paths.PARAM_COMMANDES } component={ Commandes } />
             <PrivateRoute exact path={ paths.PARAM_TABLES } component={ ParametresTablesCont } />
             <PrivateRoute exact path={ paths.PARAM_OPTIONS } component={ ParametresOptionsCont } />
+            <PrivateRoute exact path={ paths.PARAM_FISCAL } component={ ParametresFiscalCont } />
             <Route path={ paths.PARAMETRES }>
               <Redirect to={{ pathname: paths.PARAM_ENTREPRISE }} />
             </Route>

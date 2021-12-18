@@ -101,6 +101,12 @@
         height: 30px;
         min-height: 30px;
     }
+    .export {
+      background-color: $primary;
+      .StdButton-text {
+        color: $blanc;
+      }
+    }
     .table-wrapper {
         width: 100%;
         height: calc(100% - 80px);

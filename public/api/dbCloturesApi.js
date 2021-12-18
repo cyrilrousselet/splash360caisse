@@ -8,6 +8,7 @@ const GTPerpetuelModel = require("../db/GTPerpetuelModel");
 const GTTicketModel = require("../db/GTTicketModel");
 const GTPeriodiqueModel = require("../db/GTPeriodiqueModel");
 const ZCaisseModel = require("../db/zdecaisseModel");
+const ArchiveModel = require("../db/ArchiveModel");
 
 const { uuid } = require("uuidv4");
 
@@ -62,6 +63,17 @@ const actions = {
     res.send(proxies);
   },
 
+  dbClotureGetArchive: async (req, res) => {
+    const {payload} = req;
+    const proxies = await _findArchive(payload);
+    res.send(proxies);
+  },
+
+  dbCloturePersistArchive: async (req, res) => {
+    const {payload} = req;
+    const confirm = await _persistArchive(payload);
+    res.send(confirm);
+  },
 
   dbClotureGetGrandTotalTicket: async (req, res) => {
     const { payload } = req;
@@ -448,7 +460,7 @@ async function _getLastGrandTotalPeriodique(periodetype) {
   const mongo = await connect();
   if (!mongo) return false;
 
-  const __gtp = await GTPeriodiqueModel.find({gttype: periodetype}).lean().sort({createdAt:-1}).limit(1);
+  const __gtp = await GTPeriodiqueModel.find({gttype: periodetype}).lean().sort({'ENC-GTP-HOR-GDH':-1}).limit(1);
 
   return __gtp;
 
@@ -495,5 +507,28 @@ async function _generateClotureId() {
 
   return id;
 }
+
+async function _findArchive(criteriae={}) {
+
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  let __arc = await ArchiveModel.find(criteriae).lean().exec();
+
+  return __arc;
+
+}
+
+async function _persistArchive(payload) {
+  
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  await ArchiveModel.create(payload);
+
+  return true;
+  
+}
+
 
 module.exports = actions;

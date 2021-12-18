@@ -8,6 +8,7 @@ import {data} from '../../constants/translations';
 import { notificationActions } from '../notification/notificationActions';
 import logger from '../../helpers/Logger';
 import { journalActions } from '../journal/journalActions';
+import { format } from 'date-fns';
 let strings = new LocalizedStrings(data);
 
 function resetError() {
@@ -235,6 +236,59 @@ function setUserFromSync(payload) {
   }
 }
 
+function exportListe(target) {
+  return async (dispatch) => {
+
+    
+    const {users} = await userServices.getAll();
+
+    let __users = {
+      header: [
+        {id: "user_id", title: "ID"},
+        {id: "nom", title: "Nom"},
+        {id: "coordonnees", title: "Coordonnées"},
+        {id: "livreur", title: "Livreur"},
+        {id: "taux_horaire", title: "Taux horaire"},
+        {id: "identifiant", title: "Identifiant"},
+        {id: "status", title: "Status"},
+        {id: "droits", title: "Droits"},
+        {id: "createdAt", title: "Créé le"},
+        {id: "updatedAt", title: "Modifié le"}
+      ],
+      data: []
+    };
+
+
+    if (users) {
+      users.forEach(u => {
+        __users.data.push({
+          user_id: u.user_id,
+          nom: u.nom,
+          coordonnees: u.coordonnees || '',
+          livreur: u.livreur ? 'oui' : 'non',
+          taux_horaire: u.taux_horaire || '',
+          identifiant: u.identifiant,
+          status: u.status,
+          droits: (Object.entries(u.droits).map(([k,v]) => { if (v) return k })).filter(d=>d!==undefined),
+          createdAt: format(new Date(u.createdAt),'dd/MM/yyyy HH:mm:ss'),
+          updatedAt: format(new Date(u.updatedAt),'dd/MM/yyyy HH:mm:ss')
+        });
+      })
+    }
+
+
+    try {
+      await userServices.exportListe(target, __users);
+      dispatch({type: userActionTypes.EXPORTLIST_SUCCESS});
+      dispatch(journalActions.log('110',`Exportation liste utilisateurs ${target}`));
+    }
+    catch(e) {
+      dispatch({type: userActionTypes.EXPORTLIST_SUCCESS, error: e});
+    }
+
+  }
+}
+
 function toggleSuperUserMode() {
   logger.info("toggleSU");
   return dispatch => { dispatch({ type: userActionTypes.TOGGLE_SUPERUSER_MODE }) };
@@ -290,5 +344,6 @@ export const userActions = {
   delete: _delete,
   setUserFromSync,
   toggleSuperUserMode,
-  loginSU
+  loginSU,
+  exportListe
 }

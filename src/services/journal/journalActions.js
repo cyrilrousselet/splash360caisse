@@ -22,14 +22,14 @@ function log(code, description="") {
       'JET-NID': __evtid + format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + __evtnum.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false}),
       'JET-EVT-NUM': code,
       'JET-EVT-LIB': evenements[code].intitule,
-      'JET-OPE-NID': user.user_id,
+      'JET-OPE-NID': user ? user.user_id : 'auto',
       'JET-GDH': format(new Date(), 'yyyyMMddHHmmss'),
       'JET-INF': description,
       'JET-TAG-SIG': null
     };
 
     const lastSignature = await signatureServices.getLastSignature(__type);
-    const {source, signature} = signatureServices.getJETSignature({...__evt, caisse: caisse}, privateKey, lastSignature);
+    const {source, signature} = signatureServices.createJETSignature({...__evt, caisse: caisse}, privateKey, lastSignature);
  
     console.log(__evtid+' source : ',source);
 

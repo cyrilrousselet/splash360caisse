@@ -22,7 +22,7 @@ const mapDispatchToProps = (dispatch) => {
   const bound = bindActionCreators({
       getZCaisse: clotureActions.getZCaisse,
       printZCaisse: peripheralActions.printZCaisse,
-      exportFEC: clotureActions.exportFEC
+      exportComptable: clotureActions.exportComptable
   }, dispatch);
   return {
     ...bound,

@@ -45,7 +45,7 @@ const now = new Date();
 const dialogOptions = {
   title: strings.modules.listezcaisse.actions.dest,
   defaultPath: `${ app.getPath('desktop') }/`,
-  buttonLabel: strings.modules.listezcaisse.actions.fec
+  buttonLabel: strings.modules.listezcaisse.actions.exportcpt
 }
 
 
@@ -445,7 +445,7 @@ class ListeZCaisse extends React.Component {
     this.printZCaisse = this.printZCaisse.bind(this);
     this.printZCaisseId = this.printZCaisseId.bind(this);
     this.handleChangeTab = this.handleChangeTab.bind(this);
-    this.exportFEC = this.exportFEC.bind(this);
+    this.exportComptable = this.exportComptable.bind(this);
     this.prevMonth = this.prevMonth.bind(this);
     this.nextMonth = this.nextMonth.bind(this);
     this.nextYear = this.nextYear.bind(this);
@@ -566,19 +566,19 @@ class ListeZCaisse extends React.Component {
     }
   }
 
-  async exportFEC() {
+  async exportComptable() {
 
     const {startDate, endDate} = this.state;
 
     const __opt = {
       ...dialogOptions,
-      defaultPath: dialogOptions.defaultPath + `${ format(new Date(),'yyMMdd') }_FEC_${ format(startDate, 'MM-yyyy') }.csv`
+      defaultPath: dialogOptions.defaultPath + `${ format(new Date(),'yyMMdd') }_exportcomptable_${ format(startDate, 'MM-yyyy') }.csv`
     };
     
     const __target = await dialog.showSaveDialog(win, __opt);
-    console.log('💾 FEC : ',__target.filePath);
+    console.log('💾 Export Comptable : ',__target.filePath);
     
-    this.props.exportFEC(__target.filePath, startDate, endDate);
+    this.props.exportComptable(__target.filePath, startDate, endDate);
   }
 
   handleChangeTab(event, newValue) {
@@ -797,7 +797,7 @@ class ListeZCaisse extends React.Component {
                 <StdButton identifier="prevmonth" elementclass="prevmonth" key="prevmonth" text="<" onClick={()=>{this.prevMonth()}} />
                 <div className="groupe-titre">
                   <div className="currentmonth" onClick={() => {this.thisMonth()}}>{ format(startDate, 'MMMM yyyy', { locale: frLocale }) }</div>
-                  <StdButton identifier="btnfec" elementclass="btnfec" key="btnfec" text={ strings.modules.listezcaisse.actions.fec } onClick={ this.exportFEC } />
+                  <StdButton identifier="btnfec" elementclass="btnfec" key="btnfec" text={ strings.modules.listezcaisse.actions.exportcpt } onClick={ this.exportComptable } />
                 </div>
                 <StdButton identifier="nextmonth" elementclass="nextmonth" key="nextmonth" text=">" onClick={()=>{this.nextMonth()}} />
               </div>

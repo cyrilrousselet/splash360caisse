@@ -4,8 +4,8 @@ import { signatureServices } from "./signatureServices";
 function getAll() {
   return async dispatch => {
     try {
-      const signatures = await signatureServices.getAll();
-      dispatch({ type: signatureActionTypes.GET_ALL, signatures });
+      const signatures = await signatureServices.getAllSignatures();
+      dispatch({ type: signatureActionTypes.GET_ALL, ...signatures });
     } 
     catch(error) {
       dispatch({ type: signatureActionTypes.GET_ALL_FAILURE, detail: error.message });
@@ -42,8 +42,14 @@ function updateSignature(type, signature) {
       case 'duplicatas':
         dispatch({ type: signatureActionTypes.CREATE_SIGNATURE_DUPLICATA, duplicata: signature });
         break;
-      case 'grandstotaux':
-        dispatch({ type: signatureActionTypes.CREATE_SIGNATURE_GRANDTOTAL, grandtotal: signature });
+      case 'grandstotaux_jour':
+        dispatch({ type: signatureActionTypes.CREATE_SIGNATURE_GRANDTOTAL_JOUR, grandtotal: signature });
+        break;
+      case 'grandstotaux_mois':
+        dispatch({ type: signatureActionTypes.CREATE_SIGNATURE_GRANDTOTAL_MOIS, grandtotal: signature });
+        break;
+      case 'grandstotaux_annee':
+        dispatch({ type: signatureActionTypes.CREATE_SIGNATURE_GRANDTOTAL_ANNEE, grandtotal: signature });
         break;
       case 'archivesfiscales':
         dispatch({ type: signatureActionTypes.CREATE_SIGNATURE_ARCHIVEFISCALE, archivefiscale: signature });

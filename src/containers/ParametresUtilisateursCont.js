@@ -19,7 +19,8 @@ const mapDispatchToProps = (dispatch) => {
     getAll: userActions.getAll,
     updateUser: userActions.updateUser,
     createUser: userActions.createUser,
-    updateValeur: parametresActions.update
+    updateValeur: parametresActions.update,
+    exportListe: userActions.exportListe,
   },dispatch);
 }
 

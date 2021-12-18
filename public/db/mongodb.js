@@ -18,7 +18,7 @@ async function connect() {
   if (db===null) {
   
     try {
-      db = await mongoose.connect("mongodb://localhost/splash", mongooseOpts);
+      db = await mongoose.connect("mongodb://splash:splash360@localhost/splash", mongooseOpts);
       log.info('App connected to mongo');
       return db;
     }

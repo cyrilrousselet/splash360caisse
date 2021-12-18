@@ -38,6 +38,7 @@ class Dashboard extends Component {
     this.props.getReglesPanierList();
     this.props.getReglesCatalogueList();
     this.props.getCommande();
+    this.props.getPastNonConfirmed();
 
   }
 
@@ -87,6 +88,8 @@ class Dashboard extends Component {
       today_ca,
       today_numtickets,
       blocage_encaissement,
+      blocage_commande,
+      pastnonconfirmed
     } = this.props;
 
     // if (today_ca===undefined || ca===null) {
@@ -96,8 +99,19 @@ class Dashboard extends Component {
     
     let modules_bloques = [...DISABLED_MODULES];
     if (blocage_encaissement===true) {
-      modules_bloques.push('encaissement');
+      if (!modules_bloques.includes('encaissement')) modules_bloques.push('encaissement');
     }
+    if (blocage_commande===true) {
+      if (!modules_bloques.includes('encaissement')) modules_bloques.push('encaissement');
+      Swal.fire({
+        title: strings.dashboard.alert.blocked_cloture.titre,
+        html: strings.dashboard.alert.blocked_cloture[pastnonconfirmed>0 ? 'texte_nc':'texte_c']
+      }).then((result) => {
+        history.push(pastnonconfirmed>0 ? paths.LISTECOMMANDES : paths.CLOTURE);
+      });
+    }
+
+    
 
     const ca_eval = "good";
 

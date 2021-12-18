@@ -4,7 +4,10 @@ const connect = require("../db/mongodb");
 const CommandeModel = require("../db/commandeModel");
 const TicketrestauModel = require("../db/ticketrestauModel");
 const CmdchronoModel = require("../db/cmdchronoModel");
+const TicketModel = require('../db/TicketModel');
+const DuplicataModel = require('../db/DuplicataModel');
 const { uuid } = require("uuidv4");
+const { lowerFirst } = require('lodash');
 
 const actions = {
   dbCommandeGetAll: async (req, res) => {
@@ -134,6 +137,40 @@ const actions = {
     log.info("dbCommandeDelete() in API");
 
     const confirm = await _deleteCommande(payload.ticketId, payload.motif);
+
+    res.send(confirm);
+  },
+
+  dbTicketGet: async (req, res) => {
+    log.info('dbTicketGet in API');
+    const { payload } = req;
+
+    const proxies = await _findTicket(payload);
+    res.send(proxies);
+  },
+
+  dbTicketPersist: async (req, res) => {
+    log.info('dbTicketPersist in API');
+    const { payload } = req;
+
+    const confirm = await _persistTicket(payload);
+
+    res.send(confirm);
+  },
+
+  dbDuplicataGet: async (req, res) => {
+    log.info('dbDuplicataGet in API');
+    const { payload } = req;
+
+    const proxies = await _findDuplicata(payload);
+    res.send(proxies);
+  },
+
+  dbDuplicataPersist: async (req, res) => {
+    log.info('dbDuplicataPersist in API');
+    const { payload } = req;
+
+    const confirm = await _persistDuplicata(payload);
 
     res.send(confirm);
   },
@@ -512,6 +549,49 @@ async function _persistTicketRestau(payload) {
   }
 }
 
+async function _findTicket(criteriae={}) {
+
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  let __tck = await TicketModel.find(criteriae).lean().exec();
+
+  return __tck;
+
+}
+
+async function _persistTicket(payload) {
+  
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  await TicketModel.create(payload);
+
+  return true;
+  
+}
+
+async function _findDuplicata(criteriae={}) {
+
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  let __tck = await DuplicataModel.find(criteriae).lean().exec();
+
+  return __tck;
+
+}
+
+async function _persistDuplicata(payload) {
+  
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  await DuplicataModel.create(payload);
+
+  return true;
+  
+}
 
 
 async function _generateCommandId() {

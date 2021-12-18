@@ -69,8 +69,8 @@ handleChangeTab(event, newValue) {
     <AppBar position="static">
       <Tabs value={section} onChange={this.handleChangeTab} aria-label="simple tabs example">
         <Tab label={ strings.modules.parametres.submodules.peripheriques.impression.titre } {...a11yProps(0)} />
-        <Tab label={ strings.modules.parametres.submodules.peripheriques.paiement.titre } {...a11yProps(1)} />
-        <Tab label={ strings.modules.parametres.submodules.peripheriques.affichage.titre } {...a11yProps(2)} />
+      {/*  <Tab label={ strings.modules.parametres.submodules.peripheriques.paiement.titre } {...a11yProps(1)} /> */}
+      {/*  <Tab label={ strings.modules.parametres.submodules.peripheriques.affichage.titre } {...a11yProps(2)} /> */}
       </Tabs>
     </AppBar>
     <TabPanel key="impression-panel" className="panel" value={section} index={0}>

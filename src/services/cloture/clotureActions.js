@@ -2,11 +2,10 @@ import { clotureActionTypes } from './clotureActionTypes';
 import { clotureServices } from './clotureServices';
 import { commandeActions } from '../commande/commandeActions';
 import { peripheralActions } from '../peripheral/peripheralActions';
+import {remote} from 'electron';
 
-// import { differenceInMinutes } from 'date-fns/esm';
-
-// import LocalizedStrings from 'react-localization';
-// import {data} from '../../constants/translations';
+import LocalizedStrings from 'react-localization';
+import {data} from '../../constants/translations';
 // import Swal from 'sweetalert2';
 // import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
@@ -17,11 +16,34 @@ import { signatureServices } from '../signature/signatureServices';
 import { format, set, sub, isBefore, add } from 'date-fns';
 import { signatureActions } from '../signature/signatureActions';
 import { journalActions } from '../journal/journalActions';
-// import { dateBounds } from '../../helpers/toolbox';
-// const strings = new LocalizedStrings(data);
+import Swal from 'sweetalert2';
+import { marketingServices } from '../marketing/marketingServices';
+import { tresorServices } from '../tresorerie/tresorServices';
+import { last, dropRight } from 'lodash';
+import { ungzip } from 'node-gzip';
+import packageJson from '../../../package.json';
+import {statSync} from 'fs';
+
+const strings = new LocalizedStrings(data);
+const {app} = remote;
+const fs = require('fs').promises;
 
 // const logger = new Logger();
 
+const COMPTE_COMPTABLE = {
+  'ht1000':  {id: 7071000, intitule:'VENTES HT MAGASIN 10%'},
+  'ht2000':  {id: 7072000, intitule:'VENTES HT MAGASIN 20%'},
+  'ht0550':  {id: 7070550, intitule:'VENTES HT MAGASIN 5,5%'},
+  'tva1000': {id: 4457110, intitule:'TVA COLLECTEE 10%'},
+  'tva2000': {id: 4457120, intitule:'TVA COLLECTEE 20%'},
+  'tva0550': {id: 4457105, intitule:'TVA COLLECTEE 5,5%'},
+  'carte':   {id: 5111000, intitule:'CB A ENCAISSER'},
+  'ticket':  {id: 5112000, intitule:'TICKET RESTAURANT'},
+  'cheque':  {id: 5113000, intitule:'CHEQUE BANCAIRE'},
+  'avoir':   {id: 5114000, intitule:'AVOIR A ENCAISSER'},
+  'especes': {id: 5300000, intitule:'ESPECES'},
+  'ecart':   {id: 6580000, intitule:'ECART DE CAISSE'},
+}
 
 function getLast() {
   return dispatch => {
@@ -201,7 +223,7 @@ function  createZCaisse(cloture, intervalle, mode) {
     }
 
     const lastSignature = await signatureServices.getLastSignature('zdecaisse');
-    const {source, hash, signature} = signatureServices.getZdecaisseSignature({...__zdecaisse}, privateKey, lastSignature);
+    const {source, hash, signature} = signatureServices.createZdecaisseSignature({...__zdecaisse}, privateKey, lastSignature);
  
 
     __zdecaisse.source = source;
@@ -282,7 +304,7 @@ function makeCloture(params={}) {
   //  logger.info(commandeslist);
 
     const default_params =  {
-      user: {id: user.id, nom: user.nom, user_id: user.user_id},
+      user: user ? {id: user.id, nom: user.nom, user_id: user.user_id}: 'auto',
       caisse: options.caisse,
       vendeur: null,
       clotureId: 'CL' + (params.type==="auto" ? "A" : "M") + format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + cloture_id.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false}),
@@ -328,15 +350,15 @@ function makeCloture(params={}) {
       // récup des Grands Totaux Tickets associés à chaque commande
       const __gtt_ids = Object.values(commandeslist).map(c => c.ticket);
 
-      const _gtt = await clotureServices.getGTTicket({ numeroTicket:{$in: __gtt_ids} });
+      const _gtt = await clotureServices.getGTTicket({ 'ENC-GTT-ORI-NUM':{$in: __gtt_ids} });
 
       let tickets = {};
       _gtt.forEach((g) => {
-        tickets[g.numeroTicket] = g;
+        tickets[g['ENC-GTT-ORI-NUM']] = g;
       });
 
 
-      const cloture = clotureServices.makeCloture(commandeslist, tickets, catalogue, params)
+      const cloture = clotureServices.makeCloture(commandeslist, tickets, catalogue, params);
 
       const __cloture = {...cloture, localsync: [options.caisse.uniqid]};
 
@@ -352,6 +374,7 @@ function makeCloture(params={}) {
             dispatch(notificationActions.syncDispatch('cloture', __cloture));
 
             dispatch(createZCaisse(cloture, (params.type==="auto" ? 'jour':'intermediaire'), params.type));
+            dispatch({ type: clotureActionTypes.CHECK_NOCOMPLETED_COMMANDS, blocage: false});
             
           }
         );
@@ -491,10 +514,10 @@ function setClotureFromSync(cloture) {
 }
 
 
-function testCloturesAuto(intervalle) {
+function testCloturesAuto() {
   return async (dispatch, getState) => {
 
-    console.log('testCloturesAuto('+intervalle+')');
+    console.log('testCloturesAuto()');
 
     const __today =  new Date();
     let end;
@@ -514,16 +537,25 @@ function testCloturesAuto(intervalle) {
         {createdAt:{$lt:end.getTime()}}
       ]
     });
+    console.log('__cmdnonconfirmees',__cmdnonconfirmees);
 
-    if (__cmdnonconfirmees.hasOwnProperty('commandeslist') && __cmdnonconfirmees.commandeslist.length > 0) {
-      const __cmdnonconfirmees_ids = Object.values(__cmdnonconfirmees.commandeslist).map(c => c.ticketId);
+    if (__cmdnonconfirmees.hasOwnProperty('commandeslist') && Object.values(__cmdnonconfirmees.commandeslist).length > 0) {
+      const __cmdstandby_ids = Object.values(__cmdnonconfirmees.commandeslist).filter(cmd => cmd.status==="standby").map(c => c.ticketId);
+      const __cmdaencaisser = Object.values(__cmdnonconfirmees.commandeslist).filter(cmd => cmd.status==="a_encaisser");
 
-      console.log('commandes inachevées à supprimer (service passé) => ',__cmdnonconfirmees_ids, end);
+      if (__cmdaencaisser.length>0) {
+        console.log('il y a des commandes à encaisser : impossible de faire la clôture auto -> on bloque la caisse');
+        dispatch({ type: clotureActionTypes.CHECK_NOCOMPLETED_COMMANDS, blocage: true});
+      } else {
+        dispatch({ type: clotureActionTypes.CHECK_NOCOMPLETED_COMMANDS, blocage: false});
+      }
+
+      console.log('commandes en attente à supprimer (service passé) => ',__cmdstandby_ids, end);
 
 
       let cmdnum = 0;
 
-      await asyncForEach(__cmdnonconfirmees_ids, async (id) => {
+      await asyncForEach(__cmdstandby_ids, async (id) => {
 
         try{
           const __cmdabandon = await commandeServices.deleteCommande(id, "abandon avant cloture auto");
@@ -532,7 +564,7 @@ function testCloturesAuto(intervalle) {
           console.error(e);
           return false;
         }
-        if(cmdnum===__cmdnonconfirmees_ids.length) return true;
+        if(cmdnum===__cmdstandby_ids.length) return true;
 
       });
     }
@@ -873,25 +905,43 @@ function createGrandTotalTicket(commande) {
     });
 
     const __gtt = {
-      numeroTicket: commande.ticket,
-      tva_ttc: __tva_ttc.join('|'),
-      tva_ht: __tva_ht.join('|'),
-      tva_taxe: __tva_taxe.join('|'),
-      total_ttc: __total_ttc,
-      total_ht: __total_ht,
-      gtpca: __gtp.gtpca,
-      gtpva: __gtp.gtpva,
-      createdAt: format(new Date(commande.createdAt), 'yyyyMMddHHmmss'),
-      source_hash: commande.hashsource,
-      hash_ticket: commande.hash,
-      trousseauId: trousseauId,
-      signature_ticket: commande.signature
+      'ENC-GTT-ORI-NUM': commande.ticket,
+      'ENC-GTT-MTN-TVA-TTC': __tva_ttc.join('|'),
+      'ENC-GTT-MTN-TVA-HT': __tva_ht.join('|'),
+      'ENC-GTT-MTN-TVA-TAUX': __tva_taxe.join('|'),
+      'ENC-GTT-TTC': __total_ttc,
+      'ENC-GTT-HT': __total_ht,
+      'ENC-GTT-PER-TTC': __gtp.gtpca,
+      'ENC-GTT-PER-TTC-ABS': __gtp.gtpva,
+      'ENC-GTT-HOR-GDH': format(new Date(commande.createdAt), 'yyyyMMddHHmmss'),
+      'ENC-GTT-ARG': commande.hashsource,
+      'ENC-GTT-HASH': commande.hash,
+      'ENC-GTT-ID-KEY': trousseauId,
+      'ENC-GTT-TAG-SIG': commande.signature
     };
+
+    console.log('gtt',__gtt);
+
+    // const __gtt = {
+    //   numeroTicket: commande.ticket,
+    //   tva_ttc: __tva_ttc.join('|'),
+    //   tva_ht: __tva_ht.join('|'),
+    //   tva_taxe: __tva_taxe.join('|'),
+    //   total_ttc: __total_ttc,
+    //   total_ht: __total_ht,
+    //   gtpca: __gtp.gtpca,
+    //   gtpva: __gtp.gtpva,
+    //   createdAt: format(new Date(commande.createdAt), 'yyyyMMddHHmmss'),
+    //   source_hash: commande.hashsource,
+    //   hash_ticket: commande.hash,
+    //   trousseauId: trousseauId,
+    //   signature_ticket: commande.signature
+    // };
 
     try {
       await clotureServices.persistGTTicket(__gtt);
       dispatch({ type: clotureActionTypes.PERSIST_GTTICKET_REQUEST, gtt: __gtt });
-      dispatch(journalActions.log('160', 'Grand Total Ticket #'+__gtt.numeroTicket));
+      dispatch(journalActions.log('160', 'Grand Total Ticket #'+__gtt['ENC-GTT-ORI-NUM']));
     }
     catch(e) {
       console.error(e);
@@ -931,8 +981,10 @@ function createGrandTotalPeriodique(intervalle, grandstotaux) {
 
     grandstotaux.forEach(gt => {
 
+      const gttype = gt.hasOwnProperty('gttype') ? 'GTP' : 'GTT';
+
       // tva ttc
-      const gt_tvattc = gt.tva_ttc.split('|');
+      const gt_tvattc = gt[`ENC-${gttype}-MTN-TVA-TTC`].split('|');
       gt_tvattc.forEach(t => {
         let cpl = t.split(':');
         if (!__tva_ttc.hasOwnProperty(cpl[0])) __tva_ttc[cpl[0]] = 0;
@@ -940,7 +992,7 @@ function createGrandTotalPeriodique(intervalle, grandstotaux) {
       });
 
       // tva ht
-      const gt_tvaht = gt.tva_ht.split('|');
+      const gt_tvaht = gt[`ENC-${gttype}-MTN-TVA-HT`].split('|');
       gt_tvaht.forEach(t => {
         let cpl = t.split(':');
         if (!__tva_ht.hasOwnProperty(cpl[0])) __tva_ht[cpl[0]] = 0;
@@ -948,30 +1000,30 @@ function createGrandTotalPeriodique(intervalle, grandstotaux) {
       });
 
       // tva taxe
-      const gt_tvataxe = gt.tva_taxe.split('|');
+      const gt_tvataxe = gt[`ENC-${gttype}-MTN-TVA-TAUX`].split('|');
       gt_tvataxe.forEach(t => {
         let cpl = t.split(':');
         if (!__tva_taxe.hasOwnProperty(cpl[0])) __tva_taxe[cpl[0]] = 0;
         __tva_taxe[cpl[0]] += parseInt(cpl[1]);
       });
 
-      __total_ttc += gt.total_ttc;
-      __total_ht += gt.total_ht;
+      __total_ttc += gt[`ENC-${gttype}-TTC`];
+      __total_ht += gt[`ENC-${gttype}-HT`];
 
 
       let __evalstart, __evalend;
       // si le grandtotal est un GTPeriodique (ztype 'jour' ou 'mois')
-      if (gt.hasOwnProperty('periode')) {
+      if (gttype === 'GTP') {
 
-        let periode_ar = gt.periode.split('|');
+        let periode_ar = gt['ENC-GTP-ORI-NUM'].split('|');
         __evalstart = parseInt(periode_ar[0]);
         __evalend = parseInt(periode_ar[1]);
 
       } 
       // si le grandtotal est un GTTicket
       else {
-        __evalstart = parseInt(gt.createdAt);
-        __evalend = parseInt(gt.createdAt);
+        __evalstart = parseInt(gt['ENC-GTT-HOR-GDH']);
+        __evalend = parseInt(gt['ENC-GTT-HOR-GDH']);
       }
 
 
@@ -1017,36 +1069,53 @@ function createGrandTotalPeriodique(intervalle, grandstotaux) {
     }
 
 
-    const lastSignature = await signatureServices.getLastSignature('grandstotaux');
+    const lastSignature = await signatureServices.getLastSignature('grandstotaux_'+intervalle);
     const newTicket = 'GTP'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + grandtotal.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
-    const {source, hash, signature} = signatureServices.getGrandtotalSignature({...source_signature, type:"periode"}, gtpca, privateKey, lastSignature);
+    const {source, hash, signature} = signatureServices.createGrandtotalSignature({...source_signature, type:"periode"}, gtpca, privateKey, lastSignature);
  
 
     const __grandtotalperiodique = {
       gttype: intervalle,
-      grandtotal_id: newTicket,
-      periode: __start_str+'|'+__end_str,
-      tva_ttc: __alltva_ttc.join('|'),
-      tva_ht: __alltva_ht.join('|'),
-      tva_taxe: __alltva_taxe.join('|'),
-      total_ttc: __total_ttc,
-      total_ht: __total_ht,
-      gtpca: gtpca,
-      gtpva: gtpva,
-      createdAt: format(new Date(), 'yyyyMMddHHmmss'),
-      source_hash: source,
-      hash: hash,
-      trousseauId: trousseauId,
-      signature: signature
+      'ENC-GTP-ORI-NID': newTicket,
+      'ENC-GTP-ORI-NUM': __start_str+'|'+__end_str,
+      'ENC-GTP-MTN-TVA-TTC': __alltva_ttc.join('|'),
+      'ENC-GTP-MTN-TVA-HT': __alltva_ht.join('|'),
+      'ENC-GTP-MTN-TVA-TAUX': __alltva_taxe.join('|'),
+      'ENC-GTP-TTC': __total_ttc,
+      'ENC-GTP-HT': __total_ht,
+      'ENC-GTP-PER-TTC': gtpca,
+      'ENC-GTP-PER-TTC-ABS': gtpva,
+      'ENC-GTP-HOR-GDH': format(new Date(), 'yyyyMMddHHmmss'),
+      'ENC-GTP-ARG': source,
+      'ENC-GTP-HASH': hash,
+      'ENV-GTP-ID-KEY': trousseauId,
+      'ENV-GTP-TAG-SIG': signature
     };
+    // const __grandtotalperiodique = {
+    //   gttype: intervalle,
+    //   grandtotal_id: newTicket,
+    //   periode: __start_str+'|'+__end_str,
+    //   tva_ttc: __alltva_ttc.join('|'),
+    //   tva_ht: __alltva_ht.join('|'),
+    //   tva_taxe: __alltva_taxe.join('|'),
+    //   total_ttc: __total_ttc,
+    //   total_ht: __total_ht,
+    //   gtpca: gtpca,
+    //   gtpva: gtpva,
+    //   createdAt: format(new Date(), 'yyyyMMddHHmmss'),
+    //   source_hash: source,
+    //   hash: hash,
+    //   trousseauId: trousseauId,
+    //   signature: signature
+    // };
 
     try {
       const confirm = await clotureServices.persistGTPeriodique(__grandtotalperiodique);
       dispatch({ type: clotureActionTypes.PERSIST_GTPERIODIQUE_SUCCESS, gtp: __grandtotalperiodique });
 
-      dispatch(journalActions.log('160', `Grand Total Periodique (${intervalle}) #${__grandtotalperiodique.grandtotal_id}`));
+      dispatch(journalActions.log('160', `Grand Total Periodique (${intervalle}) #${__grandtotalperiodique['ENC-GTP-ORI-NID']}`));
 
-      dispatch( signatureActions.updateSignature('grandstotaux', signature) );
+      dispatch( signatureActions.updateSignature('grandstotaux_'+intervalle, signature) );
       dispatch( signatureActions.updateNumerotation('grandtotal', grandtotal+1) );
 
       // on lance le test sur l'intervalle supérieur
@@ -1067,7 +1136,7 @@ function createGrandTotalPeriodique(intervalle, grandstotaux) {
 }
 
 
-function testGTPeriodique(intervalle) {
+function testGTPeriodique(intervalle='jour') {
   return async dispatch => {
 
     const __today =  new Date();
@@ -1097,7 +1166,7 @@ function testGTPeriodique(intervalle) {
 
         if (__lastGTJ.length>0) {
           // fin de periode
-          const last_fin = parseInt(__lastGTJ[0].periode.split("|")[1]);
+          const last_fin = parseInt(__lastGTJ[0]['ENC-GTP-ORI-NUM'].split("|")[1]);
 
           console.log('fin de la période du GTJ', last_fin, parseInt(end));
 
@@ -1109,8 +1178,8 @@ function testGTPeriodique(intervalle) {
             __GTT_query = {
               "$expr" : {
                 "$and":[ 
-                  {"$gt" : [{"$toDouble": "$createdAt"} , last_fin]},
-                  {"$lt" : [{"$toDouble": "$createdAt"} , parseInt(end)]}
+                  {"$gt" : [{"$toDouble": "$ENC-GTT-HOR-GDH"} , last_fin]},
+                  {"$lt" : [{"$toDouble": "$ENC-GTT-HOR-GDH"} , parseInt(end)]}
                 ]
               }
             };
@@ -1122,7 +1191,7 @@ function testGTPeriodique(intervalle) {
         else {
           console.log('pas de GTJ antérieur')
           // on va chercher tous les GTTickets antérieurs au service d'aujourd'hui
-          __GTT_query = {"$expr" : {"$lt" : [{"$toDouble" :"$createdAt"} , parseInt(end)]}};
+          __GTT_query = {"$expr" : {"$lt" : [{"$toDouble" :"$ENC-GTP-HOR-GDH"} , parseInt(end)]}};
         }
       }
       catch(e) {
@@ -1164,7 +1233,7 @@ function testGTPeriodique(intervalle) {
 
         if (__lastGTM.length>0) {
           // fin de periode
-          const last_fin = parseInt(__lastGTM[0].periode.split("|")[1]);
+          const last_fin = parseInt(__lastGTM[0]['ENC-GTP-ORI-NUM'].split("|")[1]);
 
           console.log('fin de la période du GTM', last_fin, parseInt(end));
 
@@ -1180,7 +1249,7 @@ function testGTPeriodique(intervalle) {
                   {"$gt" : [
                     {"$toDouble": 
                       {"$arrayElemAt":[
-                        {"$split":["$periode","|"]}, 
+                        {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
                         1
                       ]}
                     },
@@ -1189,7 +1258,7 @@ function testGTPeriodique(intervalle) {
                   {"$lt" : [
                     {"$toDouble": 
                       {"$arrayElemAt":[
-                        {"$split":["$periode","|"]}, 
+                        {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
                         1
                       ]}
                     }, 
@@ -1213,7 +1282,7 @@ function testGTPeriodique(intervalle) {
                 {"$lt" : [
                   {"$toDouble": 
                     {"$arrayElemAt":[
-                      {"$split":["$periode","|"]}, 
+                      {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
                       1
                     ]}
                   }, 
@@ -1263,7 +1332,7 @@ function testGTPeriodique(intervalle) {
 
         if (__lastGTA.length>0) {
           // fin de periode
-          const last_fin = parseInt(__lastGTA[0].periode.split("|")[1]);
+          const last_fin = parseInt(__lastGTA[0]['ENC-GTP-ORI-NUM'].split("|")[1]);
 
           console.log('fin de la période du GTA', last_fin, parseInt(end));
 
@@ -1279,7 +1348,7 @@ function testGTPeriodique(intervalle) {
                   {"$gt" : [
                     {"$toDouble": 
                       {"$arrayElemAt":[
-                        {"$split":["$periode","|"]}, 
+                        {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
                         1
                       ]}
                     },
@@ -1288,7 +1357,7 @@ function testGTPeriodique(intervalle) {
                   {"$lt" : [
                     {"$toDouble": 
                       {"$arrayElemAt":[
-                        {"$split":["$periode","|"]}, 
+                        {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
                         1
                       ]}
                     }, 
@@ -1312,7 +1381,7 @@ function testGTPeriodique(intervalle) {
                 {"$lt" : [
                   {"$toDouble": 
                     {"$arrayElemAt":[
-                      {"$split":["$periode","|"]}, 
+                      {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
                       1
                     ]}
                   }, 
@@ -1345,32 +1414,826 @@ function testGTPeriodique(intervalle) {
   }
 }
 
-function exportFEC(target, debut, fin) {
+function getArchivesFiscales() {
+  return async dispatch => {
+    dispatch({ type: clotureActionTypes.GET_ARCHIVE_FISCALE_REQUEST });
+
+    try {
+      const archives = await clotureServices.getArchiveFiscale();
+      dispatch({ type: clotureActionTypes.GET_ARCHIVE_FISCALE_SUCCESS, archives: [...archives] });
+    } catch(e) {
+      dispatch({ type: clotureActionTypes.GET_ARCHIVE_FISCALE_FAILURE, error: e });
+    }
+  }
+}
+
+function checkArchive(filename) {
+  return async (dispatch, getState) => {
+    const { privateKey, publicKey } = getState().signatureReducer; 
+    const { archives_fiscales } = getState().clotureReducer; 
+
+    const afdata = archives_fiscales.find(a => a['TAG-ARC-DOC']===filename);
+
+    if (!afdata) return console.error('fichier introuvable en base');
+
+    let __afcont;
+    try {
+      __afcont = await fs.readFile(`${app.getPath('userData')}/archives_fiscales/${filename}`);
+    } catch(e) {
+      return console.error(e);
+    }
+    if (__afcont) {
+
+      const { hmac } = await signatureServices.createArchiveFiscaleSignature(__afcont.toString(), privateKey); 
+
+      console.log('fichier',hmac);
+      console.log('base',afdata['TAG-ARC-HASH']);
+
+      const isVerif = hmac===afdata['TAG-ARC-HASH'];
+      dispatch({ type: clotureActionTypes.QUALIFY_ARCHIVE_FISCALE, archive: {...afdata, verif: isVerif} });
+    }
+
+
+  }
+}
+
+
+function archiveFiscale(intervalle, debut, fin) {
   return async (dispatch, getState) => {
 
 
-    let fec = {
-      header:[   
-        {id: 'date', title: 'date'},
-        {id: 'cattc', title: 'cattc'},
-        {id: 'especes', title: 'especes'},
-        {id: 'cheques', title: 'cheques'},
-        {id: 'cartes', title: 'cartes'},
-        {id: 'tickets', title: 'tickets'},
-        {id: 'avoirs', title: 'avoirs'},
-        {id: 'caht', title: 'caht'},
-        {id: 'tva0200', title: 'tva0200'},
-        {id: 'tva0100', title: 'tva0100'},
-        {id: 'tva0055', title: 'tva0055'},
-        {id: 'nbrecmd', title: 'nbrecmd'}
-      ],
-      data:[]
+    const { privateKey, trousseauId } = getState().signatureReducer; 
+    const { caisse, archive_secret } = getState().parametresReducer.parametres.options;
+    const { user } = getState().authentication;
+
+    let __startdefacto = null;
+    let __enddefacto = null;
+
+    let __int = 'A';
+    let __periode = format(debut, 'yyyy');
+    if (intervalle==="jour") {
+      __int = 'J';
+      __periode = format(debut, 'yyyyMMdd')
+    }
+    else if (intervalle==="mois") {
+      __int = 'M';
+      __periode = format(debut, 'yyyyMM')
+    }
+
+    let fileNameRad = `${format(new Date(), 'yyMMddHHmmss')}_FA${__int}-${__periode}`;
+
+    let fileName = fileNameRad+'.zip';
+
+    // for (let num=0; statSync(`${app.getPath('userData')}/archives_fiscales/${fileName}`); num++) {
+    //   fileName = fileNamerad+'-'+num+'.zip';
+    // }
+
+    const start = format(debut, 'yyyyMMdd050000');
+    const end = format(fin, 'yyyyMMdd050000');
+
+
+    // TEST PREALABLE
+    // y a-t-il des commandes non clôturées dans la période à archiver ?
+    const cmdnonarchivees = await commandeServices.getCommandesList({
+      $and: [
+        { createdAt: {$gte: debut.getTime()} },
+        { createdAt: {$lt: fin.getTime()} },
+        { status: 'confirmed' },
+        { archived: {$exists: false} }
+      ]
+    });
+
+    if (Object.values(cmdnonarchivees.commandeslist).length>0) {
+      Swal.fire({
+        title: strings.modules.parametres.submodules.fiscal.archive.alerte.commandes.titre,
+        html: strings.modules.parametres.submodules.fiscal.archive.alerte.commandes.texte
+      });
+      dispatch({type: clotureActionTypes.ARCHIVE_FISCALE_FAILURE, error: 'commandes non clôturées'});
+      return false;
+    }
+
+
+    let __data = [];
+
+    // EXPORT DES DONNEES
+    // ------------> GTTickets
+    const __GTT_query = {
+      "$expr" : {
+        "$and":[ 
+          {"$gte" : [{"$toDouble": "$ENC-GTT-HOR-GDH"} , parseInt(start)]},
+          {"$lt" : [{"$toDouble": "$ENC-GTT-HOR-GDH"} , parseInt(end)]}
+        ]
+      }
     };
+    const gttlist = await clotureServices.getGTTicket(__GTT_query);
+
+    // fichier JSON
+    __data.push({type: 'json', data: JSON.stringify(gttlist), file: 'grandtotauxtickets.json'});
+
+    // fichier CSV
+    const gttCsvString = [
+      [
+        'ENC-GTT-ORI-NUM',
+        'ENC-GTT-MTN-TVA-TTC',
+        'ENC-GTT-MTN-TVA-HT',
+        'ENC-GTT-MTN-TVA-TAUX',
+        'ENC-GTT-TTC',
+        'ENC-GTT-HT',
+        'ENC-GTT-PER-TTC',
+        'ENC-GTT-PER-TTC-ABS',
+        'ENC-GTT-HOR-GDH',
+        'ENC-GTT-ARG',
+        'ENC-GTT-HASH',
+        'ENC-GTT-ID-KEY',
+        'ENC-GTT-TAG-SIG'
+      ],
+      ...gttlist.map(gtt => [
+        gtt['ENC-GTT-ORI-NUM'],
+        gtt['ENC-GTT-MTN-TVA-TTC'],
+        gtt['ENC-GTT-MTN-TVA-HT'],
+        gtt['ENC-GTT-MTN-TVA-TAUX'],
+        gtt['ENC-GTT-TTC'],
+        gtt['ENC-GTT-HT'],
+        gtt['ENC-GTT-PER-TTC'],
+        gtt['ENC-GTT-PER-TTC-ABS'],
+        gtt['ENC-GTT-HOR-GDH'],
+        gtt['ENC-GTT-ARG'],
+        gtt['ENC-GTT-HASH'],
+        gtt['ENC-GTT-ID-KEY'],
+        gtt['ENC-GTT-TAG-SIG']
+      ])
+    ]
+     .map(e => e.join(";")) 
+     .join("\n");
+
+    __data.push({type: 'csv', data: gttCsvString, file: 'grandtotauxtickets.csv'});
+
+
+    // ------------> GTPeriodiques
+    const __GTP_query = {
+      "$expr" : {
+        "$and":[ 
+          {"$gte" : [
+            {"$toDouble": 
+              {"$arrayElemAt":[
+                {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
+                0
+              ]}
+            }, 
+            parseInt(start)
+          ]},
+          {"$lt" : [
+            {"$toDouble": 
+              {"$arrayElemAt":[
+                {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
+                1
+              ]}
+            }, 
+            parseInt(end)
+          ]}
+        ]
+      }
+    };
+    const gtplist = await clotureServices.getGTPeriodique(__GTP_query);
+
+    // fichier JSON
+    __data.push({type: 'json', data: JSON.stringify(gtplist), file: 'grandtotauxperiodiques.json'});
+
+    // fichier CSV
+    const gtpCsvString = [
+      [
+        'gttype',
+        'ENC-GTP-ORI-NID',
+        'ENC-GTP-ORI-NUM',
+        'ENC-GTP-MTN-TVA-TTC',
+        'ENC-GTP-MTN-TVA-HT',
+        'ENC-GTP-MTN-TVA-TAUX',
+        'ENC-GTP-TTC',
+        'ENC-GTP-HT',
+        'ENC-GTP-PER-TTC',
+        'ENC-GTP-PER-TTC-ABS',
+        'ENC-GTP-HOR-GDH',
+        'ENC-GTP-ARG',
+        'ENC-GTP-HASH',
+        'ENV-GTP-ID-KEY',
+        'ENV-GTP-TAG-SIG' 
+      ],
+      ...gtplist.map(gtp => [
+        gtp.gttype,
+        gtp['ENC-GTP-ORI-NID'],
+        gtp['ENC-GTP-ORI-NUM'],
+        gtp['ENC-GTP-MTN-TVA-TTC'],
+        gtp['ENC-GTP-MTN-TVA-HT'],
+        gtp['ENC-GTP-MTN-TVA-TAUX'],
+        gtp['ENC-GTP-TTC'],
+        gtp['ENC-GTP-HT'],
+        gtp['ENC-GTP-PER-TTC'],
+        gtp['ENC-GTP-PER-TTC-ABS'],
+        gtp['ENC-GTP-HOR-GDH'],
+        gtp['ENC-GTP-ARG'],
+        gtp['ENC-GTP-HASH'],
+        gtp['ENV-GTP-ID-KEY'],
+        gtp['ENV-GTP-TAG-SIG']
+      ])
+    ]
+     .map(e => e.join(";")) 
+     .join("\n");
+
+    __data.push({type: 'csv', data: gtpCsvString, file: 'grandtotauxperiodiques.csv'});
+
+
+    // ------------>  ZCaisse 
+    const __ZC_query = {
+      "$expr" : {
+        "$and":[ 
+          {"$gte" : [
+            {"$toDouble": 
+              {"$arrayElemAt":[
+                {"$split":["$periode","|"]}, 
+                0
+              ]}
+            }, 
+            parseInt(start)
+          ]},
+          {"$lt" : [
+            {"$toDouble": 
+              {"$arrayElemAt":[
+                {"$split":["$periode","|"]}, 
+                1
+              ]}
+            }, 
+            parseInt(end)
+          ]}
+        ]
+      }
+    };
+    const zclist = await clotureServices.getZCaisse(__ZC_query);
+
+    console.log('zclist',zclist);
+    if (zclist) {
+      // fichier JSON
+      __data.push({type: 'json', data: JSON.stringify(zclist), file: 'zdecaisse.json'});
+
+      // fichier CSV
+      const zcCsvString = [
+        [
+          "zId",
+          "ztype",
+          "comptage_total",
+          "comptage_especes",
+          "comptage_carte",
+          "comptage_ticket",
+          "comptage_cheque",
+          "comptage_avoir",
+          "ecarts_especes",
+          "ecarts_especes_motif",
+          "ecarts_carte",
+          "ecarts_carte_motif",
+          "ecarts_ticket",
+          "ecarts_ticket_motif",
+          "ecarts_cheque",
+          "ecarts_cheque_motif",
+          "ecarts_avoir",
+          "ecarts_avoir_motif",
+          "periode",
+          "ca",
+          "caisse",
+          "depenses",
+          "editeur_id",
+          "editeur_nom",
+          "editeur_user_id",
+          "emission",
+          "fdcaisse",
+          "mtcaisse",
+          "numtickets",
+          "paramdfcaisse",
+          "remboursements",
+          "ticket_moyen",
+          "ventes",
+          "ventilation_moyen",
+          "ventilation_tva_ttc",
+          "ventilation_tva_ht",
+          "ventilation_tva_taxe",
+          "ventilation_vendeur",
+          "ventilation_caisse",
+          "prelevement",
+          "staffmeals",
+          "createdAt",
+          "source",
+          "hash",
+          "signature",
+          "trousseauId"
+        ],
+        ...zclist.map(zc => [
+          zc.zId,
+          zc.ztype,
+          (zc.comptage && zc.comptage.total ? zc.comptage.total : ''),
+          (zc.comptage && zc.comptage.especes ? zc.comptage.especes : ''),
+          (zc.comptage && zc.comptage.carte ? zc.comptage.carte : ''),
+          (zc.comptage && zc.comptage.ticket ? zc.comptage.ticket : ''),
+          (zc.comptage && zc.comptage.cheque ? zc.comptage.cheque : ''),
+          (zc.comptage && zc.comptage.avoir ? zc.comptage.avoir : ''),
+          (zc.ecarts && zc.ecarts.especes ? zc.ecarts.especes.valeur : ''),
+          (zc.ecarts && zc.ecarts.especes ? zc.ecarts.especes.motif : ''),
+          (zc.ecarts && zc.ecarts.carte ? zc.ecarts.carte.valeur : ''),
+          (zc.ecarts && zc.ecarts.carte ? zc.ecarts.carte.motif : ''),
+          (zc.ecarts && zc.ecarts.ticket ? zc.ecarts.ticket.valeur : ''),
+          (zc.ecarts && zc.ecarts.ticket ? zc.ecarts.ticket.motif : ''),
+          (zc.ecarts && zc.ecarts.cheque ? zc.ecarts.cheque.valeur : ''),
+          (zc.ecarts && zc.ecarts.cheque ? zc.ecarts.cheque.motif : ''),
+          (zc.ecarts && zc.ecarts.avoir ? zc.ecarts.avoir.valeur : ''),
+          (zc.ecarts && zc.ecarts.avoir ? zc.ecarts.avoir.motif : ''),
+          zc.periode,
+          zc.ca,
+          zc.caisse,
+          zc.depenses,
+          zc.editeur.id,
+          zc.editeur.nom,
+          zc.editeur.user_id,
+          zc.emission,
+          zc.fdcaisse,
+          zc.mtcaisse,
+          zc.numtickets,
+          zc.paramdfcaisse,
+          zc.remboursements,
+          zc.ticket_moyen,
+          zc.ventes,
+          Object.values(zc.ventilation.moyen).map(m=>m.moyen+': '+m.valeur).join('|'),
+          zc.ventilation.tva && Object.entries(zc.ventilation.tva).map(([k,t])=>k+':'+t.ttc).join('|'),
+          zc.ventilation.tva && Object.entries(zc.ventilation.tva).map(([k,t])=>k+':'+t.ht).join('|'),
+          zc.ventilation.tva && Object.entries(zc.ventilation.tva).map(([k,t])=>k+':'+t.taxe).join('|'),
+          Object.values(zc.ventilation.vendeur).map(v=>`${v.nom} (${v.id}) : ${v.ventes} - ${v.remboursements}`).join('|'),
+          Object.values(zc.ventilation.caisse).map(c=>`${c.nom} (${c.id}): ${c.ca}`).join('|'),
+          zc.prelevement,
+          zc.staffmeals,
+          zc.createdAt,
+          zc.source,
+          zc.hash,
+          zc.signature,
+          zc.trousseauId
+        ])
+      ]
+      .map(e => e.join(";")) 
+      .join("\n");
+
+      __data.push({type: 'csv', data: zcCsvString, file: 'zdecaisse.csv'});
+    }
+
+
+    // ------------>  Tickets
+    const tickets_id = gttlist.map(t=>t['ENC-GTT-ORI-NUM']);
+    const __ft = tickets_id.filter(t => t);
+
+    const tickets = await commandeServices.getTicket({
+      'ENC-TIK-NUM': {$in: __ft}
+    });
+
+    console.log('tickets',tickets);
+    if (Array.isArray(tickets) && tickets.length>0) {
+      let __tck = [];
+      const __tck_hdr = [
+        'ENC-TIK-NUM',
+        'ENC-TIK-CDE',
+        'ENC-TIK-TAG-VER',
+        'ENC-TIK-PRN-NBR',
+        'ENC-TIK-SOC-ETS',
+        'ENC-TIK-SOC-ID',
+        'ENC-TIK-SOC-ADR',
+        'ENC-TIK-SOC-CCP',
+        'ENC-TIK-SOC-VIL',
+        'ENC-TIK-SOC-PAY',
+        'ENC-TIK-SOC-SIR',
+        'ENC-TIK-SOC-NAF',
+        'ENC-TIK-SOC-TVA',
+        'ENC-TIK-VEN-NID',
+        'ENC-TIK-VEN-NOM',
+        'ENC-TIK-OPS-NID',
+        'ENC-TIK-OPS-NOM',
+        'ENC-TIK-CAI-NID',
+        'ENC-TIK-HOR-GDH',
+        'ENC-OPE-TYP',
+        'ENC-TIK-DOC-TYP',
+        'ENC-TIK-LIG-NBR',
+        'ENC-TIK-TAG-SIG',
+        'ENC-TIK-ID-KEY',
+        'ENC-TIK-TAG-RET',
+        'ENC-TIK-HASH',
+        'ENC-TIK-ARG',
+        'ENC-TIK-LOG',
+        'ENC-TIK-TOT-MHT',
+        'ENC-TIK-TOT-TTC'
+      ];
+      
+      let __tcklgn = [];
+      const __tcklgn_hdr = [
+        'ENC-NID',
+        'ENC-TIK-ORI-NUM',
+        'ENC-TIK-LIG-NUM',
+        'ENC-TIK-LIG-PRO-NID',
+        'ENC-TIK-LIG-PRO-LIB',
+        'ENC-TIK-LIG-PRO-QTE',
+        'ENC-TIK-LIG-TAX-NID',
+        'ENC-TIK-LIG-TAX-TXX',
+        'ENC-TIK-LIG-PRO-MTH',
+        'ENC-TIK-LIG-PRO-TTC',
+        'ENC-TIK-LIG-REM-TXX',
+        'ENC-TIK-LIG-REM-TOT',
+        'ENC-TIK-LIG-TOT-MHT',
+        'ENC-TIK-LIG-TOT-TTC',
+        'ENC-TIK-LIG-OPE-TYP',
+        'ENC-TIK-LIG-CAI-NID',
+        'ENC-TIK-LIG-VEN-NID',
+        'ENC-TIK-LIG-OPS-NID',
+        'ENC-TIK-LIG-HOR-GDH'
+      ];
+
+      let __tcktva = [];
+      const __tcktva_hdr = [
+        'ENC-NID',
+        'ENC-TIK-TOT-MHT',
+        'ENC-TIK-TVA-NID',
+        'ENC-TIK-TVA-TXX',
+        'ENC-TIK-TVA-MTN'
+      ];
+
+      let __tckrgt = [];
+      const __tckrgt_hdr = [
+        'ENC-NID',
+        'ENC-TIK-ORI-NUM',
+        'ENC-TIK-REG-TYP',
+        'ENC-TIK-REG-MOD-LIB',
+        'ENC-TIK-REG-MTN',
+        'ENC-TIK-REG-NUM',
+        'ENC-TIK-REG-USR-NID',
+        'ENC-TIK-REG-HOR-GDH'
+      ]
+      
+
+      tickets.forEach(tck => {
+
+
+        
+        let __evalstart = parseInt(tck['ENC-TIK-HOR-GDH']);
+        let __evalend = parseInt(tck['ENC-TIK-HOR-GDH']);
+
+        if (__startdefacto) {
+          __startdefacto = Math.min(__evalstart, __startdefacto);
+        } else {
+          __startdefacto = __evalstart;
+        }
+        if (__enddefacto) {
+          __enddefacto = Math.max(__evalend, __enddefacto);
+        } else {
+          __enddefacto = __evalend;
+        }
+
+        __tck.push([
+          tck['ENC-TIK-NUM'],
+          tck['ENC-TIK-CDE'],
+          tck['ENC-TIK-TAG-VER'],
+          tck['ENC-TIK-PRN-NBR'],
+          tck['ENC-TIK-SOC-ETS'],
+          tck['ENC-TIK-SOC-ID'],
+          tck['ENC-TIK-SOC-ADR'],
+          tck['ENC-TIK-SOC-CCP'],
+          tck['ENC-TIK-SOC-VIL'],
+          tck['ENC-TIK-SOC-PAY'],
+          tck['ENC-TIK-SOC-SIR'],
+          tck['ENC-TIK-SOC-NAF'],
+          tck['ENC-TIK-SOC-TVA'],
+          tck['ENC-TIK-VEN-NID'],
+          tck['ENC-TIK-VEN-NOM'],
+          tck['ENC-TIK-OPS-NID'],
+          tck['ENC-TIK-OPS-NOM'],
+          tck['ENC-TIK-CAI-NID'],
+          tck['ENC-TIK-HOR-GDH'],
+          tck['ENC-OPE-TYP'],
+          tck['ENC-TIK-DOC-TYP'],
+          tck['ENC-TIK-LIG-NBR'],
+          tck['ENC-TIK-TAG-SIG'],
+          tck['ENC-TIK-ID-KEY'],
+          tck['ENC-TIK-TAG-RET'],
+          tck['ENC-TIK-HASH'],
+          tck['ENC-TIK-ARG'],
+          tck['ENC-TIK-LOG'],
+          tck['ENC-TIK-TOT-MHT'],
+          tck['ENC-TIK-TOT-TTC']
+        ]);
+
+        __tcklgn= [
+          ...__tcklgn,
+          ...tck['LIGNES'].map(l => [
+            l['ENC-NID'],
+            l['ENC-TIK-ORI-NUM'],
+            l['ENC-TIK-LIG-NUM'],
+            l['ENC-TIK-LIG-PRO-NID'],
+            l['ENC-TIK-LIG-PRO-LIB'],
+            l['ENC-TIK-LIG-PRO-QTE'],
+            l['ENC-TIK-LIG-TAX-NID'],
+            l['ENC-TIK-LIG-TAX-TXX'],
+            l['ENC-TIK-LIG-PRO-MTH'],
+            l['ENC-TIK-LIG-PRO-TTC'],
+            l['ENC-TIK-LIG-REM-TXX'],
+            l['ENC-TIK-LIG-REM-TOT'],
+            l['ENC-TIK-LIG-TOT-MHT'],
+            l['ENC-TIK-LIG-TOT-TTC'],
+            l['ENC-TIK-LIG-OPE-TYP'],
+            l['ENC-TIK-LIG-CAI-NID'],
+            l['ENC-TIK-LIG-VEN-NID'],
+            l['ENC-TIK-LIG-OPS-NID'],
+            l['ENC-TIK-LIG-HOR-GDH']  
+          ])
+        ];
+
+        __tcktva = [
+          ...__tcktva,
+          ...tck['TVA'].map(t => [
+            t['ENC-NID'],
+            t['ENC-TIK-TOT-MHT'],
+            t['ENC-TIK-TVA-NID'],
+            t['ENC-TIK-TVA-TXX'],
+            t['ENC-TIK-TVA-MTN']
+          ])
+        ];
+
+        __tckrgt = [
+          ...__tckrgt,
+          ...tck['REGLEMENTS'].map(r => [
+            r['ENC-NID'],
+            r['ENC-TIK-ORI-NUM'],
+            r['ENC-TIK-REG-TYP'],
+            r['ENC-TIK-REG-MOD-LIB'],
+            r['ENC-TIK-REG-MTN'],
+            r['ENC-TIK-REG-NUM'],
+            r['ENC-TIK-REG-USR-NID'],
+            r['ENC-TIK-REG-HOR-GDH']
+          ])
+        ];
+
+      });
+
+      const tckString = __tck_hdr.join(';') + "\n" + __tck.map(e => e.join(";")).join("\n");
+      __data.push({type: 'csv', data: tckString, file: 'tickets.csv'});
+
+      const tcklgnString = __tcklgn_hdr.join(';') + "\n" + __tcklgn.map(e => e.join(";")).join("\n");
+      __data.push({type: 'csv', data: tcklgnString, file: 'ticketlignes.csv'});
+
+      const tcktvaString = __tcktva_hdr.join(';') + "\n" + __tcktva.map(e => e.join(";")).join("\n");
+      __data.push({type: 'csv', data: tcktvaString, file: 'tickettva.csv'});
+
+      const tckrgtString = __tckrgt_hdr.join(';') + "\n" + __tckrgt.map(e => e.join(";")).join("\n");
+      __data.push({type: 'csv', data: tckrgtString, file: 'ticketreglements.csv'});
+    }
+
+      
+    // ------------>  Clotures
+    const __cloQuery = {
+      $and: [
+        {createdAt: {$gte:debut.getTime()}},
+        {createdAt: {$lt:fin.getTime()}}
+      ]
+    }
+    const { clotureslist } = await clotureServices.getCloturesList(__cloQuery);
+    // fichier JSON
+    __data.push({type: 'json', data: JSON.stringify(clotureslist), file: 'clotures.json'});
+
+    // ------------>  Duplicatas
+    const __dplQuery = {
+      $and: [
+        {'ENC-DUP-HOR-GDH': {$gte:start}},
+        {'ENC-DUP-HOR-GDH': {$lt:end}}
+      ]
+    }
+    const dpllist = await commandeServices.getDuplicata(__dplQuery);
+
+    const dplCsvString = [
+      [
+        'ENC-DUP-NID',
+        'ENC-DUP-ORI-NUM',
+        'ENC-DUP-TYP',
+        'ENC-DUP-PRN-NUM',
+        'ENC-DUP-OPS-NID',
+        'ENC-DUP-HOR-GDH',
+        'ENC-DUP-HASH',
+        'ENC-TIK-ARG',
+        'ENC-DUP-TAG-SIG',
+        'ENC-DUP-RES',
+        'ENC-TIK-ID-KEY',
+        'ENC-DUP-VER',
+        'ENC-SIG-RES',
+        'ENC-SIG-MOTIF'
+      ],
+      ...dpllist.map(dpl =>[
+        dpl['ENC-DUP-NID'],
+        dpl['ENC-DUP-ORI-NUM'],
+        dpl['ENC-DUP-TYP'],
+        dpl['ENC-DUP-PRN-NUM'],
+        dpl['ENC-DUP-OPS-NID'],
+        dpl['ENC-DUP-HOR-GDH'],
+        dpl['ENC-DUP-HASH'],
+        dpl['ENC-TIK-ARG'],
+        dpl['ENC-DUP-TAG-SIG'],
+        dpl['ENC-DUP-RES'],
+        dpl['ENC-TIK-ID-KEY'],
+        dpl['ENC-DUP-VER'],
+        dpl['ENC-SIG-RES'],
+        dpl['ENC-SIG-MOTIF']
+      ])
+    ]
+    .map(e => e.join(";")) 
+    .join("\n");
+
+   __data.push({type: 'csv', data: dplCsvString, file: 'duplicatas.csv'});
+
+    // ------------>  Commandes
+    const __cmdQuery = {
+      $and: [
+        {status: 'confirmed'},
+        {archived: {$exists: true}},
+        {createdAt: {$gte:debut.getTime()}},
+        {createdAt: {$lt:fin.getTime()}}
+      ]
+    }
+    const { commandeslist } = await commandeServices.getCommandesList(__cmdQuery);
+    // fichier JSON
+    __data.push({type: 'json', data: JSON.stringify(commandeslist), file: 'commandes.json'});
+
+
+
+    // ------------>  Trésorerie
+    const __tresorQuery = {
+      $and: [
+        {createdAt: {$gte:debut.getTime()}},
+        {createdAt: {$lt:fin.getTime()}},
+      ]
+    }
+    const { tresorslist } = await tresorServices.getTresors(__tresorQuery);
+    // fichier JSON
+    __data.push({type: 'json', data: JSON.stringify(tresorslist), file: 'tresorerie.json'});
+
+
+
+    // ------------>  Avoirs
+    const __avoirQuery = {
+      $and: [
+        {emission: {$gte:debut.getTime()}},
+        {emission: {$lt:fin.getTime()}},
+      ]
+    }
+    const { avoirslist } = await marketingServices.getAvoirsList(__avoirQuery);
+    // fichier JSON
+    __data.push({type: 'json', data: JSON.stringify(avoirslist), file: 'avoirs.json'});
+
+
+    // ------------>  export comptable
+    const __XCPTquery = {
+      "$expr" : {
+        "$and":[ 
+          {"$eq":["$ztype", "jour"]},
+          {"$gte" : [
+            {"$toDouble": 
+              {"$arrayElemAt":[
+                {"$split":["$periode","|"]}, 
+                0
+              ]}
+            },
+            parseInt(start)
+          ]},
+          {"$lt" : [
+            {"$toDouble": 
+              {"$arrayElemAt":[
+                {"$split":["$periode","|"]}, 
+                1
+              ]}
+            }, 
+            parseInt(end)
+          ]}
+        ]
+      }
+    };
+    const liste = await clotureServices.getZCaisse(__XCPTquery);
+
+    const recap = _getExportComptable(liste);
+
+    const recap_hdr = recap.header.map(h => h.title);
+    const recap_data = recap.data.map(d => [
+      d.date,
+      d.compte,
+      d.intitule,
+      d.libelle,
+      d.credit||'',
+      d.debit||''
+    ]);
+    const xcpt_data = recap_hdr.join(';') + "\n" + recap_data.map(e => e.join(";")).join("\n");
+
+    __data.push({type: 'csv', data: xcpt_data, file: 'exportcomptable.csv'});
+
+    // COPIE DE FICHIERS
+    // ------------>  JET et PA
+  
+    const compta_dir = `${app.getPath('userData')}/compta/`;
+
+    let files
+    try {
+      files = await fs.readdir(compta_dir);
+    }
+    catch(e) {
+      console.error('impossible de scanner le dossier compta', e);
+    }
+    if (files===undefined) {
+      console.log('fichier de compta undefined');
+    } else {
+
+      const debut_aj = parseInt(format(debut,'yyDDD'));
+      const fin_aj = parseInt(format(fin,'yyDDD'));
+
+      await  asyncForEach(files, async (f) => {
+          
+        let fjour = parseInt(f.substring(0,5));
+        console.log(debut_aj, fjour, fin_aj);
+        if (fjour <= debut_aj && fjour >= fin_aj) {
+          console.log('inclu', f);
+          const __gz = (last(f.split('.'))==='gz');
+          
+          let filecont = await fs.readFile(`${compta_dir}${f}`);
+          let filedef;
+          let fdef = f;
+          if (__gz) {
+            filedef = await ungzip(filecont);
+            fdef = dropRight(f.split('.')).join('.');
+          } else {
+            filedef = filecont;
+          }
+
+          __data.push({ type: 'json', data: filedef, file: `journaux/${fdef}` });
+          
+        }
+        else {
+          console.log('exclu', f);
+        }
+
+      });
+      
+
+    }
+    
+    // ------------>  Documentation
+
+
+
+    // Génération du fichier d'information
+
+    const __contenu_archive = __data.map(d => ` - ${d.file}`);
+
+    const __infos = [
+      [`EMETTEUR: ${ user.user_id }`],
+      [`STATION: ${ caisse.id }`],
+      [`LOGICIEL: SPLASH`],
+      [`VERSION: ${ packageJson.version }`],
+      [`HORODATAGE: ${ format(new Date(),'yyyyMMddHHmmss') }`],
+      [`PERIODE: ${ start }|${ end }`],
+      [`CONTENU:`],
+      [` - INFOS.txt`],
+      [...__contenu_archive.join("\n")]
+    ].join("\n");
+
+    __data.push({ type: 'txt', data: __infos, file: 'INFOS.txt'});
+
+    await clotureServices.createArchiveFiscale(fileName, __data, archive_secret);
+
+    const __afcont = await fs.readFile(`${app.getPath('userData')}/archives_fiscales/${fileName}`);
+    const { hmac, signature } = await signatureServices.createArchiveFiscaleSignature(__afcont.toString(), privateKey); 
+
+    const __afdata = {
+      'TAG-ARC-HOR-GDH': format(new Date(),'yyyyMMddHHmmss'),
+      'TAG-ARC-DOC': fileName,
+      'TAG-ARC-OPS-NID': user.user_id,
+      'TAG-ARC-CAI-NID': caisse.id,
+      'TAG-ARC-OPE-TYP': 'ANNEE',
+      'TAG-ARC-ID-KEY': trousseauId,
+      'TAG-ARC-SIG': signature,
+      'TAG-ARC-HASH': hmac,
+      'periode': `${__startdefacto}|${__enddefacto}`
+    };
+
+    await clotureServices.persistArchiveFiscale(__afdata);
+
+    dispatch(getArchivesFiscales());
+    
+
+  } 
+}
+
+
+function exportComptable(target, debut, fin) {
+  return async (dispatch, getState) => {
+
+    const { privateKey, trousseauId } = getState().signatureReducer; 
 
     const start = format(debut, 'yyyyMMdd050000');
     const end = format(fin, 'yyyyMMdd050000');
     
-    dispatch(journalActions.log('180', `Journal de caisse du ${format(debut, 'dd/MM/yyyy')} au ${format(fin, 'dd/MM/yyyy')}`));
+    dispatch(journalActions.log('180', `Recapitulatif ventilations du ${format(debut, 'dd/MM/yyyy')} au ${format(fin, 'dd/MM/yyyy')}`));
 
     const __query = {
       "$expr" : {
@@ -1398,150 +2261,157 @@ function exportFEC(target, debut, fin) {
       }
     };
 
-    console.log('exportFEC',__query);
+    console.log('exportComptable',__query);
     const liste = await clotureServices.getZCaisse(__query);
 
-    let jour = debut;
-    while(isBefore(jour, fin)) {
-      fec.data.push({
-        date: format(jour, 'dd/MM/yyyy'),
-        cattc: 0,
-        especes: 0,
-        cheques: 0,
-        cartes: 0,
-        tickets: 0,
-        avoirs: 0,
-        caht: 0,
-        tva0200: 0,
-        tva0100: 0,
-        tva0055: 0,
-        nbrecmd: 0
-      });
-      jour = add(jour, {days:1});
-    }
-
-
-    let __total = {
-      date: 0,
-      cattc: 0,
-      especes: 0,
-      cheques: 0,
-      cartes: 0,
-      tickets: 0,
-      avoirs: 0,
-      caht: 0,
-      tva0200: 0,
-      tva0100: 0,
-      tva0055: 0,
-      nbrecmd: 0
-    };
-
-    if (liste) {
-      liste.forEach(zj => {
-
-        const p = zj.periode.split('|');
-        const j = p[0].substring(0,4)+"-"+p[0].substring(4,6)+"-"+p[0].substring(6,8)+' '+p[0].substring(8,10)+':'+p[0].substring(10,12)+':'+p[0].substring(12,14);
-        
-
-        let __especes = 0,
-            __cheques = 0,
-            __cartes = 0,
-            __tickets = 0,
-            __avoirs = 0
-          ;
-        // ventilation moyens de paiement
-        Object.entries(zj.ventilation.moyen).forEach(([k,m]) => {
-
-          let moy = k;
-          if (k.includes('_')) {
-            moy = k.split('_')[0];
-          }
-
-          if (moy==='especes') __especes += m.valeur;
-          if (moy==='cheque') __cheques += m.valeur;
-          if (moy==='carte') __cartes += m.valeur;
-          if (moy==='ticket') __tickets += m.valeur;
-          if (moy==='avoir') __avoirs += m.valeur;
-        });
-
-
-        // ventilation TVA + CAHT
-        let __caht = 0, 
-            __tva0100 = 0,
-            __tva0200 = 0,
-            __tva0055 = 0
-            ;
-        Object.entries(zj.ventilation.tva).forEach(([k,t]) => { 
-          __caht += t.hasOwnProperty('ht') ? t.ht : 0; 
-          if (k==='2000') __tva0200 += t.taxe;
-          if (k==='1000') __tva0100 += t.taxe;
-          if (k==='0550') __tva0055 += t.taxe;
-        });
-
-        let fecdata_id = fec.data.findIndex(d => d.date===format(new Date(j), 'dd/MM/yyyy'));
-
-        if (fecdata_id > -1) {
-
-          fec.data[fecdata_id].cattc += zj.ca;
-          fec.data[fecdata_id].especes += __especes;
-          fec.data[fecdata_id].cheques += __cheques;
-          fec.data[fecdata_id].cartes += __cartes;
-          fec.data[fecdata_id].tickets += __tickets;
-          fec.data[fecdata_id].avoirs += __avoirs;
-          fec.data[fecdata_id].caht += __caht;
-          fec.data[fecdata_id].tva0200 += __tva0200;
-          fec.data[fecdata_id].tva0100 += __tva0100;
-          fec.data[fecdata_id].tva0055 += __tva0055;
-          fec.data[fecdata_id].nbrecmd += zj.numtickets;
-    
-          __total.date += 1;
-          __total.cattc += zj.ca;
-          __total.especes += __especes;
-          __total.cheques += __cheques;
-          __total.cartes += __cartes;
-          __total.tickets += __tickets;
-          __total.avoirs += __avoirs;
-          __total.caht += __caht;
-          __total.tva0200 += __tva0200;
-          __total.tva0100 += __tva0100;
-          __total.tva0055 += __tva0055;
-          __total.nbrecmd += zj.numtickets;
-
-        }
+    const recap = _getExportComptable(liste);
   
-      });
-
-      fec.data.push(__total);
-
-      fec.data.forEach((d,i) => {
-
-        fec.data[i].cattc = fec.data[i].cattc.toFixed(2);
-        fec.data[i].especes = fec.data[i].especes.toFixed(2);
-        fec.data[i].cheques = fec.data[i].cheques.toFixed(2);
-        fec.data[i].cartes = fec.data[i].cartes.toFixed(2);
-        fec.data[i].tickets = fec.data[i].tickets.toFixed(2);
-        fec.data[i].avoirs = fec.data[i].avoirs.toFixed(2);
-        fec.data[i].caht = (fec.data[i].caht / 100).toFixed(2);
-        fec.data[i].tva0200 = (fec.data[i].tva0200 / 100).toFixed(2);
-        fec.data[i].tva0100 = (fec.data[i].tva0100 / 100).toFixed(2);
-        fec.data[i].tva0055 = (fec.data[i].tva0055 / 100).toFixed(2);
-
-      });
-
-    }
-
+    const { signature } = await signatureServices.createExportComptableSignature(recap, privateKey);
 
     try {
-      await clotureServices.exportFEC(target, fec);
-      dispatch({type: clotureActionTypes.EXPORT_FEC_SUCCESS});
-      dispatch(journalActions.log('290',target));
+      await clotureServices.exportComptable(target, recap);
+      dispatch({type: clotureActionTypes.EXPORT_COMPTABLE_SUCCESS});
+      dispatch(journalActions.log('902', `trousseauId:${trousseauId}, signature:${signature}`));
     }
     catch(e) {
-      dispatch({type: clotureActionTypes.EXPORT_FEC_FAILURE, error: e});
+      dispatch({type: clotureActionTypes.EXPORT_COMPTABLE_FAILURE, error: e});
     }
 
 
   }
+}
+
+function _getExportComptable(zcaisse) {
+
+  let recap = {
+    header:[   
+      {id: 'date', title: 'DATE'},
+      {id: 'compte', title: 'COMPTE COMPTABLE'},
+      {id: 'intitule', title: 'INTITULE DE COMPTE'},
+      {id: 'libelle', title: 'LIBELLE ECRITURE COMPTABLE'},
+      {id: 'credit', title: 'MONTANT CREDIT'},
+      {id: 'debit', title: 'MONTANT DEBIT'}
+    ],
+    data:[]
+  };
+
+
+  if (zcaisse) {
+
+    zcaisse.forEach(zj => {
+
+      const p = zj.periode.split('|');
+      const j = p[0].substring(0,4)+"-"+p[0].substring(4,6)+"-"+p[0].substring(6,8)+' '+p[0].substring(8,10)+':'+p[0].substring(10,12)+':'+p[0].substring(12,14);
+      const date = format(new Date(j), 'dd/MM/yyyy');
+
+
+
+      // ventilation TVA + HT
+      Object.entries(zj.ventilation.tva).forEach(([k,t]) => { 
+        recap.data.push({
+          date: date,
+          compte: COMPTE_COMPTABLE['ht'+k].id,
+          intitule:  COMPTE_COMPTABLE['ht'+k].intitule,
+          libelle: `RECETTES ${date}`, 
+          credit: (t.ht / 100).toFixed(2).replace('.',',')
+        });
+        recap.data.push({
+          date: date,
+          compte: COMPTE_COMPTABLE['tva'+k].id,
+          intitule:  COMPTE_COMPTABLE['tva'+k].intitule,
+          libelle: `RECETTES ${date}`, 
+          credit: (t.taxe / 100).toFixed(2).replace('.',',')
+        });
+      });
+
+
+
+
+      let __especes = 0,
+          __cheques = 0,
+          __cartes = 0,
+          __tickets = 0,
+          __avoirs = 0
+        ;
+      // ventilation moyens de paiement
+      Object.entries(zj.ventilation.moyen).forEach(([k,m]) => {
+
+        let moy = k;
+        if (k.includes('_')) {
+          moy = k.split('_')[0];
+        }
+
+        if (moy==='carte') __cartes += m.valeur;
+        if (moy==='ticket') __tickets += m.valeur;
+        if (moy==='cheque') __cheques += m.valeur;
+        if (moy==='avoir') __avoirs += m.valeur;
+        if (moy==='especes') __especes += m.valeur;
+      });
+
+      if (__cartes > 0) {
+        recap.data.push({
+          date: date,
+          compte: COMPTE_COMPTABLE['carte'].id,
+          intitule:  COMPTE_COMPTABLE['carte'].intitule,
+          libelle: `RECETTES ${date}`, 
+          debit: __cartes.toFixed(2).replace('.',',')
+        });
+      } 
+
+      if (__tickets > 0) {
+        recap.data.push({
+          date: date,
+          compte: COMPTE_COMPTABLE['ticket'].id,
+          intitule:  COMPTE_COMPTABLE['ticket'].intitule,
+          libelle: `RECETTES ${date}`, 
+          debit: __tickets.toFixed(2).replace('.',',')
+        });
+      } 
+
+      if (__cheques > 0) {
+        recap.data.push({
+          date: date,
+          compte: COMPTE_COMPTABLE['cheque'].id,
+          intitule:  COMPTE_COMPTABLE['cheque'].intitule,
+          libelle: `RECETTES ${date}`, 
+          debit: __cheques.toFixed(2).replace('.',',')
+        });
+      } 
+
+      if (__avoirs > 0) {
+        recap.data.push({
+          date: date,
+          compte: COMPTE_COMPTABLE['avoir'].id,
+          intitule:  COMPTE_COMPTABLE['avoir'].intitule,
+          libelle: `RECETTES ${date}`, 
+          debit: __avoirs.toFixed(2).replace('.',',')
+        });
+      } 
+
+      if (__especes > 0) {
+        recap.data.push({
+          date: date,
+          compte: COMPTE_COMPTABLE['especes'].id,
+          intitule:  COMPTE_COMPTABLE['especes'].intitule,
+          libelle: `RECETTES ${date}`, 
+          debit: __especes.toFixed(2).replace('.',',')
+        });
+      } 
+
+
+      recap.data.push({
+        date: date,
+        compte: COMPTE_COMPTABLE['ecart'].id,
+        intitule:  COMPTE_COMPTABLE['ecart'].intitule,
+        libelle: `RECETTES ${date}`
+      });
+
+    });
+  
+  }
+
+  return recap;
+
 }
 
 
@@ -1719,5 +2589,8 @@ export const clotureActions = {
   testCloturesAuto,
   testZCaisse,
   testGTPeriodique,
-  exportFEC,
+  getArchivesFiscales,
+  checkArchive,
+  archiveFiscale,
+  exportComptable,
 };

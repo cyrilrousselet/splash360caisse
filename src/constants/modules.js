@@ -29,7 +29,8 @@ export const paramSubmodulesList = [
   "peripheriques",
   "commandes",
  // 'tables'
-    'options'
+    'options',
+    'fiscal'
 ];
 
 export const clotureSubmodulesList = [

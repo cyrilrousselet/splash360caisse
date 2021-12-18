@@ -56,5 +56,6 @@ export const evenements = {
   "430": {code:430, intitule: "Changement de table affectée à une note", purgeable: true},
   "440": {code:440, intitule: "Transfert des archives fiscales sur support externe", purgeable: false},
   "450": {code:450, intitule: "Traçabilité du changement du trousseau de clés utilisé pour signer", purgeable: false},
-  "901": {code:901, intitule: "Ouverture du tiroir-caisse", purgeable: true}
+  "901": {code:901, intitule: "Ouverture du tiroir-caisse", purgeable: true},
+  "902": {code:902, intitule: "Signature de l’export comptable", purgeable: true}
 };

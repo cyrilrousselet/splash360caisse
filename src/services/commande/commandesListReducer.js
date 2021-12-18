@@ -8,6 +8,7 @@ const initialState = {
   caisses: [],
   schedules: [],
   lots: [],
+  pastnonconfirmed: 0,
 }
 
 
@@ -115,6 +116,12 @@ export function commandesListReducer(state = initialState, action) {
       return {
         ...state,
         lots: [...lots.filter(l=>l.lot_id!==action.lot_id)]
+      };
+
+    case commandeActionTypes.PAST_NONCONFIRMEDCMD:
+      return {
+        ...state,
+        pastnonconfirmed: action.value
       };
 
     default:

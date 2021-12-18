@@ -1,4 +1,4 @@
-import { differenceInMilliseconds, formatISO, parseISO, format } from "date-fns";
+import { differenceInMilliseconds, formatISO, parseISO, format, set, isBefore } from "date-fns";
 // import Logger from "../../helpers/Logger";
 import logger from "../../helpers/Logger";
 import { clotureActions } from "../cloture/clotureActions";
@@ -20,6 +20,10 @@ import { signatureServices } from "../signature/signatureServices";
 import { numeroServices } from "./numeroServices";
 import { notificationServices } from "../notification/notificationServices";
 import { journalActions } from "../journal/journalActions";
+import packageJson from '../../../package.json';
+import LocalizedStrings from 'react-localization';
+import {data} from '../../constants/translations';
+const strings = new LocalizedStrings(data);
 
 // const logger = new Logger();
 
@@ -128,7 +132,7 @@ function getCommande(commandeId = null) {
       const { user } = state.authentication;
       const { caisse } = state.parametresReducer.parametres.options;
       const commande = commandeServices.getNewCommande({
-        operator: user,
+        operator: {nom: user.nom, id: user.user_id},
         caisse: caisse
       });
       // logger.timeEnd('getCommande (new)');
@@ -235,7 +239,8 @@ function validateCommande(_payload, printTemplates) {
     const { user } = getState().authentication;
     const { commande } = getState().commandeReducer;
     const { ticket } = getState().numerotationReducer;
-    const { privateKey } = getState().signatureReducer;
+    const { privateKey, trousseauId } = getState().signatureReducer;
+    const { entreprise } = getState().parametresReducer.parametres;
 
 
     let payload = {...commande};
@@ -245,7 +250,7 @@ function validateCommande(_payload, printTemplates) {
       payload.numero = getState().commandeReducer.commande.numero;
     }
 
-    payload.operator_encaissement = { id: user.id, nom: user.nom };
+    payload.operator_encaissement = { id: user.user_id, nom: user.nom };
     payload.caisse_encaissement = caisse;
 
     payload.enproduction = payload.scheduled ? false : true;
@@ -273,7 +278,7 @@ function validateCommande(_payload, printTemplates) {
 
           const lastSignature = await signatureServices.getLastSignature('tickets');
           const newTicket = 'T'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + ticket.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
-          const {source, hash, signature} = signatureServices.getTicketSignature({...confirm, ticket: newTicket}, privateKey, lastSignature);
+          const {source, hash, signature} = signatureServices.createTicketSignature({...confirm, ticket: newTicket}, privateKey, lastSignature);
           
           confirm = {
             ...confirm,
@@ -284,6 +289,164 @@ function validateCommande(_payload, printTemplates) {
           }
           
           commandeServices.persistCommande(confirm);
+
+
+          const __ticketData = {
+            'ENC-TIK-NUM': newTicket,
+            'ENC-TIK-CDE': confirm.ticketId,
+            'ENC-TIK-TAG-VER': packageJson.version,
+            'ENC-TIK-PRN-NBR': 1,
+            'ENC-TIK-SOC-ETS': entreprise.denomination,
+            'ENC-TIK-SOC-ID': entreprise.enseigne,
+            'ENC-TIK-SOC-ADR': entreprise.adresse,
+            'ENC-TIK-SOC-CCP': entreprise.code_postal,
+            'ENC-TIK-SOC-VIL': entreprise.ville,
+            'ENC-TIK-SOC-PAY': entreprise.pays,
+            'ENC-TIK-SOC-SIR': entreprise.siret,
+            'ENC-TIK-SOC-NAF': entreprise.ape,
+            'ENC-TIK-SOC-TVA': entreprise.tva,
+            'ENC-TIK-VEN-NID': user.user_id,
+            'ENC-TIK-VEN-NOM': user.nom,
+            'ENC-TIK-OPS-NID': user.user_id,
+            'ENC-TIK-OPS-NOM': user.nom,
+            'ENC-TIK-CAI-NID': caisse.uniqid,
+            'ENC-TIK-HOR-GDH': format(confirm.createdAt,'yyyyMMddHHmmss'),
+            'ENC-OPE-TYP': 'VENTE',
+            'ENC-TIK-DOC-TYP': 'TICKET',
+            'ENC-TIK-LIG-NBR': 1,
+            'ENC-TIK-TAG-SIG': signature,
+            'ENC-TIK-ID-KEY': trousseauId,
+            'ENC-TIK-TAG-RET': signature.substring(2,3) + signature.substring(6,7) + signature.substring(12,13) + signature.substring(18,19),
+            'ENC-TIK-HASH': hash,
+            'ENC-TIK-ARG': source,
+            'ENC-TIK-LOG': 'SPLASH',
+            'LIGNES':[],
+            'TVA': [],
+            'REGLEMENTS': [],
+            'ENC-TIK-TOT-MHT': 0,
+            'ENC-TIK-TOT-TTC': 0
+          };
+
+          // lignes tickets :
+          confirm.items.forEach((itm,i) => {
+
+            // extraction des données sur le modificateur
+            const __prdmod = confirm.modificateurs.find(m => m.item === itm.itemid && m.ingredient===null);
+            let __modtx = null;
+            let __modval = null;
+            if (__prdmod) {
+              // ispc :bool (is percent)
+              const ispc = String(__prdmod.valeur).substr(-1,1)==='%';
+              const val = Math.abs(Number(String(__prdmod.valeur).slice(0,-1)));
+              __modval = ispc ? Math.round(itm.prix * 100) * (val/100) : Math.round(val * 100);
+
+              // conversion du modificateur en coefficient
+              __modtx = (ispc) 
+              ? (
+                __prdmod.operation>0 
+                ? (100 + val) / 100
+                : (100 - val) / 100
+                ) 
+              : (
+                __prdmod.operation>0 
+                ? 1 + (val/itm.prix)
+                : 1 - (val/itm.prix)
+                )
+              ;
+            }
+
+            // calcul du prix reel de la ligne (produit + supplements)
+            let __totalht = Math.round(itm.puht * 100) * itm.quantite;
+            let __totalttc = Math.round(itm.pu * 100) * itm.quantite;
+            itm.ingredients.forEach(subitm => {
+              __totalht += Math.round(subitm.supplementht * 100);
+              __totalttc += Math.round(subitm.supplement * 100);
+            })
+
+
+            __ticketData['LIGNES'].push({
+              'ENC-NID': newTicket,
+              'ENC-TIK-ORI-NUM': itm.itemid,
+              'ENC-TIK-LIG-NUM': __ticketData['ENC-TIK-LIG-NBR'],
+              'ENC-TIK-LIG-PRO-NID': itm.produitid,
+              'ENC-TIK-LIG-PRO-LIB': itm.nom,
+              'ENC-TIK-LIG-PRO-QTE': itm.quantite,
+              'ENC-TIK-LIG-TAX-NID': itm.tva.code,
+              'ENC-TIK-LIG-TAX-TXX': Number(itm.tva.valeur) * 100,
+              'ENC-TIK-LIG-PRO-MTH': Math.round(itm.puht * 100),
+              'ENC-TIK-LIG-PRO-TTC': Math.round(itm.pu * 100),
+              'ENC-TIK-LIG-REM-TXX': __modtx ? (1 - __modtx) : 0,
+              'ENC-TIK-LIG-REM-TOT': __modval || 0,
+              'ENC-TIK-LIG-TOT-MHT': __modtx ? ((Math.round(itm.puht * 100) * itm.quantite) * __modtx) : Math.round(itm.puht * 100) * itm.quantite,
+              'ENC-TIK-LIG-TOT-TTC': __modtx ? ((Math.round(itm.pu * 100) * itm.quantite) * __modtx) : (Math.round(itm.pu * 100) * itm.quantite),
+              'ENC-TIK-LIG-OPE-TYP': 'VENTE',
+              'ENC-TIK-LIG-CAI-NID': caisse.uniqid,
+              'ENC-TIK-LIG-VEN-NID': user.user_id,
+              'ENC-TIK-LIG-OPS-NID': user.user_id,
+              'ENC-TIK-LIG-HOR-GDH': format(confirm.createdAt,'yyyyMMddHHmmss')
+            });
+
+            __ticketData['ENC-TIK-LIG-NBR'] += 1;
+
+            itm.ingredients.forEach((ing, ingidx) => {
+
+              __ticketData['LIGNES'].push({
+                'ENC-NID': newTicket,
+                'ENC-TIK-ORI-NUM': itm.itemid+'-'+ingidx,
+                'ENC-TIK-LIG-NUM': __ticketData['ENC-TIK-LIG-NBR'],
+                'ENC-TIK-LIG-PRO-NID': ing.ingredient,
+                'ENC-TIK-LIG-PRO-LIB': ing.nom,
+                'ENC-TIK-LIG-PRO-QTE': ing.qte,
+                'ENC-TIK-LIG-TAX-NID': ing.tva.code,
+                'ENC-TIK-LIG-TAX-TXX': Number(ing.tva.valeur) * 100,
+                'ENC-TIK-LIG-PRO-MTH': Math.round(ing.supplementht * 100),
+                'ENC-TIK-LIG-PRO-TTC': Math.round(ing.supplement * 100),
+                'ENC-TIK-LIG-REM-TXX': 0,
+                'ENC-TIK-LIG-REM-TOT': 0,
+                'ENC-TIK-LIG-TOT-MHT': Math.round(ing.supplementht * 100) * ing.qte,
+                'ENC-TIK-LIG-TOT-TTC': Math.round(ing.supplement * 100) * ing.qte,
+                'ENC-TIK-LIG-OPE-TYP': 'VENTE',
+                'ENC-TIK-LIG-CAI-NID': caisse.uniqid,
+                'ENC-TIK-LIG-VEN-NID': user.user_id,
+                'ENC-TIK-LIG-OPS-NID': user.user_id,
+                'ENC-TIK-LIG-HOR-GDH': format(confirm.createdAt,'yyyyMMddHHmmss')
+              });
+
+              __ticketData['ENC-TIK-LIG-NBR'] += 1;
+            });
+          });
+
+          // tva ticket
+          Object.values(confirm.ventilation).forEach(tva =>{
+
+            __ticketData['TVA'].push({
+              'ENC-NID': newTicket,
+              'ENC-TIK-TOT-MHT': tva.ht,
+              'ENC-TIK-TVA-NID': tva.code,
+              'ENC-TIK-TVA-TXX': Number(tva.taux) * 100,
+              'ENC-TIK-TVA-MTN': tva.tva,
+            });
+            __ticketData['ENC-TIK-TOT-MHT'] += tva.ht;
+            __ticketData['ENC-TIK-TOT-TTC'] += tva.ttc;
+          });
+
+
+          // reglements ticket
+          confirm.reglements.forEach(r => {
+            __ticketData['REGLEMENTS'].push({
+              'ENC-NID': newTicket,
+              'ENC-TIK-ORI-NUM': r.reglementId,
+              'ENC-TIK-REG-TYP': r.moyen,
+              'ENC-TIK-REG-MOD-LIB': strings.modules.encaissement.reglement.moyens[r.moyen],
+              'ENC-TIK-REG-MTN': Math.round(r.valeur * 100),
+              'ENC-TIK-REG-NUM': r.info || '',
+              'ENC-TIK-REG-USR-NID': confirm.operator_encaissement.id,
+              'ENC-TIK-REG-HOR-GDH': format(confirm.createdAt,'yyyyMMddHHmmss')
+            });
+          });
+
+          await commandeServices.persistTicket(__ticketData);
+          dispatch(journalActions.log('160','Ticket #'+newTicket))
 
           dispatch(clotureActions.createGrandTotalTicket(confirm));
           
@@ -377,6 +540,30 @@ function validateCommande(_payload, printTemplates) {
       }
     );
   };
+}
+
+function getPastNonConfirmed() {
+  return async (dispatch, getState) => {
+    const { heure_fin } = getState().parametresReducer.parametres.entreprise;
+      
+    // // *** définition de la fin de la période précédente
+    const __periode = dateBounds(new Date(), heure_fin);
+
+    console.log('__periode.debut',__periode.debut);
+
+    const __cmdnonconfirmees = await commandeServices.getCommandesList({
+      $and: [
+        {status: {$in:['standby','a_encaisser']}},
+        {createdAt:{$lt:__periode.debut}}
+      ]
+    });
+    let __num = 0;
+    if (__cmdnonconfirmees.hasOwnProperty('commandeslist')) {
+      __num = Object.values(__cmdnonconfirmees.commandeslist).length;
+    }
+    dispatch({ type: commandeActionTypes.PAST_NONCONFIRMEDCMD, value: __num });
+
+  }
 }
 
 
@@ -1080,8 +1267,9 @@ function duplicata(ticketId) {
   return async (dispatch, getState) => {
 
     const { duplicata } = getState().numerotationReducer;
-    const { privateKey } = getState().signatureReducer;
+    const { privateKey, trousseauId } = getState().signatureReducer;
     const { caisse, role } = getState().parametresReducer.parametres.options;
+    const { user } = getState().authentication;
 
     try {
       const {_cmd} = await commandeServices.getCommandeById(ticketId);
@@ -1097,7 +1285,7 @@ function duplicata(ticketId) {
 
         const lastSignature = await signatureServices.getLastSignature('duplicatas');
         const newDuplicata = 'D'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + duplicata.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
-        const {source, hash, signature} = signatureServices.getDuplicataSignature({...commande, duplicata: newDuplicata}, privateKey, lastSignature);
+        const {source, hash, signature} = signatureServices.createDuplicataSignature({...commande, duplicata: newDuplicata}, privateKey, lastSignature);
         
         commande = {
           ...commande,
@@ -1112,8 +1300,29 @@ function duplicata(ticketId) {
           ],
           updatedAt: formatISO(new Date())
         }
+
+        const source_ar = source.split(',');
         
         commandeServices.persistCommande(commande);
+
+        const __dupli = {
+          'ENC-DUP-NID': newDuplicata,
+          'ENC-DUP-ORI-NUM': commande.ticket,
+          'ENC-DUP-TYP': 'TICKET',
+          'ENC-DUP-PRN-NUM': commande.duplicatas.length,
+          'ENC-DUP-OPS-NID': user.user_id,
+          'ENC-DUP-HOR-GDH': source_ar[2],
+          'ENC-DUP-HASH': hash,
+          'ENC-TIK-ARG': source,
+          'ENC-DUP-TAG-SIG': signature,
+          'ENC-DUP-RES': signature.substring(2,3) + signature.substring(6,7) + signature.substring(12,13) + signature.substring(18,19),
+          'ENC-TIK-ID-KEY': trousseauId,
+          'ENC-DUP-VER': packageJson.version,
+          'ENC-SIG-RES': commande.signature,
+          'ENC-SIG-MOTIF': 'LISTE COMMANDES' 
+        };
+
+        await commandeServices.persistDuplicata(__dupli);
 
         console.log('🖨 commande duplicata', commande);
         
@@ -1480,7 +1689,7 @@ function setCommandeFromOrder(provider, payload) {
 
           const lastSignature = await signatureServices.getLastSignature('tickets');
           const newTicket = 'T'+format(new Date(),'yyMM-') + 's-' + ticket.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
-          const {source, hash, signature} = signatureServices.getTicketSignature({...confirm, ticket: newTicket}, privateKey, lastSignature);
+          const {source, hash, signature} = signatureServices.createTicketSignature({...confirm, ticket: newTicket}, privateKey, lastSignature);
           
           confirm = {
             ...confirm,
@@ -1670,7 +1879,7 @@ function setCommandeFromAPI(payload) {
 
             const lastSignature = await signatureServices.getLastSignature('tickets');
             let newTicket = 'T'+format(new Date(),'yyMM-') + '%ORIGIN%-' + ticket.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
-            const {source, hash, signature} = signatureServices.getTicketSignature({...confirm, ticket: newTicket}, privateKey, lastSignature);
+            const {source, hash, signature} = signatureServices.createTicketSignature({...confirm, ticket: newTicket}, privateKey, lastSignature);
             
             if (data.provider==="clickandcollect") {
               newTicket = newTicket.replace('%ORIGIN%', 'cc');
@@ -2153,6 +2362,7 @@ export const commandeActions = {
   checkMarketing,
   getCommande,
   setChrono,
+  getPastNonConfirmed,
   validateCommande,
   standByCommande,
   livraisonCommande,

@@ -2,6 +2,8 @@ import { peripheralActionTypes } from './peripheralActionTypes';
 import { peripheralServices } from './peripheralServices';
 import { tresorServices } from '../tresorerie/tresorServices';
 
+import packageJson from '../../../package.json';
+
 import 'date-fns';
 import { format, parseJSON } from "date-fns";
 import frLocale from "date-fns/locale/fr";
@@ -976,8 +978,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               type: 'VENTE',
               vendeur: removeDiacritics(operateur.nom)+' - '+operateur.id,
               caisse: caisse.id,
-              centre: 'Rest.01',
-              version: '0.1.0',
+              centre: 'Restaurant',
+              version: packageJson.version,
               ticketid: cmd.ticket ? cmd.ticket : null,
               signature: cmd.signature ? _extrait_sign : '',
               duplicataid: _dupli_id,

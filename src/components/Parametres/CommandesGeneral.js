@@ -230,15 +230,17 @@ class CommandesGeneral extends React.Component {
    
     return (
       <div className="CommandesGeneral sectioncontent">
+      {/*
         <div className="subttl">{ strings.modules.parametres.submodules.commandes.general.types.nom }</div>
         <Fab aria-label="addtype" size="small" className="addtype-button" onClick={ ()=>{ this.openEdit() } }>
           <AddIcon htmlColor="#ffffff" />
         </Fab>
-        <div className="main-wrapper">
-          <div className="table-wrapper">
-            <TableTypes liste={data_types} id='typesliste' openEdit={this.openEdit} />
-          </div>
-          <div className="subttl">{ strings.modules.parametres.submodules.commandes.general.numero.nom }</div>
+        <div className="table-wrapper">
+        <TableTypes liste={data_types} id='typesliste' openEdit={this.openEdit} />
+        </div>
+      */}
+      <div className="main-wrapper">
+      <div className="subttl">{ strings.modules.parametres.submodules.commandes.general.numero.nom }</div>
           <div className="numero-wrapper">
             <LabelledField 
                 id={ `numerotation_start` }

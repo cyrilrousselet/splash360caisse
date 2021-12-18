@@ -29,7 +29,8 @@ const mapStateToProps = (state) => {
       livreurs: getLivreurs(state),
       commande : state.commandeReducer.commande,
       heure_fin: (state.parametresReducer.parametres.entreprise && state.parametresReducer.parametres.entreprise.heure_fin) || '05:00',
-      thiscash: (state.parametresReducer.parametres.options && state.parametresReducer.parametres.options.caisse) || {}
+      thiscash: (state.parametresReducer.parametres.options && state.parametresReducer.parametres.options.caisse) || {},
+      pastnonconfirmed: state.commandesListReducer.pastnonconfirmed
   }
 }
 
@@ -45,7 +46,8 @@ const mapDispatchToProps = (dispatch) => {
       setLivreur: commandeActions.setLivreur,
       getUsers: userActions.getAll,
       addPrintnum: commandeActions.addPrintnum,
-      deleteCurrentCommande: commandeActions.deleteCurrentCommande
+      deleteCurrentCommande: commandeActions.deleteCurrentCommande,
+      getPastNonConfirmed: commandeActions.getPastNonConfirmed 
   }, dispatch);
   return {
     ...bound,

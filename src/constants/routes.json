@@ -25,6 +25,7 @@
     "PARAM_COMMANDES": "/parametres/commandes",
     "PARAM_TABLES": "/parametres/tables",
     "PARAM_OPTIONS": "/parametres/options",
+    "PARAM_FISCAL": "/parametres/fiscal",
     "MARKET_AVOIRS": "/marketing/avoirs",
     "MARKET_PROMOTIONS": "/marketing/promotions",
     "MARKET_NEWSLETTER": "/marketing/newsletter",

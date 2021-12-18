@@ -80,7 +80,8 @@ class Financier extends React.Component {
   return (
     <div className="Financier subcontent">
       <div className="subcontent-wrapper">
-        <div className="col">
+      <div className="col">
+      {/*
           <div className="section">
             <div className="subttl">{ strings.modules.parametres.submodules.financier.tva.titre }</div>
             { tva_data.map((field,i)=>(
@@ -98,6 +99,8 @@ class Financier extends React.Component {
               />
             ))}
           </div>
+          */}
+        {/*
           <div className="section">
             <div className="subttl">{ strings.modules.parametres.submodules.financier.moyen.titre }</div>
             <Fab aria-label="addmoyen" size="small" className="addmoyen-button" onClick={ ()=>{ this.openMoyenEdit() } }>
@@ -117,7 +120,7 @@ class Financier extends React.Component {
               ))}
             </List>
           </div>
-
+        */}
         <div className="section">
           <div className="subttl">{ strings.modules.parametres.submodules.financier.fonddecaisse.titre }</div>
           <SwitchCheckbox
@@ -157,6 +160,7 @@ class Financier extends React.Component {
 
         </div>
         <div className="col">
+        {/*
         <div className="section">
           <div className="subttl">{ strings.modules.parametres.submodules.financier.happyhours.titre }</div>
           <LabelledField 
@@ -208,6 +212,7 @@ class Financier extends React.Component {
               postvalue='%'
             />
         </div>
+        */}
           <div className="section section-vente_commande">
             <SwitchCheckbox
               isChecked={ !data.hasOwnProperty('vente_commande') || data.vente_commande===true } 
@@ -225,6 +230,7 @@ class Financier extends React.Component {
             />
             <div className="caption livraison-caption">{ strings.modules.parametres.submodules.financier.livraison.caption }</div>
           </div>
+          {/*
         <div className="section">
           <div className="subttl">{ strings.modules.parametres.submodules.financier.fidelite.titre }</div>
           <SwitchCheckbox
@@ -272,6 +278,7 @@ class Financier extends React.Component {
             postvalue={ strings.modules.parametres.submodules.financier.fidelite.seuil.split(';')[1] }
           />
         </div>
+          */}
       </div>
       </div>
     </div>

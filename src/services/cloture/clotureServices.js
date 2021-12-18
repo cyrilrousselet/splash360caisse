@@ -1,5 +1,6 @@
 import {emit} from 'eiphop';
 
+import {remote} from 'electron';
 import { startOfToday, isAfter, isBefore, endOfToday } from 'date-fns';
 // import { dateBounds } from '../../helpers/toolbox';
 // import LodashId from 'lodash-id';
@@ -7,8 +8,24 @@ import { startOfToday, isAfter, isBefore, endOfToday } from 'date-fns';
 import logger from '../../helpers/Logger';
 import format from 'date-fns/format';
 import { createObjectCsvWriter } from 'csv-writer';
+import archiver from 'archiver';
+import zipencryptable from 'archiver-zip-encryptable';
+import fs from 'fs';
+import mkdirp from 'mkdirp';
+
+const {app} = remote;
 
 // const logger = new Logger();
+
+archiver.registerFormat('zip-encryptable', zipencryptable);
+
+const _checkDirectorySync = (directory) => {  
+  try {
+    fs.statSync(directory);
+  } catch(e) {
+    mkdirp.sync(directory);
+  }
+}
 
 export const clotureServices = {
   getCurrentPeriode,
@@ -31,9 +48,14 @@ export const clotureServices = {
   getZCaisse,
   getLastZCaisse,
   persistZCaisse,
-  exportFEC,
+  exportComptable,
+  createArchiveFiscale,
+  persistArchiveFiscale,
+  getArchiveFiscale,
   // checkYesterdayGTT,
 };
+
+
 
 
 
@@ -137,7 +159,7 @@ function getCurrentPeriode(commandes, gtt, catalogue, params) {
       // analyse des données du Grand Total Ticket correspondant à la commande
       const __gtt = gtt[cmd.ticket];
       if (__gtt) {
-        const gt_tvattc = __gtt.tva_ttc.split('|');
+        const gt_tvattc = __gtt['ENC-GTT-MTN-TVA-TTC'].split('|');
         gt_tvattc.forEach(t => {
           let cpl = t.split(':');
 
@@ -159,7 +181,7 @@ function getCurrentPeriode(commandes, gtt, catalogue, params) {
           cmdtotal += parseInt(cpl[1]);
         });
 
-        const gt_tvaht = __gtt.tva_ht.split('|');
+        const gt_tvaht = __gtt['ENC-GTT-MTN-TVA-HT'].split('|');
         gt_tvaht.forEach(t => {
           let cpl = t.split(':');
 
@@ -171,7 +193,7 @@ function getCurrentPeriode(commandes, gtt, catalogue, params) {
           caht += parseInt(cpl[1]);
         });
 
-        const gt_tvataxe = __gtt.tva_taxe.split('|');
+        const gt_tvataxe = __gtt['ENC-GTT-MTN-TVA-TAUX'].split('|');
         gt_tvataxe.forEach(t => {
           let cpl = t.split(':');
 
@@ -341,7 +363,7 @@ function getCurrentPeriode(commandes, gtt, catalogue, params) {
         paramfdcaisse: params.fdcaisse,
         mtcaisse: params.fdcaisse + (ca/100),
         numtickets: numtickets,
-        ticket_moyen: ticket_moyen,
+        ticket_moyen: Math.round(ticket_moyen * 100) / 100,
         ventilation: ventilation,
         emission: __emission,
         troppercu: __troppercu,
@@ -438,16 +460,94 @@ function getLastZCaisse(requete) {
   return emit('dbClotureGetLastZCaisse', requete);
 }
 
-function exportFEC(target, fec) {
+function exportComptable(target, recap) {
 
-  console.log('exportFEC', fec);
+  console.log('exportRecapVentilation', recap);
   
   const csvWriter = createObjectCsvWriter({
     path: target,
-    header: fec.header
+    header: recap.header
   });
 
-  return csvWriter.writeRecords(fec.data);
+  return csvWriter.writeRecords(recap.data);
 
+}
+
+function createArchiveFiscale(path, data, secret) {
+
+  _checkDirectorySync(`${app.getPath('userData')}/archives_fiscales`)
+
+  return new Promise((resolve, reject) => {
+
+    const completepath = `${app.getPath('userData')}/archives_fiscales/${path}`;
+
+    let output = fs.createWriteStream( completepath );
+    // let archive = archiver('zip', {
+    //   zlib: { level:9 }
+    // });
+    let archive = archiver('zip-encryptable', {
+      zlib: { level:9 },
+      forceLocalTime: true,
+      password: secret
+    });
+    archive.pipe(output);
+
+    console.log('createArchiveFiscale()',data);
+
+
+    let datanum = 0;
+
+    archive.on('entry', function() {
+      datanum++;
+      console.log('on entry', datanum, data.length)
+      if (datanum===data.length) {
+        console.log('archive finalize');
+        archive.finalize();
+      }
+    });
+
+    // listen for all archive data to be written
+    // 'close' event is fired only when a file descriptor is involved
+    output.on('close', function() {
+      console.log(archive.pointer() + ' total bytes');
+      console.log('archiver has been finalized and the output file descriptor has closed.');
+      resolve(completepath);
+    });
+
+    // good practice to catch warnings (ie stat failures and other non-blocking errors)
+    archive.on('warning', function(err) {
+      if (err.code === 'ENOENT') {
+        // log warning
+      } else {
+        // throw error
+        throw err;
+      }
+    });
+
+
+
+    data.forEach(d => {
+      if ( (['json', 'txt', 'csv']).includes(d.type) ) {
+        archive.append(Buffer.from(d.data), {name: d.file});
+      }
+      else if ( 'file'===d.type ) {
+        archive.file(d.data, {name: d.file});
+      }
+      else if ( 'dir'===d.type) {
+        archive.directory(d.dir, d.dest);
+      }
+    });
+  })
+
+  // archive.finalize();
+
+
+}
+
+function persistArchiveFiscale(archive) {
+  return emit('dbCloturePersistArchive', archive);
+}
+function getArchiveFiscale(params) {
+  return emit('dbClotureGetArchive', params);
 }
 

@@ -13,11 +13,13 @@ const { app } = remote;
 
 export const signatureServices = {
   checkAndCreateKeys,
-  getTicketSignature, 
-  getDuplicataSignature,
-  getGrandtotalSignature,
-  getJETSignature,
-  getZdecaisseSignature,
+  createTicketSignature, 
+  createDuplicataSignature,
+  createGrandtotalSignature,
+  createJETSignature,
+  createZdecaisseSignature,
+  createExportComptableSignature,
+  createArchiveFiscaleSignature,
   getAllSignatures,
   getLastSignature,
   getAllNumerotation,
@@ -25,6 +27,7 @@ export const signatureServices = {
   setTicketNumero, 
   persistSignature,
   persistNumerotation,
+  verify,
 };
 
 
@@ -74,7 +77,7 @@ function checkAndCreateKeys() {
   return { privateKey, publicKey, trousseauId:trousseauId.toString() };
 }
 
-function getTicketSignature(commande, privateKey, lastSignature = null) {
+function createTicketSignature(commande, privateKey, lastSignature = null) {
 
   if (commande.status !== 'confirmed') return null;
   if (!commande.ticket) return null;
@@ -115,7 +118,7 @@ function getTicketSignature(commande, privateKey, lastSignature = null) {
 }
 
 
-function getDuplicataSignature(commande, privateKey, lastSignature = null) {
+function createDuplicataSignature(commande, privateKey, lastSignature = null) {
 
   if (commande.status !== 'confirmed') return null;
   if (!commande.duplicata) return null;
@@ -132,7 +135,7 @@ function getDuplicataSignature(commande, privateKey, lastSignature = null) {
   let __ttc = Math.round(commande.total * 100);
   hashfeed.push(__ttc);
   
-  let __datetime = format(new Date(commande.createdAt), 'yyyyMMddHHmmss');
+  let __datetime = format(new Date(), 'yyyyMMddHHmmss');
   hashfeed.push(__datetime);
 
   let __numero = commande.duplicata;
@@ -156,7 +159,7 @@ function getDuplicataSignature(commande, privateKey, lastSignature = null) {
 }
 
 
-function getGrandtotalSignature(source, GTPCA, privateKey, lastSignature = null) {
+function createGrandtotalSignature(source, GTPCA, privateKey, lastSignature = null) {
 
   let hashfeed = [];
   if (source.type==="ticket") {
@@ -221,7 +224,7 @@ function getGrandtotalSignature(source, GTPCA, privateKey, lastSignature = null)
 }
 
 
-function getZdecaisseSignature(zdecaisse, privateKey, lastSignature = null) {
+function createZdecaisseSignature(zdecaisse, privateKey, lastSignature = null) {
   let hashfeed = [];
 
   // id de Z de caisse
@@ -326,7 +329,7 @@ function getZdecaisseSignature(zdecaisse, privateKey, lastSignature = null) {
 }
 
 
-function getJETSignature(source, privateKey, lastSignature = null) {
+function createJETSignature(source, privateKey, lastSignature = null) {
 
   let hashfeed = [];
 
@@ -365,12 +368,25 @@ function getJETSignature(source, privateKey, lastSignature = null) {
 }
 
 
+function createExportComptableSignature(recap, privateKey) {
+  return _createSignature(JSON.stringify(recap), privateKey);
+}
+
+function createArchiveFiscaleSignature(data, privateKey) {
+  // console.log('createArchiveFiscaleSignature()',data);
+  return _createSignature(data, privateKey);
+}
+
+
 function _createSignature(hashsource, privateKey) {
 
   const hash = crypto.createHash('SHA256');
   hash.update(hashsource);
   hash.end();
   const hashstring = Buffer.from(hashsource).toString('base64');
+
+  const hmac = crypto.createHmac('SHA256', privateKey);
+  hmac.update(hashsource);
 
   const sign = crypto.createSign('SHA256');
   sign.update(hashsource);
@@ -382,11 +398,22 @@ function _createSignature(hashsource, privateKey) {
 
   return {
     source: hashsource,
+    hmac: hmac.digest('hex'),
     hash: base64url.fromBase64(hashstring),
     signature: base64url.fromBase64(signstring)
   };
 }
 
+function verify(hashsource, signature, publicKey) {
+
+  const data = Buffer.from(hashsource);
+  const sign = base64url.toBase64(signature);
+
+  const isVerified = crypto.verify('SHA256', data, publicKey, Buffer.from(sign));
+
+  return isVerified;
+
+}
 
 function setTicketNumero(numero) {
   return emit('dbNumerotationSet', {cle: 'ticket', valeur:numero});
@@ -422,7 +449,9 @@ function getNumerotation(type) {
 function getLastSignature(type) {
   if (!(['tickets', 
          'duplicatas', 
-         'grandstotaux', 
+         'grandstotaux_jour', 
+         'grandstotaux_mois', 
+         'grandstotaux_annee', 
          'zdecaisse', 
          'archivesfiscales',
          'pistedaudit',

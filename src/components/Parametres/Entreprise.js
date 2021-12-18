@@ -18,6 +18,7 @@ const data_ent = {
   adresse: '36 rue de Primel',
   code_postal: '29630',
   ville: 'Plougasnou',
+  pays: 'France',
   telephone: '02 57 65 01 00',
   siret: '80045733500019',
   ape: '6202A',
@@ -28,7 +29,7 @@ const data_ent = {
   message_ticket: 'Bon appétit, merci de votre visite et à bientôt !'
 };
 
-const general_fields = ['denomination', 'enseigne', 'adresse', 'code_postal', 'ville', 'telephone', 'siret', 'ape', 'tva', 'restaurant_id'];
+const general_fields = ['denomination', 'enseigne', 'adresse', 'code_postal', 'ville', 'pays', 'telephone', 'siret', 'ape', 'tva', 'restaurant_id'];
 const general_switch = ['auto_update'];
 
 class Entreprise extends React.Component {
@@ -136,6 +137,7 @@ getLogoImg(filePath) {
               label={ strings.modules.parametres.submodules.entreprise.general.label[field] }
             />
           ))}
+         {/* 
           <div className="subttl">{ strings.modules.parametres.submodules.entreprise.objectif.titre }</div>
           <LabelledField 
               id={ `parament-ca` }
@@ -147,8 +149,9 @@ getLogoImg(filePath) {
               onChange={()=>{logger.info('click')}}
               label={ strings.modules.parametres.submodules.entreprise.objectif.label.ca }
               postvalue='€'
-            />
+          /> 
           <div className="caption ca-caption">{ strings.modules.parametres.submodules.entreprise.objectif.label.ca_caption }</div>
+        */}
         </div>
         <div className="col">
           <div className="subttl">{ strings.modules.parametres.submodules.entreprise.options.titre }</div>
@@ -190,6 +193,7 @@ getLogoImg(filePath) {
             } } 
             label={ strings.modules.parametres.submodules.entreprise.options.label.avoirs } 
           />
+          {/*
           <SwitchCheckbox 
             isChecked={ data.service===undefined ? false : data.service } 
             labelLeft={ true } 
@@ -222,11 +226,14 @@ getLogoImg(filePath) {
               onChange={(value,option)=>void(0)}
               label={ strings.modules.parametres.submodules.entreprise.options.label.heure_fin }
             />
-          <div className="caption heure-caption">{ strings.modules.parametres.submodules.entreprise.options.label.heure_fin_caption }</div>
+            <div className="caption heure-caption">{ strings.modules.parametres.submodules.entreprise.options.label.heure_fin_caption }</div>
+          */}
+        {/*
           <div className="message-ticket">
             <label>{ strings.modules.parametres.submodules.entreprise.options.label.message_ticket }</label>
             <textarea onChange={this.messageHandler} defaultValue={ message_ticket } />
           </div>
+         */}
           <div className="logo-ticket">
             <label>{ strings.modules.parametres.submodules.entreprise.options.label.logo_ticket }</label>
             <div className="caption ticket-caption">{ strings.modules.parametres.submodules.entreprise.options.label.logo_ticket_caption }</div>

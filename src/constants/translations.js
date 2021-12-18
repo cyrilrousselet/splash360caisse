@@ -75,6 +75,13 @@ const data = {
             logout: {
                 titre: 'Déconnexion',
                 texte: 'Voulez-vous vous déconnecter ?'
+            },
+            alert: {
+                blocked_cloture: {
+                    titre: 'Clôture automatique impossible',
+                    texte_nc: 'Vous devez abandonner ou encaisser les commandes à encaisser pour pouvoir utiliser la caisse.',
+                    texte_c: 'Vous devez clôturer manuellement les commandes.'
+                }
             }
         },
         modules: {
@@ -801,7 +808,7 @@ const data = {
                 actions: {
                     view: "Visualiser",
                     print: "Imprimer",
-                    fec: "Exporter le FEC",
+                    exportcpt: "Export comptable",
                     print_recap: "Imprimer Récap.",
                     dest: "Choisir un dossier de destination"
                 }
@@ -925,6 +932,7 @@ const data = {
                                 adresse: 'Adresse',
                                 code_postal: 'Code Postal',
                                 ville: 'Ville',
+                                pays: 'Pays',
                                 telephone: 'Numéro de téléphone',
                                 siret: 'No SIRET',
                                 ape: 'Code APE',
@@ -1029,6 +1037,10 @@ const data = {
                             titre: 'Repas Employés',
                             activation: 'Activés',
                             modifier: "Réduction"
+                        },
+                        export: {
+                            bouton: "Exporter la liste...",
+                            destination: "Choisir une destination"
                         }
                     },
                     financier: { 
@@ -1305,6 +1317,29 @@ const data = {
                             valeur: 'Activé'
                         }
                     },
+                    fiscal: {
+                        nom: 'Fiscal',
+                        archive: {
+                            titre: 'Archive fiscale',
+                            bouton: 'Générer l’archive fiscale',
+                            liste: 'Archives fiscales',
+                            exporter: 'Exporter l’archive',
+                            destination: 'Choisir un dossier de destination...',
+                            entetes: {
+                                annee: 'Année',
+                                fichier: 'Fichier',
+                                caisse: 'Caisse',
+                                ouverture: 'Ouverture',
+                                cloture: 'Clôture'
+                            },
+                            alerte: {
+                                commandes: {
+                                    titre: 'Archive impossible',
+                                    texte: 'Il y a des commandes non clôturées pour la période que vous souhaitez archiver.<br />Vous devez d’abord clôturer'
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },

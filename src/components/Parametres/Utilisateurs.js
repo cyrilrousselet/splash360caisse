@@ -1,5 +1,6 @@
 import React from 'react';
 
+import {remote} from 'electron';
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import { Table, TableCell, TableRow, TableHead, TableBody, Modal, Fab, Paper } from '@material-ui/core';
@@ -15,12 +16,20 @@ import PillButton from '../common/PillButton';
 import DeliveryIcon from '../common/icon/DeliveryIcon';
 import Clavier from '../common/Clavier';
 import logger from '../../helpers/Logger';
+import { format } from 'date-fns';
 let strings = new LocalizedStrings(data);
 
+const {app, dialog} = remote;
+const win = remote.getCurrentWindow();
 const passphrase_length = 6; // nombre de caractères pour l'identifiant
 
 let identifiant_tmo = -1; // id de timeout pour corriger la longueur de l'identifiant (EditUtilisateurPopin)
 
+const dialogOptions = {
+  title: strings.modules.parametres.submodules.utilisateurs.export.destination,
+  defaultPath: `${ app.getPath('desktop') }/`,
+  buttonLabel: strings.modules.parametres.submodules.utilisateurs.export.bouton
+}
 
 class EditUtilisateurPopin extends React.Component {
   constructor(props) {
@@ -78,6 +87,7 @@ class EditUtilisateurPopin extends React.Component {
     this.setState({...status});
 
   }
+
 
   supprimerUtilisateur() {
 
@@ -506,6 +516,7 @@ class Utilisateurs extends React.Component {
     this.openEdit = this.openEdit.bind(this);
     this.closeEdit = this.closeEdit.bind(this);
     this.saveUser = this.saveUser.bind(this);
+    this.exportListe = this.exportListe.bind(this);
   }
 
   componentDidMount() {
@@ -532,6 +543,19 @@ class Utilisateurs extends React.Component {
     else {
       this.props.createUser(valeurs);
     }
+  }
+
+  async exportListe() {
+
+    const __opt = {
+      ...dialogOptions,
+      defaultPath: dialogOptions.defaultPath + `${ format(new Date(),'yyMMdd') }_Utilisateurs.csv`
+    };
+    
+    const __target = await dialog.showSaveDialog(win, __opt);
+    console.log('💾 ListeUtilisateurs : ',__target.filePath);
+    
+    this.props.exportListe(__target.filePath);
   }
 
  render() {
@@ -565,6 +589,14 @@ class Utilisateurs extends React.Component {
     <div className="table-wrapper">
       <TableUtilisateurs liste={users} id='usersliste' openEdit={this.openEdit} />
     </div>
+    <StdButton 
+      identifier="export" 
+      elementclass="export" 
+      icon={ false } 
+      disabled={ users===null || users===undefined }
+      text={ strings.modules.parametres.submodules.utilisateurs.export.bouton } 
+      onClick={this.exportListe} 
+    />
     <div className="staffmeal">
       <div className="subttl">{ strings.modules.parametres.submodules.utilisateurs.staffmeal.titre }</div>
       <div className="staffmeal-activation">

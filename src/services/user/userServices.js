@@ -1,4 +1,5 @@
 import { emit } from 'eiphop';
+import { createObjectCsvWriter } from 'csv-writer';
 
 export const userServices = {
  login,
@@ -8,7 +9,8 @@ export const userServices = {
  update,
  checkUsers,
  setAdmin,
- delete: _delete
+ delete: _delete,
+ exportListe,
 };
 
 function login(passphrase) {
@@ -104,3 +106,16 @@ function _delete(id) {}
 //       return data;
 //   });
 //}
+
+function exportListe(target, liste) {
+
+  console.log('exportFEC', liste);
+  
+  const csvWriter = createObjectCsvWriter({
+    path: target,
+    header: liste.header
+  });
+
+  return csvWriter.writeRecords(liste.data);
+
+}

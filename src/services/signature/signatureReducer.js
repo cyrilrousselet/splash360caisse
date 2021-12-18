@@ -3,7 +3,9 @@ import { signatureActionTypes } from './signatureActionTypes';
 const initialState = {
   tickets: [],
   duplicatas: [],
-  grandstotaux: [],
+  grandstotaux_jour: [],
+  grandstotaux_mois: [],
+  grandstotaux_annee: [],
   archivesfiscales: [],
   pistedaudit: [],
   zdecaisse: [],
@@ -15,9 +17,35 @@ const initialState = {
 
 export function signatureReducer(state = initialState, action) {
   
-  let { tickets, duplicatas, grandstotaux, archivesfiscales, pistedaudit, zdecaisse, jet } = state;
+  let { 
+    tickets, 
+    duplicatas, 
+    grandstotaux_jour, 
+    grandstotaux_mois, 
+    grandstotaux_annee, 
+    archivesfiscales, 
+    pistedaudit, 
+    zdecaisse, 
+    jet 
+  } = state;
   
   switch (action.type) {
+
+    case signatureActionTypes.GET_ALL:
+      return {
+        ...state,
+        tickets: action.tickets, 
+        duplicatas: action.duplicatas, 
+        grandstotaux_jour: action.grandstotaux_jour, 
+        grandstotaux_mois: action.grandstotaux_mois, 
+        grandstotaux_annee: action.grandstotaux_annee, 
+        archivesfiscales: action.archivesfiscales, 
+        pistedaudit: action.pistedaudit, 
+        zdecaisse: action.zdecaisse, 
+        jet: action.jet
+      }
+
+
     case signatureActionTypes.CREATE_SIGNATURE_TICKET:
       return {
         ...state,
@@ -30,12 +58,24 @@ export function signatureReducer(state = initialState, action) {
         duplicatas: [...duplicatas, action.duplicata]
       }
     
-    case signatureActionTypes.CREATE_SIGNATURE_GRANDTOTAL:
+    case signatureActionTypes.CREATE_SIGNATURE_GRANDTOTAL_JOUR:
       return {
         ...state,
-        grandstotaux: [...grandstotaux, action.grandtotal]
+        grandstotaux_jour: [...grandstotaux_jour, action.grandtotal]
       }
     
+    case signatureActionTypes.CREATE_SIGNATURE_GRANDTOTAL_MOIS:
+      return {
+        ...state,
+        grandstotaux_mois: [...grandstotaux_mois, action.grandtotal]
+      }
+      
+    case signatureActionTypes.CREATE_SIGNATURE_GRANDTOTAL_ANNEE:
+      return {
+        ...state,
+        grandstotaux_annee: [...grandstotaux_annee, action.grandtotal]
+      }
+        
     case signatureActionTypes.CREATE_SIGNATURE_ARCHIVEFISCALE:
       return {
         ...state,

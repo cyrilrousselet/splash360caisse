@@ -61,7 +61,9 @@ async function _findSignatures(criteriae={}, lastitem=false) {
   /* 
     tickets:[],
     duplicatas:[],
-    grandstotaux:[],
+    grandstotaux_jour:[],
+    grandstotaux_mois:[],
+    grandstotaux_annee:[],
     archivesfiscales:[],
     pisteaudit:[],
     jet:[],

@@ -64,6 +64,8 @@ const mapStateToProps = (state) => {
     devise: ' €',
     caisse: 0,
     blocage_encaissement: state.tresorReducer.blocage,
+    blocage_commande: state.clotureReducer.blocage,
+    pastnonconfirmed: state.commandesListReducer.pastnonconfirmed
   }
 }
 
@@ -101,7 +103,8 @@ const mapDispatchToProps = (dispatch) => {
     getReglesCatalogueList: marketingActions.getReglesCatalogueList,
     getReglesPanierList: marketingActions.getReglesPanierList,
     getCommande: commandeActions.getCommande,
-    log: journalActions.log
+    log: journalActions.log,
+    getPastNonConfirmed: commandeActions.getPastNonConfirmed,
   }, dispatch);
   return {
     ...binded,
