@@ -1,5 +1,6 @@
 import { signatureActionTypes } from "./signatureActionTypes";
 import { signatureServices } from "./signatureServices";
+import { journalActions } from "../journal/journalActions";
 
 function getAll() {
   return async dispatch => {
@@ -22,6 +23,7 @@ function storeKeys() {
     if (!publicKey && !privateKey) {
       const keys = signatureServices.checkAndCreateKeys();
       dispatch({ type: signatureActionTypes.STORE_KEYS_SUCCESS, ...keys });
+      dispatch(journalActions.log('450',`nouveau trousseau ${keys.trousseauId}`));
     }
 
   }

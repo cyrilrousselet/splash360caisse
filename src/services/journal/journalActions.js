@@ -6,6 +6,7 @@ import { journalServices } from './journalServices';
 import { remote } from 'electron';
 import { last } from 'lodash';
 import { journalActionTypes } from './journalActionTypes';
+import { signatureActionTypes } from '../signature/signatureActionTypes';
 
 const { app } = remote;
 const fs = require('fs').promises;
@@ -23,6 +24,7 @@ function log(code, description="") {
     
     if (!privateKey) {
       const trousseau = await signatureServices.checkAndCreateKeys();
+      dispatch({ type: signatureActionTypes.STORE_KEYS_SUCCESS, ...trousseau });
       key = trousseau.privateKey;
       keyid = trousseau.trousseauId;
     }
@@ -82,6 +84,7 @@ function signPrevious(type) {
     
     if (!privateKey) {
       const trousseau = await signatureServices.checkAndCreateKeys();
+      dispatch({ type: signatureActionTypes.STORE_KEYS_SUCCESS, ...trousseau });
       key = trousseau.privateKey;
       keyid = trousseau.trousseauId;
     }
@@ -127,6 +130,7 @@ function sign(filename, type) {
     
     if (!privateKey) {
       const trousseau = await signatureServices.checkAndCreateKeys();
+      dispatch({ type: signatureActionTypes.STORE_KEYS_SUCCESS, ...trousseau });
       key = trousseau.privateKey;
       keyid = trousseau.trousseauId;
     }

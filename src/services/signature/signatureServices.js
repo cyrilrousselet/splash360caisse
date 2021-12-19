@@ -8,6 +8,10 @@ import mkdirp from 'mkdirp';
 import base64url from 'base64url';
 import { uuid } from "uuidv4";
 import canonicalizeString from "@pelevesque/canonicalize-string";
+ 
+const fs_async = require('fs').promises;
+const crypto_async = require('crypto-promise');
+
 
 const { app } = remote;
 
@@ -41,40 +45,56 @@ const _checkDirectorySync = (directory) => {
 }
 
 
-function checkAndCreateKeys() {
+async function _createKeyPair() {
+  
+  return new Promise((resolve, reject) => {
+    crypto.generateKeyPair('rsa', {
+      modulusLength: 2048,
+      publicKeyEncoding: { type: 'spki', format: 'pem' },
+      privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
+    },
+    (err, publicKey, privateKey) => {
+      if(err) {
+        return reject(err);
+      }
+      resolve({privateKey, publicKey});
+    });
+  });
+
+}
+
+async function checkAndCreateKeys() {
   _checkDirectorySync(`${app.getPath('userData')}/cert`);
 
   let privateKey = "";
   let publicKey = "";
   let trousseauId = null;
 
+  let aucun_trousseau;
   try {
-    privateKey = fs.readFileSync(`${app.getPath('userData')}/cert/prv.pem`);
-    publicKey = fs.readFileSync(`${app.getPath('userData')}/cert/pub.pem`);
-    trousseauId = fs.readFileSync(`${app.getPath('userData')}/cert/trousseau.data`);
+    privateKey = await fs_async.readFile(`${app.getPath('userData')}/cert/prv.pem`);
+    publicKey = await fs_async.readFile(`${app.getPath('userData')}/cert/pub.pem`);
+    trousseauId = await fs_async.readFile(`${app.getPath('userData')}/cert/trousseau.data`);
   } catch(e) {
-
-    const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
-      modulusLength: 2048,
-      publicKeyEncoding: { type: 'spki', format: 'pem' },
-      privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
-    });
-    trousseauId = uuid();
-
-    fs.writeFile(`${app.getPath('userData')}/cert/prv.pem`, privateKey, function(err) {
-        if (err) throw err
-    });
-  
-    fs.writeFile(`${app.getPath('userData')}/cert/pub.pem`, publicKey, function(err) {
-        if (err) throw err
-    });
-  
-    fs.writeFile(`${app.getPath('userData')}/cert/trousseau.data`, trousseauId, function(err) {
-        if (err) throw err
-    });
-    
+    console.warn('aucun trousseau');
+    aucun_trousseau = true;
   }
 
+  if (aucun_trousseau) {
+
+    try {
+      const { privateKey, publicKey } = await _createKeyPair();
+      trousseauId = uuid();
+
+      await fs_async.writeFile(`${app.getPath('userData')}/cert/prv.pem`, privateKey);
+      await fs_async.writeFile(`${app.getPath('userData')}/cert/pub.pem`, publicKey);
+      await fs_async.writeFile(`${app.getPath('userData')}/cert/trousseau.data`, trousseauId)
+    }
+    catch(err) {
+      return console.error(err);
+    };
+  }
+    
   return { privateKey, publicKey, trousseauId:trousseauId.toString() };
 }
 
