@@ -140,6 +140,14 @@ const actions = {
 
     res.send(confirm);
   },
+  dbCommandePurge:async (req, res) => {
+    const { payload } = req;
+    log.info("dbCommandePurge() in API");
+
+    const confirm = await _purgeCommande(payload);
+
+    res.send(confirm);
+  },
 
   dbTicketGet: async (req, res) => {
     log.info('dbTicketGet in API');
@@ -157,6 +165,14 @@ const actions = {
 
     res.send(confirm);
   },
+  dbTicketDelete: async (req, res) => {
+    log.info('dbTicketDelete in API');
+    const { payload } = req;
+
+    const confirm = await _deleteTicket(payload);
+
+    res.send(confirm);
+  },
 
   dbDuplicataGet: async (req, res) => {
     log.info('dbDuplicataGet in API');
@@ -171,6 +187,14 @@ const actions = {
     const { payload } = req;
 
     const confirm = await _persistDuplicata(payload);
+
+    res.send(confirm);
+  },
+  dbDuplicataDelete: async (req, res) => {
+    log.info('dbDuplicataDelete in API');
+    const { payload } = req;
+
+    const confirm = await _deleteDuplicata(payload);
 
     res.send(confirm);
   },
@@ -414,6 +438,15 @@ async function _deleteCommande(ticketId, motif) {
   return _cmd;
 }
 
+
+async function _purgeCommande(ids) {
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  const { deleteCount } = await CommandeModel.deleteMany({ticketId: {$in: ids}});
+  return (deleteCount === ids.length);
+}
+
 async function _setArchived(ids, clotureId) {
   log.info("Sync ids: ", ids);
   if (!ids || !ids.length) {
@@ -577,6 +610,13 @@ async function _persistTicket(payload) {
   return true;
   
 }
+async function _deleteTicket(ids) {
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  const { deleteCount } = await TicketModel.deleteMany({'ENC-GTT-ORI-NUM': {$in: ids}});
+  return (deleteCount === ids.length);
+}
 
 async function _findDuplicata(criteriae={}) {
 
@@ -600,6 +640,13 @@ async function _persistDuplicata(payload) {
   
 }
 
+async function _deleteDuplicata(ids) {
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  const { deleteCount } = await DuplicataModel.deleteMany({'ENC-DUP-NID': {$in: ids}});
+  return (deleteCount === ids.length);
+}
 
 async function _generateCommandId() {
   let id;

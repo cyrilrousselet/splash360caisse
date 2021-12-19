@@ -36,18 +36,22 @@ export const clotureServices = {
   getCloturesList,
   setSyncedClotures,
   getCloturesToSync,
+  deleteClotures,
   getGTP,
   updateGTP,
   getGTTicket,
   persistGTTicket,
+  deleteGTTicket,
   getGTPeriodique,
   persistGTPeriodique,
+  deleteGTPeriodique,
   getTodayCa,
   getBoundedClotures,
   getLastGTPeriodique,
   getZCaisse,
   getLastZCaisse,
   persistZCaisse,
+  deleteZCaisse,
   exportComptable,
   createArchiveFiscale,
   persistArchiveFiscale,
@@ -407,6 +411,9 @@ function setSyncedClotures(cloturesid, datetime) {
 function getCloturesToSync(limit=null) {
   return emit('dbClotureGetToSync', {limit:limit});
 }
+function deleteClotures(clotures) {
+  return emit('dbClotureDelete', clotures);
+}
 
 
 function getLast() {
@@ -439,11 +446,17 @@ function getGTTicket(params, fromEnd = -1) {
 function persistGTTicket(gtt) {
   return emit('dbCloturePersistGrandTotalTicket', gtt );
 }
+function deleteGTTicket(gtt) {
+  return emit('dbClotureDeleteGrandTotalTicket', gtt );
+}
 function getGTPeriodique(params, fromEnd = -1) {
   return emit('dbClotureGetGrandTotalPeriodique', {query:params, end:fromEnd});
 }
 function persistGTPeriodique(gtp) {
   return emit('dbCloturePersistGrandTotalPeriodique', gtp );
+}
+function deleteGTPeriodique(gtp) {
+  return emit('dbClotureDeleteGrandTotalPeriodique', gtp );
 }
 
 function getLastGTPeriodique(param) {
@@ -454,6 +467,9 @@ function getZCaisse(params, fromEnd = -1) {
 }
 function persistZCaisse(zdecaisse) {
   return emit('dbCloturePersistZCaisse', zdecaisse );
+}
+function deleteZCaisse(zdecaisse) {
+  return emit('dbClotureDeleteZCaisse', zdecaisse );
 }
 
 function getLastZCaisse(requete) {

@@ -1694,7 +1694,7 @@ function setCommandeFromOrder(provider, payload) {
     const { ticket } = getState().numerotationReducer;
     const { privateKey, trousseauId } = getState().signatureReducer;
     const { entreprise } = parametres;
-    const { user } = getState().authentication;
+    // const { user } = getState().authentication;
     const { caisse } = parametres.options;
   
 

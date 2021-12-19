@@ -56,19 +56,23 @@ class Footer extends React.Component {
 
     render() {
 
-        const {online, status, expiredate, toggleMode} = this.props;
+        const {online, status, expiredate, toggleMode, integrite_error, sequence_error} = this.props;
 
         const expDate = moment(expiredate).locale('fr', [frLocale]);
 
         return (
-          <div className="Footer">
+          <div className={`Footer${(integrite_error ? ' integrite-error' : '')}${(sequence_error ? ' sequence-error' : '')}`}>
             <div className={ `connexion ${online} ${status}` }>
                 <span>{ online === 'on' ? strings.footer.online : strings.footer.offline }</span>
-
+                <div className="errors">
+                    {(integrite_error && <span>{ strings.footer.integrite_error }</span>)}
+                    {(sequence_error && <span>{ strings.footer.sequence_error }</span>)}
+                </div>
                 <div className="top">
                     <p>Statut : {status !=="authorized" ? "bloqué" : "activé"}</p>
                     <p>Connexion : { online === 'on' ? strings.footer.online : strings.footer.offline }</p>
                     {expiredate != null && <p>La caisse sera définitivement bloquée le : {expDate.format("LLL")}</p>}
+                    {(integrite_error || sequence_error) && <p><b>Contactez le support technique</b></p> }
                 </div>
                 
 

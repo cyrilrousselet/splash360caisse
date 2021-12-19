@@ -12,7 +12,9 @@ const initialState = {
   jet: [],
   privateKey: null,
   publicKey: null,
-  trousseauId: null
+  trousseauId: null,
+  integrite_error: false,
+  sequence_error: false,
 }
 
 export function signatureReducer(state = initialState, action) {
@@ -107,6 +109,18 @@ export function signatureReducer(state = initialState, action) {
         publicKey: action.publicKey,
         trousseauId: action.trousseauId
       }
+
+    case signatureActionTypes.INTEGRITE_ERROR:
+      return {
+        ...state,
+        integrite_error: true
+      };
+
+    case signatureActionTypes.SEQUENCE_ERROR:
+      return {
+        ...state,
+        sequence_error: true
+      };
         
     default:
       return state;

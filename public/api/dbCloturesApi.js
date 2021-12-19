@@ -47,6 +47,11 @@ const actions = {
     log.info(proxies);
     res.send(proxies);
   },
+  dbClotureDelete: async (req, res) => {
+    const { payload } = req;
+    const confirm = await _deleteCloture(payload);
+    res.send(confirm);
+  },
   dbCloturePersist: async (req, res) => {
     const { payload } = req;
     log.info("dbCloturePersist() in API");
@@ -87,6 +92,11 @@ const actions = {
     const confirm = await _persistGrandTotalTicket(payload);
     res.send(confirm);
   },
+  dbClotureDeleteGrandTotalTicket: async (req, res) => {
+    const { payload } = req;
+    const confirm = await _deleteGrandTotalTicket(payload);
+    res.send(confirm);
+  },
   dbClotureGetGrandTotalPeriodique: async (req, res) => {
     const { payload } = req;
     const proxies = await _getGrandTotalPeriodique(payload);
@@ -102,6 +112,11 @@ const actions = {
   dbCloturePersistGrandTotalPeriodique: async (req, res) => {
     const { payload } = req;
     const confirm = await _persistGrandTotalPeriodique(payload);
+    res.send(confirm);
+  },
+  dbClotureDeleteGrandTotalPeriodique: async (req, res) => {
+    const { payload } = req;
+    const confirm = await _deleteGrandTotalPeriodique(payload);
     res.send(confirm);
   },
 
@@ -121,6 +136,12 @@ const actions = {
   dbCloturePersistZCaisse: async (req, res) => {
     const { payload } = req;
     const confirm = await _persistZCaisse(payload);
+    res.send(confirm);
+  },
+  
+  dbClotureDeleteZCaisse: async (req, res) => {
+    const { payload } = req;
+    const confirm = await _deleteZCaisse(payload);
     res.send(confirm);
   },
 
@@ -191,6 +212,14 @@ async function _getAll() {
   const __rawdata = await _findCloture();
   log.info('getall', __rawdata);
   return _parseCloture(__rawdata);
+}
+
+async function _deleteCloture(ids) {
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  const { deleteCount } = await ClotureModel.deleteMany({clotureId: {$in: ids}});
+  return (deleteCount === ids.length);
 }
 
 async function _addCloturesLocalSync(ids, store_id) {
@@ -388,6 +417,13 @@ async function _persistGrandTotalTicket(payload) {
   return true;
   
 }
+async function _deleteGrandTotalTicket(ids) {
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  const { deleteCount } = await GTTicketModel.deleteMany({'ENC-GTT-ORI-NUM': {$in: ids}});
+  return (deleteCount === ids.length);
+}
 
 async function _getGrandTotalPeriodique(payload) {
 
@@ -415,6 +451,13 @@ async function _persistGrandTotalPeriodique(payload) {
 
   return true;
   
+}
+async function _deleteGrandTotalPeriodique(ids) {
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  const { deleteCount } = await GTPeriodiqueModel.deleteMany({'ENC-GTP-ORI-NID': {$in: ids}});
+  return (deleteCount === ids.length);
 }
 
 async function _getGrandTotalPerpetuel() {
@@ -516,6 +559,13 @@ async function _persistZCaisse(payload) {
 
   return true;
   
+}
+async function _deleteZCaisse(ids) {
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  const { deleteCount } = await ZCaisseModel.deleteMany({zId: {$in: ids}});
+  return (deleteCount === ids.length);
 }
 
 async function _generateClotureId() {

@@ -37,8 +37,8 @@ import * as Sentry from '@sentry/react';
 import { peripheralActions } from './services/peripheral/peripheralActions';
 // import { signatureActions } from './services/signature/signatureActions';
 import { journalActions } from './services/journal/journalActions';
-import { signatureServices } from './services/signature/signatureServices';
-import { signatureActionTypes } from './services/signature/signatureActionTypes';
+// import { signatureServices } from './services/signature/signatureServices';
+// import { signatureActionTypes } from './services/signature/signatureActionTypes';
 import { signatureActions } from './services/signature/signatureActions';
 // import { evenements } from './constants/evenements';
 

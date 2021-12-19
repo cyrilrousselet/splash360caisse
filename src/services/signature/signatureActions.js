@@ -1,6 +1,6 @@
 import { signatureActionTypes } from "./signatureActionTypes";
 import { signatureServices } from "./signatureServices";
-import { journalActions } from "../journal/journalActions";
+// import { journalActions } from "../journal/journalActions";
 
 function getAll() {
   return async dispatch => {

@@ -22,6 +22,7 @@ import { tresorServices } from '../tresorerie/tresorServices';
 import { last, dropRight } from 'lodash';
 import { ungzip } from 'node-gzip';
 import packageJson from '../../../package.json';
+import { signatureActionTypes } from '../signature/signatureActionTypes';
 // import {statSync} from 'fs';
 
 const strings = new LocalizedStrings(data);
@@ -209,9 +210,11 @@ function checkZCaisse() {
       });
   
       if (integ_error) {
+        dispatch({ type: signatureActionTypes.INTEGRITE_ERROR, detail: "Z de Caisse" });
         dispatch(journalActions.log('90', `détecté dans Z de Caisse : ${integ_detection.join(', ')}`));
       }
       if (seq_error) {
+        dispatch({ type: signatureActionTypes.SEQUENCE_ERROR, detail: "Z de Caisse" });
         dispatch(journalActions.log('95', `détecté dans Z de Caisse : ${seq_detection.join(', ')}`));
       }
 
@@ -1105,9 +1108,11 @@ function checkGrandTotalPeriodique() {
       });
   
       if (integ_error) {
+        dispatch({ type: signatureActionTypes.INTEGRITE_ERROR, detail: "Grands Totaux Periodiques" });
         dispatch(journalActions.log('90', `détecté dans Grands Totaux Periodiques : ${integ_detection.join(', ')}`));
       }
       if (seq_error) {
+        dispatch({ type: signatureActionTypes.SEQUENCE_ERROR, detail: "Grands Totaux Periodiques" });
         dispatch(journalActions.log('95', `détecté dans Grands Totaux Periodiques : ${seq_detection.join(', ')}`));
       }
 
@@ -1138,6 +1143,20 @@ function createGrandTotalPeriodique(intervalle, grandstotaux) {
     const { privateKey, trousseauId } = getState().signatureReducer; 
     
     const {gtpca, gtpva} = await clotureServices.getGTP();
+
+
+    let key = privateKey;
+    let keyid = trousseauId;
+    
+    // let create_trousseau = null;
+    if (!privateKey) {
+      const trousseau = await signatureServices.checkAndCreateKeys();
+      dispatch({ type: signatureActionTypes.STORE_KEYS_SUCCESS, ...trousseau });
+      // create_trousseau = trousseau.create;
+      key = trousseau.privateKey;
+      keyid = trousseau.trousseauId;
+    }
+
 
 
     let __tva_ttc = {};
@@ -1241,7 +1260,7 @@ function createGrandTotalPeriodique(intervalle, grandstotaux) {
 
     const lastSignature = await signatureServices.getLastSignature('grandstotaux_'+intervalle);
     const newTicket = 'GTP'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + grandtotal.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
-    const {source, hash, signature} = signatureServices.createGrandtotalSignature({...source_signature, type:"periode"}, gtpca, privateKey, lastSignature);
+    const {source, hash, signature} = signatureServices.createGrandtotalSignature({...source_signature, type:"periode"}, gtpca, key, lastSignature);
  
 
     const __grandtotalperiodique = {
@@ -1258,7 +1277,7 @@ function createGrandTotalPeriodique(intervalle, grandstotaux) {
       'ENC-GTP-HOR-GDH': format(new Date(), 'yyyyMMddHHmmss'),
       'ENC-GTP-ARG': source,
       'ENC-GTP-HASH': hash,
-      'ENV-GTP-ID-KEY': trousseauId,
+      'ENV-GTP-ID-KEY': keyid,
       'ENV-GTP-TAG-SIG': signature
     };
     // const __grandtotalperiodique = {
@@ -1684,7 +1703,18 @@ function archiveFiscale(intervalle, debut, fin) {
       return false;
     }
 
-
+    let __purge = {
+      gtt: [],
+      gtp: [],
+      zc: [],
+      tickets: [],
+      duplicatas: [],
+      commandes: [],
+      clotures: [],
+      avoirs: [],
+      tresors: [],
+      jet: [],
+    };
     let __data = [];
 
     // EXPORT DES DONNEES
@@ -1701,6 +1731,10 @@ function archiveFiscale(intervalle, debut, fin) {
 
     // fichier JSON
     __data.push({type: 'json', data: JSON.stringify(gttlist), file: 'grandtotauxtickets.json'});
+
+
+    // ajout des ID de GTT à purger
+    __purge.gtt = gttlist.map(gtt => gtt['ENC-GTT-ORI-NUM'] );
 
     // fichier CSV
     const gttCsvString = [
@@ -1770,6 +1804,10 @@ function archiveFiscale(intervalle, debut, fin) {
 
     // fichier JSON
     __data.push({type: 'json', data: JSON.stringify(gtplist), file: 'grandtotauxperiodiques.json'});
+
+
+    // ajout des ID de GTP à purger
+    __purge.gtp = gtplist.map(gtp => gtp['ENC-GTP-ORI-NID'] );
 
     // fichier CSV
     const gtpCsvString = [
@@ -1845,6 +1883,11 @@ function archiveFiscale(intervalle, debut, fin) {
     if (zclist) {
       // fichier JSON
       __data.push({type: 'json', data: JSON.stringify(zclist), file: 'zdecaisse.json'});
+
+
+
+    // ajout des ID de Z de Caisse à purger
+    __purge.zc = zclist.map(zc => zc.zId );
 
       // fichier CSV
       const zcCsvString = [
@@ -1960,6 +2003,13 @@ function archiveFiscale(intervalle, debut, fin) {
       'ENC-TIK-NUM': {$in: __ft}
     });
 
+    // export en JSON
+    __data.push({type: 'json', data: JSON.stringify(tickets), file: 'tickets.json'});
+
+    // ajout des ID de Z de Caisse à purger
+    __purge.tickets = tickets.map(t => t['ENC-TIK-NUM'] );
+
+
     console.log('tickets',tickets);
     if (Array.isArray(tickets) && tickets.length>0) {
       let __tck = [];
@@ -2042,8 +2092,6 @@ function archiveFiscale(intervalle, debut, fin) {
       
 
       tickets.forEach(tck => {
-
-
         
         let __evalstart = parseInt(tck['ENC-TIK-HOR-GDH']);
         let __evalend = parseInt(tck['ENC-TIK-HOR-GDH']);
@@ -2169,6 +2217,9 @@ function archiveFiscale(intervalle, debut, fin) {
     // fichier JSON
     __data.push({type: 'json', data: JSON.stringify(clotureslist), file: 'clotures.json'});
 
+    // ajout des id de clotures à purger
+    __purge.clotures = Object.values(clotureslist).map(c => c.clotureId);
+
     // ------------>  Duplicatas
     const __dplQuery = {
       $and: [
@@ -2177,6 +2228,14 @@ function archiveFiscale(intervalle, debut, fin) {
       ]
     }
     const dpllist = await commandeServices.getDuplicata(__dplQuery);
+
+
+    // export en JSON
+    __data.push({type: 'json', data: JSON.stringify(dpllist), file: 'duplicatas.json'});
+
+    // ajout des ID de duplicatas à purger
+    __purge.duplicatas = dpllist.map(t => t['ENC-DUP-NID'] );
+
 
     const dplCsvString = [
       [
@@ -2230,7 +2289,8 @@ function archiveFiscale(intervalle, debut, fin) {
     // fichier JSON
     __data.push({type: 'json', data: JSON.stringify(commandeslist), file: 'commandes.json'});
 
-
+    // ajout des id de commandes à purger
+    __purge.commandes = Object.values(commandeslist).map(c => c.ticketId);
 
     // ------------>  Trésorerie
     const __tresorQuery = {
@@ -2243,6 +2303,8 @@ function archiveFiscale(intervalle, debut, fin) {
     // fichier JSON
     __data.push({type: 'json', data: JSON.stringify(tresorslist), file: 'tresorerie.json'});
 
+    // ajout des id de mouvements de trésorerie à purger
+    __purge.tresors = Object.values(tresorslist).map(t => t.tresorId);
 
 
     // ------------>  Avoirs
@@ -2255,6 +2317,10 @@ function archiveFiscale(intervalle, debut, fin) {
     const { avoirslist } = await marketingServices.getAvoirsList(__avoirQuery);
     // fichier JSON
     __data.push({type: 'json', data: JSON.stringify(avoirslist), file: 'avoirs.json'});
+
+    // ajout des ID de duplicatas à purger 
+    // (les avoirs périmés avant la fin de la période archivée)
+    __purge.avoirs = avoirslist.map(a => a.limite < fin.getTime() );
 
 
     // ------------>  export comptable
@@ -2326,6 +2392,9 @@ function archiveFiscale(intervalle, debut, fin) {
         if (fjour >= debut_aj && fjour <= fin_aj) {
           console.log('inclu', f);
           const __gz = (last(f.split('.'))==='gz');
+
+          // ajout des JET de la période
+          __purge.jet.push(`${compta_dir}${f}`);
           
           let filecont = await fs.readFile(`${compta_dir}${f}`);
           let filedef;
@@ -2405,7 +2474,7 @@ function archiveFiscale(intervalle, debut, fin) {
         focusCancel: true
       }).then((result)=> {
         if (result.value) {
-          dispatch(purgeData(__startdefacto, __enddefacto));
+          dispatch(purgeData(__purge));
         }
       });
     }
@@ -2415,9 +2484,110 @@ function archiveFiscale(intervalle, debut, fin) {
   } 
 }
 
-function purgeData(startnum, endnum) {
+function purgeData(purge) {
   return async (dispatch, getState) => {
-    console.log('purgeData', startnum, endnum);
+    console.log('purgeData', purge);
+
+    // purge des gtt
+    if (purge.gtt.length>0) {
+      try {
+        await clotureServices.deleteGTTicket(purge.gtt);
+      } catch(e) {
+        console.error(e);
+      }
+    }
+    
+    // purge des gtp
+    if (purge.gtp.length>0) {
+      try {
+        await clotureServices.deleteGTPeriodique(purge.gtp);
+      } catch(e) {
+        console.error(e);
+      }
+    }
+    
+    // purge des zc
+    if (purge.zc.length>0) {
+      try {
+        await clotureServices.deleteZCaisse(purge.zc);
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    // purge des tickets
+    if (purge.tickets.length>0) {
+      try {
+        await commandeServices.deleteTicket(purge.tickets);
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    // purge des duplicatas
+    if (purge.duplicatas.length>0) {
+      try {
+        await commandeServices.deleteDuplicata(purge.duplicatas);
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    // purge des commandes
+    if (purge.commandes.length>0) {
+      try {
+        await commandeServices.purgeCommandes(purge.commandes);
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    // purge des avoirs
+    if (purge.avoirs.length>0) {
+      try {
+        await marketingServices.deleteAvoir(purge.avoirs);
+      } catch(e) {
+        console.error(e);
+      }
+    } 
+
+    // purge des clotures
+    if (purge.clotures.length>0) {
+      try {
+        await clotureServices.deleteClotures(purge.clotures);
+      } catch(e) {
+        console.error(e);
+      }
+    } 
+
+    // purge des mouvements de trésorerie
+    if (purge.tresors.length>0) {
+      try {
+        await tresorServices.deleteTresor(purge.tresors);
+      } catch(e) {
+        console.error(e);
+      }
+    } 
+
+    // purge des fichiers du JET
+    if (purge.jet.length>0) {
+
+      asyncForEach(purge.jet, async (filename) => {
+        await fs.unlink(filename);
+      });
+
+    }
+
+    let purgelist = '';
+    Object.entries(purge).forEach(([t,liste]) => {
+      if (t!=='jet') {
+        purgelist += t + ' : '+liste.join(', ') + ' ; ';
+      }
+    });
+
+    dispatch(journalActions.log('200', purgelist));
+    dispatch(journalActions.log('205', purge.jet.join(', ')));
+
   }
 }
 

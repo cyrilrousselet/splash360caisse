@@ -47,7 +47,9 @@ const data = {
         },
         footer: {
             online: "connecté",
-            offline: "non connecté"
+            offline: "non connecté",
+            integrite_error: "erreur 90",
+            sequence_error: "erreur 95",
         },
         login: {
             premiere: {

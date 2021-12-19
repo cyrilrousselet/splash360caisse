@@ -23,6 +23,14 @@ const actions = {
 
     res.send(confirm);
   },
+  dbTresorerieDelete: async (req, res) => {
+    const { payload } = req;
+    log.info("dbTresorerieDelete() in API");
+
+    const confirm = await _deleteTresor(payload);
+
+    res.send(confirm);
+  },
 
   dbTresorerieGetLastMouvement: async (req, res) => {
     const { payload } = req;
@@ -333,6 +341,13 @@ async function _persistTresor(payload) {
   return _trs;
 }
 
+async function _deleteTresor(ids) {
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  const { deleteCount } = await TresorModel.deleteMany({tresorId: {$in: ids}});
+  return (deleteCount === ids.length);
+}
 
 
 async function _setSynced(ids, datetime) {

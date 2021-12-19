@@ -16,6 +16,31 @@
     background-repeat: no-repeat;
     background-position: center bottom;
 
+    &.sequence-error,
+    &.integrite-error {
+        background-color: #ffd000;
+    }
+
+    .errors {
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        position: absolute;
+        margin-top: -18px;
+        height: 55px;
+        padding-left: 10px;
+        font-size: 13px;
+        font-family: $f_hea;
+        color: $blanc;
+        span {
+            border-radius: 12px;
+            background-color: $rouge;
+            padding: 3px 10px;
+            margin: 2px 0;
+
+        }
+    }
+
     font-family: $f_med;
     font-size: 16px;
     color: $noir;

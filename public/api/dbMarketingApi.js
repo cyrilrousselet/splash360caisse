@@ -4,7 +4,7 @@ const lodashId = require('lodash-id');
 const log = require('../utils/logger');
 const connect = require("../db/mongodb");
 const AvoirModel = require("../db/avoirModel");
-const { uuid } = require("uuidv4");
+// const { uuid } = require("uuidv4");
 
 
 const actions = {
@@ -247,6 +247,18 @@ async function _persistAvoir(payload) {
   return _avr;
 }
 
+async function _deleteAvoir(ids) {
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  if (!Array.isArray(ids)) {
+    ids = [ids];
+  }
+
+  const { deleteCount } = await AvoirModel.deleteMany({avoir_id: {$in: ids}});
+  return (deleteCount === ids.length);
+}
+
 function _parseAvoir(_rawdata) {
   // let __pointages = {};
   // _rawdata._pnt.forEach(p => {
@@ -257,14 +269,6 @@ function _parseAvoir(_rawdata) {
   return {avoirslist: _rawdata._avr};
 }
 
-async function _deleteAvoir(avoir_id) {
-  const mongo = await connect();
-  if (!mongo) return false;
-
-  const _avr = await AvoirModel.deleteOne({avoir_id: avoir_id});
-  return _avr.deleteCount>0;
-
-}
 
 
 

@@ -22,13 +22,13 @@ function log(code, description="") {
     let key = privateKey;
     let keyid = trousseauId;
     
-    let create_trousseau = null;
+    // let create_trousseau = null;
     if (!privateKey) {
       const trousseau = await signatureServices.checkAndCreateKeys();
       dispatch({ type: signatureActionTypes.STORE_KEYS_SUCCESS, ...trousseau });
       key = trousseau.privateKey;
       keyid = trousseau.trousseauId;
-      create_trousseau = trousseau.create;
+      // create_trousseau = trousseau.create;
     }
 
     const __ecode = evenements[code];
@@ -53,7 +53,7 @@ function log(code, description="") {
     };
 
     const lastSignature = await signatureServices.getLastSignature(__type);
-    const {source, signature} = signatureServices.createJETSignature({...__evt, caisse: caisse}, key, lastSignature);
+    const {signature} = signatureServices.createJETSignature({...__evt, caisse: caisse}, key, lastSignature);
  
     // console.log(__evtid+' source : ',source);
 
@@ -84,13 +84,13 @@ function signPrevious(type) {
     let key = privateKey;
     let keyid = trousseauId;
     
-    let create_trousseau = null;
+    // let create_trousseau = null;
     if (!privateKey) {
       const trousseau = await signatureServices.checkAndCreateKeys();
       dispatch({ type: signatureActionTypes.STORE_KEYS_SUCCESS, ...trousseau });
       key = trousseau.privateKey;
       keyid = trousseau.trousseauId;
-      create_trousseau = trousseau.create;
+      // create_trousseau = trousseau.create;
     }
 
     const actualfile = await journalServices.getFilename(type);
@@ -133,11 +133,11 @@ function sign(filename, type) {
     let key = privateKey;
     let keyid = trousseauId;
     
-    let create_trousseau = null;
+    // let create_trousseau = null;
     if (!privateKey) {
       const trousseau = await signatureServices.checkAndCreateKeys();
       dispatch({ type: signatureActionTypes.STORE_KEYS_SUCCESS, ...trousseau });
-      create_trousseau = trousseau.create;
+      // create_trousseau = trousseau.create;
       key = trousseau.privateKey;
       keyid = trousseau.trousseauId;
     }
@@ -164,22 +164,22 @@ function sign(filename, type) {
 function check(type) {
   return async (dispatch, getState) => {
 
-    const { privateKey, trousseauId } = getState().signatureReducer;
+    const { privateKey } = getState().signatureReducer;
     const { caisse } = getState().parametresReducer.parametres.options;
 
     const journal = type==='jet' ? 'JET' : 'PA';
 
     console.log('signPrevious', privateKey ? 'ok':'KO');
     let key = privateKey;
-    let keyid = trousseauId;
+    // let keyid = trousseauId;
     
-    let create_trousseau = null;
+    // let create_trousseau = null;
     if (!privateKey) {
       const trousseau = await signatureServices.checkAndCreateKeys();
       dispatch({ type: signatureActionTypes.STORE_KEYS_SUCCESS, ...trousseau });
-      create_trousseau = trousseau.create;
+      // create_trousseau = trousseau.create;
       key = trousseau.privateKey;
-      keyid = trousseau.trousseauId;
+      // keyid = trousseau.trousseauId;
     }
 
     // on récupère le nom du dernier fichier du type
@@ -230,9 +230,11 @@ function check(type) {
     });
 
     if (integ_error) {
+      dispatch({ type: signatureActionTypes.INTEGRITE_ERROR, detail: journal });
       dispatch(log('90', `détecté dans ${journal} (${filename}) : ${integ_detection.join(', ')}`));
     }
     if (seq_error) {
+      dispatch({ type: signatureActionTypes.SEQUENCE_ERROR, detail: journal });
       dispatch(log('95', `détecté dans ${journal} (${filename}) : ${seq_detection.join(', ')}`));
     }
 

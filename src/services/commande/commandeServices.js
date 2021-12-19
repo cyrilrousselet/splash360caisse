@@ -16,6 +16,7 @@ export const commandeServices = {
   getNewCommande,
   getCommandeById,
   getCommandesList,
+  purgeCommandes,
   checkMarketing,
   getCommandesCaisses,
   addProduit,
@@ -39,8 +40,10 @@ export const commandeServices = {
   getRuleValues,
   getTicket,
   persistTicket,
+  deleteTicket,
   getDuplicata,
   persistDuplicata,
+  deleteDuplicata,
   setCommandeFromOrder,
   setCommandeFromSync,
   setCommandeFromAPI,
@@ -106,17 +109,26 @@ function deleteCommande(id, motif) {
 function getCommandesList(params) {
   return emit("dbCommandeGetAll", params);
 }
+function purgeCommandes(ids) {
+  return emit("dbCommandePurge", ids);
+}
 function getTicket(params, fromEnd = -1) {
   return emit('dbTicketGet',  {query:params, end:fromEnd});
 }
 function persistTicket(ticket) {
   return emit('dbTicketPersist', ticket );
 }
+function deleteTicket(ticket) {
+  return emit('dbTicketDelete', ticket );
+}
 function getDuplicata(params) {
   return emit('dbDuplicataGet', params);
 }
 function persistDuplicata(ticket) {
   return emit('dbDuplicataPersist', ticket );
+}
+function deleteDuplicata(ticket) {
+  return emit('dbDuplicataDelete', ticket );
 }
 
 function getAllTicketsRestaurant(params) {

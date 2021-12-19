@@ -13,7 +13,8 @@ export const tresorServices = {
   getLastClotureAndAfter,
   getServiceMouvements,
   getLastMouvement,
-  persistTresor
+  persistTresor,
+  deleteTresor,
 };
 
 function createTresor(params) {
@@ -66,6 +67,10 @@ function getLastMouvement(caisseId) {
 
 function persistTresor(tresor) {
   return emit( "dbTresoreriePersist", { tresor: tresor } );
+}
+
+function deleteTresor(tresor) {
+  return emit( "dbTresorerieDelete", tresor );
 }
 
 function _getTresorId() {
