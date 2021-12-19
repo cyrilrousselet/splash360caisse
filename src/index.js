@@ -35,9 +35,9 @@ import packageJson from '../package.json';
 
 import * as Sentry from '@sentry/react';
 import { peripheralActions } from './services/peripheral/peripheralActions';
-import { signatureActions } from './services/signature/signatureActions';
+// import { signatureActions } from './services/signature/signatureActions';
 import { journalActions } from './services/journal/journalActions';
-import { evenements } from './constants/evenements';
+// import { evenements } from './constants/evenements';
 
 if (!isDev) {
   Sentry.init({ 
@@ -53,6 +53,9 @@ if (!isDev) {
 //const {store, persistor} = configureStore();
 const {store} = configureStore();
 
+export function getStore() {
+  return store;
+};
 
 //const electron = require('electron');
 setupFrontendListener(electron);

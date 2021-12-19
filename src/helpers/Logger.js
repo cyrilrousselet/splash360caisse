@@ -64,16 +64,21 @@
 
 import { loggers, format, transports } from 'winston';
 import 'winston-daily-rotate-file';
+// import {getStore} from '../index.js';
+import { configureStore } from '../store/configureStore';
 
 
 import fs from 'fs';
 import {remote} from 'electron';
 import mkdirp from 'mkdirp';
 import { LEVEL, MESSAGE }  from 'triple-beam';
+import { journalActions } from '../services/journal/journalActions.js';
 
 
 const {app} = remote;
 const { combine, timestamp, printf, colorize, label } = format;
+
+const {store} = configureStore();
 
 const LEVELS = [ 
   "error", 
@@ -212,6 +217,15 @@ const paTransport = new transports.DailyRotateFile({
   format: format.json()
 });
 
+paTransport.on('rotate', (oldFilename, newFilename) => {
+  console.log('🔄 ROTATION PA :', oldFilename, newFilename);
+  store.dispatch(journalActions.sign(oldFilename, 'pa'));
+});
+
+paTransport.on('new', (newFilename) => {
+  console.log('📃 NEW PA :', newFilename);
+  store.dispatch(journalActions.signPrevious('pa'));
+});
 
 const jetTransport = new transports.DailyRotateFile({
   filename: '%DATE%-jet.json',
@@ -221,6 +235,16 @@ const jetTransport = new transports.DailyRotateFile({
   maxSize: '20m',
   level: 'info',
   format: format.json()
+});
+
+jetTransport.on('rotate', (oldFilename, newFilename) => {
+  console.log('🔄 ROTATION JET :', oldFilename, newFilename);
+  store.dispatch(journalActions.sign(oldFilename, 'jet'));
+});
+
+jetTransport.on('new', (newFilename) => {
+  console.log('📃 NEW JET :', newFilename);
+  store.dispatch(journalActions.signPrevious('jet'));
 });
 
 loggers.add('winstonlogger', {
@@ -290,6 +314,8 @@ const logger = {
   },
   pa: (evt, ...args) => { pa.log('info', evt) },
   jet: (evt, ...args) => { jet.log('info', evt) },
+  pasign: (sign, ...args) => { pa.log('info', sign)},
+  jetsign: (sign, ...args) => { jet.log('info', sign)},
 }
 
 

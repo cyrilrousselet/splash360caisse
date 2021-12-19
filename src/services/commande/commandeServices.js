@@ -106,8 +106,8 @@ function deleteCommande(id, motif) {
 function getCommandesList(params) {
   return emit("dbCommandeGetAll", params);
 }
-function getTicket(params) {
-  return emit('dbTicketGet', params);
+function getTicket(params, fromEnd = -1) {
+  return emit('dbTicketGet',  {query:params, end:fromEnd});
 }
 function persistTicket(ticket) {
   return emit('dbTicketPersist', ticket );

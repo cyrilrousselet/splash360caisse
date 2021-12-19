@@ -360,12 +360,19 @@ async function _setSynced(ids, datetime) {
   return _clotures != null && _clotures.length;
 }
 
-async function _getGrandTotalTicket(criteriae={}) {
+async function _getGrandTotalTicket(payload) {
 
   const mongo = await connect();
   if (!mongo) return false;
+  
+  const { query={}, end } = payload;
 
-  let __gtt = await GTTicketModel.find(criteriae).lean().exec();
+  let __gtt;
+  if (end>-1) {
+    __gtt = await GTTicketModel.find(query).sort({$natural:-1}).limit(end).sort({$natural:1}).lean().exec();
+  } else {
+    __gtt = await GTTicketModel.find(query).lean().exec();
+  }
 
   return __gtt;
 
@@ -382,13 +389,19 @@ async function _persistGrandTotalTicket(payload) {
   
 }
 
-async function _getGrandTotalPeriodique(criteriae={}) {
+async function _getGrandTotalPeriodique(payload) {
 
   const mongo = await connect();
   if (!mongo) return false;
 
-  let __gtp = await GTPeriodiqueModel.find(criteriae).lean().exec();
-
+  const {query={}, end} = payload;
+  
+  let __gtp;
+  if (end>0) {
+    __gtp = await GTPeriodiqueModel.find(query).sort({$natural:-1}).limit(end).sort({$natural:1}).lean().exec();
+  } else {
+    __gtp = await GTPeriodiqueModel.find(query).lean().exec();
+  } 
   return __gtp;
 }
 
@@ -476,12 +489,19 @@ async function _getLastZCaisse(query={}) {
   return __zc;
 }
 
-async function _getZCaisse(criteriae={}) {
+async function _getZCaisse(payload) {
 
   const mongo = await connect();
   if (!mongo) return false;
 
-  let __zc = await ZCaisseModel.find(criteriae).lean().exec();
+  const {query={}, end} = payload;
+
+  let __zc;
+  if (end>-1) {
+    __zc = await ZCaisseModel.find(query).sort({$natural:-1}).limit(end).sort({$natural:1}).lean().exec();
+  } else {
+    __zc = await ZCaisseModel.find(query).lean().exec();
+  }
 
   return __zc;
 

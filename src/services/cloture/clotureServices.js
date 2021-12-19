@@ -433,14 +433,14 @@ function updateGTP(valeur, gtpca, gtpva) {
   });
 }
 
-function getGTTicket(params) {
-  return emit('dbClotureGetGrandTotalTicket', params);
+function getGTTicket(params, fromEnd = -1) {
+  return emit('dbClotureGetGrandTotalTicket', {query:params, end:fromEnd});
 }
 function persistGTTicket(gtt) {
   return emit('dbCloturePersistGrandTotalTicket', gtt );
 }
-function getGTPeriodique(params) {
-  return emit('dbClotureGetGrandTotalPeriodique', params);
+function getGTPeriodique(params, fromEnd = -1) {
+  return emit('dbClotureGetGrandTotalPeriodique', {query:params, end:fromEnd});
 }
 function persistGTPeriodique(gtp) {
   return emit('dbCloturePersistGrandTotalPeriodique', gtp );
@@ -449,8 +449,8 @@ function persistGTPeriodique(gtp) {
 function getLastGTPeriodique(param) {
   return emit('dbClotureGetLastGrandTotalPeriodique', {gttype: param});
 }
-function getZCaisse(params) {
-  return emit('dbClotureGetZCaisse', params);
+function getZCaisse(params, fromEnd = -1) {
+  return emit('dbClotureGetZCaisse', {query:params, end:fromEnd});
 }
 function persistZCaisse(zdecaisse) {
   return emit('dbCloturePersistZCaisse', zdecaisse );

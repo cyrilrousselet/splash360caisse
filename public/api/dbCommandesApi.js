@@ -7,7 +7,7 @@ const CmdchronoModel = require("../db/cmdchronoModel");
 const TicketModel = require('../db/TicketModel');
 const DuplicataModel = require('../db/DuplicataModel');
 const { uuid } = require("uuidv4");
-const { lowerFirst } = require('lodash');
+// const { lowerFirst } = require('lodash');
 
 const actions = {
   dbCommandeGetAll: async (req, res) => {
@@ -549,12 +549,19 @@ async function _persistTicketRestau(payload) {
   }
 }
 
-async function _findTicket(criteriae={}) {
+async function _findTicket(payload) {
 
   const mongo = await connect();
   if (!mongo) return false;
 
-  let __tck = await TicketModel.find(criteriae).lean().exec();
+  const {query = {}, end} = payload;
+
+  let __tck
+  if (end>-1) {
+    __tck = await TicketModel.find(query).sort({$natural:-1}).limit(end).sort({$natural:-1}).lean().exec();
+  } else {
+  __tck = await TicketModel.find(query).lean().exec();
+  }
 
   return __tck;
 

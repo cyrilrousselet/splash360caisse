@@ -1,4 +1,3 @@
-import { clotureActions } from './clotureActions';
 import { clotureActionTypes } from './clotureActionTypes';
 
 const initialState = {

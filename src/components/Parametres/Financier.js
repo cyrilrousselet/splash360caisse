@@ -3,38 +3,38 @@ import React from 'react';
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import LabelledField from '../common/LabelledField';
-import { Fab, List, ListItem } from '@material-ui/core';
-import AddIcon from '../common/icon/AddIcon';
+// import { Fab, List, ListItem } from '@material-ui/core';
+// import AddIcon from '../common/icon/AddIcon';
 import SwitchCheckbox from '../common/SwitchCheckbox';
 // import _ from 'lodash';
 import LoadingSpinner from '../common/LoadingSpinner';
-import logger from '../../helpers/Logger';
+// import logger from '../../helpers/Logger';
 
 let strings = new LocalizedStrings(data);
 
-const tva_data = [
-  {nom: 'TVA 1', valeur: '10'},
-  {nom: 'TVA 2', valeur: '5.5'},
-  {nom: 'TVA 3', valeur: '20'},
-  {nom: 'TVA 4', valeur: '0'}
-];
-const moyens_data = [
-  {nom: 'Espèces', identifiant:'especes'},
-  {nom: 'Carte bleue', identifiant:'carte'},
-  {nom: 'Ticket Restaurant', identifiant:'ticket'},
-  {nom: 'Cheque', identifiant:'cheque'},
-];
-const happyhour_data = {
-  debut: '18:00',
-  fin: '22:00',
-  remise: '10',
-  jours: [0,1,2,3,4,5,6]
-};
-const fidelite_data = {
-  activation: true,
-  valeur: 1,
-  seuil: 0
-};
+// const tva_data = [
+//   {nom: 'TVA 1', valeur: '10'},
+//   {nom: 'TVA 2', valeur: '5.5'},
+//   {nom: 'TVA 3', valeur: '20'},
+//   {nom: 'TVA 4', valeur: '0'}
+// ];
+// const moyens_data = [
+//   {nom: 'Espèces', identifiant:'especes'},
+//   {nom: 'Carte bleue', identifiant:'carte'},
+//   {nom: 'Ticket Restaurant', identifiant:'ticket'},
+//   {nom: 'Cheque', identifiant:'cheque'},
+// ];
+// const happyhour_data = {
+//   debut: '18:00',
+//   fin: '22:00',
+//   remise: '10',
+//   jours: [0,1,2,3,4,5,6]
+// };
+// const fidelite_data = {
+//   activation: true,
+//   valeur: 1,
+//   seuil: 0
+// };
 
 
 

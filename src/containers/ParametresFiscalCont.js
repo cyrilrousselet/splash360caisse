@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux';
 import Fiscal from '../components/Parametres/Fiscal';
 import { clotureActions } from '../services/cloture/clotureActions';
-import { clotureServices } from '../services/cloture/clotureServices';
+// import { clotureServices } from '../services/cloture/clotureServices';
 import { parametresActions } from './../services/parametres/parametresActions';
 
 

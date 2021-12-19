@@ -1,0 +1,4 @@
+export const journalActionTypes = {
+  SIGNE_PISTEDAUDIT: 'JOURNAL_SIGN_PISTEDAUDIT',
+  SIGNE_JET: 'JOURNAL_SIGN_JET',
+}

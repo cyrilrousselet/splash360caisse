@@ -19,6 +19,7 @@ class MainLoader extends React.Component {
   _getstatus_job = null;
   _blockstation_job = null
   _checkinternetconnection_job = null;
+  _checkjournaux_job = null;
 
   constructor(props) {
     super(props);
@@ -59,7 +60,10 @@ class MainLoader extends React.Component {
       blockStation,
       testConnection,
       online,
-      testCloturesAuto
+      testCloturesAuto,
+      checkJET,
+      checkZCaisse,
+      checkGrandTotalPeriodique,
     } = this.props;
 
     console.log("DEBUT checkInstallation");
@@ -97,6 +101,7 @@ class MainLoader extends React.Component {
         
         if (statuschecked===false) {
           getStatus();
+
         }
         else {
           if(online === null) { 
@@ -138,6 +143,11 @@ class MainLoader extends React.Component {
               this.props.initSync();
         
               checkFinDeService();  
+              checkJET('jet');
+              checkJET('pa');
+              checkZCaisse();
+              checkGrandTotalPeriodique();
+
               this.props.log('80','demarrage'); 
             }
         
@@ -228,6 +238,9 @@ class MainLoader extends React.Component {
       getGTP,
       testGTPeriodique,
       testCloturesAuto,
+      checkJET,
+      checkZCaisse,
+      checkGrandTotalPeriodique,
     } = this.props;
 
     
@@ -268,6 +281,15 @@ class MainLoader extends React.Component {
         console.log("job test connection");
         testConnection();
       });
+    }
+
+    if (this._checkjournaux_job===null) {
+      this._checkjournaux_job = schedule.scheduleJob('* */1 * * *', () => {
+        checkJET('jet');
+        checkJET('pa');
+        checkZCaisse();
+        checkGrandTotalPeriodique();
+      })
     }
 
     this.checkInstallation("mount");

@@ -23,6 +23,7 @@ const mapDispatchToProps = (dispatch) => {
     resetError: userActions.resetError,
     storeKeys: signatureActions.storeKeys,
     storeNumerotation: signatureActions.storeNumerotation,
+    log: journalActions.log
   }, dispatch);
   return {
     ...bound,

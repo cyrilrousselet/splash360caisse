@@ -73,11 +73,8 @@ function updateSignature(type, signature) {
 function updateNumerotation(type, numerotation) {
   return async dispatch => {
 
-    signatureServices
-      .persistNumerotation(type, numerotation)
-      .then(res => 
-        dispatch({ type: signatureActionTypes.UPDATE_NUMEROTATION, cle: type, valeur: numerotation })
-      );
+    signatureServices.persistNumerotation(type, numerotation);
+    dispatch({ type: signatureActionTypes.UPDATE_NUMEROTATION, cle: type, valeur: numerotation });
 
   }
 }

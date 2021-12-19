@@ -1,4 +1,4 @@
-import { differenceInMilliseconds, formatISO, parseISO, format, set, isBefore } from "date-fns";
+import { differenceInMilliseconds, formatISO, parseISO, format } from "date-fns";
 // import Logger from "../../helpers/Logger";
 import logger from "../../helpers/Logger";
 import { clotureActions } from "../cloture/clotureActions";
@@ -291,159 +291,17 @@ function validateCommande(_payload, printTemplates) {
           commandeServices.persistCommande(confirm);
 
 
-          const __ticketData = {
-            'ENC-TIK-NUM': newTicket,
-            'ENC-TIK-CDE': confirm.ticketId,
-            'ENC-TIK-TAG-VER': packageJson.version,
-            'ENC-TIK-PRN-NBR': 1,
-            'ENC-TIK-SOC-ETS': entreprise.denomination,
-            'ENC-TIK-SOC-ID': entreprise.enseigne,
-            'ENC-TIK-SOC-ADR': entreprise.adresse,
-            'ENC-TIK-SOC-CCP': entreprise.code_postal,
-            'ENC-TIK-SOC-VIL': entreprise.ville,
-            'ENC-TIK-SOC-PAY': entreprise.pays,
-            'ENC-TIK-SOC-SIR': entreprise.siret,
-            'ENC-TIK-SOC-NAF': entreprise.ape,
-            'ENC-TIK-SOC-TVA': entreprise.tva,
-            'ENC-TIK-VEN-NID': user.user_id,
-            'ENC-TIK-VEN-NOM': user.nom,
-            'ENC-TIK-OPS-NID': user.user_id,
-            'ENC-TIK-OPS-NOM': user.nom,
-            'ENC-TIK-CAI-NID': caisse.uniqid,
-            'ENC-TIK-HOR-GDH': format(confirm.createdAt,'yyyyMMddHHmmss'),
-            'ENC-OPE-TYP': 'VENTE',
-            'ENC-TIK-DOC-TYP': 'TICKET',
-            'ENC-TIK-LIG-NBR': 1,
-            'ENC-TIK-TAG-SIG': signature,
-            'ENC-TIK-ID-KEY': trousseauId,
-            'ENC-TIK-TAG-RET': signature.substring(2,3) + signature.substring(6,7) + signature.substring(12,13) + signature.substring(18,19),
-            'ENC-TIK-HASH': hash,
-            'ENC-TIK-ARG': source,
-            'ENC-TIK-LOG': 'SPLASH',
-            'LIGNES':[],
-            'TVA': [],
-            'REGLEMENTS': [],
-            'ENC-TIK-TOT-MHT': 0,
-            'ENC-TIK-TOT-TTC': 0
-          };
-
-          // lignes tickets :
-          confirm.items.forEach((itm,i) => {
-
-            // extraction des données sur le modificateur
-            const __prdmod = confirm.modificateurs.find(m => m.item === itm.itemid && m.ingredient===null);
-            let __modtx = null;
-            let __modval = null;
-            if (__prdmod) {
-              // ispc :bool (is percent)
-              const ispc = String(__prdmod.valeur).substr(-1,1)==='%';
-              const val = Math.abs(Number(String(__prdmod.valeur).slice(0,-1)));
-              __modval = ispc ? Math.round(itm.prix * 100) * (val/100) : Math.round(val * 100);
-
-              // conversion du modificateur en coefficient
-              __modtx = (ispc) 
-              ? (
-                __prdmod.operation>0 
-                ? (100 + val) / 100
-                : (100 - val) / 100
-                ) 
-              : (
-                __prdmod.operation>0 
-                ? 1 + (val/itm.prix)
-                : 1 - (val/itm.prix)
-                )
-              ;
-            }
-
-            // calcul du prix reel de la ligne (produit + supplements)
-            let __totalht = Math.round(itm.puht * 100) * itm.quantite;
-            let __totalttc = Math.round(itm.pu * 100) * itm.quantite;
-            itm.ingredients.forEach(subitm => {
-              __totalht += Math.round(subitm.supplementht * 100);
-              __totalttc += Math.round(subitm.supplement * 100);
-            })
-
-
-            __ticketData['LIGNES'].push({
-              'ENC-NID': newTicket,
-              'ENC-TIK-ORI-NUM': itm.itemid,
-              'ENC-TIK-LIG-NUM': __ticketData['ENC-TIK-LIG-NBR'],
-              'ENC-TIK-LIG-PRO-NID': itm.produitid,
-              'ENC-TIK-LIG-PRO-LIB': itm.nom,
-              'ENC-TIK-LIG-PRO-QTE': itm.quantite,
-              'ENC-TIK-LIG-TAX-NID': itm.tva.code,
-              'ENC-TIK-LIG-TAX-TXX': Number(itm.tva.valeur) * 100,
-              'ENC-TIK-LIG-PRO-MTH': Math.round(itm.puht * 100),
-              'ENC-TIK-LIG-PRO-TTC': Math.round(itm.pu * 100),
-              'ENC-TIK-LIG-REM-TXX': __modtx ? (1 - __modtx) : 0,
-              'ENC-TIK-LIG-REM-TOT': __modval || 0,
-              'ENC-TIK-LIG-TOT-MHT': __modtx ? ((Math.round(itm.puht * 100) * itm.quantite) * __modtx) : Math.round(itm.puht * 100) * itm.quantite,
-              'ENC-TIK-LIG-TOT-TTC': __modtx ? ((Math.round(itm.pu * 100) * itm.quantite) * __modtx) : (Math.round(itm.pu * 100) * itm.quantite),
-              'ENC-TIK-LIG-OPE-TYP': 'VENTE',
-              'ENC-TIK-LIG-CAI-NID': caisse.uniqid,
-              'ENC-TIK-LIG-VEN-NID': user.user_id,
-              'ENC-TIK-LIG-OPS-NID': user.user_id,
-              'ENC-TIK-LIG-HOR-GDH': format(confirm.createdAt,'yyyyMMddHHmmss')
-            });
-
-            __ticketData['ENC-TIK-LIG-NBR'] += 1;
-
-            itm.ingredients.forEach((ing, ingidx) => {
-
-              __ticketData['LIGNES'].push({
-                'ENC-NID': newTicket,
-                'ENC-TIK-ORI-NUM': itm.itemid+'-'+ingidx,
-                'ENC-TIK-LIG-NUM': __ticketData['ENC-TIK-LIG-NBR'],
-                'ENC-TIK-LIG-PRO-NID': ing.ingredient,
-                'ENC-TIK-LIG-PRO-LIB': ing.nom,
-                'ENC-TIK-LIG-PRO-QTE': ing.qte,
-                'ENC-TIK-LIG-TAX-NID': ing.tva.code,
-                'ENC-TIK-LIG-TAX-TXX': Number(ing.tva.valeur) * 100,
-                'ENC-TIK-LIG-PRO-MTH': Math.round(ing.supplementht * 100),
-                'ENC-TIK-LIG-PRO-TTC': Math.round(ing.supplement * 100),
-                'ENC-TIK-LIG-REM-TXX': 0,
-                'ENC-TIK-LIG-REM-TOT': 0,
-                'ENC-TIK-LIG-TOT-MHT': Math.round(ing.supplementht * 100) * ing.qte,
-                'ENC-TIK-LIG-TOT-TTC': Math.round(ing.supplement * 100) * ing.qte,
-                'ENC-TIK-LIG-OPE-TYP': 'VENTE',
-                'ENC-TIK-LIG-CAI-NID': caisse.uniqid,
-                'ENC-TIK-LIG-VEN-NID': user.user_id,
-                'ENC-TIK-LIG-OPS-NID': user.user_id,
-                'ENC-TIK-LIG-HOR-GDH': format(confirm.createdAt,'yyyyMMddHHmmss')
-              });
-
-              __ticketData['ENC-TIK-LIG-NBR'] += 1;
-            });
-          });
-
-          // tva ticket
-          Object.values(confirm.ventilation).forEach(tva =>{
-
-            __ticketData['TVA'].push({
-              'ENC-NID': newTicket,
-              'ENC-TIK-TOT-MHT': tva.ht,
-              'ENC-TIK-TVA-NID': tva.code,
-              'ENC-TIK-TVA-TXX': Number(tva.taux) * 100,
-              'ENC-TIK-TVA-MTN': tva.tva,
-            });
-            __ticketData['ENC-TIK-TOT-MHT'] += tva.ht;
-            __ticketData['ENC-TIK-TOT-TTC'] += tva.ttc;
-          });
-
-
-          // reglements ticket
-          confirm.reglements.forEach(r => {
-            __ticketData['REGLEMENTS'].push({
-              'ENC-NID': newTicket,
-              'ENC-TIK-ORI-NUM': r.reglementId,
-              'ENC-TIK-REG-TYP': r.moyen,
-              'ENC-TIK-REG-MOD-LIB': strings.modules.encaissement.reglement.moyens[r.moyen],
-              'ENC-TIK-REG-MTN': Math.round(r.valeur * 100),
-              'ENC-TIK-REG-NUM': r.info || '',
-              'ENC-TIK-REG-USR-NID': confirm.operator_encaissement.id,
-              'ENC-TIK-REG-HOR-GDH': format(confirm.createdAt,'yyyyMMddHHmmss')
-            });
-          });
+          const __ticketData = _createTicket(confirm, {
+                                                newTicket,
+                                                entreprise,
+                                                user,
+                                                vendeur: user,
+                                                caisse,
+                                                signature,
+                                                trousseauId,
+                                                hash,
+                                                source,
+                                              });
 
           await commandeServices.persistTicket(__ticketData);
           dispatch(journalActions.log('160','Ticket #'+newTicket))
@@ -541,6 +399,181 @@ function validateCommande(_payload, printTemplates) {
     );
   };
 }
+
+
+
+function _createTicket(confirm, params) {
+
+  const {
+    newTicket,
+    entreprise,
+    user,
+    vendeur,
+    caisse,
+    signature,
+    trousseauId,
+    hash,
+    source,
+  } = params;
+
+  const __ticketData = {
+    'ENC-TIK-NUM': newTicket,
+    'ENC-TIK-CDE': confirm.ticketId,
+    'ENC-TIK-TAG-VER': packageJson.version,
+    'ENC-TIK-PRN-NBR': 1,
+    'ENC-TIK-SOC-ETS': entreprise.denomination,
+    'ENC-TIK-SOC-ID': entreprise.enseigne,
+    'ENC-TIK-SOC-ADR': entreprise.adresse,
+    'ENC-TIK-SOC-CCP': entreprise.code_postal,
+    'ENC-TIK-SOC-VIL': entreprise.ville,
+    'ENC-TIK-SOC-PAY': entreprise.pays,
+    'ENC-TIK-SOC-SIR': entreprise.siret,
+    'ENC-TIK-SOC-NAF': entreprise.ape,
+    'ENC-TIK-SOC-TVA': entreprise.tva,
+    'ENC-TIK-VEN-NID': vendeur.user_id,
+    'ENC-TIK-VEN-NOM': vendeur.nom,
+    'ENC-TIK-OPS-NID': user.user_id,
+    'ENC-TIK-OPS-NOM': user.nom,
+    'ENC-TIK-CAI-NID': caisse.uniqid,
+    'ENC-TIK-HOR-GDH': format(confirm.createdAt,'yyyyMMddHHmmss'),
+    'ENC-OPE-TYP': 'VENTE',
+    'ENC-TIK-DOC-TYP': 'TICKET',
+    'ENC-TIK-LIG-NBR': 1,
+    'ENC-TIK-TAG-SIG': signature,
+    'ENC-TIK-ID-KEY': trousseauId,
+    'ENC-TIK-TAG-RET': signature.substring(2,3) + signature.substring(6,7) + signature.substring(12,13) + signature.substring(18,19),
+    'ENC-TIK-HASH': hash,
+    'ENC-TIK-ARG': source,
+    'ENC-TIK-LOG': 'SPLASH',
+    'LIGNES':[],
+    'TVA': [],
+    'REGLEMENTS': [],
+    'ENC-TIK-TOT-MHT': 0,
+    'ENC-TIK-TOT-TTC': 0
+  };
+
+  // lignes tickets :
+  confirm.items.forEach((itm,i) => {
+
+    // extraction des données sur le modificateur
+    const __prdmod = confirm.modificateurs.find(m => m.item === itm.itemid && m.ingredient===null);
+    let __modtx = null;
+    let __modval = null;
+    if (__prdmod) {
+      // ispc :bool (is percent)
+      const ispc = String(__prdmod.valeur).substr(-1,1)==='%';
+      const val = Math.abs(Number(String(__prdmod.valeur).slice(0,-1)));
+      __modval = ispc ? Math.round(itm.prix * 100) * (val/100) : Math.round(val * 100);
+
+      // conversion du modificateur en coefficient
+      __modtx = (ispc) 
+      ? (
+        __prdmod.operation>0 
+        ? (100 + val) / 100
+        : (100 - val) / 100
+        ) 
+      : (
+        __prdmod.operation>0 
+        ? 1 + (val/itm.prix)
+        : 1 - (val/itm.prix)
+        )
+      ;
+    }
+
+    // calcul du prix reel de la ligne (produit + supplements)
+    // let __totalht = Math.round(itm.puht * 100) * itm.quantite;
+    // let __totalttc = Math.round(itm.pu * 100) * itm.quantite;
+    // itm.ingredients.forEach(subitm => {
+    //   __totalht += Math.round(subitm.supplementht * 100);
+    //   __totalttc += Math.round(subitm.supplement * 100);
+    // })
+
+
+    __ticketData['LIGNES'].push({
+      'ENC-NID': newTicket,
+      'ENC-TIK-ORI-NUM': itm.itemid,
+      'ENC-TIK-LIG-NUM': __ticketData['ENC-TIK-LIG-NBR'],
+      'ENC-TIK-LIG-PRO-NID': itm.produitid,
+      'ENC-TIK-LIG-PRO-LIB': itm.nom,
+      'ENC-TIK-LIG-PRO-QTE': itm.quantite,
+      'ENC-TIK-LIG-TAX-NID': itm.tva.code,
+      'ENC-TIK-LIG-TAX-TXX': Number(itm.tva.valeur) * 100,
+      'ENC-TIK-LIG-PRO-MTH': Math.round(itm.puht * 100),
+      'ENC-TIK-LIG-PRO-TTC': Math.round(itm.pu * 100),
+      'ENC-TIK-LIG-REM-TXX': __modtx ? (1 - __modtx) : 0,
+      'ENC-TIK-LIG-REM-TOT': __modval || 0,
+      'ENC-TIK-LIG-TOT-MHT': __modtx ? ((Math.round(itm.puht * 100) * itm.quantite) * __modtx) : Math.round(itm.puht * 100) * itm.quantite,
+      'ENC-TIK-LIG-TOT-TTC': __modtx ? ((Math.round(itm.pu * 100) * itm.quantite) * __modtx) : (Math.round(itm.pu * 100) * itm.quantite),
+      'ENC-TIK-LIG-OPE-TYP': 'VENTE',
+      'ENC-TIK-LIG-CAI-NID': caisse.uniqid,
+      'ENC-TIK-LIG-VEN-NID': user.user_id,
+      'ENC-TIK-LIG-OPS-NID': user.user_id,
+      'ENC-TIK-LIG-HOR-GDH': format(confirm.createdAt,'yyyyMMddHHmmss')
+    });
+
+    __ticketData['ENC-TIK-LIG-NBR'] += 1;
+
+    itm.ingredients.forEach((ing, ingidx) => {
+
+      __ticketData['LIGNES'].push({
+        'ENC-NID': newTicket,
+        'ENC-TIK-ORI-NUM': itm.itemid+'-'+ingidx,
+        'ENC-TIK-LIG-NUM': __ticketData['ENC-TIK-LIG-NBR'],
+        'ENC-TIK-LIG-PRO-NID': ing.ingredient,
+        'ENC-TIK-LIG-PRO-LIB': ing.nom,
+        'ENC-TIK-LIG-PRO-QTE': ing.qte,
+        'ENC-TIK-LIG-TAX-NID': ing.tva.code,
+        'ENC-TIK-LIG-TAX-TXX': Number(ing.tva.valeur) * 100,
+        'ENC-TIK-LIG-PRO-MTH': Math.round(ing.supplementht * 100),
+        'ENC-TIK-LIG-PRO-TTC': Math.round(ing.supplement * 100),
+        'ENC-TIK-LIG-REM-TXX': 0,
+        'ENC-TIK-LIG-REM-TOT': 0,
+        'ENC-TIK-LIG-TOT-MHT': Math.round(ing.supplementht * 100) * ing.qte,
+        'ENC-TIK-LIG-TOT-TTC': Math.round(ing.supplement * 100) * ing.qte,
+        'ENC-TIK-LIG-OPE-TYP': 'VENTE',
+        'ENC-TIK-LIG-CAI-NID': caisse.uniqid,
+        'ENC-TIK-LIG-VEN-NID': user.user_id,
+        'ENC-TIK-LIG-OPS-NID': user.user_id,
+        'ENC-TIK-LIG-HOR-GDH': format(confirm.createdAt,'yyyyMMddHHmmss')
+      });
+
+      __ticketData['ENC-TIK-LIG-NBR'] += 1;
+    });
+  });
+
+  // tva ticket
+  Object.values(confirm.ventilation).forEach(tva =>{
+
+    __ticketData['TVA'].push({
+      'ENC-NID': newTicket,
+      'ENC-TIK-TOT-MHT': tva.ht,
+      'ENC-TIK-TVA-NID': tva.code,
+      'ENC-TIK-TVA-TXX': Number(tva.taux) * 100,
+      'ENC-TIK-TVA-MTN': tva.tva,
+    });
+    __ticketData['ENC-TIK-TOT-MHT'] += tva.ht;
+    __ticketData['ENC-TIK-TOT-TTC'] += tva.ttc;
+  });
+
+
+  // reglements ticket
+  confirm.reglements.forEach(r => {
+    __ticketData['REGLEMENTS'].push({
+      'ENC-NID': newTicket,
+      'ENC-TIK-ORI-NUM': r.reglementId,
+      'ENC-TIK-REG-TYP': r.moyen,
+      'ENC-TIK-REG-MOD-LIB': strings.modules.encaissement.reglement.moyens[r.moyen],
+      'ENC-TIK-REG-MTN': Math.round(r.valeur * 100),
+      'ENC-TIK-REG-NUM': r.info || '',
+      'ENC-TIK-REG-USR-NID': confirm.operator_encaissement.id,
+      'ENC-TIK-REG-HOR-GDH': format(confirm.createdAt,'yyyyMMddHHmmss')
+    });
+  });
+
+  return __ticketData;
+}
+
+
 
 function getPastNonConfirmed() {
   return async (dispatch, getState) => {
@@ -1659,7 +1692,10 @@ function setCommandeFromOrder(provider, payload) {
     const { numero } = getState().commandeReducer;
     const { parametres } = getState().parametresReducer;
     const { ticket } = getState().numerotationReducer;
-    const { privateKey } = getState().signatureReducer;
+    const { privateKey, trousseauId } = getState().signatureReducer;
+    const { entreprise } = parametres;
+    const { user } = getState().authentication;
+    const { caisse } = parametres.options;
   
 
     const newnumero = await numeroServices.getNumero(numero, parametres);
@@ -1699,6 +1735,23 @@ function setCommandeFromOrder(provider, payload) {
             signature: signature
           }
           
+
+
+          const __ticketData = _createTicket(confirm, {
+            newTicket,
+            entreprise,
+            user: confirm.operator_encaissement,
+            vendeur: confirm.operator,
+            caisse,
+            signature,
+            trousseauId,
+            hash,
+            source,
+          });
+
+          await commandeServices.persistTicket(__ticketData);
+          dispatch(journalActions.log('160','Ticket #'+newTicket));
+
           
         //  dispatch(peripheralActions.printCommandeTicket(printTemplates, confirm));
 
@@ -1763,7 +1816,11 @@ function setCommandeFromAPI(payload) {
     let { data } = payload;
 
     const { ticket } = getState().numerotationReducer;
-    const { privateKey } = getState().signatureReducer;
+    const { privateKey, trousseauId } = getState().signatureReducer;
+    const { entreprise } = getState().parametresReducer.parametres;
+    const { user } = getState().authentication;
+    const { caisse } = getState().parametresReducer.parametres.options;
+
 
     if (data.provider==="clickandcollect") {
       const datacommande = data.commande;
@@ -1896,6 +1953,24 @@ function setCommandeFromAPI(payload) {
               signature: signature
             }
             commandeServices.persistCommande(confirm);
+
+
+            const __ticketData = _createTicket(confirm, {
+              newTicket,
+              entreprise,
+              user,
+              vendeur: confirm.operator,
+              caisse,
+              signature,
+              trousseauId,
+              hash,
+              source,
+            });
+
+            await commandeServices.persistTicket(__ticketData);
+            dispatch(journalActions.log('160','Ticket #'+newTicket));
+
+
             
             dispatch( signatureActions.updateSignature('tickets', signature) );
             dispatch( signatureActions.updateNumerotation('ticket', ticket+1) );

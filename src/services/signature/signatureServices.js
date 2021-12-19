@@ -19,7 +19,7 @@ export const signatureServices = {
   createJETSignature,
   createZdecaisseSignature,
   createExportComptableSignature,
-  createArchiveFiscaleSignature,
+  createSignature,
   getAllSignatures,
   getLastSignature,
   getAllNumerotation,
@@ -373,8 +373,8 @@ function createExportComptableSignature(recap, privateKey) {
   return _createSignature(JSON.stringify(recap), privateKey);
 }
 
-function createArchiveFiscaleSignature(data, privateKey) {
-  // console.log('createArchiveFiscaleSignature()',data);
+function createSignature(data, privateKey) {
+  // console.log('createSignature()',data);
   return _createSignature(data, privateKey);
 }
 
@@ -404,6 +404,7 @@ function _createSignature(hashsource, privateKey) {
     signature: base64url.fromBase64(signstring)
   };
 }
+
 
 function verify(hashsource, signature, publicKey) {
 
