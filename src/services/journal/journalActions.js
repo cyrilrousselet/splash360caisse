@@ -160,10 +160,13 @@ function check(type) {
     // on récupère le nom du dernier fichier du type
     const filename = await journalServices.getFilename(type);
 
-    if (!filename) return false;
+    if (!filename) return console.warn(`aucun journal (${journal})`);
 
     // on récupère le fichier
     const __cont = await fs.readFile(`${app.getPath('userData')}/compta/${filename}`);
+
+    if (!__cont) return console.warn(`aucun fichier journal (${journal}) trouvé`);
+
     // on le formate en bon JSON
     const json_string = '['+__cont.toString().split('\n').join(',').slice(0,-1)+']';
     
@@ -208,17 +211,20 @@ function check(type) {
       dispatch(log('95', `détecté dans ${journal} (${filename}) : ${seq_detection.join(', ')}`));
     }
 
-
     // on récupère la signature du fichier précédent :
     const filesign_obj = json.find(evt => !evt.hasOwnProperty('JET-NID'));
+
+    if (!filesign_obj) return console.warn(`aucune signature du fichier précédent détéctée dans le ${journal} courant`);
 
     // on récupère le fichier précédent
     const __prevcont = await fs.readFile(`${app.getPath('userData')}/compta/${filesign_obj.filename}`);
     const { signature } = signatureServices.createSignature(__prevcont.toString(), privateKey)
-
+    
     if (signature !== filesign_obj.signature) {
       dispatch(log('90', `détecté dans ${journal} ${filesign_obj.filename} (fichier entier)`));
     }
+      
+    
 
 
   }

@@ -2388,13 +2388,39 @@ function archiveFiscale(intervalle, debut, fin) {
       'periode': `${__startdefacto}|${__enddefacto}`
     };
 
-    await clotureServices.persistArchiveFiscale(__afdata);
+    let persist_confirm;
+    try {
+      persist_confirm = await clotureServices.persistArchiveFiscale(__afdata);
+      dispatch({ type: clotureActionTypes.ADD_ARCHIVE_FISCALE, archive: __afdata });
+    }
+    catch(e) {
+      persist_confirm = false;
+    }
 
-    dispatch({ type: clotureActionTypes.ADD_ARCHIVE_FISCALE, archive: __afdata });
+    if (persist_confirm){
+      Swal.fire({
+        title: strings.modules.parametres.submodules.fiscal.archive.alerte.purge.titre,
+        html: strings.modules.parametres.submodules.fiscal.archive.alerte.purge.texte,
+        showCancelButton: true,
+        focusCancel: true
+      }).then((result)=> {
+        if (result.value) {
+          dispatch(purgeData(__startdefacto, __enddefacto));
+        }
+      });
+    }
+
     
 
   } 
 }
+
+function purgeData(startnum, endnum) {
+  return async (dispatch, getState) => {
+    console.log('purgeData', startnum, endnum);
+  }
+}
+
 
 function exportArchive(target, filename) {
   return async dispatch => {

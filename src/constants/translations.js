@@ -1336,6 +1336,10 @@ const data = {
                                 commandes: {
                                     titre: 'Archive impossible',
                                     texte: 'Il y a des commandes non clôturées pour la période que vous souhaitez archiver.<br />Vous devez d’abord clôturer'
+                                },
+                                purge: {
+                                    titre: 'Purge des données',
+                                    texte: 'Voulez-vous purger les données de vente / encaissement correspondant à l’archive ?'
                                 }
                             }
                         }
