@@ -37,6 +37,9 @@ import * as Sentry from '@sentry/react';
 import { peripheralActions } from './services/peripheral/peripheralActions';
 // import { signatureActions } from './services/signature/signatureActions';
 import { journalActions } from './services/journal/journalActions';
+import { signatureServices } from './services/signature/signatureServices';
+import { signatureActionTypes } from './services/signature/signatureActionTypes';
+import { signatureActions } from './services/signature/signatureActions';
 // import { evenements } from './constants/evenements';
 
 if (!isDev) {
@@ -56,6 +59,7 @@ const {store} = configureStore();
 export function getStore() {
   return store;
 };
+
 
 //const electron = require('electron');
 setupFrontendListener(electron);
@@ -214,3 +218,12 @@ render(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 registerServiceWorker();
+
+
+async function getTrousseau() {
+  // const trousseau = await signatureServices.checkAndCreateKeys();
+  // store.dispatch({ type:signatureActionTypes.STORE_KEYS_SUCCESS, ...trousseau });
+  store.dispatch(signatureActions.storeNumerotation());
+  // store.dispatch(signatureActions.getAll());
+}
+getTrousseau();

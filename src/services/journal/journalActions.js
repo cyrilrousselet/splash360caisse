@@ -164,10 +164,23 @@ function sign(filename, type) {
 function check(type) {
   return async (dispatch, getState) => {
 
-    const { privateKey } = getState().signatureReducer;
+    const { privateKey, trousseauId } = getState().signatureReducer;
     const { caisse } = getState().parametresReducer.parametres.options;
 
     const journal = type==='jet' ? 'JET' : 'PA';
+
+    console.log('signPrevious', privateKey ? 'ok':'KO');
+    let key = privateKey;
+    let keyid = trousseauId;
+    
+    let create_trousseau = null;
+    if (!privateKey) {
+      const trousseau = await signatureServices.checkAndCreateKeys();
+      dispatch({ type: signatureActionTypes.STORE_KEYS_SUCCESS, ...trousseau });
+      create_trousseau = trousseau.create;
+      key = trousseau.privateKey;
+      keyid = trousseau.trousseauId;
+    }
 
     // on récupère le nom du dernier fichier du type
     const filename = await journalServices.getFilename(type);
@@ -200,7 +213,7 @@ function check(type) {
     let seq_detection = [];
     evenements.forEach(evt => {
       if (prevSign) {
-        const { signature } = signatureServices.createJETSignature({...evt, caisse: caisse}, privateKey, prevSign); 
+        const { signature } = signatureServices.createJETSignature({...evt, caisse: caisse}, key, prevSign); 
         if (signature !== evt['JET-TAG-SIG']) {
           integ_error = true;
           integ_detection = [...integ_detection, evt['JET-NID']];
@@ -230,7 +243,7 @@ function check(type) {
 
     // on récupère le fichier précédent
     const __prevcont = await fs.readFile(`${app.getPath('userData')}/compta/${filesign_obj.filename}`);
-    const { signature } = signatureServices.createSignature(__prevcont.toString(), privateKey)
+    const { signature } = signatureServices.createSignature(__prevcont.toString(), key)
     
     if (signature !== filesign_obj.signature) {
       dispatch(log('90', `détecté dans ${journal} ${filesign_obj.filename} (fichier entier)`));
