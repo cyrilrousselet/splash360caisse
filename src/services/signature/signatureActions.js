@@ -16,14 +16,14 @@ function getAll() {
 
 
 function storeKeys() {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
 
     const {privateKey, publicKey} = getState().signatureReducer;
 
     if (!publicKey && !privateKey) {
-      const keys = signatureServices.checkAndCreateKeys();
+      const keys = await signatureServices.checkAndCreateKeys();
       dispatch({ type: signatureActionTypes.STORE_KEYS_SUCCESS, ...keys });
-      dispatch(journalActions.log('450',`nouveau trousseau ${keys.trousseauId}`));
+      // if (keys.create) dispatch(journalActions.log('450',`nouveau trousseau ${keys.trousseauId}`));
     }
 
   }

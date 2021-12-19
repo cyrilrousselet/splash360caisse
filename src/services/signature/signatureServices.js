@@ -10,7 +10,6 @@ import { uuid } from "uuidv4";
 import canonicalizeString from "@pelevesque/canonicalize-string";
  
 const fs_async = require('fs').promises;
-const crypto_async = require('crypto-promise');
 
 
 const { app } = remote;
@@ -95,7 +94,7 @@ async function checkAndCreateKeys() {
     };
   }
     
-  return { privateKey, publicKey, trousseauId:trousseauId.toString() };
+  return { privateKey, publicKey, trousseauId:trousseauId.toString(), create:!aucun_trousseau };
 }
 
 function createTicketSignature(commande, privateKey, lastSignature = null) {

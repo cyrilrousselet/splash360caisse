@@ -22,11 +22,13 @@ function log(code, description="") {
     let key = privateKey;
     let keyid = trousseauId;
     
+    let create_trousseau = null;
     if (!privateKey) {
       const trousseau = await signatureServices.checkAndCreateKeys();
       dispatch({ type: signatureActionTypes.STORE_KEYS_SUCCESS, ...trousseau });
       key = trousseau.privateKey;
       keyid = trousseau.trousseauId;
+      create_trousseau = trousseau.create;
     }
 
     const __ecode = evenements[code];
@@ -68,7 +70,7 @@ function log(code, description="") {
       console.error(e);
     }
 
-
+    // if (create_trousseau) dispatch(log('450',`nouveau trousseau ${keyid}`));
   }
 }
 
@@ -82,11 +84,13 @@ function signPrevious(type) {
     let key = privateKey;
     let keyid = trousseauId;
     
+    let create_trousseau = null;
     if (!privateKey) {
       const trousseau = await signatureServices.checkAndCreateKeys();
       dispatch({ type: signatureActionTypes.STORE_KEYS_SUCCESS, ...trousseau });
       key = trousseau.privateKey;
       keyid = trousseau.trousseauId;
+      create_trousseau = trousseau.create;
     }
 
     const actualfile = await journalServices.getFilename(type);
@@ -116,6 +120,7 @@ function signPrevious(type) {
     } else {
       console.log('previous hash ('+type+') already set');
     }
+    // if (create_trousseau) dispatch(log('450',`nouveau trousseau ${keyid}`));
   }
 }
 
@@ -128,9 +133,11 @@ function sign(filename, type) {
     let key = privateKey;
     let keyid = trousseauId;
     
+    let create_trousseau = null;
     if (!privateKey) {
       const trousseau = await signatureServices.checkAndCreateKeys();
       dispatch({ type: signatureActionTypes.STORE_KEYS_SUCCESS, ...trousseau });
+      create_trousseau = trousseau.create;
       key = trousseau.privateKey;
       keyid = trousseau.trousseauId;
     }
@@ -150,6 +157,7 @@ function sign(filename, type) {
     type);
 
     dispatch({ type: (type==='jet') ? journalActionTypes.SIGNE_JET : journalActionTypes.SIGNE_PISTEDAUDIT, filename: __filename, hmac: hmac });
+    // if (create_trousseau) dispatch(log('450',`nouveau trousseau ${keyid}`));
   }
 }
 
