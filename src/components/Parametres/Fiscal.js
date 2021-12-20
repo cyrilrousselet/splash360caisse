@@ -89,7 +89,7 @@ class Fiscal extends React.Component {
               const debut = p[0].substring(0,4)+"-"+p[0].substring(4,6)+"-"+p[0].substring(6,8)+' '+p[0].substring(8,10)+':'+p[0].substring(10,12)+':'+p[0].substring(12,14);      
               const fin = p[1].substring(0,4)+"-"+p[1].substring(4,6)+"-"+p[1].substring(6,8)+' '+p[1].substring(8,10)+':'+p[1].substring(10,12)+':'+p[1].substring(12,14);      
 
-              return (row.status!=='deleted' && row.status!=='superuser') && (<TableRow key={row.id} className={(i%2)?'odd':'even'}>
+              return (row.status!=='deleted' && row.status!=='superuser') && (<TableRow key={row['TAG-ARC-NID']} className={(i%2)?'odd':'even'}>
                 <TableCell key={`${i}-annee`} className={ `liste-annee` }>{ p[0].substring(0,4) }</TableCell>
                 <TableCell key={`${i}-fichier`} className={ `liste-fichier` }><div onClick={()=>{this.exportArchive(row['TAG-ARC-DOC']) }}>{ row['TAG-ARC-DOC'] }</div></TableCell>
                 <TableCell key={`${i}-caisse`} className="liste-caisse">{ row['TAG-ARC-CAI-NID'] }</TableCell>

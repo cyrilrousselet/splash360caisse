@@ -269,7 +269,7 @@ function exportListe(target) {
           taux_horaire: u.taux_horaire || '',
           identifiant: u.identifiant,
           status: u.status,
-          droits: (Object.entries(u.droits).map(([k,v]) => { if (v) return k })).filter(d=>d!==undefined),
+          droits: (Object.entries(u.droits).map(([k,v]) => {  return (v) ? k : null })).filter(d=>d!==null),
           createdAt: format(new Date(u.createdAt),'dd/MM/yyyy HH:mm:ss'),
           updatedAt: format(new Date(u.updatedAt),'dd/MM/yyyy HH:mm:ss')
         });

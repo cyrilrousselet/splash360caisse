@@ -40,7 +40,7 @@ let strings = new LocalizedStrings(data);
 
 const {app, dialog} = remote;
 const win = remote.getCurrentWindow();
-const now = new Date();
+// const now = new Date();
 
 const dialogOptions = {
   title: strings.modules.listezcaisse.actions.dest,

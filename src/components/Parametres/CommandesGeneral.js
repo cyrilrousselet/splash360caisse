@@ -4,11 +4,11 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import SwitchCheckbox from '../common/SwitchCheckbox';
 
-import { Table, TableCell, TableRow, TableHead, TableBody, Modal, Fab } from '@material-ui/core';
+import { Modal, Fab } from '@material-ui/core';
 import LabelledField from '../common/LabelledField';
 import StdButton from '../common/StdButton';
 import CloseIcon from '../common/icon/CloseIcon';
-import AddIcon from '../common/icon/AddIcon';
+// import AddIcon from '../common/icon/AddIcon';
 import logger from '../../helpers/Logger';
 let strings = new LocalizedStrings(data);
 
@@ -18,42 +18,42 @@ const data_types = [
   {nom: 'livraison', identifiant:'livraison', frais:'3.50 €', remise:'0 %', activation: true},
 ];
 
-function TableTypes(props) {
-  const { liste, id, openEdit } = props;
+// function TableTypes(props) {
+//   const { liste, id, openEdit } = props;
 
-  return (
-    <Table stickyHeader size="small" key={id} aria-label="a dense table">
-      <TableHead>
-        <TableRow>
-          <TableCell key={`${id}-hd-nom`} className="liste-nom">{ strings.modules.parametres.submodules.commandes.general.types.label.nom }</TableCell>
-          <TableCell key={`${id}-hd-abreviation`} className="liste-identifiant">{ strings.modules.parametres.submodules.commandes.general.types.label.identifiant }</TableCell>
-          <TableCell key={`${id}-hd-frais`} className="liste-frais">{ strings.modules.parametres.submodules.commandes.general.types.label.frais }</TableCell>
-          <TableCell key={`${id}-hd-remise`} className="liste-remise">{ strings.modules.parametres.submodules.commandes.general.types.label.remise }</TableCell>
-          <TableCell key={`${id}-hd-activation`} className="liste-activation">{ strings.modules.parametres.submodules.commandes.general.types.label.activation }</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {liste.map((row, i) => (
-          <TableRow key={ `${id}-cmd-${i}`} className={(i%2)?'odd':'even'}>
-            <TableCell key={`${i}-nom`} className="liste-nom"><div onClick={ () => { openEdit(i) } }>{ row.nom }</div></TableCell>
-            <TableCell key={`${i}-abreviation`} className="liste-identifiant">{ row.identifiant }</TableCell>
-            <TableCell key={`${i}-frais`} className="liste-frais">{ row.frais }</TableCell>
-            <TableCell key={`${i}-remise`} className="liste-remise">{ row.remise }</TableCell>
-            <TableCell key={`${i}-activation`} className="liste-activation">
-              <SwitchCheckbox 
-                isChecked={ row.activation } 
-                key={`${i}-activation-switch`}
-                name={ 'activation' } 
-                onChange={ logger.info } 
-                label="" 
-              />
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-} 
+//   return (
+//     <Table stickyHeader size="small" key={id} aria-label="a dense table">
+//       <TableHead>
+//         <TableRow>
+//           <TableCell key={`${id}-hd-nom`} className="liste-nom">{ strings.modules.parametres.submodules.commandes.general.types.label.nom }</TableCell>
+//           <TableCell key={`${id}-hd-abreviation`} className="liste-identifiant">{ strings.modules.parametres.submodules.commandes.general.types.label.identifiant }</TableCell>
+//           <TableCell key={`${id}-hd-frais`} className="liste-frais">{ strings.modules.parametres.submodules.commandes.general.types.label.frais }</TableCell>
+//           <TableCell key={`${id}-hd-remise`} className="liste-remise">{ strings.modules.parametres.submodules.commandes.general.types.label.remise }</TableCell>
+//           <TableCell key={`${id}-hd-activation`} className="liste-activation">{ strings.modules.parametres.submodules.commandes.general.types.label.activation }</TableCell>
+//         </TableRow>
+//       </TableHead>
+//       <TableBody>
+//         {liste.map((row, i) => (
+//           <TableRow key={ `${id}-cmd-${i}`} className={(i%2)?'odd':'even'}>
+//             <TableCell key={`${i}-nom`} className="liste-nom"><div onClick={ () => { openEdit(i) } }>{ row.nom }</div></TableCell>
+//             <TableCell key={`${i}-abreviation`} className="liste-identifiant">{ row.identifiant }</TableCell>
+//             <TableCell key={`${i}-frais`} className="liste-frais">{ row.frais }</TableCell>
+//             <TableCell key={`${i}-remise`} className="liste-remise">{ row.remise }</TableCell>
+//             <TableCell key={`${i}-activation`} className="liste-activation">
+//               <SwitchCheckbox 
+//                 isChecked={ row.activation } 
+//                 key={`${i}-activation-switch`}
+//                 name={ 'activation' } 
+//                 onChange={ logger.info } 
+//                 label="" 
+//               />
+//             </TableCell>
+//           </TableRow>
+//         ))}
+//       </TableBody>
+//     </Table>
+//   );
+// } 
 
 
 
