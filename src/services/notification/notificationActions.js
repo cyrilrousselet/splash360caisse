@@ -415,7 +415,7 @@ function sendNumero(payload) {
 // }
 
 function getDatabase() {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
 
 
     logger.info('getDatabase()');
@@ -423,50 +423,24 @@ function getDatabase() {
     dispatch({type: notificationActionTypes.GET_DATABASE_REQUEST, msg:'NAct.getDatabase()'});
     const { entreprise } = getState().parametresReducer.parametres; 
 
-    if (entreprise.restaurant_id==='' || entreprise.restaurant_secret==='') {
+    if (entreprise.restaurant_id!=='' && entreprise.restaurant_secret!=='') {
 
-      // Afficher champs uniqid restaurant
-      // A la validation récuperer uniqid + uuid de la caisse et dispatch action parametre requestInstallStation
+      try {
 
-      // Swal.fire({
-      //   title: 'Installation de la caisse',
-      //   text:'Veuillez renseigner l\'uniqid du restaurant',
-      //   input:'text',
-      //   confirmButtonText: 'Valider',
-      //   showLoaderOnConfirm: true,
-      // }).then((result)=> {
-      //   if(null !== result.value) {
-      //     dispatch(parametresActions.installStation(result.value));
-      //   }
-      // })
-
-      // Swal.fire({
-      //   type: 'warning',
-      //   title: 'Configuration incomplète',
-      //   text: 'Vous devez renseigner les identifiants de restaurant pour pouvoir initialiser la caisse',
-      //   showCancelButton: false,
-      //   focusConfirm: true,
-      //   allowEscapeKey: false,
-      //   allowOutsideClick: false
-      // }).then((result)=> {
-      //   if (result.value) {
-      //     dispatch(peripheralActions.quitApp());
-      //   }
-      // });
-    } else {
-
-
-      notificationServices.getDatabase({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret})
-      .then(database => {
+        const database = await notificationServices.getDatabase({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret})
+        
         dispatch({type: notificationActionTypes.GET_DATABASE_SUCCESS, msg:'NAct.getDatabase()'});
         dispatch({type: parametresActionTypes.INSTALL_DATABASE, value:[], msg:'NAct.getDatabase()'});
+      
         dispatch(catalogueActions.replaceDatabase(database));
         dispatch(parametresActions.replaceDatabase(database));
+        
+
         dispatch(journalActions.log('140', 'importation database'));
-      },
-      error => {
+        
+      } catch(error) {
         dispatch({type: notificationActionTypes.GET_DATABASE_FAILURE, error: error});
-      });
+      }
     }
   }
 }

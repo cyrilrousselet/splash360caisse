@@ -51,6 +51,19 @@
       opacity: .5;
     }
   }
+
+  &.labelledfield-error {
+    label {
+      color: $rouge;
+    }
+
+    input,
+    input:read-only {
+      &::placeholder {
+        color: $rouge;
+      }
+    }
+  }
   
   
 }

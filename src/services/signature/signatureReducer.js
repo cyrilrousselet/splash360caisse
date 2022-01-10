@@ -2,6 +2,7 @@ import { signatureActionTypes } from './signatureActionTypes';
 
 const initialState = {
   tickets: [],
+  notes: [],
   duplicatas: [],
   grandstotaux_jour: [],
   grandstotaux_mois: [],
@@ -21,6 +22,7 @@ export function signatureReducer(state = initialState, action) {
   
   let { 
     tickets, 
+    notes, 
     duplicatas, 
     grandstotaux_jour, 
     grandstotaux_mois, 
@@ -37,6 +39,7 @@ export function signatureReducer(state = initialState, action) {
       return {
         ...state,
         tickets: action.tickets, 
+        notes: action.notes, 
         duplicatas: action.duplicatas, 
         grandstotaux_jour: action.grandstotaux_jour, 
         grandstotaux_mois: action.grandstotaux_mois, 
@@ -52,6 +55,12 @@ export function signatureReducer(state = initialState, action) {
       return {
         ...state,
         tickets: [...tickets, action.ticket]
+      }
+      
+    case signatureActionTypes.CREATE_SIGNATURE_NOTE:
+      return {
+        ...state,
+        notes: [...notes, action.note]
       }
     
     case signatureActionTypes.CREATE_SIGNATURE_DUPLICATA:

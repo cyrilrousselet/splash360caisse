@@ -1,3 +1,4 @@
+import { journalActions } from "../journal/journalActions";
 import { signatureActionTypes } from "./signatureActionTypes";
 import { signatureServices } from "./signatureServices";
 // import { journalActions } from "../journal/journalActions";
@@ -29,6 +30,15 @@ function storeKeys() {
   }
 }
 
+function updateKeys(trousseau) {
+  return async dispatch => {
+    await signatureServices.persistTrousseau(trousseau);
+    await signatureServices.writeTrousseau(trousseau);
+    dispatch({ type: signatureActionTypes.UPDATE_KEYS, trousseau });
+    dispatch(journalActions.log('450', 'nouveau trousseau id #'+trousseau.trousseauId));
+  }
+}
+
 function updateSignature(type, signature) {
   return async dispatch => {
 
@@ -40,6 +50,9 @@ function updateSignature(type, signature) {
     switch (type) {
       case 'tickets':
         dispatch({ type: signatureActionTypes.CREATE_SIGNATURE_TICKET, ticket: signature });
+        break;
+      case 'notes':
+        dispatch({ type: signatureActionTypes.CREATE_SIGNATURE_NOTE, note: signature });
         break;
       case 'duplicatas':
         dispatch({ type: signatureActionTypes.CREATE_SIGNATURE_DUPLICATA, duplicata: signature });
@@ -101,6 +114,7 @@ function storeNumerotation() {
 
 export const signatureActions = {
   getAll,
+  updateKeys,
   storeKeys,
   storeNumerotation,
   updateSignature,

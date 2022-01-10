@@ -238,7 +238,7 @@ function validateCommande(_payload, printTemplates) {
     const { caisse, role } = getState().parametresReducer.parametres.options;
     const { user } = getState().authentication;
     const { commande } = getState().commandeReducer;
-    const { ticket } = getState().numerotationReducer;
+    const { ticket, note } = getState().numerotationReducer;
     const { privateKey, trousseauId } = getState().signatureReducer;
     const { entreprise } = getState().parametresReducer.parametres;
 
@@ -276,20 +276,46 @@ function validateCommande(_payload, printTemplates) {
 
         if (!confirm.signature && !confirm.ticket) {
 
-          const lastSignature = await signatureServices.getLastSignature('tickets');
+          console.log('ticket, note', ticket, note);
+
+          const lastSignatureNote = await signatureServices.getLastSignature('notes');
+          const newNote = 'N'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + note.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
+          const signatureNote = signatureServices.createTicketSignature({...confirm, ticket: lastSignatureNote}, privateKey, lastSignatureNote);
+          
+          
+          const lastSignatureTicket = await signatureServices.getLastSignature('tickets');
           const newTicket = 'T'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + ticket.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
-          const {source, hash, signature} = signatureServices.createTicketSignature({...confirm, ticket: newTicket}, privateKey, lastSignature);
+          const signatureTicket = signatureServices.createTicketSignature({...confirm, ticket: lastSignatureNote}, privateKey, lastSignatureTicket);
           
           confirm = {
             ...confirm,
+            note: newNote,
+            hashsourcenote: signatureNote.source, 
+            hashnote:  signatureNote.hash,
+            signaturenote:  signatureNote.signature,
             ticket: newTicket,
-            hashsource: source,
-            hash: hash,
-            signature: signature
+            hashsource: signatureTicket.source,
+            hash: signatureTicket.hash,
+            signature: signatureTicket.signature
           }
           
           commandeServices.persistCommande(confirm);
 
+
+          const __noteData = _createNote(confirm, {
+                                            newNote,
+                                            entreprise,
+                                            user,
+                                            vendeur: user,
+                                            caisse,
+                                            signature: signatureNote.signature,
+                                            trousseauId,
+                                            hash: signatureNote.hash,
+                                            source: signatureNote.source,
+                                          });
+          
+          await commandeServices.persistNote(__noteData);
+          dispatch(journalActions.log('160','Note #'+newNote));
 
           const __ticketData = _createTicket(confirm, {
                                                 newTicket,
@@ -297,14 +323,14 @@ function validateCommande(_payload, printTemplates) {
                                                 user,
                                                 vendeur: user,
                                                 caisse,
-                                                signature,
+                                                signature: signatureTicket.signature,
                                                 trousseauId,
-                                                hash,
-                                                source,
+                                                hash: signatureTicket.hash,
+                                                source: signatureTicket.source,
                                               });
 
           await commandeServices.persistTicket(__ticketData);
-          dispatch(journalActions.log('160','Ticket #'+newTicket))
+          dispatch(journalActions.log('160','Ticket #'+newTicket));
 
           dispatch(clotureActions.createGrandTotalTicket(confirm));
           
@@ -312,8 +338,11 @@ function validateCommande(_payload, printTemplates) {
           console.log('🖨 commande', confirm);
           
           dispatch(peripheralActions.printCommandeTicket(printTemplates, confirm));
+
+          dispatch( signatureActions.updateSignature('notes', signatureNote.signature) );
+          dispatch( signatureActions.updateNumerotation('note', note+1) );
           
-          dispatch( signatureActions.updateSignature('tickets', signature) );
+          dispatch( signatureActions.updateSignature('tickets', signatureTicket.signature) );
           dispatch( signatureActions.updateNumerotation('ticket', ticket+1) );
           
         }
@@ -444,21 +473,35 @@ function _createTicket(confirm, params) {
     'ENC-TIK-TAG-RET': signature.substring(2,3) + signature.substring(6,7) + signature.substring(12,13) + signature.substring(18,19),
     'ENC-TIK-HASH': hash,
     'ENC-TIK-ARG': source,
-    'ENC-TIK-LOG': 'SPLASH',
+    'ENC-TIK-LOG': 'SPLASH360',
     'LIGNES':[],
     'TVA': [],
     'REGLEMENTS': [],
     'ENC-TIK-TOT-MHT': 0,
-    'ENC-TIK-TOT-TTC': 0
+    'ENC-TIK-TOT-TTC': 0,
+    'FAC-TOT-TVA': 0,
+    'ENC-TIK-REM-MTN': 0
   };
 
   // lignes tickets :
   confirm.items.forEach((itm,i) => {
 
     // extraction des données sur le modificateur
+    /* -------------------------- REGLE ---------------------------- */
+    /* |  • les remises en numéraire sont appliquées sur le TTC    | */
+    /* |  • les remises en pourcentage sont appliquées sur le HT   | */
+    /* ------------------------------------------------------------- */
     const __prdmod = confirm.modificateurs.find(m => m.item === itm.itemid && m.ingredient===null);
+    
+    // taux du modificateur
     let __modtx = null;
+    // valeur du modificateur
     let __modval = null;
+    let __itmht = Math.round(itm.puht * 100) * itm.quantite;
+    let __itmttc = (Math.round(itm.pu * 100) * itm.quantite);
+    let __itmmodtotal = 0;
+
+
     if (__prdmod) {
       // ispc :bool (is percent)
       const ispc = String(__prdmod.valeur).substr(-1,1)==='%';
@@ -468,26 +511,35 @@ function _createTicket(confirm, params) {
       // conversion du modificateur en coefficient
       __modtx = (ispc) 
       ? (
-        __prdmod.operation>0 
+        __prdmod.operation > 0 
         ? (100 + val) / 100
         : (100 - val) / 100
         ) 
       : (
-        __prdmod.operation>0 
+        __prdmod.operation > 0 
         ? 1 + (val/itm.prix)
         : 1 - (val/itm.prix)
         )
       ;
+
+      // si le modificateur est en pourcentage : application de la remise sur le HT
+      // et calcul des valeurs
+      if (ispc) {
+        let prvttc = __itmttc;
+        __itmht = __itmht * __modtx;
+        __itmttc = __itmht * (1 + itm.tva.valeur);
+        __itmmodtotal = prvttc - __itmttc;
+      }
+      // si me modificateur est en numéraire : application de la remise sur le TTC
+      // et calcul des valeurs
+      else {
+        let prvttc = __itmttc;
+        __itmttc = __itmht - __modval;
+        __itmht = __itmttc / (1 + itm.tva.valeur);
+        __itmmodtotal = prvttc - __itmttc;
+      }
+      
     }
-
-    // calcul du prix reel de la ligne (produit + supplements)
-    // let __totalht = Math.round(itm.puht * 100) * itm.quantite;
-    // let __totalttc = Math.round(itm.pu * 100) * itm.quantite;
-    // itm.ingredients.forEach(subitm => {
-    //   __totalht += Math.round(subitm.supplementht * 100);
-    //   __totalttc += Math.round(subitm.supplement * 100);
-    // })
-
 
     __ticketData['LIGNES'].push({
       'ENC-NID': newTicket,
@@ -501,9 +553,9 @@ function _createTicket(confirm, params) {
       'ENC-TIK-LIG-PRO-MTH': Math.round(itm.puht * 100),
       'ENC-TIK-LIG-PRO-TTC': Math.round(itm.pu * 100),
       'ENC-TIK-LIG-REM-TXX': __modtx ? (1 - __modtx) : 0,
-      'ENC-TIK-LIG-REM-TOT': __modval || 0,
-      'ENC-TIK-LIG-TOT-MHT': __modtx ? ((Math.round(itm.puht * 100) * itm.quantite) * __modtx) : Math.round(itm.puht * 100) * itm.quantite,
-      'ENC-TIK-LIG-TOT-TTC': __modtx ? ((Math.round(itm.pu * 100) * itm.quantite) * __modtx) : (Math.round(itm.pu * 100) * itm.quantite),
+      'ENC-TIK-LIG-REM-TOT': __itmmodtotal,
+      'ENC-TIK-LIG-TOT-MHT': __itmht,
+      'ENC-TIK-LIG-TOT-TTC': __itmttc,
       'ENC-TIK-LIG-OPE-TYP': 'VENTE',
       'ENC-TIK-LIG-CAI-NID': caisse.uniqid,
       'ENC-TIK-LIG-VEN-NID': user.user_id,
@@ -511,7 +563,11 @@ function _createTicket(confirm, params) {
       'ENC-TIK-LIG-HOR-GDH': format(confirm.createdAt,'yyyyMMddHHmmss')
     });
 
+    // incrémentation du numéro de ligne
     __ticketData['ENC-TIK-LIG-NBR'] += 1;
+
+    // total des montants de remises (modificateurs)
+    __ticketData['ENC-TIK-REM-MTN'] += __itmmodtotal;
 
     itm.ingredients.forEach((ing, ingidx) => {
 
@@ -537,6 +593,7 @@ function _createTicket(confirm, params) {
         'ENC-TIK-LIG-HOR-GDH': format(confirm.createdAt,'yyyyMMddHHmmss')
       });
 
+      // incrémentation du numéro de ligne
       __ticketData['ENC-TIK-LIG-NBR'] += 1;
     });
   });
@@ -553,6 +610,7 @@ function _createTicket(confirm, params) {
     });
     __ticketData['ENC-TIK-TOT-MHT'] += tva.ht;
     __ticketData['ENC-TIK-TOT-TTC'] += tva.ttc;
+    __ticketData['FAC-TOT-TVA'] += tva.tva;
   });
 
 
@@ -572,6 +630,174 @@ function _createTicket(confirm, params) {
 
   return __ticketData;
 }
+
+
+
+function _createNote(confirm, params) {
+
+  const {
+    newNote,
+    entreprise,
+    user,
+    vendeur,
+    caisse,
+    signature,
+    trousseauId,
+    hash,
+    source,
+  } = params;
+
+  const __noteData = {
+    'ENC-TIK-NUM': newNote,
+    'commandeId': confirm.ticketId,
+    'ENC-TIK-TAG-VER': packageJson.version,
+    'ENC-TIK-PRN-NBR': 0,
+    'ENC-TIK-SOC-ETS': entreprise.denomination,
+    'ENC-TIK-SOC-ID': entreprise.enseigne,
+    'ENC-TIK-SOC-ADR': entreprise.adresse,
+    'ENC-TIK-SOC-CCP': entreprise.code_postal,
+    'ENC-TIK-SOC-VIL': entreprise.ville,
+    'ENC-TIK-SOC-PAY': entreprise.pays,
+    'ENC-TIK-SOC-SIR': entreprise.siret,
+    'ENC-TIK-SOC-NAF': entreprise.ape,
+    'ENC-TIK-SOC-TVA': entreprise.tva,
+    'ENC-TIK-VEN-NID': vendeur.user_id,
+    'ENC-TIK-VEN-NOM': vendeur.nom,
+    'ENC-TIK-OPS-NID': user.user_id,
+    'ENC-TIK-OPS-NOM': user.nom,
+    'ENC-TIK-CAI-NID': caisse.uniqid,
+    'ENC-TIK-HOR-GDH': format(confirm.createdAt,'yyyyMMddHHmmss'),
+    'ENC-OPE-TYP': 'VENTE',
+    'ENC-TIK-DOC-TYP': 'TICKET',
+    'ENC-TIK-LIG-NBR': 1,
+    'ENC-TIK-TAG-SIG': signature,
+    'ENC-TIK-ID-KEY': trousseauId,
+    'ENC-TIK-TAG-RET': signature.substring(2,3) + signature.substring(6,7) + signature.substring(12,13) + signature.substring(18,19),
+    'ENC-TIK-HASH': hash,
+    'ENC-TIK-ARG': source,
+    'ENC-TIK-LOG': 'SPLASH360',
+    'LIGNES':[],
+    'TVA': [],
+    'REGLEMENTS': [],
+    'ENC-TIK-TOT-MHT': 0,
+    'ENC-TIK-TOT-TTC': 0,
+    'FAC-TOT-TVA': 0,
+    'ENC-TIK-REM-MTN': 0
+  };
+
+  // lignes tickets :
+  confirm.items.forEach((itm,i) => {
+
+    // extraction des données sur le modificateur
+    /* -------------------------- REGLE ---------------------------- */
+    /* |  • les remises en numéraire sont appliquées sur le TTC    | */
+    /* |  • les remises en pourcentage sont appliquées sur le HT   | */
+    /* ------------------------------------------------------------- */
+    const __prdmod = confirm.modificateurs.find(m => m.item === itm.itemid && m.ingredient===null);
+    
+    // taux du modificateur
+    let __modtx = null;
+    // valeur du modificateur
+    let __modval = null;
+    let __itmht = Math.round(itm.puht * 100) * itm.quantite;
+    let __itmttc = (Math.round(itm.pu * 100) * itm.quantite);
+    let __itmmodtotal = 0;
+
+
+    if (__prdmod) {
+      // ispc :bool (is percent)
+      const ispc = String(__prdmod.valeur).substr(-1,1)==='%';
+      const val = Math.abs(Number(String(__prdmod.valeur).slice(0,-1)));
+      __modval = ispc ? Math.round(itm.prix * 100) * (val/100) : Math.round(val * 100);
+
+      // conversion du modificateur en coefficient
+      __modtx = (ispc) 
+      ? (
+        __prdmod.operation > 0 
+        ? (100 + val) / 100
+        : (100 - val) / 100
+        ) 
+      : (
+        __prdmod.operation > 0 
+        ? 1 + (val/itm.prix)
+        : 1 - (val/itm.prix)
+        )
+      ;
+
+      // si le modificateur est en pourcentage : application de la remise sur le HT
+      // et calcul des valeurs
+      if (ispc) {
+        let prvttc = __itmttc;
+        __itmht = __itmht * __modtx;
+        __itmttc = __itmht * (1 + itm.tva.valeur);
+        __itmmodtotal = prvttc - __itmttc;
+      }
+      // si me modificateur est en numéraire : application de la remise sur le TTC
+      // et calcul des valeurs
+      else {
+        let prvttc = __itmttc;
+        __itmttc = __itmht - __modval;
+        __itmht = __itmttc / (1 + itm.tva.valeur);
+        __itmmodtotal = prvttc - __itmttc;
+      }
+      
+    }
+
+    __noteData['LIGNES'].push({
+      'ENC-NID': newNote,
+      'ENC-TIK-ORI-NUM': itm.itemid,
+      'ENC-TIK-LIG-NUM': __noteData['ENC-TIK-LIG-NBR'],
+      'ENC-TIK-LIG-PRO-NID': itm.produitid,
+      'ENC-TIK-LIG-PRO-LIB': itm.nom,
+      'ENC-TIK-LIG-PRO-QTE': itm.quantite,
+      'ENC-TIK-LIG-PRO-MTH': Math.round(itm.puht * 100),
+      'ENC-TIK-LIG-PRO-TTC': Math.round(itm.pu * 100),
+      'ENC-TIK-LIG-REM-TXX': __modtx ? (1 - __modtx) : 0,
+      'ENC-TIK-LIG-REM-TOT': __itmmodtotal,
+      'ENC-TIK-LIG-TOT-MHT': __itmht,
+      'ENC-TIK-LIG-TOT-TTC': __itmttc,
+      'ENC-TIK-LIG-OPE-TYP': 'VENTE',
+      'ENC-TIK-LIG-CAI-NID': caisse.uniqid,
+      'ENC-TIK-LIG-VEN-NID': user.user_id,
+      'ENC-TIK-LIG-OPS-NID': user.user_id,
+      'ENC-TIK-LIG-HOR-GDH': format(confirm.createdAt,'yyyyMMddHHmmss')
+    });
+
+    // incrémentation du numéro de ligne
+    __noteData['ENC-TIK-LIG-NBR'] += 1;
+
+
+    itm.ingredients.forEach((ing, ingidx) => {
+
+      __noteData['LIGNES'].push({
+        'ENC-NID': newNote,
+        'ENC-TIK-ORI-NUM': itm.itemid+'-'+ingidx,
+        'ENC-TIK-LIG-NUM': __noteData['ENC-TIK-LIG-NBR'],
+        'ENC-TIK-LIG-PRO-NID': ing.ingredient,
+        'ENC-TIK-LIG-PRO-LIB': ing.nom,
+        'ENC-TIK-LIG-PRO-QTE': ing.qte,
+        'ENC-TIK-LIG-PRO-MTH': Math.round(ing.supplementht * 100),
+        'ENC-TIK-LIG-PRO-TTC': Math.round(ing.supplement * 100),
+        'ENC-TIK-LIG-REM-TXX': 0,
+        'ENC-TIK-LIG-REM-TOT': 0,
+        'ENC-TIK-LIG-TOT-MHT': Math.round(ing.supplementht * 100) * ing.qte,
+        'ENC-TIK-LIG-TOT-TTC': Math.round(ing.supplement * 100) * ing.qte,
+        'ENC-TIK-LIG-OPE-TYP': 'VENTE',
+        'ENC-TIK-LIG-CAI-NID': caisse.uniqid,
+        'ENC-TIK-LIG-VEN-NID': user.user_id,
+        'ENC-TIK-LIG-OPS-NID': user.user_id,
+        'ENC-TIK-LIG-HOR-GDH': format(confirm.createdAt,'yyyyMMddHHmmss')
+      });
+
+      // incrémentation du numéro de ligne
+      __noteData['ENC-TIK-LIG-NBR'] += 1;
+    });
+  });
+
+
+  return __noteData;
+}
+
 
 
 
@@ -1318,8 +1544,31 @@ function duplicata(ticketId) {
 
         const lastSignature = await signatureServices.getLastSignature('duplicatas');
         const newDuplicata = 'D'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + duplicata.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
-        const {source, hash, signature} = signatureServices.createDuplicataSignature({...commande, duplicata: newDuplicata}, privateKey, lastSignature);
         
+        const printedAt = new Date();
+
+
+        const __dupli = {
+          'ENC-DUP-NID': newDuplicata,
+          'ENC-DUP-ORI-NUM': commande.ticket,
+          'ENC-DUP-TYP': 'TICKET',
+          'ENC-DUP-PRN-NUM': commande.duplicatas.length,
+          'ENC-DUP-OPS-NID': user.user_id,
+          'ENC-DUP-HOR-GDH': format(printedAt, 'yyyyMMddHHmmss'),
+          'ENC-TIK-ID-KEY': trousseauId,
+          'ENC-DUP-VER': packageJson.version,
+          'ENC-SIG-RES': commande.signature,
+          'ENC-SIG-MOTIF': 'LISTE COMMANDES' 
+        };
+
+        const {source, hash, signature} = signatureServices.createDuplicataSignature(__dupli, privateKey, lastSignature);
+      
+        __dupli['ENC-DUP-HASH'] = hash;
+        __dupli['ENC-TIK-ARG'] = source;
+        __dupli['ENC-DUP-TAG-SIG'] = signature;
+        __dupli['ENC-DUP-RES'] = signature.substring(2,3) + signature.substring(6,7) + signature.substring(12,13) + signature.substring(18,19);
+
+
         commande = {
           ...commande,
           duplicatas: [
@@ -1328,32 +1577,14 @@ function duplicata(ticketId) {
               id: newDuplicata, 
               hashsource: source,
               hash: hash,
-              signature: signature
+              signature: signature,
+              printedAt: format(printedAt, 'yyyy-MM-dd HH:mm:ss')
             }
           ],
           updatedAt: formatISO(new Date())
         }
-
-        const source_ar = source.split(',');
         
         commandeServices.persistCommande(commande);
-
-        const __dupli = {
-          'ENC-DUP-NID': newDuplicata,
-          'ENC-DUP-ORI-NUM': commande.ticket,
-          'ENC-DUP-TYP': 'TICKET',
-          'ENC-DUP-PRN-NUM': commande.duplicatas.length,
-          'ENC-DUP-OPS-NID': user.user_id,
-          'ENC-DUP-HOR-GDH': source_ar[2],
-          'ENC-DUP-HASH': hash,
-          'ENC-TIK-ARG': source,
-          'ENC-DUP-TAG-SIG': signature,
-          'ENC-DUP-RES': signature.substring(2,3) + signature.substring(6,7) + signature.substring(12,13) + signature.substring(18,19),
-          'ENC-TIK-ID-KEY': trousseauId,
-          'ENC-DUP-VER': packageJson.version,
-          'ENC-SIG-RES': commande.signature,
-          'ENC-SIG-MOTIF': 'LISTE COMMANDES' 
-        };
 
         await commandeServices.persistDuplicata(__dupli);
 

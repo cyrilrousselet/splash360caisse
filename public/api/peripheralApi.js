@@ -1303,8 +1303,10 @@ function _printEntreprise(printer, data, strings) {
       .feed(1)
       .align('CT')
     ;
-    // nom
-    printer.style('B').text(data.nom);
+    // enseigne
+    printer.fontSize('4square').style('B').text(data.enseigne);
+    // denomination
+    printer.fontSize('normal').style('A').text(data.denomination);
     // coordonnées
     data.coordonnees.forEach((string) => {
       if (string!==null ) printer.style('NORMAL').text(string);
@@ -2295,13 +2297,13 @@ function _printLegal(printer, data, strings) {
     
     if (data.duplicataid!=='') {
       printer
-      .text(`(NF525) B0000 - ${data.duplicatasignature} - Splash ${data.version}`)
+      .text(`(NF525) B0000 - ${data.duplicatasignature} - Splash360 ${data.version}`)
       .text(`Duplicata : ${data.duplicataid}`)
       .text(`Ticket original : ${data.ticketid} (${data.signature})`);
     }
     else {
       printer
-      .text(`(NF525) B0000 - ${data.signature} - Splash ${data.version}`)
+      .text(`(NF525) B0000 - ${data.signature} - Splash360 ${data.version}`)
       .text(`Ticket : ${data.ticketid}`);
     }
     printer.text(`Nombre d'impressions : ${data.printid}`);

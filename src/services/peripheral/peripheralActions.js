@@ -933,7 +933,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
 
           const siret = entreprise.siret;
-          const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
+          const siret_formatted = (siret) ? `SIRET ${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
 
           let _extrait_sign = '';
           // caractères 3, 7, 13, 19 de la signature
@@ -955,8 +955,15 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             _dupli_sign += _lastDupli.signature.substring(6,7);
             _dupli_sign += _lastDupli.signature.substring(12,13);
             _dupli_sign += _lastDupli.signature.substring(18,19);
-            _numPrint += cmd.duplicatas.length;
+            _numPrint = cmd.duplicatas.length;
           }
+
+
+          let __coordoonees = [removeDiacritics(entreprise.adresse)];
+          __coordoonees = [...__coordoonees, `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}, ${removeDiacritics(String(entreprise.pays).toUpperCase())}`];
+          if ( entreprise.telephone ) { __coordoonees = [...__coordoonees, entreprise.telephone] }
+          if ( entreprise.site_web ) { __coordoonees = [...__coordoonees, entreprise.site_web] }
+
 
           // contenu :
           contenu = {
@@ -964,9 +971,10 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             logo: logo,
             // -> entreprise
             entreprise: {
-              nom: removeDiacritics(String(entreprise.denomination).toUpperCase()),
-              coordonnees: [ removeDiacritics(entreprise.adresse), `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}`, removeDiacritics(entreprise.pays), entreprise.telephone, entreprise.site_web ],
-              fiscal: [ siret_formatted, entreprise.ape, entreprise.tva ]
+              enseigne: removeDiacritics(String(entreprise.enseigne).toUpperCase()),
+              denomination: removeDiacritics(String(entreprise.denomination).toUpperCase()),
+              coordonnees: __coordoonees,
+              fiscal: [ siret_formatted, `NAF ${entreprise.ape} - TVA ${entreprise.tva}` ]
             },
             // -> commande (id, date, articles, remises, totaux, tva, réglements)
             commande: commande,

@@ -180,49 +180,52 @@ function checkZCaisse() {
   return async (dispatch, getState) => {
 
     const { privateKey } = getState().signatureReducer; 
+    const { caisse } = getState().parametresReducer.parametres.options;
 
-    try {
-      const zcliste = await clotureServices.getZCaisse({},50);
-      
-      let integ_error = false;
-      let seq_error = false;
-      let prevNIDnum = null;
-      let prevSign = null;
-      let integ_detection = [];
-      let seq_detection = [];
+    if (caisse) {
+      try {
+        const zcliste = await clotureServices.getZCaisse({},50);
+        
+        let integ_error = false;
+        let seq_error = false;
+        let prevNIDnum = null;
+        let prevSign = null;
+        let integ_detection = [];
+        let seq_detection = [];
 
-      zcliste.forEach(zc => {
-        if (prevSign) {
-          const { signature } = signatureServices.createZdecaisseSignature({...zc}, privateKey, prevSign); 
-          if (signature !== zc.signature) {
-            integ_error = true;
-            integ_detection = [...integ_detection, zc.zId];
+        zcliste.forEach(zc => {
+          if (prevSign) {
+            const { signature } = signatureServices.createZdecaisseSignature({...zc}, privateKey, prevSign); 
+            if (signature !== zc.signature) {
+              integ_error = true;
+              integ_detection = [...integ_detection, zc.zId];
+            }
+            const NIDnum = parseInt(zc.zId.split('-')[2]);
+            
+            if (NIDnum !== (prevNIDnum - 1)) {
+              seq_error = true;
+              seq_detection = [...seq_detection, zc.zId];
+            }
           }
-          const NIDnum = parseInt(zc.zId.split('-')[2]);
-          
-          if (NIDnum !== (prevNIDnum - 1)) {
-            seq_error = true;
-            seq_detection = [...seq_detection, zc.zId];
-          }
+          prevSign = zc.signature;
+          prevNIDnum = parseInt(zc.zId.split('-')[2]);
+        });
+    
+        if (integ_error) {
+          dispatch({ type: signatureActionTypes.INTEGRITE_ERROR, detail: "Z de Caisse" });
+          dispatch(journalActions.log('90', `détecté dans Z de Caisse : ${integ_detection.join(', ')}`));
         }
-        prevSign = zc.signature;
-        prevNIDnum = parseInt(zc.zId.split('-')[2]);
-      });
-  
-      if (integ_error) {
-        dispatch({ type: signatureActionTypes.INTEGRITE_ERROR, detail: "Z de Caisse" });
-        dispatch(journalActions.log('90', `détecté dans Z de Caisse : ${integ_detection.join(', ')}`));
+        if (seq_error) {
+          dispatch({ type: signatureActionTypes.SEQUENCE_ERROR, detail: "Z de Caisse" });
+          dispatch(journalActions.log('95', `détecté dans Z de Caisse : ${seq_detection.join(', ')}`));
+        }
+
+
+
       }
-      if (seq_error) {
-        dispatch({ type: signatureActionTypes.SEQUENCE_ERROR, detail: "Z de Caisse" });
-        dispatch(journalActions.log('95', `détecté dans Z de Caisse : ${seq_detection.join(', ')}`));
+      catch(e) {
+        console.error(e);
       }
-
-
-
-    }
-    catch(e) {
-      console.error(e);
     }
 
   }
@@ -1067,60 +1070,64 @@ function checkGrandTotalPeriodique() {
   return async (dispatch, getState) => {
 
     const { privateKey } = getState().signatureReducer; 
+    const { caisse } = getState().parametresReducer.parametres.options;
 
-    try {
-      const gtplist = await clotureServices.getGTPeriodique({},50);
-      
-      let integ_error = false;
-      let seq_error = false;
-      let prevNIDnum = null;
-      let prevSign = null;
-      let integ_detection = [];
-      let seq_detection = [];
+    if (caisse) {
 
-      gtplist.forEach(gtp => {
-        if (prevSign) {
+      try {
+        const gtplist = await clotureServices.getGTPeriodique({},50);
+        
+        let integ_error = false;
+        let seq_error = false;
+        let prevNIDnum = null;
+        let prevSign = null;
+        let integ_detection = [];
+        let seq_detection = [];
 
-
-          const source_signature = {
-            tva: gtp['ENC-GTP-MTN-TVA-TTC'],
-            ttc: gtp['ENC-GTP-MTN-TVA-HT'],
-            periode: gtp['ENC-GTP-ORI-NUM']
-          }
+        gtplist.forEach(gtp => {
+          if (prevSign) {
 
 
-          const {signature} = signatureServices.createGrandtotalSignature({...source_signature, type:"periode"}, gtp['ENC-GTP-PER-TTC'], privateKey, prevSign);
- 
+            const source_signature = {
+              tva: gtp['ENC-GTP-MTN-TVA-TTC'],
+              ttc: gtp['ENC-GTP-MTN-TVA-HT'],
+              periode: gtp['ENC-GTP-ORI-NUM']
+            }
 
-          if (signature !== gtp['ENV-GTP-TAG-SIG']) {
-            integ_error = true;
-            integ_detection = [...integ_detection, gtp['ENC-GTP-ORI-NID']];
-          }
-          const NIDnum = parseInt(gtp['ENC-GTP-ORI-NID'].split('-')[2]);
-          
-          if (NIDnum !== (prevNIDnum - 1)) {
-            seq_error = true;
-            seq_detection = [...seq_detection, gtp['ENC-GTP-ORI-NID']];
-          }
-        }
-        prevSign = gtp['ENV-GTP-TAG-SIG'];
-        prevNIDnum = parseInt(gtp['ENC-GTP-ORI-NID'].split('-')[2]);
-      });
+
+            const {signature} = signatureServices.createGrandtotalSignature({...source_signature, type:"periode"}, gtp['ENC-GTP-PER-TTC'], privateKey, prevSign);
   
-      if (integ_error) {
-        dispatch({ type: signatureActionTypes.INTEGRITE_ERROR, detail: "Grands Totaux Periodiques" });
-        dispatch(journalActions.log('90', `détecté dans Grands Totaux Periodiques : ${integ_detection.join(', ')}`));
+
+            if (signature !== gtp['ENV-GTP-TAG-SIG']) {
+              integ_error = true;
+              integ_detection = [...integ_detection, gtp['ENC-GTP-ORI-NID']];
+            }
+            const NIDnum = parseInt(gtp['ENC-GTP-ORI-NID'].split('-')[2]);
+            
+            if (NIDnum !== (prevNIDnum - 1)) {
+              seq_error = true;
+              seq_detection = [...seq_detection, gtp['ENC-GTP-ORI-NID']];
+            }
+          }
+          prevSign = gtp['ENV-GTP-TAG-SIG'];
+          prevNIDnum = parseInt(gtp['ENC-GTP-ORI-NID'].split('-')[2]);
+        });
+    
+        if (integ_error) {
+          dispatch({ type: signatureActionTypes.INTEGRITE_ERROR, detail: "Grands Totaux Periodiques" });
+          dispatch(journalActions.log('90', `détecté dans Grands Totaux Periodiques : ${integ_detection.join(', ')}`));
+        }
+        if (seq_error) {
+          dispatch({ type: signatureActionTypes.SEQUENCE_ERROR, detail: "Grands Totaux Periodiques" });
+          dispatch(journalActions.log('95', `détecté dans Grands Totaux Periodiques : ${seq_detection.join(', ')}`));
+        }
+
+
+
       }
-      if (seq_error) {
-        dispatch({ type: signatureActionTypes.SEQUENCE_ERROR, detail: "Grands Totaux Periodiques" });
-        dispatch(journalActions.log('95', `détecté dans Grands Totaux Periodiques : ${seq_detection.join(', ')}`));
+      catch(e) {
+        console.error(e);
       }
-
-
-
-    }
-    catch(e) {
-      console.error(e);
     }
 
   }
@@ -2429,7 +2436,7 @@ function archiveFiscale(intervalle, debut, fin) {
     const __infos = [
       [`EMETTEUR: ${ user.user_id }`],
       [`STATION: ${ caisse.id }`],
-      [`LOGICIEL: SPLASH`],
+      [`LOGICIEL: SPLASH360`],
       [`VERSION: ${ packageJson.version }`],
       [`HORODATAGE: ${ format(new Date(),'yyyyMMddHHmmss') }`],
       [`PERIODE: ${ start }|${ end }`],
@@ -2457,139 +2464,20 @@ function archiveFiscale(intervalle, debut, fin) {
       'periode': `${__startdefacto}|${__enddefacto}`
     };
 
-    let persist_confirm;
     try {
-      persist_confirm = await clotureServices.persistArchiveFiscale(__afdata);
+      await clotureServices.persistArchiveFiscale(__afdata);
       dispatch({ type: clotureActionTypes.ADD_ARCHIVE_FISCALE, archive: __afdata });
     }
     catch(e) {
-      persist_confirm = false;
+      console.error(e);
     }
 
-    if (persist_confirm){
-      Swal.fire({
-        title: strings.modules.parametres.submodules.fiscal.archive.alerte.purge.titre,
-        html: strings.modules.parametres.submodules.fiscal.archive.alerte.purge.texte,
-        showCancelButton: true,
-        focusCancel: true
-      }).then((result)=> {
-        if (result.value) {
-          dispatch(purgeData(__purge));
-        }
-      });
-    }
-
+   
     
 
   } 
 }
 
-function purgeData(purge) {
-  return async (dispatch, getState) => {
-    console.log('purgeData', purge);
-
-    // purge des gtt
-    if (purge.gtt.length>0) {
-      try {
-        await clotureServices.deleteGTTicket(purge.gtt);
-      } catch(e) {
-        console.error(e);
-      }
-    }
-    
-    // purge des gtp
-    if (purge.gtp.length>0) {
-      try {
-        await clotureServices.deleteGTPeriodique(purge.gtp);
-      } catch(e) {
-        console.error(e);
-      }
-    }
-    
-    // purge des zc
-    if (purge.zc.length>0) {
-      try {
-        await clotureServices.deleteZCaisse(purge.zc);
-      } catch(e) {
-        console.error(e);
-      }
-    }
-
-    // purge des tickets
-    if (purge.tickets.length>0) {
-      try {
-        await commandeServices.deleteTicket(purge.tickets);
-      } catch(e) {
-        console.error(e);
-      }
-    }
-
-    // purge des duplicatas
-    if (purge.duplicatas.length>0) {
-      try {
-        await commandeServices.deleteDuplicata(purge.duplicatas);
-      } catch(e) {
-        console.error(e);
-      }
-    }
-
-    // purge des commandes
-    if (purge.commandes.length>0) {
-      try {
-        await commandeServices.purgeCommandes(purge.commandes);
-      } catch(e) {
-        console.error(e);
-      }
-    }
-
-    // purge des avoirs
-    if (purge.avoirs.length>0) {
-      try {
-        await marketingServices.deleteAvoir(purge.avoirs);
-      } catch(e) {
-        console.error(e);
-      }
-    } 
-
-    // purge des clotures
-    if (purge.clotures.length>0) {
-      try {
-        await clotureServices.deleteClotures(purge.clotures);
-      } catch(e) {
-        console.error(e);
-      }
-    } 
-
-    // purge des mouvements de trésorerie
-    if (purge.tresors.length>0) {
-      try {
-        await tresorServices.deleteTresor(purge.tresors);
-      } catch(e) {
-        console.error(e);
-      }
-    } 
-
-    // purge des fichiers du JET
-    if (purge.jet.length>0) {
-
-      asyncForEach(purge.jet, async (filename) => {
-        await fs.unlink(filename);
-      });
-
-    }
-
-    let purgelist = '';
-    Object.entries(purge).forEach(([t,liste]) => {
-      if (t!=='jet') {
-        purgelist += t + ' : '+liste.join(', ') + ' ; ';
-      }
-    });
-
-    dispatch(journalActions.log('200', purgelist));
-    dispatch(journalActions.log('205', purge.jet.join(', ')));
-
-  }
-}
 
 
 function exportArchive(target, filename) {

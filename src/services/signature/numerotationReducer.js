@@ -2,6 +2,7 @@ import { signatureActionTypes } from './signatureActionTypes';
 
 const initialState = {
   ticket: 0,
+  note: 0,
   duplicata: 0,
   grandtotal: 0,
   cloture: 0,
@@ -18,6 +19,7 @@ export function numerotationReducer(state = initialState, action) {
       return {
         ...state,
         ticket: action.ticket,
+        note: action.note,
         duplicata: action.duplicata,
         grandtotal: action.grandtotal,
         cloture: action.cloture,

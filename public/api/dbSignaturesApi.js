@@ -4,6 +4,7 @@ const { last } = require('lodash');
 const connect = require("../db/mongodb");
 const SignatureModel = require("../db/signatureModel");
 const NumerotationModel = require("../db/numerotationModel");
+const TrousseauModel = require("../db/trousseauModel");
 // const { uuid } = require("uuidv4");
 
 
@@ -41,6 +42,16 @@ const actions = {
     const { payload } = req;
     log.info('dbNumerotationSet in API ('+JSON.stringify(payload)+')');
     const proxies = await _persistNumerotation({cle: payload.cle, valeur: payload.value});
+    res.send(proxies);
+  },
+  dbTrousseauGet: async (req, res) => {
+    const proxies = await _getTrousseau();
+    res.send(proxies);
+  },
+  dbTrousseauSet: async (req, res) => {
+    const { payload } = req;
+    log.info('dbTrousseauSet in API');
+    const proxies = await _persistTrousseau(payload);
     res.send(proxies);
   }
 }
@@ -99,6 +110,7 @@ async function _findNumerotation(criteriae=null) {
 
     __num = [
       {cle:"ticket", valeur:1},
+      {cle:"note", valeur:1},
       {cle:"duplicata", valeur:1},
       {cle:"grandtotal", valeur:1},
       {cle:"cloture", valeur:1},
@@ -151,6 +163,28 @@ async function _persistSignature(type, signature) {
     }
   }
   return true;
+}
+
+async function _getTrousseau() {
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  let __trs = await TrousseauModel.find({}).lean().sort({createdAt: -1}).limit(1).exec();
+
+  return __trs;
+
+}
+
+async function _persistTrousseau(trousseau) {
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  const _trs = await TrousseauModel.create({
+    trousseauId: trousseau.trousseauId, 
+    privateKey: trousseau.privateKey, 
+    publicKey: trousseau.publicKey, 
+  });
+  return _trs;
 }
 
 module.exports = actions;

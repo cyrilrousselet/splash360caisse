@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const TicketSchema = mongoose.Schema(
+const NoteSchema = mongoose.Schema(
   {
     'ENC-TIK-NUM': String,
     'ENC-TIK-CDE': String,
@@ -30,10 +30,8 @@ const TicketSchema = mongoose.Schema(
     'ENC-TIK-HASH': String,
     'ENC-TIK-ARG': String,
     'ENC-TIK-LOG': String,
-    'ENC-TIK-TOT-MHT': Number,
     'ENC-TIK-TOT-TTC': Number,
     'FAC-TOT-TVA': Number,
-    'ENC-TIK-REM-MTN': Number,
     'LIGNES':[{
       'ENC-NID': String,
       'ENC-TIK-ORI-NUM': String,
@@ -41,8 +39,6 @@ const TicketSchema = mongoose.Schema(
       'ENC-TIK-LIG-PRO-NID': String,
       'ENC-TIK-LIG-PRO-LIB': String,
       'ENC-TIK-LIG-PRO-QTE': Number,
-      'ENC-TIK-LIG-TAX-NID': String,
-      'ENC-TIK-LIG-TAX-TXX': Number,
       'ENC-TIK-LIG-PRO-MTH': Number,
       'ENC-TIK-LIG-PRO-TTC': Number,
       'ENC-TIK-LIG-REM-TXX': Number,
@@ -54,28 +50,9 @@ const TicketSchema = mongoose.Schema(
       'ENC-TIK-LIG-VEN-NID': String,
       'ENC-TIK-LIG-OPS-NID': String,
       'ENC-TIK-LIG-HOR-GDH': String
-    }],
-    'TVA': [{
-      'ENC-NID': String,
-      'ENC-TIK-TOT-MHT': Number,
-      'ENC-TIK-TVA-NID': String,
-      'ENC-TIK-TVA-TXX': Number,
-      'ENC-TIK-TVA-MTN': Number
-    }],
-    'REGLEMENTS': [
-      {
-        'ENC-NID': String,
-        'ENC-TIK-ORI-NUM': String,
-        'ENC-TIK-REG-TYP': String,
-        'ENC-TIK-REG-MOD-LIB': String,
-        'ENC-TIK-REG-MTN': String,
-        'ENC-TIK-REG-NUM': String,
-        'ENC-TIK-REG-USR-NID': String,
-        'ENC-TIK-REG-HOR-GDH': String
-      }
-    ],
+    }]
   },
   { strict: false }
 );
 
-module.exports = mongoose.model("tickets", TicketSchema);
+module.exports = mongoose.model("notes", NoteSchema);

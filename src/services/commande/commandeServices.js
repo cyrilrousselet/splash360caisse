@@ -40,7 +40,8 @@ export const commandeServices = {
   getRuleValues,
   getTicket,
   persistTicket,
-  deleteTicket,
+  getNote,
+  persistNote,
   getDuplicata,
   persistDuplicata,
   deleteDuplicata,
@@ -118,8 +119,11 @@ function getTicket(params, fromEnd = -1) {
 function persistTicket(ticket) {
   return emit('dbTicketPersist', ticket );
 }
-function deleteTicket(ticket) {
-  return emit('dbTicketDelete', ticket );
+function getNote(params, fromEnd = -1) {
+  return emit('dbNoteGet',  {query:params, end:fromEnd});
+}
+function persistNote(note) {
+  return emit('dbNotePersist', note );
 }
 function getDuplicata(params) {
   return emit('dbDuplicataGet', params);

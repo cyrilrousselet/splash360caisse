@@ -4,7 +4,8 @@ const connect = require("../db/mongodb");
 const CommandeModel = require("../db/commandeModel");
 const TicketrestauModel = require("../db/ticketrestauModel");
 const CmdchronoModel = require("../db/cmdchronoModel");
-const TicketModel = require('../db/TicketModel');
+const TicketModel = require('../db/ticketModel');
+const NoteModel = require('../db/noteModel');
 const DuplicataModel = require('../db/DuplicataModel');
 const { uuid } = require("uuidv4");
 // const { lowerFirst } = require('lodash');
@@ -170,6 +171,23 @@ const actions = {
     const { payload } = req;
 
     const confirm = await _deleteTicket(payload);
+
+    res.send(confirm);
+  },
+
+  dbNoteGet: async (req, res) => {
+    log.info('dbNoteGet in API');
+    const { payload } = req;
+
+    const proxies = await _findNote(payload);
+    res.send(proxies);
+  },
+
+  dbNotePersist: async (req, res) => {
+    log.info('dbNotePersist in API');
+    const { payload } = req;
+
+    const confirm = await _persistNote(payload);
 
     res.send(confirm);
   },
@@ -617,6 +635,36 @@ async function _deleteTicket(ids) {
   const { deleteCount } = await TicketModel.deleteMany({'ENC-GTT-ORI-NUM': {$in: ids}});
   return (deleteCount === ids.length);
 }
+
+async function _findNote(payload) {
+
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  const {query = {}, end} = payload;
+
+  let __not
+  if (end>-1) {
+    __not = await NoteModel.find(query).sort({$natural:-1}).limit(end).sort({$natural:-1}).lean().exec();
+  } else {
+    __not = await NoteModel.find(query).lean().exec();
+  }
+
+  return __not;
+
+}
+
+async function _persistNote(payload) {
+  
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  await NoteModel.create(payload);
+
+  return true;
+  
+}
+
 
 async function _findDuplicata(criteriae={}) {
 

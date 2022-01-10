@@ -65,7 +65,8 @@ const mapStateToProps = (state) => {
     caisse: 0,
     blocage_encaissement: state.tresorReducer.blocage,
     blocage_commande: state.clotureReducer.blocage,
-    pastnonconfirmed: state.commandesListReducer.pastnonconfirmed
+    pastnonconfirmed: state.commandesListReducer.pastnonconfirmed,
+    mandatoryError: state.parametresReducer.mandatoryError
   }
 }
 
