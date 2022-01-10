@@ -469,6 +469,7 @@ function getAllNumerotation() {
 }
 function getNumerotation(type) {
   if (!(['ticket',
+         'note',
          'duplicata',
          'grandtotal',
          'cloture',
@@ -483,6 +484,7 @@ function getNumerotation(type) {
 
 function getLastSignature(type) {
   if (!(['tickets', 
+         'notes', 
          'duplicatas', 
          'grandstotaux_jour', 
          'grandstotaux_mois', 

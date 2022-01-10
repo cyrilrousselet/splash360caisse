@@ -41,6 +41,9 @@ function updateSignature(type, signature) {
       case 'tickets':
         dispatch({ type: signatureActionTypes.CREATE_SIGNATURE_TICKET, ticket: signature });
         break;
+      case 'notes':
+        dispatch({ type: signatureActionTypes.CREATE_SIGNATURE_NOTE, note: signature });
+        break;
       case 'duplicatas':
         dispatch({ type: signatureActionTypes.CREATE_SIGNATURE_DUPLICATA, duplicata: signature });
         break;
