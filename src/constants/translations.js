@@ -1379,12 +1379,13 @@ const data = {
                     sous_total: 'SOUS-TOTAL',
                     total_ttc: 'TOTAL TTC',
                     nbr_lignes: 'Nombre de lignes :',
+                    total_remise: 'TOTAL REMISE :'
                 },
                 modificateur: {
                     charge: 'CHARGE',
-                    discount_panier: 'REDUCTION PANIER',
+                    discount_panier: 'REMISE PANIER',
                     frais_panier: 'FRAIS',
-                    discount_item: 'Reduction article',
+                    discount_item: 'Remise article',
                     frais_item: 'Frais article',
                     monnaie: 'EUR'
                 },

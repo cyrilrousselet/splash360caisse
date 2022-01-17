@@ -2,7 +2,7 @@ import { peripheralActionTypes } from './peripheralActionTypes';
 import { peripheralServices } from './peripheralServices';
 import { tresorServices } from '../tresorerie/tresorServices';
 
-import packageJson from '../../../package.json';
+// import packageJson from '../../../package.json';
 
 import 'date-fns';
 import { format, parseJSON } from "date-fns";
@@ -21,6 +21,7 @@ import { last, lowerCase } from 'lodash';
 import logger from '../../helpers/Logger';
 import { commandeServices } from '../commande/commandeServices';
 import { journalActions } from '../journal/journalActions';
+import { log } from 'winston';
 // const logger = new Logger();
 const removeDiacritics = remove;
 const strings = new LocalizedStrings(data);
@@ -599,7 +600,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
     console.log('🖨 printCommandeTicket', quelstickets, cmd);
     // logger.info(clients);
 
-    const caisse = cmd.caisse;
+    // const caisse = cmd.caisse;
     const operateur = cmd.operator;
 
     const logo = entreprise.ticket_logo || null;
@@ -675,26 +676,41 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
         // ticket commande et ticket UberEats
         if (['commande','uber'].indexOf(ticket.template)>-1) {
-      
+
+
+          let piece = null;
+          try {
+            if (cmd.status==="confirmed") {
+              piece = await commandeServices.getTicket({'ENC-TIK-NUM':cmd.ticket});
+            } else {
+              piece = await commandeServices.getNote({'ENC-TIK-NUM':cmd.note});
+            }
+            piece = piece[0];
+            console.log("🧾 PIECE",piece);
+          }
+          catch(e) {
+            console.error(e);
+          }
+          
           // -> template ticket
           template = (ticket.template==='uber') ? templates.uber : templates.commande;
 
-          const cmdTva = {};
+          // const cmdTva = {};
           let articles = [];
-          let total = 0;
-          let articletotal = 0;
+          // let total = 0;
+          // let articletotal = 0;
           let __comment = null;
-          let __modificateur = null;
+          // let __modificateur = null;
           cmd.items.forEach(article => {
 
 
-            const artTva = {};
+            // const artTva = {};
             let articleIngredients = [];
-            articletotal = article.quantite * article.prix;
+            // articletotal = article.quantite * article.prix;
             // articletotal = Number(article.pu)*article.quantite;
+            let articleRemise = 0;
 
-
-            article.ingredients.forEach(ing => {
+            article.ingredients.forEach((ing,i) => {
 
               // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
               // let __noprint = types[ing.type].noprint.find(p=>p===ticket.ticket_id);
@@ -715,39 +731,51 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               // commentaire pour l'ingrédient
               __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient)
 
+              const ligne_i = piece['LIGNES'].find(l => l['ENC-TIK-ORI-NUM']===article.itemid+'-'+i);
+              // let artIngTva = ing.tva;
 
-              let artIngTva = ing.tva;
+              console.log('ligne_i', ligne_i, ing.ingredient);
 
               if (ing.fromStep!==null && !__noprint) {
                 articleIngredients.push({
-                  qte: ing.qte,
-                  codetva: artIngTva.code,
-                  nom: removeDiacritics(ing.nom),
-                  pu: ing.prix===0 ? '' : Number(ing.prix).toFixed(2),
-                  prix: ing.supplement===0 ? '' : Number(ing.supplement).toFixed(2),
+                  qte: ligne_i['ENC-TIK-LIG-PRO-QTE'],
+                  codetva: ligne_i['ENC-TIK-LIG-TAX-NID'] || '',
+                  nom: removeDiacritics(ligne_i['ENC-TIK-LIG-PRO-LIB']),
+                  pu: ligne_i['ENC-TIK-LIG-PRO-TTC']===0 ? '' : Number(ligne_i['ENC-TIK-LIG-PRO-TTC'] / 100).toFixed(2),
+                  prix: ligne_i['ENC-TIK-LIG-TOT-TTC']===0 ? '' : Number((ligne_i['ENC-TIK-LIG-PRO-TTC'] / 100) * ligne_i['ENC-TIK-LIG-PRO-QTE']).toFixed(2),
                   weight: __ingweight,
                   comment: __comment ? removeDiacritics(__comment.texte) : '',
-                  modificateur: __modificateur ? __modificateur.valeur: 0
+                  modificateur: ligne_i['ENC-TIK-LIG-REM-TOT']!==0 ? {montant: Number(ligne_i['ENC-TIK-LIG-REM-TOT'] / 100).toFixed(2), valeur: ligne_i['ENC-TIK-LIG-REM-TXX']}: 0
+                  
+                  // qte: ing.qte,
+                  // codetva: artIngTva.code,
+                  // nom: removeDiacritics(ing.nom),
+                  // pu: ing.prix===0 ? '' : Number(ing.prix).toFixed(2),
+                  // prix: ing.supplement===0 ? '' : Number(ing.supplement).toFixed(2),
+                  // weight: __ingweight,
+                  // comment: __comment ? removeDiacritics(__comment.texte) : '',
+                  // modificateur: __modificateur ? __modificateur.valeur: 0
                 });
+                articleRemise += Number(ligne_i['ENC-TIK-LIG-REM-TOT']);
               }
 
 
-              // ajout et calcul de la tva pour l'ingrédient
-              if (!artTva.hasOwnProperty(artIngTva.code)) {
-                Object.defineProperty(artTva, artIngTva.code, {
-                  value: {taux:`${Number(artIngTva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
-                  writable: true,
-                  enumerable: true
-                });
-              }
+              // // ajout et calcul de la tva pour l'ingrédient
+              // if (!artTva.hasOwnProperty(artIngTva.code)) {
+              //   Object.defineProperty(artTva, artIngTva.code, {
+              //     value: {taux:`${Number(artIngTva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
+              //     writable: true,
+              //     enumerable: true
+              //   });
+              // }
 
-              let iht = Number(ing.supplement) / (1 + Number(artIngTva.valeur));
+              // let iht = Number(ing.supplement) / (1 + Number(artIngTva.valeur));
 
-              artTva[artIngTva.code] = Object.assign(artTva[artIngTva.code], {
-                montant: artTva[artIngTva.code].montant + (iht * Number(artIngTva.valeur)),
-                ht: artTva[artIngTva.code].ht + iht,
-                ttc: artTva[artIngTva.code].ttc + Number(ing.supplement)
-              });
+              // artTva[artIngTva.code] = Object.assign(artTva[artIngTva.code], {
+              //   montant: artTva[artIngTva.code].montant + (iht * Number(artIngTva.valeur)),
+              //   ht: artTva[artIngTva.code].ht + iht,
+              //   ttc: artTva[artIngTva.code].ttc + Number(ing.supplement)
+              // });
 
             });
 
@@ -756,113 +784,126 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
             // commentaire pour l'article
             __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
+         
+         
+            const ligne_p = piece['LIGNES'].find(l => l['ENC-TIK-ORI-NUM']===article.itemid);
 
           
             // modificateurs pour l'article
-            __modificateur = cmd.modificateurs.find(m => m.item===article.itemid && m.ingredient===null);
-            let amodtx = 1;
-            let __montant = 0;
-            if (__modificateur) {
+            // __modificateur = cmd.modificateurs.find(m => m.item===article.itemid && m.ingredient===null);
+            // let amodtx = 1;
+            // let __montant = 0;
+            // if (__modificateur) {
 
-              // ispc :bool (is percent)
-              const ispc = String(__modificateur.valeur).substr(-1,1)==='%';
-              const val = Math.abs(Number(String(__modificateur.valeur).slice(0,-1)));
-              __montant = ispc ? articletotal*(val/100) : val;
+            //   // ispc :bool (is percent)
+            //   const ispc = String(__modificateur.valeur).substr(-1,1)==='%';
+            //   const val = Math.abs(Number(String(__modificateur.valeur).slice(0,-1)));
+            //   __montant = ispc ? articletotal*(val/100) : val;
 
-              // conversion du modificateur en coefficient
-              amodtx = (ispc) 
-              ? (
-                __modificateur.operation>0 
-                ? (100 + val) / 100
-                : (100 - val) / 100
-                ) 
-              : (
-                __modificateur.operation>0 
-                ? 1 + (val/articletotal)
-                : 1 - (val/articletotal)
-                )
-              ;
+            //   // conversion du modificateur en coefficient
+            //   amodtx = (ispc) 
+            //   ? (
+            //     __modificateur.operation>0 
+            //     ? (100 + val) / 100
+            //     : (100 - val) / 100
+            //     ) 
+            //   : (
+            //     __modificateur.operation>0 
+            //     ? 1 + (val/articletotal)
+            //     : 1 - (val/articletotal)
+            //     )
+            //   ;
 
-              if (ispc) {
-                articletotal *= __modificateur.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
-              } else {
-                articletotal = __modificateur.operation>0 ? articletotal + val : articletotal - val;
-              }
+            //   if (ispc) {
+            //     articletotal *= __modificateur.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
+            //   } else {
+            //     articletotal = __modificateur.operation>0 ? articletotal + val : articletotal - val;
+            //   }
           
-            }
+            // }
           
             articles.push({
-              qte: article.quantite,
-              codetva: article.tva.code,
-              nom: removeDiacritics(article.nom),
-              pu: Number(article.pu).toFixed(2),
-              prix: articletotal.toFixed(2),
+
+              qte: ligne_p['ENC-TIK-LIG-PRO-QTE'],
+              codetva: ligne_p['ENC-TIK-LIG-TAX-NID'] || '',
+              nom: removeDiacritics(ligne_p['ENC-TIK-LIG-PRO-LIB']),
+              pu: ligne_p['ENC-TIK-LIG-PRO-TTC']===0 ? '' : Number(ligne_p['ENC-TIK-LIG-PRO-TTC'] / 100).toFixed(2),
+              prix: ligne_p['ENC-TIK-LIG-TOT-TTC']===0 ? '' : Number((ligne_p['ENC-TIK-LIG-PRO-TTC'] / 100) * ligne_p['ENC-TIK-LIG-PRO-QTE']).toFixed(2),
               ingredients: articleIngredients,
               comment: __comment ? removeDiacritics(__comment.texte) : '',
-              modificateur: __modificateur ? {valeur: __modificateur.valeur, montant: __montant, operation: __modificateur.operation, nom: __modificateur.nom} : null
+              modificateur: ligne_p['ENC-TIK-LIG-REM-TOT']!==0 ? {montant: Number((ligne_p['ENC-TIK-LIG-REM-TOT'] + articleRemise) / 100).toFixed(2), valeur: ligne_p['ENC-TIK-LIG-REM-TXX']}: 0
+              
+              // qte: article.quantite,
+              // codetva: article.tva.code,
+              // nom: removeDiacritics(article.nom),
+              // pu: Number(article.pu).toFixed(2),
+              // prix: articletotal.toFixed(2),
+              // ingredients: articleIngredients,
+              // comment: __comment ? removeDiacritics(__comment.texte) : '',
+              // modificateur: __modificateur ? {valeur: __modificateur.valeur, montant: __montant, operation: __modificateur.operation, nom: __modificateur.nom} : null
             });
 
 
             // modificateur au niveau de la tva pour les ingrédients de l'article
-            if (__modificateur) {
-              Object.keys(artTva).forEach(k => {
-                artTva[k].montant *= amodtx; 
-                artTva[k].ht *= amodtx;
-                artTva[k].ttc *= amodtx;
-              });
-            } 
-
-            // ajout et calcul de la tva pour l'article
-            if (!cmdTva.hasOwnProperty(article.tva.code)) {
-              Object.defineProperty(cmdTva, article.tva.code, {
-                value: {taux:`${Number(article.tva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
-                writable: true,
-                enumerable: true
-              });
-            }
-
-            let ht = (Number(article.pu)*article.quantite)*amodtx / (1 + Number(article.tva.valeur));
-
-            cmdTva[article.tva.code] = Object.assign(cmdTva[article.tva.code], {
-              montant: cmdTva[article.tva.code].montant + (ht * Number(article.tva.valeur)),
-              ht: cmdTva[article.tva.code].ht + ht,
-              ttc: cmdTva[article.tva.code].ttc + ((Number(article.pu)*article.quantite)*amodtx)
-            });
-
             // if (__modificateur) {
-            //   cmdTva[article.tva.code].ht *= amodtx;
-            //   cmdTva[article.tva.code].ttc *= amodtx;
-            // }   
+            //   Object.keys(artTva).forEach(k => {
+            //     artTva[k].montant *= amodtx; 
+            //     artTva[k].ht *= amodtx;
+            //     artTva[k].ttc *= amodtx;
+            //   });
+            // } 
+
+            // // ajout et calcul de la tva pour l'article
+            // if (!cmdTva.hasOwnProperty(article.tva.code)) {
+            //   Object.defineProperty(cmdTva, article.tva.code, {
+            //     value: {taux:`${Number(article.tva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
+            //     writable: true,
+            //     enumerable: true
+            //   });
+            // }
+
+            // let ht = (Number(article.pu)*article.quantite)*amodtx / (1 + Number(article.tva.valeur));
+
+            // cmdTva[article.tva.code] = Object.assign(cmdTva[article.tva.code], {
+            //   montant: cmdTva[article.tva.code].montant + (ht * Number(article.tva.valeur)),
+            //   ht: cmdTva[article.tva.code].ht + ht,
+            //   ttc: cmdTva[article.tva.code].ttc + ((Number(article.pu)*article.quantite)*amodtx)
+            // });
+
+            // // if (__modificateur) {
+            // //   cmdTva[article.tva.code].ht *= amodtx;
+            // //   cmdTva[article.tva.code].ttc *= amodtx;
+            // // }   
             
 
-            // ajout des tva des ingrédients de l'article
-            Object.entries(artTva).forEach(([k,v]) => {
+            // // ajout des tva des ingrédients de l'article
+            // Object.entries(artTva).forEach(([k,v]) => {
               
-              // si le taux n'est pas listé dans les TVA
-              // on l'ajoute et on lui assigne les valeurs enregistrées pour les ingrédients
-              if (!cmdTva.hasOwnProperty(k)) {
-                Object.defineProperty(cmdTva, k, {
-                  value: {taux:v.taux, montant: v.montant, ht: v.ht, ttc: v.ttc},
-                  writable: true,
-                  enumerable: true
-                });
+            //   // si le taux n'est pas listé dans les TVA
+            //   // on l'ajoute et on lui assigne les valeurs enregistrées pour les ingrédients
+            //   if (!cmdTva.hasOwnProperty(k)) {
+            //     Object.defineProperty(cmdTva, k, {
+            //       value: {taux:v.taux, montant: v.montant, ht: v.ht, ttc: v.ttc},
+            //       writable: true,
+            //       enumerable: true
+            //     });
 
-              } 
-              // si le taux est déjà listé,
-              // on additionne avec les valeurs enregistrées pour les ingrédients
-              else {
-                cmdTva[k] = Object.assign(cmdTva[k], {
-                  montant: cmdTva[k].montant + v.montant,
-                  ht: cmdTva[k].ht + v.ht,
-                  ttc: cmdTva[k].ttc + v.ttc
-                });
-              }
-            });
+            //   } 
+            //   // si le taux est déjà listé,
+            //   // on additionne avec les valeurs enregistrées pour les ingrédients
+            //   else {
+            //     cmdTva[k] = Object.assign(cmdTva[k], {
+            //       montant: cmdTva[k].montant + v.montant,
+            //       ht: cmdTva[k].ht + v.ht,
+            //       ttc: cmdTva[k].ttc + v.ttc
+            //     });
+            //   }
+            // });
             
 
             // logger.info('iht','(Number('+article.pu+')*'+article.quantite+') / (1 + Number('+article.tva.valeur +'))');
             // logger.info(JSON.stringify(cmdTva));
-            total += articletotal;
+            // total += articletotal;
           });
           
           
@@ -870,45 +911,65 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           __comment = cmd.comments.find(c => c.item===null && c.ingredient===null);
 
           // modificateurs pour la commande
-          __modificateur = cmd.modificateurs.find(c => c.item===null && c.ingredient===null);
-          if (__modificateur) {
-        //   total += Number(__modificateur.valeur);
+        //   __modificateur = cmd.modificateurs.find(c => c.item===null && c.ingredient===null);
+        //   if (__modificateur) {
+        // //   total += Number(__modificateur.valeur);
 
-            const ispc = String(__modificateur.valeur).substr(-1,1)==='%';
-            const val = Math.abs(Number(String(__modificateur.valeur).slice(0,-1)));
-            const montant = ispc ? total*(val/100) : val;
+        //     const ispc = String(__modificateur.valeur).substr(-1,1)==='%';
+        //     const val = Math.abs(Number(String(__modificateur.valeur).slice(0,-1)));
+        //     const montant = ispc ? total*(val/100) : val;
 
-            __modificateur = {...__modificateur, montant: montant};
+        //     __modificateur = {...__modificateur, montant: montant};
 
-            // conversion du modificateur en coefficient
-            const modtx = (ispc)
-            ? (
-              __modificateur.operation>0 
-              ? (100 + val) / 100
-              : (100 - val) / 100
-              ) 
-            : (
-              __modificateur.operation>0 
-              ? 1 + (val/total)
-              : 1 - (val/total)
-              )
-            ;
+        //     // conversion du modificateur en coefficient
+        //     const modtx = (ispc)
+        //     ? (
+        //       __modificateur.operation>0 
+        //       ? (100 + val) / 100
+        //       : (100 - val) / 100
+        //       ) 
+        //     : (
+        //       __modificateur.operation>0 
+        //       ? 1 + (val/total)
+        //       : 1 - (val/total)
+        //       )
+        //     ;
 
-            if (ispc) {
-              total *= __modificateur.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
-            } else {
-              total = __modificateur.operation>0 ? total + val : total - val;
-            }
+        //     if (ispc) {
+        //       total *= __modificateur.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
+        //     } else {
+        //       total = __modificateur.operation>0 ? total + val : total - val;
+        //     }
 
 
-            // application de la réduction aux taux de tva
-            Object.entries(cmdTva).forEach(([key, value])=> {
-              cmdTva[key].montant *= modtx; 
-              cmdTva[key].ht *= modtx; 
-              cmdTva[key].ttc *= modtx; 
-            });
+            // // application de la réduction aux taux de tva
+            // Object.entries(cmdTva).forEach(([key, value])=> {
+            //   cmdTva[key].montant *= modtx; 
+            //   cmdTva[key].ht *= modtx; 
+            //   cmdTva[key].ttc *= modtx; 
+            // });
 
+          // }
+
+          let ventiltva = null;
+          if (piece['TVA']) {
+            ventiltva = piece['TVA'].map(tva => ({
+              code: tva['ENC-TIK-TVA-NID'],
+              ht: Number(tva['ENC-TIK-TOT-MHT'] / 100).toFixed(2),
+              ttc: Number((tva['ENC-TIK-TOT-MHT'] + tva['ENC-TIK-TVA-MTN']) / 100).toFixed(2),
+              taxe: Number(tva['ENC-TIK-TVA-MTN'] / 100).toFixed(2),
+              taux: tva['ENC-TIK-TVA-TXX']
+            }));
           }
+
+          let ventilrgt = [];
+          if (piece['REGLEMENTS']) {
+            ventilrgt = piece['REGLEMENTS'].map(rgt => ({
+              lib: rgt['ENC-TIK-REG-MOD-LIB'],
+              valeur: Number(rgt['ENC-TIK-REG-MTN'] / 100).toFixed(2)
+            }));
+          }
+
 
           const commande = {
             numero: cmdnumero,
@@ -916,51 +977,69 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             date: removeDiacritics(`${date} à ${heure}`),
             articles: articles,
             total: {
-              total: total.toFixed(2),
-              tva: cmdTva
+              total: Number(piece['ENC-TIK-TOT-TTC'] / 100).toFixed(2),
+              ht: Number(piece['ENC-TIK-TOT-MHT'] / 100).toFixed(2),
+              taxe: Number(piece['FAC-TOT-TVA'] / 100).toFixed(2),
+              tva: ventiltva,
+              remise: Number(piece['ENC-TIK-REM-MTN'] / 100).toFixed(2),
             },
             status: cmd.status,
             scheduled: cmd.scheduled ? format(new Date(cmd.scheduled), 'HH:mm') : null,
             mode: cmd.mode,
             bipper: cmd.bipper || null,
-            reglements: cmd.reglements,
+            reglements: ventilrgt,
             rendus: cmd.rendus,
             troppercu: cmd.troppercu,
             comment: __comment ? __comment.texte : '',
-            modificateur: __modificateur ? {valeur: __modificateur.valeur, montant: __modificateur.montant, operation: __modificateur.operation, nom: __modificateur.nom} : null,
+            modificateur: piece['ENC-TIK-REM-MTN'] || null,
             client: cmd.client && clients.find(c=>c.client_id===cmd.client.client_id)
           };
 
 
-          const siret = entreprise.siret;
+          const siret = piece['ENC-TIK-SOC-SIR'];
           const siret_formatted = (siret) ? `SIRET ${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
 
-          let _extrait_sign = '';
-          // caractères 3, 7, 13, 19 de la signature
-          if (cmd.signature) {
-            _extrait_sign += cmd.signature.substring(2,3);
-            _extrait_sign += cmd.signature.substring(6,7);
-            _extrait_sign += cmd.signature.substring(12,13);
-            _extrait_sign += cmd.signature.substring(18,19);
-          }
+          // let _extrait_sign = '';
+          // // caractères 3, 7, 13, 19 de la signature
+          // if (cmd.signature) {
+          //   _extrait_sign += cmd.signature.substring(2,3);
+          //   _extrait_sign += cmd.signature.substring(6,7);
+          //   _extrait_sign += cmd.signature.substring(12,13);
+          //   _extrait_sign += cmd.signature.substring(18,19);
+          // }
 
           // traitement du duplicata
           let _dupli_sign = '';
           let _dupli_id = '';
           let _numPrint = 1;
-          if (cmd.duplicatas && cmd.duplicatas.length>0) {
-            const _lastDupli = last(cmd.duplicatas);
-            _dupli_id = _lastDupli.id;
-            _dupli_sign += _lastDupli.signature.substring(2,3);
-            _dupli_sign += _lastDupli.signature.substring(6,7);
-            _dupli_sign += _lastDupli.signature.substring(12,13);
-            _dupli_sign += _lastDupli.signature.substring(18,19);
-            _numPrint = cmd.duplicatas.length;
+          let _dupli_gdh = '';
+          let duplitype = null;
+          if (cmd.duplicatas) {
+            const __dtype = (cmd.status==='confirmed') ? 'TICKET' : 'NOTE'
+            duplitype = cmd.duplicatas.filter(d => d.type===__dtype);
+          }
+          if (duplitype && duplitype.length>0) {
+            const _lastDupliType = last(duplitype);
+            try {
+              let duplitype = await commandeServices.getDuplicata({'ENC-DUP-NID': _lastDupliType.id})
+
+              duplitype = duplitype[0];
+
+              _dupli_id = duplitype['ENC-DUP-NID'];
+              _dupli_sign = duplitype['ENC-DUP-RES'];
+
+              const __g = duplitype['ENC-DUP-HOR-GDH'];
+              _dupli_gdh = format(new Date(__g.substring(0,4)+"-"+__g.substring(4,6)+"-"+__g.substring(6,8)+' '+__g.substring(8,10)+':'+__g.substring(10,12)+':'+__g.substring(12,14)), "d MMM yyyy - H:mm:ss", { locale: frLocale });
+              _numPrint = duplitype['ENC-DUP-PRN-NUM'];
+            }
+            catch(e) {
+              console.error(e);
+            }
           }
 
 
-          let __coordoonees = [removeDiacritics(entreprise.adresse)];
-          __coordoonees = [...__coordoonees, `${entreprise.code_postal} ${removeDiacritics(String(entreprise.ville).toUpperCase())}, ${removeDiacritics(String(entreprise.pays).toUpperCase())}`];
+          let __coordoonees = [removeDiacritics(piece['ENC-TIK-SOC-ADR'])];
+          __coordoonees = [...__coordoonees, `${piece['ENC-TIK-SOC-CCP']} ${removeDiacritics(String(piece['ENC-TIK-SOC-VIL']).toUpperCase())}, ${removeDiacritics(String(piece['ENC-TIK-SOC-PAY']).toUpperCase())}`];
           if ( entreprise.telephone ) { __coordoonees = [...__coordoonees, entreprise.telephone] }
           if ( entreprise.site_web ) { __coordoonees = [...__coordoonees, entreprise.site_web] }
 
@@ -971,10 +1050,10 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             logo: logo,
             // -> entreprise
             entreprise: {
-              enseigne: removeDiacritics(String(entreprise.enseigne).toUpperCase()),
-              denomination: removeDiacritics(String(entreprise.denomination).toUpperCase()),
+              enseigne: removeDiacritics(String(piece['ENC-TIK-SOC-ID']).toUpperCase()),
+              denomination: removeDiacritics(String(piece['ENC-TIK-SOC-ETS']).toUpperCase()),
               coordonnees: __coordoonees,
-              fiscal: [ siret_formatted, `NAF ${entreprise.ape} - TVA ${entreprise.tva}` ]
+              fiscal: [ siret_formatted, `NAF ${piece['ENC-TIK-SOC-NAF']} - TVA ${piece['ENC-TIK-SOC-TVA']}` ]
             },
             // -> commande (id, date, articles, remises, totaux, tva, réglements)
             commande: commande,
@@ -984,14 +1063,15 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             // et infos ticket : numéro ticket, date
             legal: {
               type: 'VENTE',
-              vendeur: removeDiacritics(operateur.nom)+' - '+operateur.id,
-              caisse: caisse.id,
+              vendeur: removeDiacritics(operateur.nom)+' - '+piece['ENC-TIK-VEN-NID'],
+              caisse: cmd.caisse.id,  //piece['ENC-TIK-CAI-NID'],
               centre: 'Restaurant',
-              version: packageJson.version,
-              ticketid: cmd.ticket ? cmd.ticket : null,
-              signature: cmd.signature ? _extrait_sign : '',
+              version: piece['ENC-TIK-TAG-VER'],
+              ticketid: piece['ENC-TIK-NUM'],
+              signature: piece['ENC-TIK-TAG-RET'],
               duplicataid: _dupli_id,
               duplicatasignature: _dupli_sign,
+              duplicatagdh: _dupli_gdh,
               printid: _numPrint,
               date: `${date} - ${heure}`
             },
@@ -1534,14 +1614,30 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             logger.info(response);
             dispatch({ type: peripheralActionTypes.PRINT_TICKET });
             
-            if (template==='commande' && cmd.duplicatas && cmd.duplicatas.length>1) {
-              dispatch(journalActions.log('155', cmd.duplicataid));
-            }
+            if (template==='commande') {
+              let duplitype = null;
+              if (cmd.duplicatas) {
+                if (cmd.status==='confirmed') {
+                  duplitype = cmd.duplicatas.filter(d => d.type==='TICKET');
+                }
+              }
+              if (duplitype && duplitype.length>0) {
+                dispatch(journalActions.log('155', cmd.duplicataid));
+              }
+            } 
           } 
           catch(e) {
             // log de non édition d'une note dans le cas du ticket "commande" original (note)
-            if (template==='commande' && (!cmd.duplicatas || cmd.duplicatas.length<1)) {
-              dispatch(journalActions.log('329', e));
+            if (template==='commande') {
+              let duplitype = null;
+              if (cmd.duplicatas) {
+                if (cmd.status==='confirmed') {
+                  duplitype = cmd.duplicatas.filter(d => d.type==='TICKET');
+                }
+              }
+              if (!duplitype || duplitype.length < 1) {
+                dispatch(journalActions.log('329', e));
+              }
             }
           }
 
@@ -1568,6 +1664,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
   }
 }
+
 
 
 // function printPeriodeX(payload={}) {

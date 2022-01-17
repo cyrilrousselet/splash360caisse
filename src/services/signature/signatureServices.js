@@ -121,8 +121,8 @@ async function checkAndCreateKeys() {
 
 function createTicketSignature(commande, privateKey, lastSignature = null) {
 
-  if (commande.status !== 'confirmed') return null;
-  if (!commande.ticket) return null;
+  // if (commande.status !== 'confirmed') return null;
+  // if (!commande.ticket) return null;
 
   let hashfeed = [];
   
