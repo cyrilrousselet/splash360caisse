@@ -19,7 +19,6 @@ class MainLoader extends React.Component {
   _getstatus_job = null;
   _blockstation_job = null
   _checkinternetconnection_job = null;
-  _checkjournaux_job = null;
 
   constructor(props) {
     super(props);
@@ -42,10 +41,8 @@ class MainLoader extends React.Component {
   checkInstallation(mode) {
     const { 
       paramLoaded, 
+      caisseLoaded,
       catLoaded, 
-      // catLoading, 
-      // cmdLoaded, 
-      // cmdLoading, 
       cloLoaded, 
       sseInit, 
       params,
@@ -53,26 +50,19 @@ class MainLoader extends React.Component {
       dbupdated, 
       dbgetInit,
       checkFinDeService,
-      checkScheduledCommandes,
-      // stationinstalled,
       statuschecked,
       getStatus,
       blockStation,
       testConnection,
       online,
       testCloturesAuto,
+      testGTPeriodique,
       checkJET,
       checkZCaisse,
       checkGrandTotalPeriodique,
     } = this.props;
 
     console.log("DEBUT checkInstallation");
-
-  
-
-    // storeKeys();
-    // storeNumerotation();
-    // getGTP();
 
     let first_start = params ? params.first_start : null;
     let readytolaunch = dbupdated || null;
@@ -84,12 +74,6 @@ class MainLoader extends React.Component {
 
     if(paramLoaded) {
       console.log("PARAM LOADED");
-
-      
-
-      // if(online === null) { // if connexion pas
-      //   testConnection();
-      // }
  
       if(paramsEntreprise.restaurant_id==="" || paramsEntreprise.restaurant_secret==="") {
         console.log("NO ID SECRET, GONNA INSTALL STATION");
@@ -97,7 +81,7 @@ class MainLoader extends React.Component {
         this.props.installStation(); // popin + requête au bo + update id et secret
       }
       else {
-        logger.info("ID SECRET OK");
+        // logger.info("ID SECRET OK");
         
         if (statuschecked===false) {
           getStatus();
@@ -147,7 +131,7 @@ class MainLoader extends React.Component {
               checkJET('pa');
               checkZCaisse();
               checkGrandTotalPeriodique();
-
+              
               this.props.log('80','demarrage'); 
             }
         
@@ -155,16 +139,15 @@ class MainLoader extends React.Component {
               console.log("GONNA GET DATABASE");
               this.props.getDatabase();
             }
-            else if(status === null || status === "pending"){
+            else if (status === null || status === "pending"){
               Swal.fire({
-                type: 'warning',
                 title:'Station non activée',
                 text: 'Vous devez activer la station',
                 showCancelButton: false,
                 focusConfirm: true,
                 allowEscapeKey: false,
                 allowOutsideClick: false,
-                confirmButtonText: 'Réésayer',
+                confirmButtonText: 'Réessayer',
               }).then((result)=> {
                 if (result.value) {
                   this.forceUpdate();
@@ -183,6 +166,7 @@ class MainLoader extends React.Component {
           catLoaded===false) {
 
         testCloturesAuto();
+        testGTPeriodique();
         this.props.getCatalogue();
         this.props.getLastClotureAndAfter();
       }
@@ -198,7 +182,6 @@ class MainLoader extends React.Component {
         if (readytolaunch && readytolaunch.length===2) {
 
           Swal.fire({
-            type: 'warning',
             title:'Installation prête',
             text: 'Vous devez redémarrer l’application pour terminer l’installation',
             showCancelButton: false,
@@ -215,7 +198,6 @@ class MainLoader extends React.Component {
           this.props.initSyncCommandes();
           this.props.initSyncClotures();
           this.props.checkScheduledCommandes();  
-          checkScheduledCommandes();
           this.props.loadingComplete();
         }
       }
@@ -238,16 +220,13 @@ class MainLoader extends React.Component {
       getGTP,
       testGTPeriodique,
       testCloturesAuto,
-      checkJET,
-      checkZCaisse,
-      checkGrandTotalPeriodique,
     } = this.props;
 
     
       storeKeys();
       storeNumerotation();
       getGTP();
-      testGTPeriodique();
+      // testGTPeriodique();
 
     if (this._findeservice_job===null) {  
       this._findeservice_job = schedule.scheduleJob('0 30 5 * * *', () => {
@@ -281,15 +260,6 @@ class MainLoader extends React.Component {
         console.log("job test connection");
         testConnection();
       });
-    }
-
-    if (this._checkjournaux_job===null) {
-      this._checkjournaux_job = schedule.scheduleJob('* */1 * * *', () => {
-        checkJET('jet');
-        checkJET('pa');
-        checkZCaisse();
-        checkGrandTotalPeriodique();
-      })
     }
 
     this.checkInstallation("mount");

@@ -89,7 +89,8 @@ class Dashboard extends Component {
       today_numtickets,
       blocage_encaissement,
       blocage_commande,
-      pastnonconfirmed
+      pastnonconfirmed,
+      mandatoryError,
     } = this.props;
 
     // if (today_ca===undefined || ca===null) {
@@ -100,6 +101,13 @@ class Dashboard extends Component {
     let modules_bloques = [...DISABLED_MODULES];
     if (blocage_encaissement===true) {
       if (!modules_bloques.includes('encaissement')) modules_bloques.push('encaissement');
+    }
+    if (mandatoryError===true) {
+      if (!modules_bloques.includes('encaissement')) modules_bloques.push('encaissement');
+      Swal.fire({
+        title: strings.dashboard.alert.mandatory_error.titre,
+        html: strings.dashboard.alert.mandatory_error.texte
+      });
     }
     if (blocage_commande===true) {
       if (!modules_bloques.includes('encaissement')) modules_bloques.push('encaissement');

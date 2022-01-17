@@ -16,6 +16,7 @@ const { app } = remote;
 
 export const signatureServices = {
   checkAndCreateKeys,
+  writeTrousseau,
   createTicketSignature, 
   createDuplicataSignature,
   createGrandtotalSignature,
@@ -32,6 +33,8 @@ export const signatureServices = {
   persistNumerotation,
   verify,
   verifyBuffer,
+  persistTrousseau,
+  getTrousseau
 };
 
 
@@ -60,6 +63,25 @@ async function _createKeyPair() {
     });
   });
 
+}
+
+async function writeTrousseau(trousseau) {
+  _checkDirectorySync(`${app.getPath('userData')}/cert`);
+  
+  await fs_async.unlink(`${app.getPath('userData')}/cert/prv.pem`);
+  await fs_async.unlink(`${app.getPath('userData')}/cert/pub.pem`);
+  await fs_async.unlink(`${app.getPath('userData')}/cert/trousseau.data`);
+
+  try {
+    const { trousseauId, privateKey, publicKey } = trousseau;
+
+    await fs_async.writeFile(`${app.getPath('userData')}/cert/prv.pem`, privateKey);
+    await fs_async.writeFile(`${app.getPath('userData')}/cert/pub.pem`, publicKey);
+    await fs_async.writeFile(`${app.getPath('userData')}/cert/trousseau.data`, trousseauId)
+  }
+  catch(err) {
+    return console.error(err);
+  };
 }
 
 async function checkAndCreateKeys() {
@@ -92,15 +114,15 @@ async function checkAndCreateKeys() {
     catch(err) {
       return console.error(err);
     };
-  }
+  } 
     
   return { privateKey, publicKey, trousseauId:trousseauId.toString(), create:!aucun_trousseau };
 }
 
 function createTicketSignature(commande, privateKey, lastSignature = null) {
 
-  if (commande.status !== 'confirmed') return null;
-  if (!commande.ticket) return null;
+  // if (commande.status !== 'confirmed') return null;
+  // if (!commande.ticket) return null;
 
   let hashfeed = [];
   
@@ -109,6 +131,7 @@ function createTicketSignature(commande, privateKey, lastSignature = null) {
     if (__tx<1000) __tx = '0'+__tx;
     return __tx + ':' + tva.ttc;
   });
+  
   hashfeed.push(__tva.join('|'));
   
   let __ttc = Math.round(commande.total * 100);
@@ -138,35 +161,38 @@ function createTicketSignature(commande, privateKey, lastSignature = null) {
 }
 
 
-function createDuplicataSignature(commande, privateKey, lastSignature = null) {
-
-  if (commande.status !== 'confirmed') return null;
-  if (!commande.duplicata) return null;
+function createDuplicataSignature(duplicata, privateKey, lastSignature = null, isnote = false) {
 
   let hashfeed = [];
-  
-  let __tva = Object.values(commande.ventilation).map(tva => {
-    let __tx = tva.taux * 10000;
-    if (__tx<1000) __tx = '0'+__tx;
-    return __tx + ':' + tva.ttc;
-  });
-  hashfeed.push(__tva.join('|'));
-  
-  let __ttc = Math.round(commande.total * 100);
-  hashfeed.push(__ttc);
-  
-  let __datetime = format(new Date(), 'yyyyMMddHHmmss');
-  hashfeed.push(__datetime);
 
-  let __numero = commande.duplicata;
-  hashfeed.push(__numero);
+  // 1. Numero unique du duplicata
+  hashfeed.push(duplicata['ENC-DUP-NID']);
 
-  let __operation = "VENTE";
-  hashfeed.push(__operation);
+  // 2. Type de document d'origine
+  hashfeed.push(duplicata['ENC-DUP-TYP']);
   
+  // 3. Numéro de réimpression
+  hashfeed.push(duplicata['ENC-DUP-PRN-NUM']);
+
+  // 4. Code opérateur qui émet le duplicata
+  hashfeed.push(duplicata['ENC-DUP-OPS-NID']);
+
+  // 5. Date / Heure de l'enregistrement du duplicata
+  hashfeed.push(duplicata['ENC-DUP-HOR-GDH']);
+
+  // 6. Numéro du ticket / de la note d'origine
+  hashfeed.push(duplicata['ENC-DUP-ORI-NUM']);
+
+  if (isnote) {
+    // 6B. Motif de l'émission du duplicata
+    hashfeed.push(duplicata['ENC-SIG-MOTIF']);
+  }
+
+  // 7. Indication du report de signature précédente
   const __report = (lastSignature===null) ? 'N' : 'O';
   hashfeed.push(__report);
 
+  // 8. Signature électronique du duplicata précédent
   const __last = (lastSignature===null) ? ' ' : lastSignature;
   hashfeed.push(__last);
 
@@ -467,6 +493,12 @@ function getAllSignatures() {
 function getAllNumerotation() {
   return emit('dbNumerotationGetAll', {});
 }
+function persistTrousseau(trousseau) {
+  return emit('dbTrousseauSet', trousseau);
+}
+function getTrousseau() {
+  return emit('dbTrousseauGet', {});
+}
 function getNumerotation(type) {
   if (!(['ticket',
          'note',
@@ -484,7 +516,7 @@ function getNumerotation(type) {
 
 function getLastSignature(type) {
   if (!(['tickets', 
-         'notes', 
+         'notes',
          'duplicatas', 
          'grandstotaux_jour', 
          'grandstotaux_mois', 

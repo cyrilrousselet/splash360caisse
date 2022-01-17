@@ -190,7 +190,7 @@ const fileOut = format.combine(
 const outTransport = new transports.DailyRotateFile({
   filename: '%DATE%-stdout.log',
   dirname: `${app.getPath('userData')}/logs`,
-  datePattern: 'YYDDD',
+  datePattern: 'YYDDDD',
   zippedArchive: true,
   maxSize: '20m',
   format: fileOut
@@ -199,7 +199,7 @@ const outTransport = new transports.DailyRotateFile({
 const errorTransport = new transports.DailyRotateFile({
   filename: '%DATE%-stderr.log',
   dirname: `${app.getPath('userData')}/logs`,
-  datePattern: 'YYDDD',
+  datePattern: 'YYDDDD',
   zippedArchive: true,
   maxSize: '20m',
   level: 'error',
@@ -210,7 +210,7 @@ const errorTransport = new transports.DailyRotateFile({
 const paTransport = new transports.DailyRotateFile({
   filename: '%DATE%-pistedaudit.json',
   dirname: `${app.getPath('userData')}/compta`,
-  datePattern: 'YYDDD',
+  datePattern: 'YYDDDD',
   zippedArchive: true,
   maxSize: '20m',
   level: 'info',
@@ -230,7 +230,7 @@ const paTransport = new transports.DailyRotateFile({
 const jetTransport = new transports.DailyRotateFile({
   filename: '%DATE%-jet.json',
   dirname: `${app.getPath('userData')}/compta`,
-  datePattern: 'YYDDD',
+  datePattern: 'YYDDDD',
   zippedArchive: true,
   maxSize: '20m',
   level: 'info',

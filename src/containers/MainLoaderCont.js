@@ -29,6 +29,7 @@ const mapStateToProps = (state) => {
   return {
     // paramLoading : state.parametresReducer.loading,
     paramLoaded: Object.entries(state.parametresReducer.parametres).length>0,
+    caisseLoaded: state.parametresReducer.parametres.caisse,
     // catLoading : state.catalogueReducer.loading,
     catLoaded: Object.entries(state.catalogueReducer.catalogue).length>0,
     // cmdLoading: state.commandesListReducer.loading,
@@ -51,7 +52,6 @@ const mapDispatchToProps = (dispatch) => {
     getParametres: parametresActions.getAll,
     getLastClotureAndAfter: tresorActions.getLastClotureAndAfter,
     getCatalogue: catalogueActions.getAllActive,
-    // getTodayCommandesList: commandeActions.getTodayCommandesList,
     getCloturesList: clotureActions.getCloturesList,
     getCurrentPeriode: clotureActions.getCurrentPeriode,
     getTodayCa: clotureActions.getTodayCa,

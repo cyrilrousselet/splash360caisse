@@ -205,7 +205,7 @@ class Reglement extends React.Component {
 
       // enregistrement des TR en base (pour contrôle ultérieur)
       if (trlist.length > 0) this.props.persistTicketsRestaurants(trlist);
-      this.props.validateCommande(this.props.commande, _tpl);
+      this.props.confirmCommande(this.props.commande, _tpl);
     }
     
     // reset du state avant fermeture
@@ -741,7 +741,7 @@ Reglement.propTypes = {
   tiroirOuvert: PropTypes.bool,
   valueToPay: PropTypes.number.isRequired,
   closeReglement: PropTypes.func.isRequired,
-  validateCommande: PropTypes.func.isRequired,
+  confirmCommande: PropTypes.func.isRequired,
   commande: PropTypes.object.isRequired,
   getCommande: PropTypes.func.isRequired,
   addReglement: PropTypes.func.isRequired,

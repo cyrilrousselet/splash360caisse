@@ -5,7 +5,7 @@ const TrousseauSchema = mongoose.Schema(
     trousseauId: String,
     privateKey: String,
     publicKey: String,
-    createdAd: Number
+    createdAt: Number
   },
   { strict: false }
 );

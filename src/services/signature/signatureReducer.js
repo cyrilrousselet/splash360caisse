@@ -56,7 +56,7 @@ export function signatureReducer(state = initialState, action) {
         ...state,
         tickets: [...tickets, action.ticket]
       }
-
+      
     case signatureActionTypes.CREATE_SIGNATURE_NOTE:
       return {
         ...state,

@@ -29,6 +29,7 @@ function Printer(adapter, options) {
   this.adapter = adapter;
   this.options = options;
   this.buffer = new MutableBuffer();
+  this.alignment = 'TXT_ALIGN_LT';
   this.encoding = (options && options.encoding) || 'GB18030';
   this.width = (options && options.width) || 48;
   this._fontsize = [1,1];
@@ -139,7 +140,41 @@ Printer.prototype.newLine = function () {
  * @return {[Printer]} printer  [the escpos printer instance]
  */
 Printer.prototype.text = function (content, encoding) {
-  return this.print(iconv.encode(content + _.EOL, encoding || this.encoding));
+  // return this.print(iconv.encode(content + _.EOL, encoding || this.encoding));
+
+  let text = content.toString();
+  let __width = this.width;
+  __width = Math.ceil(__width/this._fontsize[0]);
+
+  if (text.length <= __width) {
+
+    let space = Math.floor(__width - text.length);
+    let avant = 0;
+    let apres = space;
+
+    if (this.alignment==='TXT_ALIGN_CT') {
+      avant = Math.floor(space / 2);
+      apres = avant + (space % 2);
+    } else if (this.alignment==='TXT_ALIGN_RT') {
+      avant = space;
+      apres = 0;
+    }
+
+    text = (new Array(avant+1)).join(' ') + text + (new Array(apres+1)).join(' ');
+    // for (let i = 0; i < avant; i++) {
+    //   text = ' '+text;
+    // }
+    // for (let i = 0; i < apres; i++) {
+    //   text = text+' ';
+    // }
+
+  }
+
+  this.buffer.write(
+    iconv.encode(text + _.EOL, encoding || this.encoding)
+  )
+  return this;
+
 };
 
 
@@ -213,6 +248,7 @@ Printer.prototype.tableCustom = function (data, options = {}) {
   let secondLineEnabled = false
   let secondLine = []
 
+
   for (let i = 0; i < data.length; i++) {
     let obj = data[i]
     let align = (obj.align || '').toUpperCase()
@@ -221,11 +257,14 @@ Printer.prototype.tableCustom = function (data, options = {}) {
     obj.text = obj.text.toString()
     let textLength = obj.text.length
 
+
     if (obj.width) {
       cellWidth = baseWidth * obj.width
     } else if (obj.cols) {
       cellWidth = obj.cols
+      leftoverSpace = 0
     }
+
 
     if (cellWidth < textLength) {
       tooLong = true
@@ -256,6 +295,7 @@ Printer.prototype.tableCustom = function (data, options = {}) {
       }
     } else if (align === 'RIGHT') {
       let spaces = cellWidth - textLength
+
       if (leftoverSpace > 0) {
         spaces += leftoverSpace
         leftoverSpace = 0
@@ -276,7 +316,7 @@ Printer.prototype.tableCustom = function (data, options = {}) {
           lineStr += obj.text
         }
       }
-    } else {
+    } else if (align === 'LEFT' || align === '') {
       if (obj.text !== '') {
         if (obj.style) {
           lineStr += (
@@ -290,6 +330,7 @@ Printer.prototype.tableCustom = function (data, options = {}) {
       }
 
       let spaces = Math.floor(cellWidth - textLength)
+      
       if (leftoverSpace > 0) {
         spaces += leftoverSpace
         leftoverSpace = 0
@@ -380,6 +421,7 @@ Printer.prototype.control = function (ctrl) {
  * @return {[Printer]} printer  [the escpos printer instance]
  */
 Printer.prototype.align = function (align) {
+  this.alignment = 'TXT_ALIGN_' + align.toUpperCase();
   this.buffer.write(_.TEXT_FORMAT[
     'TXT_ALIGN_' + align.toUpperCase()
   ]);

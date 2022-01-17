@@ -40,7 +40,8 @@ export const commandeServices = {
   getRuleValues,
   getTicket,
   persistTicket,
-  deleteTicket,
+  getNote,
+  persistNote,
   getDuplicata,
   persistDuplicata,
   deleteDuplicata,
@@ -118,8 +119,11 @@ function getTicket(params, fromEnd = -1) {
 function persistTicket(ticket) {
   return emit('dbTicketPersist', ticket );
 }
-function deleteTicket(ticket) {
-  return emit('dbTicketDelete', ticket );
+function getNote(params, fromEnd = -1) {
+  return emit('dbNoteGet',  {query:params, end:fromEnd});
+}
+function persistNote(note) {
+  return emit('dbNotePersist', note );
 }
 function getDuplicata(params) {
   return emit('dbDuplicataGet', params);
@@ -1051,25 +1055,293 @@ function saveCommande(commande, catalogueReducer) {
   let __commandeVentilee = __c;
 
   // uniquement sur une commande confirmée :
-  if (__c.status==="confirmed") {
+  // if (__c.status==="confirmed") {
 
     // ventilation de la TVA
-    __commandeVentilee = _getVentilation(__c, catalogueReducer.tva);
+    __commandeVentilee = _getVentilationTva(__c, catalogueReducer.tva);
 
-  }
+  // }
 
   return emit("dbCommandePersist", { commande: __commandeVentilee });
 }
 
 
-// si la commande est confirmée,
+function _getVentilationTva(commande, cataloguetva) {
+
+  let __cmd = commande;
+
+  // pour chaque item, on récupère le TTC et le HT
+  let __ventilation = {};
+  let __basecmd = 0;
+
+  let __cmddiscount = null;
+
+
+  // on voit s'il existe un modificateur pour le panier
+  const modcmd = _getModificateurForCmd(__cmd.modificateurs);
+  if (modcmd) {
+    console.log('modificateur commande');
+  
+    // on boucle sur chaque item et ingrédient de la commande
+    // pour calculer le prix naturel de la commande
+    __cmd.items.forEach( (itm, i) => {
+
+      let __ttc = itm.pu * itm.quantite;
+      
+      if (!__cmd.centimes) {
+        __ttc = Math.round(__ttc * 100);
+      } 
+
+      let __ittc = 0;
+
+      // s'il y a au moins un ingredient
+      itm.ingredients.forEach(ing => {
+        __ittc += (!__cmd.centimes) ? Math.round(ing.supplement * 100) : ing.supplement;
+      });
+
+      // on récupère ainsi le total TTC de la commande.
+      __basecmd += __ttc + __ittc;
+
+    });
+
+    // on traduit le modificateur en %age (ou coefficient)
+
+    // is percentage?
+    const ispc = String(modcmd.valeur).substr(-1,1)==='%';
+    // recup valeur numérique
+    let val = Math.abs(Number(String(modcmd.valeur).slice(0,-1)));
+
+    console.log('💸 remise commande ', val, (ispc ? 'en %age':'en €'));
+
+    // si le modificateur est en pourcentage, on convertit en coefficient
+    if (ispc) {
+      // __cmddiscount = 1 - (val / 100);
+      __cmddiscount = val / 100;
+    }
+    // si le modificateur est en numéraire, on calcule le coefficient par rapport au TTC
+    else {
+      // __cmddiscount = (__basecmd - (val * 100)) / __basecmd;
+      __cmddiscount = (val * 100) / __basecmd;
+      console.log('Remise commande de '+val+' se traduit par un coeff de '+__cmddiscount);
+    }
+
+  }
+
+
+
+
+
+
+
+  // on combine le modificateur item avec le modificateur panier
+  // on extrait la valeur numéraire et %age du modificateur item combiné
+  // on applique le modificateur aux prix TTC et HT
+
+  // on applique la TVA (aux prix modifié)
+
+  // on compile les valeurs de TVA (TTC, HT, TAXE pour chaque taux)
+  // pour chaque item
+  // pour la commande entière
+
+  let __cmdht = 0;
+  let __cmdttc = 0;
+  let __cmdrem = 0;
+  
+  __cmd.items.forEach( (itm, i) => {
+
+    // (le TTC = pu (prix unique) * quantite)
+    let __ttc = itm.pu * itm.quantite;
+    let __ht = itm.puht * itm.quantite;
+
+    // // le prix correspond au montant du produit avec les ingrédients
+    // let __baseprix = itm.prix * itm.quantite;
+
+    if (!__cmd.centimes) {
+      __ttc = Math.round(__ttc * 100);
+      __ht = Math.round(__ht * 100);
+    } 
+
+    // application de la remise de commande sur l'item
+    let __remtaux = __cmddiscount;
+    
+
+    // on voit s'il existe un modificateur pour chaque item
+    const moditem = _getModificateurForItem(__cmd.modificateurs, itm.itemid);
+
+    let __itmdiscount = __cmddiscount;
+    if (moditem) {
+      const ispc = String(moditem.valeur).substr(-1,1)==='%';
+      // recup valeur numérique
+      let val = Math.abs(Number(String(moditem.valeur).slice(0,-1)));
+
+      console.log('💸 remise item ('+itm.nom+') ', val, (ispc ? 'en %age':'en €'));
+
+      // si le modificateur est en pourcentage, on convertit en coefficient
+      if (ispc) {
+        __itmdiscount = val / 100;
+      }
+      // si le modificateur est en numéraire, on calcule le coefficient par rapport au TTC
+      else {
+
+        // on ajoute à la base TTC de l'item, le prix TTC des ingrédients
+        // s'il y a au moins un ingredient
+
+        let __basettc = __ttc + 0;
+        itm.ingredients.forEach(ing => {
+          __basettc += (!__cmd.centimes) ? Math.round(ing.supplement * 100) : ing.supplement;
+        });
+
+        __itmdiscount = (val * 100) / __basettc;
+        console.log('Remise commande de '+val+' se traduit par un coeff de '+__itmdiscount);
+      }
+
+      if (__cmddiscount !== null) {
+        __itmdiscount *= __cmddiscount;
+      }
+
+    }
+
+    console.log('Remise combinée ('+__cmddiscount+' => '+__itmdiscount+')');
+
+
+    let __remttc = 0;
+    __remtaux = (__itmdiscount === null) ? 0 : Math.round(__itmdiscount * 100);
+
+    const __tx = Number(itm.tva.valeur);
+
+      
+    // s'il y a un discount on l'applique aux prix de l'item
+    if (__itmdiscount!==null) {
+
+      const __remht = __ht * __itmdiscount; // <- montant HT de la remise
+      const __calcht = __ht - __remht;  // <- montant HT de l'item après remise
+      __ht = Math.round(__calcht);  // <- HT arrondi
+      let __ottc = __ttc + 0; // <- le ttc de l'item avant remise;
+      __ttc = Math.round(__calcht * (1 + __tx)); // <- on applique la tva
+      __remttc = __ottc - __ttc;  // <- montant TTC de la remise
+      __cmdrem += __remttc;
+
+    }
+
+    // on récupère la tva de l'item et on déduit les montants HT, TVA et TTC au niveau de l'item
+    let __itmventil = {
+      [itm.tva.id]: {
+        taux: __tx,
+        code: itm.tva.code,
+        ttc: __ttc,
+        ht: __ht,
+        tva: __ttc - __ht
+      }
+    };
+
+    let __itx = 0;
+    let __ittc = 0;
+    let __iht = 0;
+    let __iremttc = 0;
+    let __iremtaux = 1;
+
+
+    // s'il y a au moins un ingredient
+    itm.ingredients.forEach((ing, j) => {
+
+      __iremttc = 0;
+
+      // on récupère la tva de l'ingredient et on déduit les montants HT, TVA et TTC
+      // (le TTC = supplement)
+      __itx = Number(ing.tva.valeur);
+      __ittc = (!__cmd.centimes) ? Math.round(ing.supplement * 100) : ing.supplement;
+      __iht = (!__cmd.centimes) ? Math.round(ing.supplementht * 100) : ing.supplementht;
+
+      __iremtaux = __remtaux;
+
+      
+      
+      // s'il y a un discount on l'applique aux prix de l'item
+      if (__itmdiscount!==null) {
+
+        const __remiht = __iht * __itmdiscount; // <- montant HT de la remise
+        const __calciht = __iht - __remiht; // montant HT de l'ingredient après remise
+        __iht = Math.round(__calciht);  // HT arrondi
+        let __iottc = __ittc + 0; // <- le ttc de l'item avant remise;
+        __ittc = Math.round(__calciht * (1 + __itx)); // <- on applique la tva
+        __iremttc = __iottc - __ittc;
+        __cmdrem += __iremttc;
+      }
+
+      if (!__itmventil.hasOwnProperty(ing.tva.id)) {
+        __itmventil[ing.tva.id] = {
+          taux: __itx,
+          code: ing.tva.code,
+          ttc: 0,
+          ht: 0,
+          tva: 0
+        };
+      }
+    
+      Object.assign(__itmventil[ing.tva.id], {
+        ttc: __itmventil[ing.tva.id].ttc + __ittc,
+        ht: __itmventil[ing.tva.id].ht + __iht,
+        tva: __itmventil[ing.tva.id].tva + (__ittc - __iht)
+      });
+
+      
+      __cmd.items[i].ingredients[j] = {
+        ...ing,
+        rem_txx: __iremtaux,
+        rem_tot: __iremttc,
+        tot_mht: __iht,
+        tot_ttc: __ittc
+      }
+      
+
+    });
+
+    __cmdttc += __ttc + __ittc;
+    __cmdht += __ht + __iht;
+
+    __cmd.items[i].rem_tot = __remttc;
+    __cmd.items[i].rem_txx = __remtaux;
+    __cmd.items[i].tot_mht = __ht;
+    __cmd.items[i].tot_ttc = __ttc;
+    __cmd.items[i].ventilation = __itmventil;
+
+    Object.entries(__itmventil).forEach(([k,v]) => {
+      if (!__ventilation.hasOwnProperty(k)) {
+        __ventilation[k] = {
+          taux: v.taux,
+          code: v.code,
+          ttc: 0,
+          ht: 0,
+          tva: 0
+        };
+      }
+      Object.assign(__ventilation[k], {
+        ttc: __ventilation[k].ttc + v.ttc,
+        ht: __ventilation[k].ht + v.ht,
+        tva: __ventilation[k].tva + v.tva
+      });
+    }); 
+
+  });  
+
+  __cmd.ventilation = __ventilation;
+  __cmd.remise = __cmdrem;
+  __cmd.total = __cmdttc;
+  __cmd.totalht = __cmdht;
+
+  return __cmd;
+}
+
+
+
+
 // on ventile la TVA au sein de chaque item et au sein de la commande
 // et on récapitule les Discounts
 function _getVentilation(commande, cataloguetva) {
 
   let __cmd = commande;
 
-  if (commande.status==="confirmed") {
+  // if (commande.status==="confirmed") {
 
 
     let __ventilation = {};
@@ -1115,7 +1387,7 @@ function _getVentilation(commande, cataloguetva) {
         const __ittc = (!__cmd.centimes) ? Math.round(ing.supplement * 100) : ing.supplement;
         const __iht = (!__cmd.centimes) ? Math.round(ing.supplementht * 100) : ing.supplementht;
 
-        if (__ittc>0) {
+        // if (__ittc>0) {
 
           if (!__itmventil.hasOwnProperty(ing.tva.id)) {
             __itmventil[ing.tva.id] = {
@@ -1135,7 +1407,7 @@ function _getVentilation(commande, cataloguetva) {
             // tva: __itmventil[ing.tva.id].tva + Math.round((__ittc / (1 + __itx)) * __itx)
           });
         
-        }
+        // }
 
       });
 
@@ -1190,7 +1462,7 @@ function _getVentilation(commande, cataloguetva) {
     }
     __cmd.ventilation = __ventilation;
 
-  }
+  //}
 
   return __cmd;
 
@@ -1497,7 +1769,7 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
           catalogueReducer.tva,
         );
       }
-      item.prix = Number((itm.price.total_price.amount / itm.quantity ) / 100);
+      item.prix = Number(itm.price.base_unit_price.amount / 100);
       item.puht = Number(prd.puht);
       commande.items.push(item);
     }

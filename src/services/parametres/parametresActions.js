@@ -10,52 +10,83 @@ import externalParams from '../../constants/externalParams.json';
 import { numeroServices } from '../commande/numeroServices';
 import { numeroActionTypes } from '../commande/numeroActionTypes';
 import { journalActions } from '../journal/journalActions';
+import { signatureServices } from '../signature/signatureServices';
+import { signatureActions } from '../signature/signatureActions';
 
 
 // const logger = new Logger();
 
 
 function replaceDatabase(database) {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     dispatch({type: parametresActionTypes.REPLACE_DATABASE_REQUEST, dd:database.database.parametres});
 
-    parametresServices.replaceDatabase(database.database.parametres)
-    .then(
-      conf => {
-        dispatch({type: parametresActionTypes.REPLACE_DATABASE_SUCCESS});
-        const {dbupdated} = getState().parametresReducer;
-        let upd = ['parametres'];
-        if (dbupdated) {
-          upd = [...dbupdated, ...upd];
-        }
-        dispatch({type: parametresActionTypes.INSTALL_DATABASE, value:upd});
+    try {
+      await parametresServices.replaceDatabase(database.database.parametres)
+    
+      dispatch({type: parametresActionTypes.REPLACE_DATABASE_SUCCESS});
+      
+      const {dbupdated} = getState().parametresReducer;
+      let upd = ['parametres'];
+      if (dbupdated) {
+        upd = [...dbupdated, ...upd];
+      }
 
-        if (dbupdated && dbupdated.length>=1) {
-          dispatch(parametresActions.update({
-            domaine: "options",
-            cle: "first_start",
-            valeur: false
-          }));
-        }
-      },
-      error => dispatch({type: parametresActionTypes.REPLACE_DATABASE_SUCCESS})
+      dispatch({type: parametresActionTypes.INSTALL_DATABASE, value:upd});
 
-    )
+
+      if (dbupdated && dbupdated.length>=1) {
+        dispatch(parametresActions.update({
+          domaine: "options",
+          cle: "first_start",
+          valeur: false
+        }));
+      }
+    }
+    catch(error) {
+      dispatch({type: parametresActionTypes.REPLACE_DATABASE_FAILURE});
+    }
+    
   }
 }
 
 
 function getAll() {
-  return dispatch => {
-   //   dispatch({ type: parametresActionTypes.GETALL_REQUEST });
-
-      parametresServices.getAll()
-          .then(
-              data => dispatch({ type: parametresActionTypes.GETALL_SUCCESS, ...data }),
-              error => dispatch({ type: parametresActionTypes.GETALL_FAILURE, error: error.toString() })
-          );
+  return async dispatch => {
+      try {
+        const data = await parametresServices.getAll()
+        dispatch({ type: parametresActionTypes.GETALL_SUCCESS, ...data });
+        dispatch(checkMandatoryData(data.parametres));
+      } 
+      catch(error) {
+        dispatch({ type: parametresActionTypes.GETALL_FAILURE, error: error.toString() })
+      }
   }
 };
+
+function checkMandatoryData(data) {
+  return dispatch => {
+
+    const {entreprise} = data;
+
+    let liste = [];
+    if (!entreprise.hasOwnProperty('denomination') || !entreprise.denomination) {liste.push('denomination');}
+    if (!entreprise.hasOwnProperty('enseigne') || !entreprise.enseigne) {liste.push('enseigne');}
+    if (!entreprise.hasOwnProperty('adresse') || !entreprise.adresse) {liste.push('adresse');}
+    if (!entreprise.hasOwnProperty('code_postal') || !entreprise.code_postal) {liste.push('code_postal');}
+    if (!entreprise.hasOwnProperty('ville') || !entreprise.ville) {liste.push('ville');}
+    if (!entreprise.hasOwnProperty('pays') || !entreprise.pays) {liste.push('pays');}
+    if (!entreprise.hasOwnProperty('siret') || !entreprise.siret) {liste.push('siret');}
+    if (!entreprise.hasOwnProperty('rcs') || !entreprise.rcs) {liste.push('rcs');}
+    if (!entreprise.hasOwnProperty('ape') || !entreprise.ape) {liste.push('ape');}
+    if (!entreprise.hasOwnProperty('tva') || !entreprise.tva) {liste.push('tva');}
+
+    console.log('checkMandatoryData()', liste);
+
+    dispatch({ type: parametresActionTypes.CHECK_MANDATORY, mandatoryerror: liste.length>0 });
+
+  }
+}
 
 
 function update(payload) {
@@ -111,37 +142,43 @@ function installStation() {
     });
     
     if(null !== result.value) {
-      parametresServices.installStation(result.value)
-      .then(
-        data => {
-          logger.info("DATA", data);
-          const {client_id, client_secret} = data;
-          logger.info("CLIENT ID SECRET", client_id, client_secret);
-          const payload = [{
-            "domaine": "entreprise",
-            "cle": "restaurant_id",
-            "valeur": client_id
-          },
-          {
-            "domaine": "entreprise",
-            "cle": "restaurant_secret",
-            "valeur": client_secret
-          }];
 
-          dispatch(journalActions.log('260', 'installation de la station'));
+      try {
 
-          parametresServices.update(payload)
-            .then(
-              data => {
-                dispatch({ type: parametresActionTypes.INSTALL_STATION_SUCCESS, ...data});
-              }
-            );
+        const data = await parametresServices.installStation(result.value)
+        
+        logger.info("DATA", data);
+        const {client_id, client_secret, trousseau_id, private_key, public_key} = data;
+        logger.info("CLIENT ID SECRET", client_id, client_secret);
 
-          // dispatch(update(payload));
-          
-        }, 
-        error => dispatch({ type: parametresActionTypes.INSTALL_STATION_FAILURE, error: error.toString() })
-      );
+        const payload = [{
+          "domaine": "entreprise",
+          "cle": "restaurant_id",
+          "valeur": client_id
+        },
+        {
+          "domaine": "entreprise",
+          "cle": "restaurant_secret",
+          "valeur": client_secret
+        }];
+
+        const trousseau = {
+          trousseauId: trousseau_id,
+          privateKey: private_key,
+          publicKey: public_key
+        };
+        
+        dispatch(journalActions.log('260', 'installation de la station'));
+        
+        dispatch(signatureActions.updateKeys(trousseau));
+
+        const updatedata = await parametresServices.update(payload)
+        dispatch({ type: parametresActionTypes.INSTALL_STATION_SUCCESS, ...updatedata}); 
+        
+      } 
+      catch(error) {
+        dispatch({ type: parametresActionTypes.INSTALL_STATION_FAILURE, error: error.toString() });
+      }
     }
   }
 }

@@ -5,6 +5,7 @@ const initialState = {
   parametres: {},
   error: null,
   statuschecked: false,
+  mandatoryError: true,
   online: null
 };
 
@@ -31,8 +32,6 @@ export function parametresReducer(state=initialState, action) {
     case parametresActionTypes.GETALL_SUCCESS:
 
       let newparams = action.parametres;
-
-      
 
       return {
         ...state,
@@ -143,6 +142,12 @@ export function parametresReducer(state=initialState, action) {
       return {
         ...state,
         online: action.value
+      };
+
+    case parametresActionTypes.CHECK_MANDATORY:
+      return {
+        ...state,
+        mandatoryError: action.mandatoryerror
       };
 
     case parametresActionTypes.GET_STATUS_SUCCESS:

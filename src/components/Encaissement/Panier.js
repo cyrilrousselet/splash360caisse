@@ -1336,7 +1336,7 @@ class Panier extends React.Component {
             updateCommande, 
             updateMode,
             standByCommande, 
-            livraisonCommande, 
+            validateCommande, 
             deleteCommande, 
             gotoListeCommandes, 
             openReglement, 
@@ -1538,7 +1538,7 @@ logger.info('⏰', schedule_delay);
    //   logger.info('validationHandler commande numero :', this.props.commande.numero);
       this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1, cmdMode:null});
       if (this.props.commande.mode==="livraison") updateCommande({});
-      livraisonCommande(this.props.commande, !this.props.commande.numero);
+      validateCommande(this.props.commande, !this.props.commande.numero);
     }
 
 
@@ -1816,14 +1816,14 @@ export default Panier;
 Panier.propTypes = {
   commande: PropTypes.object,
   loading: PropTypes.bool,
-  error: PropTypes.string,
+  error: PropTypes.object,
   parametres: PropTypes.object,
   getCommande: PropTypes.func,
   getParametres: PropTypes.func,
   getListeCommandes: PropTypes.func,
   updateCommande: PropTypes.func,
   standByCommande: PropTypes.func,
-  livraisonCommande: PropTypes.func,
+  validateCommande: PropTypes.func,
   deleteCommande: PropTypes.func,
   updateProduit: PropTypes.func,
   gotoListeCommandes: PropTypes.func,

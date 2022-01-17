@@ -83,6 +83,10 @@ const data = {
                     titre: 'Clôture automatique impossible',
                     texte_nc: 'Vous devez abandonner ou encaisser les commandes à encaisser pour pouvoir utiliser la caisse.',
                     texte_c: 'Vous devez clôturer manuellement les commandes.'
+                },
+                mandatory_error: {
+                    titre: 'Données manquantes',
+                    texte: 'Il manque des données obligatoires pour pouvoir faire des ventes.<br /> Merci de vérifier vos données dans le module "Paramètres > Entreprise" et contacter le support technique.'
                 }
             }
         },
@@ -937,20 +941,23 @@ const data = {
                                 pays: 'Pays',
                                 telephone: 'Numéro de téléphone',
                                 siret: 'No SIRET',
+                                rcs: 'RCS',
                                 ape: 'Code APE',
                                 tva: 'No TVA',
                                 restaurant_id: 'ID Restaurant'
                             },
                             placeholder: {
-                                denomination: 'votre dénomination ici',
-                                enseigne: 'votre nom ici',
-                                adresse: 'Adresse',
-                                code_postal: 'Ex. : 75001',
-                                ville: 'Ex. : Paris',
+                                denomination: '!!! MANQUANT !!!',
+                                enseigne: '!!! MANQUANT !!!',
+                                adresse: '!!! MANQUANT !!!',
+                                code_postal: '!!! MANQUANT !!!',
+                                ville: '!!! MANQUANT !!!',
+                                pays: '!!! MANQUANT !!!',
                                 telephone: 'Ex. : 01 02 03 04 05',
-                                siret: '14 caractères',
-                                ape: '5 caractères',
-                                tva: '13 caractères'
+                                siret: '!!! MANQUANT !!!',
+                                rcs: '!!! MANQUANT !!!',
+                                ape: '!!! MANQUANT !!!',
+                                tva: '!!! MANQUANT !!!'
                             }
                         },
                         objectif: {
@@ -1372,12 +1379,13 @@ const data = {
                     sous_total: 'SOUS-TOTAL',
                     total_ttc: 'TOTAL TTC',
                     nbr_lignes: 'Nombre de lignes :',
+                    total_remise: 'TOTAL REMISE :'
                 },
                 modificateur: {
                     charge: 'CHARGE',
-                    discount_panier: 'REDUCTION PANIER',
+                    discount_panier: 'REMISE PANIER',
                     frais_panier: 'FRAIS',
-                    discount_item: 'Reduction article',
+                    discount_item: 'Remise article',
                     frais_item: 'Frais article',
                     monnaie: 'EUR'
                 },

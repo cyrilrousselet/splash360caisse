@@ -29,7 +29,7 @@ const data_ent = {
   message_ticket: 'Bon appétit, merci de votre visite et à bientôt !'
 };
 
-const general_fields = ['denomination', 'enseigne', 'adresse', 'code_postal', 'ville', 'pays', 'telephone', 'siret', 'ape', 'tva', 'restaurant_id'];
+const general_fields = ['denomination', 'enseigne', 'adresse', 'code_postal', 'ville', 'pays', 'telephone', 'siret', 'rcs', 'ape', 'tva', 'restaurant_id'];
 const general_switch = ['auto_update'];
 
 class Entreprise extends React.Component {
@@ -129,6 +129,7 @@ getLogoImg(filePath) {
               id={ `parament-${field}` }
               key={ `${field}-${i}` }
               name={ field }
+              className={ (!data[field] || data[field]==='') && 'labelledfield-error' }
               value={ data[field] || '' } 
               placeholder={ strings.modules.parametres.submodules.entreprise.general.placeholder[field] } 
               type='text' 

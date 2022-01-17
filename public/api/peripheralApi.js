@@ -1303,8 +1303,10 @@ function _printEntreprise(printer, data, strings) {
       .feed(1)
       .align('CT')
     ;
-    // nom
-    printer.style('B').text(data.nom);
+    // enseigne
+    printer.fontSize('4square').style('B').text(data.enseigne);
+    // denomination
+    printer.fontSize('normal').style('A').text(data.denomination);
     // coordonnées
     data.coordonnees.forEach((string) => {
       if (string!==null ) printer.style('NORMAL').text(string);
@@ -1511,45 +1513,66 @@ function _printCommande(printer, data, strings) {
   }
 
 
+  const artcolwidth = (data.status==='confirmed') ? 22 : 24;
+
   // articles
   // header
-  printer
-    .style('B')
-    .tableCustom([
-      {text: strings.detail.quantite, cols:3, align:'RIGHT'},
-      {text:'', cols:1},
-      {text: strings.detail.articles, cols:22, align:'LEFT'},
-      {text:'', cols:1},
-      {text: strings.detail.prix_unitaire, cols:6, align:'RIGHT'},
-      {text:'', cols:1},
-      {text: strings.detail.total, cols:6, align:'RIGHT'},
+
+  let __entete = [
+    {text: strings.detail.quantite, cols:3, align:'RIGHT'},
+    {text:'', cols:1},
+    {text: strings.detail.articles, cols:artcolwidth, align:'LEFT'},
+    {text:'', cols:1},
+    {text: strings.detail.prix_unitaire, cols:6, align:'RIGHT'},
+    {text:'', cols:1},
+    {text: strings.detail.total, cols:6, align:'RIGHT'}
+  ];
+  if (data.status==='confirmed') {
+    __entete = [
+      ...__entete,
       {text:'', cols:1},
       {text: strings.detail.code_tva, cols:1}
-    ])
+    ];
+  }
+
+
+  printer
+    .style('B')
+    .tableCustom(__entete)
     .drawLine();
 
   // articles :
   printer
     .style('NORMAL');
 
-    let _linecount = 0;
+  let _linecount = 0;
 
-    let _subtotal = 0;
+  // let _subtotal = 0;
 
       
   data.articles.forEach((article) => {
-    _subtotal += Number(article.prix);
-    printer.align('CT').style('B').tableCustom([
+
+
+    // _subtotal += Number(article.prix);
+    let __ligne = [
       {text: article.qte, cols:3, align:'RIGHT'},
       {text:'', cols:1},
-      {text: article.nom, cols:22, align:'LEFT'},
+      {text: article.nom, cols:artcolwidth, align:'LEFT'},
       {text:'', cols:1},
       {text: article.pu, cols:6, align:'RIGHT'},
       {text:'', cols:1},
-      {text: (Number(article.qte)*Number(article.pu)).toFixed(2), cols:6, align:'RIGHT'},
-      {text:'', cols:1},
-      {text: article.codetva, cols:1}
-    ]);
+      {text: (Number(article.qte)*Number(article.pu)).toFixed(2), cols:6, align:'RIGHT'}
+    ];
+    if (data.status==='confirmed') {
+      __ligne = [
+        ...__ligne,
+        {text:'', cols:1},
+        {text: article.codetva, cols:1}
+      ];
+    }
+
+    printer.align('CT').style('B').tableCustom(__ligne);
+    
     if (article.comment!=='') {
       printer.align('CT').style('B').tableCustom([
         {text:'', cols:3},
@@ -1589,16 +1612,13 @@ function _printCommande(printer, data, strings) {
       });
     }
     if (article.modificateur) {
-      const modnom = article.modificateur.nom || ((article.modificateur.operation>0) ? strings.modificateur.frais_item : strings.modificateur.discount_item);
-      const modope = (article.modificateur.operation===1) ? '+' : '-';
+      const modnom = strings.modificateur.discount_item;
+      const modope = '-';
       printer.align('CT').style('B').tableCustom([
         {text: '', cols:4},
-        // {text: strings.modificateur.discount_item, cols:22, align:'LEFT'},
         {text: modnom, cols:22, align:'LEFT'},
         {text:'', cols:1},
-        {text: article.modificateur.montant ? '' : modope+article.modificateur.valeur, cols:6, align:'RIGHT'},
-        {text:'', cols:1},
-        {text: article.modificateur.montant ? modope+article.modificateur.montant.toFixed(2) : modope+article.modificateur.valeur, cols:6, align:'RIGHT'},
+        {text: modope+article.modificateur.montant, cols:13, align:'RIGHT'},
         {text:'', cols:2}
       ]);
       _linecount++;
@@ -1606,60 +1626,60 @@ function _printCommande(printer, data, strings) {
   });
 
   // modificateurs (charge ou discount) au niveau de la commande
-  if (data.modificateur) {
-    const modnom = data.modificateur.nom || ((data.modificateur.operation>0) ? strings.modificateur.frais_panier : strings.modificateur.discount_panier);
-    const modope = (data.modificateur.operation===1) ? '+' : '-';
+  //  if (data.modificateur) {
+    //  const modnom = strings.modificateur.discount_panier;
+    //  const modope = '-';
 
-    // sous-total
-    printer
-      .drawLine()
-      .align('CT')
-      // .fontSize('4square')
-      .fontSize('normal')
-      .tableCustom([
-        {text: `${strings.detail.sous_total}   ${_subtotal.toFixed(2).toString().replace('.',',')}`, cols:42, align:'right'}
-      ])
-      // .fontSize('4square')
-      .fontSize('normal')
-      .drawLine();
+    //  // sous-total
+    //  printer
+    //   .drawLine()
+    //   .align('CT')
+    //   // .fontSize('4square')
+    //   .fontSize('normal')
+    //   .tableCustom([
+    //     {text: `${strings.detail.sous_total}   ${_subtotal.toFixed(2).toString().replace('.',',')}`, cols:42, align:'right'}
+    //   ])
+    //   // .fontSize('4square')
+    //   .fontSize('normal')
+    //   .drawLine();
 
-      const ispc = String(data.modificateur.valeur).substr(-1,1)==='%';
-      let modval = Math.abs(Number(String(data.modificateur.valeur).slice(0,-1)));
-      let montant = null;
-      if (!ispc) {
-        modval = modval.toFixed(2).toString().replace('.',',') + ' EUR';
-      } else {
-        modval += ' %';
-        montant = data.modificateur.montant.toFixed(2).toString().replace('.',',') + ' EUR';
-      }
+    //   const ispc = String(data.modificateur.valeur).substr(-1,1)==='%';
+    //   let modval = Math.abs(Number(String(data.modificateur.valeur).slice(0,-1)));
+    //   let montant = null;
+    //   if (!ispc) {
+    //     modval = modval.toFixed(2).toString().replace('.',',') + ' EUR';
+    //   } else {
+    //     modval += ' %';
+    //     montant = data.modificateur.montant.toFixed(2).toString().replace('.',',') + ' EUR';
+    //   }
 
-    if (montant) {
+  //   if (montant) {
         
-      printer
-        .align('CT')
-        // .fontSize('4square')
-        .fontSize('normal')
-        .tableCustom([
-          {text: modnom, cols:22, align:'LEFT'},
-          {text: modope+modval, cols:10, align:'RIGHT'},
-          {text: modope+montant, cols:10, align:'RIGHT'}
-        ])
-        .fontSize('normal')
-      }
-      else {
+  //     printer
+  //       .align('CT')
+  //       // .fontSize('4square')
+  //       .fontSize('normal')
+  //       .tableCustom([
+  //         {text: modnom, cols:22, align:'LEFT'},
+  //         {text: modope+modval, cols:10, align:'RIGHT'},
+  //         {text: modope+montant, cols:10, align:'RIGHT'}
+  //       ])
+  //       .fontSize('normal')
+  //     }
+  //     else {
 
-      printer
-      .align('CT')
-      // .fontSize('4square')
-      .fontSize('normal')
-      .tableCustom([
-        {text: modnom, cols:22, align:'LEFT'},
-        {text: '', cols:10, align:'RIGHT'},
-        {text: modope+modval, cols:10, align:'RIGHT'}
-      ])
-      .fontSize('normal')
-      }
-  }
+  //     printer
+  //     .align('CT')
+  //     // .fontSize('4square')
+  //     .fontSize('normal')
+  //     .tableCustom([
+  //       {text: modnom, cols:22, align:'LEFT'},
+  //       {text: '', cols:10, align:'RIGHT'},
+  //       {text: modope+modval, cols:10, align:'RIGHT'}
+  //     ])
+  //     .fontSize('normal')
+  //     }
+  //  }
 
   // total
   printer
@@ -1674,50 +1694,78 @@ function _printCommande(printer, data, strings) {
     .fontSize('normal')
     .drawLine();
 
+
   printer
-    .font('A')
-    .align('CT')
+  .font('A')
+  .align('CT')
+  .tableCustom([
+    {text: `${strings.detail.nbr_lignes} ${_linecount}`, cols:42, align:'LEFT'}
+  ])
+  .drawLine();
+
+  // total remise
+  printer
     .tableCustom([
-      {text: `${strings.detail.nbr_lignes} ${_linecount}`, cols:42, align:'LEFT'}
+      {text: `${strings.detail.total_remise} ${data.total.remise.replace('.',',')}`, cols:42, align:'LEFT'}
     ]);
+
 
   if (data.status==='confirmed') {
 
-  // tva
-  printer
-    .align('CT')
-    .drawLine();
+    // tva
+    printer
+      .align('CT')
+      .drawLine();
 
-  // header
-  printer
-    .align('CT')
-    .style('B')
-    .tableCustom([
-      {text: strings.tva.code, cols:4, align:'LEFT'},
-      {text:'', cols:2},
-      {text: strings.tva.taux, cols:6, align:'RIGHT'},
-      {text:'', cols:2},
-      {text: strings.tva.tva, cols:8, align:'RIGHT'},
-      {text:'', cols:2},
-      {text: strings.tva.ht, cols:8, align:'RIGHT'},
-      {text:'', cols:2},
-      {text: strings.tva.ttc, cols:8, align:'RIGHT'}
-    ])
-    .style('NORMAL')
+    // header
+    printer
+      .align('CT')
+      .style('B')
+      .tableCustom([
+        {text: strings.tva.code, cols:4, align:'LEFT'},
+        {text:'', cols:2},
+        {text: strings.tva.taux, cols:6, align:'RIGHT'},
+        {text:'', cols:2},
+        {text: strings.tva.tva, cols:8, align:'RIGHT'},
+        {text:'', cols:2},
+        {text: strings.tva.ht, cols:8, align:'RIGHT'},
+        {text:'', cols:2},
+        {text: strings.tva.ttc, cols:8, align:'RIGHT'}
+      ])
+      .style('NORMAL')
 
-  for (let [key, value] of Object.entries(data.total.tva)) {
-    printer.tableCustom([
-      {text:key, cols:4, align:'LEFT'},
-      {text:'', cols:2},
-      {text:value.taux, cols:6, align:'RIGHT'},
-      {text:'', cols:2},
-      {text:value.montant.toFixed(2).replace('.',','), cols:8, align:'RIGHT'},
-      {text:'', cols:2},
-      {text:value.ht.toFixed(2).replace('.',','), cols:8, align:'RIGHT'},
-      {text:'', cols:2},
-      {text:value.ttc.toFixed(2).replace('.',','), cols:8, align:'RIGHT'}
-    ]);
-  }
+    // body
+    for (let value of data.total.tva) {
+
+
+      printer.tableCustom([
+        {text:value.code, cols:4, align:'LEFT'},
+        {text:'', cols:2},
+        {text:value.taux.toString().replace('.',','), cols:6, align:'RIGHT'},
+        {text:'', cols:2},
+        {text:value.taxe.replace('.',','), cols:8, align:'RIGHT'},
+        {text:'', cols:2},
+        {text:value.ht.replace('.',','), cols:8, align:'RIGHT'},
+        {text:'', cols:2},
+        {text:value.ttc.replace('.',','), cols:8, align:'RIGHT'}
+      ]);
+    }
+
+
+    // footer
+    printer
+      .align('CT')
+      .style('B')
+      .tableCustom([
+        {text: 'TOTAL :', cols:12, align:'RIGHT'},
+        {text:'', cols:2},
+        {text: data.total.taxe.replace('.',','), cols:8, align:'RIGHT'},
+        {text:'', cols:2},
+        {text: data.total.ht.replace('.',','), cols:8, align:'RIGHT'},
+        {text:'', cols:2},
+        {text: data.total.total.replace('.',','), cols:8, align:'RIGHT'}
+      ])
+      .style('NORMAL')
 
   }
   // reglements
@@ -1731,9 +1779,9 @@ function _printCommande(printer, data, strings) {
       data.reglements.forEach(reglement => {
         printer.style('NORMAL').tableCustom([
           {text:'', cols:1},
-          {text: reglement.moyen, cols:28, align:'LEFT'},
+          {text: reglement.lib, cols:28, align:'LEFT'},
           {text:'', cols:1},
-          {text: `${reglement.valeur.toFixed(2).replace('.',',')} ${strings.reglements.monnaie}`, cols:12, align:'RIGHT'}
+          {text: `${reglement.valeur.replace('.',',')} ${strings.reglements.monnaie}`, cols:12, align:'RIGHT'}
         ]);
       });
   }
@@ -2279,36 +2327,89 @@ function _printMessage(printer, data, strings) {
 // mentions légales sur le ticket
 function _printLegal(printer, data, strings) {
 
-  printer.align('LT')
+  printer.align('CT')
 
-  if (data.status==='confirmed') {
-    printer.text(`Opération : ${data.type}`);
-  }
+  
+  printer.tableCustom([
+    {text: `Opération : ${data.type}`, cols:42, align:'LEFT'},
+  ]);
+  
 
   printer
-    .text(`Vendeur : ${data.vendeur}`)
-    .text(`Caisse : ${data.caisse}`);
+    .tableCustom([{text: `Vendeur : ${data.vendeur}`, cols:42, align:'LEFT'}])
+    .tableCustom([{text: `Caisse : ${data.caisse}`, cols:42, align:'LEFT'}]);
   
   if (data.status==='confirmed') {
     printer
-      .text(`C.Paiement : ${data.centre}`);
-    
-    if (data.duplicataid!=='') {
-      printer
-      .text(`(NF525) B0000 - ${data.duplicatasignature} - Splash ${data.version}`)
-      .text(`Duplicata : ${data.duplicataid}`)
-      .text(`Ticket original : ${data.ticketid} (${data.signature})`);
-    }
-    else {
-      printer
-      .text(`(NF525) B0000 - ${data.signature} - Splash ${data.version}`)
-      .text(`Ticket : ${data.ticketid}`);
-    }
-    printer.text(`Nombre d'impressions : ${data.printid}`);
+      .tableCustom([{text: `C.Paiement : ${data.centre}`, cols:42, align:'LEFT'}]);
+  }  
+  if (data.duplicataid!=='') {
+    printer
+    .tableCustom([{text: `(NF525) B0000 - ${data.duplicatasignature} - Splash360 ${data.version}`, cols:42, align:'LEFT'}])
+    .tableCustom([{text: `Duplicata : ${data.duplicataid}`, cols:42, align:'LEFT'}])
+    .tableCustom([{text: `${(data.status==='confirmed') ? 'Ticket original' : 'Note originale'} : ${data.ticketid} (${data.signature})`, cols:42, align:'LEFT'}]);
+  }
+  else {
+    printer
+    .tableCustom([{text: `(NF525) B0000 - ${data.signature} - Splash360 ${data.version}`, cols:42, align:'LEFT'}])
+    .tableCustom([{text: `${(data.status==='confirmed') ? 'Ticket' : 'Note'} : ${data.ticketid}`, cols:42, align:'LEFT'}]);
+  }
+  printer.tableCustom([{text: `Nombre d'impressions : ${data.printid}`, cols:42, align:'LEFT'}]);
+  printer.feed();
+
+  if (data.status!=='confirmed') {
+    printer
+    .align('CT')
+    .fontSize('2height')
+    .text('DOCUMENT PROVISOIRE');
   }
   printer
-    .align('CT')
-    .text(data.date);
+    .fontSize('normal')
+    .align('CT');
+  if (data.duplicataid!=='') {
+    printer.text('Dupliqué le '+data.duplicatagdh);
+  } else {
+    printer.text(data.date);
+  }
+  
+
+  // printer.align('LT')
+
+  
+  // printer.text(`Opération : ${data.type}`);
+  
+
+  // printer
+  //   .text(`Vendeur : ${data.vendeur}`)
+  //   .text(`Caisse : ${data.caisse}`);
+  
+  // if (data.status==='confirmed') {
+  //   printer
+  //     .text(`C.Paiement : ${data.centre}`);
+  // }  
+  // if (data.duplicataid!=='') {
+  //   printer
+  //   .text(`(NF525) B0000 - ${data.duplicatasignature} - Splash360 ${data.version}`)
+  //   .text(`Duplicata : ${data.duplicataid}`)
+  //   .text(`${(data.status==='confirmed') ? 'Ticket original' : 'Note originale'} : ${data.ticketid} (${data.signature})`);
+  // }
+  // else {
+  //   printer
+  //   .text(`(NF525) B0000 - ${data.signature} - Splash360 ${data.version}`)
+  //   .text(`${(data.status==='confirmed') ? 'Ticket' : 'Note'} : ${data.ticketid}`);
+  // }
+  // printer.text(`Nombre d'impressions : ${data.printid}`);
+  // printer.feed();
+  // if (data.status!=='confirmed') {
+  //   printer
+  //   .align('CT')
+  //   .fontSize('2height')
+  //   .text('DOCUMENT PROVISOIRE');
+  // }
+  // printer
+  //   .fontSize('normal')
+  //   .align('CT')
+  //   .text(data.date);
 }
 
 

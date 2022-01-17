@@ -32,6 +32,8 @@ const TicketSchema = mongoose.Schema(
     'ENC-TIK-LOG': String,
     'ENC-TIK-TOT-MHT': Number,
     'ENC-TIK-TOT-TTC': Number,
+    'FAC-TOT-TVA': Number,
+    'ENC-TIK-REM-MTN': Number,
     'LIGNES':[{
       'ENC-NID': String,
       'ENC-TIK-ORI-NUM': String,

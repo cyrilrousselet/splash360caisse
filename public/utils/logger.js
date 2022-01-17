@@ -41,7 +41,7 @@ const fileOut = format.combine(
 const outTransport = new transports.DailyRotateFile({
   filename: '%DATE%-stdout.log',
   dirname: `${app.getPath('userData')}/logs`,
-  datePattern: 'YYDDD',
+  datePattern: 'YYDDDD',
   zippedArchive: true,
   maxSize: '20m',
   format: fileOut
@@ -50,7 +50,7 @@ const outTransport = new transports.DailyRotateFile({
 const errorTransport = new transports.DailyRotateFile({
   filename: '%DATE%-stderr.log',
   dirname: `${app.getPath('userData')}/logs`,
-  datePattern: 'YYDDD',
+  datePattern: 'YYDDDD',
   zippedArchive: true,
   maxSize: '20m',
 
