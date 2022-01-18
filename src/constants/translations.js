@@ -1379,6 +1379,7 @@ const data = {
                     sous_total: 'SOUS-TOTAL',
                     total_ttc: 'TOTAL TTC',
                     nbr_lignes: 'Nombre de lignes :',
+                    avant_remise: 'AVANT REMISE :',
                     total_remise: 'TOTAL REMISE :'
                 },
                 modificateur: {

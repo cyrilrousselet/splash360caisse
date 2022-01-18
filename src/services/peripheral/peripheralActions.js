@@ -697,17 +697,17 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
           // const cmdTva = {};
           let articles = [];
-          // let total = 0;
-          // let articletotal = 0;
+          let total = 0;
+          let articletotal = 0;
           let __comment = null;
-          // let __modificateur = null;
+          let __modificateur = null;
           cmd.items.forEach(article => {
 
 
             // const artTva = {};
             let articleIngredients = [];
             // articletotal = article.quantite * article.prix;
-            // articletotal = Number(article.pu)*article.quantite;
+            articletotal = Number(article.pu) * article.quantite;
             let articleRemise = 0;
 
             article.ingredients.forEach((ing,i) => {
@@ -727,13 +727,16 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
                 }
               }
 
-
+              
+              
               // commentaire pour l'ingrédient
               __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===ing.ingredient)
-
+              
               const ligne_i = piece['LIGNES'].find(l => l['ENC-TIK-ORI-NUM']===article.itemid+'-'+i);
               // let artIngTva = ing.tva;
 
+              articletotal += Number(ligne_i['ENC-TIK-LIG-PRO-TTC'] / 100) * ligne_i['ENC-TIK-LIG-PRO-QTE'];
+              
               console.log('ligne_i', ligne_i, ing.ingredient);
 
               if (ing.fromStep!==null && !__noprint) {
@@ -745,7 +748,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
                   prix: ligne_i['ENC-TIK-LIG-TOT-TTC']===0 ? '' : Number((ligne_i['ENC-TIK-LIG-PRO-TTC'] / 100) * ligne_i['ENC-TIK-LIG-PRO-QTE']).toFixed(2),
                   weight: __ingweight,
                   comment: __comment ? removeDiacritics(__comment.texte) : '',
-                  modificateur: ligne_i['ENC-TIK-LIG-REM-TOT']!==0 ? {montant: Number(ligne_i['ENC-TIK-LIG-REM-TOT'] / 100).toFixed(2), valeur: ligne_i['ENC-TIK-LIG-REM-TXX']}: 0
+                  // modificateur: ligne_i['ENC-TIK-LIG-REM-TOT']!==0 ? {montant: Number(ligne_i['ENC-TIK-LIG-REM-TOT'] / 100).toFixed(2), valeur: ligne_i['ENC-TIK-LIG-REM-TXX']}: 0
                   
                   // qte: ing.qte,
                   // codetva: artIngTva.code,
@@ -790,15 +793,15 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
           
             // modificateurs pour l'article
-            // __modificateur = cmd.modificateurs.find(m => m.item===article.itemid && m.ingredient===null);
+            __modificateur = cmd.modificateurs.find(m => m.item===article.itemid && m.ingredient===null);
             // let amodtx = 1;
             // let __montant = 0;
             // if (__modificateur) {
 
-            //   // ispc :bool (is percent)
+            // //   // ispc :bool (is percent)
             //   const ispc = String(__modificateur.valeur).substr(-1,1)==='%';
             //   const val = Math.abs(Number(String(__modificateur.valeur).slice(0,-1)));
-            //   __montant = ispc ? articletotal*(val/100) : val;
+            //   __montant = ispc ? articletotal * (val / 100) : val;
 
             //   // conversion du modificateur en coefficient
             //   amodtx = (ispc) 
@@ -831,8 +834,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               prix: ligne_p['ENC-TIK-LIG-TOT-TTC']===0 ? '' : Number((ligne_p['ENC-TIK-LIG-PRO-TTC'] / 100) * ligne_p['ENC-TIK-LIG-PRO-QTE']).toFixed(2),
               ingredients: articleIngredients,
               comment: __comment ? removeDiacritics(__comment.texte) : '',
-              modificateur: ligne_p['ENC-TIK-LIG-REM-TOT']!==0 ? {montant: Number((ligne_p['ENC-TIK-LIG-REM-TOT'] + articleRemise) / 100).toFixed(2), valeur: ligne_p['ENC-TIK-LIG-REM-TXX']}: 0
-              
+              // modificateur: ligne_p['ENC-TIK-LIG-REM-TOT']!==0 ? {montant: Number((ligne_p['ENC-TIK-LIG-REM-TOT'] + articleRemise) / 100).toFixed(2), valeur: ligne_p['ENC-TIK-LIG-REM-TXX']}: 0
+              soustotal: article.prix.toFixed(2),
               // qte: article.quantite,
               // codetva: article.tva.code,
               // nom: removeDiacritics(article.nom),
@@ -840,7 +843,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               // prix: articletotal.toFixed(2),
               // ingredients: articleIngredients,
               // comment: __comment ? removeDiacritics(__comment.texte) : '',
-              // modificateur: __modificateur ? {valeur: __modificateur.valeur, montant: __montant, operation: __modificateur.operation, nom: __modificateur.nom} : null
+              modificateur: __modificateur ? __modificateur : null
             });
 
 
@@ -903,7 +906,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
             // logger.info('iht','(Number('+article.pu+')*'+article.quantite+') / (1 + Number('+article.tva.valeur +'))');
             // logger.info(JSON.stringify(cmdTva));
-            // total += articletotal;
+            total += articletotal;
           });
           
           
@@ -911,13 +914,13 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           __comment = cmd.comments.find(c => c.item===null && c.ingredient===null);
 
           // modificateurs pour la commande
-        //   __modificateur = cmd.modificateurs.find(c => c.item===null && c.ingredient===null);
+          __modificateur = cmd.modificateurs.find(c => c.item===null && c.ingredient===null);
         //   if (__modificateur) {
         // //   total += Number(__modificateur.valeur);
 
         //     const ispc = String(__modificateur.valeur).substr(-1,1)==='%';
         //     const val = Math.abs(Number(String(__modificateur.valeur).slice(0,-1)));
-        //     const montant = ispc ? total*(val/100) : val;
+        //     const montant = ispc ? total * (val/100) : val;
 
         //     __modificateur = {...__modificateur, montant: montant};
 
@@ -982,6 +985,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               taxe: Number(piece['FAC-TOT-TVA'] / 100).toFixed(2),
               tva: ventiltva,
               remise: Number(piece['ENC-TIK-REM-MTN'] / 100).toFixed(2),
+              soustotal: cmd.soustotal,
+              avantremise: cmd.ttcavantremise.toFixed(2)
             },
             status: cmd.status,
             scheduled: cmd.scheduled ? format(new Date(cmd.scheduled), 'HH:mm') : null,
@@ -991,7 +996,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             rendus: cmd.rendus,
             troppercu: cmd.troppercu,
             comment: __comment ? __comment.texte : '',
-            modificateur: piece['ENC-TIK-REM-MTN'] || null,
+            // modificateur: piece['ENC-TIK-REM-MTN'] || null,
+            modificateur: __modificateur ? __modificateur : null,
             client: cmd.client && clients.find(c=>c.client_id===cmd.client.client_id)
           };
 

@@ -1559,9 +1559,9 @@ function _printCommande(printer, data, strings) {
       {text:'', cols:1},
       {text: article.nom, cols:artcolwidth, align:'LEFT'},
       {text:'', cols:1},
-      {text: article.pu, cols:6, align:'RIGHT'},
+      {text: String(article.pu).replace('.',','), cols:6, align:'RIGHT'},
       {text:'', cols:1},
-      {text: (Number(article.qte)*Number(article.pu)).toFixed(2), cols:6, align:'RIGHT'}
+      {text: (Number(article.qte)*Number(article.pu)).toFixed(2).replace('.',','), cols:6, align:'RIGHT'}
     ];
     if (data.status==='confirmed') {
       __ligne = [
@@ -1592,9 +1592,9 @@ function _printCommande(printer, data, strings) {
           {text:'', cols:1},
           {text: '  '+ingredient.nom, cols:22, align:'LEFT'},
           {text:'', cols:1},
-          {text: ingredient.pu, cols:6, align:'RIGHT'},
+          {text: String(ingredient.pu).replace('.',','), cols:6, align:'RIGHT'},
           {text:'', cols:1},
-          {text: ingredient.prix, cols:6, align:'RIGHT'},
+          {text: String(ingredient.prix).replace('.',','), cols:6, align:'RIGHT'},
           {text:'', cols:1},
           {text: ingredient.codetva, cols:1}
         ]);
@@ -1614,11 +1614,14 @@ function _printCommande(printer, data, strings) {
     if (article.modificateur) {
       const modnom = strings.modificateur.discount_item;
       const modope = '-';
+      const ispc = String(article.modificateur.valeur).substr(-1,1)==='%';
       printer.align('CT').style('B').tableCustom([
         {text: '', cols:4},
         {text: modnom, cols:22, align:'LEFT'},
         {text:'', cols:1},
-        {text: modope+article.modificateur.montant, cols:13, align:'RIGHT'},
+        {text: ispc ? modope+article.modificateur.valeur : '', cols:6, align:'RIGHT'},
+        {text:'', cols:1},
+        {text: modope+article.modificateur.montant.toFixed(2).replace('.',','), cols:6, align:'RIGHT'},
         {text:'', cols:2}
       ]);
       _linecount++;
@@ -1626,22 +1629,33 @@ function _printCommande(printer, data, strings) {
   });
 
   // modificateurs (charge ou discount) au niveau de la commande
-  //  if (data.modificateur) {
-    //  const modnom = strings.modificateur.discount_panier;
-    //  const modope = '-';
+  if (data.modificateur) {
+     const modnom = strings.modificateur.discount_panier;
+     const modope = '-';
+     const ispc = String(data.modificateur.valeur).substr(-1,1)==='%';
+     const cmdmodval = String(data.modificateur.valeur).slice(0,-1);
 
-    //  // sous-total
-    //  printer
-    //   .drawLine()
-    //   .align('CT')
-    //   // .fontSize('4square')
-    //   .fontSize('normal')
-    //   .tableCustom([
-    //     {text: `${strings.detail.sous_total}   ${_subtotal.toFixed(2).toString().replace('.',',')}`, cols:42, align:'right'}
-    //   ])
-    //   // .fontSize('4square')
-    //   .fontSize('normal')
-    //   .drawLine();
+     // sous-total
+     printer
+      .drawLine()
+      .align('CT')
+      .fontSize('normal')
+      .tableCustom([
+        {text: `${strings.detail.sous_total}   ${data.total.soustotal.toFixed(2).replace('.',',')}`, cols:40, align:'right'},
+        {text:'', cols:2}
+      ])
+      .fontSize('normal')
+      .drawLine();
+
+      printer.align('CT').style('B').tableCustom([
+        {text: '', cols:4},
+        {text: modnom, cols:22, align:'LEFT'},
+        {text:'', cols:1},
+        {text: ispc ? modope+data.modificateur.valeur : '', cols:6, align:'RIGHT'},
+        {text:'', cols:1},
+        {text: ispc ? modope+data.modificateur.montant.toFixed(2).replace('.',',') : modope+Number(cmdmodval).toFixed(2).replace('.',','), cols:6, align:'RIGHT'},
+        {text:'', cols:2}
+      ]);
 
     //   const ispc = String(data.modificateur.valeur).substr(-1,1)==='%';
     //   let modval = Math.abs(Number(String(data.modificateur.valeur).slice(0,-1)));
@@ -1679,7 +1693,7 @@ function _printCommande(printer, data, strings) {
   //     ])
   //     .fontSize('normal')
   //     }
-  //  }
+  }
 
   // total
   printer
@@ -1705,6 +1719,9 @@ function _printCommande(printer, data, strings) {
 
   // total remise
   printer
+    .tableCustom([
+      {text: `${strings.detail.avant_remise} ${data.total.avantremise.replace('.',',')}`, cols:42, align:'LEFT'}
+    ])
     .tableCustom([
       {text: `${strings.detail.total_remise} ${data.total.remise.replace('.',',')}`, cols:42, align:'LEFT'}
     ]);

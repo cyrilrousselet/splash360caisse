@@ -545,6 +545,10 @@ class DiscountModal extends React.Component {
     //   if (this.refs.commentInput) this.refs.commentInput.focus();
     // },500);
 
+    const __surpanier = ingredient===null && item===null;
+
+    const __filteredDsclib = dsclib.filter(d => (__surpanier ? d.valeur.substr(-1,1)!=="%" : true));
+
     const __mttl = (ingredient) ? 'titre_ing' : (item) ? 'titre_itm' : 'titre_cmd';
 
     const readytosave = valeur!==null;
@@ -578,7 +582,7 @@ class DiscountModal extends React.Component {
             <div className="form-group">
               <div className="label">{ strings.modules.encaissement.discount.predefini }</div>
               <div className="choix">
-                {dsclib && dsclib.map(dsc=>(
+                {__filteredDsclib && __filteredDsclib.map(dsc=>(
                   <div className="dsclib-item" key={`dsc-${dsc.id}`} onClick={()=>{this.setDiscount(dsc)}}>{`${dsc.nom} (${dsc.valeur})`}</div>
                 ))}
               </div>

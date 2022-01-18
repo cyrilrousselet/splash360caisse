@@ -1075,6 +1075,7 @@ function _getVentilationTva(commande, cataloguetva) {
   let __basecmd = 0;
 
   let __cmddiscount = null;
+  let __cmdsoustotal = 0;
 
 
   // on voit s'il existe un modificateur pour le panier
@@ -1122,7 +1123,7 @@ function _getVentilationTva(commande, cataloguetva) {
     else {
       // __cmddiscount = (__basecmd - (val * 100)) / __basecmd;
       __cmddiscount = (val * 100) / __basecmd;
-      console.log('Remise commande de '+val+' se traduit par un coeff de '+__cmddiscount);
+      console.log('Remise commande de '+val+' se traduit par un coef. de '+__cmddiscount);
     }
 
   }
@@ -1166,7 +1167,7 @@ function _getVentilationTva(commande, cataloguetva) {
     
 
     // on voit s'il existe un modificateur pour chaque item
-    const moditem = _getModificateurForItem(__cmd.modificateurs, itm.itemid);
+    let moditem = _getModificateurForItem(__cmd.modificateurs, itm.itemid);
 
     let __itmdiscount = __cmddiscount;
     if (moditem) {
@@ -1192,13 +1193,22 @@ function _getVentilationTva(commande, cataloguetva) {
         });
 
         __itmdiscount = (val * 100) / __basettc;
-        console.log('Remise commande de '+val+' se traduit par un coeff de '+__itmdiscount);
+        console.log('Remise item de '+val+' se traduit par un coef. de '+__itmdiscount);
       }
+
+
+      moditem.montant = Math.round((itm.prix * 100) * __itmdiscount) / 100;
+      const moditemIndex = __cmd.modificateurs.findIndex(m => m.modificateur_id===moditem.modificateur_id);
+      __cmd.modificateurs[moditemIndex] = moditem;
+      __cmdsoustotal += Math.round((itm.prix - moditem.montant) * 100) / 100;
+
 
       if (__cmddiscount !== null) {
-        __itmdiscount *= __cmddiscount;
+        __itmdiscount += __cmddiscount;
       }
 
+    } else {
+      __cmdsoustotal += Math.round(itm.prix);
     }
 
     console.log('Remise combinée ('+__cmddiscount+' => '+__itmdiscount+')');
@@ -1324,10 +1334,17 @@ function _getVentilationTva(commande, cataloguetva) {
 
   });  
 
+  if (modcmd) {
+    const modcmdIndex = __cmd.modificateurs.findIndex(m => m.modificateur_id===modcmd.modificateur_id);
+    __cmd.modificateurs[modcmdIndex].montant = Math.round((__cmdsoustotal * __cmddiscount) * 100) / 100;
+  }
+
   __cmd.ventilation = __ventilation;
-  __cmd.remise = __cmdrem;
-  __cmd.total = __cmdttc;
-  __cmd.totalht = __cmdht;
+  __cmd.remise = __cmdrem / 100;
+  __cmd.total = __cmdttc / 100;
+  __cmd.totalht = __cmdht / 100;
+  __cmd.soustotal = __cmdsoustotal;
+  __cmd.ttcavantremise = __basecmd / 100;
 
   return __cmd;
 }
