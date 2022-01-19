@@ -8,7 +8,7 @@ const GTPerpetuelModel = require("../db/GTPerpetuelModel");
 const GTTicketModel = require("../db/GTTicketModel");
 const GTPeriodiqueModel = require("../db/GTPeriodiqueModel");
 const ZCaisseModel = require("../db/zdecaisseModel");
-const ArchiveModel = require("../db/ArchiveModel");
+const ArchiveModel = require("../db/archiveModel");
 
 const { uuid } = require("uuidv4");
 

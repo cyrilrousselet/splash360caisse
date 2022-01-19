@@ -1035,7 +1035,7 @@ function validateCommande(_payload, needNumero) {
         schedule: confirm.ticketId
       });
     
-      if (!confirm.signaturenote && !confirm.note) {
+      // if (!confirm.signaturenote && !confirm.note) {
 
         const lastSignatureNote = await signatureServices.getLastSignature('notes');
         const newNote = 'N'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + note.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
@@ -1096,7 +1096,7 @@ function validateCommande(_payload, needNumero) {
           }
         }
 
-      }
+      // }
 
       commandeServices.persistCommande(confirm);
 
@@ -1213,14 +1213,26 @@ function addProduit(payload) {
 }
 
 function updateProduit(payload) {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const { itemid, addPrd } = payload;
     const state = getState();
+    const { commande } = state.commandeReducer;
     const item = state.commandeReducer.commande.items.find(
       (itm) => itm.itemid === itemid
     );
     const steps = state.catalogueReducer.steps[item.produitid];
     const tvaCat = state.catalogueReducer.tva;
+
+    let note = null;
+    if (commande.status==='a_encaisser') {
+      try {
+        note = await commandeServices.getNote({'ENC-TIK-NUM': commande.note});
+        note = note[0];
+        console.log('GET NOTE ('+commande.note+')', note);
+      } catch(e) {
+        console.error(e);
+      }
+    }
 
     // s'il s'agit d'un produit customisable et si on augmente la quantité
     if (addPrd && steps) {
@@ -1281,7 +1293,11 @@ function updateProduit(payload) {
       }
       if ("delete" === mode) {
         dispatch({ type: commandeActionTypes.DELETE_PRODUIT, commandeItem });
-        dispatch( journalActions.log('323', `suppression du produit ${itemid}`) );
+        if (commande.status==='a_encaisser') {
+          dispatch( journalActions.log('325', `suppression du produit ${itemid} de la note #${note['ENC-TIK-NUM']}`) );
+        } else {
+          dispatch( journalActions.log('323', `suppression du produit ${itemid}`) );
+        }
       }
 
     }

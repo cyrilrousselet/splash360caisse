@@ -6,7 +6,7 @@ const TicketrestauModel = require("../db/ticketrestauModel");
 const CmdchronoModel = require("../db/cmdchronoModel");
 const TicketModel = require('../db/ticketModel');
 const NoteModel = require('../db/noteModel');
-const DuplicataModel = require('../db/DuplicataModel');
+const DuplicataModel = require('../db/duplicataModel');
 const { uuid } = require("uuidv4");
 // const { lowerFirst } = require('lodash');
 

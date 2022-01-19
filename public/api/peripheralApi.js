@@ -1587,17 +1587,23 @@ function _printCommande(printer, data, strings) {
 
     if (article.ingredients.length>0) {
       article.ingredients.forEach((ingredient) => {
-        printer.align('CT').style('NORMAL').tableCustom([
+        let __ingligne = [
           {text: ingredient.qte, cols:3, align:'RIGHT'},
           {text:'', cols:1},
-          {text: '  '+ingredient.nom, cols:22, align:'LEFT'},
+          {text: '  '+ingredient.nom, cols:artcolwidth, align:'LEFT'},
           {text:'', cols:1},
           {text: String(ingredient.pu).replace('.',','), cols:6, align:'RIGHT'},
           {text:'', cols:1},
-          {text: String(ingredient.prix).replace('.',','), cols:6, align:'RIGHT'},
-          {text:'', cols:1},
-          {text: ingredient.codetva, cols:1}
-        ]);
+          {text: String(ingredient.prix).replace('.',','), cols:6, align:'RIGHT'}
+        ];
+        if (data.status==='confirmed') {
+          __ingligne = [
+            ...__ingligne,
+            {text:'', cols:1},
+            {text: ingredient.codetva, cols:1}
+          ];
+        }
+        printer.align('CT').style('NORMAL').tableCustom(__ingligne);
         if (ingredient.comment!=='') {
           printer.align('CT').style('B').tableCustom([
             {text:'', cols:3},
@@ -1615,15 +1621,23 @@ function _printCommande(printer, data, strings) {
       const modnom = strings.modificateur.discount_item;
       const modope = '-';
       const ispc = String(article.modificateur.valeur).substr(-1,1)==='%';
-      printer.align('CT').style('B').tableCustom([
+
+      let __modligne = [
         {text: '', cols:4},
-        {text: modnom, cols:22, align:'LEFT'},
+        {text: modnom, cols:artcolwidth, align:'LEFT'},
         {text:'', cols:1},
         {text: ispc ? modope+article.modificateur.valeur : '', cols:6, align:'RIGHT'},
         {text:'', cols:1},
-        {text: modope+article.modificateur.montant.toFixed(2).replace('.',','), cols:6, align:'RIGHT'},
-        {text:'', cols:2}
-      ]);
+        {text: modope+article.modificateur.montant.toFixed(2).replace('.',','), cols:6, align:'RIGHT'}
+      ];
+      if (data.status==='confirmed') {
+        __modligne = [
+          ...__modligne,
+          {text:'', cols:2}
+        ]
+      }
+
+      printer.align('CT').style('B').tableCustom(__modligne);
       _linecount++;
     }
   });
@@ -1636,26 +1650,38 @@ function _printCommande(printer, data, strings) {
      const cmdmodval = String(data.modificateur.valeur).slice(0,-1);
 
      // sous-total
-     printer
+    let __stligne = [
+      {text: `${strings.detail.sous_total}   ${data.total.soustotal.toFixed(2).replace('.',',')}`, cols:((data.status==='confirmed') ? 40 : 42), align:'right'},
+    ];
+    if (data.status==='confirmed') {
+      __stligne = [
+        ...__stligne,
+        {text:'', cols:2}
+      ];
+    }
+    printer
       .drawLine()
       .align('CT')
       .fontSize('normal')
-      .tableCustom([
-        {text: `${strings.detail.sous_total}   ${data.total.soustotal.toFixed(2).replace('.',',')}`, cols:40, align:'right'},
-        {text:'', cols:2}
-      ])
+      .tableCustom(__stligne)
       .fontSize('normal')
       .drawLine();
 
-      printer.align('CT').style('B').tableCustom([
+      let __pmodligne = [
         {text: '', cols:4},
         {text: modnom, cols:22, align:'LEFT'},
         {text:'', cols:1},
         {text: ispc ? modope+data.modificateur.valeur : '', cols:6, align:'RIGHT'},
         {text:'', cols:1},
-        {text: ispc ? modope+data.modificateur.montant.toFixed(2).replace('.',',') : modope+Number(cmdmodval).toFixed(2).replace('.',','), cols:6, align:'RIGHT'},
-        {text:'', cols:2}
-      ]);
+        {text: ispc ? modope+data.modificateur.montant.toFixed(2).replace('.',',') : modope+Number(cmdmodval).toFixed(2).replace('.',','), cols:((data.status==='confirmed')?6:8), align:'RIGHT'}
+      ];
+      if (data.status==='confirmed') {
+        __pmodligne = [
+          ...__pmodligne,
+          {text:'', cols:2}
+        ];
+      }
+      printer.align('CT').style('B').tableCustom(__pmodligne);
 
     //   const ispc = String(data.modificateur.valeur).substr(-1,1)==='%';
     //   let modval = Math.abs(Number(String(data.modificateur.valeur).slice(0,-1)));

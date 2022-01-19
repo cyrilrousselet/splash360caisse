@@ -579,7 +579,7 @@ const actions = {
                 __summary = { ...__summary, ...marketing_sum };
                 listeNum++;
               } else if ("users" === entity) {
-                const users_sum = await dbUsersApi.dbUsersSummary(ldb_query);
+                const users_sum = await dbUsersApi.dbUsersSummary(mongo_query);
                 __summary = { ...__summary, ...users_sum };
                 listeNum++;
               } else if ("catalogue" === entity) {

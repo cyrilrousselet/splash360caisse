@@ -1,13 +1,13 @@
 const db = require('../db.js');
-const lodashId = require('lodash-id');
+// const lodashId = require('lodash-id');
 // const log = require('electron-log');
 const log = require('../utils/logger');
+const connect = require("../db/mongodb");
+const UserModel = require("../db/userModel");
 
 const actions = {
   dbUsersGetAll: async (req,res) => {
-    // const {payload} = req;
-
-    (await db.users)._.mixin(lodashId);
+  
     log.info("dbUsersGetAll() in API");
 
     const proxies = await _getAll();
@@ -17,7 +17,6 @@ const actions = {
   dbHasUsers: async (req,res) => {
     const hasUsers = await _hasUsers();
 
-    (await db.users)._.mixin(lodashId);
     log.info('dbHasUsers', hasUsers);
     
     res.send(hasUsers);
@@ -25,8 +24,7 @@ const actions = {
   dbUsersLogin: async (req,res) => {
     const {payload} = req;
 
-    (await db.users)._.mixin(lodashId);
-    const __usr = await _findUser((u => (u.identifiant===payload.identifiant && u.status==='active')));
+    const __usr = await _findUser({$and:[{identifiant:payload.identifiant},{status:'active'}]});
     
     res.send(__usr);
   },
@@ -50,7 +48,6 @@ const actions = {
   dbAddUser: async (req,res) => {
     const {payload} = req;
 
-    (await db.users)._.mixin(lodashId);
     log.info('dbAddUser', payload.user);
 
     const __usr = await _insertUser(payload.user);
@@ -61,7 +58,6 @@ const actions = {
     const {payload} = req;
     log.info("dbUpdateUser() in API");
 
-    (await db.users)._.mixin(lodashId);
     const __usr = await _persistUser(payload.user);
 
     res.send(__usr);
@@ -69,24 +65,14 @@ const actions = {
 
   dbGetItems: async (itemtype, ids) => {
 
-    (await db.users)._.mixin(lodashId);
-    const response = await (await db.users).get('users')
-                                           .filter( c => ids.includes(c.user_id) )
-                                           .value();
-    
-    return response;
+    const _clt = await _findUser({user_id: {$in: ids}});
+    return _clt;
   },
 
-  dbUsersSummary: async (stationid) => {
+  dbUsersSummary: async (query) => {
 
-    (await db.users)._.mixin(lodashId);
+    const _usr = await _findUser(query)
 
-
-    const _usr = await (await db.users).get('users')
-                                       .filter( u => {
-                                         return (u.localsync === undefined) || !u.localsync.includes(stationid);
-                                       })
-                                       .value();
     return {
       user: _usr
     };
@@ -100,72 +86,69 @@ const actions = {
 
 
 async function _hasUsers() {
-  const __users = await (await db.users).get('users').filter( u => (u.status!=="superuser")).size().value();
+  const __users = await _findUser({'status':{$ne:"superuser"}});
   log.info('_hasUsers()', __users);
-  return __users>0;
+  return __users.length>0;
 }
 
 async function _addLocalSync(ids, store_id) {
 
-  await (await db.users)
-            .get("users")
-            .filter(t => ( ids.includes(t.user_id) && !t.localsync.includes(store_id)) )
-            .get('localsync')
-            .push(store_id)
-            // .assign({localsync: [...localsync, store_id]})
-            .write();
+  const mongo = await connect();
+  if (!mongo) return false;
 
-  return ids.length;
+  const _usrs = await UserModel.updateMany(
+    {user_id: {$in: ids}, localsync: { $ne: store_id }},
+    {$push: {localsync: store_id}}
+  );
+
+  return _usrs.n;
+
 }
 
 async function _getAll() {
   
-  const __rawdata = await _findUsers();
+  const __rawdata = await _findUser();
   
   return {users: __rawdata};
 }
 
 
-async function _findUsers() {
-  const users = await (await db.users).get('users').value();
-  return users;
-}
 
 
 /**
  * Renvoie l'utilisateur dans l'identifiant est passé dans les critères
  */
-async function _findUser(filterFn) {
-  const user = await (await db.users).get('users')
-                                     .find(filterFn)
-                                     .value();
-  return user;
+async function _findUser(criteriae={}) {
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  const _usr = await UserModel.find(criteriae).lean().sort({nom: 1}).exec();
+
+  return _usr;
 }
 
 
 async function _persistUser(payload) {
 
   let { user_id } = payload;
-  let _user = await (await db.users).get('users')
-                                    .find({user_id: user_id})
-                                    .value();
+
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  let _user = await UserModel.where({user_id: user_id})
+                             .findOne()
+                             .lean()
+                             .exec();
 
   if (_user) {
     const __now = new Date().getTime();
     let __upd = {..._user, ...payload, updatedAt:__now};
-    _user = await (await db.users).get('users')
-                                  .find({user_id: user_id})
-                                  .assign(__upd)
-                                  .write();
+    _user = await UserModel.updateOne({user_id: user_id}, __upd).exec();
+
   } else {
     _user = _insertUser(payload);
-    //  user_id = 'usr'+uniqid();
-    // _user = await (await db.users).get('users')
-    //                               .push({...payload, user_id: user_id})
-    //                               .write();
   }
 
-  //return {confirm:(_user != null), user_id:user_id};
   return _user;
 }
 
@@ -176,11 +159,10 @@ async function _insertUser(payload) {
 
   const user_id = payload.user_id || 'usr'+uniqid();
   const __now = new Date().getTime();
-  let __upd = {...payload, user_id: user_id, createdAt: __now, updatedAt: __now};
+  let __ins = {...payload, user_id: user_id, createdAt: __now, updatedAt: __now};
 
-  const _user = await (await db.users).get('users')
-                                .insert(__upd)
-                                .write();
+  let _user = await UserModel.create(__ins);
+  _user = __ins;
 
   log.info("new user", _user);
 
