@@ -683,7 +683,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             if (cmd.status==="confirmed") {
               piece = await commandeServices.getTicket({'ENC-TIK-NUM':cmd.ticket});
             } else {
-              piece = await commandeServices.getNote({'ENC-TIK-NUM':cmd.note});
+              const lastnote = last(cmd.note.split('|'));
+              piece = await commandeServices.getNote({'ENC-TIK-NUM':lastnote});
             }
             piece = piece[0];
             console.log("🧾 PIECE",piece);
@@ -1020,6 +1021,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           let _numPrint = 1;
           let _dupli_gdh = '';
           let duplitype = null;
+          let _origin_id = null;
           if (cmd.duplicatas) {
             const __dtype = (cmd.status==='confirmed') ? 'TICKET' : 'NOTE'
             duplitype = cmd.duplicatas.filter(d => d.type===__dtype);
@@ -1041,6 +1043,9 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             catch(e) {
               console.error(e);
             }
+          }
+          if (piece['ENC-OPE-TYP']==='MODIFICATION') {
+            _origin_id = (cmd.status==="confirmed") ? piece['ENC-TIK-REF'] : last(piece['ENC-TIK-CDE'].split('|'));
           }
 
 
@@ -1068,13 +1073,14 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             // -> infos légales (type d'opération, code vendeur, code caisse, code centre profit, code opération, version logiciel)
             // et infos ticket : numéro ticket, date
             legal: {
-              type: 'VENTE',
+              type: piece['ENC-OPE-TYP'],
               vendeur: removeDiacritics(operateur.nom)+' - '+piece['ENC-TIK-VEN-NID'],
               caisse: cmd.caisse.id,  //piece['ENC-TIK-CAI-NID'],
               centre: 'Restaurant',
               version: piece['ENC-TIK-TAG-VER'],
               ticketid: piece['ENC-TIK-NUM'],
               signature: piece['ENC-TIK-TAG-RET'],
+              originid: _origin_id,
               duplicataid: _dupli_id,
               duplicatasignature: _dupli_sign,
               duplicatagdh: _dupli_gdh,

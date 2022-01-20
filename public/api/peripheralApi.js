@@ -1830,17 +1830,19 @@ function _printCommande(printer, data, strings) {
   }
   // ou à régler
   else {
-
-    printer
-      .align('CT')
-      .drawLine()
-      // .size(1,2)
-      .fontSize('2height')
-      .tableCustom([
-        {text: `${strings.reglements.a_regler}   ${data.total.total.replace('.',',')}`, cols:42, align:'CENTER'}
-      ])
-      // .fontSize('4square');
-      .fontSize('normal');
+    // à condition qu'il y ait quelque chose à régler...
+    if (data.total.total>0) {
+      printer
+        .align('CT')
+        .drawLine()
+        // .size(1,2)
+        .fontSize('2height')
+        .tableCustom([
+          {text: `${strings.reglements.a_regler}   ${data.total.total.replace('.',',')}`, cols:42, align:'CENTER'}
+        ])
+        // .fontSize('4square');
+        .fontSize('normal');
+    }
   }
 
   // rendu monnaie
@@ -2396,6 +2398,10 @@ function _printLegal(printer, data, strings) {
     printer
     .tableCustom([{text: `(NF525) B0000 - ${data.signature} - Splash360 ${data.version}`, cols:42, align:'LEFT'}])
     .tableCustom([{text: `${(data.status==='confirmed') ? 'Ticket' : 'Note'} : ${data.ticketid}`, cols:42, align:'LEFT'}]);
+    if (data.originid) {
+      printer
+      .tableCustom([{text: `Modifie ${(data.status==='confirmed') ? 'le ticket' : 'la note' } : ${data.originid}`, cols:42, align:'LEFT'}]);
+    }
   }
   printer.tableCustom([{text: `Nombre d'impressions : ${data.printid}`, cols:42, align:'LEFT'}]);
   printer.feed();

@@ -1662,6 +1662,7 @@ function archiveFiscale(intervalle, debut, fin) {
 
     const { privateKey, trousseauId } = getState().signatureReducer; 
     const { caisse, archive_secret } = getState().parametresReducer.parametres.options;
+    const { entreprise } = getState().parametresReducer.parametres;
     const { user } = getState().authentication;
 
     let __startdefacto = null;
@@ -1714,12 +1715,14 @@ function archiveFiscale(intervalle, debut, fin) {
       gtt: [],
       gtp: [],
       zc: [],
+      notes: [],
       tickets: [],
       duplicatas: [],
       commandes: [],
       clotures: [],
       avoirs: [],
       tresors: [],
+      users: [],
       jet: [],
     };
     let __data = [];
@@ -2000,6 +2003,9 @@ function archiveFiscale(intervalle, debut, fin) {
 
       __data.push({type: 'csv', data: zcCsvString, file: 'zdecaisse.csv'});
     }
+
+
+    // ------------>  Notes
 
 
     // ------------>  Tickets
@@ -2434,10 +2440,20 @@ function archiveFiscale(intervalle, debut, fin) {
     const __contenu_archive = __data.map(d => [` - ${d.file}`]);
 
     const __infos = [
-      [`EMETTEUR: ${ user.user_id }`],
-      [`STATION: ${ caisse.id }`],
       [`LOGICIEL: SPLASH360`],
       [`VERSION: ${ packageJson.version }`],
+      [`EMETTEUR:`],
+      [` - ENSEIGNE: ${entreprise.enseigne}`],
+      [` - DENOMINATION: ${entreprise.denomination}`],
+      [` - ADRESSE: ${entreprise.adresse}`],
+      [` - CODE POSTAL: ${entreprise.code_postal}`],
+      [` - VILLE: ${entreprise.ville}`],
+      [` - PAYS: ${entreprise.pays}`],
+      [` - SIRET: ${entreprise.siret}`],
+      [` - RCS: ${entreprise.rcs}`],
+      [` - NAF: ${entreprise.ape}`],
+      [`UTILISATEUR: ${ user.user_id }`],
+      [`STATION: ${ caisse.id }`],
       [`HORODATAGE: ${ format(new Date(),'yyyyMMddHHmmss') }`],
       [`PERIODE: ${ start }|${ end }`],
       [`CONTENU:`],

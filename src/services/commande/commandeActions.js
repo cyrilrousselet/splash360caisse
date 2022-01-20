@@ -23,6 +23,7 @@ import { journalActions } from "../journal/journalActions";
 import packageJson from '../../../package.json';
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
+import { last } from "lodash";
 // import { createObjectCsvWriter } from "csv-writer";
 const strings = new LocalizedStrings(data);
 
@@ -232,7 +233,7 @@ function setChrono(payload) {
 
 // payload = commande à sauvegarder
 function confirmCommande(_payload, printTemplates) {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     dispatch({ type: commandeActionTypes.VALIDATE_COMMANDE_REQUEST });
 
     const catalogueReducer = getState().catalogueReducer;
@@ -260,7 +261,44 @@ function confirmCommande(_payload, printTemplates) {
     const payloadcopy = { ...payload, localsync: [caisse.uniqid] };
     dispatch(getCommande());
 
+    // *** détection de la modification du moyen de paiement après réglement ***
+    let modifreglement = false;
+    let prevticket = null;
 
+    if (payloadcopy.ticket) {
+      // si la commande du commandeReducer a un ticket, c'est qu'elle a déjà été encaissée
+      // on récupère la commande sauvegardée en bdd
+      try {
+        prevticket = payloadcopy.ticket;
+        let savedcmd = await commandeServices.getCommandeById(payloadcopy.ticketId);
+        savedcmd = savedcmd._cmd;
+
+        // on compare le tableau commande.reglements avec regcmd.reglements
+        // 1. longueur des deux tableaux
+        if (payloadcopy.reglements.length !== savedcmd.reglements.length) {
+          modifreglement = true;
+        } 
+        // 2. contenu des tableaux
+        else {
+          // pour chaque reglement...
+          payloadcopy.reglements.forEach(nr => {
+            let moyen = savedcmd.reglements.find(r => r.moyen === nr.moyen);
+            // erreur s'il est introuvable dans la commande sauvegardée
+            if (!moyen) {
+              modifreglement = true;
+            }
+            // erreur si le reglement a une valeur différente
+            if (moyen.valeur!==nr.valeur) {
+              modifreglement = true;
+            }
+          });
+        }
+
+      } catch(e) {
+        console.error(e);
+      }
+
+    }
 
     commandeServices.saveCommande(payloadcopy, catalogueReducer).then(
       async (confirm) => {
@@ -299,7 +337,8 @@ function confirmCommande(_payload, printTemplates) {
             signature: signatureNote.signature,
             trousseauId,
             hash: signatureNote.hash,
-            source: signatureNote.source
+            source: signatureNote.source,
+            operation: 'VENTE'
           });
 
           // si la note est offerte
@@ -322,8 +361,9 @@ function confirmCommande(_payload, printTemplates) {
           dispatch( signatureActions.updateNumerotation('note', note+1) );
 
         }
-          
-        if (!confirm.signature && !confirm.ticket) {
+        
+        // dans le cas d'un premier paiement ou d'une modif de moyens de paiement (réglements)
+        if ((!confirm.signature && !confirm.ticket) || modifreglement) {
           const lastSignatureTicket = await signatureServices.getLastSignature('tickets');
           const newTicket = 'T'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + ticket.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
           const signatureTicket = signatureServices.createTicketSignature({...confirm, ticket: newTicket}, privateKey, lastSignatureTicket);
@@ -347,7 +387,8 @@ function confirmCommande(_payload, printTemplates) {
             trousseauId,
             hash: signatureTicket.hash,
             source: signatureTicket.source,
-            operation: 'VENTE'
+            operation: modifreglement ? 'MODIFICATION' : 'VENTE',
+            prevticket: modifreglement ? prevticket : null
           });
 
           await commandeServices.persistTicket(__ticketData);
@@ -358,7 +399,11 @@ function confirmCommande(_payload, printTemplates) {
           dispatch( signatureActions.updateSignature('tickets', signatureTicket.signature) );
           dispatch( signatureActions.updateNumerotation('ticket', ticket+1) );
 
+          if (modifreglement) {
+            dispatch(journalActions.log('420','Ticket #'+newTicket+' remplace le ticket #'+prevticket));
+          }
         } 
+
 
         commandeServices.persistCommande(confirm);
 
@@ -464,7 +509,8 @@ function _createTicket(confirm, params) {
     trousseauId,
     hash,
     source,
-    operation
+    operation,
+    prevticket = null
   } = params;
 
   const __ticketData = {
@@ -472,6 +518,7 @@ function _createTicket(confirm, params) {
     'ENC-TIK-CDE': confirm.ticketId,
     'ENC-TIK-TAG-VER': packageJson.version,
     'ENC-TIK-PRN-NBR': 1,
+    'ENC-TIK-REF': prevticket,
     'ENC-TIK-SOC-ETS': entreprise.denomination,
     'ENC-TIK-SOC-ID': entreprise.enseigne,
     'ENC-TIK-SOC-ADR': entreprise.adresse,
@@ -670,12 +717,15 @@ function _createNote(confirm, params) {
     trousseauId,
     hash,
     source,
+    operation = 'VENTE',
+    prevnote = null
   } = params;
 
   const __noteData = {
     'ENC-TIK-NUM': newNote,
     'commandeId': confirm.ticketId,
     'ENC-TIK-TAG-VER': packageJson.version,
+    'ENC-TIK-CDE': prevnote,
     'ENC-TIK-PRN-NBR': 0,
     'ENC-TIK-SOC-ETS': entreprise.denomination,
     'ENC-TIK-SOC-ID': entreprise.enseigne,
@@ -692,7 +742,7 @@ function _createNote(confirm, params) {
     'ENC-TIK-OPS-NOM': user.nom,
     'ENC-TIK-CAI-NID': caisse.uniqid,
     'ENC-TIK-HOR-GDH': format(confirm.createdAt,'yyyyMMddHHmmss'),
-    'ENC-OPE-TYP': 'VENTE',
+    'ENC-OPE-TYP': operation,
     'ENC-TIK-DOC-TYP': 'NOTE',
     'ENC-TIK-LIG-NBR': 1,
     'ENC-TIK-TAG-SIG': signature,
@@ -707,6 +757,7 @@ function _createNote(confirm, params) {
     'FAC-TOT-TVA': 0,
     'ENC-TIK-REM-MTN': 0
   };
+
 
   // lignes tickets :
   confirm.items.forEach((itm,i) => {
@@ -1037,6 +1088,9 @@ function validateCommande(_payload, needNumero) {
     
       // if (!confirm.signaturenote && !confirm.note) {
 
+        const prevNote = confirm.note;
+        console.log('PREVNOTE', prevNote);
+
         const lastSignatureNote = await signatureServices.getLastSignature('notes');
         const newNote = 'N'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + note.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
       
@@ -1051,7 +1105,7 @@ function validateCommande(_payload, needNumero) {
        
           confirm = {
             ...confirm,
-            note: newNote,
+            note: prevNote ? prevNote + '|' + newNote : newNote,
             hashsourcenote: signatureNote.source, 
             hashnote: signatureNote.hash,
             signaturenote: signatureNote.signature
@@ -1068,6 +1122,8 @@ function validateCommande(_payload, needNumero) {
             trousseauId,
             hash: signatureNote.hash,
             source: signatureNote.source,
+            operation: prevNote ? 'MODIFICATION' : 'VENTE',
+            prevnote: prevNote,
           });
 
           // si la note est offerte
@@ -1226,7 +1282,8 @@ function updateProduit(payload) {
     let note = null;
     if (commande.status==='a_encaisser') {
       try {
-        note = await commandeServices.getNote({'ENC-TIK-NUM': commande.note});
+        const lastnote = last(commande.note.split('|'));
+        note = await commandeServices.getNote({'ENC-TIK-NUM': lastnote});
         note = note[0];
         console.log('GET NOTE ('+commande.note+')', note);
       } catch(e) {
@@ -1503,7 +1560,8 @@ function deleteCommande(payload) {
         
         if (commande.status==='a_encaisser') {
           try {
-            const note = await commandeServices.getNote({'ENC-TIK-NUM': commande.note});
+            const lastnote = last(commande.note.split('|'));
+            const note = await commandeServices.getNote({'ENC-TIK-NUM': lastnote});
 
             const lastSignatureTicket = await signatureServices.getLastSignature('tickets');
             const newTicket = 'T'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + ticket.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
@@ -1533,7 +1591,7 @@ function deleteCommande(payload) {
 
             await commandeServices.persistTicket(__ticketData);
             dispatch(journalActions.log('160','Ticket ABANDON #'+newTicket));
-            dispatch(journalActions.log('324','Abandon de la Note #'+commande.note));
+            dispatch(journalActions.log('324','Abandon de la Note #'+lastnote));
 
             dispatch( signatureActions.updateSignature('tickets', signatureTicket.signature) );
             dispatch( signatureActions.updateNumerotation('ticket', ticket+1) );
@@ -1727,7 +1785,8 @@ function duplicata(ticketId) {
         if (commande.status==="confirmed") {
           piece = await commandeServices.getTicket({'ENC-TIK-NUM':commande.ticket});
         } else {
-          piece = await commandeServices.getNote({'ENC-TIK-NUM':commande.note});
+          const lastnote = last(commande.note.split('|'));
+          piece = await commandeServices.getNote({'ENC-TIK-NUM':lastnote});
         }
         piece = piece[0];
       }
