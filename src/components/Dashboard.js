@@ -91,6 +91,7 @@ class Dashboard extends Component {
       blocage_commande,
       pastnonconfirmed,
       mandatoryError,
+      dateError,
     } = this.props;
 
     // if (today_ca===undefined || ca===null) {
@@ -116,6 +117,13 @@ class Dashboard extends Component {
         html: strings.dashboard.alert.blocked_cloture[pastnonconfirmed>0 ? 'texte_nc':'texte_c']
       }).then((result) => {
         history.push(pastnonconfirmed>0 ? paths.LISTECOMMANDES : paths.CLOTURE);
+      });
+    }
+    if (dateError===true) {
+      if (!modules_bloques.includes('encaissement')) modules_bloques.push('encaissement');
+      Swal.fire({
+        title: strings.dashboard.alert.date_error.titre,
+        html: strings.dashboard.alert.date_error.texte
       });
     }
 

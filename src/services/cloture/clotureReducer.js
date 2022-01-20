@@ -12,6 +12,7 @@ const initialState = {
   today_ca: 0,
   today_numtickets: 0,
   archives_fiscales: [],
+  date_error: false,
 }
 
 export function clotureReducer(state = initialState, action) {
@@ -90,6 +91,12 @@ export function clotureReducer(state = initialState, action) {
       return {
         ...state,
         archives_fiscales: [...archives_fiscales, action.archive]
+      };
+
+    case clotureActionTypes.DATE_ERROR:
+      return {
+        ...state,
+        date_error: action.error
       };
 
     default:

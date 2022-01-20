@@ -431,7 +431,7 @@ function _createSignature(hashsource, privateKey) {
   hash.end();
   const hashstring = Buffer.from(hashsource).toString('base64');
 
-  console.log('privateKey', privateKey);
+  // console.log('privateKey', privateKey);
 
   const hmac = crypto.createHmac('SHA256', privateKey);
   hmac.update(hashsource);

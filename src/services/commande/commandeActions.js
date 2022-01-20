@@ -2152,6 +2152,11 @@ function setCommandeFromOrder(provider, payload) {
     logger.info("setCommmandeFromOrder()");
 
     const state = getState();
+    const { date_error } = state.clotureReducer;
+
+    if (date_error===true) {
+      return false;
+    }
 
     // définition du montant du réglement à partir du sous-total
     let __valeur = payload.payment.charges.sub_total.amount / 100;
@@ -2357,286 +2362,293 @@ function setCommandeFromAPI(payload) {
     const { entreprise } = getState().parametresReducer.parametres;
     const { user } = getState().authentication;
     const { caisse } = getState().parametresReducer.parametres.options;
+    const { date_error } = getState().clotureReducer;
 
 
-    if (data.provider==="clickandcollect") {
-      const datacommande = data.commande;
-      data = {
-        ...datacommande,
-        enproduction: true,
-        provider: data.provider,
-        operator: {id:'clickandcollect', nom:'clickandcollect'},
-        caisse: {id:'clickandcollect', nom:'clickandcollect', type:'clickandcollect'}
-      };
-      if (data.reglements) {
-        data.operator = {id:'clickandcollect', nom:'clickandcollect'};
-        data.caisse = {id:'clickandcollect', nom:'clickandcollect', type:'clickandcollect'};
-        data.reglements = data.reglements.map(r => ( (r.reglementId) ? {...r} : {...r, reglementId: LodashId.createId()}) );
-      }
-    } 
-    // commandes provenant de la borne
-    else {
-      if (data.status === "confirmed") {
+    if (date_error===true) {
+      return 'caisse.erreur_dateheure';
+    } else {
+      
 
-        if (!data.operator.hasOwnProperty('uniqid')) data.operator.uniqid = data.operator.id;
-        if (!data.caisse.hasOwnProperty('uniqid')) data.caisse.uniqid = data.caisse.id;
-
-        if (!data.caisse.hasOwnProperty('type')) data.caisse.type = "borne";
-
+      if (data.provider==="clickandcollect") {
+        const datacommande = data.commande;
         data = {
-          ...data,
+          ...datacommande,
           enproduction: true,
-          operator_encaissement: data.operator,
-          caisse_encaissement: data.caisse,
-          reglements: data.reglements || [
-            {
-              moyen: "carte",
-              reglementId: LodashId.createId(),
-              valeur: data.total,
-            },
-          ],
+          provider: data.provider,
+          operator: {id:'clickandcollect', nom:'clickandcollect'},
+          caisse: {id:'clickandcollect', nom:'clickandcollect', type:'clickandcollect'}
         };
-      }
-    }
-
-    const { numero } = getState().commandeReducer;
-    const { parametres } = getState().parametresReducer;
-
-    const newnumero = await numeroServices.getNumero(numero, parametres);
-      
-
-    // si un client est renseigné
-    if (data.client) {
-
-      let client = null; 
-
-      // on le cherche dans la base
-      if (data.client.telephone || data.client.telephone2 || data.client.email) {
-
-        client = await clientsServices.findClient({
-          telephone: data.client.telephone,
-          telephone2: data.client.telephone2,
-          email: data.client.email
-        });
-        if (client._clt) dispatch({type: clientsActionTypes.FIND_CLIENT, client: client._clt});
-      }
-
-      // s'il n'existe pas on crée sa fiche
-      if (client._clt===null || client._clt===undefined) {
-        client._clt = await clientsServices.createClient(data.client);
-        if (client._clt) dispatch({type: clientsActionTypes.CREATE_SUCCESS, client: client._clt});
-      }
-
-      // et on l'ajoute à la commande
-      logger.info('cmdAct->API client', client);
-      data.client = {nom: client._clt.nom, prenom: client._clt.prenom, client_id: client._clt.client_id};
-      
-    }
-
-    logger.info("new numero", newnumero);
-    dispatch(numeroActions.setNextNumero());
-
-    logger.info(data);
-    const commande = commandeServices.setCommandeFromAPI(
-      data,
-      state.catalogueReducer,
-      state.parametresReducer.parametres,
-      newnumero
-    );
-
-    logger.warn('data.provider',data.provider);
-
-    // si la commande vient du Click & Collect
-    if (data.provider==="clickandcollect") {
-      logger.info('donc on envoie le numero de cmd au BO');
-      dispatch(notificationActions.confirmCommande({ticketId: data.ticket_id, numero: commande.numero}));
-    } 
-   
-
-    // activation de l'impression des tickets pour les commandes en attente
-    const {print_standby} = parametres.commandes;
-
-  
-
-    commandeServices.saveCommande({...commande, localsync: [parametres.options.caisse.uniqid]}, state.catalogueReducer).then(
-      async (confirm) => {
-        // met à jour la liste des schedules (ajoute ou supprime la commande)
-        dispatch({
-          type: (commande.scheduled) ? commandeActionTypes.SET_SCHEDULE : commandeActionTypes.DELETE_SCHEDULE,
-          schedule: commande.ticketId
-        });
-
-        dispatch( journalActions.log('140', `station tierce: ${data.caisse.type} (ticketId: ${commande.ticketId}, status:${commande.status})`) );
-
-
-        if (confirm.status !== "standby") {
-
-          if (!confirm.signaturenote && !confirm.note) {  
-            const lastSignatureNote = await signatureServices.getLastSignature('notes');
-            const newNote = 'N'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + note.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
-            const signatureNote = signatureServices.createTicketSignature({...confirm, ticket: newNote}, privateKey, lastSignatureNote);
-          
-            confirm = {
-              ...confirm,
-              note: newNote,
-              hashsourcenote: signatureNote.source, 
-              hashnote: signatureNote.hash,
-              signaturenote: signatureNote.signature,
-            }
-  
-  
-            const __noteData = _createNote(confirm, {
-              newNote,
-              entreprise,
-              user,
-              vendeur: confirm.operator,
-              caisse,
-              signature: signatureNote.signature,
-              trousseauId,
-              hash: signatureNote.hash,
-              source: signatureNote.source
-            });
-
-            // si la note est offerte
-            if (__noteData['ENC-TIK-REM-MTN']>0 && __noteData['ENC-TIK-TOT-TTC']===0) {
-              // on loggue dans le JET
-              dispatch(journalActions.log('327', `Note #${ newNote } offerte (${ Number(__noteData['ENC-TIK-REM-MTN'] / 100).toFixed(2) } €)`));
-            }
-            else {
-              // son loggue dans le JET les articles offerts
-              const __articlesofferts = __noteData['LIGNES'].filter(art => art['ENC-TIK-LIG-REM-TXX']===100 );
-              __articlesofferts.forEach(art => {
-                dispatch(journalActions.log('328', `Article #${ art['ENC-TIK-ORI-NUM'] } offert (${ Number(art['ENC-TIK-LIG-REM-TOT'] / 100).toFixed(2) } €) : Note #${ newNote }`));
-              });
-            }
-  
-            await commandeServices.persistNote(__noteData);
-            dispatch(journalActions.log('160','Note #'+newNote));
-  
-            dispatch( signatureActions.updateSignature('notes', signatureNote.signature) );
-            dispatch( signatureActions.updateNumerotation('note', note+1) );
-  
-          }
-
-
-
+        if (data.reglements) {
+          data.operator = {id:'clickandcollect', nom:'clickandcollect'};
+          data.caisse = {id:'clickandcollect', nom:'clickandcollect', type:'clickandcollect'};
+          data.reglements = data.reglements.map(r => ( (r.reglementId) ? {...r} : {...r, reglementId: LodashId.createId()}) );
         }
-        
+      } 
+      // commandes provenant de la borne
+      else {
+        if (data.status === "confirmed") {
 
-        if (confirm.status === "confirmed") {
-          if (!confirm.signature && !confirm.ticket) {
+          if (!data.operator.hasOwnProperty('uniqid')) data.operator.uniqid = data.operator.id;
+          if (!data.caisse.hasOwnProperty('uniqid')) data.caisse.uniqid = data.caisse.id;
 
-            const lastSignature = await signatureServices.getLastSignature('tickets');
-            let newTicket = 'T'+format(new Date(),'yyMM-') + '%ORIGIN%-' + ticket.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
-            const signatureTicket = signatureServices.createTicketSignature({...confirm, ticket: newTicket}, privateKey, lastSignature);
-            
-            if (data.provider==="clickandcollect") {
-              newTicket = newTicket.replace('%ORIGIN%', 'cc');
-            }
-            else {
-              newTicket = newTicket.replace('%ORIGIN%', 'b'+confirm.caisse.id);
-            }
+          if (!data.caisse.hasOwnProperty('type')) data.caisse.type = "borne";
 
-            confirm = {
-              ...confirm,
-              ticket: newTicket,
-              hashsource: signatureTicket.source,
-              hash: signatureTicket.hash,
-              signature: signatureTicket.signature
-            }
-
-
-            const __ticketData = _createTicket(confirm, {
-              newTicket,
-              entreprise,
-              user,
-              vendeur: confirm.operator,
-              caisse,
-              signature: signatureTicket.signature,
-              trousseauId,
-              hash: signatureTicket.hash,
-              source: signatureTicket.source,
-              operation: 'VENTE'
-            });
-
-            await commandeServices.persistTicket(__ticketData);
-            dispatch(journalActions.log('160','Ticket #'+newTicket));
-
-            dispatch(clotureActions.createGrandTotalTicket(confirm));
-            
-            dispatch( signatureActions.updateSignature('tickets', signatureTicket.signature) );
-            dispatch( signatureActions.updateNumerotation('ticket', ticket+1) );
-
-          }
-
-        }
-        commandeServices.persistCommande(confirm);
-
-        // sinon la commande vient de la borne
-        if (data.provider!=="clickandcollect") {
-
-
-          const numtosend =
-            commande.numero.hex === true
-              ? commande.numero.value.toString(16)
-              : commande.numero.value;
-
-          let _extrait_sign = '';
-          // caractères 3, 7, 13, 19 de la signature
-          if (confirm.signature) {
-            _extrait_sign += confirm.signature.substring(2,3);
-            _extrait_sign += confirm.signature.substring(6,7);
-            _extrait_sign += confirm.signature.substring(12,13);
-            _extrait_sign += confirm.signature.substring(18,19);
-          }
-
-          commandeServices.sendTicketId(
-            confirm.ticketId,
-            _extrait_sign,
-            confirm.ticket ? confirm.ticket : '',
-            numtosend,
-            payload.response
-          );
-        }
-        
-        if (data.provider==="clickandcollect") {
-          // dispatch(peripheralActions.printCommandeTicket((commande.status === "confirmed") ? "all" : "production", commande));
-          dispatch(peripheralActions.printCommandeTicket("all", confirm));
-        } else {
-          if (confirm.status === "confirmed" || print_standby) {
-            dispatch(peripheralActions.printCommandeTicket("production", confirm));
-          }
-        }
-
-
-
-
-
-        dispatch(getTodayCommandesList());
-        dispatch(notificationActions.syncDispatch("commande", confirm));
-        dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
-        dispatch(clotureActions.getTodayCa());
-
-        if (confirm.status === "confirmed") {
-          const cmdtosync = {
-            ...confirm,
-            chrono: confirm.chrono || 0,
-            createdAt: formatISO(confirm.createdAt),
-            updatedAt: formatISO(confirm.updatedAt),
+          data = {
+            ...data,
+            enproduction: true,
+            operator_encaissement: data.operator,
+            caisse_encaissement: data.caisse,
+            reglements: data.reglements || [
+              {
+                moyen: "carte",
+                reglementId: LodashId.createId(),
+                valeur: data.total,
+              },
+            ],
           };
-
-          dispatch(notificationActions.syncCommandes([cmdtosync]));
         }
-      },
-      (error) => {
-        logger.info(error);
-        dispatch({
-          type: commandeActionTypes.VALIDATE_COMMANDE_FAILURE,
-          error: error.toString(),
-        });
       }
-    );
-    return commande.ticketId;
+
+      const { numero } = getState().commandeReducer;
+      const { parametres } = getState().parametresReducer;
+
+      const newnumero = await numeroServices.getNumero(numero, parametres);
+        
+
+      // si un client est renseigné
+      if (data.client) {
+
+        let client = null; 
+
+        // on le cherche dans la base
+        if (data.client.telephone || data.client.telephone2 || data.client.email) {
+
+          client = await clientsServices.findClient({
+            telephone: data.client.telephone,
+            telephone2: data.client.telephone2,
+            email: data.client.email
+          });
+          if (client._clt) dispatch({type: clientsActionTypes.FIND_CLIENT, client: client._clt});
+        }
+
+        // s'il n'existe pas on crée sa fiche
+        if (client._clt===null || client._clt===undefined) {
+          client._clt = await clientsServices.createClient(data.client);
+          if (client._clt) dispatch({type: clientsActionTypes.CREATE_SUCCESS, client: client._clt});
+        }
+
+        // et on l'ajoute à la commande
+        logger.info('cmdAct->API client', client);
+        data.client = {nom: client._clt.nom, prenom: client._clt.prenom, client_id: client._clt.client_id};
+        
+      }
+
+      logger.info("new numero", newnumero);
+      dispatch(numeroActions.setNextNumero());
+
+      logger.info(data);
+      const commande = commandeServices.setCommandeFromAPI(
+        data,
+        state.catalogueReducer,
+        state.parametresReducer.parametres,
+        newnumero
+      );
+
+      logger.warn('data.provider',data.provider);
+
+      // si la commande vient du Click & Collect
+      if (data.provider==="clickandcollect") {
+        logger.info('donc on envoie le numero de cmd au BO');
+        dispatch(notificationActions.confirmCommande({ticketId: data.ticket_id, numero: commande.numero}));
+      } 
+    
+
+      // activation de l'impression des tickets pour les commandes en attente
+      const {print_standby} = parametres.commandes;
+
+    
+
+      commandeServices.saveCommande({...commande, localsync: [parametres.options.caisse.uniqid]}, state.catalogueReducer).then(
+        async (confirm) => {
+          // met à jour la liste des schedules (ajoute ou supprime la commande)
+          dispatch({
+            type: (commande.scheduled) ? commandeActionTypes.SET_SCHEDULE : commandeActionTypes.DELETE_SCHEDULE,
+            schedule: commande.ticketId
+          });
+
+          dispatch( journalActions.log('140', `station tierce: ${data.caisse.type} (ticketId: ${commande.ticketId}, status:${commande.status})`) );
+
+
+          if (confirm.status !== "standby") {
+
+            if (!confirm.signaturenote && !confirm.note) {  
+              const lastSignatureNote = await signatureServices.getLastSignature('notes');
+              const newNote = 'N'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + note.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
+              const signatureNote = signatureServices.createTicketSignature({...confirm, ticket: newNote}, privateKey, lastSignatureNote);
+            
+              confirm = {
+                ...confirm,
+                note: newNote,
+                hashsourcenote: signatureNote.source, 
+                hashnote: signatureNote.hash,
+                signaturenote: signatureNote.signature,
+              }
+    
+    
+              const __noteData = _createNote(confirm, {
+                newNote,
+                entreprise,
+                user,
+                vendeur: confirm.operator,
+                caisse,
+                signature: signatureNote.signature,
+                trousseauId,
+                hash: signatureNote.hash,
+                source: signatureNote.source
+              });
+
+              // si la note est offerte
+              if (__noteData['ENC-TIK-REM-MTN']>0 && __noteData['ENC-TIK-TOT-TTC']===0) {
+                // on loggue dans le JET
+                dispatch(journalActions.log('327', `Note #${ newNote } offerte (${ Number(__noteData['ENC-TIK-REM-MTN'] / 100).toFixed(2) } €)`));
+              }
+              else {
+                // son loggue dans le JET les articles offerts
+                const __articlesofferts = __noteData['LIGNES'].filter(art => art['ENC-TIK-LIG-REM-TXX']===100 );
+                __articlesofferts.forEach(art => {
+                  dispatch(journalActions.log('328', `Article #${ art['ENC-TIK-ORI-NUM'] } offert (${ Number(art['ENC-TIK-LIG-REM-TOT'] / 100).toFixed(2) } €) : Note #${ newNote }`));
+                });
+              }
+    
+              await commandeServices.persistNote(__noteData);
+              dispatch(journalActions.log('160','Note #'+newNote));
+    
+              dispatch( signatureActions.updateSignature('notes', signatureNote.signature) );
+              dispatch( signatureActions.updateNumerotation('note', note+1) );
+    
+            }
+
+
+
+          }
+          
+
+          if (confirm.status === "confirmed") {
+            if (!confirm.signature && !confirm.ticket) {
+
+              const lastSignature = await signatureServices.getLastSignature('tickets');
+              let newTicket = 'T'+format(new Date(),'yyMM-') + '%ORIGIN%-' + ticket.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
+              const signatureTicket = signatureServices.createTicketSignature({...confirm, ticket: newTicket}, privateKey, lastSignature);
+              
+              if (data.provider==="clickandcollect") {
+                newTicket = newTicket.replace('%ORIGIN%', 'cc');
+              }
+              else {
+                newTicket = newTicket.replace('%ORIGIN%', 'b'+confirm.caisse.id);
+              }
+
+              confirm = {
+                ...confirm,
+                ticket: newTicket,
+                hashsource: signatureTicket.source,
+                hash: signatureTicket.hash,
+                signature: signatureTicket.signature
+              }
+
+
+              const __ticketData = _createTicket(confirm, {
+                newTicket,
+                entreprise,
+                user,
+                vendeur: confirm.operator,
+                caisse,
+                signature: signatureTicket.signature,
+                trousseauId,
+                hash: signatureTicket.hash,
+                source: signatureTicket.source,
+                operation: 'VENTE'
+              });
+
+              await commandeServices.persistTicket(__ticketData);
+              dispatch(journalActions.log('160','Ticket #'+newTicket));
+
+              dispatch(clotureActions.createGrandTotalTicket(confirm));
+              
+              dispatch( signatureActions.updateSignature('tickets', signatureTicket.signature) );
+              dispatch( signatureActions.updateNumerotation('ticket', ticket+1) );
+
+            }
+
+          }
+          commandeServices.persistCommande(confirm);
+
+          // sinon la commande vient de la borne
+          if (data.provider!=="clickandcollect") {
+
+
+            const numtosend =
+              commande.numero.hex === true
+                ? commande.numero.value.toString(16)
+                : commande.numero.value;
+
+            let _extrait_sign = '';
+            // caractères 3, 7, 13, 19 de la signature
+            if (confirm.signature) {
+              _extrait_sign += confirm.signature.substring(2,3);
+              _extrait_sign += confirm.signature.substring(6,7);
+              _extrait_sign += confirm.signature.substring(12,13);
+              _extrait_sign += confirm.signature.substring(18,19);
+            }
+
+            commandeServices.sendTicketId(
+              confirm.ticketId,
+              _extrait_sign,
+              confirm.ticket ? confirm.ticket : '',
+              numtosend,
+              payload.response
+            );
+          }
+          
+          if (data.provider==="clickandcollect") {
+            // dispatch(peripheralActions.printCommandeTicket((commande.status === "confirmed") ? "all" : "production", commande));
+            dispatch(peripheralActions.printCommandeTicket("all", confirm));
+          } else {
+            if (confirm.status === "confirmed" || print_standby) {
+              dispatch(peripheralActions.printCommandeTicket("production", confirm));
+            }
+          }
+
+
+
+
+
+          dispatch(getTodayCommandesList());
+          dispatch(notificationActions.syncDispatch("commande", confirm));
+          dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
+          dispatch(clotureActions.getTodayCa());
+
+          if (confirm.status === "confirmed") {
+            const cmdtosync = {
+              ...confirm,
+              chrono: confirm.chrono || 0,
+              createdAt: formatISO(confirm.createdAt),
+              updatedAt: formatISO(confirm.updatedAt),
+            };
+
+            dispatch(notificationActions.syncCommandes([cmdtosync]));
+          }
+        },
+        (error) => {
+          logger.info(error);
+          dispatch({
+            type: commandeActionTypes.VALIDATE_COMMANDE_FAILURE,
+            error: error.toString(),
+          });
+        }
+      );
+      return commande.ticketId;
+    }
   };
 }
 

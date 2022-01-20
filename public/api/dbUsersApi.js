@@ -26,7 +26,7 @@ const actions = {
 
     const __usr = await _findUser({$and:[{identifiant:payload.identifiant},{status:'active'}]});
     
-    res.send(__usr);
+    res.send(__usr[0]);
   },
   dbUsersLoginSU: async (req,res) => {
     const {payload} = req;

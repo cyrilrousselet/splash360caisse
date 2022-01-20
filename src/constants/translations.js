@@ -87,6 +87,10 @@ const data = {
                 mandatory_error: {
                     titre: 'Données manquantes',
                     texte: 'Il manque des données obligatoires pour pouvoir faire des ventes.<br /> Merci de vérifier vos données dans le module "Paramètres > Entreprise" et contacter le support technique.'
+                },
+                date_error: {
+                    titre: 'Erreur de date',
+                    texte: 'La date et l’heure de la machine sont antérieures à la dernière clôture.<br /> Merci de vérifier les réglages de votre ordinateur et contacter le support technique.'
                 }
             }
         },

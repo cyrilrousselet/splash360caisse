@@ -27,6 +27,7 @@ function login(passphrase) {
     userServices.login(passphrase)
         .then(
             user => {
+              console.log('USER', user);
               if (user) {
 
                 // si l'utilisateur n'est pas actif -> refus

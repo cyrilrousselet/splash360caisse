@@ -586,7 +586,7 @@ function testCloturesAuto() {
       end = set(sub(__today,{days:1}), {hours:5});
     }
 
-    // suppression des commandes "standby" et "a_encaisser" du service précédent
+    // détection des commandes "standby" et "a_encaisser" du service précédent
     const __cmdnonconfirmees = await commandeServices.getCommandesList({
       $and: [
         {status: {$in:['standby','a_encaisser']}},
@@ -595,6 +595,8 @@ function testCloturesAuto() {
     });
     console.log('__cmdnonconfirmees',__cmdnonconfirmees);
 
+    let __canMakeCloture = true;
+
     if (__cmdnonconfirmees.hasOwnProperty('commandeslist') && Object.values(__cmdnonconfirmees.commandeslist).length > 0) {
       const __cmdstandby_ids = Object.values(__cmdnonconfirmees.commandeslist).filter(cmd => cmd.status==="standby").map(c => c.ticketId);
       const __cmdaencaisser = Object.values(__cmdnonconfirmees.commandeslist).filter(cmd => cmd.status==="a_encaisser");
@@ -602,6 +604,7 @@ function testCloturesAuto() {
       if (__cmdaencaisser.length>0) {
         console.log('il y a des commandes à encaisser : impossible de faire la clôture auto -> on bloque la caisse');
         dispatch({ type: clotureActionTypes.CHECK_NOCOMPLETED_COMMANDS, blocage: true});
+        __canMakeCloture = false;
       } else {
         dispatch({ type: clotureActionTypes.CHECK_NOCOMPLETED_COMMANDS, blocage: false});
       }
@@ -628,19 +631,21 @@ function testCloturesAuto() {
       console.log('aucune commande inachevée dans un service passé', end);
     }
 
-
-    // lancement de la clôture automatique des commandes prises avant aujdh.
-    dispatch( makeCloture({
-      type:"auto", 
-      query: {
-        $and: [
-          { status: {$in:['confirmed']} },
-          { createdAt:{$lt:end.getTime()} },
-          { archived: {"$exists": false} },
-          { centre_revenu: "restaurant" }
-        ]
-      } 
-    }) );
+    // s'il n'y a aucune commande à encaisser
+    if (__canMakeCloture) {
+      // lancement de la clôture automatique des commandes prises avant aujdh.
+      dispatch( makeCloture({
+        type:"auto", 
+        query: {
+          $and: [
+            { status: {$in:['confirmed']} },
+            { createdAt:{$lt:end.getTime()} },
+            { archived: {"$exists": false} },
+            { centre_revenu: "restaurant" }
+          ]
+        } 
+      }) );
+    }
 
   }
 }
@@ -1365,6 +1370,15 @@ function testGTPeriodique(intervalle='jour') {
           const last_fin = parseInt(__lastGTJ[0]['ENC-GTP-ORI-NUM'].split("|")[1]);
 
           console.log('fin de la période du GTJ', last_fin, parseInt(end));
+
+          // si la date de fin de la période du dernier GTJ
+          // est postérieure à la date d'aujourd'hui
+          // c'est qu'il y a ou qu'il y a eu un problème de date avec la machine
+          // on bloque l'encaissement
+          const __todayformatted = format(__today,'yyyyMMddHHmmss');
+          if (last_fin > __todayformatted) {
+            dispatch({ type: clotureActionTypes.DATE_ERROR, error: true });
+          }
 
           // si la date de fin de la période du dernier GTJ 
           // est antérieure à la date de fin du dernier service
@@ -2380,7 +2394,8 @@ function archiveFiscale(intervalle, debut, fin) {
     __data.push({type: 'csv', data: xcpt_data, file: 'exportcomptable.csv'});
 
     // COPIE DE FICHIERS
-    // ------------>  JET et PA
+    // ------------>  JET et PA du jour de l'archive 
+    // -- (et de la période archivée pour une ArchF Journalière) --
   
     const compta_dir = `${app.getPath('userData')}/compta/`;
 
@@ -2430,6 +2445,10 @@ function archiveFiscale(intervalle, debut, fin) {
       
 
     }
+
+    // ------------> GTPerpetuel Cumul Algebrique
+
+
     
     // ------------>  Documentation
 
