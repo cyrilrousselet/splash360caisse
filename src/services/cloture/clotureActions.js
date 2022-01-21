@@ -23,6 +23,7 @@ import { last, dropRight } from 'lodash';
 import { ungzip } from 'node-gzip';
 import packageJson from '../../../package.json';
 import { signatureActionTypes } from '../signature/signatureActionTypes';
+import { userServices } from '../user/userServices';
 // import {statSync} from 'fs';
 
 const strings = new LocalizedStrings(data);
@@ -1936,379 +1937,50 @@ function archiveFiscale(intervalle, debut, fin) {
 
     // EXPORT DES DONNEES
 
-    let gtperiode = ['jour','intermediaire'];
-    if (intervalle==='mois') gtperiode = ['jour','mois'];
-    if (intervalle==='annee') gtperiode = ['annee','mois'];
-
+  
     // ------------> GTPeriodiques
-    const __GTP_query = {
-      "$expr" : {
-        "$and":[ 
-          {"gttype": {"$in": gtperiode}},
-          {"$gte" : [
-            {"$toDouble": 
-              {"$arrayElemAt":[
-                {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
-                0
-              ]}
-            }, 
-            parseInt(start)
-          ]},
-          {"$lt" : [
-            {"$toDouble": 
-              {"$arrayElemAt":[
-                {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
-                1
-              ]}
-            }, 
-            parseInt(end)
-          ]}
-        ]
-      }
-    };
-    const gtplist = await clotureServices.getGTPeriodique(__GTP_query);
+    const GTdata = await _getArchiveGTPeriodiques(intervalle, start, end);
 
-    // fichier JSON
-    __data.push({type: 'json', data: JSON.stringify(gtplist), file: 'grandtotauxperiodiques.json'});
-
-
- 
-    // fichier CSV
-    const gtpCsvString = [
-      [
-        'gttype',
-        'ENC-GTP-ORI-NID',
-        'ENC-GTP-ORI-NUM',
-        'ENC-GTP-MTN-TVA-TTC',
-        'ENC-GTP-MTN-TVA-HT',
-        'ENC-GTP-MTN-TVA-TAUX',
-        'ENC-GTP-TTC',
-        'ENC-GTP-HT',
-        'ENC-GTP-PER-TTC',
-        'ENC-GTP-PER-TTC-ABS',
-        'ENC-GTP-HOR-GDH',
-        'ENC-GTP-ARG',
-        'ENC-GTP-HASH',
-        'ENV-GTP-ID-KEY',
-        'ENV-GTP-TAG-SIG' 
-      ],
-      ...gtplist.map(gtp => [
-        gtp.gttype,
-        gtp['ENC-GTP-ORI-NID'],
-        gtp['ENC-GTP-ORI-NUM'],
-        gtp['ENC-GTP-MTN-TVA-TTC'],
-        gtp['ENC-GTP-MTN-TVA-HT'],
-        gtp['ENC-GTP-MTN-TVA-TAUX'],
-        gtp['ENC-GTP-TTC'],
-        gtp['ENC-GTP-HT'],
-        gtp['ENC-GTP-PER-TTC'],
-        gtp['ENC-GTP-PER-TTC-ABS'],
-        gtp['ENC-GTP-HOR-GDH'],
-        gtp['ENC-GTP-ARG'],
-        gtp['ENC-GTP-HASH'],
-        gtp['ENV-GTP-ID-KEY'],
-        gtp['ENV-GTP-TAG-SIG']
-      ])
-    ]
-     .map(e => e.join(";")) 
-     .join("\n");
-
-    __data.push({type: 'csv', data: gtpCsvString, file: 'grandtotauxperiodiques.csv'});
+    __data.push({type: 'json', data: JSON.stringify(GTdata.json), file: 'grandtotauxperiodiques.json'});
+    __data.push({type: 'csv', data: GTdata.csv, file: 'grandtotauxperiodiques.csv'});
 
 
     // ------------>  ZCaisse 
-    const __ZC_query = {
-      "$expr" : {
-        "$and":[ 
-          {"gttype": intervalle},
-          {"$gte" : [
-            {"$toDouble": 
-              {"$arrayElemAt":[
-                {"$split":["$periode","|"]}, 
-                0
-              ]}
-            }, 
-            parseInt(start)
-          ]},
-          {"$lt" : [
-            {"$toDouble": 
-              {"$arrayElemAt":[
-                {"$split":["$periode","|"]}, 
-                1
-              ]}
-            }, 
-            parseInt(end)
-          ]}
-        ]
-      }
-    };
-    const zclist = await clotureServices.getZCaisse(__ZC_query);
+    const ZCdata = await _getArchiveZCaisse(intervalle, start, end);
 
-    console.log('zclist',zclist);
-    if (zclist) {
-      // fichier JSON
-      __data.push({type: 'json', data: JSON.stringify(zclist), file: 'zdecaisse.json'});
-
-
-
-      // fichier CSV
-      const zcCsvString = [
-        [
-          "zId",
-          "ztype",
-          "comptage_total",
-          "comptage_especes",
-          "comptage_carte",
-          "comptage_ticket",
-          "comptage_cheque",
-          "comptage_avoir",
-          "ecarts_especes",
-          "ecarts_especes_motif",
-          "ecarts_carte",
-          "ecarts_carte_motif",
-          "ecarts_ticket",
-          "ecarts_ticket_motif",
-          "ecarts_cheque",
-          "ecarts_cheque_motif",
-          "ecarts_avoir",
-          "ecarts_avoir_motif",
-          "periode",
-          "ca",
-          "caisse",
-          "depenses",
-          "editeur_id",
-          "editeur_nom",
-          "editeur_user_id",
-          "emission",
-          "fdcaisse",
-          "mtcaisse",
-          "numtickets",
-          "paramdfcaisse",
-          "remboursements",
-          "ticket_moyen",
-          "ventes",
-          "ventilation_moyen",
-          "ventilation_tva_ttc",
-          "ventilation_tva_ht",
-          "ventilation_tva_taxe",
-          "ventilation_vendeur",
-          "ventilation_caisse",
-          "prelevement",
-          "staffmeals",
-          "createdAt",
-          "source",
-          "hash",
-          "signature",
-          "trousseauId"
-        ],
-        ...zclist.map(zc => [
-          zc.zId,
-          zc.ztype,
-          (zc.comptage && zc.comptage.total ? zc.comptage.total : ''),
-          (zc.comptage && zc.comptage.especes ? zc.comptage.especes : ''),
-          (zc.comptage && zc.comptage.carte ? zc.comptage.carte : ''),
-          (zc.comptage && zc.comptage.ticket ? zc.comptage.ticket : ''),
-          (zc.comptage && zc.comptage.cheque ? zc.comptage.cheque : ''),
-          (zc.comptage && zc.comptage.avoir ? zc.comptage.avoir : ''),
-          (zc.ecarts && zc.ecarts.especes ? zc.ecarts.especes.valeur : ''),
-          (zc.ecarts && zc.ecarts.especes ? zc.ecarts.especes.motif : ''),
-          (zc.ecarts && zc.ecarts.carte ? zc.ecarts.carte.valeur : ''),
-          (zc.ecarts && zc.ecarts.carte ? zc.ecarts.carte.motif : ''),
-          (zc.ecarts && zc.ecarts.ticket ? zc.ecarts.ticket.valeur : ''),
-          (zc.ecarts && zc.ecarts.ticket ? zc.ecarts.ticket.motif : ''),
-          (zc.ecarts && zc.ecarts.cheque ? zc.ecarts.cheque.valeur : ''),
-          (zc.ecarts && zc.ecarts.cheque ? zc.ecarts.cheque.motif : ''),
-          (zc.ecarts && zc.ecarts.avoir ? zc.ecarts.avoir.valeur : ''),
-          (zc.ecarts && zc.ecarts.avoir ? zc.ecarts.avoir.motif : ''),
-          zc.periode,
-          zc.ca,
-          zc.caisse,
-          zc.depenses,
-          zc.editeur.id,
-          zc.editeur.nom,
-          zc.editeur.user_id,
-          zc.emission,
-          zc.fdcaisse,
-          zc.mtcaisse,
-          zc.numtickets,
-          zc.paramdfcaisse,
-          zc.remboursements,
-          zc.ticket_moyen,
-          zc.ventes,
-          Object.values(zc.ventilation.moyen).map(m=>m.moyen+': '+m.valeur).join('|'),
-          zc.ventilation.tva && Object.entries(zc.ventilation.tva).map(([k,t])=>k+':'+t.ttc).join('|'),
-          zc.ventilation.tva && Object.entries(zc.ventilation.tva).map(([k,t])=>k+':'+t.ht).join('|'),
-          zc.ventilation.tva && Object.entries(zc.ventilation.tva).map(([k,t])=>k+':'+t.taxe).join('|'),
-          Object.values(zc.ventilation.vendeur).map(v=>`${v.nom} (${v.id}) : ${v.ventes} - ${v.remboursements}`).join('|'),
-          Object.values(zc.ventilation.caisse).map(c=>`${c.nom} (${c.id}): ${c.ca}`).join('|'),
-          zc.prelevement,
-          zc.staffmeals,
-          zc.createdAt,
-          zc.source,
-          zc.hash,
-          zc.signature,
-          zc.trousseauId
-        ])
-      ]
-      .map(e => e.join(";")) 
-      .join("\n");
-
-      __data.push({type: 'csv', data: zcCsvString, file: 'zdecaisse.csv'});
+    if (ZCdata.json) {
+      __data.push({type: 'json', data: JSON.stringify(ZCdata.json), file: 'zdecaisse.json'});
+      __data.push({type: 'csv', data: ZCdata.csv, file: 'zdecaisse.csv'});
     }
+
+
+    // ------------>  Users
+    const { users } = await userServices.getAll();
+    // fichier JSON
+    __data.push({type: 'json', data: JSON.stringify(users), file: 'users.json'});
+
+
 
     if (intervalle==="jour") {
 
       // ------------> GTTickets
-      const __GTT_query = {
-        "$expr" : {
-          "$and":[ 
-            {"$gte" : [{"$toDouble": "$ENC-GTT-HOR-GDH"} , parseInt(start)]},
-            {"$lt" : [{"$toDouble": "$ENC-GTT-HOR-GDH"} , parseInt(end)]}
-          ]
-        }
-      };
-      const gttlist = await clotureServices.getGTTicket(__GTT_query);
+     
+      const GTTdata = await _getArchiveGTTickets(intervalle, start, end);
 
-      // fichier JSON
-      __data.push({type: 'json', data: JSON.stringify(gttlist), file: 'grandtotauxtickets.json'});
+      __data.push({type: 'json', data: JSON.stringify(GTTdata.json), file: 'grandtotauxtickets.json'});
+      __data.push({type: 'csv', data: GTTdata.csv, file: 'grandtotauxtickets.csv'});
 
-
-      // fichier CSV
-      const gttCsvString = [
-        [
-          'ENC-GTT-ORI-NUM',
-          'ENC-GTT-MTN-TVA-TTC',
-          'ENC-GTT-MTN-TVA-HT',
-          'ENC-GTT-MTN-TVA-TAUX',
-          'ENC-GTT-TTC',
-          'ENC-GTT-HT',
-          'ENC-GTT-PER-TTC',
-          'ENC-GTT-PER-TTC-ABS',
-          'ENC-GTT-HOR-GDH',
-          'ENC-GTT-ARG',
-          'ENC-GTT-HASH',
-          'ENC-GTT-ID-KEY',
-          'ENC-GTT-TAG-SIG'
-        ],
-        ...gttlist.map(gtt => [
-          gtt['ENC-GTT-ORI-NUM'],
-          gtt['ENC-GTT-MTN-TVA-TTC'],
-          gtt['ENC-GTT-MTN-TVA-HT'],
-          gtt['ENC-GTT-MTN-TVA-TAUX'],
-          gtt['ENC-GTT-TTC'],
-          gtt['ENC-GTT-HT'],
-          gtt['ENC-GTT-PER-TTC'],
-          gtt['ENC-GTT-PER-TTC-ABS'],
-          gtt['ENC-GTT-HOR-GDH'],
-          gtt['ENC-GTT-ARG'],
-          gtt['ENC-GTT-HASH'],
-          gtt['ENC-GTT-ID-KEY'],
-          gtt['ENC-GTT-TAG-SIG']
-        ])
-      ]
-      .map(e => e.join(";")) 
-      .join("\n");
-
-      __data.push({type: 'csv', data: gttCsvString, file: 'grandtotauxtickets.csv'});
-
-      // ------------>  Notes
       
       
       // ------------>  Tickets
-      const tickets_id = gttlist.map(t=>t['ENC-GTT-ORI-NUM']);
-      const __ft = tickets_id.filter(t => t);
-      
-      const tickets = await commandeServices.getTicket({
-        'ENC-TIK-NUM': {$in: __ft}
-      });
-      
-      // export en JSON
-      __data.push({type: 'json', data: JSON.stringify(tickets), file: 'tickets.json'});
-      
-      
-      
-      console.log('tickets',tickets);
-      if (Array.isArray(tickets) && tickets.length>0) {
-        let __tck = [];
-        const __tck_hdr = [
-          'ENC-TIK-NUM',
-          'ENC-TIK-CDE',
-          'ENC-TIK-TAG-VER',
-          'ENC-TIK-PRN-NBR',
-          'ENC-TIK-SOC-ETS',
-          'ENC-TIK-SOC-ID',
-          'ENC-TIK-SOC-ADR',
-          'ENC-TIK-SOC-CCP',
-          'ENC-TIK-SOC-VIL',
-          'ENC-TIK-SOC-PAY',
-          'ENC-TIK-SOC-SIR',
-          'ENC-TIK-SOC-NAF',
-          'ENC-TIK-SOC-TVA',
-          'ENC-TIK-VEN-NID',
-          'ENC-TIK-VEN-NOM',
-          'ENC-TIK-OPS-NID',
-          'ENC-TIK-OPS-NOM',
-          'ENC-TIK-CAI-NID',
-          'ENC-TIK-HOR-GDH',
-          'ENC-OPE-TYP',
-          'ENC-TIK-DOC-TYP',
-          'ENC-TIK-LIG-NBR',
-          'ENC-TIK-TAG-SIG',
-          'ENC-TIK-ID-KEY',
-          'ENC-TIK-TAG-RET',
-          'ENC-TIK-HASH',
-          'ENC-TIK-ARG',
-          'ENC-TIK-LOG',
-          'ENC-TIK-TOT-MHT',
-          'ENC-TIK-TOT-TTC'
-        ];
-        
-        let __tcklgn = [];
-        const __tcklgn_hdr = [
-          'ENC-NID',
-          'ENC-TIK-ORI-NUM',
-          'ENC-TIK-LIG-NUM',
-          'ENC-TIK-LIG-PRO-NID',
-          'ENC-TIK-LIG-PRO-LIB',
-          'ENC-TIK-LIG-PRO-QTE',
-          'ENC-TIK-LIG-TAX-NID',
-          'ENC-TIK-LIG-TAX-TXX',
-          'ENC-TIK-LIG-PRO-MTH',
-          'ENC-TIK-LIG-PRO-TTC',
-          'ENC-TIK-LIG-REM-TXX',
-          'ENC-TIK-LIG-REM-TOT',
-          'ENC-TIK-LIG-TOT-MHT',
-          'ENC-TIK-LIG-TOT-TTC',
-          'ENC-TIK-LIG-OPE-TYP',
-          'ENC-TIK-LIG-CAI-NID',
-          'ENC-TIK-LIG-VEN-NID',
-          'ENC-TIK-LIG-OPS-NID',
-          'ENC-TIK-LIG-HOR-GDH'
-        ];
-        
-        let __tcktva = [];
-        const __tcktva_hdr = [
-          'ENC-NID',
-          'ENC-TIK-TOT-MHT',
-          'ENC-TIK-TVA-NID',
-          'ENC-TIK-TVA-TXX',
-          'ENC-TIK-TVA-MTN'
-        ];
-        
-        let __tckrgt = [];
-        const __tckrgt_hdr = [
-          'ENC-NID',
-          'ENC-TIK-ORI-NUM',
-          'ENC-TIK-REG-TYP',
-          'ENC-TIK-REG-MOD-LIB',
-          'ENC-TIK-REG-MTN',
-          'ENC-TIK-REG-NUM',
-          'ENC-TIK-REG-USR-NID',
-          'ENC-TIK-REG-HOR-GDH'
-        ]
-        
-        
-        tickets.forEach(tck => {
+
+      const TicketsData = await _getArchiveTickets(GTTdata.json);
+
+      __data.push({type: 'json', data: JSON.stringify(TicketsData.json), file: 'tickets.json'});
+         
+      if (Array.isArray(TicketsData.json) && TicketsData.json.length>0) {
+
+        TicketsData.json.forEach(tck => {
           
           let __evalstart = parseInt(tck['ENC-TIK-HOR-GDH']);
           let __evalend = parseInt(tck['ENC-TIK-HOR-GDH']);
@@ -2324,102 +1996,13 @@ function archiveFiscale(intervalle, debut, fin) {
             __enddefacto = __evalend;
           }
           
-          __tck.push([
-            tck['ENC-TIK-NUM'],
-            tck['ENC-TIK-CDE'],
-            tck['ENC-TIK-TAG-VER'],
-            tck['ENC-TIK-PRN-NBR'],
-            tck['ENC-TIK-SOC-ETS'],
-            tck['ENC-TIK-SOC-ID'],
-            tck['ENC-TIK-SOC-ADR'],
-            tck['ENC-TIK-SOC-CCP'],
-            tck['ENC-TIK-SOC-VIL'],
-            tck['ENC-TIK-SOC-PAY'],
-            tck['ENC-TIK-SOC-SIR'],
-            tck['ENC-TIK-SOC-NAF'],
-            tck['ENC-TIK-SOC-TVA'],
-            tck['ENC-TIK-VEN-NID'],
-            tck['ENC-TIK-VEN-NOM'],
-            tck['ENC-TIK-OPS-NID'],
-            tck['ENC-TIK-OPS-NOM'],
-            tck['ENC-TIK-CAI-NID'],
-            tck['ENC-TIK-HOR-GDH'],
-            tck['ENC-OPE-TYP'],
-            tck['ENC-TIK-DOC-TYP'],
-            tck['ENC-TIK-LIG-NBR'],
-            tck['ENC-TIK-TAG-SIG'],
-            tck['ENC-TIK-ID-KEY'],
-            tck['ENC-TIK-TAG-RET'],
-            tck['ENC-TIK-HASH'],
-            tck['ENC-TIK-ARG'],
-            tck['ENC-TIK-LOG'],
-            tck['ENC-TIK-TOT-MHT'],
-            tck['ENC-TIK-TOT-TTC']
-          ]);
-          
-          __tcklgn= [
-            ...__tcklgn,
-            ...tck['LIGNES'].map(l => [
-              l['ENC-NID'],
-              l['ENC-TIK-ORI-NUM'],
-              l['ENC-TIK-LIG-NUM'],
-              l['ENC-TIK-LIG-PRO-NID'],
-              l['ENC-TIK-LIG-PRO-LIB'],
-              l['ENC-TIK-LIG-PRO-QTE'],
-              l['ENC-TIK-LIG-TAX-NID'],
-              l['ENC-TIK-LIG-TAX-TXX'],
-              l['ENC-TIK-LIG-PRO-MTH'],
-              l['ENC-TIK-LIG-PRO-TTC'],
-              l['ENC-TIK-LIG-REM-TXX'],
-              l['ENC-TIK-LIG-REM-TOT'],
-              l['ENC-TIK-LIG-TOT-MHT'],
-              l['ENC-TIK-LIG-TOT-TTC'],
-              l['ENC-TIK-LIG-OPE-TYP'],
-              l['ENC-TIK-LIG-CAI-NID'],
-              l['ENC-TIK-LIG-VEN-NID'],
-              l['ENC-TIK-LIG-OPS-NID'],
-              l['ENC-TIK-LIG-HOR-GDH']  
-            ])
-          ];
-          
-          __tcktva = [
-            ...__tcktva,
-            ...tck['TVA'].map(t => [
-              t['ENC-NID'],
-              t['ENC-TIK-TOT-MHT'],
-              t['ENC-TIK-TVA-NID'],
-              t['ENC-TIK-TVA-TXX'],
-              t['ENC-TIK-TVA-MTN']
-            ])
-          ];
-          
-          __tckrgt = [
-            ...__tckrgt,
-            ...tck['REGLEMENTS'].map(r => [
-              r['ENC-NID'],
-              r['ENC-TIK-ORI-NUM'],
-              r['ENC-TIK-REG-TYP'],
-              r['ENC-TIK-REG-MOD-LIB'],
-              r['ENC-TIK-REG-MTN'],
-              r['ENC-TIK-REG-NUM'],
-              r['ENC-TIK-REG-USR-NID'],
-              r['ENC-TIK-REG-HOR-GDH']
-            ])
-          ];
-          
         });
         
-        const tckString = __tck_hdr.join(';') + "\n" + __tck.map(e => e.join(";")).join("\n");
-        __data.push({type: 'csv', data: tckString, file: 'tickets.csv'});
-        
-        const tcklgnString = __tcklgn_hdr.join(';') + "\n" + __tcklgn.map(e => e.join(";")).join("\n");
-        __data.push({type: 'csv', data: tcklgnString, file: 'ticketlignes.csv'});
-        
-        const tcktvaString = __tcktva_hdr.join(';') + "\n" + __tcktva.map(e => e.join(";")).join("\n");
-        __data.push({type: 'csv', data: tcktvaString, file: 'tickettva.csv'});
-        
-        const tckrgtString = __tckrgt_hdr.join(';') + "\n" + __tckrgt.map(e => e.join(";")).join("\n");
-        __data.push({type: 'csv', data: tckrgtString, file: 'ticketreglements.csv'});
+        __data.push({type: 'csv', data: TicketsData.csv.tickets, file: 'tickets.csv'});
+        __data.push({type: 'csv', data: TicketsData.csv.lignes, file: 'ticketlignes.csv'});
+        __data.push({type: 'csv', data: TicketsData.csv.tva, file: 'tickettva.csv'});
+        __data.push({type: 'csv', data: TicketsData.csv.reglements, file: 'ticketreglements.csv'});
+
       }
       
       
@@ -2436,63 +2019,16 @@ function archiveFiscale(intervalle, debut, fin) {
 
 
       // ------------>  Duplicatas
-      const __dplQuery = {
-        $and: [
-          {'ENC-DUP-HOR-GDH': {$gte:start}},
-          {'ENC-DUP-HOR-GDH': {$lt:end}}
-        ]
-      }
-      const dpllist = await commandeServices.getDuplicata(__dplQuery);
+      const DuplisData = await _getArchiveDuplicatas(start, end);
 
-
-      // export en JSON
-      __data.push({type: 'json', data: JSON.stringify(dpllist), file: 'duplicatas.json'});
-
-  
-
-      const dplCsvString = [
-        [
-          'ENC-DUP-NID',
-          'ENC-DUP-ORI-NUM',
-          'ENC-DUP-TYP',
-          'ENC-DUP-PRN-NUM',
-          'ENC-DUP-OPS-NID',
-          'ENC-DUP-HOR-GDH',
-          'ENC-DUP-HASH',
-          'ENC-TIK-ARG',
-          'ENC-DUP-TAG-SIG',
-          'ENC-DUP-RES',
-          'ENC-TIK-ID-KEY',
-          'ENC-DUP-VER',
-          'ENC-SIG-RES',
-          'ENC-SIG-MOTIF'
-        ],
-        ...dpllist.map(dpl =>[
-          dpl['ENC-DUP-NID'],
-          dpl['ENC-DUP-ORI-NUM'],
-          dpl['ENC-DUP-TYP'],
-          dpl['ENC-DUP-PRN-NUM'],
-          dpl['ENC-DUP-OPS-NID'],
-          dpl['ENC-DUP-HOR-GDH'],
-          dpl['ENC-DUP-HASH'],
-          dpl['ENC-TIK-ARG'],
-          dpl['ENC-DUP-TAG-SIG'],
-          dpl['ENC-DUP-RES'],
-          dpl['ENC-TIK-ID-KEY'],
-          dpl['ENC-DUP-VER'],
-          dpl['ENC-SIG-RES'],
-          dpl['ENC-SIG-MOTIF']
-        ])
-      ]
-      .map(e => e.join(";")) 
-      .join("\n");
-
-    __data.push({type: 'csv', data: dplCsvString, file: 'duplicatas.csv'});
+      __data.push({type: 'json', data: JSON.stringify(DuplisData.json), file: 'duplicatas.json'});
+      __data.push({type: 'csv', data: DuplisData.csv, file: 'duplicatas.csv'});
+      
 
       // ------------>  Commandes
       const __cmdQuery = {
         $and: [
-          {status: 'confirmed'},
+          {status: {$in:['confirmed', 'deleted']}},
           {archived: {$exists: true}},
           {createdAt: {$gte:debut.getTime()}},
           {createdAt: {$lt:fin.getTime()}}
@@ -2502,6 +2038,19 @@ function archiveFiscale(intervalle, debut, fin) {
       // fichier JSON
       __data.push({type: 'json', data: JSON.stringify(commandeslist), file: 'commandes.json'});
 
+
+
+      // ------------>  Notes
+      const NotesData = await _getArchiveNotes(commandeslist);
+
+      __data.push({type: 'json', data: JSON.stringify(NotesData.json), file: 'notes.json'});
+         
+      if (Array.isArray(NotesData.json) && NotesData.json.length>0) {
+        
+        __data.push({type: 'csv', data: NotesData.csv.notes, file: 'notes.csv'});
+        __data.push({type: 'csv', data: NotesData.csv.lignes, file: 'notelignes.csv'});
+
+      }
   
       // ------------>  Trésorerie
       const __tresorQuery = {
@@ -2527,50 +2076,57 @@ function archiveFiscale(intervalle, debut, fin) {
       // fichier JSON
       __data.push({type: 'json', data: JSON.stringify(avoirslist), file: 'avoirs.json'});
 
-    }
 
-    // ------------>  export comptable
-    const __XCPTquery = {
-      "$expr" : {
-        "$and":[ 
-          {"$eq":["$ztype", intervalle]},
-          {"$gte" : [
-            {"$toDouble": 
-              {"$arrayElemAt":[
-                {"$split":["$periode","|"]}, 
-                0
-              ]}
-            },
-            parseInt(start)
-          ]},
-          {"$lt" : [
-            {"$toDouble": 
-              {"$arrayElemAt":[
-                {"$split":["$periode","|"]}, 
-                1
-              ]}
-            }, 
-            parseInt(end)
-          ]}
-        ]
-      }
-    };
-    const liste = await clotureServices.getZCaisse(__XCPTquery);
+    } // (endif intervalle==="jour")
 
-    const recap = _getExportComptable(liste);
+    if (intervalle==="mois") {
 
-    const recap_hdr = recap.header.map(h => h.title);
-    const recap_data = recap.data.map(d => [
-      d.date,
-      d.compte,
-      d.intitule,
-      d.libelle,
-      d.credit||'',
-      d.debit||''
-    ]);
-    const xcpt_data = recap_hdr.join(';') + "\n" + recap_data.map(e => e.join(";")).join("\n");
+    
+      // ------------>  export comptable
+      const __XCPTquery = {
+        "$expr" : {
+          "$and":[ 
+            {"$eq":["$ztype", intervalle]},
+            {"$gte" : [
+              {"$toDouble": 
+                {"$arrayElemAt":[
+                  {"$split":["$periode","|"]}, 
+                  0
+                ]}
+              },
+              parseInt(start)
+            ]},
+            {"$lt" : [
+              {"$toDouble": 
+                {"$arrayElemAt":[
+                  {"$split":["$periode","|"]}, 
+                  1
+                ]}
+              }, 
+              parseInt(end)
+            ]}
+          ]
+        }
+      };
+      const liste = await clotureServices.getZCaisse(__XCPTquery);
 
-    __data.push({type: 'csv', data: xcpt_data, file: 'exportcomptable.csv'});
+      const recap = _getExportComptable(liste);
+
+      const recap_hdr = recap.header.map(h => h.title);
+      const recap_data = recap.data.map(d => [
+        d.date,
+        d.compte,
+        d.intitule,
+        d.libelle,
+        d.credit||'',
+        d.debit||''
+      ]);
+      const xcpt_data = recap_hdr.join(';') + "\n" + recap_data.map(e => e.join(";")).join("\n");
+
+      __data.push({type: 'csv', data: xcpt_data, file: 'exportcomptable.csv'});
+
+    } // (endif intervalle==="mois")
+
 
     // COPIE DE FICHIERS
     // ------------>  JET et PA du jour de l'archive 
@@ -2651,6 +2207,8 @@ function archiveFiscale(intervalle, debut, fin) {
     }
 
     // ------------> GTPerpetuel Cumul Algebrique
+    const gtp = await clotureServices.getGTP();
+    __data.push({ type: 'txt', data: 'Grand Total Perpetuel Calcul Algebrique = '+gtp.gtpca, file: 'GTPCA.txt'});
 
 
     
@@ -2720,6 +2278,703 @@ function archiveFiscale(intervalle, debut, fin) {
   } 
 }
 
+async function _getArchiveGTPeriodiques(intervalle, start, end) {
+
+
+  let gtperiode = ['jour','intermediaire'];
+  if (intervalle==='mois') gtperiode = ['jour','mois'];
+  if (intervalle==='annee') gtperiode = ['annee','mois'];
+
+  const __GTP_query = {
+    "$expr" : {
+      "$and":[ 
+        {"gttype": {"$in": gtperiode}},
+        {"$gte" : [
+          {"$toDouble": 
+            {"$arrayElemAt":[
+              {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
+              0
+            ]}
+          }, 
+          parseInt(start)
+        ]},
+        {"$lt" : [
+          {"$toDouble": 
+            {"$arrayElemAt":[
+              {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
+              1
+            ]}
+          }, 
+          parseInt(end)
+        ]}
+      ]
+    }
+  };
+  const gtplist = await clotureServices.getGTPeriodique(__GTP_query);
+
+  
+  // fichier CSV
+  const gtpCsvString = [
+    [
+      'gttype',
+      'ENC-GTP-ORI-NID',
+      'ENC-GTP-ORI-NUM',
+      'ENC-GTP-MTN-TVA-TTC',
+      'ENC-GTP-MTN-TVA-HT',
+      'ENC-GTP-MTN-TVA-TAUX',
+      'ENC-GTP-TTC',
+      'ENC-GTP-HT',
+      'ENC-GTP-PER-TTC',
+      'ENC-GTP-PER-TTC-ABS',
+      'ENC-GTP-HOR-GDH',
+      'ENC-GTP-ARG',
+      'ENC-GTP-HASH',
+      'ENV-GTP-ID-KEY',
+      'ENV-GTP-TAG-SIG' 
+    ],
+    ...gtplist.map(gtp => [
+      gtp.gttype,
+      gtp['ENC-GTP-ORI-NID'],
+      gtp['ENC-GTP-ORI-NUM'],
+      gtp['ENC-GTP-MTN-TVA-TTC'],
+      gtp['ENC-GTP-MTN-TVA-HT'],
+      gtp['ENC-GTP-MTN-TVA-TAUX'],
+      gtp['ENC-GTP-TTC'],
+      gtp['ENC-GTP-HT'],
+      gtp['ENC-GTP-PER-TTC'],
+      gtp['ENC-GTP-PER-TTC-ABS'],
+      gtp['ENC-GTP-HOR-GDH'],
+      gtp['ENC-GTP-ARG'],
+      gtp['ENC-GTP-HASH'],
+      gtp['ENV-GTP-ID-KEY'],
+      gtp['ENV-GTP-TAG-SIG']
+    ])
+  ]
+   .map(e => e.join(";")) 
+   .join("\n");
+
+  return {
+    json: gtplist,
+    csv: gtpCsvString
+  };
+}
+
+async function _getArchiveZCaisse(intervalle, start, end) {
+
+  const __ZC_query = {
+    "$expr" : {
+      "$and":[ 
+        {"gttype": intervalle},
+        {"$gte" : [
+          {"$toDouble": 
+            {"$arrayElemAt":[
+              {"$split":["$periode","|"]}, 
+              0
+            ]}
+          }, 
+          parseInt(start)
+        ]},
+        {"$lt" : [
+          {"$toDouble": 
+            {"$arrayElemAt":[
+              {"$split":["$periode","|"]}, 
+              1
+            ]}
+          }, 
+          parseInt(end)
+        ]}
+      ]
+    }
+  };
+  const zclist = await clotureServices.getZCaisse(__ZC_query);
+  let zcCsvString = null;
+  console.log('zclist',zclist);
+
+  if (zclist) {
+
+    // fichier CSV
+    zcCsvString = [
+      [
+        "zId",
+        "ztype",
+        "comptage_total",
+        "comptage_especes",
+        "comptage_carte",
+        "comptage_ticket",
+        "comptage_cheque",
+        "comptage_avoir",
+        "ecarts_especes",
+        "ecarts_especes_motif",
+        "ecarts_carte",
+        "ecarts_carte_motif",
+        "ecarts_ticket",
+        "ecarts_ticket_motif",
+        "ecarts_cheque",
+        "ecarts_cheque_motif",
+        "ecarts_avoir",
+        "ecarts_avoir_motif",
+        "periode",
+        "ca",
+        "caisse",
+        "depenses",
+        "editeur_id",
+        "editeur_nom",
+        "editeur_user_id",
+        "emission",
+        "fdcaisse",
+        "mtcaisse",
+        "numtickets",
+        "paramdfcaisse",
+        "remboursements",
+        "ticket_moyen",
+        "ventes",
+        "ventilation_moyen",
+        "ventilation_tva_ttc",
+        "ventilation_tva_ht",
+        "ventilation_tva_taxe",
+        "ventilation_vendeur",
+        "ventilation_caisse",
+        "prelevement",
+        "staffmeals",
+        "createdAt",
+        "source",
+        "hash",
+        "signature",
+        "trousseauId"
+      ],
+      ...zclist.map(zc => [
+        zc.zId,
+        zc.ztype,
+        (zc.comptage && zc.comptage.total ? zc.comptage.total : ''),
+        (zc.comptage && zc.comptage.especes ? zc.comptage.especes : ''),
+        (zc.comptage && zc.comptage.carte ? zc.comptage.carte : ''),
+        (zc.comptage && zc.comptage.ticket ? zc.comptage.ticket : ''),
+        (zc.comptage && zc.comptage.cheque ? zc.comptage.cheque : ''),
+        (zc.comptage && zc.comptage.avoir ? zc.comptage.avoir : ''),
+        (zc.ecarts && zc.ecarts.especes ? zc.ecarts.especes.valeur : ''),
+        (zc.ecarts && zc.ecarts.especes ? zc.ecarts.especes.motif : ''),
+        (zc.ecarts && zc.ecarts.carte ? zc.ecarts.carte.valeur : ''),
+        (zc.ecarts && zc.ecarts.carte ? zc.ecarts.carte.motif : ''),
+        (zc.ecarts && zc.ecarts.ticket ? zc.ecarts.ticket.valeur : ''),
+        (zc.ecarts && zc.ecarts.ticket ? zc.ecarts.ticket.motif : ''),
+        (zc.ecarts && zc.ecarts.cheque ? zc.ecarts.cheque.valeur : ''),
+        (zc.ecarts && zc.ecarts.cheque ? zc.ecarts.cheque.motif : ''),
+        (zc.ecarts && zc.ecarts.avoir ? zc.ecarts.avoir.valeur : ''),
+        (zc.ecarts && zc.ecarts.avoir ? zc.ecarts.avoir.motif : ''),
+        zc.periode,
+        zc.ca,
+        zc.caisse,
+        zc.depenses,
+        zc.editeur.id,
+        zc.editeur.nom,
+        zc.editeur.user_id,
+        zc.emission,
+        zc.fdcaisse,
+        zc.mtcaisse,
+        zc.numtickets,
+        zc.paramdfcaisse,
+        zc.remboursements,
+        zc.ticket_moyen,
+        zc.ventes,
+        Object.values(zc.ventilation.moyen).map(m=>m.moyen+': '+m.valeur).join('|'),
+        zc.ventilation.tva && Object.entries(zc.ventilation.tva).map(([k,t])=>k+':'+t.ttc).join('|'),
+        zc.ventilation.tva && Object.entries(zc.ventilation.tva).map(([k,t])=>k+':'+t.ht).join('|'),
+        zc.ventilation.tva && Object.entries(zc.ventilation.tva).map(([k,t])=>k+':'+t.taxe).join('|'),
+        Object.values(zc.ventilation.vendeur).map(v=>`${v.nom} (${v.id}) : ${v.ventes} - ${v.remboursements}`).join('|'),
+        Object.values(zc.ventilation.caisse).map(c=>`${c.nom} (${c.id}): ${c.ca}`).join('|'),
+        zc.prelevement,
+        zc.staffmeals,
+        zc.createdAt,
+        zc.source,
+        zc.hash,
+        zc.signature,
+        zc.trousseauId
+      ])
+    ]
+    .map(e => e.join(";")) 
+    .join("\n");
+
+  }
+
+  return {
+    json: zclist,
+    csv: zcCsvString
+  };
+}
+
+async function _getArchiveGTTickets(intervalle, start, end) {
+
+  const __GTT_query = {
+    "$expr" : {
+      "$and":[ 
+        {"$gte" : [{"$toDouble": "$ENC-GTT-HOR-GDH"} , parseInt(start)]},
+        {"$lt" : [{"$toDouble": "$ENC-GTT-HOR-GDH"} , parseInt(end)]}
+      ]
+    }
+  };
+  const gttlist = await clotureServices.getGTTicket(__GTT_query);
+
+
+  // fichier CSV
+  const gttCsvString = [
+    [
+      'ENC-GTT-ORI-NUM',
+      'ENC-GTT-MTN-TVA-TTC',
+      'ENC-GTT-MTN-TVA-HT',
+      'ENC-GTT-MTN-TVA-TAUX',
+      'ENC-GTT-TTC',
+      'ENC-GTT-HT',
+      'ENC-GTT-PER-TTC',
+      'ENC-GTT-PER-TTC-ABS',
+      'ENC-GTT-HOR-GDH',
+      'ENC-GTT-ARG',
+      'ENC-GTT-HASH',
+      'ENC-GTT-ID-KEY',
+      'ENC-GTT-TAG-SIG'
+    ],
+    ...gttlist.map(gtt => [
+      gtt['ENC-GTT-ORI-NUM'],
+      gtt['ENC-GTT-MTN-TVA-TTC'],
+      gtt['ENC-GTT-MTN-TVA-HT'],
+      gtt['ENC-GTT-MTN-TVA-TAUX'],
+      gtt['ENC-GTT-TTC'],
+      gtt['ENC-GTT-HT'],
+      gtt['ENC-GTT-PER-TTC'],
+      gtt['ENC-GTT-PER-TTC-ABS'],
+      gtt['ENC-GTT-HOR-GDH'],
+      gtt['ENC-GTT-ARG'],
+      gtt['ENC-GTT-HASH'],
+      gtt['ENC-GTT-ID-KEY'],
+      gtt['ENC-GTT-TAG-SIG']
+    ])
+  ]
+  .map(e => e.join(";")) 
+  .join("\n");
+
+  return {
+    json: gttlist,
+    csv: gttCsvString
+  }
+}
+
+async function _getArchiveTickets(liste) {
+
+  const tickets_id = liste.map(t=>t['ENC-GTT-ORI-NUM']);
+  const __ft = tickets_id.filter(t => t);
+  
+  const tickets = await commandeServices.getTicket({
+    'ENC-TIK-NUM': {$in: __ft}
+  });
+  
+ 
+  console.log('tickets',tickets);
+
+  let tckString;
+  let tcklgnString;
+  let tcktvaString;
+  let tckrgtString;
+
+  if (Array.isArray(tickets) && tickets.length>0) {
+    let __tck = [];
+    const __tck_hdr = [
+      'ENC-TIK-NUM',
+      'ENC-TIK-CDE',
+      'ENC-TIK-TAG-VER',
+      'ENC-TIK-PRN-NBR',
+      'ENC-TIK-SOC-ETS',
+      'ENC-TIK-SOC-ID',
+      'ENC-TIK-SOC-ADR',
+      'ENC-TIK-SOC-CCP',
+      'ENC-TIK-SOC-VIL',
+      'ENC-TIK-SOC-PAY',
+      'ENC-TIK-SOC-SIR',
+      'ENC-TIK-SOC-NAF',
+      'ENC-TIK-SOC-TVA',
+      'ENC-TIK-VEN-NID',
+      'ENC-TIK-VEN-NOM',
+      'ENC-TIK-OPS-NID',
+      'ENC-TIK-OPS-NOM',
+      'ENC-TIK-CAI-NID',
+      'ENC-TIK-HOR-GDH',
+      'ENC-OPE-TYP',
+      'ENC-TIK-DOC-TYP',
+      'ENC-TIK-LIG-NBR',
+      'ENC-TIK-TAG-SIG',
+      'ENC-TIK-ID-KEY',
+      'ENC-TIK-TAG-RET',
+      'ENC-TIK-HASH',
+      'ENC-TIK-ARG',
+      'ENC-TIK-LOG',
+      'ENC-TIK-TOT-MHT',
+      'ENC-TIK-TOT-TTC',
+      'FAC-TOT-TVA',
+      'ENC-TIK-REM-MTN',
+    ];
+    
+    let __tcklgn = [];
+    const __tcklgn_hdr = [
+      'ENC-NID',
+      'ENC-TIK-ORI-NUM',
+      'ENC-TIK-LIG-NUM',
+      'ENC-TIK-LIG-PRO-NID',
+      'ENC-TIK-LIG-PRO-LIB',
+      'ENC-TIK-LIG-PRO-QTE',
+      'ENC-TIK-LIG-TAX-NID',
+      'ENC-TIK-LIG-TAX-TXX',
+      'ENC-TIK-LIG-PRO-MTH',
+      'ENC-TIK-LIG-PRO-TTC',
+      'ENC-TIK-LIG-REM-TXX',
+      'ENC-TIK-LIG-REM-TOT',
+      'ENC-TIK-LIG-TOT-MHT',
+      'ENC-TIK-LIG-TOT-TTC',
+      'ENC-TIK-LIG-OPE-TYP',
+      'ENC-TIK-LIG-CAI-NID',
+      'ENC-TIK-LIG-VEN-NID',
+      'ENC-TIK-LIG-OPS-NID',
+      'ENC-TIK-LIG-HOR-GDH'
+    ];
+    
+    let __tcktva = [];
+    const __tcktva_hdr = [
+      'ENC-NID',
+      'ENC-TIK-TOT-MHT',
+      'ENC-TIK-TVA-NID',
+      'ENC-TIK-TVA-TXX',
+      'ENC-TIK-TVA-MTN'
+    ];
+    
+    let __tckrgt = [];
+    const __tckrgt_hdr = [
+      'ENC-NID',
+      'ENC-TIK-ORI-NUM',
+      'ENC-TIK-REG-TYP',
+      'ENC-TIK-REG-MOD-LIB',
+      'ENC-TIK-REG-MTN',
+      'ENC-TIK-REG-NUM',
+      'ENC-TIK-REG-USR-NID',
+      'ENC-TIK-REG-HOR-GDH'
+    ]
+    
+    
+    tickets.forEach(tck => {
+      
+        __tck.push([
+        tck['ENC-TIK-NUM'],
+        tck['ENC-TIK-CDE'],
+        tck['ENC-TIK-TAG-VER'],
+        tck['ENC-TIK-PRN-NBR'],
+        tck['ENC-TIK-SOC-ETS'],
+        tck['ENC-TIK-SOC-ID'],
+        tck['ENC-TIK-SOC-ADR'],
+        tck['ENC-TIK-SOC-CCP'],
+        tck['ENC-TIK-SOC-VIL'],
+        tck['ENC-TIK-SOC-PAY'],
+        tck['ENC-TIK-SOC-SIR'],
+        tck['ENC-TIK-SOC-NAF'],
+        tck['ENC-TIK-SOC-TVA'],
+        tck['ENC-TIK-VEN-NID'],
+        tck['ENC-TIK-VEN-NOM'],
+        tck['ENC-TIK-OPS-NID'],
+        tck['ENC-TIK-OPS-NOM'],
+        tck['ENC-TIK-CAI-NID'],
+        tck['ENC-TIK-HOR-GDH'],
+        tck['ENC-OPE-TYP'],
+        tck['ENC-TIK-DOC-TYP'],
+        tck['ENC-TIK-LIG-NBR'],
+        tck['ENC-TIK-TAG-SIG'],
+        tck['ENC-TIK-ID-KEY'],
+        tck['ENC-TIK-TAG-RET'],
+        tck['ENC-TIK-HASH'],
+        tck['ENC-TIK-ARG'],
+        tck['ENC-TIK-LOG'],
+        tck['ENC-TIK-TOT-MHT'],
+        tck['ENC-TIK-TOT-TTC'],
+        tck['FAC-TOT-TVA'],
+        tck['ENC-TIK-REM-MTN']
+      ]);
+      
+      __tcklgn= [
+        ...__tcklgn,
+        ...tck['LIGNES'].map(l => [
+          l['ENC-NID'],
+          l['ENC-TIK-ORI-NUM'],
+          l['ENC-TIK-LIG-NUM'],
+          l['ENC-TIK-LIG-PRO-NID'],
+          l['ENC-TIK-LIG-PRO-LIB'],
+          l['ENC-TIK-LIG-PRO-QTE'],
+          l['ENC-TIK-LIG-TAX-NID'],
+          l['ENC-TIK-LIG-TAX-TXX'],
+          l['ENC-TIK-LIG-PRO-MTH'],
+          l['ENC-TIK-LIG-PRO-TTC'],
+          l['ENC-TIK-LIG-REM-TXX'],
+          l['ENC-TIK-LIG-REM-TOT'],
+          l['ENC-TIK-LIG-TOT-MHT'],
+          l['ENC-TIK-LIG-TOT-TTC'],
+          l['ENC-TIK-LIG-OPE-TYP'],
+          l['ENC-TIK-LIG-CAI-NID'],
+          l['ENC-TIK-LIG-VEN-NID'],
+          l['ENC-TIK-LIG-OPS-NID'],
+          l['ENC-TIK-LIG-HOR-GDH']  
+        ])
+      ];
+      
+      __tcktva = [
+        ...__tcktva,
+        ...tck['TVA'].map(t => [
+          t['ENC-NID'],
+          t['ENC-TIK-TOT-MHT'],
+          t['ENC-TIK-TVA-NID'],
+          t['ENC-TIK-TVA-TXX'],
+          t['ENC-TIK-TVA-MTN']
+        ])
+      ];
+      
+      __tckrgt = [
+        ...__tckrgt,
+        ...tck['REGLEMENTS'].map(r => [
+          r['ENC-NID'],
+          r['ENC-TIK-ORI-NUM'],
+          r['ENC-TIK-REG-TYP'],
+          r['ENC-TIK-REG-MOD-LIB'],
+          r['ENC-TIK-REG-MTN'],
+          r['ENC-TIK-REG-NUM'],
+          r['ENC-TIK-REG-USR-NID'],
+          r['ENC-TIK-REG-HOR-GDH']
+        ])
+      ];
+      
+    });
+    
+    tckString = __tck_hdr.join(';') + "\n" + __tck.map(e => e.join(";")).join("\n");
+    
+    tcklgnString = __tcklgn_hdr.join(';') + "\n" + __tcklgn.map(e => e.join(";")).join("\n");
+    
+    tcktvaString = __tcktva_hdr.join(';') + "\n" + __tcktva.map(e => e.join(";")).join("\n");
+
+    tckrgtString = __tckrgt_hdr.join(';') + "\n" + __tckrgt.map(e => e.join(";")).join("\n");
+  }
+
+  return {
+    json: tickets,
+    csv: {
+      tickets: tckString,
+      lignes: tcklgnString,
+      tva: tcktvaString,
+      reglements: tckrgtString
+    }
+  }
+}
+
+
+async function _getArchiveNotes(liste) {
+
+  const notes_id = liste.map(c=>c.ticketId);
+  const __ft = notes_id.filter(t => t);
+  
+  const notes = await commandeServices.getNote({
+    'commandeId': {$in: __ft}
+  });
+  
+ 
+  console.log('notes',notes);
+
+  let nString;
+  let nlgnString;
+
+  if (Array.isArray(notes) && notes.length>0) {
+
+    let __n = [];
+    const __n_hdr = [
+      'ENC-TIK-NUM',
+      'ENC-TIK-CDE',
+      'ENC-TIK-TAG-VER',
+      'ENC-TIK-PRN-NBR',
+      'ENC-TIK-SOC-ETS',
+      'ENC-TIK-SOC-ID',
+      'ENC-TIK-SOC-ADR',
+      'ENC-TIK-SOC-CCP',
+      'ENC-TIK-SOC-VIL',
+      'ENC-TIK-SOC-PAY',
+      'ENC-TIK-SOC-SIR',
+      'ENC-TIK-SOC-NAF',
+      'ENC-TIK-SOC-TVA',
+      'ENC-TIK-VEN-NID',
+      'ENC-TIK-VEN-NOM',
+      'ENC-TIK-OPS-NID',
+      'ENC-TIK-OPS-NOM',
+      'ENC-TIK-CAI-NID',
+      'ENC-TIK-HOR-GDH',
+      'ENC-OPE-TYP',
+      'ENC-TIK-DOC-TYP',
+      'ENC-TIK-LIG-NBR',
+      'ENC-TIK-TAG-SIG',
+      'ENC-TIK-ID-KEY',
+      'ENC-TIK-TAG-RET',
+      'ENC-TIK-HASH',
+      'ENC-TIK-ARG',
+      'ENC-TIK-LOG',
+      'ENC-TIK-TOT-MHT',
+      'ENC-TIK-TOT-TTC',
+      'FAC-TOT-TVA',
+    ];
+    
+    let __nlgn = [];
+    const __nlgn_hdr = [
+      'ENC-NID',
+      'ENC-TIK-ORI-NUM',
+      'ENC-TIK-LIG-NUM',
+      'ENC-TIK-LIG-PRO-NID',
+      'ENC-TIK-LIG-PRO-LIB',
+      'ENC-TIK-LIG-PRO-QTE',
+      'ENC-TIK-LIG-PRO-MTH',
+      'ENC-TIK-LIG-PRO-TTC',
+      'ENC-TIK-LIG-REM-TXX',
+      'ENC-TIK-LIG-REM-TOT',
+      'ENC-TIK-LIG-TOT-MHT',
+      'ENC-TIK-LIG-TOT-TTC',
+      'ENC-TIK-LIG-OPE-TYP',
+      'ENC-TIK-LIG-CAI-NID',
+      'ENC-TIK-LIG-VEN-NID',
+      'ENC-TIK-LIG-OPS-NID',
+      'ENC-TIK-LIG-HOR-GDH'
+    ];
+    
+      
+    
+    
+    notes.forEach(n => {
+      
+      __n.push([
+        n['ENC-TIK-NUM'],
+        n['ENC-TIK-CDE'],
+        n['ENC-TIK-TAG-VER'],
+        n['ENC-TIK-PRN-NBR'],
+        n['ENC-TIK-SOC-ETS'],
+        n['ENC-TIK-SOC-ID'],
+        n['ENC-TIK-SOC-ADR'],
+        n['ENC-TIK-SOC-CCP'],
+        n['ENC-TIK-SOC-VIL'],
+        n['ENC-TIK-SOC-PAY'],
+        n['ENC-TIK-SOC-SIR'],
+        n['ENC-TIK-SOC-NAF'],
+        n['ENC-TIK-SOC-TVA'],
+        n['ENC-TIK-VEN-NID'],
+        n['ENC-TIK-VEN-NOM'],
+        n['ENC-TIK-OPS-NID'],
+        n['ENC-TIK-OPS-NOM'],
+        n['ENC-TIK-CAI-NID'],
+        n['ENC-TIK-HOR-GDH'],
+        n['ENC-OPE-TYP'],
+        n['ENC-TIK-DOC-TYP'],
+        n['ENC-TIK-LIG-NBR'],
+        n['ENC-TIK-TAG-SIG'],
+        n['ENC-TIK-ID-KEY'],
+        n['ENC-TIK-TAG-RET'],
+        n['ENC-TIK-HASH'],
+        n['ENC-TIK-ARG'],
+        n['ENC-TIK-LOG'],
+        n['ENC-TIK-TOT-MHT'],
+        n['ENC-TIK-TOT-TTC'],
+        n['FAC-TOT-TVA'],
+        n['ENC-TIK-REM-MTN']
+      ]);
+      
+      __nlgn= [
+        ...__nlgn,
+        ...n['LIGNES'].map(l => [
+          l['ENC-NID'],
+          l['ENC-TIK-ORI-NUM'],
+          l['ENC-TIK-LIG-NUM'],
+          l['ENC-TIK-LIG-PRO-NID'],
+          l['ENC-TIK-LIG-PRO-LIB'],
+          l['ENC-TIK-LIG-PRO-QTE'],
+          l['ENC-TIK-LIG-TAX-NID'],
+          l['ENC-TIK-LIG-TAX-TXX'],
+          l['ENC-TIK-LIG-PRO-MTH'],
+          l['ENC-TIK-LIG-PRO-TTC'],
+          l['ENC-TIK-LIG-REM-TXX'],
+          l['ENC-TIK-LIG-REM-TOT'],
+          l['ENC-TIK-LIG-TOT-MHT'],
+          l['ENC-TIK-LIG-TOT-TTC'],
+          l['ENC-TIK-LIG-OPE-TYP'],
+          l['ENC-TIK-LIG-CAI-NID'],
+          l['ENC-TIK-LIG-VEN-NID'],
+          l['ENC-TIK-LIG-OPS-NID'],
+          l['ENC-TIK-LIG-HOR-GDH']  
+        ])
+      ];
+      
+    });
+    
+    nString = __n_hdr.join(';') + "\n" + __n.map(e => e.join(";")).join("\n");
+    
+    nlgnString = __nlgn_hdr.join(';') + "\n" + __nlgn.map(e => e.join(";")).join("\n");
+    
+
+  }
+
+  return {
+    json: notes,
+    csv: {
+      tickets: nString,
+      lignes: nlgnString
+    }
+  }
+}
+
+
+async function _getArchiveDuplicatas(start, end) {
+
+  const __dplQuery = {
+    $and: [
+      {'ENC-DUP-HOR-GDH': {$gte:start}},
+      {'ENC-DUP-HOR-GDH': {$lt:end}}
+    ]
+  }
+  const dpllist = await commandeServices.getDuplicata(__dplQuery);
+
+  const dplCsvString = [
+    [
+      'ENC-DUP-NID',
+      'ENC-DUP-ORI-NUM',
+      'ENC-DUP-TYP',
+      'ENC-DUP-PRN-NUM',
+      'ENC-DUP-OPS-NID',
+      'ENC-DUP-HOR-GDH',
+      'ENC-DUP-HASH',
+      'ENC-TIK-ARG',
+      'ENC-DUP-TAG-SIG',
+      'ENC-DUP-RES',
+      'ENC-TIK-ID-KEY',
+      'ENC-DUP-VER',
+      'ENC-SIG-RES',
+      'ENC-SIG-MOTIF'
+    ],
+    ...dpllist.map(dpl =>[
+      dpl['ENC-DUP-NID'],
+      dpl['ENC-DUP-ORI-NUM'],
+      dpl['ENC-DUP-TYP'],
+      dpl['ENC-DUP-PRN-NUM'],
+      dpl['ENC-DUP-OPS-NID'],
+      dpl['ENC-DUP-HOR-GDH'],
+      dpl['ENC-DUP-HASH'],
+      dpl['ENC-TIK-ARG'],
+      dpl['ENC-DUP-TAG-SIG'],
+      dpl['ENC-DUP-RES'],
+      dpl['ENC-TIK-ID-KEY'],
+      dpl['ENC-DUP-VER'],
+      dpl['ENC-SIG-RES'],
+      dpl['ENC-SIG-MOTIF']
+    ])
+  ]
+  .map(e => e.join(";")) 
+  .join("\n");
+
+  return {
+    json: dpllist,
+    csv: dplCsvString
+  };
+}
 
 
 function exportArchive(target, filename) {
