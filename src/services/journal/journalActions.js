@@ -257,19 +257,19 @@ function check(type) {
         dispatch(log('95', `détecté dans ${journal} (${filename}) : ${seq_detection.join(', ')}`));
       }
 
-      // on récupère la signature du fichier précédent :
-      const filesign_obj = json.find(evt => !evt.hasOwnProperty('JET-NID') && !evt.hasOwnProperty('JET-X-NID'));
-      console.log('JOURNAL CHECK filesign', filesign_obj);
+      // // on récupère la signature du fichier précédent :
+      // const filesign_obj = json.find(evt => !evt.hasOwnProperty('JET-NID') && !evt.hasOwnProperty('JET-X-NID'));
+      // console.log('JOURNAL CHECK filesign', filesign_obj);
 
-      if (!filesign_obj) return console.warn(`aucune signature du fichier précédent détéctée dans le ${journal} courant`);
+      // if (!filesign_obj) return console.warn(`aucune signature du fichier précédent détéctée dans le ${journal} courant`);
 
-      // on récupère le fichier précédent
-      const __prevcont = await fs.readFile(`${app.getPath('userData')}/compta/${filesign_obj.filename}`);
-      const { signature } = signatureServices.createSignature(__prevcont.toString(), key)
+      // // on récupère le fichier précédent
+      // const __prevcont = await fs.readFile(`${app.getPath('userData')}/compta/${filesign_obj.filename}`);
+      // const { signature } = signatureServices.createSignature(__prevcont.toString(), key)
       
-      if (signature !== filesign_obj.signature) {
-        dispatch(log('90', `détecté dans ${journal} ${filesign_obj.filename} (fichier entier)`));
-      }
+      // if (signature !== filesign_obj.signature) {
+      //   dispatch(log('90', `détecté dans ${journal} ${filesign_obj.filename} (fichier entier)`));
+      // }
         
     }
 

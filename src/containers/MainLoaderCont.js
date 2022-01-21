@@ -78,8 +78,8 @@ const mapDispatchToProps = (dispatch) => {
     testCloturesAuto: clotureActions.testCloturesAuto,
     log: journalActions.log,
     checkJET: journalActions.check,
-    checkGrandTotalPeriodique: clotureActions.checkGrandTotalPeriodique,
-    checkZCaisse: clotureActions.checkZCaisse,
+    // checkGrandTotalPeriodique: clotureActions.checkGrandTotalPeriodique,
+    // checkZCaisse: clotureActions.checkZCaisse,
   }, dispatch);
   return {
     ...bound,

@@ -41,7 +41,7 @@ class MainLoader extends React.Component {
   checkInstallation(mode) {
     const { 
       paramLoaded, 
-      caisseLoaded,
+      // caisseLoaded,
       catLoaded, 
       cloLoaded, 
       sseInit, 
@@ -58,8 +58,8 @@ class MainLoader extends React.Component {
       // testCloturesAuto,
       testGTPeriodique,
       checkJET,
-      checkZCaisse,
-      checkGrandTotalPeriodique,
+      // checkZCaisse,
+      // checkGrandTotalPeriodique,
     } = this.props;
 
     console.log("DEBUT checkInstallation");
@@ -129,8 +129,8 @@ class MainLoader extends React.Component {
               checkFinDeService();  
               checkJET('jet');
               checkJET('pa');
-              checkZCaisse();
-              checkGrandTotalPeriodique();
+              // checkZCaisse();
+              // checkGrandTotalPeriodique();
               
               this.props.log('80','demarrage'); 
             }
