@@ -55,7 +55,7 @@ class MainLoader extends React.Component {
       blockStation,
       testConnection,
       online,
-      testCloturesAuto,
+      // testCloturesAuto,
       testGTPeriodique,
       checkJET,
       checkZCaisse,
@@ -165,7 +165,7 @@ class MainLoader extends React.Component {
       if (paramLoaded===true && sseInit===true && 
           catLoaded===false) {
 
-        testCloturesAuto();
+        // testCloturesAuto();
         testGTPeriodique();
         this.props.getCatalogue();
         this.props.getLastClotureAndAfter();
@@ -219,7 +219,7 @@ class MainLoader extends React.Component {
       storeNumerotation,
       getGTP,
       testGTPeriodique,
-      testCloturesAuto,
+      // testCloturesAuto,
     } = this.props;
 
     
@@ -235,7 +235,7 @@ class MainLoader extends React.Component {
         resetNumero();
         getTodayCa();
         testGTPeriodique();
-        testCloturesAuto();
+        // testCloturesAuto();
       });
     } 
 

@@ -507,7 +507,8 @@ const data = {
                     type: {
                         intermediaire: "INTERMEDIAIRE",
                         jour: 'JOURNALIER',
-                        mois: 'MENSUEL'
+                        mois: 'MENSUEL',
+                        annee: 'ANNUEL'
                     },
                     editeur: 'Éditeur : ',
                     edited: 'Édité le : ',

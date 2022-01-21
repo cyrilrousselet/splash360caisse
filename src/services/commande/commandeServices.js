@@ -1231,10 +1231,10 @@ function _getVentilationTva(commande, cataloguetva) {
 
     const __remht = __ht * __itmdiscount; // <- montant HT de la remise
     const __calcht = __modhtitm;
-    __ht = Math.round(__calcht);  // <- HT arrondi
+    __ht = __calcht;  // <- HT arrondi
     let __ottc = __ttc + 0; // <- le ttc de l'item avant remise;
-    __ttc = Math.round(__calcht * (1 + __tx)); // <- on applique la tva
-    let __tva = Math.round(__calcht * __tx);
+    __ttc = __calcht * (1 + __tx); // <- on applique la tva
+    let __tva = __calcht * __tx;
     let __remttc = __ottc - __ttc;  // <- montant TTC de la remise
     console.log('__remttc = '+__ottc+' - '+__ttc, __remttc);
     __cmdrem += __remttc;
@@ -1245,9 +1245,9 @@ function _getVentilationTva(commande, cataloguetva) {
       [itm.tva.id]: {
         taux: __tx,
         code: itm.tva.code,
-        ttc: __ttc,
-        ht: __ht,
-        tva: __tva
+        ttc: Math.round(__ttc),
+        ht: Math.round(__ht),
+        tva: Math.round(__tva)
         // tva: __ttc - __ht
       }
     };
@@ -1268,10 +1268,10 @@ function _getVentilationTva(commande, cataloguetva) {
      
       const __remiht = __iht * __itmdiscount; // <- montant HT de la remise
       const __calciht = __him; // montant HT de l'ingredient après remise
-      __iht = Math.round(__calciht);  // HT arrondi
+      __iht = __calciht;  // HT arrondi
       let __iottc = __ittc + 0; // <- le ttc de l'item avant remise;
-      __ittc = Math.round(__calciht * (1 + __itx)); // <- on applique la tva
-      let __itva = Math.round(__calciht * __itx); // <- on applique la tva
+      __ittc = __calciht * (1 + __itx); // <- on applique la tva
+      let __itva = __calciht * __itx; // <- on applique la tva
       __iremttc = __iottc - __ittc;
       console.log('__iremttc = '+__iottc+' - '+__ittc, __iremttc);
       __cmdrem += __iremttc;
@@ -1291,18 +1291,18 @@ function _getVentilationTva(commande, cataloguetva) {
       }
     
       Object.assign(__itmventil[ing.tva.id], {
-        ttc: __itmventil[ing.tva.id].ttc + __ittc,
-        ht: __itmventil[ing.tva.id].ht + __iht,
-        tva: __itmventil[ing.tva.id].tva + __itva
+        ttc: __itmventil[ing.tva.id].ttc + Math.round(__ittc),
+        ht: __itmventil[ing.tva.id].ht + Math.round(__iht),
+        tva: __itmventil[ing.tva.id].tva + Math.round(__itva)
         // tva: __itmventil[ing.tva.id].tva + (__ittc - __iht)
       });
 
       __cmd.items[i].ingredients[j] = {
         ...ing,
         rem_txx: __iremtaux,
-        rem_tot: __iremttc,
-        tot_mht: __iht,
-        tot_ttc: __ittc
+        rem_tot: Math.round(__iremttc),
+        tot_mht: Math.round(__iht),
+        tot_ttc: Math.round(__ittc)
       }
 
 
@@ -1316,10 +1316,10 @@ function _getVentilationTva(commande, cataloguetva) {
     __cmdttc += __ttc + __ittc;
     __cmdht += __ht + __iht;
 
-    __cmd.items[i].rem_tot = __remttc;
+    __cmd.items[i].rem_tot = Math.round(__remttc);
     __cmd.items[i].rem_txx = Math.round((__remttc / __ttc) * 100);
-    __cmd.items[i].tot_mht = __ht;
-    __cmd.items[i].tot_ttc = __ttc;
+    __cmd.items[i].tot_mht = Math.round(__ht);
+    __cmd.items[i].tot_ttc = Math.round(__ttc);
     __cmd.items[i].ventilation = __itmventil;
 
     Object.entries(__itmventil).forEach(([k,v]) => {

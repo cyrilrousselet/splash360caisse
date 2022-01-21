@@ -107,6 +107,7 @@ const mapDispatchToProps = (dispatch) => {
     getCommande: commandeActions.getCommande,
     log: journalActions.log,
     getPastNonConfirmed: commandeActions.getPastNonConfirmed,
+    testCloturesAuto: clotureActions.testCloturesAuto,
   }, dispatch);
   return {
     ...binded,

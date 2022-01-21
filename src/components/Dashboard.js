@@ -39,6 +39,7 @@ class Dashboard extends Component {
     this.props.getReglesCatalogueList();
     this.props.getCommande();
     this.props.getPastNonConfirmed();
+    this.props.testCloturesAuto();
 
   }
 

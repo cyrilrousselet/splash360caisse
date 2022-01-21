@@ -81,8 +81,8 @@ function getCurrentPeriode(commandes, gtt, catalogue, params) {
      ,__fdcaisse_courant = Number(params.fdcaisse)
      ,__emission = 0
      ,__troppercu = 0
-     ,__start = startOfToday()
-     ,__end = endOfToday() //startOfDay(new Date('2000-01-01'))
+     ,__start = null
+     ,__end = null //startOfDay(new Date('2000-01-01'))
      ;
 
 
@@ -333,8 +333,8 @@ function getCurrentPeriode(commandes, gtt, catalogue, params) {
             
 
       // update de la date la plus ancienne
-      if ( isBefore(new Date(cmd.createdAt), __start) ) __start = new Date(cmd.createdAt);
-      if ( isAfter(new Date(cmd.createdAt), __end) ) __end = new Date(cmd.createdAt);
+      if ( isBefore(new Date(cmd.createdAt), __start) || (__start===null) ) __start = new Date(cmd.createdAt);
+      if ( isAfter(new Date(cmd.createdAt), __end) || (__end===null) ) __end = new Date(cmd.createdAt);
 
     });
 
@@ -350,6 +350,9 @@ function getCurrentPeriode(commandes, gtt, catalogue, params) {
 
 
    // logger.info('per.fdcaisse', __fdcaisse_courant);
+
+   if (__start===null) __start = startOfToday();
+   if (__end===null) __end = endOfToday();
 
     return {
       periode: {

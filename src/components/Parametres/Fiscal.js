@@ -25,15 +25,10 @@ class Fiscal extends React.Component {
 
   constructor(props) {
     super(props);
-    this.generateArchive = this.generateArchive.bind(this);
     this.exportArchive = this.exportArchive.bind(this);
   }
   componentDidMount() {
     this.props.getArchivesFiscales();
-  }
-
-  generateArchive(intervalle) {
-    this.props.archiveFiscale(intervalle, startOfYear(new Date()), endOfYear(new Date()));
   }
 
   async exportArchive(filename) {
@@ -60,16 +55,7 @@ class Fiscal extends React.Component {
       <div className="Fiscal subcontent"> 
         <div className="wrapper">
           <div className="subttl">{ strings.modules.parametres.submodules.fiscal.archive.titre }</div>
-          <div className="col">
-            <StdButton 
-              identifier={`archive-annuelle`} 
-              elementclass={`archive-annuelle`} 
-              icon={false} noStroke={true} 
-              text={`${strings.modules.parametres.submodules.fiscal.archive.bouton }`} 
-              disabled={false} 
-              onClick={() => { this.generateArchive('annee'); }} 
-            />
-          </div>
+          <div className="col"></div>
         </div>
         <Table stickyHeader size="small" key="paramfiscalarchives" aria-label="a dense table">
           <TableHead>
