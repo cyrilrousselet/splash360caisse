@@ -733,7 +733,7 @@ function testZCaisse(intervalle) {
         });
 
         console.log('__lastZJ', __lastZJ);
-        const lzj_periode = (__lastZJ) ? __lastZJ[0]['periode'].split('|') : [0,0];
+        const lzj_periode = (Array.isArray(__lastZJ) && __lastZJ.length>0) ? __lastZJ[0]['periode'].split('|') : [0,0];
         
 
 
@@ -756,7 +756,7 @@ function testZCaisse(intervalle) {
         });
       
         console.log('__lastZI', __lastZI);
-        const lzi_periode = (__lastZI) ? __lastZI[0]['periode'].split('|') : [0,0];
+        const lzi_periode = (Array.isArray(__lastZI) && __lastZI.length>0) ? __lastZI[0]['periode'].split('|') : [0,0];
 
         // si le dernier Z intermédiaire est postérieur au dernier Z journalier
         if (lzi_periode[1] > lzj_periode[1]) {
@@ -886,7 +886,7 @@ function testZCaisse(intervalle) {
         });
 
         console.log('__lastZMm', __lastZMm);
-        const lzmm_periode = (__lastZMm) ? __lastZMm[0]['periode'].split('|') : [0,0];
+        const lzmm_periode = (Array.isArray(__lastZMm) && __lastZMm.length>0) ? __lastZMm[0]['periode'].split('|') : [0,0];
         
 
 
@@ -909,7 +909,7 @@ function testZCaisse(intervalle) {
         });
       
         console.log('__lastZJm', __lastZJm);
-        const lzjm_periode = (__lastZJm) ? __lastZJm[0]['periode'].split('|') : [0,0];
+        const lzjm_periode = (Array.isArray(__lastZJm) && __lastZJm.length>0) ? __lastZJm[0]['periode'].split('|') : [0,0];
 
         // si le dernier Z intermédiaire est postérieur au dernier Z journalier
         if (lzjm_periode[1] > lzmm_periode[1]) {
@@ -2023,7 +2023,7 @@ function archiveFiscale(intervalle, debut, fin) {
 
       __data.push({type: 'json', data: JSON.stringify(DuplisData.json), file: 'duplicatas.json'});
       __data.push({type: 'csv', data: DuplisData.csv, file: 'duplicatas.csv'});
-      
+
 
       // ------------>  Commandes
       const __cmdQuery = {
@@ -2035,21 +2035,25 @@ function archiveFiscale(intervalle, debut, fin) {
         ]
       }
       const { commandeslist } = await commandeServices.getCommandesList(__cmdQuery);
-      // fichier JSON
-      __data.push({type: 'json', data: JSON.stringify(commandeslist), file: 'commandes.json'});
 
-
+      if (commandeslist) {
+        // fichier JSON
+        __data.push({type: 'json', data: JSON.stringify(commandeslist), file: 'commandes.json'});
+      }
 
       // ------------>  Notes
-      const NotesData = await _getArchiveNotes(commandeslist);
+      if (commandeslist) {
+        const NotesData = await _getArchiveNotes(Object.values(commandeslist));
 
-      __data.push({type: 'json', data: JSON.stringify(NotesData.json), file: 'notes.json'});
-         
-      if (Array.isArray(NotesData.json) && NotesData.json.length>0) {
-        
-        __data.push({type: 'csv', data: NotesData.csv.notes, file: 'notes.csv'});
-        __data.push({type: 'csv', data: NotesData.csv.lignes, file: 'notelignes.csv'});
+        __data.push({type: 'json', data: JSON.stringify(NotesData.json), file: 'notes.json'});
+          
+        if (Array.isArray(NotesData.json) && NotesData.json.length>0) {
+          
+          __data.push({type: 'csv', data: NotesData.csv.notes, file: 'notes.csv'});
+          __data.push({type: 'csv', data: NotesData.csv.lignes, file: 'notelignes.csv'});
+          __data.push({type: 'csv', data: NotesData.csv.tva, file: 'notetva.csv'});
 
+        }
       }
   
       // ------------>  Trésorerie
@@ -2281,14 +2285,16 @@ function archiveFiscale(intervalle, debut, fin) {
 async function _getArchiveGTPeriodiques(intervalle, start, end) {
 
 
-  let gtperiode = ['jour','intermediaire'];
-  if (intervalle==='mois') gtperiode = ['jour','mois'];
-  if (intervalle==='annee') gtperiode = ['annee','mois'];
+  let gtperiode = ["jour","intermediaire"];
+  if (intervalle==='mois') gtperiode = ["jour","mois"];
+  if (intervalle==='annee') gtperiode = ["annee","mois"];
+
+  console.log("_getArchiveGTPeriodiques(), gtperiode", gtperiode);
 
   const __GTP_query = {
     "$expr" : {
       "$and":[ 
-        {"gttype": {"$in": gtperiode}},
+        {"$in": ["gttype", gtperiode]},
         {"$gte" : [
           {"$toDouble": 
             {"$arrayElemAt":[
@@ -2310,48 +2316,58 @@ async function _getArchiveGTPeriodiques(intervalle, start, end) {
       ]
     }
   };
-  const gtplist = await clotureServices.getGTPeriodique(__GTP_query);
 
-  
-  // fichier CSV
-  const gtpCsvString = [
-    [
-      'gttype',
-      'ENC-GTP-ORI-NID',
-      'ENC-GTP-ORI-NUM',
-      'ENC-GTP-MTN-TVA-TTC',
-      'ENC-GTP-MTN-TVA-HT',
-      'ENC-GTP-MTN-TVA-TAUX',
-      'ENC-GTP-TTC',
-      'ENC-GTP-HT',
-      'ENC-GTP-PER-TTC',
-      'ENC-GTP-PER-TTC-ABS',
-      'ENC-GTP-HOR-GDH',
-      'ENC-GTP-ARG',
-      'ENC-GTP-HASH',
-      'ENV-GTP-ID-KEY',
-      'ENV-GTP-TAG-SIG' 
-    ],
-    ...gtplist.map(gtp => [
-      gtp.gttype,
-      gtp['ENC-GTP-ORI-NID'],
-      gtp['ENC-GTP-ORI-NUM'],
-      gtp['ENC-GTP-MTN-TVA-TTC'],
-      gtp['ENC-GTP-MTN-TVA-HT'],
-      gtp['ENC-GTP-MTN-TVA-TAUX'],
-      gtp['ENC-GTP-TTC'],
-      gtp['ENC-GTP-HT'],
-      gtp['ENC-GTP-PER-TTC'],
-      gtp['ENC-GTP-PER-TTC-ABS'],
-      gtp['ENC-GTP-HOR-GDH'],
-      gtp['ENC-GTP-ARG'],
-      gtp['ENC-GTP-HASH'],
-      gtp['ENV-GTP-ID-KEY'],
-      gtp['ENV-GTP-TAG-SIG']
-    ])
-  ]
-   .map(e => e.join(";")) 
-   .join("\n");
+  let gtplist;
+  try {
+    gtplist = await clotureServices.getGTPeriodique(__GTP_query);
+  }
+  catch(e) {
+    console.error(e);
+    console.log('ERROR query', JSON.stringify(__GTP_query));
+  }
+
+  let gtpCsvString;
+  if (gtplist) {
+    // fichier CSV
+    gtpCsvString = [
+      [
+        'gttype',
+        'ENC-GTP-ORI-NID',
+        'ENC-GTP-ORI-NUM',
+        'ENC-GTP-MTN-TVA-TTC',
+        'ENC-GTP-MTN-TVA-HT',
+        'ENC-GTP-MTN-TVA-TAUX',
+        'ENC-GTP-TTC',
+        'ENC-GTP-HT',
+        'ENC-GTP-PER-TTC',
+        'ENC-GTP-PER-TTC-ABS',
+        'ENC-GTP-HOR-GDH',
+        'ENC-GTP-ARG',
+        'ENC-GTP-HASH',
+        'ENV-GTP-ID-KEY',
+        'ENV-GTP-TAG-SIG' 
+      ],
+      ...gtplist.map(gtp => [
+        gtp.gttype,
+        gtp['ENC-GTP-ORI-NID'],
+        gtp['ENC-GTP-ORI-NUM'],
+        gtp['ENC-GTP-MTN-TVA-TTC'],
+        gtp['ENC-GTP-MTN-TVA-HT'],
+        gtp['ENC-GTP-MTN-TVA-TAUX'],
+        gtp['ENC-GTP-TTC'],
+        gtp['ENC-GTP-HT'],
+        gtp['ENC-GTP-PER-TTC'],
+        gtp['ENC-GTP-PER-TTC-ABS'],
+        gtp['ENC-GTP-HOR-GDH'],
+        gtp['ENC-GTP-ARG'],
+        gtp['ENC-GTP-HASH'],
+        gtp['ENV-GTP-ID-KEY'],
+        gtp['ENV-GTP-TAG-SIG']
+      ])
+    ]
+    .map(e => e.join(";")) 
+    .join("\n");
+  }
 
   return {
     json: gtplist,
@@ -2562,6 +2578,9 @@ async function _getArchiveTickets(liste) {
   const tickets_id = liste.map(t=>t['ENC-GTT-ORI-NUM']);
   const __ft = tickets_id.filter(t => t);
   
+
+  console.log("_getArchiveTickets(), __ft", __ft);
+
   const tickets = await commandeServices.getTicket({
     'ENC-TIK-NUM': {$in: __ft}
   });
@@ -2770,6 +2789,8 @@ async function _getArchiveNotes(liste) {
 
   const notes_id = liste.map(c=>c.ticketId);
   const __ft = notes_id.filter(t => t);
+
+  console.log("_getArchiveNotes(), __ft", __ft);
   
   const notes = await commandeServices.getNote({
     'commandeId': {$in: __ft}
@@ -2778,8 +2799,9 @@ async function _getArchiveNotes(liste) {
  
   console.log('notes',notes);
 
-  let nString;
-  let nlgnString;
+  let nString = {};
+  let nlgnString = "";
+  let ntvaString = "";
 
   if (Array.isArray(notes) && notes.length>0) {
 
@@ -2787,6 +2809,7 @@ async function _getArchiveNotes(liste) {
     const __n_hdr = [
       'ENC-TIK-NUM',
       'ENC-TIK-CDE',
+      'commandeId',
       'ENC-TIK-TAG-VER',
       'ENC-TIK-PRN-NBR',
       'ENC-TIK-SOC-ETS',
@@ -2816,6 +2839,7 @@ async function _getArchiveNotes(liste) {
       'ENC-TIK-TOT-MHT',
       'ENC-TIK-TOT-TTC',
       'FAC-TOT-TVA',
+      'ENC-TIK-REM-MTN',
     ];
     
     let __nlgn = [];
@@ -2826,6 +2850,8 @@ async function _getArchiveNotes(liste) {
       'ENC-TIK-LIG-PRO-NID',
       'ENC-TIK-LIG-PRO-LIB',
       'ENC-TIK-LIG-PRO-QTE',
+      'ENC-TIK-LIG-TAX-NID',
+      'ENC-TIK-LIG-TAX-TXX',
       'ENC-TIK-LIG-PRO-MTH',
       'ENC-TIK-LIG-PRO-TTC',
       'ENC-TIK-LIG-REM-TXX',
@@ -2841,12 +2867,22 @@ async function _getArchiveNotes(liste) {
     
       
     
+    let __ntva = [];
+    const __ntva_hdr = [
+      'ENC-NID',
+      'ENC-TIK-TOT-MHT',
+      'ENC-TIK-TVA-NID',
+      'ENC-TIK-TVA-TXX',
+      'ENC-TIK-TVA-MTN'
+    ];
+    
     
     notes.forEach(n => {
       
       __n.push([
         n['ENC-TIK-NUM'],
         n['ENC-TIK-CDE'],
+        n['commandeId'],
         n['ENC-TIK-TAG-VER'],
         n['ENC-TIK-PRN-NBR'],
         n['ENC-TIK-SOC-ETS'],
@@ -2879,7 +2915,7 @@ async function _getArchiveNotes(liste) {
         n['ENC-TIK-REM-MTN']
       ]);
       
-      __nlgn= [
+      __nlgn = [
         ...__nlgn,
         ...n['LIGNES'].map(l => [
           l['ENC-NID'],
@@ -2904,11 +2940,24 @@ async function _getArchiveNotes(liste) {
         ])
       ];
       
+      __ntva = [
+        ...__ntva,
+        ...n['TVA'].map(t => [
+          t['ENC-NID'],
+          t['ENC-TIK-TOT-MHT'],
+          t['ENC-TIK-TVA-NID'],
+          t['ENC-TIK-TVA-TXX'],
+          t['ENC-TIK-TVA-MTN']
+        ])
+      ];
+      
     });
     
     nString = __n_hdr.join(';') + "\n" + __n.map(e => e.join(";")).join("\n");
     
     nlgnString = __nlgn_hdr.join(';') + "\n" + __nlgn.map(e => e.join(";")).join("\n");
+
+    ntvaString = __ntva_hdr.join(';') + "\n" + __ntva.map(e => e.join(";")).join("\n");
     
 
   }
@@ -2916,8 +2965,9 @@ async function _getArchiveNotes(liste) {
   return {
     json: notes,
     csv: {
-      tickets: nString,
-      lignes: nlgnString
+      notes: nString,
+      lignes: nlgnString,
+      tva: ntvaString
     }
   }
 }

@@ -355,8 +355,8 @@ function _doPrintTicket(imprimante, template, contenu) {
   } catch(e) {
     log.warn(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`);
     webContents.send('jet', {code: '150', description: `erreur imprimante (${imprimante.connexion}: ${imprimante.param})`});
-    if (template==='commande' && (!contenu.legal || contenu.legal.printid===1)) {
-      webContents.send('jet', {code: '329', description: ''});
+    if (contenu.nomticket.toLowerCase()==='commande') {
+      webContents.send('jet', {code: '329', description: `${(contenu.legal.duplicataid ? contenu.legal.duplicataid : contenu.legal.ticketid)} non imprimé`});
     }
     log.error(e.message);
   }
@@ -386,8 +386,8 @@ function _doPrintTicket(imprimante, template, contenu) {
             log.warn(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`);
             webContents.send('jet', {code: '150', description: `erreur imprimante (${imprimante.connexion}: ${imprimante.param})`});
             log.error(error.message);
-            if (template==='commande' && (!contenu.legal || contenu.legal.printid===1)) {
-              webContents.send('jet', {code: '329', description: ''});
+            if (contenu.nomticket.toLowerCase()==='commande') {
+              webContents.send('jet', {code: '329', description: `${(contenu.legal.duplicataid ? contenu.legal.duplicataid : contenu.legal.ticketid)} non imprimé`});
             }
           } else {
             
@@ -406,12 +406,12 @@ function _doPrintTicket(imprimante, template, contenu) {
           }
 
         });
-      } else {
-        log.error('impression impossible');
-        webContents.send('jet', {code: '150', description: `impression impossible`});
-        if (template==='commande' && (!contenu.legal || contenu.legal.printid===1)) {
-          webContents.send('jet', {code: '329', description: ''});
-        }
+      // } else {
+      //   log.error('impression impossible: template['+contenu.nomticket+']');
+      //   webContents.send('jet', {code: '150', description: `impression impossible`});
+      //   if (contenu.nomticket.toLowerCase()==='commande') {
+      //     webContents.send('jet', {code: '329', description: `${(contenu.legal.duplicataid ? contenu.legal.duplicataid : contenu.legal.ticketid)} non imprimé`});
+      //   }
       }
 
     });
@@ -429,8 +429,8 @@ function _doPrintTicket(imprimante, template, contenu) {
           log.warn(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`);
           webContents.send('jet', {code: '150', description: `erreur imprimante (${imprimante.connexion}: ${imprimante.param})`});
           log.error(error.message);
-          if (template==='commande' && (!contenu.legal || contenu.legal.printid===1)) {
-            webContents.send('jet', {code: '329', description: ''});
+          if (contenu.nomticket.toLowerCase()==='commande') {
+            webContents.send('jet', {code: '329', description: `${(contenu.legal.duplicataid ? contenu.legal.duplicataid : contenu.legal.ticketid)} non imprimé`});
           }
         } else {
 
@@ -440,12 +440,12 @@ function _doPrintTicket(imprimante, template, contenu) {
           _launchPrint(template, printer, contenu, imprimante.config);
         }
       });
-    } else {
-      log.error('impression impossible');
-      webContents.send('jet', {code: '150', description: `impression impossible`});
-      if (template==='commande' && (!contenu.legal || contenu.legal.printid===1)) {
-        webContents.send('jet', {code: '329', description: ''});
-      }
+    // } else {
+    //   log.error('impression impossible template['+contenu.nomticket+']');
+    //   webContents.send('jet', {code: '150', description: `impression impossible`});
+    //   if (contenu.nomticket.toLowerCase()==='commande') {
+    //     webContents.send('jet', {code: '329', description: `${(contenu.legal.duplicataid ? contenu.legal.duplicataid : contenu.legal.ticketid)} non imprimé`});
+    //   }
     }
   }
     
@@ -1743,17 +1743,17 @@ function _printCommande(printer, data, strings) {
   ])
   .drawLine();
 
-  // total remise
-  printer
-    .tableCustom([
-      {text: `${strings.detail.avant_remise} ${data.total.avantremise.replace('.',',')}`, cols:42, align:'LEFT'}
-    ])
-    .tableCustom([
-      {text: `${strings.detail.total_remise} ${data.total.remise.replace('.',',')}`, cols:42, align:'LEFT'}
-    ]);
-
-
+  // uniquement sur ticket
   if (data.status==='confirmed') {
+
+    // total remise
+    printer
+      .tableCustom([
+        {text: `${strings.detail.avant_remise} ${data.total.avantremise.replace('.',',')}`, cols:42, align:'LEFT'}
+      ])
+      .tableCustom([
+        {text: `${strings.detail.total_remise} ${data.total.remise.replace('.',',')}`, cols:42, align:'LEFT'}
+      ]);
 
     // tva
     printer

@@ -752,6 +752,7 @@ function _createNote(confirm, params) {
     'ENC-TIK-ARG': source,
     'ENC-TIK-LOG': 'SPLASH360',
     'LIGNES':[],
+    'TVA': [],
     'ENC-TIK-TOT-MHT': 0,
     'ENC-TIK-TOT-TTC': 0,
     'FAC-TOT-TVA': 0,
@@ -824,6 +825,8 @@ function _createNote(confirm, params) {
       'ENC-TIK-LIG-PRO-NID': itm.produitid,
       'ENC-TIK-LIG-PRO-LIB': itm.nom,
       'ENC-TIK-LIG-PRO-QTE': itm.quantite,
+      'ENC-TIK-LIG-TAX-NID': itm.tva.code,
+      'ENC-TIK-LIG-TAX-TXX': Number(itm.tva.valeur) * 100,
       'ENC-TIK-LIG-PRO-MTH': Math.round(itm.puht * 100),
       'ENC-TIK-LIG-PRO-TTC': Math.round(itm.pu * 100),
       'ENC-TIK-LIG-REM-TXX': itm.rem_txx,
@@ -852,6 +855,8 @@ function _createNote(confirm, params) {
         'ENC-TIK-LIG-PRO-NID': ing.ingredient,
         'ENC-TIK-LIG-PRO-LIB': ing.nom,
         'ENC-TIK-LIG-PRO-QTE': ing.qte,
+        'ENC-TIK-LIG-TAX-NID': ing.tva.code,
+        'ENC-TIK-LIG-TAX-TXX': Number(ing.tva.valeur) * 100,
         'ENC-TIK-LIG-PRO-MTH': Math.round(ing.supplementht * 100),
         'ENC-TIK-LIG-PRO-TTC': Math.round(ing.supplement * 100),
         'ENC-TIK-LIG-REM-TXX': ing.rem_txx,
@@ -874,7 +879,15 @@ function _createNote(confirm, params) {
 
 
   // tva ticket
-  Object.values(confirm.ventilation).forEach(tva =>{
+  Object.values(confirm.ventilation).forEach(tva => {
+    
+    __noteData['TVA'].push({
+      'ENC-NID': newNote,
+      'ENC-TIK-TOT-MHT': tva.ht,
+      'ENC-TIK-TVA-NID': tva.code,
+      'ENC-TIK-TVA-TXX': Number(tva.taux) * 100,
+      'ENC-TIK-TVA-MTN': tva.tva,
+    });
     __noteData['ENC-TIK-TOT-MHT'] += tva.ht;
     __noteData['ENC-TIK-TOT-TTC'] += tva.ttc;
     __noteData['FAC-TOT-TVA'] += tva.tva;

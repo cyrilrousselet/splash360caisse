@@ -1004,7 +1004,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
 
           const siret = piece['ENC-TIK-SOC-SIR'];
-          const siret_formatted = (siret) ? `SIRET ${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
+          const siret_formatted = (siret) ? `SIRET ${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3),siret.substr(9,5)].join(' ')}` : '';
 
           // let _extrait_sign = '';
           // // caractères 3, 7, 13, 19 de la signature
