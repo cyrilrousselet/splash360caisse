@@ -2247,6 +2247,11 @@ function archiveFiscale(intervalle, debut, fin) {
     ].join("\n");
 
     __data.push({ type: 'txt', data: __infos, file: 'INFOS.txt'});
+    
+    const __readme = [
+      'DOCUMENTATION ARCHIVE FISCALE : https://www.splash360.fr/documentation/archivefiscale_v1.pdf'
+    ]
+    __data.push({ type: 'txt', data: __readme, file: 'README.txt'});
 
     await clotureServices.createArchiveFiscale(fileName, __data, archive_secret);
 

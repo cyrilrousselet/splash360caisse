@@ -1088,7 +1088,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               date: `${date} - ${heure}`
             },
             nomticket: ticket.nom,
-            strings: {commande: strings.tickets.commande, uber: strings.tickets.uber}
+            strings: {commande: strings.tickets.commande, uber: strings.tickets.uber},
           };
 
 
@@ -1639,6 +1639,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             } 
           } 
           catch(e) {
+            console.error(e);
             // log de non édition d'une note dans le cas du ticket "commande" original (note)
             if (template==='commande') {
               let duplitype = null;

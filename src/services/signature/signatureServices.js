@@ -34,7 +34,9 @@ export const signatureServices = {
   verify,
   verifyBuffer,
   persistTrousseau,
-  getTrousseau
+  getTrousseau,
+  persistMemoire,
+  getMemoire
 };
 
 
@@ -498,6 +500,12 @@ function persistTrousseau(trousseau) {
 }
 function getTrousseau() {
   return emit('dbTrousseauGet', {});
+}
+function persistMemoire(obj) {
+  return emit('dbMemoireSet', obj);
+}
+function getMemoire() {
+  return emit('dbMemoireGet', {});
 }
 function getNumerotation(type) {
   if (!(['ticket',

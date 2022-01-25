@@ -44,7 +44,8 @@ function updateSignature(type, signature) {
 
     // console.log('updateSignature('+type+', '+signature+')');
 
-    const _sign = await signatureServices.persistSignature(type, signature);
+    // const _sign = await signatureServices.persistSignature(type, signature);
+    const _sign = signatureServices.persistSignature(type, signature);
 
 
     switch (type) {

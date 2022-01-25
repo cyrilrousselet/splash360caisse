@@ -908,20 +908,29 @@ class Panier extends React.Component {
           }
         }
           
-        // on applique ensuite ce coef sur le HT de l'item et des ingrédients
-        let __modhtitm = (__htitm - (__htitm * __modcoef)) - ((__htitm - (__htitm * __modcoef)) * taux_remise_panier); // <- HT de l'item (avec remise)
-
-        // et on calcule le TTC
         const __tx = Number(itm.tva.valeur);
-        let __modttcitm = __modhtitm * (1 + __tx);  // <- TTC de l'item (avec remise)
+
+        // on applique ensuite ce coef sur le HT de l'item et des ingrédients
+        let __modhtitm = __htitm;
+        let __modttcitm = __ttcitm;
+        if (__modcoef>0 || taux_remise_panier>0) {
+          __modhtitm = (__htitm - (__htitm * __modcoef)) - ((__htitm - (__htitm * __modcoef)) * taux_remise_panier); // <- HT de l'item (avec remise)
+          __modttcitm = __modhtitm * (1 + __tx);  // <- TTC de l'item (avec remise)
+        }
+        // et on calcule le TTC
 
         let __modhting = 0; // <- HT des ingrédients de l'item
         let __modttcing = 0;  // <- TTC des ingrédients de l'item
         itm.ingredients.forEach(ing => {
           const __hi = Math.round(ing.supplementht * 100);
           const __itx = Number(ing.tva.valeur);
-          const __him = (__hi - (__hi * __modcoef)) - ((__hi - (__hi * __modcoef)) * taux_remise_panier);  // <- HT de l'ingrédient (avec remise)
-          const __ti = __him * (1 + __itx); // <- TTC de l'ingrédient (avec remise)
+           
+          let __him = __hi;
+          let __ti = Math.round(ing.supplement * 100);
+          if (__modcoef>0 || taux_remise_panier>0) {
+            __him = (__hi - (__hi * __modcoef)) - ((__hi - (__hi * __modcoef)) * taux_remise_panier);  // <- HT de l'ingrédient (avec remise)
+            __ti = __him * (1 + __itx); // <- TTC de l'ingrédient (avec remise)
+          }
           __modhting += __him;
           __modttcing += __ti;
         });

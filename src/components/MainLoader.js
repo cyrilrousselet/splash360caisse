@@ -58,6 +58,7 @@ class MainLoader extends React.Component {
       // testCloturesAuto,
       testGTPeriodique,
       checkJET,
+      checkEntrepriseChange,
       // checkZCaisse,
       // checkGrandTotalPeriodique,
     } = this.props;
@@ -198,6 +199,8 @@ class MainLoader extends React.Component {
           this.props.initSyncCommandes();
           this.props.initSyncClotures();
           this.props.checkScheduledCommandes();  
+
+          checkEntrepriseChange();
           this.props.loadingComplete();
         }
       }

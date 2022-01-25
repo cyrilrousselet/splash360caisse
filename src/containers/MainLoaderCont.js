@@ -78,6 +78,7 @@ const mapDispatchToProps = (dispatch) => {
     testCloturesAuto: clotureActions.testCloturesAuto,
     log: journalActions.log,
     checkJET: journalActions.check,
+    checkEntrepriseChange: parametresActions.checkEntrepriseChange,
     // checkGrandTotalPeriodique: clotureActions.checkGrandTotalPeriodique,
     // checkZCaisse: clotureActions.checkZCaisse,
   }, dispatch);

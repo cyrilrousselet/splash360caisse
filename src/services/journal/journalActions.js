@@ -35,6 +35,17 @@ function log(code, description="") {
 
     const __type = (__ecode.purgeable) ? 'jet' : 'pistedaudit';
     const __evtid = (__ecode.purgeable) ? 'JET' : 'PA';
+
+    let lastSignature = null;
+    if (__type==='jet') {
+      lastSignature = last(getState().signatureReducer.jet);
+    } else {
+      lastSignature = last(getState().signatureReducer.pistedaudit);
+    }
+
+    if (!lastSignature) {
+      lastSignature = await signatureServices.getLastSignature(__type);
+    }
     
     const __evtnum = (__ecode.purgeable) ? getState().numerotationReducer.jet : getState().numerotationReducer.pistedaudit;
 
@@ -52,6 +63,8 @@ function log(code, description="") {
         'JET-X-NID': __evtid + format(new Date(),'yyMM-') + 'cXXX-00000000',
       };
     }
+
+    
     
     __evt = {
       ...__evt,
@@ -61,27 +74,35 @@ function log(code, description="") {
       'JET-GDH': format(new Date(), 'yyyyMMddHHmmss'),
       'JET-INF': description,
       'JET-TAG-ID-KEY': keyid,
-      'JET-TAG-SIG': null
+      'JET-TAG-SIG-PRV': lastSignature,
+      'JET-TAG-SIG': null,
+      // 'JET-TAG-HMAC': null,
+      // 'JET-TAG-ARG': null,
     };
 
-    const lastSignature = await signatureServices.getLastSignature(__type);
     let signature = '';
+    let hmac = '';
+    let source = '';
     if (caisse) {
-      signature = signatureServices.createJETSignature({...__evt, caisse: caisse}, key, lastSignature).signature;
+      const js = signatureServices.createJETSignature({...__evt, caisse: caisse}, key, lastSignature);
+      signature = js.signature;
+      hmac = js.hmac;
+      source = js.source;
     }
  
     // console.log(__evtid+' source : ',source);
 
     __evt['JET-TAG-SIG'] = signature;
+    // __evt['JET-TAG-HMAC'] = hmac;
+    // __evt['JET-TAG-ARG'] = source;
 
+    if (caisse) {
+      dispatch( signatureActions.updateSignature(__type, signature) );
+    }
 
 
     try {
       await journalServices.write(__evt, __type);
-
-      if (caisse) {
-        dispatch( signatureActions.updateSignature(__type, signature) );
-      }
 
     } catch(e) {
       console.error(e);
@@ -227,25 +248,39 @@ function check(type) {
       let integ_error = false;
       let seq_error = false;
       let prevNIDnum = null;
+      let prevId = null;
       let prevSign = null;
+      let prevTrousseau = null;
       let integ_detection = [];
       let seq_detection = [];
       evenements.forEach(evt => {
         if (prevSign) {
-          const { signature } = signatureServices.createJETSignature({...evt, caisse: caisse}, key, prevSign); 
-          if (signature !== evt['JET-TAG-SIG']) {
-            integ_error = true;
-            integ_detection = [...integ_detection, evt['JET-NID']];
+
+          // on teste l'intégrité uniquement si les deux événements ont la même clé de chiffrement
+          if (prevTrousseau === evt['JET-TAG-ID-KEY']) {
+            
+            const { source, hmac, signature } = signatureServices.createJETSignature({...evt, caisse: caisse}, key, prevSign); 
+            if (signature !== evt['JET-TAG-SIG']) {
+              integ_error = true;
+              console.log("EVT SRC",source)
+
+              integ_detection = [...integ_detection, prevId+" avec "+evt['JET-NID']];
+            }
+
           }
           const NIDnum = parseInt(evt['JET-NID'].split('-')[2]);
           
-          if (NIDnum !== (prevNIDnum - 1)) {
+          // console.log('SEQU CHECK '+journal, NIDnum, prevNIDnum);
+          if (NIDnum !== (prevNIDnum + 1)) {
+            // console.log('SEQU ERROR : '+journal, NIDnum, prevNIDnum);
             seq_error = true;
-            seq_detection = [...seq_detection, evt['JET-NID']];
+            seq_detection = [...seq_detection, prevId+" avec "+evt['JET-NID']];
           }
         }
         prevSign = evt['JET-TAG-SIG'];
+        prevId = evt['JET-NID'];
         prevNIDnum = parseInt(evt['JET-NID'].split('-')[2]);
+        prevTrousseau = evt['JET-TAG-ID-KEY'];
       });
 
       if (integ_error) {

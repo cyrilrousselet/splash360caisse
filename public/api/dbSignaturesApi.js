@@ -4,6 +4,7 @@ const { last } = require('lodash');
 const connect = require("../db/mongodb");
 const SignatureModel = require("../db/signatureModel");
 const NumerotationModel = require("../db/numerotationModel");
+const MemoireModel = require("../db/memoireModel");
 const TrousseauModel = require("../db/trousseauModel");
 // const { uuid } = require("uuidv4");
 
@@ -52,6 +53,16 @@ const actions = {
     const { payload } = req;
     log.info('dbTrousseauSet in API');
     const proxies = await _persistTrousseau(payload);
+    res.send(proxies);
+  },
+  dbMemoireGet: async (req, res) => {
+    const proxies = await _getMemoire();
+    res.send(proxies);
+  },
+  dbMemoireSet: async (req, res) => {
+    const { payload } = req;
+    log.info('dbMemoireSet in API');
+    const proxies = await _persistMemoire(payload);
     res.send(proxies);
   }
 }
@@ -187,4 +198,21 @@ async function _persistTrousseau(trousseau) {
   return _trs;
 }
 
+async function _getMemoire() {
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  let __mm = await MemoireModel.find({}).lean().sort({createdAt: -1}).limit(1).exec();
+
+  return __mm;
+
+}
+
+async function _persistMemoire(memoire) {
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  const __mm = await MemoireModel.create(memoire);
+  return __mm;
+}
 module.exports = actions;

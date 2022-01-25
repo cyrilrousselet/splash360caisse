@@ -22,7 +22,38 @@ function replaceDatabase(database) {
     dispatch({type: parametresActionTypes.REPLACE_DATABASE_REQUEST, dd:database.database.parametres});
 
     try {
-      await parametresServices.replaceDatabase(database.database.parametres)
+      await parametresServices.replaceDatabase(database.database.parametres);
+
+
+      const { entreprise } = database.database.parametres;
+
+      const __memoire = [
+        'denomination',
+        'adresse',
+        'code_postal',
+        'ville',
+        'pays',
+        'siret',
+        'rcs',
+        'ape',
+        'tva'
+      ];
+
+      const __memabs = __memoire.filter(e => !Object.keys(entreprise).includes(e));
+
+      if (!__memabs) {
+        await signatureServices.persistMemoire({
+          denomination: entreprise.denomination,
+          adresse: entreprise.adresse,
+          code_postal: entreprise.code_postal,
+          ville: entreprise.ville,
+          pays: entreprise.pays,
+          siret: entreprise.siret,
+          rcs: entreprise.rcs,
+          ape: entreprise.ape,
+          tva: entreprise.tva
+        });
+      }
     
       dispatch({type: parametresActionTypes.REPLACE_DATABASE_SUCCESS});
       
@@ -84,6 +115,33 @@ function checkMandatoryData(data) {
     console.log('checkMandatoryData()', liste);
 
     dispatch({ type: parametresActionTypes.CHECK_MANDATORY, mandatoryerror: liste.length>0 });
+
+  }
+}
+
+function checkEntrepriseChange() {
+  return async (dispatch, getState) => {
+    const {entreprise} = getState().parametresReducer.parametres;
+
+    const memoire = await signatureServices.getMemoire();
+
+
+    console.log("checkEntrepriseChange", memoire);
+
+    let __changed = false;
+    let __cles = [];
+
+    Object.entries(memoire[0].valeur).forEach(([cle, valeur]) => {
+      if (entreprise[cle] !== valeur) {
+        __changed = true;
+        __cles = [...__cles, cle];
+      }
+    });
+
+    if (__changed) {
+      console.log('checkEntrepriseChange CHANGÉ', __cles.join(', '));
+      dispatch(journalActions.log('410', 'Changement dans '+__cles.join(', ')));
+    }
 
   }
 }
@@ -348,6 +406,7 @@ export const parametresActions = {
   getAll,
   update,
   replaceDatabase,
+  checkEntrepriseChange,
   installStation,
   getStatus,
   checkStatus,
