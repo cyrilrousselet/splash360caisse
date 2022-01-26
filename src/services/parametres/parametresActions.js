@@ -25,35 +25,14 @@ function replaceDatabase(database) {
       await parametresServices.replaceDatabase(database.database.parametres);
 
 
-      const { entreprise } = database.database.parametres;
+      let entreprise = {};
+      database.database.parametres.forEach(obj => {
+        if (obj.domaine==="entreprise") {
+          entreprise[obj.cle] = obj.valeur;
+        }
+      });
+      console.log('ENTREPRISE', entreprise);
 
-      const __memoire = [
-        'denomination',
-        'adresse',
-        'code_postal',
-        'ville',
-        'pays',
-        'siret',
-        'rcs',
-        'ape',
-        'tva'
-      ];
-
-      const __memabs = __memoire.filter(e => !Object.keys(entreprise).includes(e));
-
-      if (!__memabs) {
-        await signatureServices.persistMemoire({
-          denomination: entreprise.denomination,
-          adresse: entreprise.adresse,
-          code_postal: entreprise.code_postal,
-          ville: entreprise.ville,
-          pays: entreprise.pays,
-          siret: entreprise.siret,
-          rcs: entreprise.rcs,
-          ape: entreprise.ape,
-          tva: entreprise.tva
-        });
-      }
     
       dispatch({type: parametresActionTypes.REPLACE_DATABASE_SUCCESS});
       
@@ -73,9 +52,48 @@ function replaceDatabase(database) {
           valeur: false
         }));
       }
+
+
+      const __memoire = [
+        'denomination',
+        'adresse',
+        'code_postal',
+        'ville',
+        'pays',
+        'siret',
+        'rcs',
+        'ape',
+        'tva'
+      ];
+
+      const __memabs = __memoire.filter(e => !Object.keys(entreprise).includes(e));
+
+      console.log('__memabs',__memabs);
+
+      if (__memabs.length<1) {
+        try {
+          await signatureServices.persistMemoire({
+            cle: "memoire",
+            valeur: {
+              denomination: entreprise.denomination,
+              adresse: entreprise.adresse,
+              code_postal: entreprise.code_postal,
+              ville: entreprise.ville,
+              pays: entreprise.pays,
+              siret: entreprise.siret,
+              rcs: entreprise.rcs,
+              ape: entreprise.ape,
+              tva: entreprise.tva
+            }
+          });
+        } catch(e) {
+          console.error(e);
+        }
+      }
+
     }
     catch(error) {
-      dispatch({type: parametresActionTypes.REPLACE_DATABASE_FAILURE});
+      dispatch({type: parametresActionTypes.REPLACE_DATABASE_FAILURE, error: error});
     }
     
   }

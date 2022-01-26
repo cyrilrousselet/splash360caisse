@@ -2249,7 +2249,7 @@ function archiveFiscale(intervalle, debut, fin) {
     __data.push({ type: 'txt', data: __infos, file: 'INFOS.txt'});
     
     const __readme = [
-      'DOCUMENTATION ARCHIVE FISCALE : https://www.splash360.fr/documentation/archivefiscale_v1.pdf'
+      'DOCUMENTATION ARCHIVE FISCALE : https://admin.splash360.fr/documentation/archivefiscale_v1.pdf'
     ]
     __data.push({ type: 'txt', data: __readme, file: 'README.txt'});
 
