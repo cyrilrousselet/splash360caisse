@@ -1941,8 +1941,8 @@ function archiveFiscale(intervalle, debut, fin) {
     // ------------> GTPeriodiques
     const GTdata = await _getArchiveGTPeriodiques(intervalle, start, end);
 
-    __data.push({type: 'json', data: JSON.stringify(GTdata.json), file: 'grandtotauxperiodiques.json'});
-    __data.push({type: 'csv', data: GTdata.csv, file: 'grandtotauxperiodiques.csv'});
+    __data.push({type: 'json', data: JSON.stringify(GTdata.json), file: 'grandstotauxperiodiques.json'});
+    __data.push({type: 'csv', data: GTdata.csv, file: 'grandstotauxperiodiques.csv'});
 
 
     // ------------>  ZCaisse 
@@ -1967,8 +1967,8 @@ function archiveFiscale(intervalle, debut, fin) {
      
       const GTTdata = await _getArchiveGTTickets(intervalle, start, end);
 
-      __data.push({type: 'json', data: JSON.stringify(GTTdata.json), file: 'grandtotauxtickets.json'});
-      __data.push({type: 'csv', data: GTTdata.csv, file: 'grandtotauxtickets.csv'});
+      __data.push({type: 'json', data: JSON.stringify(GTTdata.json), file: 'grandstotauxtickets.json'});
+      __data.push({type: 'csv', data: GTTdata.csv, file: 'grandstotauxtickets.csv'});
 
       
       
@@ -2006,16 +2006,16 @@ function archiveFiscale(intervalle, debut, fin) {
       }
       
       
-      // ------------>  Clotures
-      const __cloQuery = {
-        $and: [
-          {createdAt: {$gte:debut.getTime()}},
-          {createdAt: {$lt:fin.getTime()}}
-        ]
-      }
-      const { clotureslist } = await clotureServices.getCloturesList(__cloQuery);
-      // fichier JSON
-      __data.push({type: 'json', data: JSON.stringify(clotureslist), file: 'clotures.json'});
+      // // ------------>  Clotures
+      // const __cloQuery = {
+      //   $and: [
+      //     {createdAt: {$gte:debut.getTime()}},
+      //     {createdAt: {$lt:fin.getTime()}}
+      //   ]
+      // }
+      // const { clotureslist } = await clotureServices.getCloturesList(__cloQuery);
+      // // fichier JSON
+      // __data.push({type: 'json', data: JSON.stringify(clotureslist), file: 'clotures.json'});
 
 
       // ------------>  Duplicatas
@@ -2248,9 +2248,11 @@ function archiveFiscale(intervalle, debut, fin) {
 
     __data.push({ type: 'txt', data: __infos, file: 'INFOS.txt'});
     
+    
     const __readme = [
-      'DOCUMENTATION ARCHIVE FISCALE : https://admin.splash360.fr/documentation/archivefiscale_v1.pdf'
-    ]
+      ['DOCUMENTATION ARCHIVE FISCALE : https://admin.splash360.fr/documentation/archivefiscale_v1.pdf']
+    ].join("\n");
+
     __data.push({ type: 'txt', data: __readme, file: 'README.txt'});
 
     await clotureServices.createArchiveFiscale(fileName, __data, archive_secret);
