@@ -1583,7 +1583,7 @@ function testGTPeriodique(intervalle='jour') {
           // est postérieure à la date d'aujourd'hui
           // c'est qu'il y a ou qu'il y a eu un problème de date avec la machine
           // on bloque l'encaissement
-          const __todayformatted = format(__today,'yyyyMMddHHmmss');
+          const __todayformatted = parseInt(format(__today,'yyyyMMddHHmmss'));
           if (last_fin > __todayformatted) {
             dispatch({ type: clotureActionTypes.DATE_ERROR, error: true });
           }
@@ -1596,7 +1596,7 @@ function testGTPeriodique(intervalle='jour') {
             __GTT_query = {
               "$expr" : {
                 "$and":[ 
-                  {"$gt" : [{"$toDouble": "$ENC-GTT-HOR-GDH"} , last_fin]},
+                  {"$gte" : [{"$toDouble": "$ENC-GTT-HOR-GDH"} , last_fin]},
                   {"$lt" : [{"$toDouble": "$ENC-GTT-HOR-GDH"} , parseInt(end)]}
                 ]
               }
@@ -1619,9 +1619,10 @@ function testGTPeriodique(intervalle='jour') {
       // on va chercher les GTTickets si besoin
       // et s'il y en a on crée un GTJ avec
       if (__GTT_query) {
-        console.log('on va chercher les GTTickets', __GTT_query);
+        console.log('on va chercher les GTTickets', JSON.stringify(__GTT_query));
         try {
           const liste_GTT = await clotureServices.getGTTicket(__GTT_query);
+          console.log('liste_GTT', liste_GTT);
           if (liste_GTT.length>0) {  
             dispatch(createGrandTotalPeriodique('jour',liste_GTT));
           }
@@ -1881,6 +1882,7 @@ function checkArchive(filename) {
 function archiveFiscale(intervalle, debut, fin) {
   return async (dispatch, getState) => {
 
+    console.log('archiveFiscale('+intervalle+')', debut, fin);
 
     const { privateKey, trousseauId } = getState().signatureReducer; 
     const { caisse, archive_secret } = getState().parametresReducer.parametres.options;
@@ -2248,7 +2250,7 @@ function archiveFiscale(intervalle, debut, fin) {
 
     __data.push({ type: 'txt', data: __infos, file: 'INFOS.txt'});
     
-    
+
     const __readme = [
       ['DOCUMENTATION ARCHIVE FISCALE : https://admin.splash360.fr/documentation/archivefiscale_v1.pdf']
     ].join("\n");
@@ -2323,6 +2325,7 @@ async function _getArchiveGTPeriodiques(intervalle, start, end) {
       ]
     }
   };
+  console.log("_getArchiveGTPeriodiques(), gtperiode", gtperiode, __GTP_query);
 
   let gtplist;
   try {
@@ -2332,7 +2335,7 @@ async function _getArchiveGTPeriodiques(intervalle, start, end) {
     console.error(e);
     console.log('ERROR query', JSON.stringify(__GTP_query));
   }
-
+  console.log('GTP liste', gtplist);
   let gtpCsvString;
   if (gtplist) {
     // fichier CSV

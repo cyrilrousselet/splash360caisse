@@ -148,14 +148,16 @@ function checkEntrepriseChange() {
 
     let __changed = false;
     let __cles = [];
-
-    Object.entries(memoire[0].valeur).forEach(([cle, valeur]) => {
-      if (entreprise[cle] !== valeur) {
-        __changed = true;
-        __cles = [...__cles, cle];
-      }
-    });
-
+    if (memoire.length>0) {
+ 
+      Object.entries(memoire[0].valeur).forEach(([cle, valeur]) => {
+        if (entreprise[cle] !== valeur) {
+          __changed = true;
+          __cles = [...__cles, cle];
+        }
+      });
+      
+    }
     if (__changed) {
       console.log('checkEntrepriseChange CHANGÉ', __cles.join(', '));
       dispatch(journalActions.log('410', 'Changement dans '+__cles.join(', ')));

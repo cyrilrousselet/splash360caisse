@@ -1882,6 +1882,7 @@ function printZCaisse(zdecaisse) {
       ecarts: zdecaisse.ecarts || null,
       strings: impression,
       mouvements: tresorslist,
+      nomticket: ticket.nom,
       createdAt: format(new Date(zdecaisse.createdAt),'yyyy/MM/dd HH:mm:ss')
     };
 

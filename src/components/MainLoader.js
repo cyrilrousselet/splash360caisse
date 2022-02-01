@@ -229,7 +229,6 @@ class MainLoader extends React.Component {
       storeKeys();
       storeNumerotation();
       getGTP();
-      // testGTPeriodique();
 
     if (this._findeservice_job===null) {  
       this._findeservice_job = schedule.scheduleJob('0 30 5 * * *', () => {
