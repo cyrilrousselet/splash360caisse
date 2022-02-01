@@ -485,7 +485,7 @@ function initSyncCommandes() {
           const {commandes, chronos} = results;
 
           logger.info('initSyncCommandes chronos', chronos);
-          logger.info('initSyncCommandes', commandes.length);
+          logger.info('initSyncCommandes', commandes ? commandes.length : 'rien');
           if (commandes.length>0) {
 
             logger.info('preparation des commandes à envoyer au backo');
@@ -622,7 +622,7 @@ function initSyncClotures() {
         results => {
           const {clotures} = results;
 
-          logger.info('initSyncClotures', clotures.length);
+          logger.info('initSyncClotures', clotures ? clotures.length : 'rien');
           if (clotures.length>0) {
 
             logger.info('preparation des clotures à envoyer au backo');

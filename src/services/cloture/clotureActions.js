@@ -359,7 +359,7 @@ function makeCloture(params={}) {
     // const newClotureId = 'CL' + (params.type==="auto" ? "A" : "M") + format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + cloture_id.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
     try {  
       const lastCloture = await clotureServices.getLast();
-      if (lastCloture.clotureslist.length>0) {
+      if (lastCloture.clotureslist && lastCloture.clotureslist.length>0) {
         lastClotureTotal = Math.round(lastCloture.clotureslist[0].periode.ca * 100);
       }
     } catch(e) {
