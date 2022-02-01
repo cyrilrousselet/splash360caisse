@@ -2033,7 +2033,7 @@ function archiveFiscale(intervalle, debut, fin) {
           {status: {$in:['confirmed', 'deleted']}},
           {archived: {$exists: true}},
           {createdAt: {$gte:debut.getTime()}},
-          {createdAt: {$lt:fin.getTime()}}
+          {createdAt: {$lte:fin.getTime()}}
         ]
       }
       const { commandeslist } = await commandeServices.getCommandesList(__cmdQuery);
@@ -2062,7 +2062,7 @@ function archiveFiscale(intervalle, debut, fin) {
       const __tresorQuery = {
         $and: [
           {createdAt: {$gte:debut.getTime()}},
-          {createdAt: {$lt:fin.getTime()}},
+          {createdAt: {$lte:fin.getTime()}},
         ]
       }
       const { tresorslist } = await tresorServices.getTresors(__tresorQuery);
@@ -2075,7 +2075,7 @@ function archiveFiscale(intervalle, debut, fin) {
       const __avoirQuery = {
         $and: [
           {emission: {$gte:debut.getTime()}},
-          {emission: {$lt:fin.getTime()}},
+          {emission: {$lte:fin.getTime()}},
         ]
       }
       const { avoirslist } = await marketingServices.getAvoirsList(__avoirQuery);
@@ -2102,7 +2102,7 @@ function archiveFiscale(intervalle, debut, fin) {
               },
               parseInt(start)
             ]},
-            {"$lt" : [
+            {"$lte" : [
               {"$toDouble": 
                 {"$arrayElemAt":[
                   {"$split":["$periode","|"]}, 
@@ -2156,7 +2156,8 @@ function archiveFiscale(intervalle, debut, fin) {
         
 
         const debut_aj = parseInt(format(debut,'yyDDD'));
-        const fin_aj = parseInt(format(fin,'yyDDD'));
+        // const fin_aj = parseInt(format(fin,'yyDDD'));
+        const fin_aj = parseInt(format(new Date(),'yyDDD'));
 
         await  asyncForEach(files, async (f) => {
             
@@ -2313,7 +2314,7 @@ async function _getArchiveGTPeriodiques(intervalle, start, end) {
           }, 
           parseInt(start)
         ]},
-        {"$lt" : [
+        {"$lte" : [
           {"$toDouble": 
             {"$arrayElemAt":[
               {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
@@ -2400,7 +2401,7 @@ async function _getArchiveZCaisse(intervalle, start, end) {
           }, 
           parseInt(start)
         ]},
-        {"$lt" : [
+        {"$lte" : [
           {"$toDouble": 
             {"$arrayElemAt":[
               {"$split":["$periode","|"]}, 
@@ -2534,7 +2535,7 @@ async function _getArchiveGTTickets(intervalle, start, end) {
     "$expr" : {
       "$and":[ 
         {"$gte" : [{"$toDouble": "$ENC-GTT-HOR-GDH"} , parseInt(start)]},
-        {"$lt" : [{"$toDouble": "$ENC-GTT-HOR-GDH"} , parseInt(end)]}
+        {"$lte" : [{"$toDouble": "$ENC-GTT-HOR-GDH"} , parseInt(end)]}
       ]
     }
   };
@@ -2988,7 +2989,7 @@ async function _getArchiveDuplicatas(start, end) {
   const __dplQuery = {
     $and: [
       {'ENC-DUP-HOR-GDH': {$gte:start}},
-      {'ENC-DUP-HOR-GDH': {$lt:end}}
+      {'ENC-DUP-HOR-GDH': {$lte:end}}
     ]
   }
   const dpllist = await commandeServices.getDuplicata(__dplQuery);
