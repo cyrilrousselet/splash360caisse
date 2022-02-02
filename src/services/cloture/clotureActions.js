@@ -241,7 +241,7 @@ function  createZCaisse(cloture, intervalle, mode) {
     const { privateKey, trousseauId } = getState().signatureReducer; 
     const { periode } = cloture;
     const { user } = getState().authentication;
-    console.log('createZCaisse', periode);
+    console.log('createZCaisse ('+mode+')', periode);
 
     let intervalleId = (intervalle==="intermediaire") ? 'I' : ((intervalle==="jour") ? 'J' : ((intervalle==="mois") ? 'M' : 'A'));
 
