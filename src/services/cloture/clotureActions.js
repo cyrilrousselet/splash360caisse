@@ -2154,17 +2154,17 @@ function archiveFiscale(intervalle, debut, fin) {
     // ------------>  JET et PA du jour de l'archive 
     // -- (et de la période archivée pour une ArchF Journalière) --
   
-    const compta_dir = `${app.getPath('userData')}/compta/`;
+    // const compta_dir = `${app.getPath('userData')}/compta/`;
 
-    let files = null;
-    try {
-      files = await fs.readdir(compta_dir);
-    }
-    catch(e) {
-      console.error('CA.archiveFiscale() impossible de scanner le dossier compta', e);
-    }
+    // let files = null;
+    // try {
+    //   files = await fs.readdir(compta_dir);
+    // }
+    // catch(e) {
+    //   console.error('CA.archiveFiscale() impossible de scanner le dossier compta', e);
+    // }
 
-    console.log('CA.archiveFiscale() compta files', files);
+    // console.log('CA.archiveFiscale() compta files', files);
 
     // if (files===undefined) {
     //   console.log('CA.archiveFiscale() fichier de compta undefined');
