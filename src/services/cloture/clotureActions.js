@@ -1911,8 +1911,8 @@ function archiveFiscale(intervalle, debut, fin) {
     //   fileName = fileNamerad+'-'+num+'.zip';
     // }
 
-    const start = format(debut, 'yyyyMMdd050000');
-    const end = format(fin, 'yyyyMMdd050000');
+    const start = (intervalle!=='jour') ? format(debut, 'yyyyMMdd050000') : format(debut, 'yyyyMMddHHmmss');
+    const end = (intervalle!=='jour') ? format(fin, 'yyyyMMdd050000') : format(fin, 'yyyyMMddHHmmss');
 
 
     // TEST PREALABLE
