@@ -2427,7 +2427,7 @@ async function _getArchiveZCaisse(intervalle, start, end) {
   const __ZC_query = {
     $expr : {
       $and:[ 
-        {"$gttype": intervalle},
+        {"$ztype": intervalle},
         {$gte : [
           {$toDouble: 
             {$arrayElemAt:[
