@@ -44,6 +44,7 @@ class MainLoader extends React.Component {
       // caisseLoaded,
       catLoaded, 
       cloLoaded, 
+      trousseauLoaded,
       sseInit, 
       params,
       paramsEntreprise, 
@@ -73,7 +74,7 @@ class MainLoader extends React.Component {
       this.props.getParametres();
     }
 
-    if(paramLoaded) {
+    if (paramLoaded && trousseauLoaded) {
       console.log("PARAM LOADED");
  
       if(paramsEntreprise.restaurant_id==="" || paramsEntreprise.restaurant_secret==="") {
@@ -163,7 +164,7 @@ class MainLoader extends React.Component {
 
 
     if (first_start===false) {
-      if (paramLoaded===true && sseInit===true && 
+      if (paramLoaded===true && trousseauLoaded===true && sseInit===true && 
           catLoaded===false) {
 
         // testCloturesAuto();
@@ -276,6 +277,7 @@ class MainLoader extends React.Component {
 
     const { 
       paramLoaded, 
+      trousseauLoaded,
       catLoaded, 
       cloLoaded,
       sseInit,
@@ -288,6 +290,7 @@ class MainLoader extends React.Component {
         <LoadingSpinner className="MainLoader-loading" />
         <div className="MainLoader-items">
           {first_start && <p className="MainLoader-item">Acquisition de la base de données...</p>}
+          {trousseauLoaded && <p className="MainLoader-item">Trousseau chargé</p>}
           {paramLoaded && <p className="MainLoader-item">Paramètres chargés</p>}
           {sseInit && <p className="MainLoader-item">SSE initialisé</p>}
           {catLoaded && <p className="MainLoader-item">Catalogue chargés</p>}

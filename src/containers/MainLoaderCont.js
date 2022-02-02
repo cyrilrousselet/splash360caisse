@@ -36,6 +36,7 @@ const mapStateToProps = (state) => {
     // cmdLoaded: Object.entries(state.commandesListReducer).length>0,
     // cloLoading : state.clotureReducer.loading,
     cloLoaded: Object.entries(state.clotureReducer).length>0,
+    trousseauLoaded: state.signatureReducer.privateKey!==null,
     sseInit: state.notificationReducer.sseInit,
     params: state.parametresReducer.parametres.options,
     paramsEntreprise: state.parametresReducer.parametres.entreprise,
