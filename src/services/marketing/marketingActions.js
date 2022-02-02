@@ -6,12 +6,12 @@ import logger from '../../helpers/Logger';
 
 
 
-function getAvoirsList(params={}) {
+function getAvoirsList() {
 
   return dispatch => {
     dispatch({ type: marketingActionTypes.GET_AVOIRS_LIST_REQUEST });
 
-    return marketingServices.getAvoirsList(params)
+    return marketingServices.getAvoirsList()
     .then(
         data => { dispatch({ type: marketingActionTypes.GET_AVOIRS_LIST_SUCCESS, ...data }) }
     )

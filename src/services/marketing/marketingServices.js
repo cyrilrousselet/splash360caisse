@@ -4,6 +4,7 @@ import LodashId from 'lodash-id';
 
 export const marketingServices = {
   getAvoirsList,
+  getAvoirs,
   getReglesPanierList,
   getReglesCatalogueList,
   createAvoir,
@@ -12,8 +13,11 @@ export const marketingServices = {
 };
 
 
-function getAvoirsList(params) {
-  return emit('dbAvoirGetAll', params);
+function getAvoirsList() {
+  return emit('dbAvoirGetAll', {});
+}
+function getAvoirs(params) {
+  return emit('dbAvoirGetAvoirs', params);
 }
 function getReglesPanierList(params) {
   return emit('dbReglePanierGetAll', params);

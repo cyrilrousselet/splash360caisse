@@ -16,10 +16,10 @@ const actions = {
       
     res.send(proxies);
   },
-  dbAvoirGetAvoir: async (req,res) => {
+  dbAvoirGetAvoirs: async (req,res) => {
     const {payload} = req;
-    log.info("dbAvoirGetAvoir("+payload.avoir_id+") in API");
-    const proxies = await _findAvoir({avoir_id: payload.avoir_id});
+    log.info("dbAvoirGetAvoirs("+payload.avoir_id+") in API");
+    const proxies = await _findAvoir(payload);
     log.info(proxies);
     res.send(proxies);
   },

@@ -2067,6 +2067,8 @@ function archiveFiscale(intervalle, debut, fin) {
         ]
       }
       const { tresorslist } = await tresorServices.getTresors(__tresorQuery);
+
+    console.log('CA.archiveFiscale() tresors', JSON.stringify(__tresorQuery) , tresorslist);
       // fichier JSON
       __data.push({type: 'json', data: JSON.stringify(tresorslist), file: 'tresorerie.json'});
 
@@ -2079,7 +2081,8 @@ function archiveFiscale(intervalle, debut, fin) {
           {emission: {$lte:fin.getTime()}},
         ]
       }
-      const { avoirslist } = await marketingServices.getAvoirsList(__avoirQuery);
+      const { avoirslist } = await marketingServices.getAvoirs(__avoirQuery);
+      console.log('CA.archiveFiscale() avoirs', JSON.stringify(__avoirQuery) , avoirslist);
       // fichier JSON
       __data.push({type: 'json', data: JSON.stringify(avoirslist), file: 'avoirs.json'});
 
@@ -2141,18 +2144,18 @@ function archiveFiscale(intervalle, debut, fin) {
   
     const compta_dir = `${app.getPath('userData')}/compta/`;
 
-    let files
+    let files = null;
     try {
       files = await fs.readdir(compta_dir);
     }
     catch(e) {
-      console.error('impossible de scanner le dossier compta', e);
+      console.error('CA.archiveFiscale() impossible de scanner le dossier compta', e);
     }
 
     console.log('CA.archiveFiscale() compta files', files);
 
     if (files===undefined) {
-      console.log('fichier de compta undefined');
+      console.log('CA.archiveFiscale() fichier de compta undefined');
     } else {
 
 
