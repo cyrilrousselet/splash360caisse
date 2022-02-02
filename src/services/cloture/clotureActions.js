@@ -2066,11 +2066,17 @@ function archiveFiscale(intervalle, debut, fin) {
           {createdAt: {$lte:fin.getTime()}},
         ]
       }
-      const { tresorslist } = await tresorServices.getTresors(__tresorQuery);
+      try {
 
-      console.log('CA.archiveFiscale() tresors', JSON.stringify(__tresorQuery) , tresorslist);
-      // fichier JSON
-      __data.push({type: 'json', data: JSON.stringify(tresorslist), file: 'tresorerie.json'});
+        const { tresorslist } = await tresorServices.getTresors(__tresorQuery);
+        
+        console.log('CA.archiveFiscale() tresors', JSON.stringify(__tresorQuery) , tresorslist);
+        // fichier JSON
+        __data.push({type: 'json', data: JSON.stringify(tresorslist), file: 'tresorerie.json'});
+      } catch (e) {
+        console.error('CA.archiveFiscale() tresors');
+        console.error(e);
+      }
 
   
 
@@ -2081,11 +2087,16 @@ function archiveFiscale(intervalle, debut, fin) {
           {emission: {$lte:fin.getTime()}},
         ]
       }
-      const { avoirslist } = await marketingServices.getAvoirs(__avoirQuery);
-      console.log('CA.archiveFiscale() avoirs', JSON.stringify(__avoirQuery) , avoirslist);
-      if (avoirslist) {
-        // fichier JSON
-        __data.push({type: 'json', data: JSON.stringify(avoirslist), file: 'avoirs.json'});
+      try {
+        const { avoirslist } = await marketingServices.getAvoirs(__avoirQuery);
+        console.log('CA.archiveFiscale() avoirs', JSON.stringify(__avoirQuery) , avoirslist);
+        if (avoirslist) {
+          // fichier JSON
+          __data.push({type: 'json', data: JSON.stringify(avoirslist), file: 'avoirs.json'});
+        }
+      } catch(e) {
+        console.error('CA.archiveFiscale() avoirs');
+        console.error(e);
       }
 
     } // (endif intervalle==="jour")
