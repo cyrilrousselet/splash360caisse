@@ -1920,11 +1920,12 @@ function archiveFiscale(intervalle, debut, fin) {
     const cmdnonarchivees = await commandeServices.getCommandesList({
       $and: [
         { createdAt: {$gte: debut.getTime()} },
-        { createdAt: {$lt: fin.getTime()} },
+        { createdAt: {$lte: fin.getTime()} },
         { status: 'confirmed' },
         { archived: {$exists: false} }
       ]
     });
+    console.log('AF cmd non cloturees', cmdnonarchivees);
 
     if (Object.values(cmdnonarchivees.commandeslist).length>0) {
       Swal.fire({
@@ -1942,7 +1943,7 @@ function archiveFiscale(intervalle, debut, fin) {
   
     // ------------> GTPeriodiques
     const GTdata = await _getArchiveGTPeriodiques(intervalle, start, end);
-
+  
     __data.push({type: 'json', data: JSON.stringify(GTdata.json), file: 'grandstotauxperiodiques.json'});
     __data.push({type: 'csv', data: GTdata.csv, file: 'grandstotauxperiodiques.csv'});
 
@@ -2147,6 +2148,9 @@ function archiveFiscale(intervalle, debut, fin) {
     catch(e) {
       console.error('impossible de scanner le dossier compta', e);
     }
+
+    console.log('CA.archiveFiscale() compta files', files);
+
     if (files===undefined) {
       console.log('fichier de compta undefined');
     } else {
@@ -2217,7 +2221,7 @@ function archiveFiscale(intervalle, debut, fin) {
     const gtp = await clotureServices.getGTP();
     __data.push({ type: 'txt', data: 'Grand Total Perpetuel Calcul Algebrique = '+gtp.gtpca, file: 'GTPCA.txt'});
 
-
+    console.log('CA.archiveFiscale() GTPCA', gtp.gtpca);
     
     // ------------>  Documentation
 
@@ -2250,6 +2254,8 @@ function archiveFiscale(intervalle, debut, fin) {
     ].join("\n");
 
     __data.push({ type: 'txt', data: __infos, file: 'INFOS.txt'});
+
+    console.log('CA.archiveFiscale() INFOS', __infos);
     
 
     const __readme = [
@@ -2258,32 +2264,44 @@ function archiveFiscale(intervalle, debut, fin) {
 
     __data.push({ type: 'txt', data: __readme, file: 'README.txt'});
 
-    await clotureServices.createArchiveFiscale(fileName, __data, archive_secret);
-
-    const __afcont = await fs.readFile(`${app.getPath('userData')}/archives_fiscales/${fileName}`);
-    const { hmac, signature } = await signatureServices.createSignature(__afcont.toString(), privateKey); 
-
-
-    const startend = (__startdefacto!==null) ? `${__startdefacto}|${__enddefacto}` : `${ start }|${ end }`;
-
-    const __afdata = {
-      'TAG-ARC-HOR-GDH': format(new Date(),'yyyyMMddHHmmss'),
-      'TAG-ARC-DOC': fileName,
-      'TAG-ARC-OPS-NID': user.user_id,
-      'TAG-ARC-CAI-NID': caisse.id,
-      'TAG-ARC-OPE-TYP': String(intervalle).toUpperCase(),
-      'TAG-ARC-ID-KEY': trousseauId,
-      'TAG-ARC-SIG': signature,
-      'TAG-ARC-HASH': hmac,
-      'periode': startend
-    };
+    console.log('CA.archiveFiscale() README', __readme);
 
     try {
-      await clotureServices.persistArchiveFiscale(__afdata);
-      dispatch({ type: clotureActionTypes.ADD_ARCHIVE_FISCALE, archive: __afdata });
-    }
-    catch(e) {
+      await clotureServices.createArchiveFiscale(fileName, __data, archive_secret);
+    } catch(e) {
+      console.error('ERROR createArchiveFiscale');
       console.error(e);
+    }
+
+    try {
+      const __afcont = await fs.readFile(`${app.getPath('userData')}/archives_fiscales/${fileName}`);
+      const { hmac, signature } = await signatureServices.createSignature(__afcont.toString(), privateKey); 
+
+
+      const startend = (__startdefacto!==null) ? `${__startdefacto}|${__enddefacto}` : `${ start }|${ end }`;
+
+      const __afdata = {
+        'TAG-ARC-HOR-GDH': format(new Date(),'yyyyMMddHHmmss'),
+        'TAG-ARC-DOC': fileName,
+        'TAG-ARC-OPS-NID': user.user_id,
+        'TAG-ARC-CAI-NID': caisse.id,
+        'TAG-ARC-OPE-TYP': String(intervalle).toUpperCase(),
+        'TAG-ARC-ID-KEY': trousseauId,
+        'TAG-ARC-SIG': signature,
+        'TAG-ARC-HASH': hmac,
+        'periode': startend
+      };
+      
+
+      try {
+        await clotureServices.persistArchiveFiscale(__afdata);
+        dispatch({ type: clotureActionTypes.ADD_ARCHIVE_FISCALE, archive: __afdata });
+      }
+      catch(e) {
+        console.error(e);
+      }
+    } catch (e) {
+      console.error('ERROR signature et persistance Archive fiscale', e);
     }
 
    
@@ -2298,8 +2316,6 @@ async function _getArchiveGTPeriodiques(intervalle, start, end) {
   let gtperiode = ["jour","intermediaire"];
   if (intervalle==='mois') gtperiode = ["jour","mois"];
   if (intervalle==='annee') gtperiode = ["annee","mois"];
-
-  console.log("_getArchiveGTPeriodiques(), gtperiode", gtperiode);
 
   const __GTP_query = {
     "$expr" : {
@@ -2326,7 +2342,7 @@ async function _getArchiveGTPeriodiques(intervalle, start, end) {
       ]
     }
   };
-  console.log("_getArchiveGTPeriodiques(), gtperiode", gtperiode, __GTP_query);
+  console.log("_getArchiveGTPeriodiques(), gtperiode", gtperiode, JSON.stringify(__GTP_query));
 
   let gtplist;
   try {
@@ -2413,6 +2429,10 @@ async function _getArchiveZCaisse(intervalle, start, end) {
       ]
     }
   };
+  
+
+  console.log("_getArchiveZCaisse("+intervalle+")", start, end, JSON.stringify(__ZC_query));
+
   const zclist = await clotureServices.getZCaisse(__ZC_query);
   let zcCsvString = null;
   console.log('zclist',zclist);
@@ -2539,6 +2559,7 @@ async function _getArchiveGTTickets(intervalle, start, end) {
       ]
     }
   };
+  console.log("_getArchiveGTTickets("+intervalle+")", start, end, JSON.stringify(__GTT_query));
   const gttlist = await clotureServices.getGTTicket(__GTT_query);
 
 
@@ -2992,6 +3013,9 @@ async function _getArchiveDuplicatas(start, end) {
       {'ENC-DUP-HOR-GDH': {$lte:end}}
     ]
   }
+  
+  console.log("_getArchiveDuplicatas()", start, end, JSON.stringify(__dplQuery));
+
   const dpllist = await commandeServices.getDuplicata(__dplQuery);
 
   const dplCsvString = [
