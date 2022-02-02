@@ -18,9 +18,9 @@ const actions = {
   },
   dbAvoirGetAvoirs: async (req,res) => {
     const {payload} = req;
-    log.info("dbAvoirGetAvoirs("+payload.avoir_id+") in API");
+    log.info("dbAvoirGetAvoirs("+payload+") in API");
     const proxies = await _findAvoir(payload);
-    log.info(proxies);
+    log.info('dbAvoirGetAvoirs => '+JSON.stringify(proxies));
     res.send(proxies);
   },
   dbAvoirPersist: async (req,res) => {

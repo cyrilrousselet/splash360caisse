@@ -2068,7 +2068,7 @@ function archiveFiscale(intervalle, debut, fin) {
       }
       const { tresorslist } = await tresorServices.getTresors(__tresorQuery);
 
-    console.log('CA.archiveFiscale() tresors', JSON.stringify(__tresorQuery) , tresorslist);
+      console.log('CA.archiveFiscale() tresors', JSON.stringify(__tresorQuery) , tresorslist);
       // fichier JSON
       __data.push({type: 'json', data: JSON.stringify(tresorslist), file: 'tresorerie.json'});
 
@@ -2083,9 +2083,10 @@ function archiveFiscale(intervalle, debut, fin) {
       }
       const { avoirslist } = await marketingServices.getAvoirs(__avoirQuery);
       console.log('CA.archiveFiscale() avoirs', JSON.stringify(__avoirQuery) , avoirslist);
-      // fichier JSON
-      __data.push({type: 'json', data: JSON.stringify(avoirslist), file: 'avoirs.json'});
-
+      if (avoirslist) {
+        // fichier JSON
+        __data.push({type: 'json', data: JSON.stringify(avoirslist), file: 'avoirs.json'});
+      }
 
     } // (endif intervalle==="jour")
 
