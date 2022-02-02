@@ -89,34 +89,63 @@ async function writeTrousseau(trousseau) {
 async function checkAndCreateKeys() {
   _checkDirectorySync(`${app.getPath('userData')}/cert`);
 
+  console.log('SS.checkAndCreateKeys()');
+
+  let trousseau;
   let privateKey = "";
   let publicKey = "";
   let trousseauId = null;
-
   let aucun_trousseau;
+  
+  // récup le trousseau en BDD
   try {
-    privateKey = await fs_async.readFile(`${app.getPath('userData')}/cert/prv.pem`);
-    publicKey = await fs_async.readFile(`${app.getPath('userData')}/cert/pub.pem`);
-    trousseauId = await fs_async.readFile(`${app.getPath('userData')}/cert/trousseau.data`);
-  } catch(e) {
-    console.warn('aucun trousseau');
-    aucun_trousseau = true;
+    trousseau = await getTrousseau();
+    console.log('TROUSSEAU EN BD', trousseau);
+  }
+  catch(e) {
+    console.error(e);
   }
 
-  if (aucun_trousseau) {
-
-    try {
-      const { privateKey, publicKey } = await _createKeyPair();
-      trousseauId = uuid();
-
-      await fs_async.writeFile(`${app.getPath('userData')}/cert/prv.pem`, privateKey);
-      await fs_async.writeFile(`${app.getPath('userData')}/cert/pub.pem`, publicKey);
-      await fs_async.writeFile(`${app.getPath('userData')}/cert/trousseau.data`, trousseauId)
-    }
-    catch(err) {
-      return console.error(err);
-    };
+  // s'il y a un trousseau en BDD, on le renvoie pour le mettre dans le store
+  if (trousseau && Array.isArray(trousseau)) {
+    privateKey = trousseau[0].privateKey;
+    publicKey = trousseau[0].publicKey;
+    trousseauId = trousseau[0].trousseauId;
+    aucun_trousseau = false;
   } 
+  // s'il n'y a pas de trousseau en BDD...
+  else {
+    
+    // on regarde s'il existe un trousseau sur le DD
+    try {
+      privateKey = await fs_async.readFile(`${app.getPath('userData')}/cert/prv.pem`);
+      publicKey = await fs_async.readFile(`${app.getPath('userData')}/cert/pub.pem`);
+      trousseauId = await fs_async.readFile(`${app.getPath('userData')}/cert/trousseau.data`);
+    } catch(e) {
+      console.warn('aucun trousseau');
+      aucun_trousseau = true;
+    }
+
+    // si aucun trousseu n'est présent sur le DD...
+    if (aucun_trousseau) {
+      // on crée un nouveau trousseau,
+      try {
+        const { privateKey, publicKey } = await _createKeyPair();
+        trousseauId = uuid();
+        
+        // on l'écrit sur le DD
+        await fs_async.writeFile(`${app.getPath('userData')}/cert/prv.pem`, privateKey);
+        await fs_async.writeFile(`${app.getPath('userData')}/cert/pub.pem`, publicKey);
+        await fs_async.writeFile(`${app.getPath('userData')}/cert/trousseau.data`, trousseauId);
+        
+        // et on le persiste en BDD
+        await persistTrousseau({ privateKey, publicKey, trousseauId:trousseauId.toString()});
+      }
+      catch(err) {
+        return console.error(err);
+      };
+    } 
+  }
     
   return { privateKey, publicKey, trousseauId:trousseauId.toString(), create:!aucun_trousseau };
 }

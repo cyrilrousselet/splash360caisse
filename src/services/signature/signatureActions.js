@@ -18,6 +18,7 @@ function getAll() {
 
 function storeKeys() {
   return async (dispatch, getState) => {
+    console.log('SA.storeKeys()')
 
     const {privateKey, publicKey} = getState().signatureReducer;
 
