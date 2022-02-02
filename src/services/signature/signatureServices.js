@@ -107,7 +107,7 @@ async function checkAndCreateKeys() {
   }
 
   // s'il y a un trousseau en BDD, on le renvoie pour le mettre dans le store
-  if (trousseau && Array.isArray(trousseau)) {
+  if (Array.isArray(trousseau) && trousseau.length>0) {
     privateKey = trousseau[0].privateKey;
     publicKey = trousseau[0].publicKey;
     trousseauId = trousseau[0].trousseauId;
