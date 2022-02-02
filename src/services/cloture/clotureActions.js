@@ -2181,7 +2181,7 @@ function archiveFiscale(intervalle, debut, fin) {
         await  asyncForEach(files, async (f) => {
             
           let fjour = parseInt(f.substring(0,5));
-          console.log(debut_aj, fjour, fin_aj);
+          console.log('AF f',debut_aj, fjour, fin_aj);
           if (fjour >= debut_aj && fjour <= fin_aj) {
             console.log('inclu', f);
             const __gz = (last(f.split('.'))==='gz');
@@ -2233,10 +2233,15 @@ function archiveFiscale(intervalle, debut, fin) {
     }
 
     // ------------> GTPerpetuel Cumul Algebrique
-    const gtp = await clotureServices.getGTP();
-    __data.push({ type: 'txt', data: 'Grand Total Perpetuel Calcul Algebrique = '+gtp.gtpca, file: 'GTPCA.txt'});
+    try {
 
-    console.log('CA.archiveFiscale() GTPCA', gtp.gtpca);
+      const gtp = await clotureServices.getGTP();
+      __data.push({ type: 'txt', data: 'Grand Total Perpetuel Calcul Algebrique = '+gtp.gtpca, file: 'GTPCA.txt'});
+      
+      console.log('CA.archiveFiscale() GTPCA', gtp.gtpca);
+    } catch (e) {
+      console.error('CA.archiveFiscale() GTPCA',  e);
+    }
     
     // ------------>  Documentation
 

@@ -494,6 +494,8 @@ function exportComptable(target, recap) {
 
 function createArchiveFiscale(path, data, secret) {
 
+  console.log('createArchiveFiscale()', path, data, secret);
+
   _checkDirectorySync(`${app.getPath('userData')}/archives_fiscales`)
 
   return new Promise((resolve, reject) => {
