@@ -2154,83 +2154,83 @@ function archiveFiscale(intervalle, debut, fin) {
     // ------------>  JET et PA du jour de l'archive 
     // -- (et de la période archivée pour une ArchF Journalière) --
   
-    // const compta_dir = `${app.getPath('userData')}/compta/`;
+    const compta_dir = `${app.getPath('userData')}/compta/`;
 
-    // let files = null;
-    // try {
-    //   files = await fs.readdir(compta_dir);
-    // }
-    // catch(e) {
-    //   console.error('CA.archiveFiscale() impossible de scanner le dossier compta', e);
-    // }
+    let files = null;
+    try {
+      files = await fs.readdir(compta_dir);
+    }
+    catch(e) {
+      console.error('CA.archiveFiscale() impossible de scanner le dossier compta', e);
+    }
 
-    // console.log('CA.archiveFiscale() compta files', files);
+    console.log('CA.archiveFiscale() compta files', files);
 
-    // if (files===undefined) {
-    //   console.log('CA.archiveFiscale() fichier de compta undefined');
-    // } else {
+    if (files===undefined) {
+      console.log('CA.archiveFiscale() fichier de compta undefined');
+    } else {
 
 
-    //   if (intervalle==="jour") {
+      if (intervalle==="jour") {
         
 
-    //     const debut_aj = parseInt(format(debut,'yyDDD'));
-    //     // const fin_aj = parseInt(format(fin,'yyDDD'));
-    //     const fin_aj = parseInt(format(new Date(),'yyDDD'));
+        const debut_aj = parseInt(format(debut,'yyDDD'));
+        // const fin_aj = parseInt(format(fin,'yyDDD'));
+        const fin_aj = parseInt(format(new Date(),'yyDDD'));
 
-    //     await  asyncForEach(files, async (f) => {
+        await  asyncForEach(files, async (f) => {
             
-    //       let fjour = parseInt(f.substring(0,5));
-    //       console.log('AF f',debut_aj, fjour, fin_aj);
-    //       if (fjour >= debut_aj && fjour <= fin_aj) {
-    //         console.log('inclu', f);
-    //         const __gz = (last(f.split('.'))==='gz');
+          let fjour = parseInt(f.substring(0,5));
+          console.log('AF f',debut_aj, fjour, fin_aj);
+          if (fjour >= debut_aj && fjour <= fin_aj) {
+            console.log('inclu', f);
+            const __gz = (last(f.split('.'))==='gz');
 
           
-    //         let filecont = await fs.readFile(`${compta_dir}${f}`);
-    //         let filedef;
-    //         let fdef = f;
-    //         if (__gz) {
-    //           filedef = await ungzip(filecont);
-    //           fdef = dropRight(f.split('.')).join('.');
-    //         } else {
-    //           filedef = filecont;
-    //         }
+            let filecont = await fs.readFile(`${compta_dir}${f}`);
+            let filedef;
+            let fdef = f;
+            if (__gz) {
+              filedef = await ungzip(filecont);
+              fdef = dropRight(f.split('.')).join('.');
+            } else {
+              filedef = filecont;
+            }
 
-    //         __data.push({ type: 'json', data: filedef, file: `journaux/${fdef}` });
+            __data.push({ type: 'json', data: filedef, file: `journaux/${fdef}` });
             
-    //       }
-    //       else {
-    //         console.log('exclu', f);
-    //       }
+          }
+          else {
+            console.log('exclu', f);
+          }
 
-    //     });
+        });
 
-    //   } else {
+      } else {
 
-    //     const __tdf = format(new Date(), 'yyDDD');
+        const __tdf = format(new Date(), 'yyDDD');
 
-    //     const afiles = files.filter(f => f.includes(__tdf));
-    //     await  asyncForEach(afiles, async (f) => {
+        const afiles = files.filter(f => f.includes(__tdf));
+        await  asyncForEach(afiles, async (f) => {
 
-    //       const __gz = (last(f.split('.'))==='gz');
+          const __gz = (last(f.split('.'))==='gz');
 
-    //       let filecont = await fs.readFile(`${compta_dir}${f}`);
-    //         let filedef;
-    //         let fdef = f;
-    //         if (__gz) {
-    //           filedef = await ungzip(filecont);
-    //           fdef = dropRight(f.split('.')).join('.');
-    //         } else {
-    //           filedef = filecont;
-    //         }
+          let filecont = await fs.readFile(`${compta_dir}${f}`);
+            let filedef;
+            let fdef = f;
+            if (__gz) {
+              filedef = await ungzip(filecont);
+              fdef = dropRight(f.split('.')).join('.');
+            } else {
+              filedef = filecont;
+            }
 
-    //         __data.push({ type: 'json', data: filedef, file: `journaux/${fdef}` });
+            __data.push({ type: 'json', data: filedef, file: `journaux/${fdef}` });
 
-    //     });
-    //   }
+        });
+      }
 
-    // }
+    }
 
     // ------------> GTPerpetuel Cumul Algebrique
     try {
