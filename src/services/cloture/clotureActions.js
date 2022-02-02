@@ -1911,8 +1911,10 @@ function archiveFiscale(intervalle, debut, fin) {
     //   fileName = fileNamerad+'-'+num+'.zip';
     // }
 
-    const start = (intervalle!=='jour') ? format(debut, 'yyyyMMdd050000') : format(debut, 'yyyyMMddHHmmss');
-    const end = (intervalle!=='jour') ? format(fin, 'yyyyMMdd050000') : format(fin, 'yyyyMMddHHmmss');
+    // const start = (intervalle!=='jour') ? format(debut, 'yyyyMMdd050000') : format(debut, 'yyyyMMddHHmmss');
+    // const end = (intervalle!=='jour') ? format(fin, 'yyyyMMdd050000') : format(fin, 'yyyyMMddHHmmss');
+    const start = format(debut, 'yyyyMMddHHmmss');
+    const end = format(fin, 'yyyyMMddHHmmss');
 
 
     // TEST PREALABLE

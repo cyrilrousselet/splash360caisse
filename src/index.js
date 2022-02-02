@@ -23,7 +23,6 @@ import { notificationActions } from './services/notification/notificationActions
 import './index.scss';
 import registerServiceWorker from './registerServiceWorker';
 import { clientsActions } from './services/clients/clientsActions';
-// import Logger from './helpers/Logger';
 import logger from './helpers/Logger';
 import { marketingActions } from './services/marketing/marketingActions';
 import { userActions } from './services/user/userActions';

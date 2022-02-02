@@ -290,7 +290,7 @@ const logger = {
    
     // winstonlogger.info(JSON.stringify([...args], null, 2));  
     if (process.env.NODE_ENV !== 'production') {
-      console.trace(...args);
+      console.log(...args);
     }
   },
   warn:  (...args) => { 
