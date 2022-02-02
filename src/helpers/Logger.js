@@ -277,18 +277,18 @@ if (process.env.NODE_ENV !== 'production') {
 
 const logger = {
   log: (...args) => {
-    if (!LEVELS.includes(String(args[0]).toLowerCase())) {
-      winstonlogger.log('info', ...args);  
-    } else { 
-      winstonlogger.log(...args);
-    }
+    // if (!LEVELS.includes(String(args[0]).toLowerCase())) {
+    //   winstonlogger.log('info', ...args);  
+    // } else { 
+    //   winstonlogger.log(...args);
+    // }
     if (process.env.NODE_ENV !== 'production') {
       console.trace(...args);
     }
   },
   info:  (...args) => { 
    
-    winstonlogger.info(JSON.stringify([...args], null, 2));  
+    // winstonlogger.info(JSON.stringify([...args], null, 2));  
     if (process.env.NODE_ENV !== 'production') {
       console.trace(...args);
     }
