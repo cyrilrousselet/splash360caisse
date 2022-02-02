@@ -716,13 +716,13 @@ function testZCaisse(intervalle) {
 
         // récup le dernier Z de caisse journalier
         let __lastZJ = await clotureServices.getLastZCaisse({
-          "$expr" : {
-            "$and":[ 
-              {"$eq":["$ztype", "jour"]},
-              {"$lt" : [
-                {"$toDouble": 
-                  {"$arrayElemAt":[
-                    {"$split":["$periode","|"]}, 
+          $expr : {
+            $and:[ 
+              {$eq:["$ztype", "jour"]},
+              {$lt : [
+                {$toDouble: 
+                  {$arrayElemAt:[
+                    {$split:["$periode","|"]}, 
                     1
                   ]}
                 }, 
@@ -739,13 +739,13 @@ function testZCaisse(intervalle) {
 
         // récup le dernier Z de caisse intermédiaire
         const __lastZI = await clotureServices.getLastZCaisse({
-          "$expr" : {
-            "$and":[ 
-              {"$eq":["$ztype", "intermediaire"]},
-              {"$lt" : [
-                {"$toDouble": 
-                  {"$arrayElemAt":[
-                    {"$split":["$periode","|"]}, 
+          $expr : {
+            $and:[ 
+              {$eq:["$ztype", "intermediaire"]},
+              {$lt : [
+                {$toDouble: 
+                  {$arrayElemAt:[
+                    {$split:["$periode","|"]}, 
                     1
                   ]}
                 }, 
@@ -773,22 +773,22 @@ function testZCaisse(intervalle) {
 
       console.log('testZCaisse, jour', start, end);
       const __ZJ_query = {
-        "$expr" : {
-          "$and":[ 
-            {"$eq":["$ztype", "jour"]},
-            {"$gte" : [
-              {"$toDouble": 
-                {"$arrayElemAt":[
-                  {"$split":["$periode","|"]}, 
+        $expr : {
+          $and:[ 
+            {$eq:["$ztype", "jour"]},
+            {$gte : [
+              {$toDouble: 
+                {$arrayElemAt:[
+                  {$split:["$periode","|"]}, 
                   0
                 ]}
               },
               parseInt(start)
             ]},
-            {"$lte" : [
-              {"$toDouble": 
-                {"$arrayElemAt":[
-                  {"$split":["$periode","|"]}, 
+            {$lte: [
+              {$toDouble: 
+                {$arrayElemAt:[
+                  {$split:["$periode","|"]}, 
                   1
                 ]}
               }, 
@@ -810,22 +810,22 @@ function testZCaisse(intervalle) {
 
         // récup ZI pour hier
         const __ZI_query = {
-          "$expr" : {
-            "$and":[ 
-              {"$eq":["$ztype", "intermediaire"]},
-              {"$gte" : [
-                {"$toDouble": 
-                  {"$arrayElemAt":[
-                    {"$split":["$periode","|"]}, 
+          $expr : {
+            $and:[ 
+              {$eq:["$ztype", "intermediaire"]},
+              {$gte : [
+                {$toDouble: 
+                  {$arrayElemAt:[
+                    {$split:["$periode","|"]}, 
                     0
                   ]}
                 },
                 parseInt(start)
               ]},
-              {"$lte" : [
-                {"$toDouble": 
-                  {"$arrayElemAt":[
-                    {"$split":["$periode","|"]}, 
+              {$lte : [
+                {$toDouble: 
+                  {$arrayElemAt:[
+                    {$split:["$periode","|"]}, 
                     1
                   ]}
                 }, 
@@ -869,13 +869,13 @@ function testZCaisse(intervalle) {
 
         // récup le dernier Z de caisse mensuel
         let __lastZMm = await clotureServices.getLastZCaisse({
-          "$expr" : {
-            "$and":[ 
-              {"$eq":["$ztype", "mois"]},
-              {"$lt" : [
-                {"$toDouble": 
-                  {"$arrayElemAt":[
-                    {"$split":["$periode","|"]}, 
+          $expr : {
+            $and:[ 
+              {$eq:["$ztype", "mois"]},
+              {$lt : [
+                {$toDouble: 
+                  {$arrayElemAt:[
+                    {$split:["$periode","|"]}, 
                     1
                   ]}
                 }, 
@@ -892,13 +892,13 @@ function testZCaisse(intervalle) {
 
         // récup le dernier Z de caisse journalier
         const __lastZJm = await clotureServices.getLastZCaisse({
-          "$expr" : {
-            "$and":[ 
-              {"$eq":["$ztype", "jour"]},
-              {"$lt" : [
-                {"$toDouble": 
-                  {"$arrayElemAt":[
-                    {"$split":["$periode","|"]}, 
+          $expr : {
+            $and:[ 
+              {$eq:["$ztype", "jour"]},
+              {$lt : [
+                {$toDouble: 
+                  {$arrayElemAt:[
+                    {$split:["$periode","|"]}, 
                     1
                   ]}
                 }, 
@@ -930,22 +930,22 @@ function testZCaisse(intervalle) {
       console.log('testZCaisse, mois', start, end);
 
       const __ZM_query = {
-        "$expr" : {
-          "$and":[ 
-            {"$eq":["$ztype", "mois"]},
-            {"$gte" : [
-              {"$toDouble": 
-                {"$arrayElemAt":[
-                  {"$split":["$periode","|"]}, 
+        $expr : {
+          $and:[ 
+            {$eq:["$ztype", "mois"]},
+            {$gte : [
+              {$toDouble: 
+                {$arrayElemAt:[
+                  {$split:["$periode","|"]}, 
                   0
                 ]}
               },
               parseInt(start)
             ]},
-            {"$lte" : [
-              {"$toDouble": 
-                {"$arrayElemAt":[
-                  {"$split":["$periode","|"]}, 
+            {$lte : [
+              {$toDouble: 
+                {$arrayElemAt:[
+                  {$split:["$periode","|"]}, 
                   1
                 ]}
               }, 
@@ -967,22 +967,22 @@ function testZCaisse(intervalle) {
 
         // récup ZJ pour le mois dernier
         const __ZJ_query = {
-          "$expr" : {
-            "$and":[ 
-              {"$eq":["$ztype", "jour"]},
-              {"$gte" : [
-                {"$toDouble": 
-                  {"$arrayElemAt":[
-                    {"$split":["$periode","|"]}, 
+          $expr : {
+            $and:[ 
+              {$eq:["$ztype", "jour"]},
+              {$gte : [
+                {$toDouble: 
+                  {$arrayElemAt:[
+                    {$split:["$periode","|"]}, 
                     0
                   ]}
                 },
                 parseInt(start)
               ]},
-              {"$lte" : [
-                {"$toDouble": 
-                  {"$arrayElemAt":[
-                    {"$split":["$periode","|"]}, 
+              {$lte : [
+                {$toDouble: 
+                  {$arrayElemAt:[
+                    {$split:["$periode","|"]}, 
                     1
                   ]}
                 }, 
@@ -1022,22 +1022,22 @@ function testZCaisse(intervalle) {
       console.log('testZCaisse, année', start, end);
 
       const __ZA_query = {
-        "$expr" : {
-          "$and":[ 
-            {"$eq":["$ztype", "annee"]},
-            {"$gte" : [
-              {"$toDouble": 
-                {"$arrayElemAt":[
-                  {"$split":["$periode","|"]}, 
+        $expr : {
+          $and:[ 
+            {$eq:["$ztype", "annee"]},
+            {$gte : [
+              {$toDouble: 
+                {$arrayElemAt:[
+                  {$split:["$periode","|"]}, 
                   0
                 ]}
               },
               parseInt(start)
             ]},
-            {"$lt" : [
-              {"$toDouble": 
-                {"$arrayElemAt":[
-                  {"$split":["$periode","|"]}, 
+            {$lt : [
+              {$toDouble: 
+                {$arrayElemAt:[
+                  {$split:["$periode","|"]}, 
                   1
                 ]}
               }, 
@@ -1059,22 +1059,22 @@ function testZCaisse(intervalle) {
 
         // récup ZM pour l'an dernier
         const __ZM_query = {
-          "$expr" : {
-            "$and":[ 
-              {"$eq":["$ztype", "mois"]},
-              {"$gte" : [
-                {"$toDouble": 
-                  {"$arrayElemAt":[
-                    {"$split":["$periode","|"]}, 
+          $expr : {
+            $and:[ 
+              {$eq:["$ztype", "mois"]},
+              {$gte : [
+                {$toDouble: 
+                  {$arrayElemAt:[
+                    {$split:["$periode","|"]}, 
                     0
                   ]}
                 },
                 parseInt(start)
               ]},
-              {"$lt" : [
-                {"$toDouble": 
-                  {"$arrayElemAt":[
-                    {"$split":["$periode","|"]}, 
+              {$lt : [
+                {$toDouble: 
+                  {$arrayElemAt:[
+                    {$split:["$periode","|"]}, 
                     1
                   ]}
                 }, 
@@ -1594,10 +1594,10 @@ function testGTPeriodique(intervalle='jour') {
             console.log('date de fin de la période du GTJ antérieure à la fin du dernier service');
             // on va chercher les éventuels GTTickets créés entre les deux dates
             __GTT_query = {
-              "$expr" : {
-                "$and":[ 
-                  {"$gte" : [{"$toDouble": "$ENC-GTT-HOR-GDH"} , last_fin]},
-                  {"$lt" : [{"$toDouble": "$ENC-GTT-HOR-GDH"} , parseInt(end)]}
+              $expr : {
+                $and:[ 
+                  {$gte : [{$toDouble: "$ENC-GTT-HOR-GDH"} , last_fin]},
+                  {$lt : [{$toDouble: "$ENC-GTT-HOR-GDH"} , parseInt(end)]}
                 ]
               }
             };
@@ -1609,7 +1609,7 @@ function testGTPeriodique(intervalle='jour') {
         else {
           console.log('pas de GTJ antérieur')
           // on va chercher tous les GTTickets antérieurs au service d'aujourd'hui
-          __GTT_query = {"$expr" : {"$lt" : [{"$toDouble" :"$ENC-GTP-HOR-GDH"} , parseInt(end)]}};
+          __GTT_query = {$expr : {$lt : [{$toDouble :"$ENC-GTP-HOR-GDH"} , parseInt(end)]}};
         }
       }
       catch(e) {
@@ -1662,22 +1662,22 @@ function testGTPeriodique(intervalle='jour') {
             console.log('date de fin de la période du GTM antérieure à la fin du dernier mois');
             // on va chercher les éventuels GTJ créés entre les deux dates
             __GTJ_query = {
-              "$expr" : {
-                "$and":[ 
-                  {"$eq":["$gttype", "jour"]},
-                  {"$gt" : [
-                    {"$toDouble": 
-                      {"$arrayElemAt":[
-                        {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
+              $expr : {
+                $and:[ 
+                  {$eq:["$gttype", "jour"]},
+                  {$gt : [
+                    {$toDouble: 
+                      {$arrayElemAt:[
+                        {$split:["$ENC-GTP-ORI-NUM","|"]}, 
                         1
                       ]}
                     },
                     last_fin
                   ]},
-                  {"$lt" : [
-                    {"$toDouble": 
-                      {"$arrayElemAt":[
-                        {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
+                  {$lt : [
+                    {$toDouble: 
+                      {$arrayElemAt:[
+                        {$split:["$ENC-GTP-ORI-NUM","|"]}, 
                         1
                       ]}
                     }, 
@@ -1695,13 +1695,13 @@ function testGTPeriodique(intervalle='jour') {
           console.log('pas de GTM antérieur')
           // on va chercher tous les GTJ antérieurs au mois actuel
           __GTJ_query = {
-            "$expr" : {
-              "$and":[ 
-                {"$eq":["$gttype", "jour"]},
-                {"$lt" : [
-                  {"$toDouble": 
-                    {"$arrayElemAt":[
-                      {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
+            $expr : {
+              $and:[ 
+                {$eq:["$gttype", "jour"]},
+                {$lt : [
+                  {$toDouble: 
+                    {$arrayElemAt:[
+                      {$split:["$ENC-GTP-ORI-NUM","|"]}, 
                       1
                     ]}
                   }, 
@@ -1761,22 +1761,22 @@ function testGTPeriodique(intervalle='jour') {
             console.log('date de fin de la période du GTA antérieure à la fin du dernier mois');
             // on va chercher les éventuels GTM créés entre les deux dates
             __GTM_query = {
-              "$expr" : {
-                "$and":[ 
-                  {"$eq":["$gttype", "mois"]},
-                  {"$gt" : [
-                    {"$toDouble": 
-                      {"$arrayElemAt":[
-                        {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
+              $expr : {
+                $and:[ 
+                  {$eq:["$gttype", "mois"]},
+                  {$gt : [
+                    {$toDouble: 
+                      {$arrayElemAt:[
+                        {$split:["$ENC-GTP-ORI-NUM","|"]}, 
                         1
                       ]}
                     },
                     last_fin
                   ]},
-                  {"$lt" : [
-                    {"$toDouble": 
-                      {"$arrayElemAt":[
-                        {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
+                  {$lt : [
+                    {$toDouble: 
+                      {$arrayElemAt:[
+                        {$split:["$ENC-GTP-ORI-NUM","|"]}, 
                         1
                       ]}
                     }, 
@@ -1794,13 +1794,13 @@ function testGTPeriodique(intervalle='jour') {
           console.log('pas de GTA antérieur')
           // on va chercher tous les GTM antérieurs à l'année actuelle
           __GTM_query = {
-            "$expr" : {
-              "$and":[ 
-                {"$eq":["$gttype", "mois"]},
-                {"$lt" : [
-                  {"$toDouble": 
-                    {"$arrayElemAt":[
-                      {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
+            $expr : {
+              $and:[ 
+                {$eq:["$gttype", "mois"]},
+                {$lt : [
+                  {$toDouble: 
+                    {$arrayElemAt:[
+                      {$split:["$ENC-GTP-ORI-NUM","|"]}, 
                       1
                     ]}
                   }, 
@@ -2106,22 +2106,22 @@ function archiveFiscale(intervalle, debut, fin) {
     
       // ------------>  export comptable
       const __XCPTquery = {
-        "$expr" : {
-          "$and":[ 
-            {"$eq":["$ztype", intervalle]},
-            {"$gte" : [
-              {"$toDouble": 
-                {"$arrayElemAt":[
-                  {"$split":["$periode","|"]}, 
+        $expr : {
+          $and:[ 
+            {$eq:["$ztype", intervalle]},
+            {$gte : [
+              {$toDouble: 
+                {$arrayElemAt:[
+                  {$split:["$periode","|"]}, 
                   0
                 ]}
               },
               parseInt(start)
             ]},
-            {"$lte" : [
-              {"$toDouble": 
-                {"$arrayElemAt":[
-                  {"$split":["$periode","|"]}, 
+            {$lte : [
+              {$toDouble: 
+                {$arrayElemAt:[
+                  {$split:["$periode","|"]}, 
                   1
                 ]}
               }, 
@@ -2338,22 +2338,22 @@ async function _getArchiveGTPeriodiques(intervalle, start, end) {
   if (intervalle==='annee') gtperiode = ["annee","mois"];
 
   const __GTP_query = {
-    "$expr" : {
-      "$and":[ 
-        {"$in": ["gttype", gtperiode]},
-        {"$gte" : [
-          {"$toDouble": 
-            {"$arrayElemAt":[
-              {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
+    $expr : {
+      $and:[ 
+        {$in: ["$gttype", gtperiode]},
+        {$gte : [
+          {$toDouble: 
+            {$arrayElemAt:[
+              {$split:["$ENC-GTP-ORI-NUM","|"]}, 
               0
             ]}
           }, 
           parseInt(start)
         ]},
-        {"$lte" : [
-          {"$toDouble": 
-            {"$arrayElemAt":[
-              {"$split":["$ENC-GTP-ORI-NUM","|"]}, 
+        {$lte : [
+          {$toDouble: 
+            {$arrayElemAt:[
+              {$split:["$ENC-GTP-ORI-NUM","|"]}, 
               1
             ]}
           }, 
@@ -2425,22 +2425,22 @@ async function _getArchiveGTPeriodiques(intervalle, start, end) {
 async function _getArchiveZCaisse(intervalle, start, end) {
 
   const __ZC_query = {
-    "$expr" : {
-      "$and":[ 
-        {"gttype": intervalle},
-        {"$gte" : [
-          {"$toDouble": 
-            {"$arrayElemAt":[
-              {"$split":["$periode","|"]}, 
+    $expr : {
+      $and:[ 
+        {"$gttype": intervalle},
+        {$gte : [
+          {$toDouble: 
+            {$arrayElemAt:[
+              {$split:["$periode","|"]}, 
               0
             ]}
           }, 
           parseInt(start)
         ]},
-        {"$lte" : [
-          {"$toDouble": 
-            {"$arrayElemAt":[
-              {"$split":["$periode","|"]}, 
+        {$lte: [
+          {$toDouble: 
+            {$arrayElemAt:[
+              {$split:["$periode","|"]}, 
               1
             ]}
           }, 
@@ -2572,10 +2572,10 @@ async function _getArchiveZCaisse(intervalle, start, end) {
 async function _getArchiveGTTickets(intervalle, start, end) {
 
   const __GTT_query = {
-    "$expr" : {
-      "$and":[ 
-        {"$gte" : [{"$toDouble": "$ENC-GTT-HOR-GDH"} , parseInt(start)]},
-        {"$lte" : [{"$toDouble": "$ENC-GTT-HOR-GDH"} , parseInt(end)]}
+    $expr : {
+      $and:[ 
+        {$gte : [{$toDouble: "$ENC-GTT-HOR-GDH"} , parseInt(start)]},
+        {$lte : [{$toDouble: "$ENC-GTT-HOR-GDH"} , parseInt(end)]}
       ]
     }
   };
@@ -3110,22 +3110,22 @@ function exportComptable(target, debut, fin) {
     dispatch(journalActions.log('180', `Recapitulatif ventilations du ${format(debut, 'dd/MM/yyyy')} au ${format(fin, 'dd/MM/yyyy')}`));
 
     const __query = {
-      "$expr" : {
-        "$and":[ 
-          {"$eq":["$ztype", "jour"]},
-          {"$gte" : [
-            {"$toDouble": 
-              {"$arrayElemAt":[
-                {"$split":["$periode","|"]}, 
+      $expr : {
+        $and:[ 
+          {$eq:["$ztype", "jour"]},
+          {$gte : [
+            {$toDouble: 
+              {$arrayElemAt:[
+                {$split:["$periode","|"]}, 
                 0
               ]}
             },
             parseInt(start)
           ]},
-          {"$lt" : [
-            {"$toDouble": 
-              {"$arrayElemAt":[
-                {"$split":["$periode","|"]}, 
+          {$lt : [
+            {$toDouble: 
+              {$arrayElemAt:[
+                {$split:["$periode","|"]}, 
                 1
               ]}
             }, 

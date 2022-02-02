@@ -489,22 +489,22 @@ class ListeZCaisse extends React.Component {
     const __end = format(__ep,'yyyyMMdd050000');
 
     const __query = {
-      "$expr" : {
-        "$and":[ 
-          {"$eq":["$ztype", __tp]},
-          {"$gte" : [
-            {"$toDouble": 
-              {"$arrayElemAt":[
-                {"$split":["$periode","|"]}, 
+      $expr : {
+        $and:[ 
+          {$eq:["$ztype", __tp]},
+          {$gte : [
+            {$toDouble: 
+              {$arrayElemAt:[
+                {$split:["$periode","|"]}, 
                 0
               ]}
             },
             parseInt(__start)
           ]},
-          {"$lt" : [
-            {"$toDouble": 
-              {"$arrayElemAt":[
-                {"$split":["$periode","|"]}, 
+          {$lt : [
+            {$toDouble: 
+              {$arrayElemAt:[
+                {$split:["$periode","|"]}, 
                 1
               ]}
             }, 
