@@ -447,7 +447,8 @@ function makeCloture(params={}) {
 
             dispatch(notificationActions.syncDispatch('cloture', __cloture));
 
-            dispatch(createZCaisse(cloture, (params.type==="auto" ? 'jour':'intermediaire'), params.type));
+            // dispatch(createZCaisse(cloture, (params.type==="auto" ? 'jour':'intermediaire'), params.type));
+            dispatch(createZCaisse(cloture, 'intermediaire', params.type));
             dispatch({ type: clotureActionTypes.CHECK_NOCOMPLETED_COMMANDS, blocage: false});
             
           }

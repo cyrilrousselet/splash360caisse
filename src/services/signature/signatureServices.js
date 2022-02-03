@@ -8,6 +8,8 @@ import mkdirp from 'mkdirp';
 import base64url from 'base64url';
 import { uuid } from "uuidv4";
 import canonicalizeString from "@pelevesque/canonicalize-string";
+import {PRV_K} from "../../constants/cert/prv.js";
+import {PUB_K} from "../../constants/cert/pub.js";
  
 const fs_async = require('fs').promises;
 
@@ -130,13 +132,15 @@ async function checkAndCreateKeys() {
     if (aucun_trousseau) {
       // on crée un nouveau trousseau,
       try {
-        const { privateKey, publicKey } = await _createKeyPair();
+        // const { privateKey, publicKey } = await _createKeyPair();
         trousseauId = uuid();
+        const privateKey = PRV_K;
+        const publicKey = PUB_K;
         
-        // on l'écrit sur le DD
-        await fs_async.writeFile(`${app.getPath('userData')}/cert/prv.pem`, privateKey);
-        await fs_async.writeFile(`${app.getPath('userData')}/cert/pub.pem`, publicKey);
-        await fs_async.writeFile(`${app.getPath('userData')}/cert/trousseau.data`, trousseauId);
+        // // on l'écrit sur le DD
+        // await fs_async.writeFile(`${app.getPath('userData')}/cert/prv.pem`, privateKey);
+        // await fs_async.writeFile(`${app.getPath('userData')}/cert/pub.pem`, publicKey);
+        // await fs_async.writeFile(`${app.getPath('userData')}/cert/trousseau.data`, trousseauId);
         
         // et on le persiste en BDD
         await persistTrousseau({ privateKey, publicKey, trousseauId:trousseauId.toString()});
