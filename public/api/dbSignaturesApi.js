@@ -201,6 +201,7 @@ async function _persistTrousseau(trousseau) {
     trousseauId: trousseau.trousseauId, 
     privateKey: trousseau.privateKey, 
     publicKey: trousseau.publicKey, 
+    createdAt: new Date().getTime()
   });
   return _trs;
 }
