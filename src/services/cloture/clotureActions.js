@@ -297,9 +297,9 @@ function  createZCaisse(cloture, intervalle, mode) {
       dispatch(testGTPeriodique(intervalle));
 
       // on génère l'archive fiscale pour une cloture auto non intermédiaire
-      if (mode==="auto" && intervalle!=="intermediaire") {
-        dispatch(archiveFiscale(intervalle, new Date(periode.debut), new Date(periode.fin)));
-      }
+      // if (mode==="auto" && intervalle!=="intermediaire") {
+      //   dispatch(archiveFiscale(intervalle, new Date(periode.debut), new Date(periode.fin)));
+      // }
 
       dispatch(journalActions.log('50', intervalle));
       dispatch(journalActions.log('160', 'Z de Caisse #'+__zdecaisse.zId));
@@ -1538,6 +1538,10 @@ function createGrandTotalPeriodique(intervalle, grandstotaux) {
       }
       else if (confirm && intervalle==="mois") {
         dispatch(testGTPeriodique('annee'));
+      }
+      if (intervalle!=='intermediaire') {
+        // on génère l'archive fiscale pour une cloture auto non intermédiaire
+        dispatch(archiveFiscale(intervalle, new Date(__start), new Date(__end)));
       }
     }
     catch(e) {

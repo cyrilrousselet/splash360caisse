@@ -796,7 +796,8 @@ const data = {
                 intervalle: {
                     intermediaire: "Intermédiaires",
                     jour: "Journaliers",
-                    mois: "Mensuels"
+                    mois: "Mensuels",
+                    annee: "Annuels"
                 },
                 dates: {
                     start: "Liste des z de caisse du ",

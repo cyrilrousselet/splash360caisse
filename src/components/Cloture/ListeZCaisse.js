@@ -582,7 +582,7 @@ class ListeZCaisse extends React.Component {
   }
 
   handleChangeTab(event, newValue) {
-    const __ztype = newValue===0 ? 'intermediaire': (newValue===1 ? 'jour' : 'mois');
+    const __ztype = newValue===0 ? 'intermediaire': (newValue===1 ? 'jour' :  (newValue===2 ? 'mois' : 'annee'));
     console.log('handleChangeTab', newValue, __ztype);
     this.setState({openTab: newValue, ztype: __ztype});
     this.getBoundedZCaisseList(null, null, __ztype);
@@ -782,6 +782,7 @@ class ListeZCaisse extends React.Component {
                 <Tab label={strings.modules.listezcaisse.intervalle.intermediaire} {...a11yProps[0]} />
                 <Tab label={strings.modules.listezcaisse.intervalle.jour} {...a11yProps[1]} />
                 <Tab label={strings.modules.listezcaisse.intervalle.mois} {...a11yProps[2]} />
+                <Tab label={strings.modules.listezcaisse.intervalle.annee} {...a11yProps[3]} />
               </Tabs>
             </AppBar>
             <TabPanel className="panel" value={openTab} index={0}>
@@ -810,6 +811,11 @@ class ListeZCaisse extends React.Component {
                 <StdButton identifier="nextyear" elementclass="nextyear" key="nextyear" text=">" onClick={()=>{this.nextYear()}} />
               </div>
               <TableZCaisse className="mois liste-zcaisse" id="liste-zcaisse" printZCaisseId={ this.printZCaisseId } openZCaisseId={ this.openZCaisseId } liste={listez} />
+            </TabPanel>
+            <TabPanel className="panel" value={openTab} index={3}>
+              <div className="date">
+              </div>
+              <TableZCaisse className="annee liste-zcaisse" id="liste-zcaisse" printZCaisseId={ this.printZCaisseId } openZCaisseId={ this.openZCaisseId } liste={listez} />
             </TabPanel>
           </div>
           <ZCaissePopin zcaisse={ zcaisse } open={zcaisseOpen} closeHandler={ this.closeZCaisse } printZCaisse={ this.printZCaisse} />
