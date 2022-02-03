@@ -220,6 +220,7 @@ class MainLoader extends React.Component {
       getStatus,
       testConnection,
       storeKeys,
+      numerotationStored,
       storeNumerotation,
       getGTP,
       testGTPeriodique,
@@ -228,7 +229,8 @@ class MainLoader extends React.Component {
 
     
       storeKeys();
-      storeNumerotation();
+      console.log('numerotationStored', numerotationStored);
+      if (!numerotationStored) storeNumerotation();
       getGTP();
 
     if (this._findeservice_job===null) {  

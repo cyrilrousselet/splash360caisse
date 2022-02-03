@@ -219,10 +219,10 @@ render(
 registerServiceWorker();
 
 
-async function getTrousseau() {
-  // const trousseau = await signatureServices.checkAndCreateKeys();
-  // store.dispatch({ type:signatureActionTypes.STORE_KEYS_SUCCESS, ...trousseau });
-  store.dispatch(signatureActions.storeNumerotation());
-  // store.dispatch(signatureActions.getAll());
-}
-getTrousseau();
+// async function getTrousseau() {
+//   // const trousseau = await signatureServices.checkAndCreateKeys();
+//   // store.dispatch({ type:signatureActionTypes.STORE_KEYS_SUCCESS, ...trousseau });
+//   store.dispatch(signatureActions.storeNumerotation());
+//   // store.dispatch(signatureActions.getAll());
+// }
+// getTrousseau();

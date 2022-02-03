@@ -792,6 +792,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
          
             const ligne_p = piece['LIGNES'].find(l => l['ENC-TIK-ORI-NUM']===article.itemid);
 
+            console.log("piece['LIGNES']", piece['LIGNES']);
+            console.log('ligne_p', ligne_p, article.itemid);
           
             // modificateurs pour l'article
             __modificateur = cmd.modificateurs.find(m => m.item===article.itemid && m.ingredient===null);

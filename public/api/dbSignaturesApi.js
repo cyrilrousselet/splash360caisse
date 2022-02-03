@@ -1,6 +1,6 @@
 // const db = require('../db');
 const log = require('../utils/logger');
-const { last } = require('lodash');
+const { last, lowerCase } = require('lodash');
 const connect = require("../db/mongodb");
 const SignatureModel = require("../db/signatureModel");
 const NumerotationModel = require("../db/numerotationModel");
@@ -29,7 +29,7 @@ const actions = {
   },
   dbNumerotationGetAll: async (req,res) => {
     log.info("dbNumerotationGetAll in API");
-    const proxies = await _getAllNumerotation();
+    const proxies = await _findNumerotation();
     log.info('dbNumerotationGetAll() '+JSON.stringify(proxies));
     res.send(proxies);
   },
@@ -103,21 +103,21 @@ async function _findSignatures(criteriae={}, lastitem=false) {
   return { _sgn };
 }
 
-async function _getAllNumerotation() {
-  const __rawdata = await _findNumerotation();
-  return __rawdata;
-}
+// async function _getAllNumerotation() {
+//   const __rawdata = await _findNumerotation();
+//   return __rawdata;
+// }
 
-async function _findNumerotation(criteriae=null) {
+async function _findNumerotation(criteriae={}) {
 
   const mongo = await connect();
   if (!mongo) return false;
 
   let __num = await NumerotationModel.find(criteriae).lean().exec();
 
-  log.info('_findNumerotation('+JSON.stringify(criteriae)+') -> '+JSON.stringify(__num));
+  log.info('_findNumerotation('+JSON.stringify(criteriae)+') -> '+JSON.stringify(__num)+' crit.L'+Object.keys(criteriae).length);
 
-  if (__num.length<1 && criteriae===null) {
+  if (__num.length<1 && Object.keys(criteriae).length<1) {
 
     __num = [
       {cle:"ticket", valeur:1},
@@ -130,8 +130,14 @@ async function _findNumerotation(criteriae=null) {
       {cle:"pistedaudit", valeur:1},
       {cle:"jet", valeur:1}
     ];
-    __num.forEach(n => {
-      _persistNumerotation(n);
+    let __count = 0;
+    await asyncForEach(__num, async (obj) => {
+      await _persistNumerotation(obj);
+      __count++;
+      log.info('loop persist ('+__count+' / '+__num.length+') = '+JSON.stringify(obj));
+      if (__count>=__num.length) {
+        return true;
+      }
     });
   }
 
@@ -142,11 +148,12 @@ async function _persistNumerotation(params=null) {
   log.info("dbSignatures._persistNumerotation() "+JSON.stringify(params));
 
   const mongo = await connect();
-  if (!mongo) return false;
+  if (!mongo) return false; 
   
   let _num = null;
   if (params) {
     _num = await NumerotationModel.updateOne({cle: params.cle},{valeur: params.valeur}).exec();
+    log.info('PERSIST NUMEROTATION RETURNS '+JSON.stringify(_num));
     if (_num.n < 1) {
       _num = await NumerotationModel.create({cle: params.cle, valeur: params.valeur})
     }
@@ -215,4 +222,13 @@ async function _persistMemoire(memoire) {
   const __mm = await MemoireModel.create(memoire);
   return __mm;
 }
+
+
+
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
+
 module.exports = actions;
