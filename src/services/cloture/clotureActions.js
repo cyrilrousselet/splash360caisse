@@ -262,7 +262,7 @@ function  createZCaisse(cloture, intervalle, mode) {
       periode: __periode,
       ca: periode.ca,
       caisses: periode.caisses,
-      caisse: periode.caisse ? periode.caisse.id : null,
+      caisse: periode.caisse ? periode.caisse.id : caisse.id,
       depenses: periode.depenses,
       editeur: __editeur,
       emission: periode.emission,
@@ -3297,7 +3297,9 @@ function _getZSynthese(zliste, type) {
 
   let __periode_debut = null;
   let __periode_fin = null;
-  let __comptage = {};
+  let __comptage = {
+    total: 0
+  };
   let __ecarts = {};
   let __prelevement = 0;
   let __ca = 0;
@@ -3355,6 +3357,7 @@ function _getZSynthese(zliste, type) {
         if (!__comptage.hasOwnProperty(moyen)) {
           __comptage[moyen] = 0;
         }
+        __comptage.total += valeur;
         __comptage[moyen] += valeur;
         __comptage[moyen] = Math.round(__comptage[moyen] * 100) / 100;
       });
@@ -3366,6 +3369,7 @@ function _getZSynthese(zliste, type) {
         if (!__comptage.hasOwnProperty(moyen)) {
           __comptage[moyen] = 0;
         }
+        __comptage.total += ventil.valeur;
         __comptage[moyen] += ventil.valeur;
         __comptage[moyen] = Math.round(__comptage[moyen] * 100) / 100;
 
