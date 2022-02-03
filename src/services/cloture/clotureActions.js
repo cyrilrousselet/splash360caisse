@@ -293,6 +293,9 @@ function  createZCaisse(cloture, intervalle, mode) {
       console.log('Z DE CAISSE #'+__zdecaisse.zId+' persisté');
       dispatch(peripheralActions.printZCaisse(__zdecaisse));
 
+
+      dispatch(testGTPeriodique(intervalle));
+
       // on génère l'archive fiscale pour une cloture auto non intermédiaire
       if (mode==="auto" && intervalle!=="intermediaire") {
         dispatch(archiveFiscale(intervalle, new Date(periode.debut), new Date(periode.fin)));
@@ -1553,128 +1556,169 @@ function testGTPeriodique(intervalle='jour') {
     let end;
 
 
-    // -------------- Grand Total Journalier (GTM) -------------- 
-    if (intervalle==="jour") {
-      // y a-t-il un GTJ pour hier ?
+    // détection des commandes "standby" et "a_encaisser" du service précédent
+    const __cmdaencaisser = await commandeServices.getCommandesList({
+      $and: [
+        {status: {$in:['standby','a_encaisser']}},
+        {createdAt:{$lt:end.getTime()}}
+      ]
+    });
+    console.log('__cmdaencaisser',__cmdaencaisser);
 
-      // si la date de test est après 5h00, le créneau de recherche correspond à [(today-1)@5h00 -> today@5h00]  
-      end = format(__today,'yyyyMMdd050000');
-
-      // si la date de test est avant 5h00, le créneau de recherche correspond à [(today-2)@5h00 -> (today-1)@5h00]
-      if (isBefore(__today, set(__today,{hours:5}))) {
-        end = format(sub(__today,{days:1}), 'yyyyMMdd050000');
-      }
+    let __canMakeGTP = true;
+    if (__cmdaencaisser.hasOwnProperty('commandeslist') && Object.values(__cmdaencaisser.commandeslist).length > 0) {
+      __canMakeGTP = false;
+    }
 
 
-      let __GTT_query = null;
+    if (__canMakeGTP) {
 
-      try {
-        // on récupère le GTJ le plus récent
-        const __lastGTJ = await clotureServices.getLastGTPeriodique("jour");
-        
-        console.log('GTJ', __lastGTJ);
+      // -------------- Grand Total Journalier (GTM) -------------- 
+      if (intervalle==="jour") {
+        // y a-t-il un GTJ pour hier ?
 
-        if (__lastGTJ.length>0) {
-          // fin de periode
-          const last_fin = parseInt(__lastGTJ[0]['ENC-GTP-ORI-NUM'].split("|")[1]);
+        // si la date de test est après 5h00, le créneau de recherche correspond à [(today-1)@5h00 -> today@5h00]  
+        end = format(__today,'yyyyMMdd050000');
 
-          console.log('fin de la période du GTJ', last_fin, parseInt(end));
-
-          // si la date de fin de la période du dernier GTJ
-          // est postérieure à la date d'aujourd'hui
-          // c'est qu'il y a ou qu'il y a eu un problème de date avec la machine
-          // on bloque l'encaissement
-          const __todayformatted = parseInt(format(__today,'yyyyMMddHHmmss'));
-          if (last_fin > __todayformatted) {
-            dispatch({ type: clotureActionTypes.DATE_ERROR, error: true });
-          }
-
-          // si la date de fin de la période du dernier GTJ 
-          // est antérieure à la date de fin du dernier service
-          if (last_fin < parseInt(end)) {
-            console.log('date de fin de la période du GTJ antérieure à la fin du dernier service');
-            // on va chercher les éventuels GTTickets créés entre les deux dates
-            __GTT_query = {
-              $expr : {
-                $and:[ 
-                  {$gte : [{$toDouble: "$ENC-GTT-HOR-GDH"} , last_fin]},
-                  {$lt : [{$toDouble: "$ENC-GTT-HOR-GDH"} , parseInt(end)]}
-                ]
-              }
-            };
-          } else {
-            console.log('date de fin de la période du GTJ n’est pas antérieure à la fin du dernier service');
-          }
+        // si la date de test est avant 5h00, le créneau de recherche correspond à [(today-2)@5h00 -> (today-1)@5h00]
+        if (isBefore(__today, set(__today,{hours:5}))) {
+          end = format(sub(__today,{days:1}), 'yyyyMMdd050000');
         }
-        // s'il n'y a pas de GTJ avant aujourd'hui
-        else {
-          console.log('pas de GTJ antérieur')
-          // on va chercher tous les GTTickets antérieurs au service d'aujourd'hui
-          __GTT_query = {$expr : {$lt : [{$toDouble :"$ENC-GTP-HOR-GDH"} , parseInt(end)]}};
-        }
-      }
-      catch(e) {
-        console.error('last GTJ ERROR', e);
-      }
 
-      // on va chercher les GTTickets si besoin
-      // et s'il y en a on crée un GTJ avec
-      if (__GTT_query) {
-        console.log('on va chercher les GTTickets', JSON.stringify(__GTT_query));
+
+        let __GTT_query = null;
+
         try {
-          const liste_GTT = await clotureServices.getGTTicket(__GTT_query);
-          console.log('liste_GTT', liste_GTT);
-          if (liste_GTT.length>0) {  
-            dispatch(createGrandTotalPeriodique('jour',liste_GTT));
+          // on récupère le GTJ le plus récent
+          const __lastGTJ = await clotureServices.getLastGTPeriodique("jour");
+          
+          console.log('GTJ', __lastGTJ);
+
+          if (__lastGTJ.length>0) {
+            // fin de periode
+            const last_fin = parseInt(__lastGTJ[0]['ENC-GTP-ORI-NUM'].split("|")[1]);
+
+            console.log('fin de la période du GTJ', last_fin, parseInt(end));
+
+            // si la date de fin de la période du dernier GTJ
+            // est postérieure à la date d'aujourd'hui
+            // c'est qu'il y a ou qu'il y a eu un problème de date avec la machine
+            // on bloque l'encaissement
+            const __todayformatted = parseInt(format(__today,'yyyyMMddHHmmss'));
+            if (last_fin > __todayformatted) {
+              dispatch({ type: clotureActionTypes.DATE_ERROR, error: true });
+            }
+
+            // si la date de fin de la période du dernier GTJ 
+            // est antérieure à la date de fin du dernier service
+            if (last_fin < parseInt(end)) {
+              console.log('date de fin de la période du GTJ antérieure à la fin du dernier service');
+              // on va chercher les éventuels GTTickets créés entre les deux dates
+              __GTT_query = {
+                $expr : {
+                  $and:[ 
+                    {$gte : [{$toDouble: "$ENC-GTT-HOR-GDH"} , last_fin]},
+                    {$lt : [{$toDouble: "$ENC-GTT-HOR-GDH"} , parseInt(end)]}
+                  ]
+                }
+              };
+            } else {
+              console.log('date de fin de la période du GTJ n’est pas antérieure à la fin du dernier service');
+            }
+          }
+          // s'il n'y a pas de GTJ avant aujourd'hui
+          else {
+            console.log('pas de GTJ antérieur')
+            // on va chercher tous les GTTickets antérieurs au service d'aujourd'hui
+            __GTT_query = {$expr : {$lt : [{$toDouble :"$ENC-GTP-HOR-GDH"} , parseInt(end)]}};
           }
         }
         catch(e) {
-          console.error('liste GTT ERROR', e);
+          console.error('last GTJ ERROR', e);
         }
-      } 
-      // si on n'a besoin de créer de GTJ
-      else {
-        // on va tester l'intervalle plus grand ("mois")
-        dispatch(testGTPeriodique('mois'));
+
+        // on va chercher les GTTickets si besoin
+        // et s'il y en a on crée un GTJ avec
+        if (__GTT_query) {
+          console.log('on va chercher les GTTickets', JSON.stringify(__GTT_query));
+          try {
+            const liste_GTT = await clotureServices.getGTTicket(__GTT_query);
+            console.log('liste_GTT', liste_GTT);
+            if (liste_GTT.length>0) {  
+              dispatch(createGrandTotalPeriodique('jour',liste_GTT));
+            }
+          }
+          catch(e) {
+            console.error('liste GTT ERROR', e);
+          }
+        } 
+        // si on n'a besoin de créer de GTJ
+        else {
+          // on va tester l'intervalle plus grand ("mois")
+          dispatch(testGTPeriodique('mois'));
+        }
       }
-    }
-    // -------------- Grand Total Mensuel (GTM) -------------- 
-    else if (intervalle==="mois") {
-      // y a-t-il un GTM pour le mois dernier ?
-      end = format(set(__today,{date:1}), 'yyyyMMdd050000');
+      // -------------- Grand Total Mensuel (GTM) -------------- 
+      else if (intervalle==="mois") {
+        // y a-t-il un GTM pour le mois dernier ?
+        end = format(set(__today,{date:1}), 'yyyyMMdd050000');
 
-      let __GTJ_query = null;
+        let __GTJ_query = null;
 
-      try {
-        // on récupère le GTM le plus récent
-        const __lastGTM = await clotureServices.getLastGTPeriodique("mois");
+        try {
+          // on récupère le GTM le plus récent
+          const __lastGTM = await clotureServices.getLastGTPeriodique("mois");
 
-        console.log('GTM', __lastGTM);
+          console.log('GTM', __lastGTM);
 
-        if (__lastGTM.length>0) {
-          // fin de periode
-          const last_fin = parseInt(__lastGTM[0]['ENC-GTP-ORI-NUM'].split("|")[1]);
+          if (__lastGTM.length>0) {
+            // fin de periode
+            const last_fin = parseInt(__lastGTM[0]['ENC-GTP-ORI-NUM'].split("|")[1]);
 
-          console.log('fin de la période du GTM', last_fin, parseInt(end));
+            console.log('fin de la période du GTM', last_fin, parseInt(end));
 
-          // si la date de fin de la période du dernier GTM 
-          // est antérieure à la date de fin du dernier mois
-          if (last_fin < parseInt(end)) {
-            console.log('date de fin de la période du GTM antérieure à la fin du dernier mois');
-            // on va chercher les éventuels GTJ créés entre les deux dates
+            // si la date de fin de la période du dernier GTM 
+            // est antérieure à la date de fin du dernier mois
+            if (last_fin < parseInt(end)) {
+              console.log('date de fin de la période du GTM antérieure à la fin du dernier mois');
+              // on va chercher les éventuels GTJ créés entre les deux dates
+              __GTJ_query = {
+                $expr : {
+                  $and:[ 
+                    {$eq:["$gttype", "jour"]},
+                    {$gt : [
+                      {$toDouble: 
+                        {$arrayElemAt:[
+                          {$split:["$ENC-GTP-ORI-NUM","|"]}, 
+                          1
+                        ]}
+                      },
+                      last_fin
+                    ]},
+                    {$lt : [
+                      {$toDouble: 
+                        {$arrayElemAt:[
+                          {$split:["$ENC-GTP-ORI-NUM","|"]}, 
+                          1
+                        ]}
+                      }, 
+                      parseInt(end)
+                    ]}
+                  ]
+                }
+              };
+            } else {
+              console.log('date de fin de la période du GTM n’est pas antérieure à la fin du dernier mois');
+            }
+          }
+          // s'il n'y a pas de GTM avant aujourd'hui
+          else {
+            console.log('pas de GTM antérieur')
+            // on va chercher tous les GTJ antérieurs au mois actuel
             __GTJ_query = {
               $expr : {
                 $and:[ 
                   {$eq:["$gttype", "jour"]},
-                  {$gt : [
-                    {$toDouble: 
-                      {$arrayElemAt:[
-                        {$split:["$ENC-GTP-ORI-NUM","|"]}, 
-                        1
-                      ]}
-                    },
-                    last_fin
-                  ]},
                   {$lt : [
                     {$toDouble: 
                       {$arrayElemAt:[
@@ -1687,93 +1731,93 @@ function testGTPeriodique(intervalle='jour') {
                 ]
               }
             };
-          } else {
-            console.log('date de fin de la période du GTM n’est pas antérieure à la fin du dernier mois');
           }
+
+        } catch(e) {
+          console.error('last GTM ERROR', e);
         }
-        // s'il n'y a pas de GTM avant aujourd'hui
-        else {
-          console.log('pas de GTM antérieur')
-          // on va chercher tous les GTJ antérieurs au mois actuel
-          __GTJ_query = {
-            $expr : {
-              $and:[ 
-                {$eq:["$gttype", "jour"]},
-                {$lt : [
-                  {$toDouble: 
-                    {$arrayElemAt:[
-                      {$split:["$ENC-GTP-ORI-NUM","|"]}, 
-                      1
-                    ]}
-                  }, 
-                  parseInt(end)
-                ]}
-              ]
+
+        // on va chercher les GTJ si besoin
+        // et s'il y en a on crée un GTM avec
+        if (__GTJ_query) {
+          console.log('on va chercher les GTJ', __GTJ_query);
+          try {
+            const liste_GTJ = await clotureServices.getGTPeriodique(__GTJ_query);
+            if (liste_GTJ.length>0) {
+              dispatch(createGrandTotalPeriodique('mois',liste_GTJ));
             }
-          };
-        }
-
-      } catch(e) {
-        console.error('last GTM ERROR', e);
-      }
-
-      // on va chercher les GTJ si besoin
-      // et s'il y en a on crée un GTM avec
-      if (__GTJ_query) {
-        console.log('on va chercher les GTJ', __GTJ_query);
-        try {
-          const liste_GTJ = await clotureServices.getGTPeriodique(__GTJ_query);
-          if (liste_GTJ.length>0) {
-            dispatch(createGrandTotalPeriodique('mois',liste_GTJ));
+          }
+          catch(e) {
+            console.error('liste GTJ ERROR', e);
           }
         }
-        catch(e) {
-          console.error('liste GTJ ERROR', e);
+        // si on n'a aucun GTM à créer
+        else {
+          // on va tester l'intervalle plus grand ("année")
+          dispatch(testGTPeriodique('annee'));
         }
       }
-      // si on n'a aucun GTM à créer
-      else {
-        // on va tester l'intervalle plus grand ("année")
-        dispatch(testGTPeriodique('annee'));
-      }
-    }
-    // -------------- Grand Total Annuel (GTA) -------------- 
-    else if (intervalle==="annee") {
-      // y a-t-il un GTA pour l'année dernière ?
-      end = format(set(__today,{month:0}), 'yyyyMMdd050000');
+      // -------------- Grand Total Annuel (GTA) -------------- 
+      else if (intervalle==="annee") {
+        // y a-t-il un GTA pour l'année dernière ?
+        end = format(set(__today,{month:0}), 'yyyyMMdd050000');
 
-      let __GTM_query = null;
+        let __GTM_query = null;
 
-      try {
-        // on récupère le GTA le plus récent
-        const __lastGTA = await clotureServices.getLastGTPeriodique("annee");
+        try {
+          // on récupère le GTA le plus récent
+          const __lastGTA = await clotureServices.getLastGTPeriodique("annee");
 
-        console.log('GTA', __lastGTA);
+          console.log('GTA', __lastGTA);
 
-        if (__lastGTA.length>0) {
-          // fin de periode
-          const last_fin = parseInt(__lastGTA[0]['ENC-GTP-ORI-NUM'].split("|")[1]);
+          if (__lastGTA.length>0) {
+            // fin de periode
+            const last_fin = parseInt(__lastGTA[0]['ENC-GTP-ORI-NUM'].split("|")[1]);
 
-          console.log('fin de la période du GTA', last_fin, parseInt(end));
+            console.log('fin de la période du GTA', last_fin, parseInt(end));
 
-          // si la date de fin de la période du dernier GTA 
-          // est antérieure à la date de fin de la dernière année
-          if (last_fin < parseInt(end)) {
-            console.log('date de fin de la période du GTA antérieure à la fin du dernier mois');
-            // on va chercher les éventuels GTM créés entre les deux dates
+            // si la date de fin de la période du dernier GTA 
+            // est antérieure à la date de fin de la dernière année
+            if (last_fin < parseInt(end)) {
+              console.log('date de fin de la période du GTA antérieure à la fin du dernier mois');
+              // on va chercher les éventuels GTM créés entre les deux dates
+              __GTM_query = {
+                $expr : {
+                  $and:[ 
+                    {$eq:["$gttype", "mois"]},
+                    {$gt : [
+                      {$toDouble: 
+                        {$arrayElemAt:[
+                          {$split:["$ENC-GTP-ORI-NUM","|"]}, 
+                          1
+                        ]}
+                      },
+                      last_fin
+                    ]},
+                    {$lt : [
+                      {$toDouble: 
+                        {$arrayElemAt:[
+                          {$split:["$ENC-GTP-ORI-NUM","|"]}, 
+                          1
+                        ]}
+                      }, 
+                      parseInt(end)
+                    ]}
+                  ]
+                }
+              };
+            } else {
+              console.log('date de fin de la période du GTA n’est pas antérieure à la fin de la dernière année');
+            }
+          }
+          // s'il n'y a pas de GTA avant cette année
+          else {
+            console.log('pas de GTA antérieur')
+            // on va chercher tous les GTM antérieurs à l'année actuelle
             __GTM_query = {
               $expr : {
                 $and:[ 
                   {$eq:["$gttype", "mois"]},
-                  {$gt : [
-                    {$toDouble: 
-                      {$arrayElemAt:[
-                        {$split:["$ENC-GTP-ORI-NUM","|"]}, 
-                        1
-                      ]}
-                    },
-                    last_fin
-                  ]},
                   {$lt : [
                     {$toDouble: 
                       {$arrayElemAt:[
@@ -1786,50 +1830,30 @@ function testGTPeriodique(intervalle='jour') {
                 ]
               }
             };
-          } else {
-            console.log('date de fin de la période du GTA n’est pas antérieure à la fin de la dernière année');
           }
+
+        } catch(e) {
+          console.error('last GTA ERROR', e);
         }
-        // s'il n'y a pas de GTA avant cette année
-        else {
-          console.log('pas de GTA antérieur')
-          // on va chercher tous les GTM antérieurs à l'année actuelle
-          __GTM_query = {
-            $expr : {
-              $and:[ 
-                {$eq:["$gttype", "mois"]},
-                {$lt : [
-                  {$toDouble: 
-                    {$arrayElemAt:[
-                      {$split:["$ENC-GTP-ORI-NUM","|"]}, 
-                      1
-                    ]}
-                  }, 
-                  parseInt(end)
-                ]}
-              ]
+
+        // on va chercher les GTM si besoin
+        // et s'il y en a on crée un GTA avec
+        if (__GTM_query) {
+          console.log('on va chercher les GTM', __GTM_query);
+          try {
+            const liste_GTM = await clotureServices.getGTPeriodique(__GTM_query);
+            if (liste_GTM.length>0) {
+              dispatch(createGrandTotalPeriodique('annee',liste_GTM));
             }
-          };
-        }
-
-      } catch(e) {
-        console.error('last GTA ERROR', e);
-      }
-
-      // on va chercher les GTM si besoin
-      // et s'il y en a on crée un GTA avec
-      if (__GTM_query) {
-        console.log('on va chercher les GTM', __GTM_query);
-        try {
-          const liste_GTM = await clotureServices.getGTPeriodique(__GTM_query);
-          if (liste_GTM.length>0) {
-            dispatch(createGrandTotalPeriodique('annee',liste_GTM));
+          }
+          catch(e) {
+            console.error('liste GTM ERROR', e);
           }
         }
-        catch(e) {
-          console.error('liste GTM ERROR', e);
-        }
       }
+
+    } else {
+      console.warn('GTPériodique impossible car il reste des commandes à encaisser');
     }
   }
 }
