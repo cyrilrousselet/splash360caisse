@@ -1556,10 +1556,18 @@ function testGTPeriodique(intervalle='jour') {
     let end;
 
 
+    // si la date de test est après 5h00, le créneau de recherche correspond à [(today-1)@5h00 -> today@5h00]  
+    end = format(__today,'yyyyMMdd050000');
+
+    // si la date de test est avant 5h00, le créneau de recherche correspond à [(today-2)@5h00 -> (today-1)@5h00]
+    if (isBefore(__today, set(__today,{hours:5}))) {
+      end = format(sub(__today,{days:1}), 'yyyyMMdd050000');
+    }
+
     // détection des commandes "standby" et "a_encaisser" du service précédent
     const __cmdaencaisser = await commandeServices.getCommandesList({
       $and: [
-        {status: {$in:['standby','a_encaisser']}},
+        {status: {$in:['a_encaisser']}},
         {createdAt:{$lt:end.getTime()}}
       ]
     });
@@ -1577,13 +1585,7 @@ function testGTPeriodique(intervalle='jour') {
       if (intervalle==="jour") {
         // y a-t-il un GTJ pour hier ?
 
-        // si la date de test est après 5h00, le créneau de recherche correspond à [(today-1)@5h00 -> today@5h00]  
-        end = format(__today,'yyyyMMdd050000');
-
-        // si la date de test est avant 5h00, le créneau de recherche correspond à [(today-2)@5h00 -> (today-1)@5h00]
-        if (isBefore(__today, set(__today,{hours:5}))) {
-          end = format(sub(__today,{days:1}), 'yyyyMMdd050000');
-        }
+        
 
 
         let __GTT_query = null;
