@@ -1540,8 +1540,11 @@ function createGrandTotalPeriodique(intervalle, grandstotaux) {
         dispatch(testGTPeriodique('annee'));
       }
       if (intervalle!=='intermediaire') {
+        const af_debut = new Date(__start_str.substring(0,4)+"-"+__start_str.substring(4,6)+"-"+__start_str.substring(6,8)+' '+__start_str.substring(8,10)+':'+__start_str.substring(10,12)+':'+__start_str.substring(12,14));
+        const af_fin = new Date(__end_str.substring(0,4)+"-"+__end_str.substring(4,6)+"-"+__end_str.substring(6,8)+' '+__end_str.substring(8,10)+':'+__end_str.substring(10,12)+':'+__end_str.substring(12,14));
+
         // on génère l'archive fiscale pour une cloture auto non intermédiaire
-        dispatch(archiveFiscale(intervalle, new Date(__start), new Date(__end)));
+        dispatch(archiveFiscale(intervalle, af_debut, af_fin));
       }
     }
     catch(e) {
@@ -2291,6 +2294,8 @@ function archiveFiscale(intervalle, debut, fin) {
       [`EMETTEUR:`],
       [` - ENSEIGNE: ${entreprise.enseigne}`],
       [` - DENOMINATION: ${entreprise.denomination}`],
+      [` - STATUT JURIDIQUE: ${entreprise.statut_juridique}`],
+      [` - CAPITAL SOCIAL: ${entreprise.capital_social} €`],
       [` - ADRESSE: ${entreprise.adresse}`],
       [` - CODE POSTAL: ${entreprise.code_postal}`],
       [` - VILLE: ${entreprise.ville}`],
@@ -3388,7 +3393,9 @@ function _getZSynthese(zliste, type) {
         if (!__comptage.hasOwnProperty(moyen)) {
           __comptage[moyen] = 0;
         }
-        __comptage.total += valeur;
+        if (moyen!=='total') {
+          __comptage.total += valeur;
+        }
         __comptage[moyen] += valeur;
         __comptage[moyen] = Math.round(__comptage[moyen] * 100) / 100;
       });
@@ -3400,7 +3407,9 @@ function _getZSynthese(zliste, type) {
         if (!__comptage.hasOwnProperty(moyen)) {
           __comptage[moyen] = 0;
         }
-        __comptage.total += ventil.valeur;
+        if (moyen!=='total') {
+          __comptage.total += ventil.valeur;
+        }
         __comptage[moyen] += ventil.valeur;
         __comptage[moyen] = Math.round(__comptage[moyen] * 100) / 100;
 
