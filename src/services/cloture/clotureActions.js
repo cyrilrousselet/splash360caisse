@@ -294,7 +294,6 @@ function  createZCaisse(cloture, intervalle, mode) {
       dispatch(peripheralActions.printZCaisse(__zdecaisse));
 
 
-      dispatch(testGTPeriodique(intervalle));
 
       // on génère l'archive fiscale pour une cloture auto non intermédiaire
       // if (mode==="auto" && intervalle!=="intermediaire") {
@@ -308,12 +307,21 @@ function  createZCaisse(cloture, intervalle, mode) {
       dispatch( signatureActions.updateNumerotation('zdecaisse', zdecaisse+1) );
 
       if (mode==="auto") {
+        
         if (intervalle==="intermediaire") {
+          
           dispatch(testZCaisse('jour'));
+
         } else if (intervalle==="jour") {
+
+          dispatch(testGTPeriodique(intervalle));
           dispatch(testZCaisse('mois'));
+
         } else if (intervalle==="mois") {
+
+          dispatch(testGTPeriodique(intervalle));
           dispatch(testZCaisse('annee'));
+
         }
       }
     }
@@ -1589,7 +1597,7 @@ function testGTPeriodique(intervalle='jour') {
 
     if (__canMakeGTP) {
 
-      // -------------- Grand Total Journalier (GTM) -------------- 
+      // -------------- Grand Total Journalier (GTM) --------------`
       if (intervalle==="jour") {
         // y a-t-il un GTJ pour hier ?
 
@@ -1860,6 +1868,9 @@ function testGTPeriodique(intervalle='jour') {
             console.error('liste GTM ERROR', e);
           }
         }
+      }
+      else {
+        console.log("Pour l'intervalle 'intermédiaire', on ne génère pas de GTP, ")
       }
 
     } else {
@@ -2372,7 +2383,7 @@ function archiveFiscale(intervalle, debut, fin) {
 async function _getArchiveGTPeriodiques(intervalle, start, end) {
 
 
-  let gtperiode = ["jour","intermediaire"];
+  let gtperiode = ["jour"];
   if (intervalle==='mois') gtperiode = ["jour","mois"];
   if (intervalle==='annee') gtperiode = ["annee","mois"];
 
