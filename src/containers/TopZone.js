@@ -27,7 +27,7 @@ const mapStateToProps = (state) => {
   return {
     cashname: state.parametresReducer.parametres.options?.caisse?.nom,
     username: state.authentication.user.nom,
-    userid: state.authentication.user.id,
+    userid: state.authentication.user.user_id,
     homename: strings.dashboard.nom,
   };
 };

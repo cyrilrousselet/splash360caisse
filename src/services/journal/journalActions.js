@@ -81,13 +81,13 @@ function log(code, description="") {
     };
 
     let signature = '';
-    let hmac = '';
-    let source = '';
+    // let hmac = '';
+    // let source = '';
     if (caisse) {
       const js = signatureServices.createJETSignature({...__evt, caisse: caisse}, key, lastSignature);
       signature = js.signature;
-      hmac = js.hmac;
-      source = js.source;
+      // hmac = js.hmac;
+      // source = js.source;
     }
  
     // console.log(__evtid+' source : ',source);
@@ -259,7 +259,7 @@ function check(type) {
           // on teste l'intégrité uniquement si les deux événements ont la même clé de chiffrement
           if (prevTrousseau === evt['JET-TAG-ID-KEY']) {
             
-            const { source, hmac, signature } = signatureServices.createJETSignature({...evt, caisse: caisse}, key, prevSign); 
+            const { source, signature } = signatureServices.createJETSignature({...evt, caisse: caisse}, key, prevSign); 
             if (signature !== evt['JET-TAG-SIG']) {
               integ_error = true;
               console.log("EVT SRC",source)

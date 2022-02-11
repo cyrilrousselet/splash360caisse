@@ -38,7 +38,7 @@ import { peripheralActions } from './services/peripheral/peripheralActions';
 import { journalActions } from './services/journal/journalActions';
 // import { signatureServices } from './services/signature/signatureServices';
 // import { signatureActionTypes } from './services/signature/signatureActionTypes';
-import { signatureActions } from './services/signature/signatureActions';
+// import { signatureActions } from './services/signature/signatureActions';
 // import { evenements } from './constants/evenements';
 
 if (!isDev) {

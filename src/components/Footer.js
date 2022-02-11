@@ -2,9 +2,9 @@ import React from 'react';
 import LocalizedStrings from 'react-localization';
 import { data } from '../constants/translations';
 import packageJson from './../../package.json';
-import moment from 'moment';
-import frLocale from "moment/locale/fr";
+import frLocale from "date-fns/locale/fr";
 import {withRouter} from 'react-router-dom';
+import { format } from 'date-fns';
 
 
 let strings = new LocalizedStrings(data);
@@ -58,8 +58,6 @@ class Footer extends React.Component {
 
         const {online, status, expiredate, toggleMode, integrite_error, sequence_error} = this.props;
 
-        const expDate = moment(expiredate).locale('fr', [frLocale]);
-
         return (
           <div className={`Footer${(integrite_error ? ' integrite-error' : '')}${(sequence_error ? ' sequence-error' : '')}`}>
             <div className={ `connexion ${online} ${status}` }>
@@ -71,7 +69,7 @@ class Footer extends React.Component {
                 <div className="top">
                     <p>Statut : {status !=="authorized" ? "bloqué" : "activé"}</p>
                     <p>Connexion : { online === 'on' ? strings.footer.online : strings.footer.offline }</p>
-                    {expiredate != null && <p>La caisse sera définitivement bloquée le : {expDate.format("LLL")}</p>}
+                    {expiredate != null && <p>La caisse sera définitivement bloquée le : {format(new Date(expiredate), "d MMM yyyy à HH:mm", { locale: frLocale })}</p>}
                     {(integrite_error || sequence_error) && <p><b>Contactez le support technique</b></p> }
                 </div>
                 

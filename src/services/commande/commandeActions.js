@@ -1542,7 +1542,7 @@ function deleteCommande(payload) {
 
     const { commandeslist } = getState().commandesListReducer;
 
-    const { caisse, role } = getState().parametresReducer.parametres.options;
+    const { caisse } = getState().parametresReducer.parametres.options;
     const { user } = getState().authentication;
     const { ticket } = getState().numerotationReducer;
     const { privateKey, trousseauId } = getState().signatureReducer;
@@ -1574,7 +1574,7 @@ function deleteCommande(payload) {
         if (commande.status==='a_encaisser') {
           try {
             const lastnote = last(commande.note.split('|'));
-            const note = await commandeServices.getNote({'ENC-TIK-NUM': lastnote});
+            // const note = await commandeServices.getNote({'ENC-TIK-NUM': lastnote});
 
             const lastSignatureTicket = await signatureServices.getLastSignature('tickets');
             const newTicket = 'T'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + ticket.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});

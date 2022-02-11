@@ -37,7 +37,7 @@ function createWindow() {
       if (process.platform === 'darwin') {
         try {
           BrowserWindow.addDevToolsExtension(
-              path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions/lmhkpmbekcpmknklioeibfkpmmfibljd/3.0.6_0')
+              path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions/lmhkpmbekcpmknklioeibfkpmmfibljd/3.0.9_0')
           );
         } catch(e) {
           log.warn('pbm devtool darwin');

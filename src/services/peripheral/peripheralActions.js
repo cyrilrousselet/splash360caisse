@@ -21,7 +21,7 @@ import { last, lowerCase } from 'lodash';
 import logger from '../../helpers/Logger';
 import { commandeServices } from '../commande/commandeServices';
 import { journalActions } from '../journal/journalActions';
-import { log } from 'winston';
+// import { log } from 'winston';
 // const logger = new Logger();
 const removeDiacritics = remove;
 const strings = new LocalizedStrings(data);
@@ -698,8 +698,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
           // const cmdTva = {};
           let articles = [];
-          let total = 0;
-          let articletotal = 0;
+          // let total = 0;
+          // let articletotal = 0;
           let __comment = null;
           let __modificateur = null;
           cmd.items.forEach(article => {
@@ -708,8 +708,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             // const artTva = {};
             let articleIngredients = [];
             // articletotal = article.quantite * article.prix;
-            articletotal = Number(article.pu) * article.quantite;
-            let articleRemise = 0;
+            // articletotal = Number(article.pu) * article.quantite;
+            // let articleRemise = 0;
 
             article.ingredients.forEach((ing,i) => {
 
@@ -736,7 +736,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               const ligne_i = piece['LIGNES'].find(l => l['ENC-TIK-ORI-NUM']===article.itemid+'-'+i);
               // let artIngTva = ing.tva;
 
-              articletotal += Number(ligne_i['ENC-TIK-LIG-PRO-TTC'] / 100) * ligne_i['ENC-TIK-LIG-PRO-QTE'];
+              // articletotal += Number(ligne_i['ENC-TIK-LIG-PRO-TTC'] / 100) * ligne_i['ENC-TIK-LIG-PRO-QTE'];
               
               console.log('ligne_i', ligne_i, ing.ingredient);
 
@@ -760,7 +760,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
                   // comment: __comment ? removeDiacritics(__comment.texte) : '',
                   // modificateur: __modificateur ? __modificateur.valeur: 0
                 });
-                articleRemise += Number(ligne_i['ENC-TIK-LIG-REM-TOT']);
+                // articleRemise += Number(ligne_i['ENC-TIK-LIG-REM-TOT']);
               }
 
 
@@ -909,7 +909,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
             // logger.info('iht','(Number('+article.pu+')*'+article.quantite+') / (1 + Number('+article.tva.valeur +'))');
             // logger.info(JSON.stringify(cmdTva));
-            total += articletotal;
+            // total += articletotal;
           });
           
           

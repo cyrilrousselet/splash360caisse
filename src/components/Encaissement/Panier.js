@@ -990,7 +990,7 @@ class Panier extends React.Component {
   calculateTotal(items, modificateurs) {
     let __total = 0;
 
-    let __totalht = 0;
+    // let __totalht = 0;
 
 
     if (undefined!==items) {

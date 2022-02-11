@@ -80,18 +80,18 @@ const { combine, timestamp, printf, colorize, label } = format;
 
 // const {store} = configureStore();
 
-const LEVELS = [ 
-  "error", 
-  "warn",
-  "help",
-  "data",
-  "info",
-  "debug",
-  "prompt",
-  "verbose",
-  "input",
-  "silly"
-];
+// const LEVELS = [ 
+//   "error", 
+//   "warn",
+//   "help",
+//   "data",
+//   "info",
+//   "debug",
+//   "prompt",
+//   "verbose",
+//   "input",
+//   "silly"
+// ];
 
 const checkDirectorySync = (directory) => {  
   try {

@@ -468,7 +468,6 @@ function makeCloture(params={}) {
 
             console.log('cloture sauvegardée, on lance le ZdC intermédiaire');
 
-            // dispatch(createZCaisse(cloture, (params.type==="auto" ? 'jour':'intermediaire'), params.type));
             dispatch(createZCaisse(cloture, 'intermediaire', params.type));
             dispatch({ type: clotureActionTypes.CHECK_NOCOMPLETED_COMMANDS, blocage: false});
             
@@ -1543,7 +1542,8 @@ function createGrandTotalPeriodique(intervalle, grandstotaux) {
     // };
 
     try {
-      const confirm = await clotureServices.persistGTPeriodique(__grandtotalperiodique);
+      // const confirm = await clotureServices.persistGTPeriodique(__grandtotalperiodique);
+      await clotureServices.persistGTPeriodique(__grandtotalperiodique);
       dispatch({ type: clotureActionTypes.PERSIST_GTPERIODIQUE_SUCCESS, gtp: __grandtotalperiodique });
 
       dispatch(journalActions.log('160', `Grand Total Periodique (${intervalle}) #${__grandtotalperiodique['ENC-GTP-ORI-NID']}`));
@@ -1965,7 +1965,7 @@ function archiveFiscale(intervalle, debut, fin) {
       __periode = format(debut, 'yyyyMM')
     }
 
-    let fileNameRad = `${format(new Date(), 'yyMMddHHmmss')}_FA${__int}-${__periode}`;
+    let fileNameRad = `${format(new Date(), 'yyMMddHHmmss')}_AF${__int}-${__periode}`;
 
     let fileName = fileNameRad+'.zip';
 
@@ -3417,29 +3417,27 @@ function _getZSynthese(zliste, type) {
     
     if (z.hasOwnProperty('comptage')) {
       Object.entries(z.comptage).forEach(([moyen,valeur])=> {
-        if (!__comptage.hasOwnProperty(moyen)) {
-          __comptage[moyen] = 0;
-        }
         if (moyen!=='total') {
+          if (!__comptage.hasOwnProperty(moyen)) {
+            __comptage[moyen] = 0;
+          }
           __comptage.total += valeur;
+          __comptage[moyen] += valeur;
+          __comptage[moyen] = Math.round(__comptage[moyen] * 100) / 100;
         }
-        __comptage[moyen] += valeur;
-        __comptage[moyen] = Math.round(__comptage[moyen] * 100) / 100;
       });
     } 
     // s'il n'y a pas de comptage, on prend la ventilation comme comptage
     else {
       Object.entries(z.ventilation.moyen).forEach(([moyen,ventil])=> {
-
-        if (!__comptage.hasOwnProperty(moyen)) {
-          __comptage[moyen] = 0;
-        }
         if (moyen!=='total') {
+          if (!__comptage.hasOwnProperty(moyen)) {
+            __comptage[moyen] = 0;
+          }
           __comptage.total += ventil.valeur;
+          __comptage[moyen] += ventil.valeur;
+          __comptage[moyen] = Math.round(__comptage[moyen] * 100) / 100;
         }
-        __comptage[moyen] += ventil.valeur;
-        __comptage[moyen] = Math.round(__comptage[moyen] * 100) / 100;
-
       });
     }
 

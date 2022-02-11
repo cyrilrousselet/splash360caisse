@@ -51,23 +51,23 @@ const _checkDirectorySync = (directory) => {
 }
 
 
-async function _createKeyPair() {
+// async function _createKeyPair() {
   
-  return new Promise((resolve, reject) => {
-    crypto.generateKeyPair('rsa', {
-      modulusLength: 2048,
-      publicKeyEncoding: { type: 'spki', format: 'pem' },
-      privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
-    },
-    (err, publicKey, privateKey) => {
-      if(err) {
-        return reject(err);
-      }
-      resolve({privateKey, publicKey});
-    });
-  });
+//   return new Promise((resolve, reject) => {
+//     crypto.generateKeyPair('rsa', {
+//       modulusLength: 2048,
+//       publicKeyEncoding: { type: 'spki', format: 'pem' },
+//       privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
+//     },
+//     (err, publicKey, privateKey) => {
+//       if(err) {
+//         return reject(err);
+//       }
+//       resolve({privateKey, publicKey});
+//     });
+//   });
 
-}
+// }
 
 async function writeTrousseau(trousseau) {
   _checkDirectorySync(`${app.getPath('userData')}/cert`);
