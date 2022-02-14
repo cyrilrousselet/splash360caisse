@@ -609,8 +609,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
     if (undefined!==cmd.createdAt) {
       __createdAt = parseJSON(cmd.createdAt);
     }
-    const date = format(__createdAt, "d MMM yyyy", { locale: frLocale });
-    const heure = format(__createdAt, "H:mm:ss");
+    let date = format(__createdAt, "d MMM yyyy", { locale: frLocale });
+    let heure = format(__createdAt, "H:mm:ss");
 
     let contenu = {};
     let target_imprimantes = [];
@@ -977,10 +977,15 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           }
 
 
+
+          const __gdh = piece['ENC-TIK-HOR-GDH']
+          const __datetime = new Date(__gdh.substring(0,4)+"-"+__gdh.substring(4,6)+"-"+__gdh.substring(6,8)+' '+__gdh.substring(8,10)+':'+__gdh.substring(10,12)+':'+__gdh.substring(12,14)); 
+          const __datestr = `${format(__datetime, "d MMM yyyy", { locale: frLocale })} à ${format(__datetime, "H:mm:ss")}`;
+
           const commande = {
             numero: cmdnumero,
             id: cmd.ticketId,
-            date: removeDiacritics(`${date} à ${heure}`),
+            date: removeDiacritics(__datestr),
             articles: articles,
             total: {
               total: Number(piece['ENC-TIK-TOT-TTC'] / 100).toFixed(2),
@@ -1087,7 +1092,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               duplicatasignature: _dupli_sign,
               duplicatagdh: _dupli_gdh,
               printid: _numPrint,
-              date: `${date} - ${heure}`
+              date: __datestr.replace('à','-')
             },
             nomticket: ticket.nom,
             strings: {commande: strings.tickets.commande, uber: strings.tickets.uber},

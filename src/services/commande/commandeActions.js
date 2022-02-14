@@ -377,19 +377,24 @@ function confirmCommande(_payload, printTemplates) {
           }
 
 
-          const __ticketData = _createTicket(confirm, {
-            newTicket,
-            entreprise,
-            user,
-            vendeur: user,
-            caisse,
-            signature: signatureTicket.signature,
-            trousseauId,
-            hash: signatureTicket.hash,
-            source: signatureTicket.source,
-            operation: modifreglement ? 'MODIFICATION' : 'VENTE',
-            prevticket: modifreglement ? prevticket : null
-          });
+          const __ticketData = _createTicket(
+            {...confirm, 
+              createdAt: new Date() 
+            }, 
+            {
+              newTicket,
+              entreprise,
+              user,
+              vendeur: user,
+              caisse,
+              signature: signatureTicket.signature,
+              trousseauId,
+              hash: signatureTicket.hash,
+              source: signatureTicket.source,
+              operation: modifreglement ? 'MODIFICATION' : 'VENTE',
+              prevticket: modifreglement ? prevticket : null
+            }
+          );
 
           await commandeServices.persistTicket(__ticketData);
           dispatch(journalActions.log('160','Ticket #'+newTicket));
@@ -1585,7 +1590,8 @@ function deleteCommande(payload) {
               ticket: newTicket,
               hashsource: signatureTicket.source,
               hash: signatureTicket.hash,
-              signature: signatureTicket.signature
+              signature: signatureTicket.signature,
+              createdAt: new Date()
             }
 
 
