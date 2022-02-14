@@ -1078,7 +1078,7 @@ function _getVentilationTva(commande, cataloguetva) {
   // let __cmdsoustotal_ht = 0;
   let __cmdsoustotal_ttc = 0;
 
-
+console.log('🔅 PREMIERE PASSE');
   // PREMIERE PASSE : ON CALCULE LE SOUS-TOTAL DE LA COMMANDE
   // on boucle sur les items
   __cmd.items.forEach(itm => {
@@ -1086,19 +1086,28 @@ function _getVentilationTva(commande, cataloguetva) {
     let __ttcitm = itm.pu * itm.quantite;
     if (!__cmd.centimes) __ttcitm = Math.round(__ttcitm * 100);
 
-    let __htitm = itm.puht * itm.quantite;
-    if (!__cmd.centimes) __htitm = Math.round(__htitm * 100);
+
+    // on déduit le prix HT à partir du TTC et du taux de TVA
+    let __tvaitm = Number(itm.tva.valeur);
+    // let __htitm = itm.puht * itm.quantite;
+    let __htitm = (itm.pu /( 1 + __tvaitm)) * itm.quantite;
+    // if (!__cmd.centimes) __htitm = Math.round(__htitm * 100);
+    if (!__cmd.centimes) __htitm = __htitm * 100;
+
+    console.log('🔅 montant item',__ttcitm, __htitm);
 
     let __ttcing = 0;
 
     // on boucle sur le prix TTC des ingrédients
     itm.ingredients.forEach(ing => {
-      __ttcing += (!__cmd.centimes) ? Math.round(ing.supplement * 100) : ing.supplement;
+      // __ttcing += (!__cmd.centimes) ? Math.round(ing.supplement * 100) : ing.supplement;
+      __ttcing += (!__cmd.centimes) ? ing.supplement * 100 : ing.supplement;
     });
 
     // on obtient le soustotal ttc de l'item
     let __sttcitm = __ttcitm + __ttcing;
     __basecmd += __sttcitm;
+    console.log('🔅 sous-total',__sttcitm);
 
 
     let __modcoef = 0;
@@ -1117,6 +1126,7 @@ function _getVentilationTva(commande, cataloguetva) {
         // à partir du montant TTC de l'item + ses ingrédients
         __modcoef = (val * 100) / __sttcitm;
       }
+      console.log('🔅 modificateur pour item', moditm.valeur, __modcoef);
     }
         
     // on applique ensuite ce coef sur le HT de l'item et des ingrédients
@@ -1125,15 +1135,19 @@ function _getVentilationTva(commande, cataloguetva) {
     // et on calcule le TTC
     const __tx = Number(itm.tva.valeur);
     let __modttcitm = __modcoef>0 ? __modhtitm * (1 + __tx) : __ttcitm;  // <- TTC de l'item (avec remise)
+    console.log('🔅 application du coef sur le HT puis TTC',__modhtitm, __modttcitm);
 
     // let __modhting = 0; // <- HT des ingrédients de l'item
     let __modttcing = 0;  // <- TTC des ingrédients de l'item
     itm.ingredients.forEach(ing => {
-      const __hi = Math.round(ing.supplementht * 100);
       const __itx = Number(ing.tva.valeur);
+      // const __hi = Math.round(ing.supplementht * 100);
+      const __hi = (ing.supplement / (1 + __itx)) * 100;  // <- HT de l'ingrédient (à partir du TTC)
       const __him = __modcoef>0 ? (__hi - (__hi * __modcoef)) : __hi;  // <- HT de l'ingrédient (avec remise)
       const __ti = __modcoef>0 ? __him * (1 + __itx) : Math.round(ing.supplement * 100); // <- TTC de l'ingrédient (avec remise)
       // __modhting += __him;
+      console.log('🔅 ING :',__hi, __ti);
+
       __modttcitm += __ti;
     });
 
@@ -1145,7 +1159,8 @@ function _getVentilationTva(commande, cataloguetva) {
     }
       
     // on compile les données HT et TTC
-    __cmdsoustotal_ttc += Math.round(__modttcitm + __modttcing);
+    __cmdsoustotal_ttc += __modttcitm + __modttcing;
+    console.log('🔅 __cmdsoustotal_ttc',__cmdsoustotal_ttc);
     // __cmdsoustotal_ht += Math.round(__modhtitm + __modhting);
   
   });
@@ -1160,8 +1175,10 @@ function _getVentilationTva(commande, cataloguetva) {
     if (ispc) {
       __cmddiscount = val / 100;
     } else {
-      __cmddiscount = Math.round(val * 100) / __cmdsoustotal_ttc;
+      // __cmddiscount = Math.round(val * 100) / __cmdsoustotal_ttc;
+      __cmddiscount = (val * 100) / __cmdsoustotal_ttc;
     }
+    console.log('🔅 MOD PANIER',modcmd.valeur, __cmddiscount);
   }
 
   // DEUXIEME PASSE : ON CALCULE LES VALEURS, LES TAXES ET LES REMISES
@@ -1183,14 +1200,16 @@ function _getVentilationTva(commande, cataloguetva) {
   __cmd.items.forEach( (itm, i) => {
 
     // (le TTC = pu (prix unique) * quantite)
+    let __tx = Number(itm.tva.valeur);
     let __ttc = itm.pu * itm.quantite;
-    let __ht = itm.puht * itm.quantite;
+    // let __ht = itm.puht * itm.quantite;
+    let __ht = (itm.pu / (1 + __tx)) * itm.quantite;
     let __tva = (itm.pu - itm.puht) * itm.quantite;
 
     if (!__cmd.centimes) {
-      __ttc = Math.round(__ttc * 100);
-      __ht = Math.round(__ht * 100);
-      __tva = Math.round(__tva * 100);
+      __ttc = __ttc * 100;
+      __ht = __ht * 100;
+      __tva = __tva * 100;
     } 
 
     // on voit s'il existe un modificateur pour chaque item
@@ -1216,20 +1235,18 @@ function _getVentilationTva(commande, cataloguetva) {
 
         let __basettc = __ttc + 0;
         itm.ingredients.forEach(ing => {
-          __basettc += (!__cmd.centimes) ? Math.round(ing.supplement * 100) : ing.supplement;
+          __basettc += (!__cmd.centimes) ? ing.supplement * 100 : ing.supplement;
         });
 
         __itmdiscount = (val * 100) / __basettc;
-        console.log('Remise item de '+val+' se traduit par un coef. de '+__itmdiscount);
+        console.log('🔅 Remise item de '+val+' se traduit par un coef. de '+__itmdiscount);
       }
     }
 
 
     // on applique ensuite ce coef sur le HT de l'item et des ingrédients
     let __modhtitm = (__ht - (__ht * __itmdiscount)) - ((__ht - (__ht * __itmdiscount)) * __cmddiscount); // <- HT de l'item (avec remise)
-
-
-    const __tx = Number(itm.tva.valeur);
+    console.log('🔅 __modhtitm', __modhtitm);
 
     // const __remht = __ht * __itmdiscount; // <- montant HT de la remise
     const __calcht = __modhtitm;
@@ -1238,11 +1255,10 @@ function _getVentilationTva(commande, cataloguetva) {
     __ttc = (__itmdiscount>0 || __cmddiscount>0) ? __calcht * (1 + __tx) : __ttc; // <- on applique la tva
     __tva = (__itmdiscount>0 || __cmddiscount>0) ? __calcht * __tx : __tva;
     let __remttc = __ottc - __ttc;  // <- montant TTC de la remise
-    console.log('__remttc = '+__ottc+' - '+__ttc, __remttc);
+    console.log('🔅 __remttc = '+__ottc+' - '+__ttc, __remttc);
     __cmdrem += __remttc;
-    console.log('__cmdrem',__cmdrem);
-
-    console.log('PRD TVA __tva = ', __tva);
+    console.log('🔅 __cmdrem',__cmdrem);
+    console.log('🔅 PRD TVA __tva = ', __tva);
 
     // on récupère la tva de l'item et on déduit les montants HT, TVA et TTC au niveau de l'item
     let __itmventil = {
@@ -1266,9 +1282,11 @@ function _getVentilationTva(commande, cataloguetva) {
       
       const __itx = Number(ing.tva.valeur);
      
-      __ittc = Math.round(ing.supplement * 100);
-      __iht = Math.round(ing.supplementht * 100);
-      const __hi = Math.round(ing.supplementht * 100);
+      __ittc = ing.supplement * 100;
+      // __iht = Math.round(ing.supplementht * 100);
+      __iht = ((ing.supplement / ( 1 + __itx )) * 100);
+      // const __hi = Math.round(ing.supplementht * 100);
+      const __hi = ((ing.supplement / ( 1 + __itx )) * 100);
       
       let __iottc = __ittc + 0; // <- le ttc de l'item avant remise;
       if (__itmdiscount>0 || __cmddiscount>0) {
@@ -1277,12 +1295,11 @@ function _getVentilationTva(commande, cataloguetva) {
       }
       let __itva = (__itmdiscount>0 || __cmddiscount>0) ? __iht * __itx : __ittc - __iht; // <- on applique la tva
       __iremttc = __iottc - __ittc;
-      console.log('__iremttc = '+__iottc+' - '+__ittc, __iremttc);
+      console.log('🔅 __iremttc = '+__iottc+' - '+__ittc, __iremttc);
       __cmdrem += __iremttc;
-      console.log('__cmdrem',__cmdrem);
+      console.log('🔅 __cmdrem',__cmdrem);
       // __remttc += __iremttc;
-
-      console.log('ING TVA __itva = ', __itva);
+      console.log('🔅 ING TVA __itva = ', __itva);
 
       __iremtaux = __ittc===0 ? 0 : __iremttc / __ittc;
 
@@ -1353,11 +1370,11 @@ function _getVentilationTva(commande, cataloguetva) {
   }
 
   __cmd.ventilation = __ventilation;
-  __cmd.remise = __cmdrem / 100;
-  __cmd.total = __cmdttc / 100;
-  __cmd.totalht = __cmdht / 100;
-  __cmd.soustotal = __cmdsoustotal_ttc / 100;
-  __cmd.ttcavantremise = __basecmd / 100;
+  __cmd.remise = Math.round(__cmdrem) / 100;
+  __cmd.total = Math.round(__cmdttc) / 100;
+  __cmd.totalht = Math.round(__cmdht) / 100;
+  __cmd.soustotal = Math.round(__cmdsoustotal_ttc) / 100;
+  __cmd.ttcavantremise = Math.round(__basecmd) / 100;
 
   return __cmd;
 }

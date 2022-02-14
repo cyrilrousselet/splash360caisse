@@ -245,8 +245,8 @@ function  createZCaisse(cloture, intervalle, mode) {
 
     let intervalleId = (intervalle==="intermediaire") ? 'I' : ((intervalle==="jour") ? 'J' : ((intervalle==="mois") ? 'M' : 'A'));
 
-    console.log('📅 DEBUT',periode.debut)
-    console.log('📅 FIN',periode.fin)
+    // console.log('📅 DEBUT',periode.debut)
+    // console.log('📅 FIN',periode.fin)
 
     // chaine symbolisant le début de la fin des commandes
     const __periode = format(new Date(periode.debut), 'yyyyMMddHHmmss') + '|' + format(new Date(periode.fin), 'yyyyMMddHHmmss');
@@ -290,7 +290,7 @@ function  createZCaisse(cloture, intervalle, mode) {
 
     try {
       await clotureServices.persistZCaisse(__zdecaisse);
-      console.log('Z DE CAISSE #'+__zdecaisse.zId+' persisté');
+      // console.log('Z DE CAISSE #'+__zdecaisse.zId+' persisté');
       dispatch(peripheralActions.printZCaisse(__zdecaisse));
 
 
@@ -309,25 +309,25 @@ function  createZCaisse(cloture, intervalle, mode) {
         
         if (intervalle==="intermediaire") {
 
-          console.log('zdc intermediaire => testZC jour');
+          // console.log('zdc intermediaire => testZC jour');
           dispatch(testZCaisse('jour'));
           
         } else if (intervalle==="jour") {
           
-          console.log('zdc jour => testGTJ');
+          // console.log('zdc jour => testGTJ');
           dispatch(testGTPeriodique(intervalle));
-          console.log('zdc jour => testZC mois');
+          // console.log('zdc jour => testZC mois');
           dispatch(testZCaisse('mois'));
           
         } else if (intervalle==="mois") {
           
-          console.log('zdc mois => testGTM');
+          // console.log('zdc mois => testGTM');
           dispatch(testGTPeriodique(intervalle));
-          console.log('zdc mois => testZC année');
+          // console.log('zdc mois => testZC année');
           dispatch(testZCaisse('annee'));
           
         } else {
-          console.log('zdc année=> testGTA');
+          // console.log('zdc année=> testGTA');
           dispatch(testGTPeriodique(intervalle));
         }
       }
@@ -435,7 +435,7 @@ function makeCloture(params={}) {
     // récup. cmd non clôturées
     const {commandeslist} = await commandeServices.getCommandesList(query);
 
-    console.warn('makeCloture : commandeslist', commandeslist);
+    // console.warn('makeCloture : commandeslist', commandeslist);
 
     if (commandeslist && Object.values(commandeslist).length>0) {
 
@@ -453,7 +453,7 @@ function makeCloture(params={}) {
       const cloture = clotureServices.makeCloture(commandeslist, tickets, catalogue, params);
 
       const __cloture = {...cloture, localsync: [options.caisse.uniqid]};
-      console.log('makeCloture', cloture);
+      // console.log('makeCloture', cloture);
 
       clotureServices.saveCloture(__cloture)
         .then(
@@ -466,7 +466,7 @@ function makeCloture(params={}) {
 
             dispatch(notificationActions.syncDispatch('cloture', __cloture));
 
-            console.log('cloture sauvegardée, on lance le ZdC intermédiaire');
+            // console.log('cloture sauvegardée, on lance le ZdC intermédiaire');
 
             dispatch(createZCaisse(cloture, 'intermediaire', params.type));
             dispatch({ type: clotureActionTypes.CHECK_NOCOMPLETED_COMMANDS, blocage: false});
@@ -632,7 +632,7 @@ function testCloturesAuto() {
         {createdAt:{$lt:end.getTime()}}
       ]
     });
-    console.log('__cmdnonconfirmees',__cmdnonconfirmees);
+    // console.log('__cmdnonconfirmees',__cmdnonconfirmees);
 
     let __canMakeCloture = true;
 
@@ -641,14 +641,14 @@ function testCloturesAuto() {
       const __cmdaencaisser = Object.values(__cmdnonconfirmees.commandeslist).filter(cmd => cmd.status==="a_encaisser");
 
       if (__cmdaencaisser.length>0) {
-        console.log('il y a des commandes à encaisser : impossible de faire la clôture auto -> on bloque la caisse');
+        // console.log('il y a des commandes à encaisser : impossible de faire la clôture auto -> on bloque la caisse');
         dispatch({ type: clotureActionTypes.CHECK_NOCOMPLETED_COMMANDS, blocage: true});
         __canMakeCloture = false;
       } else {
         dispatch({ type: clotureActionTypes.CHECK_NOCOMPLETED_COMMANDS, blocage: false});
       }
 
-      console.log('commandes en attente à supprimer (service passé) => ',__cmdstandby_ids, end);
+      // console.log('commandes en attente à supprimer (service passé) => ',__cmdstandby_ids, end);
 
 
       let cmdnum = 0;
@@ -753,7 +753,7 @@ function testZCaisse(intervalle) {
           }
         });
 
-        console.log('__lastZJ', __lastZJ);
+        // console.log('__lastZJ', __lastZJ);
         const lzj_periode = (Array.isArray(__lastZJ) && __lastZJ.length>0) ? __lastZJ[0]['periode'].split('|') : [0,0];
         
 
@@ -776,7 +776,7 @@ function testZCaisse(intervalle) {
           }
         });
       
-        console.log('__lastZI', __lastZI);
+        // console.log('__lastZI', __lastZI);
         const lzi_periode = (Array.isArray(__lastZI) && __lastZI.length>0) ? __lastZI[0]['periode'].split('|') : [0,0];
 
         // si le dernier Z intermédiaire est postérieur au dernier Z journalier
@@ -792,7 +792,7 @@ function testZCaisse(intervalle) {
       }
 
 
-      console.log('testZCaisse, jour', start, end);
+      // console.log('testZCaisse, jour', start, end);
       const __ZJ_query = {
         $expr : {
           $and:[ 
@@ -822,12 +822,12 @@ function testZCaisse(intervalle) {
       // y a-t-il un ZJ pour hier ?
       const zj_hier = await clotureServices.getZCaisse(__ZJ_query);
 
-      console.log('zj_hier', zj_hier);
+      // console.log('zj_hier', zj_hier);
 
       // s'il n'y en a pas, on lance sa création
       if (zj_hier.length<1) {
 
-        console.log('il n’y a pas de ZJ pour hier');
+        // console.log('il n’y a pas de ZJ pour hier');
 
         // récup ZI pour hier
         const __ZI_query = {
@@ -857,15 +857,15 @@ function testZCaisse(intervalle) {
         };
         const zi_hier = await clotureServices.getZCaisse(__ZI_query);
 
-        console.log('TZC zi_hier',zi_hier);
+        // console.log('TZC zi_hier',zi_hier);
 
         if (zi_hier.length>0) {
           const zj_synth = _getZSynthese(zi_hier, "jour");
-          console.log('il y a des ZI hier, on lance la création du ZJ');
+          // console.log('il y a des ZI hier, on lance la création du ZJ');
           dispatch(createZCaisse(zj_synth, "jour", "auto"));
         }
         else {
-          console.log('TZC jour : pas de ZCaisse pour ce jour, on lance le test pour le mois');
+          // console.log('TZC jour : pas de ZCaisse pour ce jour, on lance le test pour le mois');
           dispatch(testZCaisse('mois'));
         }
 
@@ -873,7 +873,7 @@ function testZCaisse(intervalle) {
       // s'il y en a un, on lance le test mensuel
       else {
 
-        console.log('il y a un ZJ pour hier, donc on lance le test mensuel');
+        // console.log('il y a un ZJ pour hier, donc on lance le test mensuel');
         dispatch(testZCaisse('mois'));
       }
       
@@ -906,7 +906,7 @@ function testZCaisse(intervalle) {
           }
         });
 
-        console.log('__lastZMm', __lastZMm);
+        // console.log('__lastZMm', __lastZMm);
         const lzmm_periode = (Array.isArray(__lastZMm) && __lastZMm.length>0) ? __lastZMm[0]['periode'].split('|') : [0,0];
         
 
@@ -929,7 +929,7 @@ function testZCaisse(intervalle) {
           }
         });
       
-        console.log('__lastZJm', __lastZJm);
+        // console.log('__lastZJm', __lastZJm);
         const lzjm_periode = (Array.isArray(__lastZJm) && __lastZJm.length>0) ? __lastZJm[0]['periode'].split('|') : [0,0];
 
         // si le dernier Z journalier est postérieur au dernier Z mensuel
@@ -948,7 +948,7 @@ function testZCaisse(intervalle) {
 
 
 
-      console.log('testZCaisse, mois', start, end);
+      // console.log('testZCaisse, mois', start, end);
 
       const __ZM_query = {
         $expr : {
@@ -979,12 +979,12 @@ function testZCaisse(intervalle) {
       // y a-t-il un ZM pour le mois dernier ?
       const zm_mois = await clotureServices.getZCaisse(__ZM_query);
 
-      console.log('TZC zm_mois',zm_mois);
+      // console.log('TZC zm_mois',zm_mois);
 
       // s'il n'y en a pas, on lance sa création
       if (zm_mois.length<1) {
 
-        console.log('Il n’y a pas de ZM pour le mois dernier')
+        // console.log('Il n’y a pas de ZM pour le mois dernier')
 
         // récup ZJ pour le mois dernier
         const __ZJ_query = {
@@ -1012,16 +1012,16 @@ function testZCaisse(intervalle) {
             ]
           }
         };
-        console.log('TZC __ZJ_query',__ZJ_query);
+        // console.log('TZC __ZJ_query',__ZJ_query);
         const zj_mois = await clotureServices.getZCaisse(__ZJ_query);
 
-        console.log('TZC zj_mois',zj_mois);
+        // console.log('TZC zj_mois',zj_mois);
         if (zj_mois.length>0) {
           const zm_synth = _getZSynthese(zj_mois, "mois");
-          console.log('il y a des ZJ, on lance la création du ZM');
+          // console.log('il y a des ZJ, on lance la création du ZM');
           dispatch(createZCaisse(zm_synth, "mois", "auto"));
         } else {
-          console.log('TZC mois : pas de ZCaisse pour ce mois, on lance le test pour l’année');
+          // console.log('TZC mois : pas de ZCaisse pour ce mois, on lance le test pour l’année');
           dispatch(testZCaisse('annee'));
         }
 
@@ -1029,7 +1029,7 @@ function testZCaisse(intervalle) {
       // s'il y en a un, on lance le test annuel
       else {
 
-        console.log('il y a un ZM pour le mois dernier, donc on lance le test annuel');
+        // console.log('il y a un ZM pour le mois dernier, donc on lance le test annuel');
 
         dispatch(testZCaisse('annee'));
       }
@@ -1041,7 +1041,7 @@ function testZCaisse(intervalle) {
       start = format(set(sub(__today,{years:1}), {month:0, date:1}),'yyyyMMdd050000'); // 1er janvier de l'année dernière à 5h00
       end = format(set(__today, {month:0, date:1}), 'yyyyMMdd050000'); // 1er janvier de cette année à 5h00
 
-      console.log('testZCaisse, année', start, end);
+      // console.log('testZCaisse, année', start, end);
 
       const __ZA_query = {
         $expr : {
@@ -1072,12 +1072,12 @@ function testZCaisse(intervalle) {
       // y a-t-il un ZA pour l'an dernier ?
       const zm_annee = await clotureServices.getZCaisse(__ZA_query);
 
-      console.log('TZC zm_annee',zm_annee);
+      // console.log('TZC zm_annee',zm_annee);
 
       // s'il n'y en a pas, on lance sa création
       if (zm_annee.length<1) {
 
-        console.log('Il n’y a pas de ZA pour l’an dernier')
+        // console.log('Il n’y a pas de ZA pour l’an dernier')
 
         // récup ZM pour l'an dernier
         const __ZM_query = {
@@ -1107,10 +1107,10 @@ function testZCaisse(intervalle) {
         };
         const zm_annee = await clotureServices.getZCaisse(__ZM_query);
 
-        console.log('TZC zj_mois',zm_annee);
+        // console.log('TZC zj_mois',zm_annee);
         if (zm_annee.length>0) {
           const za_synth = _getZSynthese(zm_annee, "annee");
-          console.log('il y a des ZM, on lance la création du ZA');
+          // console.log('il y a des ZM, on lance la création du ZA');
           dispatch(createZCaisse(za_synth, "annee", "auto"));
         } else {
           console.log('TZC annee : pas de ZCaisse pour cette année, on s’arrête là');
@@ -1269,23 +1269,7 @@ function createGrandTotalTicket(commande) {
       'ENC-GTT-TAG-SIG': commande.signature
     };
 
-    console.log('gtt',__gtt);
-
-    // const __gtt = {
-    //   numeroTicket: commande.ticket,
-    //   tva_ttc: __tva_ttc.join('|'),
-    //   tva_ht: __tva_ht.join('|'),
-    //   tva_taxe: __tva_taxe.join('|'),
-    //   total_ttc: __total_ttc,
-    //   total_ht: __total_ht,
-    //   gtpca: __gtp.gtpca,
-    //   gtpva: __gtp.gtpva,
-    //   createdAt: format(new Date(commande.createdAt), 'yyyyMMddHHmmss'),
-    //   source_hash: commande.hashsource,
-    //   hash_ticket: commande.hash,
-    //   trousseauId: trousseauId,
-    //   signature_ticket: commande.signature
-    // };
+    // console.log('gtt',__gtt);
 
     try {
       await clotureServices.persistGTTicket(__gtt);
@@ -1302,72 +1286,6 @@ function createGrandTotalTicket(commande) {
 
 
 
-// function checkGrandTotalPeriodique() {
-//   return async (dispatch, getState) => {
-
-//     const { privateKey } = getState().signatureReducer; 
-//     const { caisse } = getState().parametresReducer.parametres.options;
-
-//     if (caisse) {
-
-//       try {
-//         const gtplist = await clotureServices.getGTPeriodique({},50);
-        
-//         let integ_error = false;
-//         let seq_error = false;
-//         let prevNIDnum = null;
-//         let prevSign = null;
-//         let integ_detection = [];
-//         let seq_detection = [];
-
-//         gtplist.forEach(gtp => {
-//           if (prevSign) {
-
-
-//             const source_signature = {
-//               tva: gtp['ENC-GTP-MTN-TVA-TTC'],
-//               ttc: gtp['ENC-GTP-MTN-TVA-HT'],
-//               periode: gtp['ENC-GTP-ORI-NUM']
-//             }
-
-
-//             const {signature} = signatureServices.createGrandtotalSignature({...source_signature, type:"periode"}, gtp['ENC-GTP-PER-TTC'], privateKey, prevSign);
-  
-
-//             if (signature !== gtp['ENV-GTP-TAG-SIG']) {
-//               integ_error = true;
-//               integ_detection = [...integ_detection, gtp['ENC-GTP-ORI-NID']];
-//             }
-//             const NIDnum = parseInt(gtp['ENC-GTP-ORI-NID'].split('-')[2]);
-            
-//             if (NIDnum !== (prevNIDnum - 1)) {
-//               seq_error = true;
-//               seq_detection = [...seq_detection, gtp['ENC-GTP-ORI-NID']];
-//             }
-//           }
-//           prevSign = gtp['ENV-GTP-TAG-SIG'];
-//           prevNIDnum = parseInt(gtp['ENC-GTP-ORI-NID'].split('-')[2]);
-//         });
-    
-//         if (integ_error) {
-//           dispatch({ type: signatureActionTypes.INTEGRITE_ERROR, detail: "Grands Totaux Periodiques" });
-//           dispatch(journalActions.log('90', `détecté dans Grands Totaux Periodiques : ${integ_detection.join(', ')}`));
-//         }
-//         if (seq_error) {
-//           dispatch({ type: signatureActionTypes.SEQUENCE_ERROR, detail: "Grands Totaux Periodiques" });
-//           dispatch(journalActions.log('95', `détecté dans Grands Totaux Periodiques : ${seq_detection.join(', ')}`));
-//         }
-
-
-
-//       }
-//       catch(e) {
-//         console.error(e);
-//       }
-//     }
-
-//   }
-// }
 
 
 /**
@@ -1523,26 +1441,9 @@ function createGrandTotalPeriodique(intervalle, grandstotaux) {
       'ENV-GTP-ID-KEY': keyid,
       'ENV-GTP-TAG-SIG': signature
     };
-    // const __grandtotalperiodique = {
-    //   gttype: intervalle,
-    //   grandtotal_id: newTicket,
-    //   periode: __start_str+'|'+__end_str,
-    //   tva_ttc: __alltva_ttc.join('|'),
-    //   tva_ht: __alltva_ht.join('|'),
-    //   tva_taxe: __alltva_taxe.join('|'),
-    //   total_ttc: __total_ttc,
-    //   total_ht: __total_ht,
-    //   gtpca: gtpca,
-    //   gtpva: gtpva,
-    //   createdAt: format(new Date(), 'yyyyMMddHHmmss'),
-    //   source_hash: source,
-    //   hash: hash,
-    //   trousseauId: trousseauId,
-    //   signature: signature
-    // };
+  
 
     try {
-      // const confirm = await clotureServices.persistGTPeriodique(__grandtotalperiodique);
       await clotureServices.persistGTPeriodique(__grandtotalperiodique);
       dispatch({ type: clotureActionTypes.PERSIST_GTPERIODIQUE_SUCCESS, gtp: __grandtotalperiodique });
 
@@ -1551,17 +1452,6 @@ function createGrandTotalPeriodique(intervalle, grandstotaux) {
       dispatch( signatureActions.updateSignature('grandstotaux_'+intervalle, signature) );
       dispatch( signatureActions.updateNumerotation('grandtotal', grandtotal+1) );
 
-      // on lance le test sur l'intervalle supérieur
-      // (qui est susceptible d'utiliser le GT periodique qu'on vient de créer...)
-
-// ce qui suit a été commenté parce que redondant avec l'appel depuis createZCaisse()
-
-              // if (confirm && intervalle==="jour") {
-              //   dispatch(testGTPeriodique('mois'));
-              // }
-              // else if (confirm && intervalle==="mois") {
-              //   dispatch(testGTPeriodique('annee'));
-              // }
       if (intervalle!=='intermediaire') {
         const af_debut = new Date(__start_str.substring(0,4)+"-"+__start_str.substring(4,6)+"-"+__start_str.substring(6,8)+' '+__start_str.substring(8,10)+':'+__start_str.substring(10,12)+':'+__start_str.substring(12,14));
         const af_fin = new Date(__end_str.substring(0,4)+"-"+__end_str.substring(4,6)+"-"+__end_str.substring(6,8)+' '+__end_str.substring(8,10)+':'+__end_str.substring(10,12)+':'+__end_str.substring(12,14));
@@ -1603,7 +1493,7 @@ function testGTPeriodique(intervalle='jour') {
         {createdAt:{$lt:__end.getTime()}}
       ]
     });
-    console.log('__cmdaencaisser',__cmdaencaisser);
+    // console.log('__cmdaencaisser',__cmdaencaisser);
 
     let __canMakeGTP = true;
     if (__cmdaencaisser.hasOwnProperty('commandeslist') && Object.values(__cmdaencaisser.commandeslist).length > 0) {
@@ -1626,13 +1516,13 @@ function testGTPeriodique(intervalle='jour') {
           // on récupère le GTJ le plus récent
           const __lastGTJ = await clotureServices.getLastGTPeriodique("jour");
           
-          console.log('GTJ', __lastGTJ);
+          // console.log('GTJ', __lastGTJ);
 
           if (__lastGTJ.length>0) {
             // fin de periode
             const last_fin = parseInt(__lastGTJ[0]['ENC-GTP-ORI-NUM'].split("|")[1]);
 
-            console.log('fin de la période du GTJ', last_fin, parseInt(end));
+            // console.log('fin de la période du GTJ', last_fin, parseInt(end));
 
             // si la date de fin de la période du dernier GTJ
             // est postérieure à la date d'aujourd'hui
@@ -1646,7 +1536,7 @@ function testGTPeriodique(intervalle='jour') {
             // si la date de fin de la période du dernier GTJ 
             // est antérieure à la date de fin du dernier service
             if (last_fin < parseInt(end)) {
-              console.log('date de fin de la période du GTJ antérieure à la fin du dernier service');
+              // console.log('date de fin de la période du GTJ antérieure à la fin du dernier service');
               // on va chercher les éventuels GTTickets créés entre les deux dates
               __GTT_query = {
                 $expr : {
@@ -1662,7 +1552,7 @@ function testGTPeriodique(intervalle='jour') {
           }
           // s'il n'y a pas de GTJ avant aujourd'hui
           else {
-            console.log('pas de GTJ antérieur')
+            // console.log('pas de GTJ antérieur')
             // on va chercher tous les GTTickets antérieurs au service d'aujourd'hui
             __GTT_query = {$expr : {$lt : [{$toDouble :"$ENC-GTP-HOR-GDH"} , parseInt(end)]}};
           }
@@ -1674,10 +1564,10 @@ function testGTPeriodique(intervalle='jour') {
         // on va chercher les GTTickets si besoin
         // et s'il y en a on crée un GTJ avec
         if (__GTT_query) {
-          console.log('on va chercher les GTTickets', JSON.stringify(__GTT_query));
+          // console.log('on va chercher les GTTickets', JSON.stringify(__GTT_query));
           try {
             const liste_GTT = await clotureServices.getGTTicket(__GTT_query);
-            console.log('liste_GTT', liste_GTT);
+            // console.log('liste_GTT', liste_GTT);
             if (liste_GTT.length>0) {  
               dispatch(createGrandTotalPeriodique('jour',liste_GTT));
             }
@@ -1703,18 +1593,18 @@ function testGTPeriodique(intervalle='jour') {
           // on récupère le GTM le plus récent
           const __lastGTM = await clotureServices.getLastGTPeriodique("mois");
 
-          console.log('GTM', __lastGTM);
+          // console.log('GTM', __lastGTM);
 
           if (__lastGTM.length>0) {
             // fin de periode
             const last_fin = parseInt(__lastGTM[0]['ENC-GTP-ORI-NUM'].split("|")[1]);
 
-            console.log('fin de la période du GTM', last_fin, parseInt(end));
+            // console.log('fin de la période du GTM', last_fin, parseInt(end));
 
             // si la date de fin de la période du dernier GTM 
             // est antérieure à la date de fin du dernier mois
             if (last_fin < parseInt(end)) {
-              console.log('date de fin de la période du GTM antérieure à la fin du dernier mois');
+              // console.log('date de fin de la période du GTM antérieure à la fin du dernier mois');
               // on va chercher les éventuels GTJ créés entre les deux dates
               __GTJ_query = {
                 $expr : {
@@ -1747,7 +1637,7 @@ function testGTPeriodique(intervalle='jour') {
           }
           // s'il n'y a pas de GTM avant aujourd'hui
           else {
-            console.log('pas de GTM antérieur')
+            // console.log('pas de GTM antérieur')
             // on va chercher tous les GTJ antérieurs au mois actuel
             __GTJ_query = {
               $expr : {
@@ -1774,7 +1664,7 @@ function testGTPeriodique(intervalle='jour') {
         // on va chercher les GTJ si besoin
         // et s'il y en a on crée un GTM avec
         if (__GTJ_query) {
-          console.log('on va chercher les GTJ', __GTJ_query);
+          // console.log('on va chercher les GTJ', __GTJ_query);
           try {
             const liste_GTJ = await clotureServices.getGTPeriodique(__GTJ_query);
             if (liste_GTJ.length>0) {
@@ -1802,18 +1692,18 @@ function testGTPeriodique(intervalle='jour') {
           // on récupère le GTA le plus récent
           const __lastGTA = await clotureServices.getLastGTPeriodique("annee");
 
-          console.log('GTA', __lastGTA);
+          // console.log('GTA', __lastGTA);
 
           if (__lastGTA.length>0) {
             // fin de periode
             const last_fin = parseInt(__lastGTA[0]['ENC-GTP-ORI-NUM'].split("|")[1]);
 
-            console.log('fin de la période du GTA', last_fin, parseInt(end));
+            // console.log('fin de la période du GTA', last_fin, parseInt(end));
 
             // si la date de fin de la période du dernier GTA 
             // est antérieure à la date de fin de la dernière année
             if (last_fin < parseInt(end)) {
-              console.log('date de fin de la période du GTA antérieure à la fin du dernier mois');
+              // console.log('date de fin de la période du GTA antérieure à la fin du dernier mois');
               // on va chercher les éventuels GTM créés entre les deux dates
               __GTM_query = {
                 $expr : {
@@ -1846,7 +1736,7 @@ function testGTPeriodique(intervalle='jour') {
           }
           // s'il n'y a pas de GTA avant cette année
           else {
-            console.log('pas de GTA antérieur')
+            // console.log('pas de GTA antérieur')
             // on va chercher tous les GTM antérieurs à l'année actuelle
             __GTM_query = {
               $expr : {
@@ -1873,7 +1763,7 @@ function testGTPeriodique(intervalle='jour') {
         // on va chercher les GTM si besoin
         // et s'il y en a on crée un GTA avec
         if (__GTM_query) {
-          console.log('on va chercher les GTM', __GTM_query);
+          // console.log('on va chercher les GTM', __GTM_query);
           try {
             const liste_GTM = await clotureServices.getGTPeriodique(__GTM_query);
             if (liste_GTM.length>0) {
