@@ -480,7 +480,7 @@ function TableUtilisateurs(props) {
 
 
   return (
-    <Table stickyHeader size="small" key={id} aria-label="a dense table">
+    <Table stickyHeader size="small" key={`tu${id}`} aria-label="a dense table">
       <TableHead>
         <TableRow>
           <TableCell key={`${id}-hd-nom`} className="liste-nom">{ strings.modules.parametres.submodules.utilisateurs.liste.nom }</TableCell>
@@ -490,7 +490,7 @@ function TableUtilisateurs(props) {
       </TableHead>
       <TableBody>
         {liste.map((row, i) => (
-          (row.status!=='deleted' && row.status!=='superuser') && (<TableRow key={row.id} className={(i%2)?'odd':'even'}>
+          (row.status!=='deleted' && row.status!=='superuser') && (<TableRow key={`tru${row.id}`} className={(i%2)?'odd':'even'}>
             <TableCell key={`${i}-nom`} className={ `liste-nom${ (row.status && row.status==='disabled')?' user-disabled':''}` }><div onClick={ () => { openEdit(i) } }>{ row.nom }{ row.livreur && <DeliveryIcon className="delivery" /> }{ (row.livreur && row.coordonnees) && `(${row.coordonnees})` }</div></TableCell>
             <TableCell key={`${i}-passe`} className="liste-passe">{ row.identifiant }</TableCell>
             <TableCell key={`${i}-droits`} className="liste-droits"><DroitsPopper id={`drt${i}`} droits={row.droits}></DroitsPopper></TableCell>

@@ -123,7 +123,7 @@ class EditImprimantePopin extends React.Component {
                 id="nom"
                 name="nom"
                 className="fieldnom"
-                value={ nom }
+                value={ nom || '' }
                 placeholder=""
                 type="text"
                 readOnly={ false }
@@ -152,7 +152,7 @@ class EditImprimantePopin extends React.Component {
                 id="param"
                 name="param"
                 className="fieldparam"
-                value={ param }
+                value={ param || '' }
                 placeholder=""
                 type="text"
                 readOnly={ false }
@@ -367,7 +367,7 @@ class EditTicketPopin extends React.Component {
                 </div>
               </div>)}
               <div className="kds">
-              {(ticket && ticket.ticket_id!=='tck1') && (<div class="kds-activation">
+              {(ticket && ticket.ticket_id!=='tck1') && (<div className="kds-activation">
                   <div className="liste-label">{ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.kds }</div>
                   <div className="liste-liste">
                     <SwitchCheckbox 
@@ -382,7 +382,7 @@ class EditTicketPopin extends React.Component {
                       />
                   </div>
                 </div>)}
-                <div class="indirect">
+                <div className="indirect">
                   <div className={ `liste-label${((kds || (ticket && ticket.ticket_id==='tck1'))?'':' disabled')}`}>{ strings.modules.parametres.submodules.peripheriques.impression.tickets.edition.indirect }</div>
                   <div className="liste-liste">
                     <SwitchCheckbox 

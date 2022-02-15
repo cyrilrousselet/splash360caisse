@@ -129,7 +129,7 @@ getLogoImg(filePath) {
               id={ `parament-${field}` }
               key={ `${field}-${i}` }
               name={ field }
-              className={ (!data[field] || data[field]==='') && 'labelledfield-error' }
+              className={ (!data[field] || data[field]==='') ? 'labelledfield-error' : '' }
               value={ data[field] || '' } 
               placeholder={ strings.modules.parametres.submodules.entreprise.general.placeholder[field] } 
               type='text' 

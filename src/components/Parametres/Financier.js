@@ -124,7 +124,7 @@ class Financier extends React.Component {
         <div className="section">
           <div className="subttl">{ strings.modules.parametres.submodules.financier.fonddecaisse.titre }</div>
           <SwitchCheckbox
-            isChecked={ data.fonddecaisse_activation } 
+            isChecked={ (data.fonddecaisse_activation ? true : false) } 
             key="fonddecaisse-activation"
             name="fonddecaisse_activation" 
             className="fonddecaisse-activation" 

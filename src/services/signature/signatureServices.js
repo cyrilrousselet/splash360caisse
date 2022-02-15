@@ -72,9 +72,14 @@ const _checkDirectorySync = (directory) => {
 async function writeTrousseau(trousseau) {
   _checkDirectorySync(`${app.getPath('userData')}/cert`);
   
-  await fs_async.unlink(`${app.getPath('userData')}/cert/prv.pem`);
-  await fs_async.unlink(`${app.getPath('userData')}/cert/pub.pem`);
-  await fs_async.unlink(`${app.getPath('userData')}/cert/trousseau.data`);
+  try {
+    await fs_async.unlink(`${app.getPath('userData')}/cert/prv.pem`);
+    await fs_async.unlink(`${app.getPath('userData')}/cert/pub.pem`);
+    await fs_async.unlink(`${app.getPath('userData')}/cert/trousseau.data`);
+  }
+  catch(err) {
+    return console.error(err);
+  }
 
   try {
     const { trousseauId, privateKey, publicKey } = trousseau;
@@ -136,12 +141,7 @@ async function checkAndCreateKeys() {
         trousseauId = uuid();
         const privateKey = PRV_K;
         const publicKey = PUB_K;
-        
-        // // on l'écrit sur le DD
-        // await fs_async.writeFile(`${app.getPath('userData')}/cert/prv.pem`, privateKey);
-        // await fs_async.writeFile(`${app.getPath('userData')}/cert/pub.pem`, publicKey);
-        // await fs_async.writeFile(`${app.getPath('userData')}/cert/trousseau.data`, trousseauId);
-        
+             
         // et on le persiste en BDD
         await persistTrousseau({ privateKey, publicKey, trousseauId:trousseauId.toString()});
       }
