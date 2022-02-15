@@ -1074,11 +1074,12 @@ function _getVentilationTva(commande, cataloguetva) {
   let __ventilation = {};
   let __basecmd = 0;
 
-  let __cmddiscount = 0;
-  // let __cmdsoustotal_ht = 0;
+  let __cmddiscount_num = 0;
+  let __cmddiscount_pct = 0;
+
   let __cmdsoustotal_ttc = 0;
 
-console.log('🔅 PREMIERE PASSE');
+// console.log('🔅 PREMIERE PASSE');
   // PREMIERE PASSE : ON CALCULE LE SOUS-TOTAL DE LA COMMANDE
   // on boucle sur les items
   __cmd.items.forEach(itm => {
@@ -1089,29 +1090,28 @@ console.log('🔅 PREMIERE PASSE');
 
     // on déduit le prix HT à partir du TTC et du taux de TVA
     let __tvaitm = Number(itm.tva.valeur);
-    // let __htitm = itm.puht * itm.quantite;
     let __htitm = (itm.pu /( 1 + __tvaitm)) * itm.quantite;
-    // if (!__cmd.centimes) __htitm = Math.round(__htitm * 100);
     if (!__cmd.centimes) __htitm = __htitm * 100;
 
-    console.log('🔅 montant item',__ttcitm, __htitm);
+    // console.log('🔅 montant item',__ttcitm, __htitm);
 
     let __ttcing = 0;
 
     // on boucle sur le prix TTC des ingrédients
     itm.ingredients.forEach(ing => {
-      // __ttcing += (!__cmd.centimes) ? Math.round(ing.supplement * 100) : ing.supplement;
       __ttcing += (!__cmd.centimes) ? ing.supplement * 100 : ing.supplement;
     });
 
     // on obtient le soustotal ttc de l'item
     let __sttcitm = __ttcitm + __ttcing;
     __basecmd += __sttcitm;
-    console.log('🔅 sous-total',__sttcitm);
+    // console.log('🔅 sous-total', __sttcitm);
 
 
-    let __modcoef = 0;
+    let __modcoef_num = 0;
+    let __modcoef_pct = 0;
     let moditm = _getModificateurForItem(__cmd.modificateurs, itm.itemid);
+
     // s'il y a un modificateur pour l'item
     if (moditm) {
       const ispc = String(moditm.valeur).substr(-1,1)==='%';
@@ -1119,34 +1119,53 @@ console.log('🔅 PREMIERE PASSE');
       
       if (ispc) {
         // on passe de %age en coef.
-        __modcoef = val / 100;
+        __modcoef_pct = val / 100;
       }
       // si c'est une remise numéraire, on la convertit en coef.
       else {
         // à partir du montant TTC de l'item + ses ingrédients
-        __modcoef = (val * 100) / __sttcitm;
+        __modcoef_num = (val * 100) / __sttcitm;
       }
-      console.log('🔅 modificateur pour item', moditm.valeur, __modcoef);
+      // console.log('🔅 modificateur pour item', moditm.valeur, __modcoef_pct, __modcoef_num);
     }
-        
-    // on applique ensuite ce coef sur le HT de l'item et des ingrédients
-    let __modhtitm = __modcoef>0 ? (__htitm - (__htitm * __modcoef)) : __htitm; // <- HT de l'item (avec remise)
+  
 
-    // et on calcule le TTC
+    let __modhtitm = __htitm;
+    let __modttcitm = __ttcitm;
     const __tx = Number(itm.tva.valeur);
-    let __modttcitm = __modcoef>0 ? __modhtitm * (1 + __tx) : __ttcitm;  // <- TTC de l'item (avec remise)
-    console.log('🔅 application du coef sur le HT puis TTC',__modhtitm, __modttcitm);
 
-    // let __modhting = 0; // <- HT des ingrédients de l'item
+    // si le modificateur est en % on l'applique sur le HT et on calcule le TTC
+    if (__modcoef_pct > 0) {
+      __modhtitm = (__htitm - (__htitm * __modcoef_pct));
+      __modttcitm = __modhtitm * (1 + __tx);
+      // console.log('🔅 application du coef sur le HT puis TTC',__modhtitm, __modttcitm);
+    }
+    // si le modificateur est en € on l'applique sur le TTC et on calcule le HT
+    if (__modcoef_num > 0) {
+      __modttcitm = (__modttcitm - (__modttcitm * __modcoef_num));
+      __modhtitm = __modttcitm * (1 - __tx);
+      // console.log('🔅 application du coef sur le TTC puis HT',__modhtitm, __modttcitm);
+    }
+
     let __modttcing = 0;  // <- TTC des ingrédients de l'item
     itm.ingredients.forEach(ing => {
+
+      let __hi = ( ing.supplement / (1 + Number(ing.tva.valeur)) ) * 100;
+      let __ti = Math.round(ing.supplement * 100);
       const __itx = Number(ing.tva.valeur);
-      // const __hi = Math.round(ing.supplementht * 100);
-      const __hi = (ing.supplement / (1 + __itx)) * 100;  // <- HT de l'ingrédient (à partir du TTC)
-      const __him = __modcoef>0 ? (__hi - (__hi * __modcoef)) : __hi;  // <- HT de l'ingrédient (avec remise)
-      const __ti = __modcoef>0 ? __him * (1 + __itx) : Math.round(ing.supplement * 100); // <- TTC de l'ingrédient (avec remise)
-      // __modhting += __him;
-      console.log('🔅 ING :',__hi, __ti);
+
+      // si le modificateur est en % on l'applique sur le HT et on calcule le TTC
+      if (__modcoef_pct > 0) {
+        __hi = (__hi - (__hi * __modcoef_pct));
+        __ti = __hi * (1 + __itx);
+        // console.log('🔅 ING HT puis TTC',__hi, __ti);
+      }
+      // si le modificateur est en € on l'applique sur le TTC et on calcule le HT
+      if (__modcoef_num > 0) {
+        __ti = (__ti - (__ti * __modcoef_num));
+        __hi = __ti * (1 - __itx);
+        // console.log('🔅 ING TTC puis HT',__hi, __ti);
+      }
 
       __modttcitm += __ti;
     });
@@ -1158,10 +1177,9 @@ console.log('🔅 PREMIERE PASSE');
       
     }
       
-    // on compile les données HT et TTC
+    // on compile les données
     __cmdsoustotal_ttc += __modttcitm + __modttcing;
-    console.log('🔅 __cmdsoustotal_ttc',__cmdsoustotal_ttc);
-    // __cmdsoustotal_ht += Math.round(__modhtitm + __modhting);
+    // console.log('🔅 __cmdsoustotal_ttc', __cmdsoustotal_ttc);
   
   });
   
@@ -1173,25 +1191,15 @@ console.log('🔅 PREMIERE PASSE');
     // recup valeur numérique
     let val = Math.abs(Number(String(modcmd.valeur).slice(0,-1)));
     if (ispc) {
-      __cmddiscount = val / 100;
+      __cmddiscount_pct = val / 100;
     } else {
-      // __cmddiscount = Math.round(val * 100) / __cmdsoustotal_ttc;
-      __cmddiscount = (val * 100) / __cmdsoustotal_ttc;
+      __cmddiscount_num = (val * 100) / __cmdsoustotal_ttc;
     }
-    console.log('🔅 MOD PANIER',modcmd.valeur, __cmddiscount);
+    // console.log('🔅 MOD PANIER',modcmd.valeur, __cmddiscount_pct, __cmddiscount_num);
   }
 
+
   // DEUXIEME PASSE : ON CALCULE LES VALEURS, LES TAXES ET LES REMISES
-
-  // on combine le modificateur item avec le modificateur panier
-  // on extrait la valeur numéraire et %age du modificateur item combiné
-  // on applique le modificateur aux prix TTC et HT
-
-  // on applique la TVA (aux prix modifié)
-
-  // on compile les valeurs de TVA (TTC, HT, TAXE pour chaque taux)
-  // pour chaque item
-  // pour la commande entière
 
   let __cmdht = 0;
   let __cmdttc = 0;
@@ -1202,9 +1210,9 @@ console.log('🔅 PREMIERE PASSE');
     // (le TTC = pu (prix unique) * quantite)
     let __tx = Number(itm.tva.valeur);
     let __ttc = itm.pu * itm.quantite;
-    // let __ht = itm.puht * itm.quantite;
+    // on recalcule le HT NON ARRONDI à partir du TTC et du taux de TVA
     let __ht = (itm.pu / (1 + __tx)) * itm.quantite;
-    let __tva = (itm.pu - itm.puht) * itm.quantite;
+    let __tva = ( itm.pu - (itm.pu / (1 + __tx)) ) * itm.quantite;
 
     if (!__cmd.centimes) {
       __ttc = __ttc * 100;
@@ -1212,20 +1220,22 @@ console.log('🔅 PREMIERE PASSE');
       __tva = __tva * 100;
     } 
 
-    // on voit s'il existe un modificateur pour chaque item
+    // on voit s'il existe un modificateur pour l'item
     let moditem = _getModificateurForItem(__cmd.modificateurs, itm.itemid);
 
-    let __itmdiscount = 0;
+    let __itmdiscount_pct = 0;
+    let __itmdiscount_num = 0;
     if (moditem) {
       const ispc = String(moditem.valeur).substr(-1,1)==='%';
       // recup valeur numérique
       let val = Math.abs(Number(String(moditem.valeur).slice(0,-1)));
 
-      console.log('💸 remise item ('+itm.nom+') ', val, (ispc ? 'en %age':'en €'));
+      // console.log('💸 remise item ('+itm.nom+') ', val, (ispc ? 'en %age':'en €'));
 
       // si le modificateur est en pourcentage, on convertit en coefficient
       if (ispc) {
-        __itmdiscount = val / 100;
+        __itmdiscount_pct = val / 100;
+        // console.log('🔅 Remise item de '+val+'% se traduit par un coef. de '+__itmdiscount_pct);
       }
       // si le modificateur est en numéraire, on calcule le coefficient par rapport au TTC
       else {
@@ -1238,27 +1248,54 @@ console.log('🔅 PREMIERE PASSE');
           __basettc += (!__cmd.centimes) ? ing.supplement * 100 : ing.supplement;
         });
 
-        __itmdiscount = (val * 100) / __basettc;
-        console.log('🔅 Remise item de '+val+' se traduit par un coef. de '+__itmdiscount);
+        __itmdiscount_num = (val * 100) / __basettc;
+        // console.log('🔅 Remise item de '+val+'€ se traduit par un coef. de '+__itmdiscount_num);
       }
     }
 
+    let __modhtitm = 0;
+    let __modttcitm = 0;
 
     // on applique ensuite ce coef sur le HT de l'item et des ingrédients
-    let __modhtitm = (__ht - (__ht * __itmdiscount)) - ((__ht - (__ht * __itmdiscount)) * __cmddiscount); // <- HT de l'item (avec remise)
-    console.log('🔅 __modhtitm', __modhtitm);
+    
+    // d'abord la remise produit
+    // si la remise de l'item est un coef
+    if (__itmdiscount_pct > 0) {
+      __modhtitm = __ht - (__ht * __itmdiscount_pct);
+      __modttcitm = __modhtitm * (1 + __tx);
+    }
+    // si la remise de l'item est numéraire
+    if (__itmdiscount_num > 0) {
+      __modttcitm = __ttc - (__ttc * __itmdiscount_num);
+      __modhtitm = __modttcitm * (1 - __tx);
+    }
 
-    // const __remht = __ht * __itmdiscount; // <- montant HT de la remise
-    const __calcht = __modhtitm;
-    __ht = __calcht;  // <- HT arrondi 
-    let __ottc = __ttc + 0; // <- le ttc de l'item avant remise;
-    __ttc = (__itmdiscount>0 || __cmddiscount>0) ? __calcht * (1 + __tx) : __ttc; // <- on applique la tva
-    __tva = (__itmdiscount>0 || __cmddiscount>0) ? __calcht * __tx : __tva;
-    let __remttc = __ottc - __ttc;  // <- montant TTC de la remise
-    console.log('🔅 __remttc = '+__ottc+' - '+__ttc, __remttc);
+    // ensuite la remise commande
+    // si la remise de la commande est un coef
+    if (__cmddiscount_pct > 0) {
+      __modhtitm = __modhtitm - (__modhtitm * __cmddiscount_pct);
+      __modttcitm = __modhtitm * (1 + __tx);
+    }
+    // si la remise de la commande est numéraire
+    if (__cmddiscount_num > 0) {
+      __modttcitm = __modttcitm - (__modttcitm * __cmddiscount_num);
+      __modhtitm = __modttcitm * (1 - __tx);
+    }
+
+    // console.log('🔅 __modhtitm', __modhtitm);
+    
+    let __remttc = 0;  // <- montant TTC de la remise
+
+    if (__itmdiscount_pct>0 || __itmdiscount_num>0 || __cmddiscount_pct>0 || __cmddiscount_num>0) {
+      __remttc = __ttc - __modttcitm;  // <- montant TTC de la remise
+      // console.log('🔅 remise de l’item : __remttc = '+__ttc+' - '+__ttc, __remttc);
+      __ht = __modhtitm; 
+      __ttc = __modttcitm;
+      __tva =  __ttc - __ht;
+    }
+
     __cmdrem += __remttc;
-    console.log('🔅 __cmdrem',__cmdrem);
-    console.log('🔅 PRD TVA __tva = ', __tva);
+    // console.log('🔅 remise de la commande (itm) : __cmdrem',__cmdrem);
 
     // on récupère la tva de l'item et on déduit les montants HT, TVA et TTC au niveau de l'item
     let __itmventil = {
@@ -1268,39 +1305,66 @@ console.log('🔅 PREMIERE PASSE');
         ttc: Math.round(__ttc),
         ht: Math.round(__ht),
         tva: Math.round(__tva)
-        // tva: __ttc - __ht
       }
     };
 
-    // let __itx = 0;
-    let __ittc = 0;
-    let __iht = 0;
-    let __iremttc = 0;
+    let __ittc;
+    let __iht;
+    let __itva;
+    let __iremttc;
     let __iremtaux = 1;
+    let __modhting = 0;
+    let __modttcing = 0;
 
     itm.ingredients.forEach((ing, j) => {
       
       const __itx = Number(ing.tva.valeur);
      
       __ittc = ing.supplement * 100;
-      // __iht = Math.round(ing.supplementht * 100);
       __iht = ((ing.supplement / ( 1 + __itx )) * 100);
-      // const __hi = Math.round(ing.supplementht * 100);
-      const __hi = ((ing.supplement / ( 1 + __itx )) * 100);
-      
-      let __iottc = __ittc + 0; // <- le ttc de l'item avant remise;
-      if (__itmdiscount>0 || __cmddiscount>0) {
-        __iht = (__hi - (__hi * __itmdiscount)) - ((__hi - (__hi * __itmdiscount)) * __cmddiscount);  // <- HT de l'ingrédient (avec remise)
-        __ittc = __iht * (1 + __itx); // <- on applique la tva
-      }
-      let __itva = (__itmdiscount>0 || __cmddiscount>0) ? __iht * __itx : __ittc - __iht; // <- on applique la tva
-      __iremttc = __iottc - __ittc;
-      console.log('🔅 __iremttc = '+__iottc+' - '+__ittc, __iremttc);
-      __cmdrem += __iremttc;
-      console.log('🔅 __cmdrem',__cmdrem);
-      // __remttc += __iremttc;
-      console.log('🔅 ING TVA __itva = ', __itva);
+      __itva = __ittc - __iht;
+      __iremttc = 0;      
 
+
+      // on applique les remises à chaque ingrédient
+
+      // d'abord la remise produit
+      // si la remise de l'item est un coef
+      if (__itmdiscount_pct > 0) {
+        __modhting = __iht - (__iht * __itmdiscount_pct);
+        __modttcing = __modhting * (1 + __itx);
+      }
+      // si la remise de l'item est numéraire
+      if (__itmdiscount_num > 0) {
+        __modttcing = __ittc - (__ittc * __itmdiscount_num);
+        __modhting = __modttcing * (1 - __itx);
+      }
+
+      // ensuite la remise commande
+      // si la remise de la commande est un coef
+      if (__cmddiscount_pct > 0) {
+        __modhting = __modhting - (__modhting * __cmddiscount_pct);
+        __modttcing = __modhting * (1 + __itx);
+      }
+      // si la remise de la commande est numéraire
+      if (__cmddiscount_num > 0) {
+        __modttcing = __modttcing - (__modttcing * __cmddiscount_num);
+        __modhting = __modttcing * (1 - __itx);
+      }
+      
+      
+
+      if (__itmdiscount_pct>0 || __itmdiscount_num>0 || __cmddiscount_pct>0 || __cmddiscount_num>0) {
+
+        __iremttc = __ittc - __modttcing;
+        // console.log('🔅 remise de l’ingrédient : __iremttc = '+__ittc+' - '+__modttcing, __iremttc);
+        __ittc = __modttcing;
+        __iht = __modhting;
+        __itva = __modttcing - __modhting;
+        
+      }
+      __cmdrem += __iremttc;
+      // console.log('🔅 remise de la commande (ing) : __cmdrem', __cmdrem);
       __iremtaux = __ittc===0 ? 0 : __iremttc / __ittc;
 
       if (!__itmventil.hasOwnProperty(ing.tva.id)) {
@@ -1317,7 +1381,6 @@ console.log('🔅 PREMIERE PASSE');
         ttc: __itmventil[ing.tva.id].ttc + Math.round(__ittc),
         ht: __itmventil[ing.tva.id].ht + Math.round(__iht),
         tva: __itmventil[ing.tva.id].tva + Math.round(__itva)
-        // tva: __itmventil[ing.tva.id].tva + (__ittc - __iht)
       });
 
       __cmd.items[i].ingredients[j] = {
@@ -1366,7 +1429,12 @@ console.log('🔅 PREMIERE PASSE');
 
   if (modcmd) {
     const modcmdIndex = __cmd.modificateurs.findIndex(m => m.modificateur_id===modcmd.modificateur_id);
-    __cmd.modificateurs[modcmdIndex].montant = Math.round((__cmdsoustotal_ttc * __cmddiscount)) / 100;
+    if (__cmddiscount_num > 0) {
+      __cmd.modificateurs[modcmdIndex].montant = Math.round((__cmdsoustotal_ttc * __cmddiscount_num)) / 100;
+    }
+    if (__cmddiscount_pct > 0) {
+      __cmd.modificateurs[modcmdIndex].montant = Math.round((__cmdsoustotal_ttc * __cmddiscount_pct)) / 100;
+    }
   }
 
   __cmd.ventilation = __ventilation;
