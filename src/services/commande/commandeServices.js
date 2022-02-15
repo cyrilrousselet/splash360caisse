@@ -1297,6 +1297,9 @@ function _getVentilationTva(commande, cataloguetva) {
     __cmdrem += __remttc;
     // console.log('🔅 remise de la commande (itm) : __cmdrem',__cmdrem);
 
+    __cmdttc += __ttc;
+    __cmdht += __ht;
+
     // on récupère la tva de l'item et on déduit les montants HT, TVA et TTC au niveau de l'item
     let __itmventil = {
       [itm.tva.id]: {
@@ -1367,6 +1370,10 @@ function _getVentilationTva(commande, cataloguetva) {
       // console.log('🔅 remise de la commande (ing) : __cmdrem', __cmdrem);
       __iremtaux = __ittc===0 ? 0 : __iremttc / __ittc;
 
+      __cmdttc += __ittc;
+      __cmdht += __iht;
+
+
       if (!__itmventil.hasOwnProperty(ing.tva.id)) {
         __itmventil[ing.tva.id] = {
           taux: __itx,
@@ -1399,8 +1406,10 @@ function _getVentilationTva(commande, cataloguetva) {
 
 
 
-    __cmdttc += __ttc + __ittc;
-    __cmdht += __ht + __iht;
+    // __cmdttc += __ttc + __ittc;
+    // console.log('🔅 total calcul : __cmdttc', __cmdttc, __ttc+' + '+__ittc );
+    // __cmdht += __ht + __iht;
+    // console.log('🔅 total HT calcul : __cmdht', __cmdht, __ht+' + '+__iht );
 
     __cmd.items[i].rem_tot = Math.round(__remttc);
     __cmd.items[i].rem_txx = Math.round((__remttc / __ttc) * 100);
@@ -1436,7 +1445,10 @@ function _getVentilationTva(commande, cataloguetva) {
       __cmd.modificateurs[modcmdIndex].montant = Math.round((__cmdsoustotal_ttc * __cmddiscount_pct)) / 100;
     }
   }
-
+  
+  console.log('🔅 total : __cmdttc', __cmdttc);
+  console.log('🔅 total HT : __cmdht', __cmdht);
+  
   __cmd.ventilation = __ventilation;
   __cmd.remise = Math.round(__cmdrem) / 100;
   __cmd.total = Math.round(__cmdttc) / 100;
