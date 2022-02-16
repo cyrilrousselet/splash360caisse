@@ -1,7 +1,7 @@
 import { emit } from "eiphop";
 // import logger from '../../helpers/Logger';
 import { format } from 'date-fns';
-import fs from 'fs';
+import fs, { unlink, readFile, writeFile } from 'fs';
 import crypto from 'crypto';
 import {remote} from 'electron';
 import mkdirp from 'mkdirp';
@@ -10,8 +10,14 @@ import { uuid } from "uuidv4";
 import canonicalizeString from "@pelevesque/canonicalize-string";
 import {PRV_K} from "../../constants/cert/prv.js";
 import {PUB_K} from "../../constants/cert/pub.js";
- 
-const fs_async = require('fs').promises;
+
+import { promisify } from "util";
+
+// const fs_async = require('fs').promises;
+
+const fsUnlink = promisify(unlink);
+const fsReadFile = promisify(readFile);
+const fsWriteFile = promisify(writeFile);
 
 
 const { app } = remote;
@@ -73,9 +79,9 @@ async function writeTrousseau(trousseau) {
   _checkDirectorySync(`${app.getPath('userData')}/cert`);
   
   try {
-    await fs_async.unlink(`${app.getPath('userData')}/cert/prv.pem`);
-    await fs_async.unlink(`${app.getPath('userData')}/cert/pub.pem`);
-    await fs_async.unlink(`${app.getPath('userData')}/cert/trousseau.data`);
+    await fsUnlink(`${app.getPath('userData')}/cert/prv.pem`);
+    await fsUnlink(`${app.getPath('userData')}/cert/pub.pem`);
+    await fsUnlink(`${app.getPath('userData')}/cert/trousseau.data`);
   }
   catch(err) {
     return console.error(err);
@@ -84,9 +90,9 @@ async function writeTrousseau(trousseau) {
   try {
     const { trousseauId, privateKey, publicKey } = trousseau;
 
-    await fs_async.writeFile(`${app.getPath('userData')}/cert/prv.pem`, privateKey);
-    await fs_async.writeFile(`${app.getPath('userData')}/cert/pub.pem`, publicKey);
-    await fs_async.writeFile(`${app.getPath('userData')}/cert/trousseau.data`, trousseauId)
+    await fsWriteFile(`${app.getPath('userData')}/cert/prv.pem`, privateKey);
+    await fsWriteFile(`${app.getPath('userData')}/cert/pub.pem`, publicKey);
+    await fsWriteFile(`${app.getPath('userData')}/cert/trousseau.data`, trousseauId)
   }
   catch(err) {
     return console.error(err);
@@ -125,9 +131,9 @@ async function checkAndCreateKeys() {
     
     // on regarde s'il existe un trousseau sur le DD
     try {
-      privateKey = await fs_async.readFile(`${app.getPath('userData')}/cert/prv.pem`);
-      publicKey = await fs_async.readFile(`${app.getPath('userData')}/cert/pub.pem`);
-      trousseauId = await fs_async.readFile(`${app.getPath('userData')}/cert/trousseau.data`);
+      privateKey = await fsReadFile(`${app.getPath('userData')}/cert/prv.pem`);
+      publicKey = await fsReadFile(`${app.getPath('userData')}/cert/pub.pem`);
+      trousseauId = await fsReadFile(`${app.getPath('userData')}/cert/trousseau.data`);
     } catch(e) {
       console.warn('aucun trousseau');
       aucun_trousseau = true;

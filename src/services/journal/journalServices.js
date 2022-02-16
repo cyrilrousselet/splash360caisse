@@ -2,9 +2,11 @@ import logger from "../../helpers/Logger";
 import { remote } from 'electron';
 import { last } from 'lodash';
 import format from "date-fns/format";
-
+import { readdir } from "fs";
+import { promisify } from "util";
 const { app } = remote;
-const fs = require('fs').promises;
+// const fs = require('fs').promises;
+const fsReaddir = promisify(readdir);
 
 export const journalServices = {
   write,
@@ -43,7 +45,8 @@ async function getPreviousFilename(type) {
   let files;
   try {
     // on récupère la liste des journaux
-    files = await fs.readdir(compta_dir);
+    // files = await fs.readdir(compta_dir);
+    files = await fsReaddir(compta_dir);
   }
   catch(e) {
     console.error('impossible de scanner le dossier compta', e);
@@ -73,7 +76,8 @@ async function getFilename(type) {
   let files;
   try {
     // on récupère la liste des journaux
-    files = await fs.readdir(compta_dir);
+    // files = await fs.readdir(compta_dir);
+    files = await fsReaddir(compta_dir);
   }
   catch(e) {
     console.error('impossible de scanner le dossier compta', e);

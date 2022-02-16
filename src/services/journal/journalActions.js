@@ -8,9 +8,11 @@ import { last } from 'lodash';
 import { journalActionTypes } from './journalActionTypes';
 import { signatureActionTypes } from '../signature/signatureActionTypes';
 
+import { readFile } from 'fs';
+import { promisify } from 'util';
 const { app } = remote;
-const fs = require('fs').promises;
-
+// const fs = require('fs').promises;
+const fsReadFile = promisify(readFile);
 
 function log(code, description="") {
   return async (dispatch, getState) => {
@@ -132,7 +134,8 @@ function signPrevious(type) {
     }
 
     const actualfile = await journalServices.getFilename(type);
-    const __acj = await fs.readFile(`${app.getPath('userData')}/compta/${actualfile}`);
+    // const __acj = await fs.readFile(`${app.getPath('userData')}/compta/${actualfile}`);
+    const __acj = await fsReadFile(`${app.getPath('userData')}/compta/${actualfile}`);
     const __hh = __acj.toString().includes('"type":"FICHIER PRECEDENT"');
 
     if (!__hh) {
@@ -140,7 +143,8 @@ function signPrevious(type) {
       const prevFilename = await journalServices.getPreviousFilename(type);
       if (prevFilename) {
 
-        const __cont = await fs.readFile(`${app.getPath('userData')}/compta/${prevFilename}`);
+        // const __cont = await fs.readFile(`${app.getPath('userData')}/compta/${prevFilename}`);
+        const __cont = await fsReadFile(`${app.getPath('userData')}/compta/${prevFilename}`);
         const { hmac, signature } = await signatureServices.createSignature(__cont.toString(), key); 
 
         await journalServices.setSignature({
@@ -182,7 +186,8 @@ function sign(filename, type) {
 
     const __filename = last(filename.split('/'));
   
-    const __jetcont = await fs.readFile(`${app.getPath('userData')}/compta/${__filename}`);
+    // const __jetcont = await fs.readFile(`${app.getPath('userData')}/compta/${__filename}`);
+    const __jetcont = await fsReadFile(`${app.getPath('userData')}/compta/${__filename}`);
     const { hmac, signature } = await signatureServices.createSignature(__jetcont.toString(), key); 
   
     await journalServices.setSignature({
@@ -228,7 +233,8 @@ function check(type) {
       if (!filename) return console.warn(`aucun journal (${journal})`);
 
       // on récupère le fichier
-      const __cont = await fs.readFile(`${app.getPath('userData')}/compta/${filename}`);
+      // const __cont = await fs.readFile(`${app.getPath('userData')}/compta/${filename}`);
+      const __cont = await fsReadFile(`${app.getPath('userData')}/compta/${filename}`);
 
       if (!__cont) return console.warn(`aucun fichier journal (${journal}) trouvé`);
 

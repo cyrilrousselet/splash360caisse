@@ -26,9 +26,16 @@ import { signatureActionTypes } from '../signature/signatureActionTypes';
 import { userServices } from '../user/userServices';
 // import {statSync} from 'fs';
 
+import { readdir, readFile, copyFile } from 'fs';
+import { promisify } from 'util';
+
 const strings = new LocalizedStrings(data);
 const {app} = remote;
-const fs = require('fs').promises;
+// const fs = require('fs').promises;
+
+const fsReaddir = promisify(readdir);
+const fsReadFile = promisify(readFile);
+const fsCopyFile = promisify(copyFile);
 
 // const logger = new Logger();
 
@@ -1807,7 +1814,8 @@ function checkArchive(filename) {
 
     let __afcont;
     try {
-      __afcont = await fs.readFile(`${app.getPath('userData')}/archives_fiscales/${filename}`);
+      // __afcont = await fs.readFile(`${app.getPath('userData')}/archives_fiscales/${filename}`);
+      __afcont = await fsReadFile(`${app.getPath('userData')}/archives_fiscales/${filename}`);
     } catch(e) {
       return console.error(e);
     }
@@ -2110,7 +2118,8 @@ function archiveFiscale(intervalle, debut, fin) {
 
     let files = null;
     try {
-      files = await fs.readdir(compta_dir);
+      // files = await fs.readdir(compta_dir);
+      files = await fsReaddir(compta_dir);
     }
     catch(e) {
       console.error('CA.archiveFiscale() impossible de scanner le dossier compta', e);
@@ -2139,7 +2148,8 @@ function archiveFiscale(intervalle, debut, fin) {
             const __gz = (last(f.split('.'))==='gz');
 
           
-            let filecont = await fs.readFile(`${compta_dir}${f}`);
+            // let filecont = await fs.readFile(`${compta_dir}${f}`);
+            let filecont = await fsReadFile(`${compta_dir}${f}`);
             let filedef;
             let fdef = f;
             if (__gz) {
@@ -2167,7 +2177,8 @@ function archiveFiscale(intervalle, debut, fin) {
 
           const __gz = (last(f.split('.'))==='gz');
 
-          let filecont = await fs.readFile(`${compta_dir}${f}`);
+          // let filecont = await fs.readFile(`${compta_dir}${f}`);
+          let filecont = await fsReadFile(`${compta_dir}${f}`);
             let filedef;
             let fdef = f;
             if (__gz) {
@@ -2248,7 +2259,8 @@ function archiveFiscale(intervalle, debut, fin) {
     }
 
     try {
-      const __afcont = await fs.readFile(`${app.getPath('userData')}/archives_fiscales/${fileName}`);
+      // const __afcont = await fs.readFile(`${app.getPath('userData')}/archives_fiscales/${fileName}`);
+      const __afcont = await fsReadFile(`${app.getPath('userData')}/archives_fiscales/${fileName}`);
       const { hmac, signature } = await signatureServices.createSignature(__afcont.toString(), privateKey); 
 
 
@@ -3042,7 +3054,8 @@ function exportArchive(target, filename) {
 
     const origin = `${app.getPath('userData')}/archives_fiscales/${filename}`;
     try {
-      await fs.copyFile(origin, target);
+      // await fs.copyFile(origin, target);
+      await fsCopyFile(origin, target);
       console.log(`${origin} was copied to ${target}`);
       dispatch(journalActions.log('440',`Exportation de ${filename} vers ${target}`));
     } catch {
