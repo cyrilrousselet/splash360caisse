@@ -290,14 +290,12 @@ function  createZCaisse(cloture, intervalle, mode) {
 
     try {
       await clotureServices.persistZCaisse(__zdecaisse);
-      // console.log('Z DE CAISSE #'+__zdecaisse.zId+' persisté');
-      dispatch(peripheralActions.printZCaisse(__zdecaisse));
 
-
-      // on génère l'archive fiscale pour une cloture auto non intermédiaire
-      // if (mode==="auto" && intervalle!=="intermediaire") {
-      //   dispatch(archiveFiscale(intervalle, new Date(periode.debut), new Date(periode.fin)));
-      // }
+      if (mode==="auto" && intervalle==="intermediaire") {
+        console.log('ZdC intermédiaire automatique -> pas d’impression');
+      } else {
+        dispatch(peripheralActions.printZCaisse(__zdecaisse));
+      }
 
       dispatch(journalActions.log('50', intervalle));
       dispatch(journalActions.log('160', 'Z de Caisse #'+__zdecaisse.zId));
