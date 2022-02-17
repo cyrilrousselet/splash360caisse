@@ -83,34 +83,42 @@ function log(code, description="") {
     };
 
     let signature = '';
-    // let hmac = '';
-    // let source = '';
     if (caisse) {
       const js = signatureServices.createJETSignature({...__evt, caisse: caisse}, key, lastSignature);
       signature = js.signature;
-      // hmac = js.hmac;
-      // source = js.source;
     }
  
-    // console.log(__evtid+' source : ',source);
-
     __evt['JET-TAG-SIG'] = signature;
-    // __evt['JET-TAG-HMAC'] = hmac;
-    // __evt['JET-TAG-ARG'] = source;
 
     if (caisse) {
       dispatch( signatureActions.updateSignature(__type, signature) );
     }
 
 
-    try {
-      await journalServices.write(__evt, __type);
+    dispatch({ type: journalActionTypes.LOG, event: __evt });
 
+    // try {
+    //   await journalServices.write(__evt, __type);
+
+    // } catch(e) {
+    //   console.error(e);
+    // }
+
+  }
+}
+
+function write(evt) {
+  return async dispatch => {
+
+    const __ecode = evenements[evt['JET-EVT-NUM']];
+    const __type = (__ecode.purgeable) ? 'jet' : 'pistedaudit';
+
+    try {
+      await journalServices.write(evt, __type);
+      dispatch({ type: journalActionTypes.LOGGED, event: evt });
     } catch(e) {
       console.error(e);
     }
-
-    // if (create_trousseau) dispatch(log('450',`nouveau trousseau ${keyid}`));
   }
 }
 
@@ -321,6 +329,7 @@ function check(type) {
 
 export const journalActions = {
   log,
+  write,
   signPrevious,
   sign,
   check,

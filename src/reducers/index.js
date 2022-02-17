@@ -15,6 +15,7 @@ import { tableReducer } from "./../services/table/tableReducer";
 import { tresorReducer } from './../services/tresorerie/tresorReducer';
 import { userReducer } from "./../services/user/userReducer";
 import { signatureReducer } from "./../services/signature/signatureReducer";
+import { journalReducer } from "../services/journal/journalReducer";
 import { numerotationReducer } from "./../services/signature/numerotationReducer";
 import { authentication } from "./authenticationReducer";
 
@@ -35,6 +36,7 @@ export default function createRootReducer(history) {
     tresorReducer,
     clientsReducer,
     signatureReducer,
+    journalReducer,
     numerotationReducer,
     authentication,
   });

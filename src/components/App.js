@@ -1,6 +1,7 @@
 // @flow
 import * as React from 'react';
 import FooterCont from '../containers/FooterCont';
+import JournalManagerCont from '../containers/JournalManagerCont';
 import NotifierCont from '../containers/NotifierCont';
 import './../assets/scss/styles.scss'
 
@@ -18,6 +19,7 @@ export default class App extends React.Component<Props> {
         {children}
         <FooterCont />
         <NotifierCont />
+        <JournalManagerCont />
       </React.Fragment>
     );
   }
