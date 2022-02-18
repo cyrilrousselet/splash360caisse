@@ -1184,7 +1184,7 @@ function updateGTP(valeur) {
 //           const {signature} = signatureServices.createGrandtotalSignature() ({...source_signature, type:"periode"}, gtp['ENC-GTP-PER-TTC'], privateKey, prevSign);
  
 
-//           if (signature !== gtp['ENV-GTP-TAG-SIG']) {
+//           if (signature !== gtp['ENC-GTP-TAG-SIG']) {
 //             integ_error = true;
 //             integ_detection = [...integ_detection, gtp['ENC-GTP-ORI-NID']];
 //           }
@@ -1195,7 +1195,7 @@ function updateGTP(valeur) {
 //             seq_detection = [...seq_detection, gtp['ENC-GTP-ORI-NID']];
 //           }
 //         }
-//         prevSign = gtp['ENV-GTP-TAG-SIG'];
+//         prevSign = gtp['ENC-GTP-TAG-SIG'];
 //         prevNIDnum = parseInt(gtp['ENC-GTP-ORI-NID'].split('-')[2]);
 //       });
   
@@ -1443,8 +1443,8 @@ function createGrandTotalPeriodique(intervalle, grandstotaux) {
       'ENC-GTP-HOR-GDH': format(new Date(), 'yyyyMMddHHmmss'),
       'ENC-GTP-ARG': source,
       'ENC-GTP-HASH': hash,
-      'ENV-GTP-ID-KEY': keyid,
-      'ENV-GTP-TAG-SIG': signature
+      'ENC-GTP-ID-KEY': keyid,
+      'ENC-GTP-TAG-SIG': signature
     };
   
 
@@ -2357,8 +2357,8 @@ async function _getArchiveGTPeriodiques(intervalle, start, end) {
         'ENC-GTP-HOR-GDH',
         'ENC-GTP-ARG',
         'ENC-GTP-HASH',
-        'ENV-GTP-ID-KEY',
-        'ENV-GTP-TAG-SIG' 
+        'ENC-GTP-ID-KEY',
+        'ENC-GTP-TAG-SIG' 
       ],
       ...gtplist.map(gtp => [
         gtp.gttype,
@@ -2374,8 +2374,8 @@ async function _getArchiveGTPeriodiques(intervalle, start, end) {
         gtp['ENC-GTP-HOR-GDH'],
         gtp['ENC-GTP-ARG'],
         gtp['ENC-GTP-HASH'],
-        gtp['ENV-GTP-ID-KEY'],
-        gtp['ENV-GTP-TAG-SIG']
+        gtp['ENC-GTP-ID-KEY'],
+        gtp['ENC-GTP-TAG-SIG']
       ])
     ]
     .map(e => e.join(";")) 

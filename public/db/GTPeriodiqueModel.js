@@ -16,8 +16,8 @@ const GTPeriodiqueSchema = mongoose.Schema(
     'ENC-GTP-HOR-GDH': String,       // createdAt: String,
     'ENC-GTP-ARG': String,           // source_hash: String,
     'ENC-GTP-HASH': String,          // hash: String,
-    'ENV-GTP-ID-KEY': String,        // trousseauId: String,
-    'ENV-GTP-TAG-SIG': String        // signature: String
+    'ENC-GTP-ID-KEY': String,        // trousseauId: String,
+    'ENC-GTP-TAG-SIG': String        // signature: String
   },
   { strict: false }
 );
