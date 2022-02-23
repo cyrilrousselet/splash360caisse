@@ -2114,19 +2114,35 @@ function archiveFiscale(intervalle, debut, fin) {
                 ]}
               },
               parseInt(start)
-            ]},
-            {$lte : [
-              {$toDouble: 
-                {$arrayElemAt:[
-                  {$split:["$periode","|"]}, 
-                  1
-                ]}
-              }, 
-              parseInt(end)
             ]}
           ]
         }
       };
+      // const __XCPTquery = {
+      //   $expr : {
+      //     $and:[ 
+      //       {$eq:["$ztype", intervalle]},
+      //       {$gte : [
+      //         {$toDouble: 
+      //           {$arrayElemAt:[
+      //             {$split:["$periode","|"]}, 
+      //             0
+      //           ]}
+      //         },
+      //         parseInt(start)
+      //       ]},
+      //       {$lte : [
+      //         {$toDouble: 
+      //           {$arrayElemAt:[
+      //             {$split:["$periode","|"]}, 
+      //             1
+      //           ]}
+      //         }, 
+      //         parseInt(end)
+      //       ]}
+      //     ]
+      //   }
+      // };
       const liste = await clotureServices.getZCaisse(__XCPTquery);
 
       const recap = _getExportComptable(liste);
