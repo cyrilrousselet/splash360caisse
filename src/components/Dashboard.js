@@ -40,6 +40,7 @@ class Dashboard extends Component {
     this.props.getCommande();
     this.props.getPastNonConfirmed();
     this.props.testCloturesAuto();
+    this.props.checkDateError();
 
   }
 

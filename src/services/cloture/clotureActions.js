@@ -712,6 +712,21 @@ function getZCaisse(params) {
   }
 }
 
+function checkDateError() {
+  return async dispatch => {
+
+    let __lastZJ = await clotureServices.getLastZCaisse({});
+    const lzj_periode = (Array.isArray(__lastZJ) && __lastZJ.length>0) ? __lastZJ[0]['periode'].split('|') : [0,0];
+
+    const __todayformatted = parseInt(format(new Date(),'yyyyMMddHHmmss'));
+    console.log('❓ ZdC jour ❓', __todayformatted, lzj_periode[1]);
+    if (lzj_periode[1] > __todayformatted) {
+      dispatch({ type: clotureActionTypes.DATE_ERROR, error: true });
+    }
+
+  }
+}
+
 function testZCaisse(intervalle) {
 
   return async (dispatch, getState) => {
@@ -757,6 +772,7 @@ function testZCaisse(intervalle) {
             ]
           }
         });
+        
 
         // console.log('__lastZJ', __lastZJ);
         const lzj_periode = (Array.isArray(__lastZJ) && __lastZJ.length>0) ? __lastZJ[0]['periode'].split('|') : [0,0];
@@ -783,6 +799,20 @@ function testZCaisse(intervalle) {
       
         // console.log('__lastZI', __lastZI);
         const lzi_periode = (Array.isArray(__lastZI) && __lastZI.length>0) ? __lastZI[0]['periode'].split('|') : [0,0];
+
+
+        // si le dernier Z de Caisse journalier ou Z de Caisse intermédiaire
+        // est postérieur à la date actuelle
+        // il y a une erreur de date du système
+        // on bloque l'encaissement
+
+        
+        const __todayformatted = parseInt(format(__today,'yyyyMMddHHmmss'));
+        console.log('❓ ZdC jour ❓', __todayformatted, lzi_periode[1], lzj_periode[1]);
+        if (lzi_periode[1] > __todayformatted || lzj_periode[1] > __todayformatted) {
+          dispatch({ type: clotureActionTypes.DATE_ERROR, error: true });
+        }
+
 
         // si le dernier Z intermédiaire est postérieur au dernier Z journalier
         if (lzi_periode[1] > lzj_periode[1]) {
@@ -1993,10 +2023,17 @@ function archiveFiscale(intervalle, debut, fin) {
         $and: [
           {status: {$in:['confirmed', 'deleted']}},
           {archived: {$exists: true}},
-          {createdAt: {$gte:debut.getTime()}},
-          {createdAt: {$lte:fin.getTime()}}
+          {createdAt: {$gte:debut.getTime()}}
         ]
-      }
+      };
+      // const __cmdQuery = {
+      //   $and: [
+      //     {status: {$in:['confirmed', 'deleted']}},
+      //     {archived: {$exists: true}},
+      //     {createdAt: {$gte:debut.getTime()}},
+      //     {createdAt: {$lte:fin.getTime()}}
+      //   ]
+      // };
       const { commandeslist } = await commandeServices.getCommandesList(__cmdQuery);
 
       if (commandeslist) {
@@ -3459,6 +3496,7 @@ export const clotureActions = {
   setClotureFromSync,
   getTodayCa,
   testCloturesAuto,
+  checkDateError,
   testZCaisse,
   testGTPeriodique,
   getArchivesFiscales,
