@@ -2105,7 +2105,7 @@ function archiveFiscale(intervalle, debut, fin) {
       const __XCPTquery = {
         $expr : {
           $and:[ 
-            {$eq:["$ztype", intervalle]},
+            {$eq:["$ztype", 'jour']},
             {$gte : [
               {$toDouble: 
                 {$arrayElemAt:[
