@@ -224,7 +224,7 @@ class MainLoader extends React.Component {
       storeNumerotation,
       getGTP,
       // testGTPeriodique,
-      testCloturesAuto,
+      gotoDashboard,
     } = this.props;
 
     
@@ -240,7 +240,8 @@ class MainLoader extends React.Component {
         resetNumero();
         getTodayCa();
         // testGTPeriodique();
-        testCloturesAuto();
+        // testCloturesAuto();
+        gotoDashboard();
       });
     } 
 
