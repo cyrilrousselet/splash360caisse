@@ -86,7 +86,8 @@ const mapDispatchToProps = (dispatch) => {
   }, dispatch);
   return {
     ...bound,
-    loadingComplete: gotoDashboard
+    loadingComplete: gotoDashboard,
+    gotoDashboard: gotoDashboard
   }
 }
 
