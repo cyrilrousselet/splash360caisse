@@ -28,17 +28,17 @@
         font-size: 18px;
         text-align: center;
       }
-      .date-pickers {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        .MuiFab-root {
-          background-color: $blanc;
-          margin-left: 20px;
-        }
-  
+    }
+    .date-pickers {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      .MuiFab-root {
+        background-color: $blanc;
+        margin-left: 20px;
       }
+
     }
   } // --- /.dates
 

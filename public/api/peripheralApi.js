@@ -2440,13 +2440,13 @@ function _printLegal(printer, data, strings) {
   }  
   if (data.duplicataid!=='') {
     printer
-    .tableCustom([{text: `(NF525) B0000 - ${data.duplicatasignature} - Splash360 ${data.version}`, cols:42, align:'LEFT'}])
+    .tableCustom([{text: `(NF525) B0478 - ${data.duplicatasignature} - SPLASH360 ${data.version}`, cols:42, align:'LEFT'}])
     .tableCustom([{text: `Duplicata : ${data.duplicataid}`, cols:42, align:'LEFT'}])
     .tableCustom([{text: `${(data.status==='confirmed') ? 'Ticket original' : 'Note originale'} : ${data.ticketid} (${data.signature})`, cols:42, align:'LEFT'}]);
   }
   else {
     printer
-    .tableCustom([{text: `(NF525) B0000 - ${data.signature} - Splash360 ${data.version}`, cols:42, align:'LEFT'}])
+    .tableCustom([{text: `(NF525) B0478 - ${data.signature} - SPLASH360 ${data.version}`, cols:42, align:'LEFT'}])
     .tableCustom([{text: `${(data.status==='confirmed') ? 'Ticket' : 'Note'} : ${data.ticketid}`, cols:42, align:'LEFT'}]);
     if (data.originid) {
       printer

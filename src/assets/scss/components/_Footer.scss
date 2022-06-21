@@ -11,10 +11,10 @@
     height: $footer-height;
     background-color: $blanc;
 
-    background: linear-gradient(90deg, #3366CC 0%, #3366CC 30%, #FFFFFF 30%, #FFFFFF 70%, #CC0000 70%);
-    background-size: 100% 4px;
-    background-repeat: no-repeat;
-    background-position: center bottom;
+    // background: linear-gradient(90deg, #3366CC 0%, #3366CC 30%, #FFFFFF 30%, #FFFFFF 70%, #CC0000 70%);
+    // background-size: 100% 4px;
+    // background-repeat: no-repeat;
+    // background-position: center bottom;
 
     &.sequence-error,
     &.integrite-error {
@@ -104,6 +104,13 @@
         color: $gris;
         font-size: 10px;
         user-select: none;
+        background-image: url('../../images/Logo_NF_525.svg');
+        background-repeat: no-repeat;
+        background-position: right center;
+        background-size: contain;
+        padding-right: 60px;
+        height: 50px;
+        line-height: 50px;
     }
     .date {
         display: inline-block;
