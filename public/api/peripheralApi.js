@@ -597,6 +597,13 @@ function _launchPrint(template, printer, contenu, config={}) {
         _printErrorHandler(e, '_printUber', printer);
       }
     } 
+    else if ('deliveroo' ===  section) {
+      try {
+        await _printDeliveroo(printer, contenu.deliveroo, contenu.strings.deliveroo);
+      } catch(e) {
+        _printErrorHandler(e, '_printDeliveroo', printer);
+      }
+    } 
     else if ('recap' === section) {
       try {
         _printRecap(printer, contenu.recap, contenu.strings);
@@ -1552,94 +1559,120 @@ function _printCommande(printer, data, strings) {
       
   data.articles.forEach((article) => {
 
+    if (article.produitid!=='frais') {
 
-    // _subtotal += Number(article.prix);
-    let __ligne = [
-      {text: article.qte, cols:3, align:'RIGHT'},
-      {text:'', cols:1},
-      {text: article.nom, cols:artcolwidth, align:'LEFT'},
-      {text:'', cols:1},
-      {text: String(article.pu).replace('.',','), cols:6, align:'RIGHT'},
-      {text:'', cols:1},
-      {text: (Number(article.qte)*Number(article.pu)).toFixed(2).replace('.',','), cols:6, align:'RIGHT'}
-    ];
-    if (data.status==='confirmed') {
-      __ligne = [
-        ...__ligne,
+      // _subtotal += Number(article.prix);
+      let __ligne = [
+        {text: article.qte, cols:3, align:'RIGHT'},
         {text:'', cols:1},
-        {text: article.codetva, cols:1}
-      ];
-    }
-
-    printer.align('CT').style('B').tableCustom(__ligne);
-    
-    if (article.comment!=='') {
-      printer.align('CT').style('B').tableCustom([
-        {text:'', cols:3},
-        {text: '* ', cols:2, align:'RIGHT'},
-        {text: article.comment, cols:32, align:'LEFT'},
-        {text: ' *', cols:2, align:'RIGHT'},
-        {text:'', cols:3}
-      ]);
-      _linecount++;
-    }
-    _linecount++;
-
-    if (article.ingredients.length>0) {
-      article.ingredients.forEach((ingredient) => {
-        let __ingligne = [
-          {text: ingredient.qte, cols:3, align:'RIGHT'},
-          {text:'', cols:1},
-          {text: '  '+ingredient.nom, cols:artcolwidth, align:'LEFT'},
-          {text:'', cols:1},
-          {text: String(ingredient.pu).replace('.',','), cols:6, align:'RIGHT'},
-          {text:'', cols:1},
-          {text: String(ingredient.prix).replace('.',','), cols:6, align:'RIGHT'}
-        ];
-        if (data.status==='confirmed') {
-          __ingligne = [
-            ...__ingligne,
-            {text:'', cols:1},
-            {text: ingredient.codetva, cols:1}
-          ];
-        }
-        printer.align('CT').style('NORMAL').tableCustom(__ingligne);
-        if (ingredient.comment!=='') {
-          printer.align('CT').style('B').tableCustom([
-            {text:'', cols:3},
-            {text: '* ', cols:2, align:'RIGHT'},
-            {text: ingredient.comment, cols:32, align:'LEFT'},
-            {text: ' *', cols:2, align:'RIGHT'},
-            {text:'', cols:3}
-          ]);
-          _linecount++;
-        }
-        _linecount++;
-      });
-    }
-    if (article.modificateur) {
-      const modnom = strings.modificateur.discount_item;
-      const modope = '-';
-      const ispc = String(article.modificateur.valeur).substr(-1,1)==='%';
-
-      let __modligne = [
-        {text: '', cols:4},
-        {text: modnom, cols:artcolwidth, align:'LEFT'},
+        {text: article.nom, cols:artcolwidth, align:'LEFT'},
         {text:'', cols:1},
-        {text: ispc ? modope+article.modificateur.valeur : '', cols:6, align:'RIGHT'},
+        {text: String(article.pu).replace('.',','), cols:6, align:'RIGHT'},
         {text:'', cols:1},
-        {text: modope+article.modificateur.montant.toFixed(2).replace('.',','), cols:6, align:'RIGHT'}
+        {text: (Number(article.qte)*Number(article.pu)).toFixed(2).replace('.',','), cols:6, align:'RIGHT'}
       ];
       if (data.status==='confirmed') {
-        __modligne = [
-          ...__modligne,
-          {text:'', cols:2}
-        ]
+        __ligne = [
+          ...__ligne,
+          {text:'', cols:1},
+          {text: article.codetva, cols:1}
+        ];
       }
 
-      printer.align('CT').style('B').tableCustom(__modligne);
+      printer.align('CT').style('B').tableCustom(__ligne);
+      
+      if (article.comment!=='') {
+        printer.align('CT').style('B').tableCustom([
+          {text:'', cols:3},
+          {text: '* ', cols:2, align:'RIGHT'},
+          {text: article.comment, cols:32, align:'LEFT'},
+          {text: ' *', cols:2, align:'RIGHT'},
+          {text:'', cols:3}
+        ]);
+        _linecount++;
+      }
+      _linecount++;
+
+      if (article.ingredients.length>0) {
+        article.ingredients.forEach((ingredient) => {
+          let __ingligne = [
+            {text: ingredient.qte, cols:3, align:'RIGHT'},
+            {text:'', cols:1},
+            {text: '  '+ingredient.nom, cols:artcolwidth, align:'LEFT'},
+            {text:'', cols:1},
+            {text: String(ingredient.pu).replace('.',','), cols:6, align:'RIGHT'},
+            {text:'', cols:1},
+            {text: String(ingredient.prix).replace('.',','), cols:6, align:'RIGHT'}
+          ];
+          if (data.status==='confirmed') {
+            __ingligne = [
+              ...__ingligne,
+              {text:'', cols:1},
+              {text: ingredient.codetva, cols:1}
+            ];
+          }
+          printer.align('CT').style('NORMAL').tableCustom(__ingligne);
+          if (ingredient.comment!=='') {
+            printer.align('CT').style('B').tableCustom([
+              {text:'', cols:3},
+              {text: '* ', cols:2, align:'RIGHT'},
+              {text: ingredient.comment, cols:32, align:'LEFT'},
+              {text: ' *', cols:2, align:'RIGHT'},
+              {text:'', cols:3}
+            ]);
+            _linecount++;
+          }
+          _linecount++;
+        });
+      }
+      if (article.modificateur) {
+        const modnom = strings.modificateur.discount_item;
+        const modope = '-';
+        const ispc = String(article.modificateur.valeur).substr(-1,1)==='%';
+
+        let __modligne = [
+          {text: '', cols:4},
+          {text: modnom, cols:artcolwidth, align:'LEFT'},
+          {text:'', cols:1},
+          {text: ispc ? modope+article.modificateur.valeur : '', cols:6, align:'RIGHT'},
+          {text:'', cols:1},
+          {text: modope+article.modificateur.montant.toFixed(2).replace('.',','), cols:6, align:'RIGHT'}
+        ];
+        if (data.status==='confirmed') {
+          __modligne = [
+            ...__modligne,
+            {text:'', cols:2}
+          ]
+        }
+
+        printer.align('CT').style('B').tableCustom(__modligne);
+        _linecount++;
+      }
+
+    } else {
+
+      let __fraisligne = [
+        {text:'', cols:4},
+        {text: article.nom.toUpperCase(), cols:artcolwidth, align:'LEFT'},
+        {text:'', cols:1},
+        {text: '+'+article.pu, cols:6, align:'RIGHT'},
+      ];
+      if (data.status==='confirmed') {
+        __fraisligne = [
+          ...__fraisligne,
+          {text:'', cols:1},
+          {text: article.codetva, cols:1}
+        ];
+      }
+      printer.align('CT').style('B').tableCustom(__fraisligne);
       _linecount++;
     }
+
+
+
+
+
+
   });
 
   // modificateurs (charge ou discount) au niveau de la commande
@@ -2349,6 +2382,23 @@ function _printUber(printer, data, strings) {
     .fontSize('4square')
     .text(strings.texte + data.heure)
     // .fontSize('4square');
+    .fontSize('normal');
+}
+
+function _printDeliveroo(printer, data, strings) {
+  printer
+    .fontSize('normal')
+    .drawLine()
+    .align('CT')
+    .style('B')
+    .fontSize('4square')
+    .text(strings.titre)
+    .text('#'+data.display_id)
+    .font('A')
+    .fontSize('normal')
+    .drawLine()
+    .fontSize('4square')
+    .text(strings.texte + data.heure)
     .fontSize('normal');
 }
 

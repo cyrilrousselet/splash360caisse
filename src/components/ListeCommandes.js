@@ -10,11 +10,9 @@ import history from '../helpers/history';
 import paths from './../constants/routes.json';
 
 import 'date-fns';
-import { format, compareAsc, compareDesc,differenceInMilliseconds,  parseISO } from "date-fns";
-import DateFnsUtils from '@date-io/date-fns';
+import { format, compareAsc, compareDesc,differenceInMilliseconds, parseISO, set, add, sub } from "date-fns";
 import moment from 'moment';
 import frLocale from "date-fns/locale/fr";
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -45,6 +43,8 @@ import AccessTimeIcon from '@material-ui/icons/AccessTime';
 
 import { decodetable } from '../constants/decodetable';
 import { dateBounds } from '../helpers/toolbox';
+import DateRangePickerPopin from './common/DateRangePickerPopin';
+import DatePickerIcon from './common/icon/DatePickerIcon';
 
 // import Logger from '../helpers/Logger';
 import logger from '../helpers/Logger';
@@ -54,12 +54,6 @@ import logger from '../helpers/Logger';
 let strings = new LocalizedStrings(data);
 
 
-
-class LocalizedUtils extends DateFnsUtils {
-  getDatePickerHeaderText(date) {
-    return format(date, "d MMM yyyy", { locale: this.locale });
-  }
-}
 
 
 function TabPanel(props) {
@@ -274,6 +268,8 @@ class ListeCommandes extends React.Component {
     this.closeLivraisonStatus = this.closeLivraisonStatus.bind(this);
     this.getBoundedCommandesList = this.getBoundedCommandesList.bind(this);
     this.printTicketHandler = this.printTicketHandler.bind(this);
+    this.setDateRange = this.setDateRange.bind(this);
+    this.togglePicker = this.togglePicker.bind(this);
 
     const {heure_fin} = props;
     const __todayBounds = dateBounds(new Date(), heure_fin);
@@ -289,7 +285,8 @@ class ListeCommandes extends React.Component {
       inputfocus: true,
       keyboardOpen: false,
       livreurOpen: false,
-      livraisonStatusOpen: false
+      livraisonStatusOpen: false,
+      pickerOpen: false,
     };
   }
   
@@ -342,6 +339,17 @@ class ListeCommandes extends React.Component {
     this.getBoundedCommandesList(d,f);
   }
 
+  setDateRange(range) {
+    console.log('setDateRange()', range);
+    let startDate = set(range.startDate, {hours:5, minutes:0});
+    let endDate = set(add(range.endDate, {days:1}), {hours:5, minutes:0});
+    this.setState({startDate, endDate, pickerOpen:false});
+    this.getBoundedCommandesList(startDate, endDate);
+  }
+  togglePicker() {
+    const {pickerOpen} = this.state;
+    this.setState({pickerOpen:!pickerOpen});
+  }
   
   closeReglement() {
     logger.info('ListeCmd.closeReglement()');
@@ -455,11 +463,25 @@ class ListeCommandes extends React.Component {
   }
 
   printTicketHandler(tck) {
-    const { printTicket, tickets, duplicata } = this.props;
+    const { printTicket, tickets, duplicata, commandeslist } = this.props;
     const { commandeId } = this.state;
     // if (tck==='all' || (tck.hasOwnProperty('ids') && Array.isArray(tck.ids) && tickets.find(t => t.ticket_id===tck.ids[0]).template==="commande")) {
       //   addPrintnum({commandeId:commandeId});
       // }
+
+    const { operator } = commandeslist[commandeId];
+    if (operator) {
+      if (String(operator.nom).toLowerCase() === 'ubereats') {
+        if (tck==='all') tck = 'all_uber';
+        if (tck==='commande') tck = 'uber';
+      }
+      else if (String(operator.nom).toLowerCase() === 'deliveroo') {
+        if (tck==='all') tck = 'all_deliveroo';
+        if (tck==='commande') tck = 'deliveroo';
+      }
+    }
+
+
     if (tck.hasOwnProperty('ids') && Array.isArray(tck.ids) && tickets.find(t => t.ticket_id===tck.ids[0]).template==="commande") {
     // if (tck==='commande') {
       duplicata(commandeId);
@@ -479,11 +501,11 @@ class ListeCommandes extends React.Component {
   render() {
     const { commandeslist, loading, tickets, thiscash, livreurs, setLivreur } = this.props;
 
-    const { startDate, endDate, openTab, commandeId, printOpen, searchval, inputfocus, keyboardOpen, livreurOpen } = this.state;
+    const { startDate, endDate, openTab, commandeId, printOpen, searchval, inputfocus, keyboardOpen, livreurOpen, pickerOpen } = this.state;
 
     const self = this;
 
-    const commandeLivreur = commandeId!=null ? commandeslist[commandeId].livreur : null;
+    const commandeLivreur = (commandeId!=null && commandeslist[commandeId]!=null) ? commandeslist[commandeId].livreur : null;
 
 
     let a_encaisserlist = [], standbylist = [], confirmedlist = [], stmeallist = [];
@@ -562,6 +584,7 @@ class ListeCommandes extends React.Component {
       <TopZone />
       <div className="MainZone">
         <div className="dates">
+        {/*
           <MuiPickersUtilsProvider utils={LocalizedUtils} locale={ frLocale }>
             <div className="caption">{ strings.modules.listecommandes.dates.start}</div>
             <KeyboardDatePicker
@@ -586,6 +609,13 @@ class ListeCommandes extends React.Component {
               cancelLabel={ strings.general.dialog.cancel }
               />
           </MuiPickersUtilsProvider>
+            */}
+            <div className="date-pickers" onClick={() => {this.togglePicker()}}>
+            <div className="caption space-left">{ strings.modules.listecommandes.dates.start + format(startDate, 'd MMM yyyy', {locale:frLocale}) + strings.modules.listecommandes.dates.end + format(sub(endDate, {days:1}), 'd MMM yyyy', {locale:frLocale})}</div>
+            <Fab aria-label="openPicker" size="small" className="openPicker-button" onClick={ this.togglePicker }>
+              <DatePickerIcon htmlColor="#0065E5" />
+            </Fab>
+          </div>
         </div>
 
         <div className="listes">
@@ -617,6 +647,14 @@ class ListeCommandes extends React.Component {
         <NumberKeyboard open={keyboardOpen} numbersOnly={true} buttonHandler={this.keyboardButtonHandler} closeHandler={this.closeKeyboard} />
         <ImpressionTicketPopin tickets={tickets} printOpen={printOpen} closeHandler={this.closePrint} commandeId={ this.state.commandeId } launchTicket={this.printTicketHandler} />
         <LivreurPopin livreurs={livreurs} livreurOpen={livreurOpen} setLivreur={setLivreur} closeHandler={this.closeLivreurs} commandeId={ this.state.commandeId } commandeLivreur={commandeLivreur} />
+        <DateRangePickerPopin
+          wrapperClassName='datepickercomponent'
+          open={ pickerOpen } 
+          startDate={ startDate }
+          endDate={ endDate }
+          validate={ this.setDateRange }
+          closeHandler={ this.togglePicker }
+        />
 
       </div>
     </div>

@@ -12,7 +12,7 @@ export const htmlentities = value => value.replace('<br />', String.fromCharCode
 // export const htmlentities = value => value;
 
 
-export const dateBounds = (date, heure_fin) => {
+export const dateBounds = (date, heure_fin='5:00') => {
 
   // *** définition de la fin de la période précédente
   // fin de la période précédente

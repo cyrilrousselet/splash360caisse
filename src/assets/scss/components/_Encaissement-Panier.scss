@@ -319,6 +319,20 @@
                 left: 3px;
             }
         }
+        &.PanierListeItem-frais {
+
+            .MuiListItem-root {
+                background-color: $rouge;
+                border-radius: 15px;
+                .litm {
+                    font-family: $f_hea;
+                    color: $blanc;
+                }
+            }
+            .quantite:before {
+                content: '';
+            }
+        }
         .prix {
             box-sizing: border-box;
             width: 50px;

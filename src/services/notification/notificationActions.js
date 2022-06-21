@@ -261,6 +261,30 @@ function treatment(data) {
         );
       }
     }
+    // traitement d'une nouvelle commande Deliveroo
+    else if (data.eventType==="new_order") {
+      const {restaurant_id, restaurant_secret} = getState().parametresReducer.parametres.entreprise;
+
+      dispatch({ type: notificationActionTypes.GET_NOTIFICATION, notif: data.eventType });
+      notificationServices.ackitNotification({id: restaurant_id, secret: restaurant_secret, uniqid: data.uniqid});
+      
+      if (data.provider==='deliveroo') {
+        // on confirme qu'elle est prise en charge
+        notificationServices.confirmDispo( 'deliveroo', {...data, id: restaurant_id, secret: restaurant_secret});
+
+        // on récupère la commande depuis le BO
+        notificationServices.getOrder( 'deliveroo', {...data, href: data.href.replace('import/confirmdispodeliveroo', 'export/getcommande'), id: restaurant_id, secret: restaurant_secret} )
+        .then(
+          response => {
+            dispatch(commandeActions.setCommandeFromAPI( {data:{...response, provider:'deliveroo'}} ))
+          }
+        )
+      }
+    }
+    // annulation d'une commande Deliveroo (provoquée par le service)
+    else if (data.eventType==="cancel_order") {
+      dispatch(commandeActions.deleteCommande({ticketId: data.url, motif: 'Annulée par le provider'}));
+    }
     else if (data.eventType==='newcommande') {
       const { entreprise } = getState().parametresReducer.parametres;
 

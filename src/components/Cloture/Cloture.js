@@ -455,7 +455,7 @@ class Cloture extends React.Component {
 
   getVentilation(periode) {
 
-    const { ventilation, emission } = periode;
+    const { ventilation, emission, troppercu } = periode;
 
     let especes = 0,
         carte = 0,
@@ -467,8 +467,8 @@ class Cloture extends React.Component {
     if (ventilation && ventilation.moyen) {
       if (ventilation.moyen.hasOwnProperty('especes')) especes = ventilation.moyen.especes.valeur;
       if (ventilation.moyen.hasOwnProperty('carte')) carte = ventilation.moyen.carte.valeur;
-      // note : on retire des TR le montant des avoirs émis
-      if (ventilation.moyen.hasOwnProperty('ticket')) ticket = ventilation.moyen.ticket.valeur  - emission;
+      // note : on retire des TR le montant des avoirs émis et le trop perçu
+      if (ventilation.moyen.hasOwnProperty('ticket')) ticket = ventilation.moyen.ticket.valeur  - (emission + troppercu);
       if (ventilation.moyen.hasOwnProperty('cheque')) cheque = ventilation.moyen.cheque.valeur;
       if (ventilation.moyen.hasOwnProperty('avoir')) avoir = ventilation.moyen.avoir.valeur;
       Object.entries(ventilation.moyen).forEach(([k,v]) => {

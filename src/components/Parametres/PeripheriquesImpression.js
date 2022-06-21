@@ -558,8 +558,7 @@ class PeripheriquesImpression extends React.Component {
         };
     });
     tickets_liste = tickets_liste.sort((a,b)=>a.weight-b.weight);
-    // tickets_liste = tickets_liste.filter(tck=>(['commande','cloture_x','cloture_z','avoir']).indexOf(tck.type)===-1);
-    tickets_liste = tickets_liste.filter(tck=>(['cloture_x','cloture_z','avoir']).indexOf(tck.type)===-1);
+    tickets_liste = tickets_liste.filter(tck=>(['cloture_x','cloture_z','avoir','uber','deliveroo']).indexOf(tck.type)===-1);
 
     return (
     <div className="PeripheriquesImpression sectioncontent">

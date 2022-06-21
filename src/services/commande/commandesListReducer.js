@@ -4,6 +4,8 @@ const initialState = {
   loading: false,
   error: null,
   commandeslist: {},
+  liststart: null,
+  listend: null,
   ticketsrestau: [],
   caisses: [],
   schedules: [],
@@ -21,10 +23,36 @@ export function commandesListReducer(state = initialState, action) {
   switch (action.type) {
     case commandeActionTypes.GET_ALLCOMMANDES_REQUEST:
     case commandeActionTypes.GETALL_TICKETSRESTAU_REQUEST:
-    case commandeActionTypes.GET_COMMANDESLIST_REQUEST:
     case commandeActionTypes.GET_COMMANDES_CAISSES_REQUEST:
       return {
         ...state,
+        loading: true,
+        error: null
+      };
+
+    case commandeActionTypes.GET_COMMANDESLIST_REQUEST:
+
+      let start = null;
+      let end = null;
+
+      if (action.params.hasOwnProperty('$and')) {
+        if (action.params['$and'][0].hasOwnProperty('createdAt') && action.params['$and'][1].hasOwnProperty('createdAt')) {
+          start = action.params['$and'][0].createdAt['$gt'];
+          end = action.params['$and'][1].createdAt['$lte'];
+        }
+      } else if (action.params.hasOwnProperty('createdAt')) {
+        if (action.params.createdAt.hasOwnProperty('$gt')) {
+          start = action.params.createdAt['$gt'];
+        } 
+        if (action.params.createdAt.hasOwnProperty('$lte')) {
+          end = action.params.createdAt['$lte'];
+        } 
+      }
+
+      return {
+        ...state,
+        liststart: start,
+        listend: end,
         loading: true,
         error: null
       };

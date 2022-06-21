@@ -25,7 +25,7 @@ function printTest() {
 
 function printTicket(imprimante, template, contenu) {
 
-  logger.info('printTicket imprimante', imprimante);
+  logger.info('printTicket imprimante', imprimante, template);
 
   return emit('printTicket', {imprimante, template, contenu});
 }

@@ -13,6 +13,13 @@ export const templates = {
     'commande',
     'legal'
   ],
+  deliveroo: [
+    'logo', 
+    'entreprise',
+    'deliveroo',
+    'commande',
+    'legal'
+  ],
   partiel: [
     [],
     [

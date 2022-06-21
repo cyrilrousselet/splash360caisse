@@ -103,6 +103,7 @@ const mapDispatchToProps = (dispatch) => {
     removeRendu: commandeActions.removeRendu,
     addTroppercu: commandeActions.addTroppercu,
     confirmCommande: commandeActions.confirmCommande,
+    // printTicket: peripheralActions.printTicket,
     openDrawer: peripheralActions.openDrawer,
     closeDrawer: peripheralActions.closeDrawer,
     persistTicketsRestaurants: commandeActions.persistTicketsRestaurants,

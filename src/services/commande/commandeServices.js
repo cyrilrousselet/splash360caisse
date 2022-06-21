@@ -325,7 +325,7 @@ console.log('SndSrv.addIngredient ingre : ',item.ingredients);
     ) {
       console.log('OUI ! tous les steps sont validated')
       item.status = "completed";
-      item.ingredients = _ventilationIngredientsSteps(item, produitSteps, tvaCat);
+      item.ingredients = _ventilationIngredientsSteps(item, produitSteps, tvaCat, commandeMode);
     } else {
       console.log('NON ! tous les steps ne sont pas validated');
     }
@@ -455,7 +455,7 @@ function uncheckItemSteps(item, stepid) {
   return item;
 }
 
-function completeStep(step, item, produitSteps, tvaCat) {
+function completeStep(step, item, produitSteps, tvaCat, commandeMode) {
   logger.info("completeStep");
   return new Promise((resolve, reject) => {
     const { steps } = item;
@@ -478,7 +478,7 @@ function completeStep(step, item, produitSteps, tvaCat) {
         logger.info("item completed");
         item.status = "completed";
 
-        item.ingredients = _ventilationIngredientsSteps(item, produitSteps, tvaCat);
+        item.ingredients = _ventilationIngredientsSteps(item, produitSteps, tvaCat, commandeMode);
       }
     }
     item.prix = _getPrix(item, produitSteps);
@@ -527,7 +527,7 @@ function updateMode(mode, commande, data_catalogue) {
     let __stepsDuProduit = steps[itm.produitid];
     
     if (__stepsDuProduit) {  
-      __ritm.ingredients = _ventilationIngredientsSteps(__ritm, __stepsDuProduit, tva);
+      __ritm.ingredients = _ventilationIngredientsSteps(__ritm, __stepsDuProduit, tva, mode);
     }
 
     // __ritm.prix = __stepsDuProduit ? _getPrix(__ritm, __stepsDuProduit) : (__ritm.pu * __ritm.quantite);
@@ -558,7 +558,7 @@ function _getProduit(id, catalogue) {
 
 
 // on passe en revue chaque step pour déterminer le supplément pour chaque ingrédient
-function _ventilationIngredientsSteps(item, produitSteps, tvaCat) {
+function _ventilationIngredientsSteps(item, produitSteps, tvaCat, mode) {
   logger.info("_ventilationIngredientsSteps()");
   // let __supplement = 0;
   let __ing = null;
@@ -579,13 +579,13 @@ function _ventilationIngredientsSteps(item, produitSteps, tvaCat) {
       if (__ing.length > 0)
         __ingredients = [
           ...__ingredients,
-          ..._setSupplements(step.regles[0], __ing, tvaCat),
+          ..._setSupplements(step.regles[0], __ing, tvaCat, mode),
         ];
     } else {
       step.regles.forEach((regle) => {
         __ing = item.ingredients.filter((ing) => regle.type === ing.type);
         if (__ing.length > 0)
-          __ingredients = [...__ingredients, ..._setSupplements(regle, __ing, tvaCat)];
+          __ingredients = [...__ingredients, ..._setSupplements(regle, __ing, tvaCat, mode)];
       });
     }
   });
@@ -595,7 +595,7 @@ function _ventilationIngredientsSteps(item, produitSteps, tvaCat) {
 
 // on attribue le montant du supplément à chaque ingrédient,
 // en fonction des règles des steps
-function _setSupplements(rule, ingredients, tvaCat) {
+function _setSupplements(rule, ingredients, tvaCat, mode) {
   logger.info("_setSupplements");
 
   const regle = rule.regle;
@@ -634,10 +634,10 @@ function _setSupplements(rule, ingredients, tvaCat) {
       // let __stack = 0;
       // on compte uniquement le prix des ingrédients
       ingredients.forEach((ing) => {
-        ing.supplement = 0;
-        ing.supplementht = 0;
-        ing.supplement += Number(ing.prix) * ing.qte;
-        ing.supplementht += Number(ing.ht) * ing.qte;
+        // ing.supplement = 0;
+        // ing.supplementht = 0;
+        ing.supplement = Number(ing.prix) * ing.qte;
+        ing.supplementht = Number(ing.ht) * ing.qte;
         __ingredients.push(ing);
       });
     }
@@ -645,8 +645,10 @@ function _setSupplements(rule, ingredients, tvaCat) {
     ingredients.forEach((ing) => {
       ing.supplement = 0;
       ing.supplementht = 0;
-      ing.supplement += (Number(ing.prix) + Number(rule.supplement)) * ing.qte;
-      ing.supplementht += (Number(ing.ht) + Number(rule.supplement)) * ing.qte;
+      // ing.supplement += (Number(ing.prix) + Number(rule.supplement)) * ing.qte;
+      // ing.supplementht += (Number(ing.ht) + Number(rule.supplement)) * ing.qte;
+      ing.supplement = Number(ing.prix) * ing.qte;
+      ing.supplementht = Number(ing.ht) * ing.qte;
       __ingredients.push(ing);
     });
   }
@@ -1034,7 +1036,12 @@ function saveCommande(commande, catalogueReducer) {
       itm.ingredients = ingrd;
     }
 
-    const prd = produits.find((p) => p.id === itm.produitid);
+    let prd;
+    if (itm.produitid!=='frais') {
+      prd = produits.find((p) => p.id === itm.produitid);
+    } else {
+      prd = {tva_id: itm.tva.id};
+    }
     items.push({
       ...itm,
       tva: {
@@ -1052,15 +1059,12 @@ function saveCommande(commande, catalogueReducer) {
   };
 
 
-  let __commandeVentilee = __c;
 
-  // uniquement sur une commande confirmée :
-  // if (__c.status==="confirmed") {
 
-    // ventilation de la TVA
-    __commandeVentilee = _getVentilationTva(__c, catalogueReducer.tva);
 
-  // }
+  // ventilation de la TVA
+  let  __commandeVentilee = _getVentilationTva(__c, catalogueReducer.tva);
+
 
   return emit("dbCommandePersist", { commande: __commandeVentilee });
 }
@@ -1602,7 +1606,7 @@ function _getModificateurForItem(modificateurs, itemid) {
 }
 
 function _getModificateurForCmd(modificateurs) {
-  return modificateurs.find(mod => (mod.item===null && mod.type!=='frais'));
+  return modificateurs.find(mod => (mod.item===null && mod.operation<0 && mod.type!=='frais'));
 }
 // function _getFraisForCmd(modificateurs) {
 //   return modificateurs.find(mod => (mod.item===null && mod.type==='frais'));
@@ -1825,9 +1829,9 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
         produitid: itm.id,
         nom: prd.nom,
         //        prix: itm.quantity*Number(prd.prix),
-        prix: Number(itm.price.unit_price.amount / 100),
-        pu: Number(itm.price.unit_price.amount / 100),
-        puht: Number(prd.puht),
+        prix: Number(itm.price.base_total_price.amount / 100),
+        pu: Number(itm.price.base_total_price.amount / 100),
+        puht: Number(prd.prixArray_c[MODES[commande.mode]].ht / 100),
         tva: { ...catalogueReducer.tva[prd.tva_id] },
         composition: complist,
         ingredients: [],
@@ -1859,7 +1863,7 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
             // infos de l'ingrédient issues du catalogue
             const ingredient = catalogueReducer.ingredients[ing.id];
 
-            logger.info(ing.id, ingredient);
+            // logger.info(ing.id, ingredient);
 
             if (ingredient) {
               logger.info("steps", steps);
@@ -1877,8 +1881,10 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
                 ingredient: ing.id,
                 type: ingredient.type,
                 qte: ing.quantity,
-                prix: Number(ing.price.unit_price.amount / 100),
-                puht: Number(ingredient.supplementArray[MODES[commande.mode]].ht),
+                prix: Number(ing.price.base_unit_price.amount / 100),
+                puht: Number(ingredient.supplementArray_c[MODES[commande.mode]].ht / 100),
+                ht: Number(ingredient.supplementArray_c[MODES[commande.mode]].ht / 100),
+                supplementht: Number(ingredient.supplementArray[MODES[commande.mode]].ht) * parseInt(ing.quantity),
                 nom: ingredient.nom,
                 fromStep: ingredient_step.step_id,
                 tva: catalogueReducer.tva[ingredient.tvaArray[MODES[commande.mode]]]
@@ -1894,10 +1900,12 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
           item,
           catalogueReducer.steps[item.produitid],
           catalogueReducer.tva,
+          commande.mode
         );
       }
-      item.prix = Number(itm.price.base_unit_price.amount / 100);
-      item.puht = Number(prd.puht);
+      // item.prix = Number(itm.price.base_unit_price.amount / 100);
+      // item.puht = Number(prd.puht);
+      item.prix = _getPrix(item, steps);
       commande.items.push(item);
     }
   });
@@ -1964,7 +1972,9 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
   commande.status = data.status; // "standby" ou "confirmed"
   commande.mode = data.mode; // "emporter", "surplace" ou "livraison"
   commande.numero = numero;
-
+  if (data.modificateurs && Array.isArray(data.modificateurs)) {
+    commande.modificateurs = data.modificateurs.filter(m => m.operation<0);
+  }
   // on met tous les produits dans le même array
   let produits = [];
   // for (let [key, value] of Object.entries(catalogueReducer.catalogue)) {
@@ -2031,7 +2041,7 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
         const item = {
           produitid: itm.produitid,
           nom: prd.nom,
-          prix: __itmqte * Number(prd.prix),
+          prix: Number((__itmqte * prd.prixArray_c[MODES[commande.mode]].ttc) / 100), //__itmqte * Number(prd.prix),
           pu: Number(prd.prixArray[MODES[commande.mode]].ttc),
           puht: Number(prd.prixArray[MODES[commande.mode]].ht),
           tva: { ...catalogueReducer.tva[prd.tvaArray[MODES[commande.mode]]] },
@@ -2101,7 +2111,8 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
           item.ingredients = _ventilationIngredientsSteps(
             item,
             catalogueReducer.steps[itm.produitid],
-            catalogueReducer.tva
+            catalogueReducer.tva,
+            commande.mode
           );
         }
 
@@ -2111,9 +2122,39 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
     }
   });
 
-  if (data.modificateurs) commande.modificateurs = data.modificateurs;
 
-  commande.total = _getCommandeTotal(commande.items, []);
+  if (data.modificateurs && data.modificateurs.length>0) {
+    const modfrais = data.modificateurs.filter(m => m.operation>0);
+
+    modfrais.forEach(f => {
+      
+      const __fttc = Math.abs( Number(String(f.valeur).slice(0, -1)) );
+      const __ftva = f.taux;
+      const __tht = __fttc / (1 + __ftva);
+      const __cattva = Object.values(catalogueReducer.tva).find(t => Number(t.valeur)===__ftva);
+      
+      console.log('FRAIS TVA', f.taux, __cattva);
+      const frais = {
+        produitid: 'frais',
+        nom: f.nom,
+        prix: __fttc,
+        pu: __fttc,
+        puht: Math.round(__tht * 100) / 100,
+        tva: { ...__cattva, id:__cattva.tva_id },
+        composition: [],
+        ingredients: [],
+        steps: [],
+        stepslength: 0,
+        quantite: 1,
+        itemid: _newCommandeItemId(),
+        status: "completed",
+      };
+      commande.items.push(frais);
+    });
+  }
+
+  commande.total = _getCommandeTotal(commande.items, commande.modificateurs);
+  // commande.total = _getCommandeTotal(commande.items, []);
   return commande;
 }
 
@@ -2408,7 +2449,7 @@ const _getCommandeTotal = (items, modificateurs) => {
         (m) => m.item === itm.itemid && m.ingredient === null
       );
 
-      if (__modificateur) {
+      if (__modificateur && __modificateur.operation<0) {
 
         const ispc = String(__modificateur.valeur).substr(-1, 1) === "%";
         const val = Math.abs(
@@ -2430,7 +2471,7 @@ const _getCommandeTotal = (items, modificateurs) => {
   __modificateur = modificateurs.find(
     (c) => c.item === null && c.ingredient === null
   );
-  if (__modificateur) {
+  if (__modificateur && __modificateur.operation<0) {
     const ispc = String(modificateurs[0].valeur).substr(-1, 1) === "%";
     const val = Math.abs(Number(String(modificateurs[0].valeur).slice(0, -1)));
     if (ispc) {

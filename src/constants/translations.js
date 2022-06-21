@@ -829,8 +829,8 @@ const data = {
             statistiques: { 
                 nom: "Statistiques",
                 pickers: {
-                    du: "Statistiques du",
-                    au: "au"
+                    du: "Statistiques du ",
+                    au: " au "
                 },
                 shortcut: {
                     jour: "Jour",
@@ -1437,6 +1437,11 @@ const data = {
                 titre: 'Commande UberEats',
                 texte: 'LIVRAISON a ',
                 client: 'Client :',
+                couverts: 'AVEC COUVERTS, PAILLE...'
+            },
+            deliveroo: {
+                titre: 'Commande Deliveroo',
+                texte: 'LIVRAISON a ',
                 couverts: 'AVEC COUVERTS, PAILLE...'
             },
             production: {

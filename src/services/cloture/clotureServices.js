@@ -1,12 +1,11 @@
 import {emit} from 'eiphop';
 
 import {remote} from 'electron';
-import { startOfToday, isAfter, isBefore, endOfToday } from 'date-fns';
+import { isAfter, isBefore, set, sub, add } from 'date-fns';
 // import { dateBounds } from '../../helpers/toolbox';
 // import LodashId from 'lodash-id';
 // import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
-import format from 'date-fns/format';
 import { createObjectCsvWriter } from 'csv-writer';
 import archiver from 'archiver';
 import zipencryptable from 'archiver-zip-encryptable';
@@ -351,13 +350,30 @@ function getCurrentPeriode(commandes, gtt, catalogue, params) {
 
    // logger.info('per.fdcaisse', __fdcaisse_courant);
 
-   if (__start===null) __start = startOfToday();
-   if (__end===null) __end = endOfToday();
+  //  if (__start===null) __start = startOfToday();
+  //  if (__end===null) __end = endOfToday();
+
+  const __td = new Date();
+
+  // si on est entre minuit et 5h du matin
+  if (__td.getHours()<5) {
+   // l'heure de début est hier à 5h
+   if (__start===null) __start = set(sub(__td, {days: 1}), {hours: 5});
+   // l'heure de fin est aujourd'hui à 5h
+   if (__end===null) __end = set(__td, {hours: 5});
+  } 
+  // si on est entre 5h et minuit
+  else {
+   // l'heure de début est aujourd'hui à 5h
+   if (__start===null) __start = set(__td, {hours: 5});
+   // l'heure de fin est demain à 5h
+   if (__end===null) __end = set(add(__td, {days: 1}), {hours: 5});
+  }
 
     return {
       periode: {
-        debut: format(__start,'yyyy-MM-dd HH:mm:ss.SSS'), //startOfToday(),
-        fin: format(__end,'yyyy-MM-dd HH:mm:ss.SSS'),   //endOfToday(),
+        debut: __start, //format(__start,'yyyy-MM-dd HH:mm:ss.SSS'), //startOfToday(),
+        fin: __end, //format(__end,'yyyy-MM-dd HH:mm:ss.SSS'),   //endOfToday(),
         editeur: params.user,
         caisse: params.caisse,
         vendeur: params.vendeur,

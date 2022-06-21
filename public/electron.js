@@ -37,7 +37,7 @@ function createWindow() {
       if (process.platform === 'darwin') {
         try {
           BrowserWindow.addDevToolsExtension(
-              path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions/lmhkpmbekcpmknklioeibfkpmmfibljd/3.0.9_0')
+              path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions/lmhkpmbekcpmknklioeibfkpmmfibljd/3.0.11_0')
           );
         } catch(e) {
           log.warn('pbm devtool darwin');
@@ -46,7 +46,7 @@ function createWindow() {
       } else if (process.platform === 'win32') {
         try {
           BrowserWindow.addDevToolsExtension(
-          path.join(os.homedir(), '\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\lmhkpmbekcpmknklioeibfkpmmfibljd\\2.17.2_0')
+          path.join(os.homedir(), '\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\lmhkpmbekcpmknklioeibfkpmmfibljd\\3.0.11_0')
           );
         } catch(e) {
           log.warn('pbm devtool win');

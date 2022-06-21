@@ -675,7 +675,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
         // en fonction du type de ticket demandé
 
         // ticket commande et ticket UberEats
-        if (['commande','uber'].indexOf(ticket.template)>-1) {
+        if (['commande','uber','deliveroo'].indexOf(ticket.template)>-1) {
 
 
           let piece = null;
@@ -694,7 +694,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           }
           
           // -> template ticket
-          template = (ticket.template==='uber') ? templates.uber : templates.commande;
+          template = (ticket.template==='uber') ? templates.uber : ( (ticket.template==='deliveroo') ? templates.uber : templates.commande );
 
           // const cmdTva = {};
           let articles = [];
@@ -702,6 +702,13 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           // let articletotal = 0;
           let __comment = null;
           let __modificateur = null;
+
+
+          // on déplace les frais de gestion à la fin de l'array
+          if (cmd.items.findIndex(e=>e.produitid==='frais')>-1) {
+            cmd.items.push(cmd.items.splice(cmd.items.findIndex(e=>e.produitid==='frais'), 1)[0]);
+          }
+          
           cmd.items.forEach(article => {
 
 
@@ -831,6 +838,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             articles.push({
 
               qte: ligne_p['ENC-TIK-LIG-PRO-QTE'],
+              produitid: ligne_p['ENC-TIK-LIG-PRO-NID'],  // article.produitid,
               codetva: ligne_p['ENC-TIK-LIG-TAX-NID'] || '',
               nom: removeDiacritics(ligne_p['ENC-TIK-LIG-PRO-LIB']),
               pu: ligne_p['ENC-TIK-LIG-PRO-TTC']===0 ? '' : Number(ligne_p['ENC-TIK-LIG-PRO-TTC'] / 100).toFixed(2),
@@ -982,6 +990,11 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           const __datetime = new Date(__gdh.substring(0,4)+"-"+__gdh.substring(4,6)+"-"+__gdh.substring(6,8)+' '+__gdh.substring(8,10)+':'+__gdh.substring(10,12)+':'+__gdh.substring(12,14)); 
           const __datestr = `${format(__datetime, "d MMM yyyy", { locale: frLocale })} à ${format(__datetime, "H:mm:ss")}`;
 
+          let __client = null;
+          if (ticket.template!=='deliveroo') {
+            __client = cmd.client && clients.find(c=>c.client_id===cmd.client.client_id);
+          }
+
           const commande = {
             numero: cmdnumero,
             id: cmd.ticketId,
@@ -1006,7 +1019,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             comment: __comment ? __comment.texte : '',
             // modificateur: piece['ENC-TIK-REM-MTN'] || null,
             modificateur: __modificateur ? __modificateur : null,
-            client: cmd.client && clients.find(c=>c.client_id===cmd.client.client_id)
+            client: __client
           };
 
 
@@ -1095,12 +1108,16 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               date: __datestr.replace('à','-')
             },
             nomticket: ticket.nom,
-            strings: {commande: strings.tickets.commande, uber: strings.tickets.uber},
+            strings: {commande: strings.tickets.commande, uber: strings.tickets.uber, deliveroo: strings.tickets.deliveroo},
           };
 
 
           if (ticket.template==='uber') {
             contenu = {...contenu, uber: cmd.uber};
+          }
+          if (ticket.template==='deliveroo') {
+            let heurecmt = cmd.comments.find(c => c.item==='heure' && c.ingredient===null);
+            contenu = {...contenu, deliveroo: { display_id: cmd.client.client_id, heure: format(new Date(heurecmt['texte']), 'HH:mm') }};
           }
 
         }

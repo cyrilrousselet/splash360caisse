@@ -97,17 +97,19 @@ function getCloturesList(params={}) {
   return (dispatch) => {
     dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_REQUEST, criterias:params });
 
-    // logger.time('ClotureActions.getCloturesList');
     return clotureServices.getCloturesList(params)
     .then(
         data => { 
-          // logger.timeEnd('ClotureActions.getCloturesList');
-          dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_SUCCESS, ...data }) 
+          const filteredArray = Object.entries(data.clotureslist).filter(([k,v])=>{
+            console.log('clo', v);
+            return v.periode.hasOwnProperty('ventilation');
+          });
+          console.log('filteredArray', Object.fromEntries(filteredArray));
+          dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_SUCCESS, clotureslist: Object.fromEntries(filteredArray) }) 
         }
     )
     .catch(
       error => { 
-        // logger.timeEnd('ClotureActions.getCloturesList');
         logger.error(error);
         dispatch({ type: clotureActionTypes.GET_CLOTURES_LIST_FAILURE, error: error.toString() }) 
       }
@@ -3412,54 +3414,62 @@ function _getZSynthese(zliste, type) {
       });
     }
     
-    Object.entries(z.ventilation.moyen).forEach(([moyen,ventil])=> {
-      if (!__ventilation.moyen.hasOwnProperty(moyen)) {
-        __ventilation.moyen[moyen] = {
-          moyen: ventil.moyen,
-          valeur: 0
-        };
-      }
-      __ventilation.moyen[moyen].valeur += ventil.valeur;
-      __ventilation.moyen[moyen].valeur = Math.round(__ventilation.moyen[moyen].valeur * 100) / 100;
-    });
+    if (z.ventilation.hasOwnProperty('moyen')) {
+      Object.entries(z.ventilation.moyen).forEach(([moyen,ventil])=> {
+        if (!__ventilation.moyen.hasOwnProperty(moyen)) {
+          __ventilation.moyen[moyen] = {
+            moyen: ventil.moyen,
+            valeur: 0
+          };
+        }
+        __ventilation.moyen[moyen].valeur += ventil.valeur;
+        __ventilation.moyen[moyen].valeur = Math.round(__ventilation.moyen[moyen].valeur * 100) / 100;
+      });
+    }
     
-    Object.entries(z.ventilation.tva).forEach(([taux,tva])=> {
-      if (!__ventilation.tva.hasOwnProperty(taux)) {
-        __ventilation.tva[taux] = {
-          taux: tva.taux,
-          ttc: 0,
-          ht: 0,
-          taxe: 0
-        };
-      }
-      __ventilation.tva[taux].ttc += Math.round(tva.ttc);
-      __ventilation.tva[taux].ht += Math.round(tva.ht);
-      __ventilation.tva[taux].taxe += Math.round(tva.taxe);
-    });
+    if (z.ventilation.hasOwnProperty('tva')) {
+      Object.entries(z.ventilation.tva).forEach(([taux,tva])=> {
+        if (!__ventilation.tva.hasOwnProperty(taux)) {
+          __ventilation.tva[taux] = {
+            taux: tva.taux,
+            ttc: 0,
+            ht: 0,
+            taxe: 0
+          };
+        }
+        __ventilation.tva[taux].ttc += Math.round(tva.ttc);
+        __ventilation.tva[taux].ht += Math.round(tva.ht);
+        __ventilation.tva[taux].taxe += Math.round(tva.taxe);
+      });
+    }
     
-    Object.entries(z.ventilation.vendeur).forEach(([id,vendeur])=> {
-      if (!__ventilation.vendeur.hasOwnProperty(id)) {
-        __ventilation.vendeur[id] = {
-          id: vendeur.id,
-          nom: vendeur.nom,
-          ventes: 0,
-          remboursements: 0
-        };
-      }
-      __ventilation.vendeur[id].ventes += Math.round(vendeur.ventes);
-      __ventilation.vendeur[id].remboursements += Math.round(vendeur.remboursements);
-    });
+    if (z.ventilation.hasOwnProperty('vendeur')) {
+      Object.entries(z.ventilation.vendeur).forEach(([id,vendeur])=> {
+        if (!__ventilation.vendeur.hasOwnProperty(id)) {
+          __ventilation.vendeur[id] = {
+            id: vendeur.id,
+            nom: vendeur.nom,
+            ventes: 0,
+            remboursements: 0
+          };
+        }
+        __ventilation.vendeur[id].ventes += Math.round(vendeur.ventes);
+        __ventilation.vendeur[id].remboursements += Math.round(vendeur.remboursements);
+      });
+    }
     
-    Object.entries(z.ventilation.caisse).forEach(([id,caisse])=> {
-      if (!__ventilation.caisse.hasOwnProperty(id)) {
-        __ventilation.caisse[id] = {
-          id: caisse.id,  
-          nom: caisse.nom,
-          ca: 0
-        };
-      }
-      __ventilation.caisse[id].ca += Math.round(caisse.ca);
-    });
+    if (z.ventilation.hasOwnProperty('caisse')) {
+      Object.entries(z.ventilation.caisse).forEach(([id,caisse])=> {
+        if (!__ventilation.caisse.hasOwnProperty(id)) {
+          __ventilation.caisse[id] = {
+            id: caisse.id,  
+            nom: caisse.nom,
+            ca: 0
+          };
+        }
+        __ventilation.caisse[id].ca += Math.round(caisse.ca);
+      });
+    }
 
   });
 

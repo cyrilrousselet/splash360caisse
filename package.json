@@ -2,7 +2,7 @@
     "name": "splash360",
     "productName": "Splash360",
     "description": "Cash application",
-    "version": "1.1.0+1",
+    "version": "1.1.0+2",
     "private": true,
     "author": {
         "name": "Splash360",
@@ -70,6 +70,7 @@
         "lodash-id": "^0.14.0",
         "lodash-move": "^1.1.1",
         "lowdb": "^1.0.0",
+        "materialui-daterange-picker": "^1.1.92",
         "mkdirp": "^1.0.4",
         "mongoose": "^5.10.15",
         "node-gzip": "^1.1.2",

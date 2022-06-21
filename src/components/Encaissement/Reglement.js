@@ -184,11 +184,17 @@ class Reglement extends React.Component {
           this.props.updateCommande({shippedAt: __shippedAt, chronoLivraison: Math.round( differenceInMilliseconds( parseISO(__shippedAt), parseISO(this.props.commande.pickedAt) ) / 10 ) / 100}, 'beforeCloseReglement (livraison)');
         }
 
+        this.props.updateCommande({printnum: Number(this.props.commande.printnum)+1}, 'beforeCloseReglement');
+        // this.props.printTicket({ templates: ["commande"] });
+
       } else if (__previousstatus === "standby") {
 
         if (!this.props.commande.scheduled || this.props.commande.enproduction===true) {
           _tpl = 'all';
         }
+        // const __tpl = (this.props.commande.scheduled && this.props.commande.enproduction===false) ? { templates: ["commande"]} : "all";
+        // this.props.updateCommande({printnum: Number(this.props.commande.printnum)+1}, 'beforeCloseReglement');
+        // this.props.printTicket(__tpl);
 
       } else {
 
@@ -200,6 +206,10 @@ class Reglement extends React.Component {
         if (!this.props.commande.scheduled || this.props.commande.enproduction===true) {
           _tpl = 'all';
         }
+        // on imprime tous les tickets (sauf si on modifie juste les réglements)
+        // const __tpl = (this.props.commande.scheduled && this.props.commande.enproduction===false) ? { templates: ["commande"]} : "all";
+        // this.props.updateCommande({printnum: Number(this.props.commande.printnum)+1}, 'beforeCloseReglement');
+        // if (!modif) this.props.printTicket(__tpl);
 
       }
 

@@ -110,6 +110,11 @@ const server = {
     api_server.get("/ping", (req,res) => {
       res.json({status: "success", request:"ping"});
     });
+    api_server.post("/testcmd", (req, res) => {
+      log.info('POST /testcmd ' + JSON.stringify(req.body));
+      wcont.send("getNotification", {eventType:req.body.eventType, href:req.body.href});
+      res.json({status: "success", request:"testcmd"});
+    });
     api_server.post("/", (req, res) => {
       log.info("POST : " + req.body.data);
       let __d = new Date();

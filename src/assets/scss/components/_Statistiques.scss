@@ -38,6 +38,17 @@
         text-align: center;
       }
     }
+    .date-pickers {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .openPicker-button {
+      margin-left: 20px;
+      background-color: $blanc;
+    }
     button {
       background-color: transparent !important;
       border-radius: 0;
@@ -87,7 +98,7 @@
         font-family: $f_hea;
         font-size: 18px;
         background-color: $gris-clair;
-        border-radius: 15px 15px 0 0;
+        border-radius: 50%;
         color: $noir;
         margin-right: 2px;
         padding: 8px 25px;

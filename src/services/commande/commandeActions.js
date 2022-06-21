@@ -57,16 +57,21 @@ function getCommandesList(params = {}) {
   };
 }
 
-function getTodayCommandesList() {
+function getTodayCommandesList(nostrict=false) {
   return (dispatch, getState) => {
     logger.info("CmdA.getTodayCommandesList()");
     const { heure_fin } = getState().parametresReducer.parametres.entreprise;
+    const { liststart } = getState().commandesListReducer;
 
     // *** définition de la fin de la période précédente
     const __periode_bounds = dateBounds(new Date(), heure_fin);
     const lastperiode_end = __periode_bounds.debut;
 
-    dispatch(getCommandesList({createdAt: { $gt: lastperiode_end } }));
+    let start = lastperiode_end;
+    if (!nostrict && liststart) {
+      start = liststart;
+    }
+    dispatch(getCommandesList({createdAt: { $gt: start } }));
 
   }
 }
@@ -299,205 +304,210 @@ function confirmCommande(_payload, printTemplates) {
       }
 
     }
+    if (payloadcopy.items.length && payloadcopy.items.length>0) {
 
-    commandeServices.saveCommande(payloadcopy, catalogueReducer).then(
-      async (confirm) => {
+      commandeServices.saveCommande(payloadcopy, catalogueReducer).then(
+        async (confirm) => {
 
-        dispatch({
-          type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS,
-          commande: {},
-        });
-        // met à jour la liste des schedules (ajoute ou supprime la commande)
-        dispatch({
-          type: (payloadcopy.scheduled) ? commandeActionTypes.SET_SCHEDULE : commandeActionTypes.DELETE_SCHEDULE,
-          schedule: payloadcopy.ticketId
-        });
-
-        
-        if (!confirm.signaturenote && !confirm.note) {  
-          const lastSignatureNote = await signatureServices.getLastSignature('notes');
-          const newNote = 'N'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + note.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
-          const signatureNote = signatureServices.createTicketSignature({...confirm, ticket: newNote}, privateKey, lastSignatureNote);
-        
-          confirm = {
-            ...confirm,
-            note: newNote,
-            hashsourcenote: signatureNote.source, 
-            hashnote: signatureNote.hash,
-            signaturenote: signatureNote.signature,
-          }
-
-
-          const __noteData = _createNote(confirm, {
-            newNote,
-            entreprise,
-            user,
-            vendeur: user,
-            caisse,
-            signature: signatureNote.signature,
-            trousseauId,
-            hash: signatureNote.hash,
-            source: signatureNote.source,
-            operation: 'VENTE'
+          dispatch({
+            type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS,
+            commande: {},
+          });
+          // met à jour la liste des schedules (ajoute ou supprime la commande)
+          dispatch({
+            type: (payloadcopy.scheduled) ? commandeActionTypes.SET_SCHEDULE : commandeActionTypes.DELETE_SCHEDULE,
+            schedule: payloadcopy.ticketId
           });
 
-          // si la note est offerte
-          if (__noteData['ENC-TIK-REM-MTN']>0 && __noteData['ENC-TIK-TOT-TTC']===0) {
-            // on loggue dans le JET
-            dispatch(journalActions.log('327', `Note #${ newNote } offerte (${ Number(__noteData['ENC-TIK-REM-MTN'] / 100).toFixed(2) } €)`));
-          }
-          else {
-            // son loggue dans le JET les articles offerts
-            const __articlesofferts = __noteData['LIGNES'].filter(art => art['ENC-TIK-LIG-REM-TXX']===100 );
-            __articlesofferts.forEach(art => {
-              dispatch(journalActions.log('328', `Article #${ art['ENC-TIK-ORI-NUM'] } offert (${ Number(art['ENC-TIK-LIG-REM-TOT'] / 100).toFixed(2) } €) : Note #${ newNote }`));
-            });
-          }
-
-          await commandeServices.persistNote(__noteData);
-          dispatch(journalActions.log('160','Note #'+newNote));
-
-          dispatch( signatureActions.updateSignature('notes', signatureNote.signature) );
-          dispatch( signatureActions.updateNumerotation('note', note+1) );
-
-        }
-        
-        // dans le cas d'un premier paiement ou d'une modif de moyens de paiement (réglements)
-        if ((!confirm.signature && !confirm.ticket) || modifreglement) {
-          const lastSignatureTicket = await signatureServices.getLastSignature('tickets');
-          const newTicket = 'T'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + ticket.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
-          const signatureTicket = signatureServices.createTicketSignature({...confirm, ticket: newTicket}, privateKey, lastSignatureTicket);
-        
-          confirm = {
-            ...confirm,
-            ticket: newTicket,
-            hashsource: signatureTicket.source,
-            hash: signatureTicket.hash,
-            signature: signatureTicket.signature
-          }
+          
+          if (!confirm.signaturenote && !confirm.note) {  
+            const lastSignatureNote = await signatureServices.getLastSignature('notes');
+            const newNote = 'N'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + note.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
+            const signatureNote = signatureServices.createTicketSignature({...confirm, ticket: newNote}, privateKey, lastSignatureNote);
+          
+            confirm = {
+              ...confirm,
+              note: newNote,
+              hashsourcenote: signatureNote.source, 
+              hashnote: signatureNote.hash,
+              signaturenote: signatureNote.signature,
+            }
 
 
-          const __ticketData = _createTicket(
-            {...confirm, 
-              createdAt: new Date() 
-            }, 
-            {
-              newTicket,
+            const __noteData = _createNote(confirm, {
+              newNote,
               entreprise,
               user,
               vendeur: user,
               caisse,
-              signature: signatureTicket.signature,
+              signature: signatureNote.signature,
               trousseauId,
-              hash: signatureTicket.hash,
-              source: signatureTicket.source,
-              operation: modifreglement ? 'MODIFICATION' : 'VENTE',
-              prevticket: modifreglement ? prevticket : null
-            }
-          );
-
-          await commandeServices.persistTicket(__ticketData);
-          dispatch(journalActions.log('160','Ticket #'+newTicket));
-
-          dispatch(clotureActions.createGrandTotalTicket(confirm));
-
-          dispatch( signatureActions.updateSignature('tickets', signatureTicket.signature) );
-          dispatch( signatureActions.updateNumerotation('ticket', ticket+1) );
-
-          if (modifreglement) {
-            dispatch(journalActions.log('420','Ticket #'+newTicket+' remplace le ticket #'+prevticket));
-          }
-        } 
-
-
-        commandeServices.persistCommande(confirm);
-
-
-        console.log('🖨 commande', confirm);
-        
-        dispatch(peripheralActions.printCommandeTicket(printTemplates, confirm));
-
-      
-
-        dispatch(notificationActions.syncDispatch("commande", confirm));
-
-        dispatch(clotureActions.getTodayCa());
-
-        const cmdtosync = {
-          ...confirm,
-          chrono: confirm.chrono || 0,
-          createdAt: formatISO(confirm.createdAt),
-          updatedAt: formatISO(confirm.updatedAt),
-        };
-
-
-        // si la caisse est une primary, elle s'occupe de la synchro avec le BO
-        if (role==="primary") {
-
-          commandeServices.getCommandesToSync(10).then((results) => {
-
-            const { commandes, chronos } = results;
-
-            // si la nouvelle commande (confirm) est déjà en BDD, on le l'ajoute pas
-            const prevcommandes = commandes.filter((c) => (confirm.ticketId!==c.ticketId) );
-
-            const chrcommandes = prevcommandes.map((c) => {
-              const chr = chronos
-                ? chronos.find((h) => h.ticketId === c.ticketId)
-                : undefined;
-              if (chr !== undefined) {
-
-                return {
-                  ...c,
-                  chrono: c.chrono || 0,
-                  createdAt: formatISO(c.createdAt),
-                  updatedAt: formatISO(c.updatedAt),
-                  endTime: formatISO(chr.endTime),
-                  careTime: chr.careTime.hasOwnProperty('firstCare') ? formatISO(chr.careTime.firstCare) : null,
-                  productionTime: chr.careTime.hasOwnProperty('firstCare') ? 
-                    (Math.round(
-                      differenceInMilliseconds(
-                        chr.endTime,
-                        chr.careTime.firstCare
-                      ) / 10
-                    ) / 100) : null,
-                  waitTime: chr.careTime.hasOwnProperty('firstCare') ?
-                    (Math.round(
-                      differenceInMilliseconds(
-                        chr.careTime.firstCare,
-                        parseISO(c.end)
-                      ) / 10
-                    ) / 100) : null,
-                };
-                
-              } else {
-                return {
-                  ...c,
-                  chrono: c.chrono || 0,
-                  createdAt: formatISO(c.createdAt),
-                  updatedAt: formatISO(c.updatedAt),
-                };
-              }
+              hash: signatureNote.hash,
+              source: signatureNote.source,
+              operation: 'VENTE'
             });
 
-            dispatch(
-              notificationActions.syncCommandes([...chrcommandes, cmdtosync])
+            // si la note est offerte
+            if (__noteData['ENC-TIK-REM-MTN']>0 && __noteData['ENC-TIK-TOT-TTC']===0) {
+              // on loggue dans le JET
+              dispatch(journalActions.log('327', `Note #${ newNote } offerte (${ Number(__noteData['ENC-TIK-REM-MTN'] / 100).toFixed(2) } €)`));
+            }
+            else {
+              // son loggue dans le JET les articles offerts
+              const __articlesofferts = __noteData['LIGNES'].filter(art => art['ENC-TIK-LIG-REM-TXX']===100 );
+              __articlesofferts.forEach(art => {
+                dispatch(journalActions.log('328', `Article #${ art['ENC-TIK-ORI-NUM'] } offert (${ Number(art['ENC-TIK-LIG-REM-TOT'] / 100).toFixed(2) } €) : Note #${ newNote }`));
+              });
+            }
+
+            await commandeServices.persistNote(__noteData);
+            dispatch(journalActions.log('160','Note #'+newNote));
+
+            dispatch( signatureActions.updateSignature('notes', signatureNote.signature) );
+            dispatch( signatureActions.updateNumerotation('note', note+1) );
+
+          }
+          
+          // dans le cas d'un premier paiement ou d'une modif de moyens de paiement (réglements)
+          if ((!confirm.signature && !confirm.ticket) || modifreglement) {
+            const lastSignatureTicket = await signatureServices.getLastSignature('tickets');
+            const newTicket = 'T'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + ticket.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
+            const signatureTicket = signatureServices.createTicketSignature({...confirm, ticket: newTicket}, privateKey, lastSignatureTicket);
+          
+            confirm = {
+              ...confirm,
+              ticket: newTicket,
+              hashsource: signatureTicket.source,
+              hash: signatureTicket.hash,
+              signature: signatureTicket.signature
+            }
+
+
+            const __ticketData = _createTicket(
+              {...confirm, 
+                createdAt: new Date() 
+              }, 
+              {
+                newTicket,
+                entreprise,
+                user,
+                vendeur: user,
+                caisse,
+                signature: signatureTicket.signature,
+                trousseauId,
+                hash: signatureTicket.hash,
+                source: signatureTicket.source,
+                operation: modifreglement ? 'MODIFICATION' : 'VENTE',
+                prevticket: modifreglement ? prevticket : null
+              }
             );
+
+            await commandeServices.persistTicket(__ticketData);
+            dispatch(journalActions.log('160','Ticket #'+newTicket));
+
+            dispatch(clotureActions.createGrandTotalTicket(confirm));
+
+            dispatch( signatureActions.updateSignature('tickets', signatureTicket.signature) );
+            dispatch( signatureActions.updateNumerotation('ticket', ticket+1) );
+
+            if (modifreglement) {
+              dispatch(journalActions.log('420','Ticket #'+newTicket+' remplace le ticket #'+prevticket));
+            }
+          } 
+
+
+          commandeServices.persistCommande(confirm);
+
+
+          console.log('🖨 commande', confirm);
+          
+          dispatch(peripheralActions.printCommandeTicket(printTemplates, confirm));
+
+        
+
+          dispatch(notificationActions.syncDispatch("commande", confirm));
+
+          dispatch(clotureActions.getTodayCa());
+
+          const cmdtosync = {
+            ...confirm,
+            chrono: confirm.chrono || 0,
+            createdAt: formatISO(confirm.createdAt),
+            updatedAt: formatISO(confirm.updatedAt),
+          };
+
+
+          // si la caisse est une primary, elle s'occupe de la synchro avec le BO
+          if (role==="primary") {
+
+            commandeServices.getCommandesToSync(10).then((results) => {
+
+              const { commandes, chronos } = results;
+
+              // si la nouvelle commande (confirm) est déjà en BDD, on le l'ajoute pas
+              const prevcommandes = commandes.filter((c) => (confirm.ticketId!==c.ticketId) );
+
+              const chrcommandes = prevcommandes.map((c) => {
+                const chr = chronos
+                  ? chronos.find((h) => h.ticketId === c.ticketId)
+                  : undefined;
+                if (chr !== undefined) {
+
+                  return {
+                    ...c,
+                    chrono: c.chrono || 0,
+                    createdAt: formatISO(c.createdAt),
+                    updatedAt: formatISO(c.updatedAt),
+                    endTime: formatISO(chr.endTime),
+                    careTime: chr.careTime.hasOwnProperty('firstCare') ? formatISO(chr.careTime.firstCare) : null,
+                    productionTime: chr.careTime.hasOwnProperty('firstCare') ? 
+                      (Math.round(
+                        differenceInMilliseconds(
+                          chr.endTime,
+                          chr.careTime.firstCare
+                        ) / 10
+                      ) / 100) : null,
+                    waitTime: chr.careTime.hasOwnProperty('firstCare') ?
+                      (Math.round(
+                        differenceInMilliseconds(
+                          chr.careTime.firstCare,
+                          parseISO(c.end)
+                        ) / 10
+                      ) / 100) : null,
+                  };
+                  
+                } else {
+                  return {
+                    ...c,
+                    chrono: c.chrono || 0,
+                    createdAt: formatISO(c.createdAt),
+                    updatedAt: formatISO(c.updatedAt),
+                  };
+                }
+              });
+
+              dispatch(
+                notificationActions.syncCommandes([...chrcommandes, cmdtosync])
+              );
+            });
+          }
+
+          // s'il y a un numéro de commande, c'est qu'on encaisse une commande déjà réglée
+          // donc on met à jour la liste des commande
+          if (payload.createdAt) dispatch(getTodayCommandesList());
+        },
+        (error) => {
+          logger.info(error);
+          dispatch({
+            type: commandeActionTypes.VALIDATE_COMMANDE_FAILURE,
+            error: error,
           });
         }
-
-        // s'il y a un numéro de commande, c'est qu'on encaisse une commande déjà réglée
-        // donc on met à jour la liste des commande
-        if (payload.createdAt) dispatch(getTodayCommandesList());
-      },
-      (error) => {
-        logger.info(error);
-        dispatch({
-          type: commandeActionTypes.VALIDATE_COMMANDE_FAILURE,
-          error: error,
-        });
-      }
-    );
+      );
+    }
+    else {
+      console.error('commandeActions.confirmCommande(), sauvegarde impossible : aucun item dans la commande');
+    }
   };
 }
 
@@ -944,60 +954,66 @@ function standByCommande(payload, needNumero) {
 
     logger.info("standByCommande needNumero", needNumero);
 
-    const { parametres } = state.parametresReducer;
-    if (needNumero) {
+    if (payload.items && payload.items.length > 0) {
+
+      const { parametres } = state.parametresReducer;
+      if (needNumero) {
 
 
-      const { numero } = state.commandeReducer;
+        const { numero } = state.commandeReducer;
 
-      // cf. détail du process dans './src/services/commande/numeroActions.js > takeNumero()'
-      if (parametres.options.role==="secondary") {
-        const conf = await notificationServices.askNumero(parametres.options.primary)
-        payload.numero = conf.numero;
-        dispatch({type: numeroActionTypes.GET_NUMERO, numero: conf.numero});
-      }
-      else {
-        const conf_numero = await numeroServices.getNumero(numero, parametres);
-        payload.numero = conf_numero;
-        dispatch({type: numeroActionTypes.GET_NUMERO, numero: conf_numero});
-        dispatch(numeroActions.setNextNumero());
-      }
-
-      logger.info("standByCommande nn numero", payload.numero);
-    }
-    logger.info("standByCommande nn numero", payload.numero);
-
-    payload.localsync = [parametres.options.caisse.uniqid];
-
-    // if (payload.numero==null) {
-    //   payload.numero = getState().commandeReducer.commande.numero;
-    // }
-
-    // activation de l'impression des tickets pour les commandes en attente
-    const {print_standby} = getState().parametresReducer.parametres.commandes;
-
-    commandeServices.saveCommande(payload, state.catalogueReducer).then(
-      (confirm) => {
-        dispatch({
-          type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS,
-          commande: {},
-        });
-        // on force l'impression des tickets de production si c'est paramétré
-        // sauf si la commande est programmée
-        if (print_standby && (payload.scheduled && payload.enproduction===false)) {
-          dispatch(peripheralActions.printCommandeTicket("production", confirm));
+        // cf. détail du process dans './src/services/commande/numeroActions.js > takeNumero()'
+        if (parametres.options.role==="secondary") {
+          const conf = await notificationServices.askNumero(parametres.options.primary)
+          payload.numero = conf.numero;
+          dispatch({type: numeroActionTypes.GET_NUMERO, numero: conf.numero});
         }
-        dispatch(notificationActions.syncDispatch("commande", confirm));
-        dispatch(getCommande());
-      },
-      (error) => {
-        logger.info(error);
-        dispatch({
-          type: commandeActionTypes.VALIDATE_COMMANDE_FAILURE,
-          error: error.toString(),
-        });
+        else {
+          const conf_numero = await numeroServices.getNumero(numero, parametres);
+          payload.numero = conf_numero;
+          dispatch({type: numeroActionTypes.GET_NUMERO, numero: conf_numero});
+          dispatch(numeroActions.setNextNumero());
+        }
+
+        logger.info("standByCommande nn numero", payload.numero);
       }
-    );
+      logger.info("standByCommande nn numero", payload.numero);
+
+      payload.localsync = [parametres.options.caisse.uniqid];
+
+      // if (payload.numero==null) {
+      //   payload.numero = getState().commandeReducer.commande.numero;
+      // }
+
+      // activation de l'impression des tickets pour les commandes en attente
+      const {print_standby} = getState().parametresReducer.parametres.commandes;
+
+      commandeServices.saveCommande(payload, state.catalogueReducer).then(
+        (confirm) => {
+          dispatch({
+            type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS,
+            commande: {},
+          });
+          // on force l'impression des tickets de production si c'est paramétré
+          // sauf si la commande est programmée
+          if (print_standby && (payload.scheduled && payload.enproduction===false)) {
+            dispatch(peripheralActions.printCommandeTicket("production", confirm));
+          }
+          dispatch(notificationActions.syncDispatch("commande", confirm));
+          dispatch(getCommande());
+        },
+        (error) => {
+          logger.info(error);
+          dispatch({
+            type: commandeActionTypes.VALIDATE_COMMANDE_FAILURE,
+            error: error.toString(),
+          });
+        }
+      );
+    }
+    else {
+      console.error('commandeActions.standByCommande(), sauvegarde impossible : aucun item dans la commande');
+    }
   };
 }
 
@@ -1028,174 +1044,180 @@ function validateCommande(_payload, needNumero) {
 
     logger.info("validateCommande needNumero", needNumero);
 
-    const { parametres } = state.parametresReducer;
-    if (needNumero) {
-      const { numero } = state.commandeReducer;
+    if (payload.items && payload.items.length > 0) {
 
-      // cf. détail du process dans './src/services/commande/numeroActions.js > takeNumero()'
-      if (parametres.options.role==="secondary") {
-        const conf = await notificationServices.askNumero(parametres.options.primary)
-        payload.numero = conf.numero;
-        dispatch({type: numeroActionTypes.GET_NUMERO, numero: conf.numero});
-      }
-      else {
-        const conf_numero = await numeroServices.getNumero(numero, parametres);
-        payload.numero = conf_numero;
-        dispatch({type: numeroActionTypes.GET_NUMERO, numero: conf_numero});
-        dispatch(numeroActions.setNextNumero());
-      }
+      const { parametres } = state.parametresReducer;
+      if (needNumero) {
+        const { numero } = state.commandeReducer;
 
-      logger.info("validateCommande nn numero", payload.numero);
-    }
-
-    logger.info("validateCommande numero", payload.numero);
-
-
-    if (payload.mode==="livraison" && payload.client && !payload.lot) {
-
-      // const {parametres} = getState().parametresReducer;
-      // let param_limit = parametres.commandes.hasOwnProperty('lot_max_num_commandes') ? parametres.commandes.lot_max_num_commandes : 10;
-      // let param_exp = parametres.commandes.hasOwnProperty('lot_exp_in_minutes') ? parametres.commandes.lot_exp_in_minutes : 15;
-
-      const client = state.clientsReducer.clients.find(clt=>clt.client_id===payload.client.client_id);
-      if (client.hasOwnProperty('secteur')) {
-        logger.info('client', client);
-        const {lots} = state.commandesListReducer;
-        logger.info('lots', lots);
-        if (lots!==undefined) {
-          logger.info('lots non undefined');
-
-          const {lot_id, lot_timestamp} = dispatch(addCommandeToLot(payload.ticketId, client.secteur));
-          logger.info('validateCommande() lot_id', lot_id);
-
-          payload.lot = lot_id;
-          payload.timestamplot = lot_timestamp.getTime();
-
+        // cf. détail du process dans './src/services/commande/numeroActions.js > takeNumero()'
+        if (parametres.options.role==="secondary") {
+          const conf = await notificationServices.askNumero(parametres.options.primary)
+          payload.numero = conf.numero;
+          dispatch({type: numeroActionTypes.GET_NUMERO, numero: conf.numero});
         }
+        else {
+          const conf_numero = await numeroServices.getNumero(numero, parametres);
+          payload.numero = conf_numero;
+          dispatch({type: numeroActionTypes.GET_NUMERO, numero: conf_numero});
+          dispatch(numeroActions.setNextNumero());
+        }
+
+        logger.info("validateCommande nn numero", payload.numero);
       }
-    } // end "livraison" + client + lot
+
+      logger.info("validateCommande numero", payload.numero);
+
+
+      if (payload.mode==="livraison" && payload.client && !payload.lot) {
+
+        // const {parametres} = getState().parametresReducer;
+        // let param_limit = parametres.commandes.hasOwnProperty('lot_max_num_commandes') ? parametres.commandes.lot_max_num_commandes : 10;
+        // let param_exp = parametres.commandes.hasOwnProperty('lot_exp_in_minutes') ? parametres.commandes.lot_exp_in_minutes : 15;
+
+        const client = state.clientsReducer.clients.find(clt=>clt.client_id===payload.client.client_id);
+        if (client.hasOwnProperty('secteur')) {
+          logger.info('client', client);
+          const {lots} = state.commandesListReducer;
+          logger.info('lots', lots);
+          if (lots!==undefined) {
+            logger.info('lots non undefined');
+
+            const {lot_id, lot_timestamp} = dispatch(addCommandeToLot(payload.ticketId, client.secteur));
+            logger.info('validateCommande() lot_id', lot_id);
+
+            payload.lot = lot_id;
+            payload.timestamplot = lot_timestamp.getTime();
+
+          }
+        }
+      } // end "livraison" + client + lot
 
 
 
-    const payloadcopy = { ...payload, localsync: [parametres.options.caisse.uniqid] };
+      const payloadcopy = { ...payload, localsync: [parametres.options.caisse.uniqid] };
 
-    dispatch({
-      type: commandeActionTypes.UPDATE_COMMANDE,
-      commande: payloadcopy
-    });
-   
-    
-
-    dispatch(getCommande());
-
-
-    try {
-
-      let confirm = await commandeServices.saveCommande(payloadcopy, catalogueReducer);
-     
       dispatch({
-        type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS,
-        commande: {},
-      });
-
-      // met à jour la liste des schedules (ajoute ou supprime la commande)
-      dispatch({
-        type: (confirm.scheduled) ? commandeActionTypes.SET_SCHEDULE : commandeActionTypes.DELETE_SCHEDULE,
-        schedule: confirm.ticketId
+        type: commandeActionTypes.UPDATE_COMMANDE,
+        commande: payloadcopy
       });
     
-      // if (!confirm.signaturenote && !confirm.note) {
-
-        const prevNote = confirm.note;
-        console.log('PREVNOTE', prevNote);
-
-        const lastSignatureNote = await signatureServices.getLastSignature('notes');
-        const newNote = 'N'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + note.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
       
-        let signatureNote = null;
-        try {
-          signatureNote = signatureServices.createTicketSignature({...confirm, ticket: lastSignatureNote}, privateKey, lastSignatureNote);
-        } catch(e) {
-          console.error(e);
-        }
 
-        if (signatureNote) {
-       
-          confirm = {
-            ...confirm,
-            note: prevNote ? prevNote + '|' + newNote : newNote,
-            hashsourcenote: signatureNote.source, 
-            hashnote: signatureNote.hash,
-            signaturenote: signatureNote.signature
-          }
+      dispatch(getCommande());
 
 
-          const __noteData = _createNote(confirm, {
-            newNote,
-            entreprise,
-            user,
-            vendeur: user,
-            caisse,
-            signature: signatureNote.signature,
-            trousseauId,
-            hash: signatureNote.hash,
-            source: signatureNote.source,
-            operation: prevNote ? 'MODIFICATION' : 'VENTE',
-            prevnote: prevNote,
-          });
+      try {
 
-          // si la note est offerte
-          if (__noteData['ENC-TIK-REM-MTN']>0 && __noteData['ENC-TIK-TOT-TTC']===0) {
-            // on loggue dans le JET
-            dispatch(journalActions.log('327', `Note #${ newNote } offerte (${ Number(__noteData['ENC-TIK-REM-MTN'] / 100).toFixed(2) } €)`));
-          }
-          else {
-            // son loggue dans le JET les articles offerts
-            const __articlesofferts = __noteData['LIGNES'].filter(art => art['ENC-TIK-LIG-REM-TXX']===100 );
-            __articlesofferts.forEach(art => {
-              dispatch(journalActions.log('328', `Article #${ art['ENC-TIK-ORI-NUM'] } offert (${ Number(art['ENC-TIK-LIG-REM-TOT'] / 100).toFixed(2) } €) : Note #${ newNote }`));
-            });
-          }
+        let confirm = await commandeServices.saveCommande(payloadcopy, catalogueReducer);
+      
+        dispatch({
+          type: commandeActionTypes.VALIDATE_COMMANDE_SUCCESS,
+          commande: {},
+        });
 
-          console.log('note', __noteData);
+        // met à jour la liste des schedules (ajoute ou supprime la commande)
+        dispatch({
+          type: (confirm.scheduled) ? commandeActionTypes.SET_SCHEDULE : commandeActionTypes.DELETE_SCHEDULE,
+          schedule: confirm.ticketId
+        });
+      
+        // if (!confirm.signaturenote && !confirm.note) {
 
+          const prevNote = confirm.note;
+          console.log('PREVNOTE', prevNote);
+
+          const lastSignatureNote = await signatureServices.getLastSignature('notes');
+          const newNote = 'N'+format(new Date(),'yyMM-') + 'c' + caisse.id + '-' + note.toLocaleString('en-US',{minimumIntegerDigits: 5, useGrouping: false});
+        
+          let signatureNote = null;
           try {
-            await commandeServices.persistNote(__noteData);
-            dispatch(journalActions.log('160','Note #'+newNote));
-            
-            dispatch( signatureActions.updateSignature('notes', signatureNote.signature) );
-            dispatch( signatureActions.updateNumerotation('note', note+1) );
+            signatureNote = signatureServices.createTicketSignature({...confirm, ticket: lastSignatureNote}, privateKey, lastSignatureNote);
           } catch(e) {
             console.error(e);
           }
+
+          if (signatureNote) {
+        
+            confirm = {
+              ...confirm,
+              note: prevNote ? prevNote + '|' + newNote : newNote,
+              hashsourcenote: signatureNote.source, 
+              hashnote: signatureNote.hash,
+              signaturenote: signatureNote.signature
+            }
+
+
+            const __noteData = _createNote(confirm, {
+              newNote,
+              entreprise,
+              user,
+              vendeur: user,
+              caisse,
+              signature: signatureNote.signature,
+              trousseauId,
+              hash: signatureNote.hash,
+              source: signatureNote.source,
+              operation: prevNote ? 'MODIFICATION' : 'VENTE',
+              prevnote: prevNote,
+            });
+
+            // si la note est offerte
+            if (__noteData['ENC-TIK-REM-MTN']>0 && __noteData['ENC-TIK-TOT-TTC']===0) {
+              // on loggue dans le JET
+              dispatch(journalActions.log('327', `Note #${ newNote } offerte (${ Number(__noteData['ENC-TIK-REM-MTN'] / 100).toFixed(2) } €)`));
+            }
+            else {
+              // son loggue dans le JET les articles offerts
+              const __articlesofferts = __noteData['LIGNES'].filter(art => art['ENC-TIK-LIG-REM-TXX']===100 );
+              __articlesofferts.forEach(art => {
+                dispatch(journalActions.log('328', `Article #${ art['ENC-TIK-ORI-NUM'] } offert (${ Number(art['ENC-TIK-LIG-REM-TOT'] / 100).toFixed(2) } €) : Note #${ newNote }`));
+              });
+            }
+
+            console.log('note', __noteData);
+
+            try {
+              await commandeServices.persistNote(__noteData);
+              dispatch(journalActions.log('160','Note #'+newNote));
+              
+              dispatch( signatureActions.updateSignature('notes', signatureNote.signature) );
+              dispatch( signatureActions.updateNumerotation('note', note+1) );
+            } catch(e) {
+              console.error(e);
+            }
+          }
+
+        // }
+
+        commandeServices.persistCommande(confirm);
+
+
+        // si la commande à encaisser est PROGRAMMÉE,
+        // on n'imprime que le ticket commande
+        if (payload.scheduled && payload.enproduction===false) {
+          // dispatch(peripheralActions.printTicket({templates:["commande"]}));
+          dispatch(peripheralActions.printCommandeTicket({templates:["commande"]}, confirm));
+        }
+        // sinon on imprime tout
+        else {
+          // dispatch(peripheralActions.printTicket("all"));
+          dispatch(peripheralActions.printCommandeTicket("all", confirm));
         }
 
-      // }
+        dispatch(notificationActions.syncDispatch("commande", confirm));
 
-      commandeServices.persistCommande(confirm);
-
-
-      // si la commande à encaisser est PROGRAMMÉE,
-      // on n'imprime que le ticket commande
-      if (payload.scheduled && payload.enproduction===false) {
-        // dispatch(peripheralActions.printTicket({templates:["commande"]}));
-        dispatch(peripheralActions.printCommandeTicket({templates:["commande"]}, confirm));
       }
-      // sinon on imprime tout
-      else {
-        // dispatch(peripheralActions.printTicket("all"));
-        dispatch(peripheralActions.printCommandeTicket("all", confirm));
+      catch(error){
+        logger.info(error);
+        dispatch({
+          type: commandeActionTypes.VALIDATE_COMMANDE_FAILURE,
+          error: error,
+        });
       }
-
-      dispatch(notificationActions.syncDispatch("commande", confirm));
-
     }
-    catch(error){
-      logger.info(error);
-      dispatch({
-        type: commandeActionTypes.VALIDATE_COMMANDE_FAILURE,
-        error: error,
-      });
+    else {
+      console.error('commandeActions.validateCommande(), sauvegarde impossible : aucun item dans la commande');
     }
 
   };
@@ -2404,6 +2426,22 @@ function setCommandeFromAPI(payload) {
           data.reglements = data.reglements.map(r => ( (r.reglementId) ? {...r} : {...r, reglementId: LodashId.createId()}) );
         }
       } 
+      else if (data.provider==='deliveroo') {
+        const datacommande = data.commande;
+        data = {
+          ...datacommande,
+          enproduction: true,
+          provider: data.provider,
+          operator: {id:'deliveroo', nom:'deliveroo'},
+          caisse: {id:'deliveroo', nom:'deliveroo', type:'deliveroo'},
+          status: 'confirmed'
+        };
+        if (data.reglements) {
+          data.operator = {id:'deliveroo', nom:'deliveroo'};
+          data.caisse = {id:'deliveroo', nom:'deliveroo', type:'deliveroo'};
+          data.reglements = data.reglements.map(r => ( (r.reglementId) ? {...r} : {...r, reglementId: LodashId.createId()}) );
+        }
+      } 
       // commandes provenant de la borne
       else {
         if (data.status === "confirmed") {
@@ -2436,7 +2474,7 @@ function setCommandeFromAPI(payload) {
         
 
       // si un client est renseigné
-      if (data.client) {
+      if (data.client && data.provider!=='deliveroo') {
 
         let client = null; 
 
@@ -2477,10 +2515,25 @@ function setCommandeFromAPI(payload) {
       logger.warn('data.provider',data.provider);
 
       // si la commande vient du Click & Collect
-      if (data.provider==="clickandcollect") {
+      if (["clickandcollect", "deliveroo"].includes(data.provider)) {
         logger.info('donc on envoie le numero de cmd au BO');
         dispatch(notificationActions.confirmCommande({ticketId: data.ticket_id, numero: commande.numero}));
       } 
+      // sinon la commande vient de la borne
+      else {
+        
+  
+        const numtosend =
+          commande.numero.hex === true
+            ? commande.numero.value.toString(16)
+            : commande.numero.value;
+  
+        commandeServices.sendTicketId(
+          commande.ticketId,
+          numtosend,
+          payload.response
+        );
+      }
     
 
       // activation de l'impression des tickets pour les commandes en attente
@@ -2629,15 +2682,16 @@ function setCommandeFromAPI(payload) {
             );
           }
           
-          if (data.provider==="clickandcollect") {
-            // dispatch(peripheralActions.printCommandeTicket((commande.status === "confirmed") ? "all" : "production", commande));
-            dispatch(peripheralActions.printCommandeTicket("all", confirm));
+
+          if (data.provider==="deliveroo") {
+            dispatch(peripheralActions.printCommandeTicket("all_deliveroo", commande));
+          } else if (data.provider==="clickandcollect") {
+            dispatch(peripheralActions.printCommandeTicket("all", commande));
           } else {
-            if (confirm.status === "confirmed" || print_standby) {
-              dispatch(peripheralActions.printCommandeTicket("production", confirm));
+            if (commande.status === "confirmed" || print_standby) {
+              dispatch(peripheralActions.printCommandeTicket("production", commande));
             }
           }
-
 
 
 

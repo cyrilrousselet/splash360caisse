@@ -18,7 +18,8 @@ async function connect() {
   if (db===null) {
   
     try {
-      db = await mongoose.connect("mongodb://splash:splash360@localhost/splash", mongooseOpts);
+      db = mongoose.connect("mongodb://localhost/splash", mongooseOpts);
+      // db = await mongoose.connect("mongodb://splash:splash360@localhost/splash", mongooseOpts);
       log.info('App connected to mongo');
       return db;
     }
@@ -30,15 +31,6 @@ async function connect() {
     return db;
   }
   
-  // mongoose.connection.on("error", function (error) {
-  //   log.error("Cannot connect to mongo: ", error);
-  // });
-
-  // mongoose.connection.on("connected", function() {
-  //   log.info('App connected to mongo');
-  //   return db;
-  // });
-
 }
 
 module.exports = connect;

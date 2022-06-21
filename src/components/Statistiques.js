@@ -1,11 +1,9 @@
-import DateFnsUtils from "@date-io/date-fns";
 import AppBar from "@material-ui/core/AppBar";
-import {
-  KeyboardDatePicker,
-  MuiPickersUtilsProvider,
-} from "@material-ui/pickers";
 import "date-fns";
 import {
+  add,
+  set,
+  sub,
   compareAsc,
   endOfMonth,
   endOfWeek,
@@ -23,6 +21,9 @@ import LoadingSpinner from "./common/LoadingSpinner";
 import StdButton from "./common/StdButton";
 import {dateBounds} from "./../helpers/toolbox";
 import logger from './../helpers/Logger';
+import DateRangePickerPopin from "./common/DateRangePickerPopin";
+import { Fab } from "@material-ui/core";
+import DatePickerIcon from "./common/icon/DatePickerIcon";
 
 let strings = new LocalizedStrings(data);
 
@@ -39,11 +40,7 @@ const _colorWheel = [
   "#ECA36A",
 ];
 
-class LocalizedUtils extends DateFnsUtils {
-  getDatePickerHeaderText(date) {
-    return format(date, "d MMM yyyy", { locale: this.locale });
-  }
-}
+
 
 // function TabPanel(props) {
 //   const { children, value, index, ...other } = props;
@@ -181,6 +178,8 @@ class Statistiques extends React.Component {
     // this.shouldComponentRender = this.shouldComponentRender.bind(this);
     
     this.getBoundedCommandesList = this.getBoundedCommandesList.bind(this);
+    this.setDateRange = this.setDateRange.bind(this);
+    this.togglePicker = this.togglePicker.bind(this);
 
     const {heure_fin} = props;
     const __todayBounds = dateBounds(new Date(), heure_fin);
@@ -189,6 +188,7 @@ class Statistiques extends React.Component {
       openTab: 0,
       startDate: __todayBounds.debut,
       endDate: __todayBounds.fin,
+      pickerOpen: false,
     };
   }
 
@@ -276,9 +276,21 @@ class Statistiques extends React.Component {
     this.getBoundedCommandesList(startDate, endDate);
   }
 
+  setDateRange(range) {
+    console.log('setDateRange()', range);
+    let startDate = set(range.startDate, {hours:5, minutes:0});
+    let endDate = set(add(range.endDate, {days:1}), {hours:5, minutes:0});
+    this.setState({startDate, endDate, pickerOpen:false});
+    this.getBoundedCommandesList(startDate, endDate);
+  }
+  togglePicker() {
+    const {pickerOpen} = this.state;
+    this.setState({pickerOpen:!pickerOpen});
+  }
+
   render() {
     const { commandeslist, loading, canaux } = this.props;
-    const { startDate, endDate } = this.state;
+    const { startDate, endDate, pickerOpen } = this.state;
 
     let /*ca_total = 0,*/
       ca_confirmes = 0,
@@ -405,41 +417,12 @@ class Statistiques extends React.Component {
           <div className="listes">
             <AppBar position="static" className="liste-header">
               <div className="dates">
-                <MuiPickersUtilsProvider
-                  utils={LocalizedUtils}
-                  locale={frLocale}
-                >
-                  <div className="caption">
-                    {strings.modules.statistiques.pickers.du}
-                  </div>
-                  <KeyboardDatePicker
-                    id="startdatepicker"
-                    margin="normal"
-                    value={startDate}
-                    format="d MMM yyyy"
-                    onChange={(date) => {
-                      this.setSelectedDate("start", date);
-                    }}
-                    KeyboardButtonProps={{ "aria-label": "change date" }}
-                    clearLabel={strings.general.dialog.clear}
-                    cancelLabel={strings.general.dialog.cancel}
-                  />
-                  <div className="caption">
-                    {strings.modules.statistiques.pickers.au}
-                  </div>
-                  <KeyboardDatePicker
-                    id="enddatepicker"
-                    margin="normal"
-                    value={endDate}
-                    format="d MMM yyyy"
-                    onChange={(date) => {
-                      this.setSelectedDate("end", date);
-                    }}
-                    KeyboardButtonProps={{ "aria-label": "change date" }}
-                    clearLabel={strings.general.dialog.clear}
-                    cancelLabel={strings.general.dialog.cancel}
-                  />
-                </MuiPickersUtilsProvider>
+                <div className="date-pickers" onClick={() => {this.togglePicker()}}>
+                <div className="caption space-left">{ strings.modules.statistiques.pickers.du + format(startDate, 'd MMM yyyy', {locale:frLocale}) + strings.modules.statistiques.pickers.au + format(sub(endDate, {days:1}), 'd MMM yyyy', {locale:frLocale})}</div>
+                  <Fab aria-label="openPicker" size="small" className="openPicker-button" onClick={ this.togglePicker }>
+                    <DatePickerIcon htmlColor="#0065E5" />
+                  </Fab>
+                </div>
               </div>
               <div className="shortcuts">
                 <StdButton
@@ -557,6 +540,14 @@ class Statistiques extends React.Component {
             </div>
           </div>
         </div>
+        <DateRangePickerPopin
+          wrapperClassName='datepickercomponent'
+          open={ pickerOpen } 
+          startDate={ startDate }
+          endDate={ endDate }
+          validate={ this.setDateRange }
+          closeHandler={ this.togglePicker }
+        />
       </div>
     );
   }

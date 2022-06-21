@@ -20,7 +20,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import FicheClientCont from '../../containers/FicheClientCont';
 import Clavier from '../common/Clavier';
-import {devise} from '../../helpers/toolbox';
+import {devise, dateBounds} from '../../helpers/toolbox';
 import TableIcon from '../common/icon/TableIcon';
 import BellIcon from '../common/icon/BellIcon';
 // import Logger from '../../helpers/Logger';
@@ -35,24 +35,23 @@ import { decodetable } from '../../constants/decodetable';
 import MouvementPopin from '../Cloture/MouvementPopin';
 import EmployeIcon from '../common/icon/EmployeIcon';
 import LoginCont from '../../containers/LoginCont';
-import { dateBounds } from '../../helpers/toolbox';
-import frLocale from "date-fns/locale/fr";
-import { MuiPickersUtilsProvider, TimePicker } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
+// import frLocale from "date-fns/locale/fr";
+// import { MuiPickersUtilsProvider, TimePicker } from '@material-ui/pickers';
+// import DateFnsUtils from '@date-io/date-fns';
 // import { formatRFC3339 } from 'date-fns';
 // import { add, isBefore, format } from 'date-fns';
-import { add, isBefore } from 'date-fns';
+import { add, sub, differenceInHours, format, isBefore, set } from 'date-fns';
 
 
 let strings = new LocalizedStrings(data);
 // const logger = new Logger();
 
 
-class LocalizedDayUtils extends DateFnsUtils {
-  getDatePickerHeaderText(date) {
-    return this.format(date, "d MMM yyyy", { locale: frLocale });
-  }
-}
+// class LocalizedDayUtils extends DateFnsUtils {
+//   getDatePickerHeaderText(date) {
+//     return this.format(date, "d MMM yyyy", { locale: frLocale });
+//   }
+// }
 
 // class TablesModal extends React.Component {
 
@@ -130,13 +129,18 @@ class ScheduleModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      schedule: null
+      schedule: null,
+      end: dateBounds(new Date(), props.heure_fin).fin
     };
 
     this.deleteSchedule = this.deleteSchedule.bind(this);
     this.saveSchedule = this.saveSchedule.bind(this);
     this.resetPopin = this.resetPopin.bind(this);
     this.checkHour = this.checkHour.bind(this);
+    this.hrsUp = this.hrsUp.bind(this);
+    this.hrsDown = this.hrsDown.bind(this);
+    this.minUp = this.minUp.bind(this);
+    this.minDown = this.minDown.bind(this);
   }
 
   deleteSchedule() {
@@ -168,13 +172,113 @@ class ScheduleModal extends React.Component {
   resetPopin() {
     this.setState({schedule: null});
   }
+  hrsUp() {
+    const {end, schedule} = this.state;
+    let hr = (schedule) ? schedule : new Date();
+
+    hr = add(hr, {hours: 1});
+    if (hr.getTime() < end) { 
+      this.setState({schedule: hr});
+    } else {
+      console.error('hrsUp HEURE DEPASSEE', hr);
+    }
+    console.log('hrsUp', hr);
+  }
+  
+  hrsDown() {
+
+    const start = add(new Date(), {minutes:15});
+    const {schedule} = this.state;
+    let hr = (schedule) ? schedule : new Date();
+
+    hr = sub(hr, {hours: 1});
+    if (hr.getTime() >= start) { 
+      this.setState({schedule: hr});
+    } else {
+      console.error('hrsUp HEURE ANTICIPEE', hr);
+    }
+    console.log('hrsDown', hr);
+  }
+
+  minUp() {
+    const {end, schedule} = this.state;
+    let hr = (schedule) ? schedule : new Date();
+    // let min = (Math.ceil(hr.getMinutes() / 15) * 15) % 60;
+    // hr = set(hr, {minutes: min});
+    // if (min===0) {
+    //   hr = add(hr, {hours: 1});
+    // }
+
+    hr = add(hr, {minutes: 15});
+
+    if (hr.getTime() < end) { 
+      this.setState({schedule: hr});
+    } else {
+      console.error('minUp HEURE DEPASSEE', hr);
+    }
+    console.log('minUp', hr);
+  }
+
+  minDown() {
+    const start = add(new Date(), {minutes:15});
+    const {schedule} = this.state;
+    let hr = (schedule) ? schedule : new Date();
+    // let min = (Math.floor(hr.getMinutes() / 15) * 15) % 60;
+    // hr = set(hr, {minutes: min});
+
+    hr = sub(hr, {minutes: 15});
+
+    if (hr.getTime() >= start) { 
+      this.setState({schedule: hr});
+    } else {
+      console.error('minDown HEURE ANTICIPEE', hr);
+    }
+    console.log('minDown', hr);
+  }
 
   render() {
 
     const {open, closeHandler} = this.props;
-    const {schedule} = this.state;
+    const {schedule, end} = this.state;
 
-    const vschedule = schedule ? schedule : this.props.schedule;
+    let start = add(new Date(), {minutes:15});
+    console.log('start brut', format(start,'HH:mm'));
+    let min = (Math.ceil(start.getMinutes() / 15) * 15) % 60;
+    start = set(start, {minutes: min});
+    if (min===0) {
+      start = add(start, {hours: 1});
+    }
+    console.log('start round', format(start,'HH:mm'));
+    if (!schedule) {
+      this.setState({schedule: start});
+    }
+
+    let vschedule = schedule ? schedule : this.props.schedule;
+
+    // nombre d'heures dispo : 
+      
+    const duree = differenceInHours(end, start);
+
+    const hrs_range = Array.from((new Array(duree + 1)), (x,i) => format( add(start, {hours: i}), 'H' ));
+    const min_range = [0,15,30,45];
+
+    const next_hrs = start.getHours();
+    const next_min = (Math.ceil(start.getMinutes() / 15) * 15) % 60;
+
+    if (!vschedule) {
+      vschedule = set(new Date(), {hours: next_hrs, minutes: next_min});
+    }
+
+    const sche_hrs = vschedule.getHours();
+    const sche_min = vschedule.getMinutes();
+
+
+    const hrs_decal = differenceInHours(vschedule, set(start, {minutes:0}));
+    const min_decal = Math.floor(vschedule.getMinutes() / 15);
+    console.log('hrs_decal', hrs_decal);
+    console.log('min_decal', min_decal);
+
+    console.log('⏰ schedule', `${sche_hrs.toString().padStart(2,0)}h${sche_min.toString().padStart(2,0)}`);
 
     return (
       <Modal
@@ -188,24 +292,40 @@ class ScheduleModal extends React.Component {
             <div className="body">
       
               <div className="heures">
-                <MuiPickersUtilsProvider utils={LocalizedDayUtils} locale={frLocale}>
-                  <TimePicker
-                            margin="dense"
-                            variant="static"
-                            orientation="landscape"
-                            openTo="hours"
-                            id="start"
-                            ampm={false}
-                            className="heure"
-                            label={ strings.modules.encaissement.schedule.heure }
-                            value={vschedule}
-                            minutesStep={5}
-                            onChange={(heure) => { this.checkHour(heure) }}
-                            KeyboardButtonProps={{
-                              'aria-label': 'change time',
-                            }}
-                          />
-                </MuiPickersUtilsProvider>
+                <div className="next-schedule">Prochain créneau : { next_hrs.toString().padStart(2,0) }h{ next_min.toString().padStart(2,0) }</div>
+                
+                <div className="picker-hrs">
+                  <div className="pck-up hrs-up" onClick={ this.hrsUp } hidden={ add(vschedule, {hours:1}) >= end }></div>
+                  { (add(vschedule, {hours:1}) > end) && (<div className="dummy-up"></div>)}
+                  <div className="pck-val hrs-val">
+                    <div className="pck-wrapper">
+                      <ul className={ `decal-${hrs_decal}` }>
+                      {hrs_range && hrs_range.map(h => (
+                        <li key={`hrs-${h}`}>{ h.padStart(2,0) }</li>
+                      )) }
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="pck-down hrs-down" onClick={ this.hrsDown } hidden={ sub(vschedule, {hours:1}) < start }></div>
+                  { (sub(vschedule, {hours:1}) < start) && (<div className="dummy-down"></div>)}
+                </div>
+                <div className="picker-dots">:</div>
+                <div className="picker-min">
+                  <div className="pck-up min-up" onClick={ this.minUp } hidden={ add(vschedule, {minutes: 15}) >= end }></div>
+                  { (add(vschedule, {minutes: 15}) > end) && (<div className="dummy-up"></div>)}
+                  <div className="pck-val min-val">
+                    <div className="pck-wrapper">
+                      <ul className={ `decal-${min_decal}` }>
+                      {min_range && min_range.map(m => (
+                        <li key={`min-${m}`}>{ m.toString().padStart(2,0) }</li>
+                      )) }
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="pck-down min-down" onClick={ this.minDown } hidden={ sub(vschedule, {minutes:15}) < start }></div>
+                  { (sub(vschedule, {minutes:15}) < start) && (<div className="dummy-down"></div>)}
+                </div>
+
               </div>
             </div>
             <div className="footer">
@@ -1747,6 +1867,10 @@ logger.info('⏰', schedule_delay);
       history.push(paths.DASHBOARD);
     }
 
+    // on déplace les frais de gestion à la fin de l'array
+    if (items.findIndex(e=>e.produitid==='frais')>-1) {
+      items.push(items.splice(items.findIndex(e=>e.produitid==='frais'), 1)[0]);
+    }
  
     return (
       <div className={ `Panier ${open && 'reglement-ouvert'}` }>
@@ -1806,7 +1930,11 @@ logger.info('⏰', schedule_delay);
                           discount={ getDiscount(itm) }
                           deleteDiscountHandler={deleteDiscount}
                           openDiscountHandler={this.openDiscount}
-                          _onClick={ this.setSelectedIndex }
+                          _onClick={() => { 
+                            if (itm.produitid!=='frais') {
+                              this.setSelectedIndex(i);
+                            }
+                          } }
                           _onDoubleClick={ (id) => {
                             let __prevstepid = -1;
                             let __nextstepid = (itm.steps.length>1) ? itm.steps[1].id : -1;
@@ -1919,6 +2047,7 @@ logger.info('⏰', schedule_delay);
           saveSchedule={ this.setSchedule }
           schedule={this.props.commande.scheduled}
           delai={schedule_delay}
+          heure_fin={parametres.heure_fin}
         />
         <MouvementPopin 
           open={ ouvertureOpen } 
@@ -2012,7 +2141,7 @@ class PanierListeItem extends React.Component {
 
  
   render() {
-    const {id, itemid, nom, quantite, prix, selected, discount, deleteDiscountHandler, openDiscountHandler, selectedIng, disabled, ingredients, composition, getComment, removeComment, steps, _onClick, _onDoubleClick, _onSubClick, _onSubDoubleClick, commandetype} = this.props;
+    const {id, itemid,  produitid, nom, quantite, prix, selected, discount, deleteDiscountHandler, openDiscountHandler, selectedIng, disabled, ingredients, composition, getComment, removeComment, steps, _onClick, _onDoubleClick, _onSubClick, _onSubDoubleClick, commandetype} = this.props;
 
 
     // logger.info('item discount', discount);
@@ -2066,7 +2195,7 @@ class PanierListeItem extends React.Component {
     const comment = getComment(itemid);
 
     return (
-      <div className="PanierListeItem" key={`pli-${id}`}>
+      <div className={`PanierListeItem${(produitid==='frais' ? ' PanierListeItem-frais' : '')}`} key={`pli-${id}`}>
         <ListItem 
           button 
           disableGutters
@@ -2079,8 +2208,8 @@ class PanierListeItem extends React.Component {
           <div className="litm row">
             { /*<div className="nom">{ `${nom} (${itemid.substr(0,5)})` }</div> */ }
             <div className="nom">{ `${nom}` }</div> 
-            <div className="quantite">{quantite}</div> 
-            <div className="prix">{ prix.toFixed(2).replace('.',',') }</div>
+            <div className="quantite">{ (produitid!=='frais' ? quantite : '') }</div> 
+            <div className="prix">{ `${(produitid==='frais' ? '+ ' : '')}${prix.toFixed(2).replace('.',',')}` }</div>
           </div>
           {comment && <div className="litm-comment">{ `* ${comment} *` }<div className="cmtdel" onClick={()=>{removeComment(itemid)}}><CommentRemoveIcon htmlColor="#FF2D55" /></div></div>}
         </ListItem>

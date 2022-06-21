@@ -282,7 +282,7 @@ async function getOrder(provider, data) {
 
   logger.info('notifSrv.getOrder()', `provider: ${provider}`, data);
 
-  if (provider==='clickandcollect') {
+  if ((['clickandcollect', 'deliveroo']).includes(provider)) {
 
     
     const __splashToken = await getSplashToken(data);
@@ -294,7 +294,7 @@ async function getOrder(provider, data) {
       return emit('getCommande', {url: __url, access_token: __splashToken.splash_token.access_token});
     } 
 
-  } else {
+  } else if (provider==='uber') {
  
     // const __getOrdertoken = await getToken(provider, 'getorder');
     logger.info('getOrder '+provider);

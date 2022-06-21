@@ -73,6 +73,7 @@ const _getIngredientTypes = (state, stepId) => {
  * @param {*} itemid  id de l'item en cours de personnalisation
  */
 const _getItemIngredients = (state, itemid) => {
+  if (itemid===null) return null;
   if (itemid===-1) return null;
   if (undefined === state.commandeReducer.commande.items) return null;
  const item_obj = state.commandeReducer.commande.items.find(item=>item.itemid===itemid);
@@ -81,6 +82,7 @@ const _getItemIngredients = (state, itemid) => {
 }
 
 const _getItemSteps = (state, itemid) => {
+  if (itemid===null) return null;
   if (itemid===-1) return null;
   if (undefined === state.commandeReducer.commande.items) return null;
   const item_obj = state.commandeReducer.commande.items.find(item=>item.itemid===itemid);

@@ -246,7 +246,7 @@ class MainLoader extends React.Component {
     } 
 
     if (this._scheduledcmd_job===null) {
-      this._scheduledcmd_job = schedule.scheduleJob('*/5 * * * *', () => {
+      this._scheduledcmd_job = schedule.scheduleJob('*/1 * * * *', () => {
         checkScheduledCommandes();
         checkNotif();
       });
