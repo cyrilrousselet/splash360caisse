@@ -709,7 +709,7 @@ const actions = {
   },
         
   installStation: (req, res) => {
-    const {url, uniqid} = req.payload;
+    const {url, uniqid, creation} = req.payload;
 
     let data = '';
 
@@ -726,7 +726,8 @@ const actions = {
 
     const form = qs.stringify({
       uuid: id,
-      uniqid: uniqid
+      uniqid: uniqid,
+      creation: creation
     });
     __request.write(form);
 

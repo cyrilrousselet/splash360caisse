@@ -187,7 +187,7 @@ async function _getTrousseau() {
   const mongo = await connect();
   if (!mongo) return false;
 
-  let __trs = await TrousseauModel.find({}).lean().sort({createdAt: -1}).limit(1).exec();
+  let __trs = await TrousseauModel.find({trousseauId:{$exists:true}}).lean().sort({createdAt: -1}).limit(1).exec();
 
   return __trs;
 

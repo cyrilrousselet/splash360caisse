@@ -69,6 +69,23 @@ const data = {
                 texte: 'Cet utilisateur est désactivé'
             }
         },
+        installation: {
+            choice: {
+                titre: 'Installation de la caisse',
+                texte: 'Voulez-vous créer une nouvelle caisse<br />ou réinstaller une caisse existante&nbsp;?',
+                confirm: 'Créer',
+                deny: 'Réinstaller',
+                cancel: 'Quitter'
+            },
+            install: {
+                titre: 'Installation de la nouvelle caisse',
+                texte: 'Veuillez renseigner l\'uniqid du restaurant'
+            },
+            reinstall: {
+                titre: 'Réinstallation de la caisse',
+                texte: 'Veuillez renseigner l\'uniqid de la caisse'
+            }
+        },
         dashboard: {
             nom: 'Accueil',
             points: ' pts',

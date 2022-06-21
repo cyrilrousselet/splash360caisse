@@ -12,6 +12,7 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 - Ajout d'un point d'entrée "/testcmd" dans le serveur Express de la caisse
 - Prise en charge des commandes provenant de Deliveroo
 - DateRangePicker pour la liste des commandes et les statistiques
+- Processus de réinstallation de caisse
 
 ### Changed
 - Paramètres de connexion au serveur MongoDB en local

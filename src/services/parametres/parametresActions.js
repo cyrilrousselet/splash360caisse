@@ -13,6 +13,9 @@ import { journalActions } from '../journal/journalActions';
 import { signatureServices } from '../signature/signatureServices';
 import { signatureActions } from '../signature/signatureActions';
 
+import LocalizedStrings from 'react-localization';
+import {data} from '../../constants/translations';
+const strings = new LocalizedStrings(data);
 
 // const logger = new Logger();
 
@@ -209,21 +212,43 @@ function update(payload) {
 function installStation() {
   return async (dispatch) => {
 
-    const result = await Swal.fire({
-      title: 'Installation de la caisse',
-      text:'Veuillez renseigner l\'uniqid du restaurant',
-      input:'text',
-      confirmButtonText: 'Valider',
+    const choice = await Swal.fire({
+      title: strings.installation.choice.titre,
+      html: strings.installation.choice.texte,
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: strings.installation.choice.confirm,
+      denyButtonText: strings.installation.choice.deny,
+      cancelButtonText: strings.installation.choice.cancel,
       showLoaderOnConfirm: true,
       allowEscapeKey: false,
       allowOutsideClick: false
     });
+
+    console.log('installStation()', choice);
+    
+    const newstation = choice.isConfirmed===true;
+
+    if (choice.isDismissed && choice.dismiss==='cancel') {
+      dispatch(peripheralActions.quitApp());
+    }
+
+    const result = await Swal.fire({
+      title: newstation ? strings.installation.install.titre : strings.installation.reinstall.titre,
+      text: newstation ?  strings.installation.install.texte : strings.installation.reinstall.texte,
+      input:'text',
+      confirmButtonText: strings.general.dialog.ok,
+      showLoaderOnConfirm: true,
+      allowEscapeKey: false,
+      allowOutsideClick: false
+    });
+
     
     if(null !== result.value) {
 
       try {
 
-        const data = await parametresServices.installStation(result.value)
+        const data = await parametresServices.installStation(result.value, newstation);
         
         logger.info("DATA", data);
         const {client_id, client_secret, trousseau_id, private_key, public_key} = data;

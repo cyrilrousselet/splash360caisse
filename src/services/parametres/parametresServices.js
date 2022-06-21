@@ -25,10 +25,10 @@ function replaceDatabase(parametres) {
 
 // requestInstallStation()
 // emit (dbParametreInstallStation)
-function installStation(uniqid) {
+function installStation(uniqid, newstation) {
   var __url = externalParams.synchro.installStation;
   console.log('installStation', uniqid);
-  return emit('installStation', {url: __url, uniqid: uniqid});
+  return emit('installStation', {url: __url, uniqid: uniqid, creation: newstation});
 }
 
 async function getStatus(params) {  //get station status
