@@ -31,6 +31,7 @@ export const notificationServices = {
   getDatabase,
   syncCommandes,
   syncClotures,
+  syncTickets,
   syncCatalogue,
   confirmCommande,
   resync
@@ -69,6 +70,17 @@ async function syncClotures(params) {
   if (__splashToken.splash_token.access_token) {
     var __url = externalParams.synchro.syncClotures;
     return emit('syncCloturesBO', {url: __url, access_token: __splashToken.splash_token.access_token, clotures: params.clotures});
+  }
+}
+async function syncTickets(params) {
+  logger.info('notifSrv.syncTickets()','init');
+  const __splashToken = await getSplashToken(params);
+
+  logger.info('notifSrv.syncTickets()',__splashToken);
+
+  if (__splashToken.splash_token.access_token) {
+    var __url = externalParams.synchro.syncTickets;
+    return emit('syncTicketsBO', {url: __url, access_token: __splashToken.splash_token.access_token, tickets: params.tickets});
   }
 }
 async function syncCatalogue(params) {

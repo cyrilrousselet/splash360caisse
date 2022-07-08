@@ -62,6 +62,7 @@ const mapDispatchToProps = (dispatch) => {
     initSync: notificationActions.initSync,
     getDatabase: notificationActions.getDatabase,
     initSyncCommandes: notificationActions.initSyncCommandes,
+    initSyncTickets: notificationActions.initSyncTickets,
     initSyncClotures: notificationActions.initSyncClotures,
     quitApp: peripheralActions.quitApp,
     checkFinDeService: tresorActions.checkFinDeService,

@@ -6,6 +6,7 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 
 ## [Unreleased]
 - Sauvegarde des préférences de la caisse au niveau du backend pour permettre une réinstallation sans perdre les paramètres.
+- Sauvegarde des z de caisse au niveau du backend
 
 ## [1.1.0+2] - 2022-06-17
 ### Added
@@ -15,6 +16,7 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 - DateRangePicker pour la liste des commandes et les statistiques [9d63649]
 - Processus de réinstallation de caisse [2b5efbc]
 - Logo NF 525 dans le footer
+- Sauvegarde des tickets au niveau du backend
 
 ### Changed
 - Paramètres de connexion au serveur MongoDB en local [9d63649]
@@ -27,4 +29,4 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 - Paramètres : liste des Tickets : filtrage des tickets obligatoires "UberEats" et "Deliveroo" [9d63649]
 - Numéro de certificat NF sur les tickets client
 
-### Removed
+<!-- ### Removed -->

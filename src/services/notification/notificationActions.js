@@ -700,6 +700,65 @@ function syncClotures(clotures) {
 
 
 
+function initSyncTickets() {
+  return (dispatch, getState) => {
+
+
+    const { options } = getState().parametresReducer.parametres;
+
+    if (options.role!=="secondary") {
+      
+      commandeServices.getTicketsToSync(100)
+      .then(
+        results => {
+          const {tickets} = results;
+
+          logger.info('initSyncTickets', tickets ? tickets.length : 'rien');
+          if (tickets && tickets.length>0) {
+
+            logger.info('preparation des tickets à envoyer au backo');
+
+            dispatch(syncTickets(tickets));
+          }
+        },
+        error => {
+          dispatch({type: notificationActionTypes.INIT_SYNC_TICKETS_ERROR, error:error});
+        }
+      )
+    } else {
+      logger.info('role secondary : pas de synchro tickets');
+    }
+  };
+}
+
+function syncTickets(tickets) {
+  return (dispatch, getState) => {
+
+    const { entreprise } = getState().parametresReducer.parametres; 
+
+    const { options } = getState().parametresReducer.parametres;
+
+    if (options.role!=="secondary") {
+
+      dispatch(journalActions.log('110', 'synchronisation tickets backend'));
+
+      notificationServices.syncTickets({id: entreprise.restaurant_id, secret: entreprise.restaurant_secret, tickets:tickets})
+      .then(
+        response => {
+          dispatch(commandeActions.setSyncedTickets(response.confirm))
+        },
+        error => {
+          logger.error(error);
+        }
+      )
+    } else {
+      logger.info('role secondary : pas de synchro tickets');
+    }
+  }
+}
+
+
+
 export const notificationActions = {
   initSSE,
   checkNotif,
@@ -722,6 +781,8 @@ export const notificationActions = {
   syncCommandes,
   initSyncClotures,
   syncClotures,
+  initSyncTickets,
+  syncTickets,
   checkStation,
   resync
 };

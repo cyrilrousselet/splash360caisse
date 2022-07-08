@@ -662,6 +662,54 @@ const actions = {
     __request.end();
   },
 
+  syncTicketsBO: (req, res) => {
+    const { url, access_token, tickets } = req.payload;
+
+    let __syncedTickets = [];
+
+    const __request = net.request({
+      url: url,
+      method: "post",
+    });
+    __request.setHeader("Authorization", "Bearer " + access_token);
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/json");
+    __request.setHeader("Accept", "application/json; version=1.1.0");
+
+    const __data = JSON.stringify({ tickets: tickets });
+    console.log("Tickets to sync: ", __data);
+
+    __request.write(__data);
+
+    __request.on("response", (response) => {
+      response.on("data", (chunk) => {
+        __syncedTickets.push(chunk);
+        log.info(`syncTicketsBO BODY: ${chunk}`);
+      });
+      response.on("end", () => {
+        log.info("syncTicketsBO: end");
+
+        let __conf = {};
+        try {
+          __conf = { confirm: JSON.parse(__syncedTickets.join("")) };
+        } catch (e) {
+          __conf = { error: e.message };
+          log.error("syntck JSON error", e);
+        }
+        res.send(__conf);
+        //        res.send({confirm: JSON.parse(__syncedClotures.join(''))});
+        // res.send({confirm: true});
+      });
+    });
+
+    __request.on('error', (error) => {
+      log.error('syncTicketsBO ERROR', error);
+      res.error(error);
+    });
+
+    __request.end();
+  },
+
   syncCatalogueBO: (req, res) => {
     const { url, access_token, catalogue } = req.payload;
 

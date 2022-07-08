@@ -367,6 +367,8 @@ function confirmCommande(_payload, printTemplates) {
             dispatch( signatureActions.updateNumerotation('note', note+1) );
 
           }
+
+          let __ticketData;
           
           // dans le cas d'un premier paiement ou d'une modif de moyens de paiement (réglements)
           if ((!confirm.signature && !confirm.ticket) || modifreglement) {
@@ -383,7 +385,7 @@ function confirmCommande(_payload, printTemplates) {
             }
 
 
-            const __ticketData = _createTicket(
+            __ticketData = _createTicket(
               {...confirm, 
                 createdAt: new Date() 
               }, 
@@ -409,6 +411,7 @@ function confirmCommande(_payload, printTemplates) {
 
             dispatch( signatureActions.updateSignature('tickets', signatureTicket.signature) );
             dispatch( signatureActions.updateNumerotation('ticket', ticket+1) );
+
 
             if (modifreglement) {
               dispatch(journalActions.log('420','Ticket #'+newTicket+' remplace le ticket #'+prevticket));
@@ -489,7 +492,22 @@ function confirmCommande(_payload, printTemplates) {
               dispatch(
                 notificationActions.syncCommandes([...chrcommandes, cmdtosync])
               );
+
+
+              // synchronisation du nouveau ticket et éventuellement les 10 derniers non synchronisés
+              commandeServices.getTicketsToSync(10).then((results) => {
+                const { tickets } = results;
+                // si le nouveau ticket (__ticketData) est déjà en BDD, on le l'ajoute pas
+                const prevtickets = tickets.filter((t) => (__ticketData['ENC-TIK-NUM']!==t['ENC-TIK-NUM']) );
+
+                dispatch(notificationActions.syncTickets([...prevtickets, __ticketData]));
+              });
+
+
             });
+
+
+            
           }
 
           // s'il y a un numéro de commande, c'est qu'on encaisse une commande déjà réglée
@@ -1638,6 +1656,7 @@ function deleteCommande(payload) {
             dispatch( signatureActions.updateNumerotation('ticket', ticket+1) );
 
 
+            dispatch(notificationActions.syncTickets([__ticketData]));
 
           }
           catch(e) {
@@ -2187,6 +2206,27 @@ function setSyncedCommands(payload) {
     );
   };
 }
+function setSyncedTickets(payload) {
+  return (dispatch) => {
+    dispatch({ type: commandeActionTypes.SETSYNCED_REQUEST });
+    logger.info("setSyncedTickets()", payload);
+    const { id, datetime } = payload;
+    commandeServices.setSyncedTickets(id, datetime).then(
+      (confirm) => {
+        dispatch({ type: commandeActionTypes.SETSYNCED_SUCCESS });
+        dispatch(
+          notificationActions.syncDispatch("setsyncedtickets", {
+            id,
+            datetime,
+          })
+        );
+      },
+      (error) => {
+        dispatch({ type: commandeActionTypes.SETSYNCED_FAILURE, error: error });
+      }
+    );
+  };
+}
 
 function setCommandeFromOrder(provider, payload) {
   return async (dispatch, getState) => {
@@ -2343,7 +2383,8 @@ function setCommandeFromOrder(provider, payload) {
           dispatch( signatureActions.updateSignature('tickets', signatureTicket.signature) );
           dispatch( signatureActions.updateNumerotation('ticket', ticket+1) );
 
-          
+          dispatch( notificationActions.syncTickets([__ticketData]) );
+
         }
 
 
@@ -2649,6 +2690,8 @@ function setCommandeFromAPI(payload) {
               
               dispatch( signatureActions.updateSignature('tickets', signatureTicket.signature) );
               dispatch( signatureActions.updateNumerotation('ticket', ticket+1) );
+
+              dispatch( notificationActions.syncTickets([__ticketData]) );
 
             }
 
@@ -3142,6 +3185,7 @@ export const commandeActions = {
   addTroppercu,
   archiveCommands,
   setSyncedCommands,
+  setSyncedTickets,
   addComment,
   updateComment,
   deleteComment,

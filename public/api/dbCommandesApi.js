@@ -174,6 +174,26 @@ const actions = {
 
     res.send(confirm);
   },
+  dbTicketGetToSync: async (req, res) => {
+    const { payload } = req;
+    const limit = payload.limit;
+    const proxies = await _getTicketsToSync(limit);
+    res.send(proxies);
+  },
+  dbTicketSetSynced: async (req, res) => {
+    const { payload } = req;
+    log.info(
+      "dbTicketSetSynced([" +
+        payload.ids +
+        "]," +
+        payload.datetime +
+        ") in API"
+    );
+
+    const confirm = await _setSyncedTickets(payload.ids, payload.datetime);
+
+    res.send(confirm);
+  },
 
   dbNoteGet: async (req, res) => {
     log.info('dbNoteGet in API');
@@ -331,6 +351,7 @@ async function _getCommandesToSync(limit = null) {
     chronos: _chr && !Array.isArray(_chr) ? [_chr] : _chr,
   };
 }
+
 
 async function _getCommandes(criteriae = {}) {
   const mongo = await connect();
@@ -634,6 +655,51 @@ async function _deleteTicket(ids) {
 
   const { deleteCount } = await TicketModel.deleteMany({'ENC-GTT-ORI-NUM': {$in: ids}});
   return (deleteCount === ids.length);
+}
+
+async function _getTicketsToSync(limit = null) {
+  const mongo = await connect();
+  if (!mongo) return false;
+
+  const criteria = {
+      $or: [
+      { sync: {$exists: false} },
+      { sync: null }
+    ]
+  };
+
+  log.info('gettck2sync crit', criteria);
+
+  let _tck;
+
+  if (limit && limit > 0) {
+    _tck = await TicketModel.find(criteria).sort({"ENC-TIK-HOR-GDH": -1}).lean().limit(limit).exec();
+  } else {
+    _tck = await TicketModel.find(criteria).sort({"ENC-TIK-HOR-GDH": -1}).lean().exec();
+  }
+
+  // Map document
+  _tck = _tck.map((c) => ({ ...c, _id: undefined, __v: undefined }));
+
+  return {
+    tickets: _tck,
+  };
+}
+
+async function _setSyncedTickets(ids, datetime) {
+  log.info("Sync ids: ", ids);
+  if (!ids || !ids.length) {
+    return false;
+  }
+
+  const __datetime = new Date(datetime).getTime();
+
+  const _tck = await TicketModel.updateMany(
+    {'ENC-TIK-CDE': {$in: ids}},
+    {'sync': __datetime}
+  );
+
+  return _tck.acknowledged;
 }
 
 async function _findNote(payload) {

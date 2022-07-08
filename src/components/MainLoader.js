@@ -198,6 +198,7 @@ class MainLoader extends React.Component {
 
         } else if (readytolaunch===null) {
           this.props.initSyncCommandes();
+          this.props.initSyncTickets();
           this.props.initSyncClotures();
           this.props.checkScheduledCommandes();  
 

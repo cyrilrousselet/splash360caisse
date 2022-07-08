@@ -32,6 +32,7 @@ export const commandeServices = {
   deleteCommande,
   archiveCommands,
   setSyncedCommands,
+  setSyncedTickets,
   addIngredient,
   removeIngredient,
   noIngredientForStep,
@@ -50,6 +51,7 @@ export const commandeServices = {
   setCommandeFromAPI,
   sendTicketId,
   getCommandesToSync,
+  getTicketsToSync,
   getAllTicketsRestaurant,
   persistTicketsRestaurants,
   persistSingleTicketRestaurant,
@@ -1772,6 +1774,9 @@ function archiveCommands(commandesid, clotureId) {
 function setSyncedCommands(commandesid, datetime) {
   return emit("dbCommandeSetSynced", { ids: commandesid, datetime: datetime });
 }
+function setSyncedTickets(ticketsid, datetime) {
+  return emit("dbTicketSetSynced", { ids: ticketsid, datetime: datetime });
+}
 
 function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
   const commande = getNewCommande(data);
@@ -2379,6 +2384,9 @@ function getCommandesToSync(limit = null) {
   return emit("dbCommandeGetToSync", { limit: limit });
 }
 
+function getTicketsToSync(limit = null) {
+  return emit("dbTicketGetToSync", { limit: limit });
+}
 
 function createLot(secteur, expiration) {
   const __now = new Date(); 
