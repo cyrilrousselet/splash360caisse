@@ -17,8 +17,8 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 - Processus de réinstallation de caisse [2b5efbc]
 - Logo NF 525 dans le footer
 - Sauvegarde des tickets au niveau du backend
-- Stockage des token d'UberEats dans le LocalStorage pour pouvoir les réutiliser pendant leur durée de vie (30 jours) []
-- Reset et mise à jour de la liste des imprimantes et des tickets lors d'une opération de réinstallation []
+- Stockage des token d'UberEats dans le LocalStorage pour pouvoir les réutiliser pendant leur durée de vie (30 jours) [f4e30e1]
+- Reset et mise à jour de la liste des imprimantes et des tickets lors d'une opération de réinstallation [f4e30e1]
 
 ### Changed
 - Paramètres de connexion au serveur MongoDB en local [9d63649]
@@ -30,6 +30,6 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 - Correction de la fonction de l'impression de ticket commande depuis la liste des commandes (et tickets UberEats, Deliveroo) [9d63649]
 - Paramètres : liste des Tickets : filtrage des tickets obligatoires "UberEats" et "Deliveroo" [9d63649]
 - Numéro de certificat NF sur les tickets client
-- Correction des checkbox d'impression des produits et ingrédients dans le module "Menu" []
+- Correction des checkbox d'impression des produits et ingrédients dans le module "Menu" [f4e30e1]
 
 <!-- ### Removed -->
