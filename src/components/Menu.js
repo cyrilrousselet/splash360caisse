@@ -801,16 +801,16 @@ function MenuListe(props) {
                 <Checkbox
                   icon={<CheckBoxOutlineBlankIcon htmlColor="#7FAD3B" fontSize="small" />}
                   checkedIcon={<CheckBoxIcon  htmlColor="#7FAD3B" fontSize="small" />}
-                  checked={ (type==='produits') ? isChecked(tck.ticket_id, cont.produits) : isChecked(tck.ticket_id, cont.ingredients)}
+                  checked={ (type==='produits') ? isChecked(tck.ticket_id.toString(), cont.produits) : isChecked(tck.ticket_id.toString(), cont.ingredients)}
                   onClick={(e)=>{ e.stopPropagation();}}
-                  onChange={(e) => { (type==='produits') ? changeNoPrintAll(cont.groupe_id, cont.produits, tck.ticket_id, isChecked(tck.ticket_id, cont.produits), isIndeterminate(tck.ticket_id, cont.produits) ) : changeNoPrintAll(cont.groupe_id, cont.ingredients, tck.ticket_id, isChecked(tck.ticket_id, cont.ingredients), isIndeterminate(tck.ticket_id, cont.ingredients) ) }}
-                  indeterminate={ (type==='produits') ? isIndeterminate(tck.ticket_id, cont.produits) : isIndeterminate(tck.ticket_id, cont.ingredients)}
+                  onChange={(e) => { (type==='produits') ? changeNoPrintAll(cont.groupe_id, cont.produits, tck.ticket_id.toString(), isChecked(tck.ticket_id.toString(), cont.produits), isIndeterminate(tck.ticket_id.toString(), cont.produits) ) : changeNoPrintAll(cont.groupe_id, cont.ingredients, tck.ticket_id.toString(), isChecked(tck.ticket_id.toString(), cont.ingredients), isIndeterminate(tck.ticket_id.toString(), cont.ingredients) ) }}
+                  indeterminate={ (type==='produits') ? isIndeterminate(tck.ticket_id.toString(), cont.produits) : isIndeterminate(tck.ticket_id.toString(), cont.ingredients)}
                   name="checkedB"
                   color="primary"
                 />
               }
               label={tck.nom}
-              key={tck.ticket_id}
+              key={tck.ticket_id.toString()}
             />
             )}
           </div>
@@ -831,9 +831,9 @@ function MenuListe(props) {
                       <Checkbox
                         icon={<CheckBoxOutlineBlankIcon htmlColor="#7FAD3B" fontSize="small" />}
                         checkedIcon={<CheckBoxIcon  htmlColor="#7FAD3B" fontSize="small" />}
-                        checked={(p.noprint!=null) ? p.noprint.indexOf(tck.ticket_id)===-1 : cont.noprint.indexOf(tck.ticket_id)===-1}
+                        checked={(p.noprint!=null) ? p.noprint.indexOf(tck.ticket_id.toString())===-1 : cont.noprint.indexOf(tck.ticket_id.toString())===-1}
                         onClick={(e)=>{ e.stopPropagation();}}
-                        onChange={(e) => { changeNoPrintItem(p.id, tck.ticket_id) }}
+                        onChange={(e) => { changeNoPrintItem(p.id, tck.ticket_id.toString()) }}
                         name="checkedB"
                         color="primary"
                       />
@@ -865,15 +865,15 @@ function MenuListe(props) {
                       <Checkbox
                         icon={<CheckBoxOutlineBlankIcon htmlColor="#7FAD3B" fontSize="small" />}
                         checkedIcon={<CheckBoxIcon  htmlColor="#7FAD3B" fontSize="small" />}
-                        checked={(n.noprint!=null) ? n.noprint.indexOf(tck.ticket_id)===-1 : cont.noprint.indexOf(tck.ticket_id)===-1}
+                        checked={(n.noprint!=null) ? n.noprint.indexOf(tck.ticket_id.toString())===-1 : cont.noprint.indexOf(tck.ticket_id.toString())===-1}
                         onClick={(e)=>{ e.stopPropagation();}}
-                        onChange={(e) => { changeNoPrintItem(n.id, tck.ticket_id, true) }}
+                        onChange={(e) => { changeNoPrintItem(n.id, tck.ticket_id.toString(), true) }}
                         name="checkedB"
                         color="primary"
                       />
                     }
                     label={tck.nom}
-                    key={tck.ticket_id}
+                    key={tck.ticket_id.toString()}
                   />
                   )}
                 </div>

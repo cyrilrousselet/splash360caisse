@@ -218,12 +218,21 @@ function sendNumero(numero, response) {
 async function denyOrder(provider, order) {
 
   // const __denyOrdertoken = await getToken(provider, 'acceptorder');
-  const __denyOrdertoken = await getUberToken({
-    url: externalParams.uber.oAuth,
-    id: externalParams[provider].clientid,
-    secret: externalParams[provider].secret,
-    scope: externalParams[provider].denyorder.scope
-  });
+
+  const utok_deny = localStorage.getItem('utok_deny');
+  let __denyOrdertoken = {access_token:''};
+
+  if (!utok_deny || utok_deny.expiration < new Date().getTime()) {
+    __denyOrdertoken = await getUberToken({
+      url: externalParams.uber.oAuth,
+      id: externalParams[provider].clientid,
+      secret: externalParams[provider].secret,
+      scope: externalParams[provider].denyorder.scope
+    });
+    localStorage.setItem('utok_deny', { ...__denyOrdertoken, expiration: new Date().getTime() + __denyOrdertoken.expires_in })
+  } else {
+    __denyOrdertoken.access_token = utok_deny.access_token;
+  }
 
   logger.info('denyOrder token :',__denyOrdertoken);
 
@@ -237,12 +246,21 @@ async function denyOrder(provider, order) {
 async function acceptOrder(provider, order) {
 
   // const __acceptOrdertoken = await getToken(provider, 'acceptorder');
-  const __acceptOrdertoken = await getUberToken({
-    url: externalParams.uber.oAuth,
-    id: externalParams[provider].clientid,
-    secret: externalParams[provider].secret,
-    scope: externalParams[provider].acceptorder.scope
-  });
+  const utok_accept = localStorage.getItem('utok_accept');
+  let __acceptOrdertoken = {access_token:''};
+  
+  if (!utok_accept || utok_accept.expiration < new Date().getTime()) {
+
+    __acceptOrdertoken = await getUberToken({
+      url: externalParams.uber.oAuth,
+      id: externalParams[provider].clientid,
+      secret: externalParams[provider].secret,
+      scope: externalParams[provider].acceptorder.scope
+    });
+    localStorage.setItem('utok_accept', { ...__acceptOrdertoken, expiration: new Date().getTime() + __acceptOrdertoken.expires_in });
+  } else {
+    __acceptOrdertoken.access_token = utok_accept.access_token;
+  }
 
   logger.info('acceptOrder token :',__acceptOrdertoken);
 
@@ -311,13 +329,21 @@ async function getOrder(provider, data) {
     // const __getOrdertoken = await getToken(provider, 'getorder');
     logger.info('getOrder '+provider);
 
-    const __getOrdertoken = await getUberToken({
-      url: externalParams.uber.oAuth,
-      id: externalParams[provider].clientid,
-      secret: externalParams[provider].secret,
-      scope: externalParams[provider].getorder.scope
-    });
-  
+    const utok_getorder = localStorage.getItem('utok_getorder');
+    let __getOrdertoken = {access_token:''};
+    
+    if (!utok_getorder || utok_getorder.expiration < new Date().getTime()) {
+      __getOrdertoken = await getUberToken({
+        url: externalParams.uber.oAuth,
+        id: externalParams[provider].clientid,
+        secret: externalParams[provider].secret,
+        scope: externalParams[provider].getorder.scope
+      });
+    
+      localStorage.setItem('utok_getorder', { ...__getOrdertoken, expiration: new Date().getTime() + __getOrdertoken.expires_in });
+    } else {
+      __getOrdertoken.access_token = utok_getorder.access_token;
+    }
     logger.info('getOrder token :',__getOrdertoken);
     
     if (__getOrdertoken.access_token) {
@@ -330,12 +356,20 @@ async function getOrder(provider, data) {
 async function setPOS(provider, data) {
 
   // const __updatePOStoken = await getToken(provider, 'pos');
-  const __updatePOStoken = await getUberToken({
-    url: externalParams.uber.oAuth,
-    id: externalParams[provider].clientid,
-    secret: externalParams[provider].secret,
-    scope: externalParams[provider].pos.scope
-  });
+  const utok_updpos = localStorage.getItem('utok_updpos');
+  let __updatePOStoken = {access_token:''};
+  
+  if (!utok_updpos || utok_updpos.expiration < new Date().getTime()) {
+    __updatePOStoken = await getUberToken({
+      url: externalParams.uber.oAuth,
+      id: externalParams[provider].clientid,
+      secret: externalParams[provider].secret,
+      scope: externalParams[provider].pos.scope
+    });
+    localStorage.setItem('utok_updpos', { ...__updatePOStoken, expiration: new Date().getTime() + __updatePOStoken.expires_in });
+  } else {
+    __updatePOStoken.access_token = utok_updpos.access_token;
+  }
 
   logger.info('setPOS token :',__updatePOStoken);
 
@@ -351,12 +385,20 @@ async function setRestaurantOnline(provider, data) {
   logger.info('NSrv.setRestaurantOnline()');
   // const __updateRestaurantToken = await getToken(provider, 'restaurant');
 
-  const __updateRestaurantToken = await getUberToken({
-    url: externalParams.uber.oAuth,
-    id: externalParams[provider].clientid,
-    secret: externalParams[provider].secret,
-    scope: externalParams[provider].restaurant.scope
-  });
+  const utok_updres = localStorage.getItem('utok_updres');
+  let __updateRestaurantToken = {access_token:''};
+  
+  if (!utok_updres || utok_updres.expiration < new Date().getTime()) {
+    __updateRestaurantToken = await getUberToken({
+      url: externalParams.uber.oAuth,
+      id: externalParams[provider].clientid,
+      secret: externalParams[provider].secret,
+      scope: externalParams[provider].restaurant.scope
+    });
+    localStorage.setItem('utok_updres', { ...__updateRestaurantToken, expiration: new Date().getTime() + __updateRestaurantToken.expires_in });
+  } else {
+    __updateRestaurantToken.access_token = utok_updres.access_token;
+  }
 
   logger.info('setRestaurantOnline token :',__updateRestaurantToken);
 
@@ -370,12 +412,20 @@ async function updateProduitUber(provider, data) {
   logger.info('NSrv.updateProduitUber()');
   // const __updateProduitToken = await getToken(provider, 'updateitem');
 
-  const __updateProduitToken = await getUberToken({
-    url: externalParams.uber.oAuth,
-    id: externalParams[provider].clientid,
-    secret: externalParams[provider].secret,
-    scope: externalParams[provider].updateitem.scope
-  });
+  const utok_updprd = localStorage.getItem('utok_updprd');
+  let __updateProduitToken = {access_token:''};
+  
+  if (!utok_updprd || utok_updprd.expiration < new Date().getTime()) {
+    __updateProduitToken = await getUberToken({
+      url: externalParams.uber.oAuth,
+      id: externalParams[provider].clientid,
+      secret: externalParams[provider].secret,
+      scope: externalParams[provider].updateitem.scope
+    });
+    localStorage.setItem('utok_updprd', { ...__updateProduitToken, expiration: new Date().getTime() + __updateProduitToken.expires_in });
+  } else {
+    __updateProduitToken.access_token = utok_updprd.access_token;
+  }
 
   logger.info('updateProduitUber token :',__updateProduitToken);
 

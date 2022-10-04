@@ -25,7 +25,7 @@ function replaceDatabase(database) {
     dispatch({type: parametresActionTypes.REPLACE_DATABASE_REQUEST, dd:database.database.parametres});
 
     try {
-      await parametresServices.replaceDatabase(database.database.parametres);
+      await parametresServices.replaceDatabase({parametres: database.database.parametres, imprimantes: database.database.imprimantes, tickets: database.database.tickets});
 
 
       let entreprise = {};

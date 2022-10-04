@@ -24,6 +24,8 @@ const actions = {
     log.info("dbParametresCompleteDB() in API", data);
 
     (await db.parametres)._.mixin(lodashId);
+    (await db.imprimantes)._.mixin(lodashId);
+    (await db.tickets)._.mixin(lodashId);
 
     const confirm = await _replaceAll(data);
 
@@ -97,18 +99,29 @@ async function _getAll() {
 
 async function _replaceAll(data) {
 
+  const {parametres, imprimantes, tickets} = data;
   log.info('_replaceAll', data);
+  
+  await (await db.imprimantes).get('imprimantes').remove((n)=>true).write();
+  imprimantes.forEach(async (imp) => {
+    await (await db.imprimantes).get('imprimantes').insert(imp).write();
+  });
+  
+  await (await db.tickets).get('tickets').remove((n)=>true).write();
+  tickets.forEach(async (tck) => {
+    await (await db.tickets).get('tickets').insert(tck).write();
+  });
+  
   let count = 0;
-
   const start = async () => {
-    await asyncForEach(data, async (obj) => {
+    await asyncForEach(parametres, async (obj) => {
       
 //        _param = await _insertParametre(obj);
       const  _param = await _persistParametres(obj);
         if (_param!=null) count++;
       
     });
-    return count === data.length;
+    return count === parametres.length;
   }
   start();
 
