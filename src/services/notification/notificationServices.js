@@ -229,7 +229,7 @@ async function denyOrder(provider, order) {
       secret: externalParams[provider].secret,
       scope: externalParams[provider].denyorder.scope
     });
-    localStorage.setItem('utok_deny', { ...__denyOrdertoken, expiration: new Date().getTime() + __denyOrdertoken.expires_in })
+    localStorage.setItem('utok_deny', { ...__denyOrdertoken, expiration: new Date().getTime() + (__denyOrdertoken.expires_in * 1000) })
   } else {
     __denyOrdertoken.access_token = utok_deny.access_token;
   }
@@ -257,7 +257,7 @@ async function acceptOrder(provider, order) {
       secret: externalParams[provider].secret,
       scope: externalParams[provider].acceptorder.scope
     });
-    localStorage.setItem('utok_accept', { ...__acceptOrdertoken, expiration: new Date().getTime() + __acceptOrdertoken.expires_in });
+    localStorage.setItem('utok_accept', { ...__acceptOrdertoken, expiration: new Date().getTime() + (__acceptOrdertoken.expires_in * 1000) });
   } else {
     __acceptOrdertoken.access_token = utok_accept.access_token;
   }
@@ -340,7 +340,7 @@ async function getOrder(provider, data) {
         scope: externalParams[provider].getorder.scope
       });
     
-      localStorage.setItem('utok_getorder', { ...__getOrdertoken, expiration: new Date().getTime() + __getOrdertoken.expires_in });
+      localStorage.setItem('utok_getorder', { ...__getOrdertoken, expiration: new Date().getTime() + (__getOrdertoken.expires_in * 1000) });
     } else {
       __getOrdertoken.access_token = utok_getorder.access_token;
     }
@@ -366,7 +366,7 @@ async function setPOS(provider, data) {
       secret: externalParams[provider].secret,
       scope: externalParams[provider].pos.scope
     });
-    localStorage.setItem('utok_updpos', { ...__updatePOStoken, expiration: new Date().getTime() + __updatePOStoken.expires_in });
+    localStorage.setItem('utok_updpos', { ...__updatePOStoken, expiration: new Date().getTime() + (__updatePOStoken.expires_in * 1000) });
   } else {
     __updatePOStoken.access_token = utok_updpos.access_token;
   }
@@ -395,7 +395,7 @@ async function setRestaurantOnline(provider, data) {
       secret: externalParams[provider].secret,
       scope: externalParams[provider].restaurant.scope
     });
-    localStorage.setItem('utok_updres', { ...__updateRestaurantToken, expiration: new Date().getTime() + __updateRestaurantToken.expires_in });
+    localStorage.setItem('utok_updres', { ...__updateRestaurantToken, expiration: new Date().getTime() + (__updateRestaurantToken.expires_in * 1000) });
   } else {
     __updateRestaurantToken.access_token = utok_updres.access_token;
   }
@@ -422,7 +422,7 @@ async function updateProduitUber(provider, data) {
       secret: externalParams[provider].secret,
       scope: externalParams[provider].updateitem.scope
     });
-    localStorage.setItem('utok_updprd', { ...__updateProduitToken, expiration: new Date().getTime() + __updateProduitToken.expires_in });
+    localStorage.setItem('utok_updprd', { ...__updateProduitToken, expiration: new Date().getTime() + (__updateProduitToken.expires_in * 1000) });
   } else {
     __updateProduitToken.access_token = utok_updprd.access_token;
   }
