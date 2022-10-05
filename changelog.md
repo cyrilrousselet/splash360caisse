@@ -31,5 +31,6 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 - Paramètres : liste des Tickets : filtrage des tickets obligatoires "UberEats" et "Deliveroo" [9d63649]
 - Numéro de certificat NF sur les tickets client
 - Correction des checkbox d'impression des produits et ingrédients dans le module "Menu" [f4e30e1]
+- Le module de communication interprocess "eiphop" n'écrit des logs qu'en mode de développement []
 
 <!-- ### Removed -->

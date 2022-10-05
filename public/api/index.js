@@ -3,6 +3,8 @@
 const electron = require("electron");
 const { setupMainHandler } = require("../utils/eiphop");
 
+const isDev = require('electron-is-dev');
+
 const dbCatalogueApi = require("./dbCatalogueApi.js");
 const dbCommandesApi = require("./dbCommandesApi.js");
 const dbCloturesApi = require("./dbCloturesApi.js");
@@ -42,5 +44,5 @@ setupMainHandler(
     ...sse,
     ...kds,
   },
-  true
+  isDev
 );
