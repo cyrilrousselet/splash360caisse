@@ -241,7 +241,7 @@ function  createZCaisse(cloture, intervalle, mode) {
     const { privateKey, trousseauId } = getState().signatureReducer; 
     const { periode } = cloture;
     const { user } = getState().authentication;
-    console.log('createZCaisse ('+mode+')', periode);
+    console.trace('createZCaisse ('+mode+')', periode);
 
     let intervalleId = (intervalle==="intermediaire") ? 'I' : ((intervalle==="jour") ? 'J' : ((intervalle==="mois") ? 'M' : 'A'));
 
@@ -294,7 +294,6 @@ function  createZCaisse(cloture, intervalle, mode) {
       dispatch(peripheralActions.printZCaisse(__zdecaisse));
 
 
-
       // on génère l'archive fiscale pour une cloture auto non intermédiaire
       // if (mode==="auto" && intervalle!=="intermediaire") {
       //   dispatch(archiveFiscale(intervalle, new Date(periode.debut), new Date(periode.fin)));
@@ -309,19 +308,27 @@ function  createZCaisse(cloture, intervalle, mode) {
       if (mode==="auto") {
         
         if (intervalle==="intermediaire") {
-          
+
+          console.log('zdc intermediaire => testZC jour');
           dispatch(testZCaisse('jour'));
-
+          
         } else if (intervalle==="jour") {
-
+          
+          console.log('zdc jour => testGTJ');
           dispatch(testGTPeriodique(intervalle));
+          console.log('zdc jour => testZC mois');
           dispatch(testZCaisse('mois'));
-
+          
         } else if (intervalle==="mois") {
-
+          
+          console.log('zdc mois => testGTM');
           dispatch(testGTPeriodique(intervalle));
+          console.log('zdc mois => testZC année');
           dispatch(testZCaisse('annee'));
-
+          
+        } else {
+          console.log('zdc année=> testGTA');
+          dispatch(testGTPeriodique(intervalle));
         }
       }
     }
@@ -357,7 +364,7 @@ function loadCloture(clotureId) {
 function makeCloture(params={}) {
   return async (dispatch, getState) => {
 
-    console.log('makeCloture()',params);
+    console.trace('makeCloture()',params);
    
     const state = getState();
     const catalogue = state.catalogueReducer;
@@ -428,7 +435,7 @@ function makeCloture(params={}) {
     // récup. cmd non clôturées
     const {commandeslist} = await commandeServices.getCommandesList(query);
 
-    console.warn('makeCloture : commandeslist',commandeslist);
+    console.warn('makeCloture : commandeslist', commandeslist);
 
     if (commandeslist && Object.values(commandeslist).length>0) {
 
@@ -446,6 +453,7 @@ function makeCloture(params={}) {
       const cloture = clotureServices.makeCloture(commandeslist, tickets, catalogue, params);
 
       const __cloture = {...cloture, localsync: [options.caisse.uniqid]};
+      console.log('makeCloture', cloture);
 
       clotureServices.saveCloture(__cloture)
         .then(
@@ -457,6 +465,8 @@ function makeCloture(params={}) {
             dispatch( signatureActions.updateNumerotation('cloture', cloture_id+1) );
 
             dispatch(notificationActions.syncDispatch('cloture', __cloture));
+
+            console.log('cloture sauvegardée, on lance le ZdC intermédiaire');
 
             // dispatch(createZCaisse(cloture, (params.type==="auto" ? 'jour':'intermediaire'), params.type));
             dispatch(createZCaisse(cloture, 'intermediaire', params.type));
@@ -603,7 +613,7 @@ function setClotureFromSync(cloture) {
 function testCloturesAuto() {
   return async (dispatch, getState) => {
 
-    console.log('testCloturesAuto()');
+    console.trace('testCloturesAuto()');
 
     const __today =  new Date();
     let end;
@@ -788,7 +798,7 @@ function testZCaisse(intervalle) {
         $expr : {
           $and:[ 
             {$eq:["$ztype", "jour"]},
-            {$gte : [
+            {$gt : [
               {$toDouble: 
                 {$arrayElemAt:[
                   {$split:["$periode","|"]}, 
@@ -825,7 +835,7 @@ function testZCaisse(intervalle) {
           $expr : {
             $and:[ 
               {$eq:["$ztype", "intermediaire"]},
-              {$gte : [
+              {$gt : [
                 {$toDouble: 
                   {$arrayElemAt:[
                     {$split:["$periode","|"]}, 
@@ -852,6 +862,7 @@ function testZCaisse(intervalle) {
 
         if (zi_hier.length>0) {
           const zj_synth = _getZSynthese(zi_hier, "jour");
+          console.log('il y a des ZI hier, on lance la création du ZJ');
           dispatch(createZCaisse(zj_synth, "jour", "auto"));
         }
         else {
@@ -864,7 +875,6 @@ function testZCaisse(intervalle) {
       else {
 
         console.log('il y a un ZJ pour hier, donc on lance le test mensuel');
-
         dispatch(testZCaisse('mois'));
       }
       
@@ -923,7 +933,7 @@ function testZCaisse(intervalle) {
         console.log('__lastZJm', __lastZJm);
         const lzjm_periode = (Array.isArray(__lastZJm) && __lastZJm.length>0) ? __lastZJm[0]['periode'].split('|') : [0,0];
 
-        // si le dernier Z intermédiaire est postérieur au dernier Z journalier
+        // si le dernier Z journalier est postérieur au dernier Z mensuel
         if (lzjm_periode[1] > lzmm_periode[1]) {
           // on cale la période de recherche sur l'intervalle entre les deux Z
           start = Number(lzmm_periode[1]);
@@ -945,7 +955,7 @@ function testZCaisse(intervalle) {
         $expr : {
           $and:[ 
             {$eq:["$ztype", "mois"]},
-            {$gte : [
+            {$gt : [
               {$toDouble: 
                 {$arrayElemAt:[
                   {$split:["$periode","|"]}, 
@@ -982,7 +992,7 @@ function testZCaisse(intervalle) {
           $expr : {
             $and:[ 
               {$eq:["$ztype", "jour"]},
-              {$gte : [
+              {$gt : [
                 {$toDouble: 
                   {$arrayElemAt:[
                     {$split:["$periode","|"]}, 
@@ -1009,6 +1019,7 @@ function testZCaisse(intervalle) {
         console.log('TZC zj_mois',zj_mois);
         if (zj_mois.length>0) {
           const zm_synth = _getZSynthese(zj_mois, "mois");
+          console.log('il y a des ZJ, on lance la création du ZM');
           dispatch(createZCaisse(zm_synth, "mois", "auto"));
         } else {
           console.log('TZC mois : pas de ZCaisse pour ce mois, on lance le test pour l’année');
@@ -1037,7 +1048,7 @@ function testZCaisse(intervalle) {
         $expr : {
           $and:[ 
             {$eq:["$ztype", "annee"]},
-            {$gte : [
+            {$gt : [
               {$toDouble: 
                 {$arrayElemAt:[
                   {$split:["$periode","|"]}, 
@@ -1074,7 +1085,7 @@ function testZCaisse(intervalle) {
           $expr : {
             $and:[ 
               {$eq:["$ztype", "mois"]},
-              {$gte : [
+              {$gt : [
                 {$toDouble: 
                   {$arrayElemAt:[
                     {$split:["$periode","|"]}, 
@@ -1100,6 +1111,7 @@ function testZCaisse(intervalle) {
         console.log('TZC zj_mois',zm_annee);
         if (zm_annee.length>0) {
           const za_synth = _getZSynthese(zm_annee, "annee");
+          console.log('il y a des ZM, on lance la création du ZA');
           dispatch(createZCaisse(za_synth, "annee", "auto"));
         } else {
           console.log('TZC annee : pas de ZCaisse pour cette année, on s’arrête là');
@@ -1368,7 +1380,7 @@ function createGrandTotalTicket(commande) {
 function createGrandTotalPeriodique(intervalle, grandstotaux) {
   return async (dispatch, getState) => {
 
-    console.log('createGrandTotalPeriodique(' + intervalle + ') L=' + grandstotaux.length);
+    console.trace('createGrandTotalPeriodique(' + intervalle + ') L=' + grandstotaux.length);
 
     const { grandtotal } = getState().numerotationReducer;
     const { caisse } = getState().parametresReducer.parametres.options;
@@ -1541,12 +1553,15 @@ function createGrandTotalPeriodique(intervalle, grandstotaux) {
 
       // on lance le test sur l'intervalle supérieur
       // (qui est susceptible d'utiliser le GT periodique qu'on vient de créer...)
-      if (confirm && intervalle==="jour") {
-        dispatch(testGTPeriodique('mois'));
-      }
-      else if (confirm && intervalle==="mois") {
-        dispatch(testGTPeriodique('annee'));
-      }
+
+// ce qui suit a été commenté parce que redondant avec l'appel depuis createZCaisse()
+
+              // if (confirm && intervalle==="jour") {
+              //   dispatch(testGTPeriodique('mois'));
+              // }
+              // else if (confirm && intervalle==="mois") {
+              //   dispatch(testGTPeriodique('annee'));
+              // }
       if (intervalle!=='intermediaire') {
         const af_debut = new Date(__start_str.substring(0,4)+"-"+__start_str.substring(4,6)+"-"+__start_str.substring(6,8)+' '+__start_str.substring(8,10)+':'+__start_str.substring(10,12)+':'+__start_str.substring(12,14));
         const af_fin = new Date(__end_str.substring(0,4)+"-"+__end_str.substring(4,6)+"-"+__end_str.substring(6,8)+' '+__end_str.substring(8,10)+':'+__end_str.substring(10,12)+':'+__end_str.substring(12,14));
@@ -1571,6 +1586,7 @@ function testGTPeriodique(intervalle='jour') {
     let __end;
     let end;
 
+    console.trace('testGTPeriodique('+intervalle+')');
 
     // si la date de test est après 5h00, le créneau de recherche correspond à [(today-1)@5h00 -> today@5h00]  
     __end = __today;
@@ -1635,7 +1651,7 @@ function testGTPeriodique(intervalle='jour') {
               __GTT_query = {
                 $expr : {
                   $and:[ 
-                    {$gte : [{$toDouble: "$ENC-GTT-HOR-GDH"} , last_fin]},
+                    {$gt : [{$toDouble: "$ENC-GTT-HOR-GDH"} , last_fin]},
                     {$lt : [{$toDouble: "$ENC-GTT-HOR-GDH"} , parseInt(end)]}
                   ]
                 }
@@ -1928,7 +1944,7 @@ function checkArchive(filename) {
 function archiveFiscale(intervalle, debut, fin) {
   return async (dispatch, getState) => {
 
-    console.log('archiveFiscale('+intervalle+')', debut, fin);
+    console.trace('archiveFiscale('+intervalle+')', debut, fin);
 
     const { privateKey, trousseauId } = getState().signatureReducer; 
     const { caisse, archive_secret } = getState().parametresReducer.parametres.options;
@@ -2229,9 +2245,9 @@ function archiveFiscale(intervalle, debut, fin) {
         await  asyncForEach(files, async (f) => {
             
           let fjour = parseInt(f.substring(0,5));
-          console.log('AF f',debut_aj, fjour, fin_aj);
+        //  console.log('AF f',debut_aj, fjour, fin_aj);
           if (fjour >= debut_aj && fjour <= fin_aj) {
-            console.log('inclu', f);
+        //    console.log('inclu', f);
             const __gz = (last(f.split('.'))==='gz');
 
           
@@ -2248,9 +2264,9 @@ function archiveFiscale(intervalle, debut, fin) {
             __data.push({ type: 'json', data: filedef, file: `journaux/${fdef}` });
             
           }
-          else {
-            console.log('exclu', f);
-          }
+          // else {
+          //   console.log('exclu', f);
+          // }
 
         });
 

@@ -76,7 +76,7 @@ const mapDispatchToProps = (dispatch) => {
     storeKeys: signatureActions.storeKeys,
     storeNumerotation: signatureActions.storeNumerotation,
     getGTP: clotureActions.getGTP,
-    testGTPeriodique: clotureActions.testGTPeriodique,
+    // testGTPeriodique: clotureActions.testGTPeriodique,
     testCloturesAuto: clotureActions.testCloturesAuto,
     log: journalActions.log,
     checkJET: journalActions.check,

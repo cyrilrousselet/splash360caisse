@@ -57,7 +57,7 @@ class MainLoader extends React.Component {
       testConnection,
       online,
       // testCloturesAuto,
-      testGTPeriodique,
+      // testGTPeriodique,
       checkJET,
       checkEntrepriseChange,
       // checkZCaisse,
@@ -168,7 +168,7 @@ class MainLoader extends React.Component {
           catLoaded===false) {
 
         // testCloturesAuto();
-        testGTPeriodique();
+        // testGTPeriodique();
         this.props.getCatalogue();
         this.props.getLastClotureAndAfter();
       }

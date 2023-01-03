@@ -520,7 +520,7 @@ function createArchiveFiscale(path, data, secret) {
 
     archive.on('entry', function() {
       datanum++;
-      console.log('on entry', datanum, data.length)
+      // console.log('on entry', datanum, data.length)
       if (datanum===data.length) {
         console.log('archive finalize');
         archive.finalize();
