@@ -10,7 +10,8 @@ const mapStateToProps = (state) => {
   return {
     data: state.parametresReducer.parametres.commandes,
     lastnumero: state.commandeReducer.numero,
-    options: state.parametresReducer.parametres.options
+    options: state.parametresReducer.parametres.options,
+    monnaie: (state.parametresReducer.parametres.financier && state.parametresReducer.parametres.financier.monnaie) || {iso: 'EUR', nom: 'euro', nom_pl: 'euros', symbole: '€'},
   }
 }
 

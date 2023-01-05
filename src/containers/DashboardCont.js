@@ -61,7 +61,7 @@ const mapStateToProps = (state) => {
    // periode: getPeriode(state),
     points: null, //200,
     modules: (state.authentication.user.status === 'superuser') ? modulesList : getModulesFromDroits(state.authentication.user.droits),
-    devise: ' €',
+    devise: (state.parametresReducer.parametres.financier && state.parametresReducer.parametres.financier.monnaie && ` ${state.parametresReducer.parametres.financier.monnaie.symbole}`) || ' €',
     caisse: 0,
     blocage_encaissement: state.tresorReducer.blocage,
     blocage_commande: state.clotureReducer.blocage,

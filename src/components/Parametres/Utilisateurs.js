@@ -286,7 +286,7 @@ class EditUtilisateurPopin extends React.Component {
 
 
   render() {
-    const { utilisateur, editOpen, closeHandler, clavierOpen } = this.props;
+    const { utilisateur, editOpen, closeHandler, clavierOpen, symbolemonnaie } = this.props;
     const { nom, identifiant, droits, allchecked, status, livreur, coordonnees, taux_horaire } = this.getValues();
     logger.info("utilisateur: ", utilisateur);
     logger.info('status',status);
@@ -384,6 +384,7 @@ class EditUtilisateurPopin extends React.Component {
                   onClick={this.setFocus}
                   onChange={(val)=>{ this.updateValue({taux_horaire:val.value}) }}
                   label={ strings.modules.parametres.submodules.utilisateurs.edition.taux_horaire }
+                  postvalue={ symbolemonnaie }
               />
               <div className="droits-wrapper">
                 <div className={ `subttl${allchecked?' allchecked':''}`} onClick={() => { this.checkAllDroits(droits) }} title={ allchecked ? strings.general.check.aucun : strings.general.check.tous }>{ strings.modules.parametres.submodules.utilisateurs.liste.droits }</div>
@@ -561,7 +562,7 @@ class Utilisateurs extends React.Component {
  render() {
 
   const { utilisateur, editOpen } = this.state;
-  const { users, clavier, updateValeur, options } = this.props;
+  const { users, clavier, updateValeur, options, monnaie } = this.props;
   const { staffmeal_active, staffmeal_modifier } = options;
 
   const identifiants = {};
@@ -570,14 +571,8 @@ class Utilisateurs extends React.Component {
   })
 
 
-  // const onChangeModifierHandler = (val) => {
-  //   // let opt = '€';
-  //   // if ((['€','%']).indexOf(String(staffmeal_modifier).substr(-1,1))>-1) opt = String(staffmeal_modifier).substr(-1,1);
-  //   updateOption({domaine: 'options', cle:'staffmeal_modifier', valeur:val});
-  // }
   const getOption = (str) => {
-    const o = String(str).substr(-1,1);
-    return ['€','%'].indexOf(o)>-1 ? o : '€';
+    return String(str).includes('%') ? '%' : monnaie.symbole;
   }
 
   return (
@@ -617,18 +612,15 @@ class Utilisateurs extends React.Component {
           type="number"
           value={staffmeal_modifier ? Number(String(staffmeal_modifier).substr(0, staffmeal_modifier.length-1)) : 0}
           option={getOption(staffmeal_modifier)}
-          options={['€','%']}
+          options={[monnaie.symbole,'%']}
           onChange={(val)=> {
-          //  let opt = '€';
-          //  if ((['€','%']).indexOf(String(val.value).substr(-1,1))>-1) opt = String(val.value).substr(-1,1);
-          //  updateOption({domaine: 'options', cle:'staffmeal_modifier', valeur:val});
             updateValeur({domaine: 'options', cle:'staffmeal_modifier', valeur:val.value+val.option});
           }}
           label={ strings.modules.parametres.submodules.utilisateurs.staffmeal.modifier }
         />
       </div>
     </div>
-    <EditUtilisateurPopin utilisateur={utilisateur} editOpen={editOpen} clavierOpen={clavier} identifiants={identifiants} closeHandler={this.closeEdit} saveUtilisateur={this.saveUser} />
+    <EditUtilisateurPopin utilisateur={utilisateur} editOpen={editOpen} clavierOpen={clavier} identifiants={identifiants} closeHandler={this.closeEdit} saveUtilisateur={this.saveUser} symbolemonnaie={monnaie.symbole} />
   </div>
   );
  }

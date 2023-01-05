@@ -233,12 +233,6 @@ const data = {
                         uber: "Uber"
                     },
                     scan_avoir: "Scan Avoir",
-                    raccourcis: [
-                        "5 €",
-                        "10 €",
-                        "20 €",
-                        "50 €"
-                    ],
                     erreur: {
                         ticket: {
                             yet: {
@@ -1411,7 +1405,6 @@ const data = {
                     frais_panier: 'FRAIS',
                     discount_item: 'Remise article',
                     frais_item: 'Frais article',
-                    monnaie: 'EUR'
                 },
                 tva: {
                     code: 'CODE',
@@ -1422,12 +1415,10 @@ const data = {
                 },
                 reglements: {
                     titre: 'REGLEMENT :',
-                    monnaie: 'EUR',
                     a_regler: 'A REGLER :'
                 },
                 rendu: {
                     titre: 'RENDU :',
-                    monnaie: 'EUR'
                 },
                 mode: {
                     livraison: 'LIVRAISON',
@@ -1436,7 +1427,6 @@ const data = {
                 },
                 troppercu: {
                     titre: "TROP PERCU :",
-                    monnaie: "EUR"
                 },
                 client: {
                     titre: 'Client :',

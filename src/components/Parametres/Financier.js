@@ -68,7 +68,7 @@ class Financier extends React.Component {
 
   // const { moyenEditOpen, moyen } = this.state;
   // const { moyen } = this.state;
-  const { data, updateValeur } = this.props;
+  const { data, updateValeur, monnaie } = this.props;
 
   if (undefined===data) return <LoadingSpinner />;
 
@@ -154,7 +154,7 @@ class Financier extends React.Component {
               }}
               onChange={(value,option)=>void(0)}
               label={ strings.modules.parametres.submodules.financier.fonddecaisse.montant }
-              postvalue='€'
+              postvalue={ monnaie.symbole }
             />
         </div>
 
@@ -260,7 +260,7 @@ class Financier extends React.Component {
             readOnly={ !data.fidelite_activation } 
             onChange={()=>{logger.info('click')}}
             label={ strings.modules.parametres.submodules.financier.fidelite.valeur }
-            postvalue='€'
+            postvalue={  monnaie.symbole }
           />
 
           <LabelledField 

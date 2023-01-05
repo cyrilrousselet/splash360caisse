@@ -13,7 +13,8 @@ const mapStateToProps = (state) => {
     error: getCommandesListError(state),
     commandeslist: getCommandesList(state),
     heure_fin: (state.parametresReducer.parametres.entreprise && state.parametresReducer.parametres.entreprise.heure_fin) || '05:00',
-    canaux: state.parametresReducer.parametres.options.canaux || []
+    canaux: state.parametresReducer.parametres.options.canaux || [],
+    monnaie: (state.parametresReducer.parametres.financier && state.parametresReducer.parametres.financier.monnaie) || {iso: 'EUR', nom: 'euro', nom_pl: 'euros', symbole: '€'},
   }
 }
 

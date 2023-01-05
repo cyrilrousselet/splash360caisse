@@ -499,7 +499,7 @@ class ListeCommandes extends React.Component {
   }
 
   render() {
-    const { commandeslist, loading, tickets, thiscash, livreurs, setLivreur } = this.props;
+    const { commandeslist, loading, tickets, thiscash, livreurs, setLivreur, monnaie } = this.props;
 
     const { startDate, endDate, openTab, commandeId, printOpen, searchval, inputfocus, keyboardOpen, livreurOpen, pickerOpen } = this.state;
 
@@ -526,7 +526,7 @@ class ListeCommandes extends React.Component {
         createdAt: value.createdAt,
         date: format(new Date(value.createdAt), "d MMM yyyy", { locale: this.locale }),
         heure: format(new Date(value.createdAt), "H:mm:ss"),
-        montant: `${value.total.toFixed(2).replace('.',',')} €`,
+        montant: `${value.total.toFixed(2).replace('.',',')} ${monnaie.symbole}`,
         client: value.client ? value.client.nom+' '+value.client.prenom : 'Anonyme',
         mode: value.mode,
         caisse: value.caisse,

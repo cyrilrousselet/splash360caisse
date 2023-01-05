@@ -29,7 +29,7 @@ class Dashboard extends Component {
   }
 
   componentDidMount() {
-    //  logger.info('Dashboard.componentDidMount()');
+      logger.info('Dashboard.componentDidMount()');
     // this.props.getAllActive();
     this.props.getParametres();
   //  this.props.getTodayCommandesList();

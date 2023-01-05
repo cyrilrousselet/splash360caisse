@@ -300,7 +300,7 @@ function CloturePopin(props) {
 
 
 function TableClotures(props) {
-  const { liste, id, openClotureId, printClotureId } = props;
+  const { liste, id, openClotureId, printClotureId, symbolemonnaie } = props;
 
   liste.sort((a,b) => {
     let da = new Date(a.cloture.debut), db = new Date(b.cloture.debut);
@@ -329,8 +329,8 @@ function TableClotures(props) {
               <TableCell key={`${row.id}-station`} className="liste-station">{ row.caisse }</TableCell>
               <TableCell key={`${row.id}-debut`} className="liste-debut">{ format(new Date(row.cloture.debut), "d MMM yyyy à HH:mm", { locale: frLocale }) }</TableCell>
               <TableCell key={`${row.id}-fin`} className="liste-fin">{ format(new Date(row.cloture.fin), "d MMM yyyy à HH:mm", { locale: frLocale }) }</TableCell>
-              <TableCell key={`${row.id}-ht`} className="liste-ht">{ `${row.cloture.ht} €` }</TableCell>
-              <TableCell key={`${row.id}-ventes`} className="liste-ventes">{ `${row.cloture.ventes} €` }</TableCell>
+              <TableCell key={`${row.id}-ht`} className="liste-ht">{ `${row.cloture.ht} ${symbolemonnaie}` }</TableCell>
+              <TableCell key={`${row.id}-ventes`} className="liste-ventes">{ `${row.cloture.ventes} ${symbolemonnaie}` }</TableCell>
               <TableCell key={`${row.id}-nombre`} className="liste-nombre">{ row.cloture.nombre }</TableCell>
               <TableCell key={`${row.id}-actions`} className="liste-actions">
                 <StdButton key={`${row.id}-view`} identifier='view' elementclass="action action-view" icon={ <PageviewIcon htmlColor="#ffffff" /> } noStroke={true} text={ '' } onClick={ () => { openClotureId(row.cloture.clotureId) } } />
@@ -676,7 +676,7 @@ class ListeClotures extends React.Component {
   }
 
   render() {
-    const { clotureslist } = this.props;
+    const { clotureslist, monnaie } = this.props;
     const { startDate, endDate, cloture, clotureOpen } = this.state;
 
     let clotures = [];
@@ -753,7 +753,7 @@ class ListeClotures extends React.Component {
             </div>
             <StdButton identifier="btnsynthese" elementclass="btnsynthese" key="btnsynthese" text={ strings.modules.listeclotures.actions.synthese } onClick={ () => { this.getSynthese(clotures) }} />
           </div>
-          <TableClotures className="liste-clotures" id="liste-clotures" printClotureId={ this.printClotureId } openClotureId={ this.openClotureId } liste={clotures} />
+          <TableClotures className="liste-clotures" id="liste-clotures" printClotureId={ this.printClotureId } openClotureId={ this.openClotureId } liste={clotures} symbolemonnaie={monnaie.symbole} />
         </div>
         <CloturePopin cloture={ cloture } open={clotureOpen} closeHandler={ this.closeCloture } printCloture={ this.printCloture} />
       </div>

@@ -156,7 +156,7 @@ class MouvementPopin extends React.Component {
 
   render() {
 
-    const { mouvement, type, caisse, caisses, open, closeHandler } = this.props;
+    const { mouvement, type, caisse, caisses, open, closeHandler, symbolemonnaie  } = this.props;
     const { montant, motif , destination, origine} = this.state;
     
     const _caisse = mouvement && (type==="entree" ? mouvement.destination : mouvement.origine);
@@ -238,7 +238,7 @@ class MouvementPopin extends React.Component {
                 {(type==="ouverture" && mouvement) && (
                   <div className="zone-precedent">
                   <div className="label">{ strings.modules.tresor.popin.ouverture.precedent }</div>
-                  <div className="montant">{ `${devise(mouvement.lastMontant/100)} €` }</div>
+                  <div className="montant">{ `${devise(mouvement.lastMontant/100)} ${symbolemonnaie}` }</div>
                   </div>
                 )}
                 {(type==="ouverture" && mouvement===null) && (

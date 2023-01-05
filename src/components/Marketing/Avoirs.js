@@ -17,7 +17,7 @@ class Avoirs extends React.Component {
 
  render() {
 
-  const { avoirs } = this.props;
+  const { avoirs, monnaie } = this.props;
 
   avoirs.sort((a,b) => {
     let da = new Date(a.limite), db = new Date(b.limite);
@@ -40,7 +40,7 @@ class Avoirs extends React.Component {
           {avoirs.map((row, i) => (
             <TableRow key={row.id} className={` ${((i%2)?'odd':'even')}${ (row.burnt?' burnt':'')}${ (isBefore(endOfDay(new Date(row.limite)), endOfToday()) ? ' perime' : '' ) }` }>
               <TableCell key={`avr-code`} className={ `liste-code` }>{ row.code }</TableCell>
-              <TableCell key={`avr-valeur`} className="liste-valeur">{ `${devise(row.valeur)} €` }</TableCell>
+              <TableCell key={`avr-valeur`} className="liste-valeur">{ `${devise(row.valeur)} ${monnaie.symbole}` }</TableCell>
               <TableCell key={`avr-limite`} className="liste-limite">{ format(new Date(row.limite), "d MMM yyyy", { locale: frLocale }) }</TableCell>
               <TableCell key={`avr-status`} className="liste-status">{ (row.burnt ? strings.modules.marketing.submodules.avoirs.liste.status.burnt : (isBefore(endOfDay(new Date(row.limite)), endOfToday()) ? strings.modules.marketing.submodules.avoirs.liste.status.perime : strings.modules.marketing.submodules.avoirs.liste.status.valide )) }</TableCell>
             </TableRow>

@@ -115,7 +115,7 @@ getLogoImg(filePath) {
  render() {
 
   // const { message_ticket } = this.state;
-  const { data, updateValeur } = this.props;
+  const { data, updateValeur, monnaie } = this.props;
 
   logger.info(strings.modules.parametres.submodules.entreprise.options.label.auto_update);
 
@@ -149,7 +149,7 @@ getLogoImg(filePath) {
               readOnly={ false } 
               onChange={()=>{logger.info('click')}}
               label={ strings.modules.parametres.submodules.entreprise.objectif.label.ca }
-              postvalue='€'
+              postvalue={monnaie.symbole}
           /> 
           <div className="caption ca-caption">{ strings.modules.parametres.submodules.entreprise.objectif.label.ca_caption }</div>
         */}

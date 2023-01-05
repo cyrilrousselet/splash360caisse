@@ -149,7 +149,7 @@ class CountTRTool extends React.Component {
 
 
   render() {
-    const {open, onValidate, closeHandler} = this.props;
+    const {open, onValidate, closeHandler, symbolemonnaie} = this.props;
 
     const { liste, counttotal } = this.state;
 
@@ -187,14 +187,14 @@ class CountTRTool extends React.Component {
                 {liste && liste.map(tr => (
                   <div className="liste-row">
                     <div className="body-id">{ tr.id }</div>
-                    <div className="prix">{ `${devise(tr.valeur)} €` }</div>
+                    <div className="prix">{ `${devise(tr.valeur)} ${symbolemonnaie}` }</div>
                   </div>
                   ))}
                   </div>
                 </div>
                 <div className="liste-footer">
                     <div className="footer-id">{ strings.modules.cloture.comptage.counttrtool.total }</div>
-                    <div className="prix">{ `${devise(counttotal)} €` }</div>
+                    <div className="prix">{ `${devise(counttotal)} ${symbolemonnaie}` }</div>
                 </div>
               </div>
             </div>

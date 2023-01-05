@@ -115,9 +115,7 @@ async function _replaceAll(data) {
   let count = 0;
   const start = async () => {
     await asyncForEach(parametres, async (obj) => {
-      
-//        _param = await _insertParametre(obj);
-      const  _param = await _persistParametres(obj);
+            const  _param = await _persistParametres(obj);
         if (_param!=null) count++;
       
     });

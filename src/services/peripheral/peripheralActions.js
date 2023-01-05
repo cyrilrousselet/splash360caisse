@@ -45,7 +45,9 @@ function printAvoir(payload) {
     logger.info('printAvoir()', payload);
 
     const { imprimantes, tickets } = getState().peripheralReducer;
-    const { entreprise } = getState().parametresReducer.parametres;
+    const { entreprise, financier } = getState().parametresReducer.parametres;
+
+    const __isomonnaie = financier.monnaie ? financier.monnaie.iso : 'EUR';
 
     // récup des préf. du ticket et de l'imprimante correspondante
     let ticket = Object.values(tickets).find(tck=>tck.template==='avoir');
@@ -66,7 +68,7 @@ function printAvoir(payload) {
       code: payload.code,
       detail: {
         limite: limite,
-        valeur: `${devise(payload.valeur)} EUR`,
+        valeur: `${devise(payload.valeur)} ${__isomonnaie.toUpperCase()}`,
         client: payload.client,
       },
       strings: strings.modules.marketing.avoir.impression
@@ -590,10 +592,13 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
     const ingredients = state.catalogueReducer.ingredients;
     const {catalogue, steps} = state.catalogueReducer;
     const { imprimantes, tickets } = state.peripheralReducer;
-    const { entreprise } = state.parametresReducer.parametres;
+    const { entreprise, financier } = state.parametresReducer.parametres;
   //  const { impression } = peripheriques;
     const { clients } = state.clientsReducer;
     const {print_standby} = state.parametresReducer.parametres.commandes;
+
+    const __monnaie = financier.monnaie || {iso:'EUR', nom:'euro', nom_pl:'euros', symbole:'€'};
+
 
 
     // logger.info('peripheralAction.printCommandeTicket()',cmd);
@@ -804,36 +809,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           
             // modificateurs pour l'article
             __modificateur = cmd.modificateurs.find(m => m.item===article.itemid && m.ingredient===null);
-            // let amodtx = 1;
-            // let __montant = 0;
-            // if (__modificateur) {
 
-            // //   // ispc :bool (is percent)
-            //   const ispc = String(__modificateur.valeur).substr(-1,1)==='%';
-            //   const val = Math.abs(Number(String(__modificateur.valeur).slice(0,-1)));
-            //   __montant = ispc ? articletotal * (val / 100) : val;
-
-            //   // conversion du modificateur en coefficient
-            //   amodtx = (ispc) 
-            //   ? (
-            //     __modificateur.operation>0 
-            //     ? (100 + val) / 100
-            //     : (100 - val) / 100
-            //     ) 
-            //   : (
-            //     __modificateur.operation>0 
-            //     ? 1 + (val/articletotal)
-            //     : 1 - (val/articletotal)
-            //     )
-            //   ;
-
-            //   if (ispc) {
-            //     articletotal *= __modificateur.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
-            //   } else {
-            //     articletotal = __modificateur.operation>0 ? articletotal + val : articletotal - val;
-            //   }
           
-            // }
           
             articles.push({
 
@@ -1016,9 +993,10 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             reglements: ventilrgt,
             rendus: cmd.rendus,
             troppercu: cmd.troppercu,
+            devise: __monnaie.iso.toUpperCase(),
             comment: __comment ? __comment.texte : '',
             // modificateur: piece['ENC-TIK-REM-MTN'] || null,
-            modificateur: __modificateur ? __modificateur : null,
+            modificateur: __modificateur ? {valeur: __modificateur.valeur, montant: __modificateur.montant, operation: __modificateur.operation, nom: __modificateur.nom, symbolemonnaie: __monnaie.symbole} : null,
             client: __client
           };
 

@@ -97,7 +97,8 @@ const mapStateToProps = (...args) => {
     stepObject: _findStep(state, props.step),
     ingredientTypes: _getIngredientTypes(state, props.step),
     itemIngredients: _getItemIngredients(state, props.item),
-    itemSteps: _getItemSteps(state, props.item)
+    itemSteps: _getItemSteps(state, props.item),
+    monnaie: (state.parametresReducer.parametres.financier && state.parametresReducer.parametres.financier.monnaie) || {iso: 'EUR', nom: 'euro', nom_pl: 'euros', symbole: '€'},
     // valueToPay: getCommandeTotal(getCommande(state).items),
     // tiroirOuvert: getTiroirOuvert(state),
     // loading: getCommandeLoading(state),

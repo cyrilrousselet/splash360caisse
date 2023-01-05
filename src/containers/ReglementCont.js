@@ -9,28 +9,7 @@ import { peripheralActions } from '../services/peripheral/peripheralActions';
 import { marketingActions } from '../services/marketing/marketingActions';
 
 
-const getCommandeTotal = (items, modificateurs) => {
-  // montant à payer (somme des items)
-  // let __total = 0;
-  // if (undefined!==items) {
-  //   items.forEach(itm => {
-  //     __total += itm.quantite * itm.prix;      
-  //   });
-  // }
-
-  //   // en attendant d'avoir un discount sur chaque item / ingredient
-  //   if (modificateurs && modificateurs.length) {
-  //     const ispc = String(modificateurs[0].valeur).substr(-1,1)==='%';
-  //     const val = Math.abs(Number(String(modificateurs[0].valeur).slice(0,-1)));
-  //     if (ispc) {
-  //       __total *= (100 - val) / 100;
-  //     } else {
-  //       __total -= val;
-  //     }
-  //   }
-
-
-  // return __total;
+const getCommandeTotal = (items, modificateurs, symbolemonnaie) => {
 
 
     let __total = 0;
@@ -42,8 +21,11 @@ const getCommandeTotal = (items, modificateurs) => {
         // modificateur sur l'item
         const __moditem = (modificateurs && modificateurs.length) ? modificateurs.find(m => m.item===itm.itemid && m.ingredient===null) : null;
         if (__moditem) {
-          const ispc = String(__moditem.valeur).substr(-1,1)==='%';
-          const val = Math.abs(Number(String(__moditem.valeur).slice(0,-1)));
+          const ispc = String(__moditem.valeur).includes("%");
+          const val = Math.abs(ispc 
+            ? Number(String(__moditem.valeur).slice(0, -1))
+            : Number(String(__moditem.valeur).slice(0, -symbolemonnaie.length))
+          );
           if (ispc) {
             __itemtotal *= __moditem.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
           } else {
@@ -60,8 +42,11 @@ const getCommandeTotal = (items, modificateurs) => {
     // modificateur sur le panier entier
     const modpanier = (modificateurs && modificateurs.length) ? modificateurs.find(m => m.item===null && m.ingredient===null) : null;
     if (modpanier) {
-      const ispc = String(modpanier.valeur).substr(-1,1)==='%';
-      const val = Math.abs(Number(String(modpanier.valeur).slice(0,-1)));
+      const ispc = String(modpanier.valeur).includes("%");
+      const val = Math.abs(ispc 
+        ? Number(String(modpanier.valeur).slice(0, -1))
+        : Number(String(modpanier.valeur).slice(0, -symbolemonnaie.length))
+      );
       if (ispc) {
         __total *= modpanier.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
       } else {
@@ -80,16 +65,18 @@ const getCommandeTotal = (items, modificateurs) => {
 
 const mapStateToProps = (...args) => { 
     const state = args[0];
+    const __monnaie = (state.parametresReducer.parametres.financier && state.parametresReducer.parametres.financier.monnaie) || {iso: 'EUR', nom: 'euro', nom_pl: 'euros', symbole: '€'};
   //  const props = args[1];
   return {
     //open: state.openReglement,
-    valueToPay: getCommandeTotal(getCommande(state).items, getCommande(state).modificateurs),
+    valueToPay: getCommandeTotal(getCommande(state).items, getCommande(state).modificateurs, __monnaie.symbole),
     tiroirOuvert: getTiroirOuvert(state),
     loading: getCommandeLoading(state),
     commande: getCommande(state),
     error: getCommandeError(state),
     params: getParametres(state).entreprise,
-    avoirs: state.marketingReducer.avoirs
+    avoirs: state.marketingReducer.avoirs,
+    monnaie: __monnaie,
   };
 }
 

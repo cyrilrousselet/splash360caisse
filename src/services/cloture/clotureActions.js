@@ -485,6 +485,7 @@ function makeCloture(params={}) {
     // s'il n'y a aucune commande à clôturer...
     else {
       console.warn('!!! aucune commande à clôturer !!!');
+      dispatch({ type: clotureActionTypes.CHECK_NOCOMPLETED_COMMANDS, blocage: false});
       // si la cloture est commandée automatiquement,
       // on lance le test pour crée une synthèse, si besoin.
       if (params.type==="auto") {
@@ -648,10 +649,11 @@ function testCloturesAuto() {
       const __cmdaencaisser = Object.values(__cmdnonconfirmees.commandeslist).filter(cmd => cmd.status==="a_encaisser");
 
       if (__cmdaencaisser.length>0) {
-        // console.log('il y a des commandes à encaisser : impossible de faire la clôture auto -> on bloque la caisse');
+        console.log('il y a des commandes à encaisser : impossible de faire la clôture auto -> on bloque la caisse');
         dispatch({ type: clotureActionTypes.CHECK_NOCOMPLETED_COMMANDS, blocage: true});
         __canMakeCloture = false;
       } else {
+        console.log('il n’y a aucune commandes à encaisser');
         dispatch({ type: clotureActionTypes.CHECK_NOCOMPLETED_COMMANDS, blocage: false});
       }
 
@@ -1876,7 +1878,7 @@ function archiveFiscale(intervalle, debut, fin) {
 
     const { privateKey, trousseauId } = getState().signatureReducer; 
     const { caisse, archive_secret } = getState().parametresReducer.parametres.options;
-    const { entreprise } = getState().parametresReducer.parametres;
+    const { entreprise, financier } = getState().parametresReducer.parametres;
     const { user } = getState().authentication;
 
     let __startdefacto = null;
@@ -2276,7 +2278,7 @@ function archiveFiscale(intervalle, debut, fin) {
       [` - ENSEIGNE: ${entreprise.enseigne}`],
       [` - DENOMINATION: ${entreprise.denomination}`],
       [` - STATUT JURIDIQUE: ${entreprise.statut_juridique}`],
-      [` - CAPITAL SOCIAL: ${entreprise.capital_social} €`],
+      [` - CAPITAL SOCIAL: ${entreprise.capital_social} ${financier.monnaie.symbole}`],
       [` - ADRESSE: ${entreprise.adresse}`],
       [` - CODE POSTAL: ${entreprise.code_postal}`],
       [` - VILLE: ${entreprise.ville}`],

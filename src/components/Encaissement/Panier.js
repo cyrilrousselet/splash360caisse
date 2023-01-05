@@ -273,7 +273,7 @@ class ScheduleModal extends React.Component {
     const sche_min = vschedule.getMinutes();
 
 
-    const hrs_decal = differenceInHours(vschedule, set(start, {minutes:0}));
+    const hrs_decal = differenceInHours(vschedule, set(start, {minutes:0, seconds:0}));
     const min_decal = Math.floor(vschedule.getMinutes() / 15);
     console.log('hrs_decal', hrs_decal);
     console.log('min_decal', min_decal);
@@ -990,7 +990,9 @@ class Panier extends React.Component {
   }
 
 
-  _calculeItemsEtRemises(items, modificateurs, taux_remise_panier = 0) {
+  _calculeItemsEtRemises(items, modificateurs, taux_remise_panier = 0, symbolemonnaie) {
+
+    console.log('🧮 _calculeItemsEtRemises', items, modificateurs, taux_remise_panier, symbolemonnaie);
 
     let __soustotal_ht = 0;
     let __soustotal_ttc = 0;
@@ -1002,22 +1004,31 @@ class Panier extends React.Component {
         let __ttcitm = Math.round(itm.pu * 100) * itm.quantite;
         let __htitm = Math.round(itm.puht * 100) * itm.quantite;
         let __ttcing = 0;
+
+        console.log('🧮 _cI&R (ttcitm, htitm, ttcing)', __ttcitm, __htitm, __ttcing);
         
         // on boucle sur le prix TTC des ingrédients
         itm.ingredients.forEach(ing => {
           __ttcing += Math.round(ing.supplement * 100);
         });
+        console.log('🧮 _cI&R TTCING = ', __ttcing);
   
         // on obtient le soustotal ttc de l'item
         let __sttcitm = __ttcitm + __ttcing;
+        console.log('🧮 _cI&R __sttcitm = ', __sttcitm);
   
         let __modcoef = 0;
         const moditm = modificateurs.find(m => m.item===itm.itemid);
         // s'il y a un modificateur pour l'item
         if (moditm) {
-          const ispc = String(moditm.valeur).substr(-1,1)==='%';
-          let val = Math.abs(Number(String(moditm.valeur).slice(0,-1)));
           
+          const ispc = String(moditm.valeur).includes("%");
+          const val = Math.abs(ispc 
+            ? Number(String(moditm.valeur).slice(0, -1))
+            : Number(String(moditm.valeur).slice(0, -symbolemonnaie.length))
+          );
+
+
           if (ispc) {
             __modcoef = val / 100;
           }
@@ -1026,6 +1037,7 @@ class Panier extends React.Component {
             // à partir du montant TTC de l'item + ses ingrédients
             __modcoef = (val * 100) / __sttcitm;
           }
+          console.log('🧮 _cI&R moditm val = ', __modcoef);
         }
           
         const __tx = Number(itm.tva.valeur);
@@ -1037,6 +1049,8 @@ class Panier extends React.Component {
           __modhtitm = (__htitm - (__htitm * __modcoef)) - ((__htitm - (__htitm * __modcoef)) * taux_remise_panier); // <- HT de l'item (avec remise)
           __modttcitm = __modhtitm * (1 + __tx);  // <- TTC de l'item (avec remise)
         }
+        console.log('🧮 _cI&R __tx', __tx);
+        console.log('🧮 _cI&R __modhtitm,  __modttcitm', __modhtitm, __modttcitm);
         // et on calcule le TTC
 
         let __modhting = 0; // <- HT des ingrédients de l'item
@@ -1054,10 +1068,12 @@ class Panier extends React.Component {
           __modhting += __him;
           __modttcing += __ti;
         });
+        console.log('🧮 _cI&R __modhting,  __modttcing', __modhting, __modttcing);
           
         // on compile les données HT et TTC
         __soustotal_ttc += __modttcitm + __modttcing;
         __soustotal_ht += __modhtitm + __modhting;
+        console.log('🧮 _cI&R ssttlttc,  ssttlht', __soustotal_ttc, __soustotal_ht);
   
       });
 
@@ -1066,11 +1082,12 @@ class Panier extends React.Component {
 
 
   /* retourne le sous-total, le total et les remises pour le panier  */
-  calculeTotaux(items, modificateurs) {
+  calculeTotaux(items, modificateurs, symbolemonnaie) {
 
     let __total = 0;
     
-    const soustotal = this._calculeItemsEtRemises(items, modificateurs);
+    const soustotal = this._calculeItemsEtRemises(items, modificateurs, 0, symbolemonnaie);
+    console.log('🧮 soustotal', soustotal);
     
     let __soustotal_ttc = soustotal.ttc;
 
@@ -1082,21 +1099,27 @@ class Panier extends React.Component {
     // s'il y a un modificateur pour le panier
     if (modcmd) {
 
-      const ispc = String(modcmd.valeur).substr(-1,1)==='%';  
-      // recup valeur numérique
-      let val = Math.abs(Number(String(modcmd.valeur).slice(0,-1)));
+
+      const ispc = String(modcmd.valeur).includes("%");
+      const val = Math.abs(ispc 
+        ? Number(String(modcmd.valeur).slice(0, -1))
+        : Number(String(modcmd.valeur).slice(0, -symbolemonnaie.length))
+      );
+      console.log('🧮 val remise', val);
   
       // si c'est une remise en %age
       if (ispc) {
         // on applique ensuite ce coef sur le HT du sous-total du panier
         // on calcule le TTC
-        const total = this._calculeItemsEtRemises(items, modificateurs, (val / 100));
+        const total = this._calculeItemsEtRemises(items, modificateurs, (val / 100), symbolemonnaie);
         __remise_panier = __soustotal_ttc - total.ttc;
         __total = total.ttc;
       } else {
         __remise_panier = Math.round(val * 100);
         __total = __soustotal_ttc - Math.round(val * 100);
       }
+
+      console.log('🧮 __total', __total);
 
     } else {
       __total = __soustotal_ttc;
@@ -1106,53 +1129,6 @@ class Panier extends React.Component {
 
   }
 
-
-  calculateTotal(items, modificateurs) {
-    let __total = 0;
-
-    // let __totalht = 0;
-
-
-    if (undefined!==items) {
-      items.forEach(itm => {
-
-        let __itemtotal = itm.quantite * itm.prix;
-        
-        // modificateur sur l'item
-        const __moditem = (modificateurs && modificateurs.length) ? modificateurs.find(m => m.item===itm.itemid && m.ingredient===null) : null;
-        if (__moditem) {
-          const ispc = String(__moditem.valeur).substr(-1,1)==='%';
-          const val = Math.abs(Number(String(__moditem.valeur).slice(0,-1)));
-          if (ispc) {
-            // __itemtotal *= (100 - val) / 100;
-            __itemtotal *= __moditem.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
-          } else {
-            // __itemtotal -= val;
-            __itemtotal = __moditem.operation>0 ? __itemtotal + val : __itemtotal - val;
-          }
-        }
-        __total += __itemtotal;
-      });
-    }
-
-
-
-
-    // modificateur sur le panier entier
-    const modpanier = (modificateurs && modificateurs.length) ? modificateurs.find(m => m.item===null && m.ingredient===null) : null;
-    if (modpanier) {
-      const ispc = String(modpanier.valeur).substr(-1,1)==='%';
-      const val = Math.abs(Number(String(modpanier.valeur).slice(0,-1)));
-      if (ispc) {
-        __total *= modpanier.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
-      } else {
-        __total = modpanier.operation>0 ? __total + val : __total - val;
-      }
-    }
-    
-
-    return __total;
-  }
 
 
   searchHandler(event) {
@@ -1236,17 +1212,48 @@ class Panier extends React.Component {
   }
 
   saveDiscount(discountid, itemid, ingredientid, valeur, nom='') {
+
+    const { commande, monnaie } = this.props;
+    
+
+    let __discount_valeur = valeur;
+
+    // si le discount est en numéraire
+    if (!String(valeur).includes("%")) {
+      
+      let __target_price = 0;
+
+      // si le discount est attribué à un item
+      if (itemid || ingredientid) {
+        const item = commande.items.find(i=> i.itemid===itemid);
+        __target_price = item.prix;
+      }
+      // si le discount est attribué au panier entier
+      else {
+        const __ssttl = this._calculeItemsEtRemises(commande.items, commande.modificateurs, 0, monnaie.symbole);
+        __target_price = __ssttl.ttc / 100;
+        console.log('❓PRICE', __target_price);
+      }
+      
+      // si le montant du discount dépasse la valeur qu'il modifie
+      const __discount_valeurabsolue = Math.abs( Number(String(valeur).slice(0, -monnaie.symbole.length)) );
+      if (__discount_valeurabsolue > __target_price) {
+        // on limite la valeur du discount à celle du panier
+        __discount_valeur = __target_price + monnaie.symbole;
+      }
+    }
+    
     if (discountid===null) {
       this.props.addDiscount({
         item: itemid,
         ingredient: ingredientid,
-        valeur: valeur,
+        valeur: __discount_valeur,
         nom: nom
       });
     } else {
       this.props.updateDiscount({
         discountId: discountid, 
-        valeur: valeur,
+        valeur: __discount_valeur,
         nom: nom
       });
     }
@@ -1596,6 +1603,7 @@ class Panier extends React.Component {
             caisse, 
             blocage_encaissement,
             // caisses,
+            monnaie,
             log,
            } = this.props;
 
@@ -1647,9 +1655,9 @@ logger.info('⏰', schedule_delay);
     logger.info('searchval', searchval);
 
     // const total = this.calculateTotal(items, modificateurs);
-    let {total, remisepanier} = this.calculeTotaux(items, modificateurs);
+    let {total, remisepanier} = this.calculeTotaux(items, modificateurs, monnaie.symbole);
     total = total / 100;
-    const devisemonnaie = '€';
+    const devisemonnaie = monnaie.symbole;
     const { selectedIndex, selectedIngredient } = this.state;
 
     const { staffmeal_active, staffmeal_modifier } = parametres.options;
@@ -1811,8 +1819,13 @@ logger.info('⏰', schedule_delay);
       const __moditem = modificateurs.find(m=>m.item===item.itemid && m.ingredient===null);
       if (__moditem) {
 
-        const ispc = String(__moditem.valeur).substr(-1,1)==='%';
-        const val = Math.abs(Number(String(__moditem.valeur).slice(0,-1)));
+
+        const ispc = String(__moditem.valeur).includes("%");
+        const val = Math.abs(ispc 
+          ? Number(String(__moditem.valeur).slice(0, -1))
+          : Number(String(__moditem.valeur).slice(0, -monnaie.symbole.length))
+        );
+
         __montant = ispc ? __itemtotal*(val/100) : val
         
         logger.info('geDiscount', item.itemid)
@@ -1824,36 +1837,9 @@ logger.info('⏰', schedule_delay);
     const getPanierDiscount = () => {
 
       if (null===modificateurs || (modificateurs && modificateurs.length<1)) return null;
-      // let __total = 0;
 
-      // if (undefined!==items) {
-      //   items.forEach(itm => {
-  
-      //     let __itemtotal = itm.quantite * itm.prix;
-          
-      //     // modificateur sur l'item
-      //     const __moditem = (modificateurs && modificateurs.length) ? modificateurs.find(m => m.item===itm.itemid && m.ingredient===null) : null;
-      //     if (__moditem) {
-      //       const ispc = String(__moditem.valeur).substr(-1,1)==='%';
-      //       const val = Math.abs(Number(String(__moditem.valeur).slice(0,-1)));
-      //       if (ispc) {
-      //         __itemtotal *= (100 - val) / 100;
-      //       } else {
-      //         __itemtotal -= val;
-      //       }
-      //     }
-      //     __total += __itemtotal;
-      //   });
-      // }
-
-      // let __montant;
       const __modpanier = (modificateurs && modificateurs.length) ? modificateurs.find(m=>m.item===null && m.ingredient===null) : null;
-      // if (__modpanier) {
-
-      //   const ispc = String(__modpanier.valeur).substr(-1,1)==='%';
-      //   const val = Math.abs(Number(String(__modpanier.valeur).slice(0,-1)));
-      //   __montant = ispc ? __total*(val/100) : val;
-      // }
+  
       return __modpanier ? {...__modpanier, montant: devise(remisepanier / 100)} : null;
     }
 
@@ -2057,6 +2043,7 @@ logger.info('⏰', schedule_delay);
           caisses={ [] }
           closeHandler={ this.closeOuverture }
           saveMouvement={ this.addOuverture }
+          symbolemonnaie={ monnaie.symbole }
         />
         {(staffmeal_active && staffmeal_modifier) && (<BeneficiaireModal closePopin={ this.cancelStaffmeal } getBeneficiaire={ this.getBeneficiaire } open={ type==="staffmeal" && !beneficiaire } />)}
         <CmdModeModal

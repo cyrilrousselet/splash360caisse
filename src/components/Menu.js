@@ -151,7 +151,7 @@ class MenuItemModal extends React.Component {
   
     render() {
   
-      const { item, type, closeHandler, open } = this.props;
+      const { item, type, closeHandler, open, symbolemonnaie } = this.props;
       const { valeur_p, valeur_e, valeur_l, couleur, asproduct } = this.state;
   
       let vvaleur_p = '';
@@ -193,7 +193,7 @@ class MenuItemModal extends React.Component {
                       name="valeur_p"
                       className="valeur-input"
                       value={vvaleur_p}
-                      postvalue="€"
+                      postvalue={symbolemonnaie}
                       type="text"
                       onChange={({value}) => {this.changeHandler('valeur_p',value)}}
                     />
@@ -202,7 +202,7 @@ class MenuItemModal extends React.Component {
                       name="valeur_e"
                       className="valeur-input"
                       value={vvaleur_e}
-                      postvalue="€"
+                      postvalue={symbolemonnaie}
                       type="text"
                       onChange={({value}) => {this.changeHandler('valeur_e',value)}}
                     />
@@ -211,7 +211,7 @@ class MenuItemModal extends React.Component {
                       name="valeur_l"
                       className="valeur-input"
                       value={vvaleur_l}
-                      postvalue="€"
+                      postvalue={symbolemonnaie}
                       type="text"
                       onChange={({value}) => {this.changeHandler('valeur_l',value)}}
                     />
@@ -621,7 +621,7 @@ class Menu extends React.Component {
 
  render() {
 
-  const { catalogue, tva, categories, ingredients, ingredientTypes, tickets, clavier, updateIngredientType, noprintAllowed } = this.props;
+  const { catalogue, tva, categories, ingredients, ingredientTypes, tickets, clavier, updateIngredientType, noprintAllowed, monnaie } = this.props;
   const { openTab, categorie, itemId, editItem, editOpen, editType } = this.state;
 
   const defCat = categorie || categories[0].categorie_id;
@@ -679,14 +679,54 @@ class Menu extends React.Component {
               </Tabs>
             </AppBar>
             <TabPanel key={ `panel-produits` } className="panel" value={openTab} index={0}>
-              <MenuListe key="liste-produits" data={prdlist} type="produits" openEdit={this.editProduit} tickets={tickList} changeDispo={this.changeDispoProduit} changeNoPrintAll={this.changeNoPrintMultipleProduits} changeNoPrintItem={this.changeNoPrintProduit} isIndeterminate={this.isGroupeIndeterminate} isChecked={this.isGroupeChecked} editOpen={this.openEdit} updateType={null} noprintAllowed={noprintAllowed}/>
+              <MenuListe 
+                key="liste-produits" 
+                data={prdlist} 
+                type="produits" 
+                openEdit={this.editProduit} 
+                tickets={tickList} 
+                changeDispo={this.changeDispoProduit} 
+                changeNoPrintAll={this.changeNoPrintMultipleProduits} 
+                changeNoPrintItem={this.changeNoPrintProduit} 
+                isIndeterminate={this.isGroupeIndeterminate} 
+                isChecked={this.isGroupeChecked} 
+                editOpen={this.openEdit} 
+                updateType={null} 
+                noprintAllowed={noprintAllowed}
+                symbolemonnaie={monnaie.symbole}
+              />
             </TabPanel>
             <TabPanel key={ `panel-ingredients` } className="panel" value={openTab} index={1}>
-              <MenuListe  key="liste-ingredients" data={inglist} type="ingredients" openEdit={this.editIngredient} tickets={tickList} changeDispo={this.changeDispoIngredient} changeNoPrintAll={this.changeNoPrintMultipleIngredients} changeNoPrintItem={this.changeNoPrintIngredient} isIndeterminate={this.isGroupeIndeterminate} isChecked={this.isGroupeChecked} editOpen={this.openEdit} updateType={updateIngredientType} noprintAllowed={noprintAllowed} />
+              <MenuListe 
+                key="liste-ingredients" 
+                data={inglist} 
+                type="ingredients" 
+                openEdit={this.editIngredient} 
+                tickets={tickList} 
+                changeDispo={this.changeDispoIngredient} 
+                changeNoPrintAll={this.changeNoPrintMultipleIngredients} 
+                changeNoPrintItem={this.changeNoPrintIngredient} 
+                isIndeterminate={this.isGroupeIndeterminate} 
+                isChecked={this.isGroupeChecked} 
+                editOpen={this.openEdit} 
+                updateType={updateIngredientType} 
+                noprintAllowed={noprintAllowed} 
+                symbolemonnaie={monnaie.symbole}
+              />
             </TabPanel>
           </div>
       </div>
-      <MenuItemModal id={itemId} type={editType} tva={tva} item={editItem} clavierOpen={clavier} open={editOpen} closeHandler={this.closeEdit} updateItem={this.updateMenuItem} />
+      <MenuItemModal 
+        id={itemId} 
+        type={editType} 
+        tva={tva} 
+        item={editItem} 
+        clavierOpen={clavier} 
+        open={editOpen} 
+        closeHandler={this.closeEdit} 
+        updateItem={this.updateMenuItem} 
+        symbolemonnaie={monnaie.symbole}
+      />
     </div>
     );
   }
@@ -754,7 +794,7 @@ const IOSSwitch = withStyles((theme) => ({
 
 function MenuListe(props) {
 
-  const {data, type, changeDispo, tickets, changeNoPrintAll, changeNoPrintItem, isIndeterminate, isChecked, editOpen, updateType, noprintAllowed} = props;
+  const {data, type, changeDispo, tickets, changeNoPrintAll, changeNoPrintItem, isIndeterminate, isChecked, editOpen, updateType, noprintAllowed, symbolemonnaie} = props;
 
   const mliste = data.map((cont,i) => {
     
@@ -822,7 +862,7 @@ function MenuListe(props) {
               <ListItemIcon>
                 <LensIcon className={`couleur ${p.color}`} />
               </ListItemIcon>
-              <ListItemText id={p.id} onClick={ () => { editOpen('produit', p.id) } } primary={p.nom} secondary={ `${ strings.modules.encaissement.panier.mode.surplace } : ${devise(Number(p.prixArray[0].ttc))} € - ${ strings.modules.encaissement.panier.mode.emporter } : ${devise(Number(p.prixArray[1].ttc))} € - ${ strings.modules.encaissement.panier.mode.livraison } : ${devise(Number(p.prixArray[2].ttc))} €`} />
+              <ListItemText id={p.id} onClick={ () => { editOpen('produit', p.id) } } primary={p.nom} secondary={ `${ strings.modules.encaissement.panier.mode.surplace } : ${devise(Number(p.prixArray[0].ttc))} ${symbolemonnaie} - ${ strings.modules.encaissement.panier.mode.emporter } : ${devise(Number(p.prixArray[1].ttc))} ${symbolemonnaie} - ${ strings.modules.encaissement.panier.mode.livraison } : ${devise(Number(p.prixArray[2].ttc))} ${symbolemonnaie}`} />
               <ListItemSecondaryAction>
                 <div className="cont-print">
                   {(noprintAllowed) && tickets.map(tck=>
@@ -856,7 +896,7 @@ function MenuListe(props) {
               <ListItemIcon>
                 <LensIcon className={`couleur ${n.color}`} />
               </ListItemIcon>
-              <ListItemText id={n.id} onClick={ () => { editOpen('ingredient', n.id) } } primary={n.nom} secondary={`${devise(Number(n.supplement))} €` } />
+              <ListItemText id={n.id} onClick={ () => { editOpen('ingredient', n.id) } } primary={n.nom} secondary={`${devise(Number(n.supplement))} ${symbolemonnaie}` } />
               <ListItemSecondaryAction>
                 <div className="cont-print">
                   {(noprintAllowed) && tickets.map(tck=>

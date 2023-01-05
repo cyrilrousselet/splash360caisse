@@ -34,8 +34,8 @@ const mapStateToProps = (state) => {
     online: state.parametresReducer.online,
     status: localStorage.getItem("status"),
     expiredate: localStorage.getItem("expireDate"),
-    integrite_error: state.signatureReducer.integrite_error,
-    sequence_error: state.signatureReducer.sequence_error,
+    integrite_error: false, //state.signatureReducer.integrite_error,
+    sequence_error: false,  //state.signatureReducer.sequence_error,
   }
 }
 

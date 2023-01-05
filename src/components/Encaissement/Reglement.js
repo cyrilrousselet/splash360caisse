@@ -503,6 +503,7 @@ class Reglement extends React.Component {
       tiroirOuvert,
       params,
       modif,
+      monnaie,
     } = this.props;
     const { reglements, rendus } = this.props.commande;
     const { reste, rendable } = this.updateValeurs();
@@ -643,7 +644,7 @@ class Reglement extends React.Component {
                       elementclass="raccourci"
                       icon={false}
                       text={
-                        strings.modules.encaissement.reglement.raccourcis[i]
+                        `${racc} ${monnaie.symbole}`
                       }
                       onClick={(value) => {
                         this.addValeur(Number(value));

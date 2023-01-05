@@ -12,13 +12,7 @@ import logger from '../../helpers/Logger';
 let strings = new LocalizedStrings(data);
 
 
-const ProduitBtn = ({ id, nom, prix, composition, color, onClick, disabled }) => (
-  // <Button
-  //   className="ProduitBtn"
-  //   id={id}
-  //   composition={ composition }
-  //   onClick={ () => onClick(id) }
-  // ><div>{ nom }</div><div>{ Number(prix).toFixed(2).replace('.',',') }&nbsp;€</div></Button>
+const ProduitBtn = ({ id, nom, prix, composition, color, onClick, disabled, symbolemonnaie }) => (
   <div
     className={ `ProduitBtn${disabled ? ' btn-disabled' :''} ${color}` }
     id={id}
@@ -26,7 +20,7 @@ const ProduitBtn = ({ id, nom, prix, composition, color, onClick, disabled }) =>
     onClick={ () => {  if (!disabled) onClick(id)} }
   ><div className="btnlabel">
     <div className="nom">{ nom }</div>
-    <div className="supplt">{ Number(prix).toFixed(2).replace('.',',') }&nbsp;€</div>
+    <div className="supplt">{ Number(prix).toFixed(2).replace('.',',') }&nbsp;{symbolemonnaie}</div>
     </div>
   </div>
 );

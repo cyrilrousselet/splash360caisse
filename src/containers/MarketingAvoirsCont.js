@@ -7,7 +7,8 @@ import { marketingActions } from './../services/marketing/marketingActions';
 
 const mapStateToProps = (state) => {
   return {
-    avoirs: state.marketingReducer.avoirs
+    avoirs: state.marketingReducer.avoirs,
+    monnaie: (state.parametresReducer.parametres.financier && state.parametresReducer.parametres.financier.monnaie) || {iso: 'EUR', nom: 'euro', nom_pl: 'euros', symbole: '€'},
   }
 }
 

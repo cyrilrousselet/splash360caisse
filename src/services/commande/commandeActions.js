@@ -140,7 +140,8 @@ function getCommande(commandeId = null) {
       const { caisse } = state.parametresReducer.parametres.options;
       const commande = commandeServices.getNewCommande({
         operator: {nom: user.nom, id: user.user_id},
-        caisse: caisse
+        caisse: caisse,
+        devise: state.parametresReducer.parametres.financier.monnaie,
       });
       // logger.timeEnd('getCommande (new)');
       dispatch({ type: commandeActionTypes.GET_COMMANDE_SUCCESS, commande });
@@ -350,13 +351,13 @@ function confirmCommande(_payload, printTemplates) {
             // si la note est offerte
             if (__noteData['ENC-TIK-REM-MTN']>0 && __noteData['ENC-TIK-TOT-TTC']===0) {
               // on loggue dans le JET
-              dispatch(journalActions.log('327', `Note #${ newNote } offerte (${ Number(__noteData['ENC-TIK-REM-MTN'] / 100).toFixed(2) } €)`));
+              dispatch(journalActions.log('327', `Note #${ newNote } offerte (${ Number(__noteData['ENC-TIK-REM-MTN'] / 100).toFixed(2) } ${payloadcopy.devise.symbole})`));
             }
             else {
               // son loggue dans le JET les articles offerts
               const __articlesofferts = __noteData['LIGNES'].filter(art => art['ENC-TIK-LIG-REM-TXX']===100 );
               __articlesofferts.forEach(art => {
-                dispatch(journalActions.log('328', `Article #${ art['ENC-TIK-ORI-NUM'] } offert (${ Number(art['ENC-TIK-LIG-REM-TOT'] / 100).toFixed(2) } €) : Note #${ newNote }`));
+                dispatch(journalActions.log('328', `Article #${ art['ENC-TIK-ORI-NUM'] } offert (${ Number(art['ENC-TIK-LIG-REM-TOT'] / 100).toFixed(2) } ${payloadcopy.devise.symbole}) : Note #${ newNote }`));
               });
             }
 
@@ -588,61 +589,6 @@ function _createTicket(confirm, params) {
   // lignes tickets :
   confirm.items.forEach((itm,i) => {
 
-    // extraction des données sur le modificateur
-    /* -------------------------- REGLE ---------------------------- */
-    /* |  • les remises en numéraire sont appliquées sur le TTC    | */
-    /* |  • les remises en pourcentage sont appliquées sur le HT   | */
-    /* ------------------------------------------------------------- */
-    // const __prdmod = confirm.modificateurs.find(m => m.item === itm.itemid && m.ingredient===null);
-    
-    // // taux du modificateur
-    // let __modtx = null;
-    // // valeur du modificateur
-    // let __modval = null;
-    // let __itmht = Math.round(itm.puht * 100) * itm.quantite;
-    // let __itmttc = (Math.round(itm.pu * 100) * itm.quantite);
-    // let __itmmodtotal = 0;
-
-
-    // if (__prdmod) {
-    //   // ispc :bool (is percent)
-    //   const ispc = String(__prdmod.valeur).substr(-1,1)==='%';
-    //   const val = Math.abs(Number(String(__prdmod.valeur).slice(0,-1)));
-    //   __modval = ispc ? Math.round(itm.prix * 100) * (val/100) : Math.round(val * 100);
-
-    //   // conversion du modificateur en coefficient
-    //   __modtx = (ispc) 
-    //   ? (
-    //     __prdmod.operation > 0 
-    //     ? (100 + val) / 100
-    //     : (100 - val) / 100
-    //     ) 
-    //   : (
-    //     __prdmod.operation > 0 
-    //     ? 1 + (val/itm.prix)
-    //     : 1 - (val/itm.prix)
-    //     )
-    //   ;
-
-    //   // si le modificateur est en pourcentage : application de la remise sur le HT
-    //   // et calcul des valeurs
-    //   if (ispc) {
-    //     let prvttc = __itmttc;
-    //     __itmht = __itmht * __modtx;
-    //     __itmttc = __itmht * (1 + itm.tva.valeur);
-    //     __itmmodtotal = prvttc - __itmttc;
-    //   }
-    //   // si me modificateur est en numéraire : application de la remise sur le TTC
-    //   // et calcul des valeurs
-    //   else {
-    //     let prvttc = __itmttc;
-    //     __itmttc = __itmht - __modval;
-    //     __itmht = __itmttc / (1 + itm.tva.valeur);
-    //     __itmmodtotal = prvttc - __itmttc;
-    //   }
-      
-    // }
-
     __ticketData['LIGNES'].push({
       'ENC-NID': newTicket,
       'ENC-TIK-ORI-NUM': itm.itemid,
@@ -796,61 +742,6 @@ function _createNote(confirm, params) {
   // lignes tickets :
   confirm.items.forEach((itm,i) => {
 
-    // // extraction des données sur le modificateur
-    // /* -------------------------- REGLE ---------------------------- */
-    // /* |  • les remises en numéraire sont appliquées sur le TTC    | */
-    // /* |  • les remises en pourcentage sont appliquées sur le HT   | */
-    // /* ------------------------------------------------------------- */
-    // const __prdmod = confirm.modificateurs.find(m => m.item === itm.itemid && m.ingredient===null);
-    
-    // // taux du modificateur
-    // let __modtx = null;
-    // // valeur du modificateur
-    // let __modval = null;
-    // let __itmht = Math.round(itm.puht * 100) * itm.quantite;
-    // let __itmttc = (Math.round(itm.pu * 100) * itm.quantite);
-    // let __itmmodtotal = 0;
-
-
-    // if (__prdmod) {
-    //   // ispc :bool (is percent)
-    //   const ispc = String(__prdmod.valeur).substr(-1,1)==='%';
-    //   const val = Math.abs(Number(String(__prdmod.valeur).slice(0,-1)));
-    //   __modval = ispc ? Math.round(itm.prix * 100) * (val/100) : Math.round(val * 100);
-
-    //   // conversion du modificateur en coefficient
-    //   __modtx = (ispc) 
-    //   ? (
-    //     __prdmod.operation > 0 
-    //     ? (100 + val) / 100
-    //     : (100 - val) / 100
-    //     ) 
-    //   : (
-    //     __prdmod.operation > 0 
-    //     ? 1 + (val/itm.prix)
-    //     : 1 - (val/itm.prix)
-    //     )
-    //   ;
-
-    //   // si le modificateur est en pourcentage : application de la remise sur le HT
-    //   // et calcul des valeurs
-    //   if (ispc) {
-    //     let prvttc = __itmttc;
-    //     __itmht = __itmht * __modtx;
-    //     __itmttc = __itmht * (1 + itm.tva.valeur);
-    //     __itmmodtotal = prvttc - __itmttc;
-    //   }
-    //   // si me modificateur est en numéraire : application de la remise sur le TTC
-    //   // et calcul des valeurs
-    //   else {
-    //     let prvttc = __itmttc;
-    //     __itmttc = __itmht - __modval;
-    //     __itmht = __itmttc / (1 + itm.tva.valeur);
-    //     __itmmodtotal = prvttc - __itmttc;
-    //   }
-      
-    // }
-
     __noteData['LIGNES'].push({
       'ENC-NID': newNote,
       'ENC-TIK-ORI-NUM': itm.itemid,
@@ -999,9 +890,6 @@ function standByCommande(payload, needNumero) {
 
       payload.localsync = [parametres.options.caisse.uniqid];
 
-      // if (payload.numero==null) {
-      //   payload.numero = getState().commandeReducer.commande.numero;
-      // }
 
       // activation de l'impression des tickets pour les commandes en attente
       const {print_standby} = getState().parametresReducer.parametres.commandes;
@@ -1183,13 +1071,13 @@ function validateCommande(_payload, needNumero) {
             // si la note est offerte
             if (__noteData['ENC-TIK-REM-MTN']>0 && __noteData['ENC-TIK-TOT-TTC']===0) {
               // on loggue dans le JET
-              dispatch(journalActions.log('327', `Note #${ newNote } offerte (${ Number(__noteData['ENC-TIK-REM-MTN'] / 100).toFixed(2) } €)`));
+              dispatch(journalActions.log('327', `Note #${ newNote } offerte (${ Number(__noteData['ENC-TIK-REM-MTN'] / 100).toFixed(2) } ${payloadcopy.devise.symbole})`));
             }
             else {
               // son loggue dans le JET les articles offerts
               const __articlesofferts = __noteData['LIGNES'].filter(art => art['ENC-TIK-LIG-REM-TXX']===100 );
               __articlesofferts.forEach(art => {
-                dispatch(journalActions.log('328', `Article #${ art['ENC-TIK-ORI-NUM'] } offert (${ Number(art['ENC-TIK-LIG-REM-TOT'] / 100).toFixed(2) } €) : Note #${ newNote }`));
+                dispatch(journalActions.log('328', `Article #${ art['ENC-TIK-ORI-NUM'] } offert (${ Number(art['ENC-TIK-LIG-REM-TOT'] / 100).toFixed(2) } ${payloadcopy.devise.symbole}) : Note #${ newNote }`));
               });
             }
 
@@ -2325,13 +2213,13 @@ function setCommandeFromOrder(provider, payload) {
           // si la note est offerte
           if (__noteData['ENC-TIK-REM-MTN']>0 && __noteData['ENC-TIK-TOT-TTC']===0) {
             // on loggue dans le JET
-            dispatch(journalActions.log('327', `Note #${ newNote } offerte (${ Number(__noteData['ENC-TIK-REM-MTN'] / 100).toFixed(2) } €)`));
+            dispatch(journalActions.log('327', `Note #${ newNote } offerte (${ Number(__noteData['ENC-TIK-REM-MTN'] / 100).toFixed(2) } ${commande.devise.symbole})`));
           }
           else {
             // son loggue dans le JET les articles offerts
             const __articlesofferts = __noteData['LIGNES'].filter(art => art['ENC-TIK-LIG-REM-TXX']===100 );
             __articlesofferts.forEach(art => {
-              dispatch(journalActions.log('328', `Article #${ art['ENC-TIK-ORI-NUM'] } offert (${ Number(art['ENC-TIK-LIG-REM-TOT'] / 100).toFixed(2) } €) : Note #${ newNote }`));
+              dispatch(journalActions.log('328', `Article #${ art['ENC-TIK-ORI-NUM'] } offert (${ Number(art['ENC-TIK-LIG-REM-TOT'] / 100).toFixed(2) } ${commande.devise.symbole}) : Note #${ newNote }`));
             });
           }
 
@@ -2624,13 +2512,13 @@ function setCommandeFromAPI(payload) {
               // si la note est offerte
               if (__noteData['ENC-TIK-REM-MTN']>0 && __noteData['ENC-TIK-TOT-TTC']===0) {
                 // on loggue dans le JET
-                dispatch(journalActions.log('327', `Note #${ newNote } offerte (${ Number(__noteData['ENC-TIK-REM-MTN'] / 100).toFixed(2) } €)`));
+                dispatch(journalActions.log('327', `Note #${ newNote } offerte (${ Number(__noteData['ENC-TIK-REM-MTN'] / 100).toFixed(2) } ${commande.devise.symbole})`));
               }
               else {
                 // son loggue dans le JET les articles offerts
                 const __articlesofferts = __noteData['LIGNES'].filter(art => art['ENC-TIK-LIG-REM-TXX']===100 );
                 __articlesofferts.forEach(art => {
-                  dispatch(journalActions.log('328', `Article #${ art['ENC-TIK-ORI-NUM'] } offert (${ Number(art['ENC-TIK-LIG-REM-TOT'] / 100).toFixed(2) } €) : Note #${ newNote }`));
+                  dispatch(journalActions.log('328', `Article #${ art['ENC-TIK-ORI-NUM'] } offert (${ Number(art['ENC-TIK-LIG-REM-TOT'] / 100).toFixed(2) } ${commande.devise.symbole}) : Note #${ newNote }`));
                 });
               }
     

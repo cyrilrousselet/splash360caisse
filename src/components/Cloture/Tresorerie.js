@@ -49,7 +49,7 @@ class LocalizedUtils extends DateFnsUtils {
 
 function TableMouvements(props) {
   // const { liste, id, openMouvementId, caisses } = props;
-  const { liste, id, caisses } = props;
+  const { liste, id, caisses, symbolemonnaie } = props;
 
 
   let _mouvements = [];
@@ -110,9 +110,9 @@ function TableMouvements(props) {
               <TableCell key={`${row.id}-date`} className="liste-date">{ format(new Date(row.createdAt), "d MMM yyyy à HH:mm", { locale: frLocale }) }</TableCell>
               <TableCell key={`${row.id}-origine`} className="liste-origine">{ ((["cloture","sortie"]).includes(row.type))? _getNomCaisse(row.origine) : row.origine }</TableCell>
               <TableCell key={`${row.id}-destination`} className="liste-destination">{ ((["ouverture","entree"]).includes(row.type))? _getNomCaisse(row.destination) : row.destination }</TableCell>
-              <TableCell key={`${row.id}-debit`} className="liste-debit">{ (row.type==="ouverture") ? (row.debit>0 ? `- ${devise(row.debit/100)} €` : '') : `- ${devise(row.debit/100)} €` }</TableCell>
-              <TableCell key={`${row.id}-credit`} className="liste-credit">{ (row.type==="ouverture") ? (row.credit>0 ? `+ ${devise(row.credit/100)} €` : '') : `+ ${devise(row.credit/100)} €` }</TableCell>
-              <TableCell key={`${row.id}-montant`} className="liste-montant">{ `${devise(row.solde/100)} €` }</TableCell>
+              <TableCell key={`${row.id}-debit`} className="liste-debit">{ (row.type==="ouverture") ? (row.debit>0 ? `- ${devise(row.debit/100)} ${symbolemonnaie}` : '') : `- ${devise(row.debit/100)} ${symbolemonnaie}` }</TableCell>
+              <TableCell key={`${row.id}-credit`} className="liste-credit">{ (row.type==="ouverture") ? (row.credit>0 ? `+ ${devise(row.credit/100)} ${symbolemonnaie}` : '') : `+ ${devise(row.credit/100)} ${symbolemonnaie}` }</TableCell>
+              <TableCell key={`${row.id}-montant`} className="liste-montant">{ `${devise(row.solde/100)} ${symbolemonnaie}` }</TableCell>
               <TableCell key={`${row.id}-type`} className="liste-type">{ strings.modules.tresor.types[row.type] }</TableCell>
             </TableRow>
           ))}
@@ -228,7 +228,7 @@ class Tresorerie extends React.Component {
 
   render() {
 
-    const { mouvements, caisses } = this.props;
+    const { mouvements, caisses, monnaie } = this.props;
     const { mouvement, mouvementOpen, mouvementType } = this.state;
     const startDate = new Date();
     const endDate = new Date();
@@ -274,6 +274,7 @@ class Tresorerie extends React.Component {
             // openMouvementId={ this.openMouvementId } 
             liste={mouvements}
             caisses={ caisses } 
+            symbolemonnaie={ monnaie.symbole }
           />
         </div>
         <MouvementPopin 
@@ -284,6 +285,7 @@ class Tresorerie extends React.Component {
           caisses={ caisses }
           closeHandler={ this.closeMouvement }
           saveMouvement={ this.saveMouvement }
+          symbolemonnaie={ monnaie.symbole }
         />
       </div>
     );

@@ -10,9 +10,10 @@ let strings = new LocalizedStrings(data);
 
 const DateRangePickerPopin = (props) => {
   const { startDate, endDate, open, validate, closeHandler } = props;
-  const [dateRange, setDateRange] = React.useState({});
+  const [dateRange, setDateRange] = React.useState({startDate: new Date(startDate), endDate: new Date(endDate)});
+  const [dataNotChanged, setDataNotChanged] = React.useState(true);
 
-  
+
   return (
     <Modal open={open}>
       <div className="DateRangePickerPopin">
@@ -22,7 +23,11 @@ const DateRangePickerPopin = (props) => {
             open={true}
             definedRanges={[]}
             initialDateRange={{startDate, endDate}}
-            onChange={(range) => setDateRange(range)}
+            onChange={(range) => {
+              setDataNotChanged(false);
+              console.log('DateRangePickerPopin', range);
+              setDateRange(range)
+            }}
             />
           </div>
           <div className="footer">

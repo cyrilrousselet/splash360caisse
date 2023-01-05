@@ -60,7 +60,7 @@ const _colorWheel = [
 // }
 
 function CanalChart(props) {
-  const { data } = props;
+  const { data, symbolemonnaie } = props;
 
   let i = 0;
   const max = Object.values(data).sort((a, b) => b - a);
@@ -68,14 +68,14 @@ function CanalChart(props) {
   const __items = Object.entries(data).map(([nom, valeur]) => (
     <div className="canal-item" key={`canal-${nom}`}>
       <div className="tracker">
-        {`${valeur.toFixed(2).replace(".", ",")} €`}
+        {`${valeur.toFixed(2).replace(".", ",")} ${symbolemonnaie}`}
         <div
           className="jauge"
           style={{
             backgroundColor: _colorWheel[i++],
             width: `calc(${Math.round((valeur / max[0]) * 100)}% - 4px)`,
           }}
-        >{`${valeur.toFixed(2).replace(".", ",")} €`}</div>
+        >{`${valeur.toFixed(2).replace(".", ",")} ${symbolemonnaie}`}</div>
       </div>
       <div className="nom">{nom}</div>
     </div>
@@ -85,7 +85,7 @@ function CanalChart(props) {
 }
 
 function MoyenChart(props) {
-  const { data } = props;
+  const { data, symbolemonnaie } = props;
 
   let i = 0;
   const max = Object.values(data).sort((a, b) => b - a);
@@ -101,7 +101,7 @@ function MoyenChart(props) {
           }}
         ></div>
       </div>
-      <div className="nom">{`${valeur.toFixed(2).replace(".", ",")} €`}</div>
+      <div className="nom">{`${valeur.toFixed(2).replace(".", ",")} ${symbolemonnaie}`}</div>
     </div>
   ));
 
@@ -289,7 +289,7 @@ class Statistiques extends React.Component {
   }
 
   render() {
-    const { commandeslist, loading, canaux } = this.props;
+    const { commandeslist, loading, canaux, monnaie } = this.props;
     const { startDate, endDate, pickerOpen } = this.state;
 
     let /*ca_total = 0,*/
@@ -302,17 +302,8 @@ class Statistiques extends React.Component {
       moyen = {},
       vendeur = {},
       mode = {};
-    // for (let [key, value] of Object.entries(commandeslist)) {
+
     Object.values(commandeslist).forEach((value) => {
-      // let cmd = {
-      //   id: value.ticketId,
-      //   createdAt: value.createdAt,
-      //   date: format(new Date(value.createdAt), "d MMM yyyy", { locale: this.locale }),
-      //   heure: format(new Date(value.createdAt), "H:mm:ss"),
-      //   montant: `${value.total.toFixed(2).replace('.',',')} €`,
-      //   client: 'Anonyme',
-      //   caisse: value.caisse
-      // };
 
       let __start = compareAsc(new Date(value.createdAt), startDate);
       let __end = compareAsc(new Date(value.createdAt), endDate);
@@ -385,7 +376,7 @@ class Statistiques extends React.Component {
     };
     let i = 0;
     Object.entries(vendeur).forEach(([id, val]) => {
-      vendeur_data.labels.push(`${id} ${val.toFixed(2).replace(".", ",")}€`);
+      vendeur_data.labels.push(`${id} ${val.toFixed(2).replace(".", ",")} ${monnaie.symbole}`);
       vendeur_data.datasets[0].data.push(Math.round(val));
       vendeur_data.datasets[0].backgroundColor.push(_colorWheel[i]);
       vendeur_data.datasets[0].hoverBackgroundColor.push(_colorWheel[i++]);
@@ -467,7 +458,7 @@ class Statistiques extends React.Component {
                   noStroke={false}
                   text={`${strings.modules.statistiques.totaux.ca} ${
                     ca_confirmes.toFixed(2).replace(".", ",") + nbsp
-                  }€`}
+                  } ${monnaie.symbole}`}
                   onClick={() => void 0}
                 />
                 <StdButton
@@ -485,7 +476,7 @@ class Statistiques extends React.Component {
                   noStroke={false}
                   text={`${strings.modules.statistiques.totaux.moyen} ${
                     panier_moyen.toFixed(2).replace(".", ",") + nbsp
-                  }€`}
+                  } ${monnaie.symbole}`}
                   onClick={() => void 0}
                 />
                 <StdButton

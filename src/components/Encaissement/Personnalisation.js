@@ -25,6 +25,7 @@ const IngredientBtn = ({
   qte,
   withbuttons,
   disabled,
+  symbolemonnaie
 }) => (
   <div
     className={`IngredientBtn${withbuttons ? " with-qtebtn" : ""}${
@@ -41,7 +42,7 @@ const IngredientBtn = ({
       <div className="nom">{nom}</div>
       {supplement > 0 && (
         <div className="supplt">
-          {Number(supplement).toFixed(2).replace(".", ",")}&nbsp;€
+          {Number(supplement).toFixed(2).replace(".", ",")}&nbsp;{symbolemonnaie}
         </div>
       )}
     </div>

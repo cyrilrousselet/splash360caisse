@@ -597,6 +597,7 @@ class Cloture extends React.Component {
       catalogue,
       // caisses,
       user,
+      monnaie,
     } = this.props;
 
     const {
@@ -839,13 +840,13 @@ class Cloture extends React.Component {
                     <EspecesIcon htmlColor="#ffffff" />
                     { strings.modules.cloture.comptage.moyens.especes }
                   </div>
-                  <div className="valeur valeur-static">{ `${devise(especes)} €` }</div>
+                  <div className="valeur valeur-static">{ `${devise(especes)} ${monnaie.symbole}` }</div>
                   <div className="valeur valeur-input" onClick={()=>{ this.startSaisie('saisie_especes') }}>
                     <div className="label">{ strings.modules.cloture.comptage.saisie.caption }</div>
-                    <div className="input">{ `${(saisie_especes_fv!=='' ? devise(saisie_especes_fv)+' €' : '')}` }</div>
+                    <div className="input">{ `${(saisie_especes_fv!=='' ? devise(saisie_especes_fv)+' '+monnaie.symbole : '')}` }</div>
                   </div>
                   {(ecart_especes_fv!==0) && (<>
-                    <div className="ecart">{ `${ecart_especes_fv>0 ? '+':''} ${devise(ecart_especes_fv)} €` }</div>
+                    <div className="ecart">{ `${ecart_especes_fv>0 ? '+':''} ${devise(ecart_especes_fv)} ${monnaie.symbole}` }</div>
                     <div className="motif" onClick={()=>{ this.openMotifModal('motif_especes') }}>{ motif_especes }</div>
                   </>)}
                   {(ecart_especes_fv===0) && (<div className="ecart">-</div>)}
@@ -855,13 +856,13 @@ class Cloture extends React.Component {
                     <CarteIcon htmlColor="#ffffff" />
                     { strings.modules.cloture.comptage.moyens.carte }
                   </div>
-                  <div className="valeur valeur-static">{ `${devise(carte)} €` }</div>
+                  <div className="valeur valeur-static">{ `${devise(carte)} ${monnaie.symbole}` }</div>
                   <div className="valeur valeur-input" onClick={()=>{ this.startSaisie('saisie_carte') }}>
                     <div className="label">{ strings.modules.cloture.comptage.saisie.caption }</div>
-                    <div className="input">{ `${(saisie_carte_fv!=='' ? devise(saisie_carte_fv)+' €' : '')}` }</div>
+                    <div className="input">{ `${(saisie_carte_fv!=='' ? devise(saisie_carte_fv)+' '+monnaie.symbole : '')}` }</div>
                   </div>
                   {(ecart_carte_fv!==0) && (<>
-                    <div className="ecart">{ `${ecart_carte_fv>0 ? '+':''} ${devise(ecart_carte_fv)} €` }</div>
+                    <div className="ecart">{ `${ecart_carte_fv>0 ? '+':''} ${devise(ecart_carte_fv)} ${monnaie.symbole}` }</div>
                     <div className="motif" onClick={()=>{ this.openMotifModal('motif_carte') }}>{ motif_carte }</div>
                   </>)}
                   {(ecart_carte_fv===0) && (<div className="ecart">-</div>)}
@@ -871,13 +872,13 @@ class Cloture extends React.Component {
                     <TicketIcon htmlColor="#ffffff" />
                     { strings.modules.cloture.comptage.moyens.ticket }
                   </div>
-                  <div className="valeur valeur-static">{ `${devise(ticket)} €` }</div>
+                  <div className="valeur valeur-static">{ `${devise(ticket)} ${monnaie.symbole}` }</div>
                   <div className="valeur valeur-input" onClick={()=>{ this.startSaisie('saisie_ticket') }}>
                     <div className="label">{ strings.modules.cloture.comptage.saisie.caption }</div>
-                    <div className="input">{ `${(saisie_ticket_fv!=='' ? devise(saisie_ticket_fv)+' €' : '')}` }</div>
+                    <div className="input">{ `${(saisie_ticket_fv!=='' ? devise(saisie_ticket_fv)+' '+monnaie.symbole : '')}` }</div>
                   </div>
                   {(ecart_ticket_fv!==0) && (<>
-                    <div className="ecart">{ `${ecart_ticket_fv>0 ? '+':''} ${devise(ecart_ticket_fv)} €` }</div>
+                    <div className="ecart">{ `${ecart_ticket_fv>0 ? '+':''} ${devise(ecart_ticket_fv)} ${monnaie.symbole}` }</div>
                     <div className="motif" onClick={()=>{ this.openMotifModal('motif_ticket') }}>{ motif_ticket }</div>
                   </>)}
                   {(ecart_ticket_fv===0) && (<div className="ecart">-</div>)}
@@ -887,13 +888,13 @@ class Cloture extends React.Component {
                     <ChequeIcon htmlColor="#ffffff" />
                     { strings.modules.cloture.comptage.moyens.cheque }
                   </div>
-                  <div className="valeur valeur-static">{ `${devise(cheque)} €` }</div>
+                  <div className="valeur valeur-static">{ `${devise(cheque)} ${monnaie.symbole}` }</div>
                   <div className="valeur valeur-input" onClick={()=>{ this.startSaisie('saisie_cheque') }}>
                     <div className="label">{ strings.modules.cloture.comptage.saisie.caption }</div>
-                    <div className="input">{ `${(saisie_cheque_fv!=='' ? devise(saisie_cheque_fv)+' €' : '')}` }</div>
+                    <div className="input">{ `${(saisie_cheque_fv!=='' ? devise(saisie_cheque_fv)+' '+monnaie.symbole : '')}` }</div>
                   </div>
                   {(ecart_cheque_fv!==0) && (<>
-                    <div className="ecart">{ `${ecart_cheque_fv>0 ? '+':''} ${devise(ecart_cheque_fv)} €` }</div>
+                    <div className="ecart">{ `${ecart_cheque_fv>0 ? '+':''} ${devise(ecart_cheque_fv)} ${monnaie.symbole}` }</div>
                     <div className="motif" onClick={()=>{ this.openMotifModal('motif_cheque') }}>{ motif_cheque }</div>
                   </>)}
                   {(ecart_cheque_fv===0) && (<div className="ecart">-</div>)}
@@ -903,13 +904,13 @@ class Cloture extends React.Component {
                     <QRCodeIcon htmlColor="#ffffff" />
                     { strings.modules.cloture.comptage.moyens.avoir }
                   </div>
-                  <div className="valeur valeur-static">{ `${devise(avoir)} €` }</div>
+                  <div className="valeur valeur-static">{ `${devise(avoir)} ${monnaie.symbole}` }</div>
                   <div className="valeur valeur-input" onClick={()=>{ this.startSaisie('saisie_avoir') }}>
                     <div className="label">{ strings.modules.cloture.comptage.saisie.caption }</div>
-                    <div className="input">{ `${(saisie_avoir_fv!=='' ? devise(saisie_avoir_fv)+' €' : '')}` }</div>
+                    <div className="input">{ `${(saisie_avoir_fv!=='' ? devise(saisie_avoir_fv)+' '+monnaie.symbole : '')}` }</div>
                   </div>
                   {(ecart_avoir_fv!==0) && (<>
-                    <div className="ecart">{ `${ecart_avoir_fv>0 ? '+':''} ${devise(ecart_avoir_fv)} €` }</div>
+                    <div className="ecart">{ `${ecart_avoir_fv>0 ? '+':''} ${devise(ecart_avoir_fv)} ${monnaie.symbole}` }</div>
                     <div className="motif" onClick={()=>{ this.openMotifModal('motif_avoir') }}>{ motif_avoir }</div>
                   </>)}
                   {(ecart_avoir_fv===0) && (<div className="ecart">-</div>)}
@@ -923,26 +924,26 @@ class Cloture extends React.Component {
                     <label>{ `${strings.modules.cloture.comptage.moyens[am.moyen]} (${am.station})` }</label>
                     <div className="input">{`${devise(
                       am.valeur
-                    )} €`}</div>
+                    )} ${monnaie.symbole}`}</div>
                   </div>
                 )))}
                 <div key={`total-encaissement`} className="total-encaissement">
                   <label>{strings.modules.cloture.comptage.especes.total_encaissement}</label>
                   <div className="input">{`${devise(
                     _encaissement
-                  )} €`}</div>
+                  )} ${monnaie.symbole}`}</div>
                 </div>
                 <div key={`total-fonddecaisse`} className="total-fdc">
                   <label>{strings.modules.cloture.comptage.especes.total_fdcaisse}</label>
                   <div className="input">{`${devise(
                     periode_z.periode.fdcaisse
-                  )} €`}</div>
+                  )} ${monnaie.symbole}`}</div>
                 </div>
                 <div key={`total-caisse-theo`} className="total-caisse">
                   <label>{strings.modules.cloture.comptage.especes.total_montant}</label>
                   <div className="input">{`${devise(
                     periode_z.periode.fdcaisse + _encaissement
-                  )} €`}</div>
+                  )} ${monnaie.symbole}`}</div>
                 </div>
               </div>{/* -- /.clo-gauche-btm -- */}
             
@@ -980,13 +981,13 @@ class Cloture extends React.Component {
                   <div className="valeur-input editable strong">
                     <label>{strings.modules.cloture.prelevement}</label>
                     <div className="input">{`${
-                      prelevement_fv!=='' ? devise(prelevement_fv) + " €" : ""
+                      prelevement_fv!=='' ? devise(prelevement_fv) + " " + monnaie.symbole : ""
                     }`}</div>
                   </div>
                 </div>
                 <div key={`fonddecaisse-new`} className="valeur-input">
                   <label>{strings.modules.cloture.fond_de_caisse}</label>
-                  <div className="input">{`${fdcaisse_new} €`}</div>
+                  <div className="input">{`${fdcaisse_new} ${monnaie.symbole}`}</div>
                 </div>
               </div>{/* -- /.clo-droite-mid -- */}
 

@@ -442,7 +442,7 @@ class Paies extends React.Component {
 
   render() {
 
-    const { params, employes, pointages, shifts, adjusts, createTimeadjust, admin } = this.props;
+    const { params, employes, pointages, shifts, adjusts, createTimeadjust, admin, monnaie } = this.props;
     const { startDate, endDate, view, timeadjustOpen, tmaEmploye, tmaValeur, tmaReel, tmaPrevu } = this.state;
     const { shifttypes } = params || {shifttypes:null};
 
@@ -466,9 +466,9 @@ class Paies extends React.Component {
     const _salaire = (taux, temps) => {
       const d = 3600 * 1000;
       if (!taux) {
-        return ' - €';
+        return ' - '+monnaie.symbole;
       }
-      return `${devise(taux*(temps/d))} €`;
+      return `${devise(taux*(temps/d))} ${monnaie.symbole}`;
     }
 
 

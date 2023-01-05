@@ -1628,7 +1628,7 @@ function _printCommande(printer, data, strings) {
       if (article.modificateur) {
         const modnom = strings.modificateur.discount_item;
         const modope = '-';
-        const ispc = String(article.modificateur.valeur).substr(-1,1)==='%';
+        const ispc = String(article.modificateur.valeur).includes('%');
 
         let __modligne = [
           {text: '', cols:4},
@@ -1679,8 +1679,11 @@ function _printCommande(printer, data, strings) {
   if (data.modificateur) {
      const modnom = strings.modificateur.discount_panier;
      const modope = '-';
-     const ispc = String(data.modificateur.valeur).substr(-1,1)==='%';
-     const cmdmodval = String(data.modificateur.valeur).slice(0,-1);
+     const ispc = String(data.modificateur.valeur).includes('%');;
+     let cmdmodval = Math.abs(ispc 
+       ? Number(String(data.modificateur.valeur).slice(0, -1))
+       : Number(String(data.modificateur.valeur).slice(0, -data.modificateur.symbolemonnaie.length))
+     );
 
      // sous-total
     let __stligne = [
@@ -1715,43 +1718,6 @@ function _printCommande(printer, data, strings) {
         ];
       }
       printer.align('CT').style('B').tableCustom(__pmodligne);
-
-    //   const ispc = String(data.modificateur.valeur).substr(-1,1)==='%';
-    //   let modval = Math.abs(Number(String(data.modificateur.valeur).slice(0,-1)));
-    //   let montant = null;
-    //   if (!ispc) {
-    //     modval = modval.toFixed(2).toString().replace('.',',') + ' EUR';
-    //   } else {
-    //     modval += ' %';
-    //     montant = data.modificateur.montant.toFixed(2).toString().replace('.',',') + ' EUR';
-    //   }
-
-  //   if (montant) {
-        
-  //     printer
-  //       .align('CT')
-  //       // .fontSize('4square')
-  //       .fontSize('normal')
-  //       .tableCustom([
-  //         {text: modnom, cols:22, align:'LEFT'},
-  //         {text: modope+modval, cols:10, align:'RIGHT'},
-  //         {text: modope+montant, cols:10, align:'RIGHT'}
-  //       ])
-  //       .fontSize('normal')
-  //     }
-  //     else {
-
-  //     printer
-  //     .align('CT')
-  //     // .fontSize('4square')
-  //     .fontSize('normal')
-  //     .tableCustom([
-  //       {text: modnom, cols:22, align:'LEFT'},
-  //       {text: '', cols:10, align:'RIGHT'},
-  //       {text: modope+modval, cols:10, align:'RIGHT'}
-  //     ])
-  //     .fontSize('normal')
-  //     }
   }
 
   // total
@@ -1857,7 +1823,7 @@ function _printCommande(printer, data, strings) {
           {text:'', cols:1},
           {text: reglement.lib, cols:28, align:'LEFT'},
           {text:'', cols:1},
-          {text: `${reglement.valeur.replace('.',',')} ${strings.reglements.monnaie}`, cols:12, align:'RIGHT'}
+          {text: `${reglement.valeur.replace('.',',')} ${data.devise}`, cols:12, align:'RIGHT'}
         ]);
       });
   }
@@ -1889,7 +1855,7 @@ function _printCommande(printer, data, strings) {
         {text:'', cols:1},
         {text: rendu.moyen, cols:28, align:'LEFT'},
         {text:'', cols:1},
-        {text: `${rendu.valeur.toFixed(2).replace('.',',')} ${strings.rendu.monnaie}`, cols:12, align:'RIGHT'}
+        {text: `${rendu.valeur.toFixed(2).replace('.',',')} ${data.devise}`, cols:12, align:'RIGHT'}
       ]);
     });
   }
@@ -1902,7 +1868,7 @@ function _printCommande(printer, data, strings) {
         {text:'', cols:1},
         {text: strings.troppercu.titre, cols:28, align:'LEFT'},
         {text:'', cols:1},
-        {text: `${troppercu.valeur.toFixed(2).replace('.',',')} ${strings.troppercu.monnaie}`, cols:12, align:'RIGHT'}
+        {text: `${troppercu.valeur.toFixed(2).replace('.',',')} ${data.devise}`, cols:12, align:'RIGHT'}
       ]);
     });
   }

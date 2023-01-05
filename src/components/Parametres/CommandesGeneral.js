@@ -13,9 +13,9 @@ import logger from '../../helpers/Logger';
 let strings = new LocalizedStrings(data);
 
 const data_types = [
-  {nom: 'sur place', identifiant:'surplace', frais:'0.00 €', remise:'0 %', activation: true},
-  {nom: 'à emporter', identifiant:'emporter', frais:'0.00 €', remise:'15 %', activation: true},
-  {nom: 'livraison', identifiant:'livraison', frais:'3.50 €', remise:'0 %', activation: true},
+  {nom: 'sur place', identifiant:'surplace', frais:'0.00', remise:'0 %', activation: true},
+  {nom: 'à emporter', identifiant:'emporter', frais:'0.00', remise:'15 %', activation: true},
+  {nom: 'livraison', identifiant:'livraison', frais:'3.50', remise:'0 %', activation: true},
 ];
 
 // function TableTypes(props) {
@@ -57,107 +57,107 @@ const data_types = [
 
 
 
-class EditTypePopin extends React.Component {
-  constructor(props) {
-    super(props);
-    logger.info(props);
-    this.state = {
-      nom: props.commandtype && props.commandtype.nom,
-      identifiant: props.commandtype && props.commandtype.identifiant, 
-      frais: props.commandtype && props.commandtype.frais, 
-      remise: props.commandtype && props.commandtype.remise
-    }
-    this.updateValue = this.updateValue.bind(this);
-    this.saveType = this.saveType.bind(this);
-  }
+// class EditTypePopin extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     logger.info(props);
+//     this.state = {
+//       nom: props.commandtype && props.commandtype.nom,
+//       identifiant: props.commandtype && props.commandtype.identifiant, 
+//       frais: props.commandtype && props.commandtype.frais, 
+//       remise: props.commandtype && props.commandtype.remise
+//     }
+//     this.updateValue = this.updateValue.bind(this);
+//     this.saveType = this.saveType.bind(this);
+//   }
 
 
-  updateValue(value) {
-    this.setState(value);
-  }
-  saveType() {
-    this.props.saveType(this.state);
-    this.props.closeHandler();
-  }
+//   updateValue(value) {
+//     this.setState(value);
+//   }
+//   saveType() {
+//     this.props.saveType(this.state);
+//     this.props.closeHandler();
+//   }
 
-  render() {
-    const { commandtype, editOpen, closeHandler } = this.props;
+//   render() {
+//     const { commandtype, editOpen, closeHandler } = this.props;
 
-    return (
-      <Modal open={ editOpen } >
-        <div className="EditTypeModal">
-          <div className="Modal-container">
-            <div className="header">
-              <div className="title">{ commandtype==null ? strings.modules.parametres.submodules.commandes.general.types.label.ajouter : strings.modules.parametres.submodules.commandes.general.types.label.editer }</div>
-            </div>
-            <div className="body">
-              <LabelledField 
-                  id={ `nom` }
-                  name={ `nom` }
-                  className="fieldnom"
-                  value={ commandtype && commandtype.nom } 
-                  placeholder='' 
-                  type='text' 
-                  readOnly={ false } 
-                  onChange={(val)=>{ this.updateValue({nom:val.value}) }}
-                  label={ strings.modules.parametres.submodules.commandes.general.types.label.nom }
-              />
-              <LabelledField 
-                  id={ `identifiant` }
-                  name={ `identifiant` }
-                  className="fieldidentifiant"
-                  value={ commandtype && commandtype.identifiant } 
-                  placeholder='' 
-                  type='text' 
-                  readOnly={ false } 
-                  onChange={(val)=>{ this.updateValue({identifiant:val.value}) }}
-                  label={ strings.modules.parametres.submodules.commandes.general.types.label.identifiant }
-              />
-              <LabelledField 
-                  id={ `frais` }
-                  name={ `frais` }
-                  className="fieldfrais"
-                  value={ commandtype && commandtype.frais.replace(/(\s)?(€|%)/,'') } 
-                  placeholder='' 
-                  type='text' 
-                  options={['€','%']}
-                  optionvalue={ commandtype && commandtype.frais.match(/(€|%)/)[0] } 
-                  readOnly={ false } 
-                  onChange={(val)=>{ this.updateValue({frais:`${val.value} ${val.option}`}) }}
-                  label={ strings.modules.parametres.submodules.commandes.general.types.label.frais }
-              />
-              <LabelledField 
-                  id={ `remise` }
-                  name={ `remise` }
-                  className="fieldremise"
-                  value={ commandtype && commandtype.remise.replace(/(\s)?(€|%)/,'') } 
-                  placeholder='' 
-                  type='text' 
-                  options={['€','%']}
-                  optionvalue={ commandtype && commandtype.remise.match(/(€|%)/)[0] } 
-                  readOnly={ false } 
-                  onChange={(val)=>{ this.updateValue({remise:`${val.value} ${val.option}`}) }}
-                  label={ strings.modules.parametres.submodules.commandes.general.types.label.remise }
-              />
-            </div>
-            <div className="footer">
-              <StdButton 
-                identifier="modal-save" 
-                elementclass="save" 
-                icon={ false } 
-                text={ strings.general.dialog.save } 
-                onClick={this.saveType} 
-              />
-            </div>
-          </div>
-          <Fab aria-label="close" size="small" className="close-button" onClick={ closeHandler }>
-            <CloseIcon />
-          </Fab>
-        </div>
-      </Modal>
-    );
-  }
-}
+//     return (
+//       <Modal open={ editOpen } >
+//         <div className="EditTypeModal">
+//           <div className="Modal-container">
+//             <div className="header">
+//               <div className="title">{ commandtype==null ? strings.modules.parametres.submodules.commandes.general.types.label.ajouter : strings.modules.parametres.submodules.commandes.general.types.label.editer }</div>
+//             </div>
+//             <div className="body">
+//               <LabelledField 
+//                   id={ `nom` }
+//                   name={ `nom` }
+//                   className="fieldnom"
+//                   value={ commandtype && commandtype.nom } 
+//                   placeholder='' 
+//                   type='text' 
+//                   readOnly={ false } 
+//                   onChange={(val)=>{ this.updateValue({nom:val.value}) }}
+//                   label={ strings.modules.parametres.submodules.commandes.general.types.label.nom }
+//               />
+//               <LabelledField 
+//                   id={ `identifiant` }
+//                   name={ `identifiant` }
+//                   className="fieldidentifiant"
+//                   value={ commandtype && commandtype.identifiant } 
+//                   placeholder='' 
+//                   type='text' 
+//                   readOnly={ false } 
+//                   onChange={(val)=>{ this.updateValue({identifiant:val.value}) }}
+//                   label={ strings.modules.parametres.submodules.commandes.general.types.label.identifiant }
+//               />
+//               <LabelledField 
+//                   id={ `frais` }
+//                   name={ `frais` }
+//                   className="fieldfrais"
+//                   value={ commandtype && commandtype.frais.replace(/(\s)?(€|%)/,'') } 
+//                   placeholder='' 
+//                   type='text' 
+//                   options={['€','%']}
+//                   optionvalue={ commandtype && commandtype.frais.match(/(€|%)/)[0] } 
+//                   readOnly={ false } 
+//                   onChange={(val)=>{ this.updateValue({frais:`${val.value} ${val.option}`}) }}
+//                   label={ strings.modules.parametres.submodules.commandes.general.types.label.frais }
+//               />
+//               <LabelledField 
+//                   id={ `remise` }
+//                   name={ `remise` }
+//                   className="fieldremise"
+//                   value={ commandtype && commandtype.remise.replace(/(\s)?(€|%)/,'') } 
+//                   placeholder='' 
+//                   type='text' 
+//                   options={['€','%']}
+//                   optionvalue={ commandtype && commandtype.remise.match(/(€|%)/)[0] } 
+//                   readOnly={ false } 
+//                   onChange={(val)=>{ this.updateValue({remise:`${val.value} ${val.option}`}) }}
+//                   label={ strings.modules.parametres.submodules.commandes.general.types.label.remise }
+//               />
+//             </div>
+//             <div className="footer">
+//               <StdButton 
+//                 identifier="modal-save" 
+//                 elementclass="save" 
+//                 icon={ false } 
+//                 text={ strings.general.dialog.save } 
+//                 onClick={this.saveType} 
+//               />
+//             </div>
+//           </div>
+//           <Fab aria-label="close" size="small" className="close-button" onClick={ closeHandler }>
+//             <CloseIcon />
+//           </Fab>
+//         </div>
+//       </Modal>
+//     );
+//   }
+// }
 
 class CommandesGeneral extends React.Component {
 
@@ -357,7 +357,7 @@ class CommandesGeneral extends React.Component {
             </div>
           </div>
         </div>
-        <EditTypePopin commandtype={commandtype} editOpen={editOpen} closeHandler={this.closeEdit} saveType={this.saveType} />
+        {/* <EditTypePopin commandtype={commandtype} editOpen={editOpen} closeHandler={this.closeEdit} saveType={this.saveType} /> */}
       </div>
     );
   }

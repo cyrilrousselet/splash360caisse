@@ -19,17 +19,18 @@ let strings = new LocalizedStrings(data);
 
 
 function DiscountEditModal (props) {
-  const {id, discount, nom='', editOpen, clavierOpen, closeHandler, updateDiscount, saveDiscount} = props;
+  const {id, discount, nom='', editOpen, clavierOpen, closeHandler, updateDiscount, saveDiscount, symbolemonnaie} = props;
 
 
   const onChangeHandler = (val) => {
-    let opt = '€';
-    if ((['€','%']).indexOf(String(discount).substr(-1,1))>-1) opt = String(discount).substr(-1,1);
+    let opt = symbolemonnaie;
+    if ( String(discount).includes('%')) {
+      opt = '%';
+    }
     updateDiscount({value:val, option:opt, nom:nom});
   }
   const getOption = (str) => {
-    const o = String(str).substr(-1,1);
-    return ['€','%'].indexOf(o)>-1 ? o : '€';
+    return String(str).includes('%') ? '%' : symbolemonnaie;
   }
 
   return(
@@ -54,10 +55,10 @@ function DiscountEditModal (props) {
                   className="edit-input"
                   name="edit-input"
                   type="number"
-                  value={Number(String(discount).slice(0,-1))}
+                  value={ String(discount).includes('%') ? Number(String(discount).slice(0,-1)) : Number(String(discount).slice(0,-symbolemonnaie.length))}
                   // option={String(discount).substr(-1,1)}
                   option={getOption(discount)}
-                  options={['€','%']}
+                  options={[symbolemonnaie,'%']}
                   onChange={(val) => {updateDiscount('valeur',val)}}
                 />
               </div>
@@ -229,7 +230,7 @@ class CommandesDiscount extends React.Component {
   }
 
   render() {
-    const { data, entreprise } = this.props;
+    const { data, entreprise, monnaie } = this.props;
     const { discount_predefini } = data;
     const { editing, editdiscount, editnom } = this.state;
     const { clavier } = entreprise;
@@ -276,6 +277,7 @@ class CommandesDiscount extends React.Component {
         updateDiscount={this.updateDiscount}
         saveDiscount={this.saveDiscount}
         clavierOpen={clavier}
+        symbolemonnaie={monnaie.symbole}
       />
     </div>
     );

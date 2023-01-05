@@ -386,7 +386,7 @@ function ZCaissePopin(props) {
 
 
 function TableZCaisse(props) {
-  const { liste, id, openZCaisseId, printZCaisseId } = props;
+  const { liste, id, openZCaisseId, printZCaisseId, symbolemonnaie } = props;
 
   console.log('TableZCaisse liste',liste);
 
@@ -417,8 +417,8 @@ function TableZCaisse(props) {
               <TableCell key={`${row.id}-station`} className="liste-station">{ row.caisse }</TableCell>
               <TableCell key={`${row.id}-debut`} className="liste-debut">{ format(new Date(row.debut), "d MMM yyyy à HH:mm", { locale: frLocale }) }</TableCell>
               <TableCell key={`${row.id}-fin`} className="liste-fin">{ format(new Date(row.fin), "d MMM yyyy à HH:mm", { locale: frLocale }) }</TableCell>
-              <TableCell key={`${row.id}-ht`} className="liste-ht">{ `${row.ht} €` }</TableCell>
-              <TableCell key={`${row.id}-ventes`} className="liste-ventes">{ `${row.ventes} €` }</TableCell>
+              <TableCell key={`${row.id}-ht`} className="liste-ht">{ `${row.ht} ${symbolemonnaie}` }</TableCell>
+              <TableCell key={`${row.id}-ventes`} className="liste-ventes">{ `${row.ventes} ${symbolemonnaie}` }</TableCell>
               <TableCell key={`${row.id}-nombre`} className="liste-nombre">{ row.nombre }</TableCell>
               <TableCell key={`${row.id}-actions`} className="liste-actions">
                 <StdButton key={`${row.id}-view`} identifier='view' elementclass="action action-view" icon={ <PageviewIcon htmlColor="#ffffff" /> } noStroke={true} text={ '' } onClick={ () => { openZCaisseId(row.id) } } />
@@ -690,7 +690,7 @@ class ListeZCaisse extends React.Component {
   }
 
   render() {
-    const { zcaisselist } = this.props;
+    const { zcaisselist, monnaie } = this.props;
     const { startDate, endDate, zcaisse, zcaisseOpen, openTab } = this.state;
 
     let listez = [];
@@ -744,37 +744,6 @@ class ListeZCaisse extends React.Component {
       <div className="ListeZCaisse container">
         <TopZone />
         <div className="MainZone">
-        {/*
-          <div className="dates">
-             <div className="date-pickers">
-              <MuiPickersUtilsProvider utils={LocalizedUtils} locale={ frLocale }>
-                <div className="caption space-left">{ strings.modules.listezcaisse.dates.start}</div>
-                <KeyboardDatePicker
-                  id="startdatepicker"
-                  margin="normal"
-                  value={ startDate }
-                  format="d MMM yyyy"
-                  onChange={date => { this.setSelectedDate('start', date) }}
-                  KeyboardButtonProps={{ 'aria-label': 'change date' }}
-                  clearLabel={ strings.general.dialog.clear }
-                  cancelLabel={ strings.general.dialog.cancel }
-                  />
-                <div className="caption">{ strings.modules.listezcaisse.dates.end}</div>
-                <KeyboardDatePicker
-                  id="enddatepicker"
-                  margin="normal"
-                  value={ endDate }
-                  format="d MMM yyyy"
-                  onChange={date => { this.setSelectedDate('end', date) }}
-                  KeyboardButtonProps={{ 'aria-label': 'change date' }}
-                  clearLabel={ strings.general.dialog.clear }
-                  cancelLabel={ strings.general.dialog.cancel }
-                  />
-              </MuiPickersUtilsProvider>
-          </div>
-            <StdButton identifier="btnsynthese" elementclass="btnsynthese" key="btnsynthese" text={ strings.modules.listezcaisse.actions.synthese } onClick={ () => { this.getSynthese(clotures) }} />
-          </div>
-        */}
           <div className="listes">
             <StdButton identifier="btnretour" elementclass="btnretour" key="btnretour" text={ strings.general.dialog.back } onClick={ () => { history.push(paths.CLOTURE) }} />
             <AppBar position="static">
@@ -791,7 +760,7 @@ class ListeZCaisse extends React.Component {
                 <div className="currentmonth" onClick={() => {this.thisMonth()}}>{ format(startDate, 'MMMM yyyy', { locale: frLocale }) }</div>
                 <StdButton identifier="nextmonth" elementclass="nextmonth" key="nextmonth" text=">" onClick={()=>{this.nextMonth()}} />
               </div>
-              <TableZCaisse className="intermediaire liste-zcaisse" id="liste-zcaisse" printZCaisseId={ this.printZCaisseId } openZCaisseId={ this.openZCaisseId } liste={listez} />
+              <TableZCaisse className="intermediaire liste-zcaisse" id="liste-zcaisse" printZCaisseId={ this.printZCaisseId } openZCaisseId={ this.openZCaisseId } liste={listez} symbolemonnaie={monnaie.symbole} />
             </TabPanel>
             <TabPanel className="panel" value={openTab} index={1}>
               <div className="date">
@@ -802,7 +771,7 @@ class ListeZCaisse extends React.Component {
                 </div>
                 <StdButton identifier="nextmonth" elementclass="nextmonth" key="nextmonth" text=">" onClick={()=>{this.nextMonth()}} />
               </div>
-              <TableZCaisse className="jour liste-zcaisse" id="liste-zcaisse" printZCaisseId={ this.printZCaisseId } openZCaisseId={ this.openZCaisseId } liste={listez} />
+              <TableZCaisse className="jour liste-zcaisse" id="liste-zcaisse" printZCaisseId={ this.printZCaisseId } openZCaisseId={ this.openZCaisseId } liste={listez} symbolemonnaie={monnaie.symbole} />
             </TabPanel>
             <TabPanel className="panel" value={openTab} index={2}>
               <div className="date">
@@ -810,12 +779,12 @@ class ListeZCaisse extends React.Component {
                 <div className="currentyear" onClick={() => {this.thisYear()}}>{ format(startDate, 'yyyy', { locale: frLocale }) }</div>
                 <StdButton identifier="nextyear" elementclass="nextyear" key="nextyear" text=">" onClick={()=>{this.nextYear()}} />
               </div>
-              <TableZCaisse className="mois liste-zcaisse" id="liste-zcaisse" printZCaisseId={ this.printZCaisseId } openZCaisseId={ this.openZCaisseId } liste={listez} />
+              <TableZCaisse className="mois liste-zcaisse" id="liste-zcaisse" printZCaisseId={ this.printZCaisseId } openZCaisseId={ this.openZCaisseId } liste={listez} symbolemonnaie={monnaie.symbole} />
             </TabPanel>
             <TabPanel className="panel" value={openTab} index={3}>
               <div className="date">
               </div>
-              <TableZCaisse className="annee liste-zcaisse" id="liste-zcaisse" printZCaisseId={ this.printZCaisseId } openZCaisseId={ this.openZCaisseId } liste={listez} />
+              <TableZCaisse className="annee liste-zcaisse" id="liste-zcaisse" printZCaisseId={ this.printZCaisseId } openZCaisseId={ this.openZCaisseId } liste={listez} symbolemonnaie={monnaie.symbole} />
             </TabPanel>
           </div>
           <ZCaissePopin zcaisse={ zcaisse } open={zcaisseOpen} closeHandler={ this.closeZCaisse } printZCaisse={ this.printZCaisse} />

@@ -95,6 +95,7 @@ function getNewCommande(params) {
     shippedAt: null,
     chronoLivraison: 0,
     beneficiaire: params.beneficiaire ? params.beneficiaire : null,
+    devise: params.devise || {iso: 'EUR', nom: 'euro', nom_pl: 'euros', symbole: '€'}
   };
 }
 
@@ -1057,7 +1058,7 @@ function saveCommande(commande, catalogueReducer) {
   const __c = {
     ...commande,
     items,
-    total: _getCommandeTotal(commande.items, commande.modificateurs),
+    total: _getCommandeTotal(commande.items, commande.modificateurs, commande.devise.symbole),
   };
 
 
@@ -1065,14 +1066,14 @@ function saveCommande(commande, catalogueReducer) {
 
 
   // ventilation de la TVA
-  let  __commandeVentilee = _getVentilationTva(__c, catalogueReducer.tva);
+  let  __commandeVentilee = _getVentilationTva(__c, catalogueReducer.tva, commande.devise.symbole);
 
 
   return emit("dbCommandePersist", { commande: __commandeVentilee });
 }
 
 
-function _getVentilationTva(commande, cataloguetva) {
+function _getVentilationTva(commande, cataloguetva, symbolemonnaie) {
 
   let __cmd = commande;
 
@@ -1120,8 +1121,11 @@ function _getVentilationTva(commande, cataloguetva) {
 
     // s'il y a un modificateur pour l'item
     if (moditm) {
-      const ispc = String(moditm.valeur).substr(-1,1)==='%';
-      let val = Math.abs(Number(String(moditm.valeur).slice(0,-1)));
+      const ispc = String(moditm.valeur).includes("%");
+      let val = Math.abs(ispc 
+        ? Number(String(moditm.valeur).slice(0, -1))
+        : Number(String(moditm.valeur).slice(0, -symbolemonnaie.length))
+      );
       
       if (ispc) {
         // on passe de %age en coef.
@@ -1146,7 +1150,7 @@ function _getVentilationTva(commande, cataloguetva) {
       __modttcitm = __modhtitm * (1 + __tx);
       // console.log('🔅 application du coef sur le HT puis TTC',__modhtitm, __modttcitm);
     }
-    // si le modificateur est en € on l'applique sur le TTC et on calcule le HT
+    // si le modificateur est en ¥ on l'applique sur le TTC et on calcule le HT
     if (__modcoef_num > 0) {
       __modttcitm = (__modttcitm - (__modttcitm * __modcoef_num));
       __modhtitm = __modttcitm * (1 - __tx);
@@ -1166,7 +1170,7 @@ function _getVentilationTva(commande, cataloguetva) {
         __ti = __hi * (1 + __itx);
         // console.log('🔅 ING HT puis TTC',__hi, __ti);
       }
-      // si le modificateur est en € on l'applique sur le TTC et on calcule le HT
+      // si le modificateur est en ¥ on l'applique sur le TTC et on calcule le HT
       if (__modcoef_num > 0) {
         __ti = (__ti - (__ti * __modcoef_num));
         __hi = __ti * (1 - __itx);
@@ -1193,9 +1197,12 @@ function _getVentilationTva(commande, cataloguetva) {
   const modcmd = _getModificateurForCmd(__cmd.modificateurs);
   // s'il y a un modificateur pour le panier
   if (modcmd) {
-    const ispc = String(modcmd.valeur).substr(-1,1)==='%';  
+    const ispc = String(modcmd.valeur).includes("%");
     // recup valeur numérique
-    let val = Math.abs(Number(String(modcmd.valeur).slice(0,-1)));
+    let val = Math.abs(ispc 
+      ? Number(String(modcmd.valeur).slice(0, -1))
+      : Number(String(modcmd.valeur).slice(0, -symbolemonnaie.length))
+    );
     if (ispc) {
       __cmddiscount_pct = val / 100;
     } else {
@@ -1232,11 +1239,14 @@ function _getVentilationTva(commande, cataloguetva) {
     let __itmdiscount_pct = 0;
     let __itmdiscount_num = 0;
     if (moditem) {
-      const ispc = String(moditem.valeur).substr(-1,1)==='%';
+      const ispc = String(moditem.valeur).includes("%");
       // recup valeur numérique
-      let val = Math.abs(Number(String(moditem.valeur).slice(0,-1)));
+      let val = Math.abs(ispc 
+        ? Number(String(moditem.valeur).slice(0, -1))
+        : Number(String(moditem.valeur).slice(0, -symbolemonnaie.length))
+      );
 
-      // console.log('💸 remise item ('+itm.nom+') ', val, (ispc ? 'en %age':'en €'));
+      // console.log('💸 remise item ('+itm.nom+') ', val, (ispc ? 'en %age':'en ¥'));
 
       // si le modificateur est en pourcentage, on convertit en coefficient
       if (ispc) {
@@ -1255,7 +1265,7 @@ function _getVentilationTva(commande, cataloguetva) {
         });
 
         __itmdiscount_num = (val * 100) / __basettc;
-        // console.log('🔅 Remise item de '+val+'€ se traduit par un coef. de '+__itmdiscount_num);
+        // console.log('🔅 Remise item de '+val+'¥ se traduit par un coef. de '+__itmdiscount_num);
       }
     }
 
@@ -1468,141 +1478,6 @@ function _getVentilationTva(commande, cataloguetva) {
 
 
 
-// on ventile la TVA au sein de chaque item et au sein de la commande
-// et on récapitule les Discounts
-// function _getVentilation(commande, cataloguetva) {
-
-//   let __cmd = commande;
-
-//   // if (commande.status==="confirmed") {
-
-
-//     let __ventilation = {};
-//     let __basecmd = 0;
-
-//     // pour chaque item de commande
-//     __cmd.items.forEach( (itm, i) => {
-
-//       // (le TTC = pu (prix unique) * quantite)
-//       let __ttc = itm.pu * itm.quantite;
-//       let __ht = itm.puht * itm.quantite;
-//       // le prix correspond au montant du produit avec les ingrédients
-//       let __baseprix = itm.prix * itm.quantite;
-      
-//       if (!__cmd.centimes) {
-//         __ttc = Math.round(__ttc * 100);
-//         __ht = Math.round(__ht * 100);
-//         __baseprix = Math.round(__baseprix * 100);
-//       } 
-      
-//       __basecmd += __baseprix;
-
-//       // on récupère la tva de l'item et on déduit les montants HT, TVA et TTC au niveau de l'item
-//       const __tx = Number(itm.tva.valeur);
-//       let __itmventil = {
-//         [itm.tva.id]: {
-//           taux: __tx,
-//           code: itm.tva.code,
-//           ttc: __ttc,
-//           ht: __ht,
-//           tva: __ttc - __ht
-//           // ht: Math.round(__ttc / (1 + __tx)),
-//           // tva: Math.round((__ttc / (1 + __tx)) * __tx)
-//         }
-//       };
-
-//       // s'il y a au moins un ingredient
-//       itm.ingredients.forEach(ing => {
-
-//         // on récupère la tva de l'ingredient et on déduit les montants HT, TVA et TTC
-//         // (le TTC = supplement)
-//         const __itx = Number(ing.tva.valeur);
-//         const __ittc = (!__cmd.centimes) ? Math.round(ing.supplement * 100) : ing.supplement;
-//         const __iht = (!__cmd.centimes) ? Math.round(ing.supplementht * 100) : ing.supplementht;
-
-//         // if (__ittc>0) {
-
-//           if (!__itmventil.hasOwnProperty(ing.tva.id)) {
-//             __itmventil[ing.tva.id] = {
-//               taux: __itx,
-//               code: ing.tva.code,
-//               ttc: 0,
-//               ht: 0,
-//               tva: 0
-//             };
-//           }
-        
-//           Object.assign(__itmventil[ing.tva.id], {
-//             ttc: __itmventil[ing.tva.id].ttc + __ittc,
-//             ht: __itmventil[ing.tva.id].ht + __iht,
-//             tva: __itmventil[ing.tva.id].tva + (__ittc - __iht)
-//             // ht: __itmventil[ing.tva.id].ht + Math.round(__ittc / (1 + __itx)),
-//             // tva: __itmventil[ing.tva.id].tva + Math.round((__ittc / (1 + __itx)) * __itx)
-//           });
-        
-//         // }
-
-//       });
-
-
-//       // s'il y a un modificateur au niveau de l'item, on l'applique à la ventilation
-//       const moditem = _getModificateurForItem(__cmd.modificateurs, itm.itemid);
-//       if (moditem) {
-//         console.log('modificateur item '+itm.itemid);
-//         const __itm_modif = _applyModificateur(moditem, __itmventil, __baseprix, !__cmd.centimes);
-//         __itmventil = __itm_modif.ventilation;
-//         __cmd.items[i].discount = __itm_modif.discount;
-//       }
-
-
-//       __cmd.items[i].ventilation = __itmventil;
-
-//       Object.entries(__itmventil).forEach(([k,v]) => {
-//         if (!__ventilation.hasOwnProperty(k)) {
-//           __ventilation[k] = {
-//             taux: v.taux,
-//             code: v.code,
-//             ttc: 0,
-//             ht: 0,
-//             tva: 0
-//           };
-//         }
-//         Object.assign(__ventilation[k], {
-//           ttc: __ventilation[k].ttc + v.ttc,
-//           ht: __ventilation[k].ht +v.ht,
-//           tva: __ventilation[k].tva +v.tva
-//         });
-//       }); 
-
-//     });  
-
-//     // s'il y a un modificateur au niveau de la commande, on l'applique à la ventilation
-//     const modcmd = _getModificateurForCmd(__cmd.modificateurs);
-//     if (modcmd) {
-//       console.log('modificateur commande');
-//       const __cmd_modif = _applyModificateur(modcmd, __ventilation, __basecmd, !__cmd.centimes);   
-//       __ventilation = __cmd_modif.ventilation;
-//       __cmd.discount = __cmd_modif.discount;
-//     }
-//     // __cmd.ventilation = __ventilation;
-
-//     const fraiscmd = _getFraisForCmd(__cmd.modificateurs);
-//     if (fraiscmd) {
-//       const __cmd_frais = _applyFrais(fraiscmd, __ventilation, __basecmd, cataloguetva, !__cmd.centimes);
-//       __ventilation = __cmd_frais.ventilation;
-//       __cmd.frais = __cmd_frais.frais;
-//       console.log('frais commande', __cmd_frais.ventilation);
-//     }
-//     __cmd.ventilation = __ventilation;
-
-//   //}
-
-//   return __cmd;
-
-
-// }
-
-
 function _getModificateurForItem(modificateurs, itemid) {
   return modificateurs.find(mod => mod.item===itemid);
 }
@@ -1610,159 +1485,6 @@ function _getModificateurForItem(modificateurs, itemid) {
 function _getModificateurForCmd(modificateurs) {
   return modificateurs.find(mod => (mod.item===null && mod.operation<0 && mod.type!=='frais'));
 }
-// function _getFraisForCmd(modificateurs) {
-//   return modificateurs.find(mod => (mod.item===null && mod.type==='frais'));
-// }
-
-
-/**
- * 
- * @param {*} modificateur 
- * @param {*} ventilation 
- * @param {*} ttc       montant total de la commande en centimes
- * @param {*} useeuros  si les montants sont enregistrés en euros, il faut convertir le montant du modificateur
- * @returns 
- */
-// function _applyModificateur(modificateur, ventilation, ttc, useeuros) {
-//   // is percentage?
-//   const ispc = String(modificateur.valeur).substr(-1,1)==='%';
-//   // recup valeur numérique
-//   let val = Math.abs(Number(String(modificateur.valeur).slice(0,-1)));
-
-//   let taux = 1;
-
-//   // si le modificateur est en pourcentage, on traduit le taux en facteur
-//   if (ispc) {
-//     taux = modificateur.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
-//   } 
-//   // si le modificateur est en numéraire, on calcule le facteur en comparant le total TTC avec la valeur du modificateur
-//   else {
-//     if (useeuros) {
-//       val *= 100;
-//     }
-//     taux = modificateur.operation<0 ? (ttc - val) / ttc : (ttc + val) / ttc;
-//   }
-
-//   let __modventil = {};
-//   Object.entries(ventilation).forEach(([k,v]) => {
-//     __modventil[k] = {
-//       taux: v.taux,
-//       code: v.code,
-//       ttc: Math.round(v.ttc * taux),
-//       ht: Math.round(v.ht * taux),
-//       tva: Math.round(v.tva * taux)
-//     };
-//   });
-
-//   return {
-//     ventilation: __modventil, 
-//     discount: {
-//       base: ttc, 
-//       montant: ttc - Math.round(ttc * taux), 
-//       taux: (modificateur.operation>0?'+':'-') + (100 - (taux * 100)).toFixed(1) + '%'
-//     }
-//   };
-// }
-
-
-/**
- * 
- * @param {*} frais 
- * @param {*} ventilation 
- * @param {*} ttc       montant total de la commande en centimes
- * @param {*} useeuros  si les montants sont enregistrés en euros, il faut convertir le montant du modificateur
- * @returns 
- */
-//  function _applyFrais(frais, ventilation, ttc, cataloguetva, useeuros) {
-
-//   console.log('CmdSrv._applyFrais()', frais, ventilation, ttc);
-
-
-//   // is percentage?
-//   const ispc = String(frais.valeur).substr(-1,1)==='%';
-//   // recup valeur numérique
-//   let val = Math.abs(Number(String(frais.valeur).slice(0,-1)));
-
-//   let frais_ttc = 0;
-//   let frais_taux = 1;
-
-//   // si le modificateur est en pourcentage, on calcule le montant par rapport au total de la commande
-//   if (ispc) {
-//     frais_ttc = Math.round(ttc * (val/100));
-//     frais_taux = val / 100;
-//     if (useeuros) {
-//       frais_taux = Math.round(frais_taux * 100);
-//     }
-//   } 
-//   else {
-//     frais_ttc = val;
-//     if (useeuros) {
-//       frais_ttc = Math.round(frais_ttc * 100);
-//     }
-//     frais_taux = (ttc + frais_ttc) / ttc;
-//   }
-
-//   const frais_ht = Math.round(frais_ttc / (1+frais.taux));
-//   const frais_tva = frais_ttc - frais_ht;
-
-//   // mise à jour de la ventilation de TVA correspondant au frais
-//   let __modventil = {};
-
-  
-//   const cattvafrais = Object.values(cataloguetva).find(v => {
-//     let vv = Number(v.valeur);
-//     let fv = Number(frais.taux);
-//     console.log('TVA',vv,fv);
-//     return vv===fv;
-//   });
-
-
-  
-//   const __tvafrais = {
-//     taux: frais.taux,
-//     code: cattvafrais.code,
-//     ttc: frais_ttc,
-//     ht: frais_ht,
-//     tva: frais_tva
-//   };
-
-//   console.log('frais tva',cattvafrais.tva_id, __tvafrais);
-
-//   if (ventilation.hasOwnProperty(cattvafrais.tva_id)) {
-  
-//     Object.entries(ventilation).forEach(([k,v]) => {
-//       if (k===cattvafrais.tva_id) {
-//         __modventil[k] = {
-//           taux: v.taux,
-//           code: v.code,
-//           ttc: Math.round(v.ttc + frais_ttc),
-//           ht: Math.round(v.ht + frais_ht),
-//           tva: Math.round(v.tva + frais_tva)
-//         };
-//       } else {
-//         __modventil[k] = v;
-//       }
-//     });
-//   }
-//   else {
-//     __modventil = {
-//       ...ventilation,
-//       [cattvafrais.tva_id]: __tvafrais
-//     };
-//   }
-
-//   return {
-//     ventilation: __modventil, 
-//     frais: {
-//       base: ttc, 
-//       montant: frais_ttc,
-//       taux: '+' + (frais_taux * 100).toFixed(1) + '%'
-//     }
-//   };
-// }
-
-
-
 
 function persistCommande(commande) {
   return emit("dbCommandePersist", { commande: commande });
@@ -1779,7 +1501,9 @@ function setSyncedTickets(ticketsid, datetime) {
 }
 
 function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
-  const commande = getNewCommande(data);
+  const __monnaie = parametres.financier.monnaie || {iso:'EUR',nom:'euro',nom_pl:'euros',symbole:'€'};
+  const dataparam = {...data, devise: __monnaie};
+  const commande = getNewCommande(dataparam);
   commande.centre_revenu = "uber";
   commande.status = "confirmed"; // "standby" ou "confirmed"
   commande.mode = "livraison"; // "emporter", "surplace" ou "livraison"
@@ -1942,7 +1666,7 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
         addModificateur({
           item: null,
           ingredient: null,
-          valeur: `${(- Number(promo.promo_discount_value / 100))}€`
+          valeur: `${(- Number(promo.promo_discount_value / 100))}${__monnaie.symbole}`
         })
       );
 
@@ -2158,8 +1882,8 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
     });
   }
 
-  commande.total = _getCommandeTotal(commande.items, commande.modificateurs);
-  // commande.total = _getCommandeTotal(commande.items, []);
+  commande.total = _getCommandeTotal(commande.items, commande.modificateurs, commande.devise.symbole);
+
   return commande;
 }
 
@@ -2177,6 +1901,8 @@ function checkMarketing(commande, reglescatalogue) {
     if (r.end>r.start && r.end<now) active = false;
     return active;
   });
+
+  const symbolemonnaie = commande.devise.symbole || '€';
 
   logger.info('checkMarketing', "regles actives : ",regles_actives.length);
   logger.info('checkMarketing', "items : ",commande.items.length);
@@ -2266,9 +1992,10 @@ function checkMarketing(commande, reglescatalogue) {
             let item_prix = item.pu * qte_promo;
 
             // calcul de la valeur :
-            const ispc = String(promo.valeur).substr(-1, 1) === "%";
-            const val = Math.abs(
-              Number(String(promo.valeur).slice(0, -1))
+            const ispc = String(promo.valeur).includes("%");
+            const val = Math.abs(ispc 
+              ? Number(String(promo.valeur).slice(0, -1))
+              : Number(String(promo.valeur).slice(0, -symbolemonnaie.length))
             );
       
             const promoval = ispc
@@ -2282,7 +2009,7 @@ function checkMarketing(commande, reglescatalogue) {
               ingredient: null,
               nom: promo.nom+" "+promo.valeur,
               operation: promo.operation,
-              valeur: promoval+'€'
+              valeur: promoval+commande.devise.symbole
             });
           }
 
@@ -2326,10 +2053,10 @@ function checkMarketing(commande, reglescatalogue) {
             let item = produits.items.shift();
             let item_prix = item.pu;
 
-            // calcul de la valeur :
-            const ispc = String(promo.valeur).substr(-1, 1) === "%";
-            const val = Math.abs(
-              Number(String(promo.valeur).slice(0, -1))
+            const ispc = String(promo.valeur).includes("%");
+            const val = Math.abs(ispc 
+              ? Number(String(promo.valeur).slice(0, -1))
+              : Number(String(promo.valeur).slice(0, -symbolemonnaie.length))
             );
       
             const promoval = ispc
@@ -2345,7 +2072,7 @@ function checkMarketing(commande, reglescatalogue) {
               ingredient: null,
               nom: promo.nom+" "+promo.valeur,
               operation: promo.operation,
-              valeur: promoval+'€'
+              valeur: promoval+commande.devise.symbole
             });
           }
 
@@ -2442,7 +2169,7 @@ const _newLotId = () => {
   return LodashId.createId();
 };
 
-const _getCommandeTotal = (items, modificateurs) => {
+const _getCommandeTotal = (items, modificateurs, symboledevise) => {
   // montant à payer (somme des items)
   let __total = 0;
   let articletotal = 0;
@@ -2459,9 +2186,11 @@ const _getCommandeTotal = (items, modificateurs) => {
 
       if (__modificateur && __modificateur.operation<0) {
 
-        const ispc = String(__modificateur.valeur).substr(-1, 1) === "%";
-        const val = Math.abs(
-          Number(String(__modificateur.valeur).slice(0, -1))
+        
+        const ispc = String(__modificateur.valeur).includes("%");
+        const val = Math.abs(ispc 
+          ? Number(String(__modificateur.valeur).slice(0, -1))
+          : Number(String(__modificateur.valeur).slice(0, -symboledevise.length))
         );
 
         if (ispc) {
@@ -2480,8 +2209,11 @@ const _getCommandeTotal = (items, modificateurs) => {
     (c) => c.item === null && c.ingredient === null
   );
   if (__modificateur && __modificateur.operation<0) {
-    const ispc = String(modificateurs[0].valeur).substr(-1, 1) === "%";
-    const val = Math.abs(Number(String(modificateurs[0].valeur).slice(0, -1)));
+    const ispc = String(__modificateur.valeur).includes("%");
+    const val = Math.abs(ispc 
+      ? Number(String(__modificateur.valeur).slice(0, -1))
+      : Number(String(__modificateur.valeur).slice(0, -symboledevise.length))
+    );
     if (ispc) {
       __total *= __modificateur.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
     } else {
