@@ -4,10 +4,10 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import SwitchCheckbox from '../common/SwitchCheckbox';
 
-import { Modal, Fab } from '@material-ui/core';
+// import { Modal, Fab } from '@material-ui/core';
 import LabelledField from '../common/LabelledField';
-import StdButton from '../common/StdButton';
-import CloseIcon from '../common/icon/CloseIcon';
+// import StdButton from '../common/StdButton';
+// import CloseIcon from '../common/icon/CloseIcon';
 // import AddIcon from '../common/icon/AddIcon';
 import logger from '../../helpers/Logger';
 let strings = new LocalizedStrings(data);
@@ -221,7 +221,7 @@ class CommandesGeneral extends React.Component {
 
   render() {
 
-    const { commandtype, editOpen } = this.state;
+    // const { commandtype, editOpen } = this.state;
     const { data, lastnumero, updateValeur, resetNumero, options } = this.props;
 
     const num_not_editable = options.role==='secondary';

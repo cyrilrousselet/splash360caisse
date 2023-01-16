@@ -115,7 +115,7 @@ getLogoImg(filePath) {
  render() {
 
   // const { message_ticket } = this.state;
-  const { data, updateValeur, monnaie } = this.props;
+  const { data, updateValeur } = this.props;
 
   logger.info(strings.modules.parametres.submodules.entreprise.options.label.auto_update);
 

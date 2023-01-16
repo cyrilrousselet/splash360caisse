@@ -57,13 +57,16 @@ function printAvoir(payload) {
 
 
     const siret = entreprise.siret;
-    const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
+   // const siret_formatted = (siret) ? `${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3)].join(' ')} RCS ${entreprise.rcs}` : '';
+  
+
+
     const contenu = {
       // -> entreprise
       entreprise: {
         nom: String(entreprise.denomination).toUpperCase(),
         coordonnees: [ entreprise.adresse, `${entreprise.code_postal} ${String(entreprise.ville).toUpperCase()}`, entreprise.telephone, entreprise.site_web ],
-        fiscal: [ siret_formatted ]
+        fiscal: [ siret ]
       },
       code: payload.code,
       detail: {
@@ -592,7 +595,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
     const ingredients = state.catalogueReducer.ingredients;
     const {catalogue, steps} = state.catalogueReducer;
     const { imprimantes, tickets } = state.peripheralReducer;
-    const { entreprise, financier } = state.parametresReducer.parametres;
+    const { entreprise, financier, peripheriques, options } = state.parametresReducer.parametres;
   //  const { impression } = peripheriques;
     const { clients } = state.clientsReducer;
     const {print_standby} = state.parametresReducer.parametres.commandes;
@@ -616,6 +619,10 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
     }
     let date = format(__createdAt, "d MMM yyyy", { locale: frLocale });
     let heure = format(__createdAt, "H:mm:ss");
+    let date_alt = date;
+    if (options.hasOwnProperty('secondelangue') && options.secondelangue!==null) {
+      date_alt = format(__createdAt, data[options.secondelangue].params.dateformat);
+    }
 
     let contenu = {};
     let target_imprimantes = [];
@@ -700,6 +707,12 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           
           // -> template ticket
           template = (ticket.template==='uber') ? templates.uber : ( (ticket.template==='deliveroo') ? templates.uber : templates.commande );
+          template = [...template];
+          if (options.hasOwnProperty('secondelangue') && options.secondelangue!==null) {
+            // console.log('🖨 AVANT', template);
+            template.splice(template.indexOf('legal') + 1, 0, 'separateur', 'commande_alt', 'legal_alt');
+            // console.log('🖨 APRES', template);
+          }
 
           // const cmdTva = {};
           let articles = [];
@@ -976,6 +989,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             numero: cmdnumero,
             id: cmd.ticketId,
             date: removeDiacritics(__datestr),
+            date_alt: date_alt,
             articles: articles,
             total: {
               total: Number(piece['ENC-TIK-TOT-TTC'] / 100).toFixed(2),
@@ -1002,7 +1016,18 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
 
           const siret = piece['ENC-TIK-SOC-SIR'];
-          const siret_formatted = (siret) ? `SIRET ${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3),siret.substr(9,5)].join(' ')}` : '';
+          // const siret_formatted = (siret) ? `SIRET ${[siret.substr(0,3),siret.substr(3,3),siret.substr(6,3),siret.substr(9,5)].join(' ')}` : '';
+
+
+          // message promo (bon d'achat) + source de QRCode
+          let promo = null;
+          if (peripheriques && peripheriques.hasOwnProperty('promo_message')) {
+            promo = {
+              message: peripheriques.promo_message,
+              url: peripheriques.promo_url
+            };
+          }
+
 
           // let _extrait_sign = '';
           // // caractères 3, 7, 13, 19 de la signature
@@ -1053,6 +1078,17 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           if ( entreprise.site_web ) { __coordoonees = [...__coordoonees, entreprise.site_web] }
 
 
+          let strings_alt = null;
+          if (options.hasOwnProperty('secondelangue') && options.secondelangue!==null) {
+            strings_alt = {
+              encoding: data[options.secondelangue].params.encoding,
+              direction: data[options.secondelangue].params.direction,
+              commande: data[options.secondelangue].tickets.commande, 
+              uber: data[options.secondelangue].tickets.uber, 
+              deliveroo: data[options.secondelangue].tickets.deliveroo
+            }
+          }
+
           // contenu :
           contenu = {
             // -> logo
@@ -1062,7 +1098,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               enseigne: removeDiacritics(String(piece['ENC-TIK-SOC-ID']).toUpperCase()),
               denomination: removeDiacritics(String(piece['ENC-TIK-SOC-ETS']).toUpperCase()),
               coordonnees: __coordoonees,
-              fiscal: [ siret_formatted, `NAF ${piece['ENC-TIK-SOC-NAF']} - TVA ${piece['ENC-TIK-SOC-TVA']}` ]
+              fiscal: [ siret, `NAF ${piece['ENC-TIK-SOC-NAF']} - TVA ${piece['ENC-TIK-SOC-TVA']}` ]
             },
             // -> commande (id, date, articles, remises, totaux, tva, réglements)
             commande: commande,
@@ -1085,8 +1121,10 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               printid: _numPrint,
               date: __datestr.replace('à','-')
             },
+            promo,
             nomticket: ticket.nom,
             strings: {commande: strings.tickets.commande, uber: strings.tickets.uber, deliveroo: strings.tickets.deliveroo},
+            strings_alt: strings_alt
           };
 
 

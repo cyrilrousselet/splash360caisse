@@ -496,10 +496,14 @@ function _launchPrint(template, printer, contenu, config={}) {
         _printErrorHandler(e, '_printEntreprise', printer);
       }
     }
-    else if ('commande' === section) {
+    else if ('commande' === section || 'commande_alt' === section) {
+      const __str = ('commande_alt' === section) ? contenu.strings_alt : contenu.strings;
+      if ('commande_alt' === section) {
+        contenu.commande.date = contenu.commande.date_alt;
+      }
       try {
         const cmdcont = contenu.commande;
-        _printCommande(printer, {...cmdcont, dupli: contenu.legal.duplicataid!==''}, contenu.strings.commande);
+        _printCommande(printer, {...cmdcont, dupli: contenu.legal.duplicataid!==''}, __str.commande);
       } catch(e) {
         _printErrorHandler(e, '_printCommande', printer);
       }
@@ -511,12 +515,20 @@ function _launchPrint(template, printer, contenu, config={}) {
         _printErrorHandler(e, '_printMessage', printer);
       }
     }
-    else if ('legal' === section) {
+    else if ('legal' === section || 'legal_alt' === section) {
+      const __str = ('legal_alt' === section) ? contenu.strings_alt.commande.legal : contenu.strings.commande.legal;
       try {
         const legalcont = contenu.legal;
-        _printLegal(printer, {...legalcont, status: contenu.commande.status}, contenu.strings);
+        _printLegal(printer, {...legalcont, status: contenu.commande.status}, __str);
       } catch(e) {
         _printErrorHandler(e, '_printLegal', printer);
+      }
+    }
+    else if ('promo' === section) {
+      try {
+        await _printPromo(printer, contenu.promo, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printPromo', printer);
       }
     }
     else if ('periode_x' === section) {
@@ -2475,6 +2487,25 @@ function _printLegal(printer, data, strings) {
   //   .fontSize('normal')
   //   .align('CT')
   //   .text(data.date);
+}
+
+// mentions légales sur le ticket
+async function _printPromo(printer, data, strings) {
+
+  const qrimg = await QRCode.toDataURL(data.url, {width:200});
+  const pixels = await getPixelsAsync(qrimg);
+  const image = new escpos.Image(pixels);
+
+  printer
+    .align('CT')
+    .feed(1)
+    .drawLine()
+    .feed(1)
+    .text(data.message)
+    .align('CT');
+    
+  //  log.info(image);
+    await _printImage(printer, image);
 }
 
 

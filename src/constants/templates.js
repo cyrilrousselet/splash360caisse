@@ -4,21 +4,24 @@ export const templates = {
     'entreprise',
     'commande', 
    //  'message', 
-    'legal'
+    'legal',
+    'promo'
   ],
   uber: [
     'logo', 
     'entreprise',
     'uber',
     'commande',
-    'legal'
+    'legal',
+    'promo'
   ],
   deliveroo: [
     'logo', 
     'entreprise',
     'deliveroo',
     'commande',
-    'legal'
+    'legal',
+    'promo'
   ],
   partiel: [
     [],

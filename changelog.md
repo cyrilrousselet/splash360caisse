@@ -7,6 +7,18 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 ## [Unreleased]
 - Sauvegarde des préférences de la caisse au niveau du backend pour permettre une réinstallation sans perdre les paramètres.
 - Sauvegarde des z de caisse au niveau du backend
+- Version arabe de l'impression bilingue
+
+
+## [1.1.0+3] - 2023-01-05
+### Added
+- Impression optionnelle sur le ticket commande d'un message promotionnel et d'un QR-code.
+- Impression bilingue des infos commandes (articles, totaux, taxes, infos legales) possibles sur le ticket commande.
+
+### Changed
+- Le DateRangePicker attend une date de début et une date de fin pour pouvoir valider
+- Déblocage de la caisse après l'annulation de commandes (si aucune autre commande doit être clôturée)
+
 
 ## [1.1.0+2] - 2022-06-17
 ### Added
@@ -32,7 +44,5 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 - Numéro de certificat NF sur les tickets client
 - Correction des checkbox d'impression des produits et ingrédients dans le module "Menu" [f4e30e1]
 - Le module de communication interprocess "eiphop" n'écrit des logs qu'en mode de développement []
-- Le DateRangePicker attend une date de début et une date de fin pour pouvoir valider
-- Déblocage de la caisse après l'annulation de commandes (si aucune autre commande doit être clôturée)
 
 <!-- ### Removed -->

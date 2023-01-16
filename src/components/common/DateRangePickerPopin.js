@@ -11,7 +11,7 @@ let strings = new LocalizedStrings(data);
 const DateRangePickerPopin = (props) => {
   const { startDate, endDate, open, validate, closeHandler } = props;
   const [dateRange, setDateRange] = React.useState({startDate: new Date(startDate), endDate: new Date(endDate)});
-  const [dataNotChanged, setDataNotChanged] = React.useState(true);
+  const [setDataNotChanged] = React.useState(true);
 
 
   return (

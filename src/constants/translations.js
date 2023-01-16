@@ -1,5 +1,11 @@
 const data = {
     fr: {
+        params: {
+            nom: 'français',
+            encoding: 'Cp850',
+            direction: 'ltr',
+            dateformat: 'd MMM yyyy'
+        },
         general: {
             checkbox: "Checkbox",
             checkbox2: "L’autre checkbox",
@@ -1341,6 +1347,12 @@ const data = {
                         kds_product_color: {
                             titre: 'KDS : affichage de la couleur du produit',
                             valeur: 'Activé'
+                        },
+                        i18n: {
+                            titre: 'Ticket bilingue',
+                            label: 'Seconde langue :',
+                            aucun: 'Aucune',
+                            helper: 'Le ticket client sera imprimé en deux langues'
                         }
                     },
                     fiscal: {
@@ -1438,6 +1450,15 @@ const data = {
                 },
                 schedule: {
                     titre: 'PRET A '
+                },
+                legal: {
+                    operation: 'Opération :',
+                    vendeur: 'Vendeur :',
+                    caisse: 'Caisse :',
+                    cpaiement: 'C.Paiement :',
+                    version: 'Version :',
+                    ticket: 'ticket :',
+                    nbreimp: "Nombre d'impressions :"
                 }
             },
             uber: {
@@ -1476,6 +1497,270 @@ const data = {
                 client: {
                     titre: 'Client :'
                 }
+            }
+        }
+    },
+    en: {
+        params: {
+            nom: 'english',
+            encoding: 'Cp850',
+            direction: 'ltr',
+            dateformat: 'MMM do yyyy'
+        },
+        general: {
+            checkbox: "Checkbox",
+            checkbox2: "The other checkbox",
+            jours: [
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday"
+            ],
+            mois: [
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December"
+            ],
+            dialog: {
+                ok: "OK",
+                cancel: "Cancel",
+                clear: "Clear",
+                save: "Save",
+                update: "Update",
+                back: "Back",
+                delete: "Delete",
+                accept: "Accept",
+                deny: "Deny",
+                select: "Select",
+                browse: "Browse",
+                print: "Print"
+            },
+            check: {
+                tous: 'Select All',
+                aucun: 'Unselect all'
+            }
+        },
+        tickets: {
+            commande: {
+                titre: 'ORDER',
+                numero: 'Ord. no ',
+                bipper: 'BIPPER #',
+                detail: {
+                    quantite: 'QTY',
+                    articles: 'ARTICLES',
+                    prix_unitaire: 'U.P.',
+                    total: 'TOTAL',
+                    code_tva: 'T',
+                    sous_total: 'SUBTOTAL',
+                    total_ttc: 'TOTAL INCL.TAX',
+                    nbr_lignes: 'Number of lines:',
+                    avant_remise: 'BEFORE DISCOUNT:',
+                    total_remise: 'TOTAL DISCOUNT:'
+                },
+                modificateur: {
+                    charge: 'CHARGE',
+                    discount_panier: 'CART DISCOUNT',
+                    frais_panier: 'FEE',
+                    discount_item: 'Article Discount',
+                    frais_item: 'Article Fee',
+                },
+                tva: {
+                    code: 'CODE',
+                    taux: 'RATE',
+                    tva: 'VAT',
+                    ht: 'excl.tax',
+                    ttc: 'incl.tax'
+                },
+                reglements: {
+                    titre: 'PAYMENT:',
+                    a_regler: 'TO PAY:'
+                },
+                rendu: {
+                    titre: 'CHANGE:'
+                },
+                mode: {
+                    livraison: 'DELIVERY',
+                    surplace: 'ON SITE',
+                    emporter: 'TAKE AWAY'
+                },
+                troppercu: {
+                    titre: "OVERPAYMENT:"
+                },
+                client: {
+                    titre: 'Cust.:',
+                    tel: 'Ph.:',
+                    batiment: 'Build.',
+                    etage: 'Level ',
+                    email: 'Email :',
+                    commentaire: 'Cmt. :'
+                },
+                schedule: {
+                    titre: 'READY AT '
+                },
+                legal: {
+                    operation: 'Operation:',
+                    vendeur: 'Seller:',
+                    caisse: 'Cash:',
+                    cpaiement: 'C.Payment:',
+                    version: 'Version:',
+                    ticket: 'ticket:',
+                    nbreimp: "Nbr of printing:"
+                }
+            },
+            uber: {
+                titre: 'UberEats Order',
+                texte: 'DELIVERY at ',
+                client: 'Cust. :',
+                couverts: 'WITH CUTLERY, STRAW...'
+            },
+            deliveroo: {
+                titre: 'Deliveroo Order',
+                texte: 'DELIVERY at ',
+                couverts: 'WITH CUTLERY, STRAW...'
+            }
+        }
+    },
+    ar: {
+        params: {
+            nom: 'arabic',
+            encoding: 'Cp864',
+            direction: 'rtl',
+            dateformat: 'yyyy-MM-dd'
+        },
+        general: {
+            checkbox: "خانة الاختيار",
+            checkbox2: "مربع الاختيار الآخر",
+            jours: [
+                "الأحد",
+                "الاثنين",
+                "يوم الثلاثاء",
+                "الأربعاء",
+                "يوم الخميس",
+                "جمعة",
+                "السبت"
+            ],
+            mois: [
+                "يناير",
+                "شهر فبراير",
+                "مارس",
+                "نيسان",
+                "مايو",
+                "يونيو",
+                "يوليو",
+                "شهر اغسطس",
+                "سبتمبر",
+                "اكتوبر",
+                "شهر نوفمبر",
+                "ديسمبر"
+            ],
+            dialog: {
+                ok: "نعم",
+                cancel: "يلغي",
+                clear: "صافي",
+                save: "حفظ",
+                update: "تحديث",
+                back: "خلف",
+                delete: "حذف",
+                accept: "قبول",
+                deny: "ينكر",
+                select: "تحديد",
+                browse: "تصفح",
+                print: "مطبعة"
+            },
+            check: {
+                tous: 'اختر الكل',
+                aucun: 'إلغاء تحديد الكل'
+            }
+        },
+        tickets: {
+            commande: {
+                titre: 'أمر',
+                numero: '#',
+                bipper: 'بيبر #',
+                detail: {
+                    quantite: 'كمية',
+                    articles: 'العناصر',
+                    prix_unitaire: 'سعر الوحدة',
+                    total: 'المبلغ',
+                    code_tva: 'T',
+                    sous_total: 'المجموع الفرعي',
+                    total_ttc: 'متضمن للضريبة',
+                    nbr_lignes: 'عدد الأسطر',
+                    avant_remise: 'قبل الخصم',
+                    total_remise: 'إجمالي الخصم'
+                },
+                modificateur: {
+                    charge: 'ثمن',
+                    discount_panier: 'سلة الخصم',
+                    frais_panier: 'مصاريف',
+                    discount_item: 'خصم البند',
+                    frais_item: 'رسوم البند',
+                },
+                tva: {
+                    code: 'رمز',
+                    taux: 'معدل',
+                    tva: 'ضريبة',
+                    ht: 'غير شامل. ضريبة',
+                    ttc: 'متضمن للضريبة'
+                },
+                reglements: {
+                    titre: 'قسط',
+                    a_regler: 'للدفع'
+                },
+                rendu: {
+                    titre: 'نظرا للتغيير'
+                },
+                mode: {
+                    livraison: 'توصيل',
+                    surplace: 'بالموقع',
+                    emporter: 'يبعد'
+                },
+                troppercu: {
+                    titre: "دفع مبالغ زائدة"
+                },
+                client: {
+                    titre: 'Cust.:',
+                    tel: 'Ph.:',
+                    batiment: 'Build.',
+                    etage: 'Level ',
+                    email: 'Email :',
+                    commentaire: 'Cmt. :'
+                },
+                schedule: {
+                    titre: 'READY AT '
+                },
+                legal: {
+                    operation: 'Operation:',
+                    vendeur: 'Seller:',
+                    caisse: 'Cash:',
+                    cpaiement: 'C.Payment:',
+                    version: 'Version:',
+                    ticket: 'ticket:',
+                    nbreimp: "Nbr of printing:"
+                }
+            },
+            uber: {
+                titre: 'UberEats Order',
+                texte: 'DELIVERY at ',
+                client: 'Cust. :',
+                couverts: 'WITH CUTLERY, STRAW...'
+            },
+            deliveroo: {
+                titre: 'Deliveroo Order',
+                texte: 'DELIVERY at ',
+                couverts: 'WITH CUTLERY, STRAW...'
             }
         }
     }
