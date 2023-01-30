@@ -28,6 +28,8 @@ let webContents = null;
 
 let printSpool = [];
 
+let default_encoding = null;
+
 
 const peripheral = {
   init: (wcont) => {
@@ -179,18 +181,22 @@ const actions = {
 
           printer
             .feed(1)
-            .fontSize('4square')
+            .fontSize('NORMAL')
             .text('Test impression :')
             .text('-> '+msg+' <-')
             .drawLine()
             .feed(1)
-            .text('test QR code (aqua-forte.net)')
-            .cashdraw()
-            .feed(1)
-            .text('EAN13 barcode example')
-            .barcode('123456789012', 'EAN13') // code length 12
-          //  .barcode('109876543210') // default type 'EAN13'
-          //  .barcode('7654321', 'EAN8') // The EAN parity bit is automatically added.
+            // .text('test QR code (aqua-forte.net)')
+            // .cashdraw()
+            // .feed(1)
+            // .text('EAN13 barcode example')
+            // .barcode('123456789012', 'EAN13') // code length 12
+            .text('windows1256 :')
+            .text("الصفحة الرئيسية",'windows1256')
+            .text('iso88596 :')
+            .text("الصفحة الرئيسية",'iso88596')
+            .text('cp1046 :')
+            .text("الصفحة الرئيسية",'cp1046')
             .feed(2)
             .cut()
             .close();
@@ -330,6 +336,7 @@ function _doPrintTicket(imprimante, template, contenu) {
     encoding: imprimante.encoding, 
     width:42
   };
+  default_encoding = imprimante.encoding;
   let printer;
   try {
     
@@ -466,6 +473,7 @@ function _closePrinter(printer) {
   printer.close(function() {
     log.info('---> Printer closed');
     printerOpen = false;
+    default_encoding = null;
   });
 }
 function _printErrorHandler(error, methodName, printer) {
@@ -498,12 +506,16 @@ function _launchPrint(template, printer, contenu, config={}) {
     }
     else if ('commande' === section || 'commande_alt' === section) {
       const __str = ('commande_alt' === section) ? contenu.strings_alt : contenu.strings;
+      let _enc = null;
+      let _dir = 'ltr';
       if ('commande_alt' === section) {
         contenu.commande.date = contenu.commande.date_alt;
+        _enc = contenu.strings_alt.encoding;
+        _dir = contenu.strings_alt.direction;
       }
       try {
         const cmdcont = contenu.commande;
-        _printCommande(printer, {...cmdcont, dupli: contenu.legal.duplicataid!==''}, __str.commande);
+        _printCommande(printer, {...cmdcont, dupli: contenu.legal.duplicataid!==''}, __str.commande, _enc, _dir);
       } catch(e) {
         _printErrorHandler(e, '_printCommande', printer);
       }
@@ -517,9 +529,15 @@ function _launchPrint(template, printer, contenu, config={}) {
     }
     else if ('legal' === section || 'legal_alt' === section) {
       const __str = ('legal_alt' === section) ? contenu.strings_alt.commande.legal : contenu.strings.commande.legal;
+      let _enc = null;
+      let _dir = 'ltr';
+      if ('legal_alt' === section) {
+        _enc = contenu.strings_alt.encoding;
+        _dir = contenu.strings_alt.direction;
+      }
       try {
         const legalcont = contenu.legal;
-        _printLegal(printer, {...legalcont, status: contenu.commande.status}, __str);
+        _printLegal(printer, {...legalcont, status: contenu.commande.status}, __str, _enc, _dir);
       } catch(e) {
         _printErrorHandler(e, '_printLegal', printer);
       }
@@ -1434,7 +1452,9 @@ function getLogoImg(filePath) {
 // }
 
 // impression des informations de commande
-function _printCommande(printer, data, strings) {
+function _printCommande(printer, data, strings, encoding=null, direction='ltr') {
+
+  const __enc = encoding || default_encoding;
 
   printer
     .align('CT')
@@ -1442,13 +1462,13 @@ function _printCommande(printer, data, strings) {
     .style('B')
     // .size(2,2)
     .fontSize('4square')
-    .text(`#${data.numero}`)
+    .text(`#${data.numero}`, __enc)
     .font('A')
     // .fontSize('4square')
     .fontSize('normal')
     .style('NORMAL')
-    .text(data.id)
-    .text(data.date)
+    .text(data.id, __enc)
+    .text(data.date, __enc)
     ;
 
     if (data.dupli) {
@@ -1457,7 +1477,7 @@ function _printCommande(printer, data, strings) {
       .align('CT')
       .fontSize('2width')
       .feed(1)
-      .text(`DUPLICATA`);
+      .text(`DUPLICATA`, __enc);
     }
 
   printer
@@ -1466,7 +1486,7 @@ function _printCommande(printer, data, strings) {
     .style('B')
     // .size(2,2)
     .fontSize('4square')
-    .text(`*** ${strings.mode[data.mode]} ***`)
+    .text(`*** ${strings.mode[data.mode]} ***`, __enc)
     .font('A')
     // .fontSize('4square')
     .fontSize('normal')
@@ -1478,7 +1498,7 @@ function _printCommande(printer, data, strings) {
   if (data.bipper) {
     printer
       .fontSize('4square')
-      .text(`--- ${strings.bipper}${data.bipper} ---`)
+      .text(`--- ${strings.bipper}${data.bipper} ---`, __enc)
       .fontSize('2height')
       .drawLine()
       .fontSize('normal');
@@ -1487,7 +1507,7 @@ function _printCommande(printer, data, strings) {
   if (data.scheduled) {
     printer
     .fontSize('2width')
-    .text(`<<< ${strings.schedule.titre}${data.scheduled} >>>`)
+    .text(`<<< ${strings.schedule.titre}${data.scheduled} >>>`, __enc)
     .fontSize('normal')
     .drawLine()
     ;
@@ -1501,7 +1521,7 @@ function _printCommande(printer, data, strings) {
       {text: data.comment, cols:32, align:'LEFT'},
       {text: ' *', cols:2, align:'RIGHT'},
       {text:'', cols:3}
-    ]);
+    ], {encoding:__enc});
     printer.font('A')
           // .fontSize('4square')
           .fontSize('normal')
@@ -1517,16 +1537,16 @@ function _printCommande(printer, data, strings) {
           .style('NORMAL')
           .tableCustom([
             {text: `${strings.client.titre} ${data.client.prenom} ${data.client.nom}`, cols:42, align:'LEFT'}
-          ])
+          ], {encoding:__enc})
           .tableCustom([
             {text: `(${data.client.client_id})`, cols:42, align:'LEFT'}
-          ]);
-    if (data.client.adresse!=='') printer.tableCustom([{text: data.client.adresse, cols:42, align:'LEFT'}]);
-    if (data.client.adresse2!=='') printer.tableCustom([{text: data.client.adresse2, cols:42, align:'LEFT'}]);
-    if (data.client.batiment!=='' || data.client.etage!=='') printer.tableCustom([{text: `${((data.client.batiment!=='')?strings.client.batiment+data.client.batiment:'')}${((data.client.batiment!=='' && data.client.etage!=='')?' - ':'')}${((data.client.etage!=='')?strings.client.etage+data.client.etage:'')}`, cols:42, align:'LEFT'}]);
-    if (data.client.codepostal!=='' || data.client.ville!=='') printer.tableCustom([{text: `${data.client.codepostal} ${data.client.ville}`, cols:42, align:'LEFT'}]);
-    if (data.client.telephone!=='' || data.client.telephone2!=='') printer.tableCustom([{text: `${strings.client.tel} ${data.client.telephone}${((data.client.telephone!=='' && data.client.telephone2!=='')?' - ':'')}${data.client.telephone2}`, cols:42, align:'LEFT'}]);
-    if (data.client.commentaire!=='') printer.tableCustom([{text: `${strings.client.commentaire} ${data.client.commentaire}`, cols:42, align:'LEFT'}]);
+          ], {encoding:__enc});
+    if (data.client.adresse!=='') printer.tableCustom([{text: data.client.adresse, cols:42, align:'LEFT'}], {encoding:__enc});
+    if (data.client.adresse2!=='') printer.tableCustom([{text: data.client.adresse2, cols:42, align:'LEFT'}], {encoding:__enc});
+    if (data.client.batiment!=='' || data.client.etage!=='') printer.tableCustom([{text: `${((data.client.batiment!=='')?strings.client.batiment+data.client.batiment:'')}${((data.client.batiment!=='' && data.client.etage!=='')?' - ':'')}${((data.client.etage!=='')?strings.client.etage+data.client.etage:'')}`, cols:42, align:'LEFT'}], {encoding:__enc});
+    if (data.client.codepostal!=='' || data.client.ville!=='') printer.tableCustom([{text: `${data.client.codepostal} ${data.client.ville}`, cols:42, align:'LEFT'}], {encoding:__enc});
+    if (data.client.telephone!=='' || data.client.telephone2!=='') printer.tableCustom([{text: `${strings.client.tel} ${data.client.telephone}${((data.client.telephone!=='' && data.client.telephone2!=='')?' - ':'')}${data.client.telephone2}`, cols:42, align:'LEFT'}], {encoding:__enc});
+    if (data.client.commentaire!=='') printer.tableCustom([{text: `${strings.client.commentaire} ${data.client.commentaire}`, cols:42, align:'LEFT'}], {encoding:__enc});
 
     printer.drawLine();
   }
@@ -1557,7 +1577,7 @@ function _printCommande(printer, data, strings) {
 
   printer
     .style('B')
-    .tableCustom(__entete)
+    .tableCustom(__entete, {encoding:__enc})
     .drawLine();
 
   // articles :
@@ -1591,7 +1611,7 @@ function _printCommande(printer, data, strings) {
         ];
       }
 
-      printer.align('CT').style('B').tableCustom(__ligne);
+      printer.align('CT').style('B').tableCustom(__ligne, {encoding:__enc});
       
       if (article.comment!=='') {
         printer.align('CT').style('B').tableCustom([
@@ -1623,7 +1643,7 @@ function _printCommande(printer, data, strings) {
               {text: ingredient.codetva, cols:1}
             ];
           }
-          printer.align('CT').style('NORMAL').tableCustom(__ingligne);
+          printer.align('CT').style('NORMAL').tableCustom(__ingligne, {encoding:__enc});
           if (ingredient.comment!=='') {
             printer.align('CT').style('B').tableCustom([
               {text:'', cols:3},
@@ -1657,7 +1677,7 @@ function _printCommande(printer, data, strings) {
           ]
         }
 
-        printer.align('CT').style('B').tableCustom(__modligne);
+        printer.align('CT').style('B').tableCustom(__modligne, {encoding:__enc});
         _linecount++;
       }
 
@@ -1676,7 +1696,7 @@ function _printCommande(printer, data, strings) {
           {text: article.codetva, cols:1}
         ];
       }
-      printer.align('CT').style('B').tableCustom(__fraisligne);
+      printer.align('CT').style('B').tableCustom(__fraisligne, {encoding:__enc});
       _linecount++;
     }
 
@@ -1711,7 +1731,7 @@ function _printCommande(printer, data, strings) {
       .drawLine()
       .align('CT')
       .fontSize('normal')
-      .tableCustom(__stligne)
+      .tableCustom(__stligne, {encoding:__enc})
       .fontSize('normal')
       .drawLine();
 
@@ -1729,7 +1749,7 @@ function _printCommande(printer, data, strings) {
           {text:'', cols:2}
         ];
       }
-      printer.align('CT').style('B').tableCustom(__pmodligne);
+      printer.align('CT').style('B').tableCustom(__pmodligne, {encoding:__enc});
   }
 
   // total
@@ -1740,7 +1760,7 @@ function _printCommande(printer, data, strings) {
     .fontSize('2height')
     .tableCustom([
       {text: `${strings.detail.total_ttc}   ${data.total.total.replace('.',',')}`, cols:42, align:'RIGHT'}
-    ])
+    ], {encoding:__enc})
     // .fontSize('4square')
     .fontSize('normal')
     .drawLine();
@@ -1751,7 +1771,7 @@ function _printCommande(printer, data, strings) {
   .align('CT')
   .tableCustom([
     {text: `${strings.detail.nbr_lignes} ${_linecount}`, cols:42, align:'LEFT'}
-  ])
+  ], {encoding:__enc})
   .drawLine();
 
   // uniquement sur ticket
@@ -1761,10 +1781,10 @@ function _printCommande(printer, data, strings) {
     printer
       .tableCustom([
         {text: `${strings.detail.avant_remise} ${data.total.avantremise.replace('.',',')}`, cols:42, align:'LEFT'}
-      ])
+      ], {encoding:__enc})
       .tableCustom([
         {text: `${strings.detail.total_remise} ${data.total.remise.replace('.',',')}`, cols:42, align:'LEFT'}
-      ]);
+      ], {encoding:__enc});
 
     // tva
     printer
@@ -1785,7 +1805,7 @@ function _printCommande(printer, data, strings) {
         {text: strings.tva.ht, cols:8, align:'RIGHT'},
         {text:'', cols:2},
         {text: strings.tva.ttc, cols:8, align:'RIGHT'}
-      ])
+      ], {encoding:__enc})
       .style('NORMAL')
 
     // body
@@ -1802,7 +1822,7 @@ function _printCommande(printer, data, strings) {
         {text:value.ht.replace('.',','), cols:8, align:'RIGHT'},
         {text:'', cols:2},
         {text:value.ttc.replace('.',','), cols:8, align:'RIGHT'}
-      ]);
+      ], {encoding:__enc});
     }
 
 
@@ -1818,7 +1838,7 @@ function _printCommande(printer, data, strings) {
         {text: data.total.ht.replace('.',','), cols:8, align:'RIGHT'},
         {text:'', cols:2},
         {text: data.total.total.replace('.',','), cols:8, align:'RIGHT'}
-      ])
+      ], {encoding:__enc})
       .style('NORMAL')
 
   }
@@ -1836,7 +1856,7 @@ function _printCommande(printer, data, strings) {
           {text: reglement.lib, cols:28, align:'LEFT'},
           {text:'', cols:1},
           {text: `${reglement.valeur.replace('.',',')} ${data.devise}`, cols:12, align:'RIGHT'}
-        ]);
+        ], {encoding:__enc});
       });
   }
   // ou à régler
@@ -1850,7 +1870,7 @@ function _printCommande(printer, data, strings) {
         .fontSize('2height')
         .tableCustom([
           {text: `${strings.reglements.a_regler}   ${data.total.total.replace('.',',')}`, cols:42, align:'CENTER'}
-        ])
+        ], {encoding:__enc})
         // .fontSize('4square');
         .fontSize('normal');
     }
@@ -1860,7 +1880,7 @@ function _printCommande(printer, data, strings) {
   if (data.rendus.length>0) {
     printer
       .drawLine()
-      .style('NORMAL').text(strings.rendu.titre);
+      .style('NORMAL').text(strings.rendu.titre, __enc);
 
     data.rendus.forEach(rendu => {
       printer.style('NORMAL').tableCustom([
@@ -1868,7 +1888,7 @@ function _printCommande(printer, data, strings) {
         {text: rendu.moyen, cols:28, align:'LEFT'},
         {text:'', cols:1},
         {text: `${rendu.valeur.toFixed(2).replace('.',',')} ${data.devise}`, cols:12, align:'RIGHT'}
-      ]);
+      ], {encoding:__enc});
     });
   }
   if (data.troppercu.length>0) {
@@ -1881,7 +1901,7 @@ function _printCommande(printer, data, strings) {
         {text: strings.troppercu.titre, cols:28, align:'LEFT'},
         {text:'', cols:1},
         {text: `${troppercu.valeur.toFixed(2).replace('.',',')} ${data.devise}`, cols:12, align:'RIGHT'}
-      ]);
+      ], {encoding:__enc});
     });
   }
 
@@ -2398,95 +2418,60 @@ function _printMessage(printer, data, strings) {
 }
 
 // mentions légales sur le ticket
-function _printLegal(printer, data, strings) {
+function _printLegal(printer, data, strings, encoding=null, direction='ltr') {
+
+
+  const __enc = encoding || default_encoding;
 
   printer.align('CT')
 
   
   printer.tableCustom([
-    {text: `Opération : ${data.type}`, cols:42, align:'LEFT'},
-  ]);
+    {text: `${strings.operation} ${data.type}`, cols:42, align:'LEFT'}
+  ], {encoding:__enc});
   
 
   printer
-    .tableCustom([{text: `Vendeur : ${data.vendeur}`, cols:42, align:'LEFT'}])
-    .tableCustom([{text: `Caisse : ${data.caisse}`, cols:42, align:'LEFT'}]);
+    .tableCustom([{text: `${strings.vendeur} ${data.vendeur}`, cols:42, align:'LEFT'}], {encoding:__enc})
+    .tableCustom([{text: `${strings.caisse} ${data.caisse}`, cols:42, align:'LEFT'}], {encoding:__enc});
   
   if (data.status==='confirmed') {
     printer
-      .tableCustom([{text: `C.Paiement : ${data.centre}`, cols:42, align:'LEFT'}]);
+      .tableCustom([{text: `${strings.cpaiement} ${data.centre}`, cols:42, align:'LEFT'}], {encoding:__enc});
   }  
   if (data.duplicataid!=='') {
     printer
-    .tableCustom([{text: `(NF525) B0478 - ${data.duplicatasignature} - SPLASH360 ${data.version}`, cols:42, align:'LEFT'}])
-    .tableCustom([{text: `Duplicata : ${data.duplicataid}`, cols:42, align:'LEFT'}])
-    .tableCustom([{text: `${(data.status==='confirmed') ? 'Ticket original' : 'Note originale'} : ${data.ticketid} (${data.signature})`, cols:42, align:'LEFT'}]);
+    .tableCustom([{text: `(NF525) B0478 - ${data.duplicatasignature} - SPLASH360 ${data.version}`, cols:42, align:'LEFT'}], {encoding:__enc})
+    .tableCustom([{text: `${strings.duplicata}  ${data.duplicataid}`, cols:42, align:'LEFT'}], {encoding:__enc})
+    .tableCustom([{text: `${(data.status==='confirmed') ? strings.ticketorig : strings.noteorig} ${data.ticketid} (${data.signature})`, cols:42, align:'LEFT'}], {encoding:__enc});
   }
   else {
     printer
-    .tableCustom([{text: `(NF525) B0478 - ${data.signature} - SPLASH360 ${data.version}`, cols:42, align:'LEFT'}])
-    .tableCustom([{text: `${(data.status==='confirmed') ? 'Ticket' : 'Note'} : ${data.ticketid}`, cols:42, align:'LEFT'}]);
+    .tableCustom([{text: `(NF525) B0478 - ${data.signature} - SPLASH360 ${data.version}`, cols:42, align:'LEFT'}], {encoding:__enc})
+    .tableCustom([{text: `${(data.status==='confirmed') ? strings.ticket : strings.note} : ${data.ticketid}`, cols:42, align:'LEFT'}], {encoding:__enc});
     if (data.originid) {
       printer
-      .tableCustom([{text: `Modifie ${(data.status==='confirmed') ? 'le ticket' : 'la note' } : ${data.originid}`, cols:42, align:'LEFT'}]);
+      .tableCustom([{text: `${(data.status==='confirmed') ? strings.modifticket : strings.modifnote } ${data.originid}`, cols:42, align:'LEFT'}], {encoding:__enc});
     }
   }
-  printer.tableCustom([{text: `Nombre d'impressions : ${data.printid}`, cols:42, align:'LEFT'}]);
+  printer.tableCustom([{text: `${strings.nbreimp} ${data.printid}`, cols:42, align:'LEFT'}], {encoding:__enc});
   printer.feed();
 
   if (data.status!=='confirmed') {
     printer
     .align('CT')
     .fontSize('2height')
-    .text('DOCUMENT PROVISOIRE');
+    .text(strings.provisoire, __enc);
   }
   printer
     .fontSize('normal')
     .align('CT');
   if (data.duplicataid!=='') {
-    printer.text('Dupliqué le '+data.duplicatagdh);
+    printer.text(strings.duplique + data.duplicatagdh, __enc);
   } else {
-    printer.text(data.date);
+    printer.text(data.date, __enc);
   }
-  
 
-  // printer.align('LT')
-
-  
-  // printer.text(`Opération : ${data.type}`);
-  
-
-  // printer
-  //   .text(`Vendeur : ${data.vendeur}`)
-  //   .text(`Caisse : ${data.caisse}`);
-  
-  // if (data.status==='confirmed') {
-  //   printer
-  //     .text(`C.Paiement : ${data.centre}`);
-  // }  
-  // if (data.duplicataid!=='') {
-  //   printer
-  //   .text(`(NF525) B0000 - ${data.duplicatasignature} - Splash360 ${data.version}`)
-  //   .text(`Duplicata : ${data.duplicataid}`)
-  //   .text(`${(data.status==='confirmed') ? 'Ticket original' : 'Note originale'} : ${data.ticketid} (${data.signature})`);
-  // }
-  // else {
-  //   printer
-  //   .text(`(NF525) B0000 - ${data.signature} - Splash360 ${data.version}`)
-  //   .text(`${(data.status==='confirmed') ? 'Ticket' : 'Note'} : ${data.ticketid}`);
-  // }
-  // printer.text(`Nombre d'impressions : ${data.printid}`);
-  // printer.feed();
-  // if (data.status!=='confirmed') {
-  //   printer
-  //   .align('CT')
-  //   .fontSize('2height')
-  //   .text('DOCUMENT PROVISOIRE');
-  // }
-  // printer
-  //   .fontSize('normal')
-  //   .align('CT')
-  //   .text(data.date);
 }
 
 // mentions légales sur le ticket

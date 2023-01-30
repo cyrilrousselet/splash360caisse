@@ -23,7 +23,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({
     getAll: parametresActions.getAll,
-    updateValeur: parametresActions.update
+    updateValeur: parametresActions.update,
   },dispatch);
 }
 

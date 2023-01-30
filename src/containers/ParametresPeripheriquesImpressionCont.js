@@ -21,7 +21,8 @@ const mapDispatchToProps = (dispatch) => {
     getAllTickets: peripheralActions.getAllTickets,
     updateTicket: peripheralActions.updateTicket,
     createTicket: peripheralActions.createTicket,
-    deleteTicket: peripheralActions.deleteTicket
+    deleteTicket: peripheralActions.deleteTicket,
+    printTest: peripheralActions.printTest,
   },dispatch);
 }
 

@@ -1458,7 +1458,14 @@ const data = {
                     cpaiement: 'C.Paiement :',
                     version: 'Version :',
                     ticket: 'ticket :',
-                    nbreimp: "Nombre d'impressions :"
+                    nbreimp: "Nombre d'impressions :",
+                    duplicata: "Duplicata :",
+                    ticketorig: "Ticket original :",
+                    noteorig: "Note originale :",
+                    modifticket: "Modifie le ticket :",
+                    modifnote: "Modifie la note :",
+                    provisoire: "DOCUMENT PROVISOIRE",
+                    duplique: "Dupliqué le "
                 }
             },
             uber: {
@@ -1616,7 +1623,14 @@ const data = {
                     cpaiement: 'C.Payment:',
                     version: 'Version:',
                     ticket: 'ticket:',
-                    nbreimp: "Nbr of printing:"
+                    nbreimp: "Nbr of printing:",
+                    duplicata: "Duplicata:",
+                    ticketorig: "Origin ticket:",
+                    noteorig: "Origin bill:",
+                    modifticket: "Modify the ticket:",
+                    modifnote: "Modify the bill:",
+                    provisoire: "DRAFT DOCUMENT",
+                    duplique: "Duplicated on "
                 }
             },
             uber: {
@@ -1635,7 +1649,7 @@ const data = {
     ar: {
         params: {
             nom: 'arabic',
-            encoding: 'Cp864',
+            encoding: 'win1256',
             direction: 'rtl',
             dateformat: 'yyyy-MM-dd'
         },
@@ -1748,7 +1762,15 @@ const data = {
                     cpaiement: 'C.Payment:',
                     version: 'Version:',
                     ticket: 'ticket:',
-                    nbreimp: "Nbr of printing:"
+                    note: 'bill:',
+                    nbreimp: "Nbr of printing:",
+                    duplicata: "Duplicata:",
+                    ticketorig: "Origin ticket:",
+                    noteorig: "Origin bill:",
+                    modifticket: "Modify the ticket:",
+                    modifnote: "Modify the bill:",
+                    provisoire: "DRAFT DOCUMENT",
+                    duplique: "Duplicated on "
                 }
             },
             uber: {
