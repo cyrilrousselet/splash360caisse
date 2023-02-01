@@ -8,6 +8,15 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 - Sauvegarde des préférences de la caisse au niveau du backend pour permettre une réinstallation sans perdre les paramètres.
 - Sauvegarde des z de caisse au niveau du backend
 - Version arabe de l'impression bilingue
+- Prise en charge des promotions Luckylikes
+
+## [1.1.0+4] - 2023-02-01
+### Changed
+- Correction de la sélection des dates d'affichage de la liste des commandes
+- Possibilité de changer le CodeTable de l'imprimante ESC/POS
+
+### Disabled
+- Impression bilingue
 
 
 ## [1.1.0+3] - 2023-01-05

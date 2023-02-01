@@ -7,7 +7,7 @@ const { MutableBuffer } = require('mutable-buffer');
 const EventEmitter = require('events');
 const Image = require('../../node_modules/escpos/image');
 const utils = require('../../node_modules/escpos/utils');
-const _ = require('../../node_modules/escpos/commands');
+const _ = require('./commands');
 const Promiseify = require('../../node_modules/escpos/promisify');
 const statuses = require('../../node_modules/escpos/statuses');
 const {PrinterStatus,OfflineCauseStatus,ErrorCauseStatus,RollPaperSensorStatus} = statuses;
@@ -34,6 +34,7 @@ function Printer(adapter, options) {
   this.width = (options && options.width) || 48;
   this._fontsize = [1,1];
   this._model = null;
+  this.buffer.write(_.ESC + _.CODETABLE.SET + ((options && options.code) ? _.CODETABLE.CODES[options.code] : _.CODETABLE.CODES.LATIN1));//Set codetable for printing latin symbols
 };
 
 Printer.create = function (device) {

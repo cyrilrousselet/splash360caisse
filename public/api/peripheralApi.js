@@ -8,6 +8,7 @@ escpos.USB = require('escpos-usb');
 escpos.Network = require('escpos-network');
 escpos.SerialPort = require('escpos-serialport');
 // const statuses = require('escpos/statuses');
+const _ = require('../utils/commands');
 const iconv = require('iconv-lite');
 
 // const {PrinterStatus,OfflineCauseStatus,ErrorCauseStatus,RollPaperSensorStatus} = statuses;
@@ -155,7 +156,7 @@ const actions = {
    */
   printTest: (req,res) => {
     const device = new escpos.USB();
-    const options = {};
+    const options = {code: _.CODETABLE.CODES.ARABIC};
     const printer = new Printer(device, options);
 
     const { payload } = req;
@@ -191,12 +192,21 @@ const actions = {
             // .feed(1)
             // .text('EAN13 barcode example')
             // .barcode('123456789012', 'EAN13') // code length 12
-            .text('windows1256 :')
-            .text("الصفحة الرئيسية",'windows1256')
+            .text('windows1256 / cp1256 :')
+            .encode('windows1256')
+            .text("اللغة العربية")
             .text('iso88596 :')
-            .text("الصفحة الرئيسية",'iso88596')
+            .encode('iso88596')
+            .text("اللغة العربية")
             .text('cp1046 :')
-            .text("الصفحة الرئيسية",'cp1046')
+            .encode('cp1046')
+            .text("اللغة العربية")
+            .text('cp720 :')
+            .encode('cp720')
+            .text("اللغة العربية")
+            .encode('cp850')
+            .text("اللغة العربية")
+            .text('--FIN--')
             .feed(2)
             .cut()
             .close();

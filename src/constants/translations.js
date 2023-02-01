@@ -1507,7 +1507,7 @@ const data = {
             }
         }
     },
-    en: {
+    /*en: {
         params: {
             nom: 'english',
             encoding: 'Cp850',
@@ -1645,8 +1645,8 @@ const data = {
                 couverts: 'WITH CUTLERY, STRAW...'
             }
         }
-    },
-    ar: {
+    },*/
+  /*  ar: {
         params: {
             nom: 'arabic',
             encoding: 'win1256',
@@ -1785,6 +1785,6 @@ const data = {
                 couverts: 'WITH CUTLERY, STRAW...'
             }
         }
-    }
+    }*/
 }
 export { data };
