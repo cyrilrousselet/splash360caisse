@@ -11,7 +11,7 @@ escpos.SerialPort = require('escpos-serialport');
 // const statuses = require('escpos/statuses');
 const _ = require('../utils/commands');
 const iconv = require('iconv-lite');
-const canvasBuffer = require('electron-canvas-to-buffer');
+// const canvasBuffer = require('electron-canvas-to-buffer');
 
 // const {PrinterStatus,OfflineCauseStatus,ErrorCauseStatus,RollPaperSensorStatus} = statuses;
 // const _ = require('escpos/commands');
@@ -1474,7 +1474,7 @@ async function _printTicketImage(printer, image2print) {
 
   const image = new escpos.Image(image2print);
   await _printImage(printer, image);
-  
+
 }
 
 function getLogoImg(filePath) {

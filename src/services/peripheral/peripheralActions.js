@@ -1,7 +1,7 @@
 import { peripheralActionTypes } from './peripheralActionTypes';
 import { peripheralServices } from './peripheralServices';
 import { tresorServices } from '../tresorerie/tresorServices';
-import {canvasBuffer} from 'electron-canvas-to-buffer';
+// import {canvasBuffer} from 'electron-canvas-to-buffer';
 
 // import packageJson from '../../../package.json';
 
@@ -22,7 +22,7 @@ import { last, lowerCase } from 'lodash';
 import logger from '../../helpers/Logger';
 import { commandeServices } from '../commande/commandeServices';
 import { journalActions } from '../journal/journalActions';
-import { nativeImage } from 'electron';
+// import { nativeImage } from 'electron';
 import getPixels from 'get-pixels';
 // import { log } from 'winston';
 // const logger = new Logger();
