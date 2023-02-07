@@ -7,15 +7,16 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 ## [Unreleased]
 - Sauvegarde des préférences de la caisse au niveau du backend pour permettre une réinstallation sans perdre les paramètres.
 - Sauvegarde des z de caisse au niveau du backend
-- Version arabe de l'impression bilingue
 - Prise en charge des promotions Luckylikes
 
 ## [1.1.0+5] - 2023-02-07
 ### Added
 - Ajout du mode de commande (abrégé) et du numéro de bipper sur les étiquettes (print label)
+- Version arabe de l'impression bilingue
 
 ### Changed
 - Correction de l'impression des étiquettes, filtrage des frais de service
+- Impression bilingue
 
 
 ## [1.1.0+4] - 2023-02-01
