@@ -4,7 +4,8 @@ const data = {
             nom: 'français',
             encoding: 'Cp850',
             direction: 'ltr',
-            dateformat: 'd MMM yyyy'
+            dateformat: 'd MMM yyyy',
+            treatment: "direct"
         },
         general: {
             checkbox: "Checkbox",
@@ -1399,6 +1400,7 @@ const data = {
                 titre: 'COMMANDE',
                 numero: 'Cmd no ',
                 bipper: 'BIPPER #',
+                duplicata: 'DUPLICATA',
                 detail: {
                     quantite: 'QTE',
                     articles: 'ARTICLES',
@@ -1423,7 +1425,8 @@ const data = {
                     taux: 'TAUX',
                     tva: 'TVA',
                     ht: 'H.T.',
-                    ttc: 'TTC'
+                    ttc: 'TTC',
+                    total: 'TOTAL'
                 },
                 reglements: {
                     titre: 'REGLEMENT :',
@@ -1512,12 +1515,13 @@ const data = {
             }
         }
     },
-    /*en: {
+    en: {
         params: {
             nom: 'english',
             encoding: 'Cp850',
             direction: 'ltr',
-            dateformat: 'MMM do yyyy'
+            dateformat: 'MMM do yyyy',
+            treatment: "direct"
         },
         general: {
             checkbox: "Checkbox",
@@ -1568,6 +1572,7 @@ const data = {
             commande: {
                 titre: 'ORDER',
                 numero: 'Ord. no ',
+                duplicata: 'DUPLICATA',
                 bipper: 'BIPPER #',
                 detail: {
                     quantite: 'QTY',
@@ -1593,7 +1598,8 @@ const data = {
                     taux: 'RATE',
                     tva: 'VAT',
                     ht: 'excl.tax',
-                    ttc: 'incl.tax'
+                    ttc: 'incl.tax',
+                    total: 'TOTAL'
                 },
                 reglements: {
                     titre: 'PAYMENT:',
@@ -1650,13 +1656,14 @@ const data = {
                 couverts: 'WITH CUTLERY, STRAW...'
             }
         }
-    },*/
-  /*  ar: {
+    },
+    ar: {
         params: {
             nom: 'arabic',
             encoding: 'win1256',
             direction: 'rtl',
-            dateformat: 'yyyy-MM-dd'
+            dateformat: 'yyyy-MM-dd',
+            treatment: 'canvas'
         },
         general: {
             checkbox: "خانة الاختيار",
@@ -1707,6 +1714,7 @@ const data = {
             commande: {
                 titre: 'أمر',
                 numero: '#',
+                duplicata: 'مكرر',
                 bipper: 'بيبر #',
                 detail: {
                     quantite: 'كمية',
@@ -1732,7 +1740,8 @@ const data = {
                     taux: 'معدل',
                     tva: 'ضريبة',
                     ht: 'غير شامل. ضريبة',
-                    ttc: 'متضمن للضريبة'
+                    ttc: 'متضمن للضريبة',
+                    total: 'TOTAL'
                 },
                 reglements: {
                     titre: 'قسط',
@@ -1790,6 +1799,6 @@ const data = {
                 couverts: 'WITH CUTLERY, STRAW...'
             }
         }
-    }*/
+    }
 }
 export { data };

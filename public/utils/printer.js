@@ -34,7 +34,7 @@ function Printer(adapter, options) {
   this.width = (options && options.width) || 48;
   this._fontsize = [1,1];
   this._model = null;
-  this.buffer.write(_.ESC + _.CODETABLE.SET + ((options && options.code) ? _.CODETABLE.CODES[options.code] : _.CODETABLE.CODES.LATIN1));//Set codetable for printing latin symbols
+  // this.buffer.write(_.ESC + _.CODETABLE.SET + ((options && options.code) ? _.CODETABLE.CODES[options.code] : _.CODETABLE.CODES.LATIN1));//Set codetable for printing latin symbols
 };
 
 Printer.create = function (device) {

@@ -19,8 +19,8 @@ function quitApp() {
   return emit('quitApp', {});
 }
 
-function printTest() {
-  return emit('printTest', {msg:'message de test'});
+function printTest(_image) {
+  return emit('printTest', {msg:'message de test', image: _image});
 }
 
 function printTicket(imprimante, template, contenu) {

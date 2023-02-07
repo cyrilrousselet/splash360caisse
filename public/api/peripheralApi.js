@@ -2,6 +2,7 @@
 const log = require('../utils/logger');
 const electron = require('electron');
 const { app } = electron;
+const fs = require('fs').promises;
 const escpos = require('escpos');
 const Printer = require('../utils/printer')
 escpos.USB = require('escpos-usb');
@@ -10,16 +11,17 @@ escpos.SerialPort = require('escpos-serialport');
 // const statuses = require('escpos/statuses');
 const _ = require('../utils/commands');
 const iconv = require('iconv-lite');
+// const canvasBuffer = require('electron-canvas-to-buffer');
 
 // const {PrinterStatus,OfflineCauseStatus,ErrorCauseStatus,RollPaperSensorStatus} = statuses;
 // const _ = require('escpos/commands');
 const path = require('path');
-const fs = require('fs');
 
 const getPixels = require('get-pixels');
 
 const QRCode = require('qrcode');
 const { logger } = require('@sentry/utils');
+// const { cp } = require('fs/promises');
 
 let printerOpen = false;
 let waitInterval = null;
@@ -154,22 +156,52 @@ const actions = {
   /**
    * Impression d'un ticket de test passant en revue certaines fonctionnalités de l'imprimante
    */
-  printTest: (req,res) => {
+  printTest: async (req,res) => {
     const device = new escpos.USB();
-    const options = {code: _.CODETABLE.CODES.ARABIC};
+    const options = {}; //{code: _.CODETABLE.CODES.ARABIC};
     const printer = new Printer(device, options);
+    const config = {
+      width: 300,
+      lineHeight: 30
+    };
 
     const { payload } = req;
     const msg = payload.msg!=='' ? payload.msg : 'rien';
+    const image2print = payload.image;
+
+    // const pixels = await getPixelsAsync(image2print);
+    const image = new escpos.Image(image2print);
 
     log.info('printTest start');
 
-    const tux = path.join(__dirname, 'default_logo.png');
-    log.info('img : '+tux);
-    escpos.Image.load(tux, function(image){
+    // const tux = path.join(__dirname, 'default_logo.png');
+    // log.info('img : '+tux);
+    // escpos.Image.load(tux, function(image){
     
 
       device.open(async function() {
+
+
+        // génération de l'image-texte
+        // const __testtext = "اللغة العربية";
+
+        // const _cnv = document.createElement('canvas');
+
+        // // const _cnv = canvas.createCanvas(
+        // //   config.width,
+        // //   config.lineHeight * 1
+        // // );
+
+        // const _ctx = _cnv.getContext("2d");
+        // _ctx.textAlign = "left";
+        // _ctx.font = "30px bold";
+        // _ctx.fillText(__testtext, 0, 50);
+
+        // // impression de l'image-texte
+        // const image = canvasBuffer(_cnv, 'image/png');
+
+        // impression du reste
+
         
         
          printer
@@ -192,20 +224,6 @@ const actions = {
             // .feed(1)
             // .text('EAN13 barcode example')
             // .barcode('123456789012', 'EAN13') // code length 12
-            .text('windows1256 / cp1256 :')
-            .encode('windows1256')
-            .text("اللغة العربية")
-            .text('iso88596 :')
-            .encode('iso88596')
-            .text("اللغة العربية")
-            .text('cp1046 :')
-            .encode('cp1046')
-            .text("اللغة العربية")
-            .text('cp720 :')
-            .encode('cp720')
-            .text("اللغة العربية")
-            .encode('cp850')
-            .text("اللغة العربية")
             .text('--FIN--')
             .feed(2)
             .cut()
@@ -213,7 +231,7 @@ const actions = {
         }
          
       });
-    });
+    // });
 
     log.info('printTest end');
 
@@ -628,6 +646,13 @@ function _launchPrint(template, printer, contenu, config={}) {
         await _printQRCode(printer, contenu.code);
       } catch(e) {
         _printErrorHandler(e, '_printQRCode', printer);
+      }
+    }
+    else if ('ticket_image' ===  section) {
+      try {
+        await _printTicketImage(printer, contenu.ticket_image);
+      } catch(e) {
+        _printErrorHandler(e, '_printTicketImage', printer);
       }
     }
     else if ('uber' ===  section) {
@@ -1451,6 +1476,13 @@ async function _printQRCode(printer, code) {
     .text(code)
   ;
   
+}
+
+async function _printTicketImage(printer, image2print) {
+
+  const image = new escpos.Image(image2print);
+  await _printImage(printer, image);
+
 }
 
 function getLogoImg(filePath) {

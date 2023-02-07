@@ -1,6 +1,7 @@
 import { peripheralActionTypes } from './peripheralActionTypes';
 import { peripheralServices } from './peripheralServices';
 import { tresorServices } from '../tresorerie/tresorServices';
+// import {canvasBuffer} from 'electron-canvas-to-buffer';
 
 // import packageJson from '../../../package.json';
 
@@ -21,14 +22,968 @@ import { last, lowerCase } from 'lodash';
 import logger from '../../helpers/Logger';
 import { commandeServices } from '../commande/commandeServices';
 import { journalActions } from '../journal/journalActions';
+// import { nativeImage } from 'electron';
+import getPixels from 'get-pixels';
 // import { log } from 'winston';
 // const logger = new Logger();
 const removeDiacritics = remove;
 const strings = new LocalizedStrings(data);
 
+function getPixelsAsync(url) {
+  return new Promise(function(resolve, reject) {
+     getPixels(url, function(err, pixels) {
+          if (err) reject(false)
+          else resolve(pixels)
+      })
+  })
+}
+
+
+
+
+async function _getTicketImage(contenu, params) {
+
+  const config = {
+    width: 480,
+    lineHeight: 32,
+    fontSize: {
+      sm: 24,
+      md: 36,
+      lg: 50
+    }
+  };
+
+
+  const __composition = _getTicketComposition(contenu, params, config);
+  
+  let __totalHeight = last(__composition).y;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = config.width;
+  // canvas.height = 400;
+  canvas.height = __totalHeight;
+  const ctx = canvas.getContext("2d");
+  ctx.direction = params.direction;
+  ctx.textBaseline= "top";
+
+
+  __composition.forEach((ligne) => {
+    if (ligne.action === 'drawLine') {
+      ctx.lineWidth = 5;
+      ctx.fillRect(0, ligne.y, config.width, 3);
+    }
+    else if (ligne.action === 'fillText') {
+      ctx.font = ligne.font;
+      ctx.textAlign = ligne.textAlign;
+      ctx.fillText(ligne.text, ligne.x, ligne.y);
+    }
+  })
+
+
+
+  console.log('📐', canvas.width, canvas.height);
+  const cnvdata = canvas.toDataURL('image/png',.9);
+  
+  const pixels = await getPixelsAsync(cnvdata);
+
+  return pixels;
+}
+
+function _getTicketComposition(contenu, params, config) {
+
+  let composition = [];
+
+
+  let __tabstops = [];
+  const __cmttabstops = [40,70,410];
+  let __y = 50;
+
+  const strings = contenu.strings_alt;
+  const data = contenu.commande;
+
+// PRINT COMMANDE
+
+  composition.push({
+    action: 'drawLine',
+    x: null,
+    y: __y,
+  });
+
+  __y += 60;
+
+  // --- ticketId ---
+  // composition.push({
+  //   action: 'fillText',
+  //   textAlign: "center",
+  //   font: `normal ${config.fontSize.sm}px sans-serif`,
+  //   text: data.id,
+  //   x: config.width/2,
+  //   y: __y,
+  // });
+
+  // __y += config.lineHeight;
+  
+ // --- date ---
+  composition.push({
+    action: 'fillText',
+    textAlign: "center",
+    font: `normal ${config.fontSize.sm}px sans-serif`,
+    text: data.date_alt,
+    x: config.width/2,
+    y: __y,
+  });
+
+  
+  // --- duplicata ---
+  if (data.dupli) {
+    
+    __y += config.lineHeight;
+
+    composition.push({
+      action: 'fillText',
+      textAlign: "center",
+      font: `bold ${config.fontSize.lg}px sans-serif`,
+      text: strings.commande.duplicata,
+      x: config.width/2,
+      y: __y,
+    });
+
+    __y += 50;
+    
+  }
+
+  __y += 60;
+
+  // --- mode de commande ---
+  composition.push({
+    action: 'fillText',
+    textAlign: "center",
+    font: `bold ${config.fontSize.lg}px sans-serif`,
+    text: `*** ${strings.commande.mode[data.mode]} ***`,
+    x: config.width/2,
+    y: __y,
+  });
+
+  __y += 60;
+
+
+  composition.push({
+    action: 'drawLine',
+    x: null,
+    y: __y,
+  });
+
+
+  // --- bipper ---
+  if (data.bipper) {
+
+    __y += config.lineHeight;
+
+    composition.push({
+      action: 'fillText',
+      textAlign: "center",
+      font: `bold ${config.fontSize.lg}px sans-serif`,
+      text: `--- ${strings.commande.bipper}${data.bipper} ---`,
+      x: config.width/2,
+      y: __y,
+    });
+
+    __y += 60;
+
+    composition.push({
+      action: 'drawLine',
+      x: null,
+      y: __y,
+    });
+
+    __y += config.lineHeight;
+  }
+
+  // --- commande programmée ---
+  if (data.scheduled) {
+    composition.push({
+      action: 'fillText',
+      textAlign: "center",
+      font: `bold ${config.fontSize.md}px sans-serif`,
+      text: `<<< ${strings.commande.schedule.titre}${data.scheduled} >>>`,
+      x: config.width/2,
+      y: __y,
+    });
+    __y += 60;
+
+    composition.push({
+      action: 'drawLine',
+      x: null,
+      y: __y,
+    });
+
+    __y += config.lineHeight;
+  }
+
+  // --- commentaire ticket ---
+  if (data.comment!=='') {
+
+    composition.push({
+      action: 'fillText',
+      textAlign: "left", font: `bold ${config.fontSize.sm}px sans-serif`,
+      text: `*`,
+      x: __cmttabstops[0], y: __y,
+    });
+    composition.push({
+      action: 'fillText',
+      textAlign: "left", font: `bold ${config.fontSize.sm}px sans-serif`,
+      text: data.comment,
+      x: __cmttabstops[1], y: __y,
+    });
+    composition.push({
+      action: 'fillText',
+      textAlign: "right", font: `bold ${config.fontSize.sm}px sans-serif`,
+      text: `*`,
+      x: __cmttabstops[2], y: __y,
+    });
+
+    __y += Math.round(config.lineHeight * Math.ceil(data.comment.length / 25));
+
+    composition.push({
+      action: 'drawLine',
+      x: null,
+      y: __y,
+    });
+
+    __y += config.lineHeight;
+  }
+
+  // --- infos client ---
+  if (data.client!==null) {
+
+    composition.push({
+      action: 'fillText',
+      textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+      text:`${strings.commande.client.titre} ${data.client.prenom} ${data.client.nom}`,
+      x: 0, y: __y,
+    });
+    __y += config.lineHeight;
+    
+    if (data.client.adresse!=='') {
+      composition.push({
+        action: 'fillText',
+        textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: data.client.adresse,
+        x: 0, y: __y,
+      });
+      __y += config.lineHeight;
+    }
+    if (data.client.adresse2!=='') {
+      composition.push({
+        action: 'fillText',
+        textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: data.client.adresse2,
+        x: 0, y: __y,
+      });
+      __y += config.lineHeight;
+    }
+    if (data.client.batiment!=='' || data.client.etage!=='') {
+      composition.push({
+        action: 'fillText',
+        textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: `${((data.client.batiment!=='')?strings.commande.client.batiment+data.client.batiment:'')}${((data.client.batiment!=='' && data.client.etage!=='')?' - ':'')}${((data.client.etage!=='')?strings.commande.client.etage+data.client.etage:'')}`,
+        x: 0, y: __y,
+      });
+      __y += config.lineHeight;
+    }
+    if (data.client.codepostal!=='' || data.client.ville!=='') {
+      composition.push({
+        action: 'fillText',
+        textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: `${data.client.codepostal} ${data.client.ville}`,
+        x: 0, y: __y,
+      });
+      __y += config.lineHeight;
+    }
+    if (data.client.telephone!=='' || data.client.telephone2!=='') {
+      composition.push({
+        action: 'fillText',
+        textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: `${strings.commande.client.tel} ${data.client.telephone}${((data.client.telephone!=='' && data.client.telephone2!=='')?' - ':'')}${data.client.telephone2}`,
+        x: 0, y: __y,
+      });
+      __y += config.lineHeight;
+    }
+    if (data.client.commentaire!=='') {
+      composition.push({
+        action: 'fillText',
+        textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: `${strings.commande.client.commentaire} ${data.client.commentaire}`,
+        x: 0, y: __y,
+      });
+      __y += config.lineHeight;
+    }
+
+    composition.push({
+      action: 'drawLine',
+      x: null,
+      y: __y,
+    });
+  }
+
+  __y += 30;
+
+
+  const artcolwidth = (data.status==='confirmed') ? 22 : 24;
+  __tabstops = (data.status==='confirmed') ? [0,45,300,380,450] : [0,45,340,420];
+
+  // --- articles ---
+  // --> header
+
+
+  composition.push({
+    action: 'fillText',
+    textAlign: "left", font: `bold ${config.fontSize.sm}px sans-serif`,
+    text: strings.commande.detail.quantite,
+    x: __tabstops[0], y: __y,
+  });
+  composition.push({
+    action: 'fillText',
+    textAlign: "left", font: `bold ${config.fontSize.sm}px sans-serif`,
+    text: strings.commande.detail.articles,
+    x: __tabstops[1], y: __y,
+  });
+  composition.push({
+    action: 'fillText',
+    textAlign: "left", font: `bold ${config.fontSize.sm}px sans-serif`,
+    text: strings.commande.detail.prix_unitaire,
+    x: __tabstops[2], y: __y,
+  });
+  composition.push({
+    action: 'fillText',
+    textAlign: "left", font: `bold ${config.fontSize.sm}px sans-serif`,
+    text: strings.commande.detail.total,
+    x: __tabstops[3], y: __y,
+  });
+  if (data.status==='confirmed') {
+    composition.push({
+      action: 'fillText',
+      textAlign: "left", font: `bold ${config.fontSize.sm}px sans-serif`,
+      text: strings.commande.detail.code_tva,
+      x: __tabstops[4], y: __y,
+    });
+  }
+  __y += config.lineHeight;
+
+  composition.push({
+    action: 'drawLine',
+    x: null,
+    y: __y,
+  });
+  __y += config.lineHeight;
+
+  //  --> articles :
+  let _linecount = 0;
+
+      
+  data.articles.forEach((article) => {
+
+    if (article.produitid!=='frais') {
+      composition.push({
+        action: 'fillText',
+        textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: article.qte,
+        x: __tabstops[0], y: __y,
+      });
+      composition.push({
+        action: 'fillText',
+        textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: article.nom,
+        x: __tabstops[1], y: __y,
+      });
+      composition.push({
+        action: 'fillText',
+        textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: String(article.pu).replace('.',','),
+        x: __tabstops[2], y: __y,
+      });
+      composition.push({
+        action: 'fillText',
+        textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: (Number(article.qte)*Number(article.pu)).toFixed(2).replace('.',','),
+        x: __tabstops[3], y: __y,
+      });
+
+      if (data.status==='confirmed') {
+        composition.push({
+          action: 'fillText',
+          textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+          text: article.codetva,
+          x: __tabstops[4], y: __y,
+        });
+      }
+      __y += config.lineHeight;
+      
+      // --> commentaire article
+      if (article.comment!=='') {
+
+        composition.push({
+          action: 'fillText',
+          textAlign: "left", font: `bold ${config.fontSize.sm}px sans-serif`,
+          text: `*`,
+          x: __cmttabstops[0], y: __y,
+        });
+        composition.push({
+          action: 'fillText',
+          textAlign: "left", font: `bold ${config.fontSize.sm}px sans-serif`,
+          text: article.comment,
+          x: __cmttabstops[1], y: __y,
+        });
+        composition.push({
+          action: 'fillText',
+          textAlign: "right", font: `bold ${config.fontSize.sm}px sans-serif`,
+          text: `*`,
+          x: __cmttabstops[2], y: __y,
+        });
+
+        __y += Math.round(config.lineHeight * Math.ceil(data.comment.length / 25));
+
+        // composition.push({
+        //   action: 'drawLine',
+        //   x: null,
+        //   y: __y,
+        // });
+
+        __y += config.lineHeight;
+
+
+        _linecount++;
+      }
+      _linecount++;
+
+      if (article.ingredients.length>0) {
+        article.ingredients.forEach((ingredient) => {
+
+          composition.push({
+            action: 'fillText',
+            textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+            text: ingredient.qte,
+            x: __tabstops[0], y: __y,
+          });
+          composition.push({
+            action: 'fillText',
+            textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+            text: ingredient.nom,
+            x: __tabstops[1], y: __y,
+          });
+          composition.push({
+            action: 'fillText',
+            textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+            text: String(ingredient.pu).replace('.',','),
+            x: __tabstops[2], y: __y,
+          });
+          composition.push({
+            action: 'fillText',
+            textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+            text: String(ingredient.prix).replace('.',','),
+            x: __tabstops[3], y: __y,
+          });
+      
+          if (data.status==='confirmed') {
+            composition.push({
+              action: 'fillText',
+              textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+              text: ingredient.codetva,
+              x: __tabstops[4], y: __y,
+            });
+          }
+          __y += config.lineHeight;
+
+          if (ingredient.comment!=='') {
+            composition.push({
+              action: 'fillText',
+              textAlign: "left", font: `bold ${config.fontSize.sm}px sans-serif`,
+              text: `*`,
+              x: __cmttabstops[0], y: __y,
+            });
+            composition.push({
+              action: 'fillText',
+              textAlign: "left", font: `bold ${config.fontSize.sm}px sans-serif`,
+              text: ingredient.comment,
+              x: __cmttabstops[1], y: __y,
+            });
+            composition.push({
+              action: 'fillText',
+              textAlign: "right", font: `bold ${config.fontSize.sm}px sans-serif`,
+              text: `*`,
+              x: __cmttabstops[2], y: __y,
+            });
+      
+            __y += Math.round(config.lineHeight * Math.ceil(data.comment.length / 25));
+      
+            // composition.push({
+            //   action: 'drawLine',
+            //   x: null,
+            //   y: __y,
+            // });
+      
+            __y += config.lineHeight;
+      
+      
+            _linecount++;
+          }
+          _linecount++;
+        });
+      }
+      if (article.modificateur) {
+        const modnom = strings.commande.modificateur.discount_item;
+        const modope = '-';
+        const ispc = String(article.modificateur.valeur).includes('%');
+
+        composition.push({
+          action: 'fillText',
+          textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+          text: modnom,
+          x: __tabstops[1], y: __y,
+        });
+        if (ispc) {
+          composition.push({
+            action: 'fillText',
+            textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+            text: modope+article.modificateur.valeur,
+            x: __tabstops[2], y: __y,
+          });
+        }
+        composition.push({
+          action: 'fillText',
+          textAlign: "right", font: `normal ${config.fontSize.sm}px sans-serif`,
+          text: modope+article.modificateur.montant.toFixed(2).replace('.',','),
+          x: __tabstops[3], y: __y,
+        });
+        __y += config.lineHeight;
+
+        _linecount++;
+      }
+
+    } 
+    // --> frais de commande
+    else {
+      composition.push({
+        action: 'fillText',
+        textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: article.nom.toUpperCase(),
+        x: __tabstops[1], y: __y,
+      });
+      composition.push({
+        action: 'fillText',
+        textAlign: "right", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: '+'+String(article.pu).replace('.',','),
+        x: __tabstops[3], y: __y,
+      });
+      if (data.status==='confirmed') {
+        composition.push({
+          action: 'fillText',
+          textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+          text: article.codetva,
+          x: __tabstops[4], y: __y,
+        });
+      }
+      __y += config.lineHeight;
+      _linecount++;
+    }
+
+  });
+
+  // modificateurs (charge ou discount) au niveau de la commande
+  if (data.modificateur) {
+    const modnom = strings.commande.modificateur.discount_panier;
+    const modope = '-';
+    const ispc = String(data.modificateur.valeur).includes('%');;
+    let cmdmodval = Math.abs(ispc 
+      ? Number(String(data.modificateur.valeur).slice(0, -1))
+      : Number(String(data.modificateur.valeur).slice(0, -data.modificateur.symbolemonnaie.length))
+    );
+
+    // --- sous-total ---
+    composition.push({
+      action: 'fillText',
+      textAlign: "right", font: `normal ${config.fontSize.sm}px sans-serif`,
+      text: `${strings.commande.detail.sous_total}   ${data.total.soustotal.toFixed(2).replace('.',',')}`,
+      x: __tabstops[4], y: __y,
+    });
+
+    __y += config.lineHeight;
+
+    composition.push({
+      action: 'drawLine',
+      x: null,
+      y: __y,
+    });
+
+    __y += 15;
+
+    composition.push({
+      action: 'drawLine',
+      x: null,
+      y: __y,
+    });
+    
+    __y += config.lineHeight;
+
+
+    composition.push({
+      action: 'fillText',
+      textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+      text: modnom,
+      x: __tabstops[1], y: __y,
+    });
+    if (ispc) {
+      composition.push({
+        action: 'fillText',
+        textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: modope+data.modificateur.valeur,
+        x: __tabstops[2], y: __y,
+      });
+    }
+    composition.push({
+      action: 'fillText',
+      textAlign: "right", font: `normal ${config.fontSize.sm}px sans-serif`,
+      text: ispc ? modope+data.modificateur.montant.toFixed(2).replace('.',',') : modope+Number(cmdmodval).toFixed(2).replace('.',','),
+      x: __tabstops[3], y: __y,
+    });
+    __y += config.lineHeight;
+
+    _linecount++;
+
+  }
+
+  // --- total ---
+
+
+  composition.push({
+    action: 'drawLine',
+    x: null,
+    y: __y,
+  });
+
+  __y += config.lineHeight;
+
+
+  composition.push({
+    action: 'fillText',
+    textAlign: "right", font: `bold ${config.fontSize.md}px sans-serif`,
+    text: `${data.total.total.replace('.',',')}    ${strings.commande.detail.total_ttc}`,
+    x: config.width, y: __y,
+  });
+  __y += config.fontSize.md + 10;
+
+  composition.push({
+    action: 'drawLine',
+    x: null,
+    y: __y,
+  });
+
+  __y += config.lineHeight;
+
+
+  composition.push({
+    action: 'fillText',
+    textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+    text: `${strings.commande.detail.nbr_lignes} ${_linecount}`,
+    x: 0, y: __y,
+  });
+  
+  __y += config.lineHeight;
+
+  composition.push({
+    action: 'drawLine',
+    x: null,
+    y: __y,
+  });
+
+  __y += config.lineHeight;
+
+
+  // --- uniquement sur ticket ---
+  if (data.status==='confirmed') {
+
+    //  --- total remise ---
+
+    composition.push({
+      action: 'fillText',
+      textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+      text: `${strings.commande.detail.avant_remise} ${data.total.avantremise.replace('.',',')}`,
+      x: 0, y: __y,
+    });
+    __y += config.lineHeight;
+    composition.push({
+      action: 'fillText',
+      textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+      text: `${strings.commande.detail.total_remise} ${data.total.remise.replace('.',',')}`,
+      x: 0, y: __y,
+    });
+    __y += config.lineHeight;
+    composition.push({
+      action: 'drawLine',
+      x: null,
+      y: __y,
+    });
+    __y += config.lineHeight;
+
+    // --- tva ---
+
+    __tabstops = [0,70,160,275,390];
+
+    // header
+    composition.push({
+      action: 'fillText',
+      textAlign: "left", font: `bold ${config.fontSize.sm}px sans-serif`,
+      text: strings.commande.tva.code,
+      x: __tabstops[0], y: __y,
+    });
+    composition.push({
+      action: 'fillText',
+      textAlign: "right", font: `bold ${config.fontSize.sm}px sans-serif`,
+      text: strings.commande.tva.taux,
+      x: __tabstops[1], y: __y,
+    });
+    composition.push({
+      action: 'fillText',
+      textAlign: "right", font: `bold ${config.fontSize.sm}px sans-serif`,
+      text: strings.commande.tva.tva,
+      x: __tabstops[2], y: __y,
+    });
+    composition.push({
+      action: 'fillText',
+      textAlign: "right", font: `bold ${config.fontSize.sm}px sans-serif`,
+      text: strings.commande.tva.ht,
+      x: __tabstops[3], y: __y,
+    });
+    composition.push({
+      action: 'fillText',
+      textAlign: "right", font: `bold ${config.fontSize.sm}px sans-serif`,
+      text: strings.commande.tva.ttc,
+      x: __tabstops[4], y: __y,
+    });
+
+    __y += config.lineHeight;
+
+    // body
+    for (let value of data.total.tva) {
+
+
+      composition.push({
+        action: 'fillText',
+        textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: value.code,
+        x: __tabstops[0], y: __y,
+      });
+      composition.push({
+        action: 'fillText',
+        textAlign: "right", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: value.taux.toString().replace('.',','),
+        x: __tabstops[1], y: __y,
+      });
+      composition.push({
+        action: 'fillText',
+        textAlign: "right", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: value.taxe.replace('.',','),
+        x: __tabstops[2], y: __y,
+      });
+      composition.push({
+        action: 'fillText',
+        textAlign: "right", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: value.ht.replace('.',','),
+        x: __tabstops[3], y: __y,
+      });
+      composition.push({
+        action: 'fillText',
+        textAlign: "right", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: value.ttc.replace('.',','),
+        x: __tabstops[4], y: __y,
+      });
+    
+      __y += config.lineHeight;
+    }
+
+
+    // footer
+    composition.push({
+      action: 'fillText',
+      textAlign: "left", font: `bold ${config.fontSize.sm}px sans-serif`,
+      text: strings.commande.tva.total,
+      x: __tabstops[0], y: __y,
+    });
+    composition.push({
+      action: 'fillText',
+      textAlign: "right", font: `bold ${config.fontSize.sm}px sans-serif`,
+      text: data.total.taxe.replace('.',','),
+      x: __tabstops[2], y: __y,
+    });
+    composition.push({
+      action: 'fillText',
+      textAlign: "right", font: `bold ${config.fontSize.sm}px sans-serif`,
+      text: data.total.ht.replace('.',','),
+      x: __tabstops[3], y: __y,
+    });
+    composition.push({
+      action: 'fillText',
+      textAlign: "right", font: `bold ${config.fontSize.sm}px sans-serif`,
+      text: data.total.total.replace('.',','),
+      x: __tabstops[4], y: __y,
+    });
+    __y += config.lineHeight;
+
+  }
+  // --- reglements ---
+  if (data.reglements.length>0) {
+    
+    composition.push({
+      action: 'drawLine',
+      x: null,
+      y: __y,
+    });
+    __y += config.lineHeight;
+
+  composition.push({
+    action: 'fillText',
+    textAlign: "center", font: `normal ${config.fontSize.sm}px sans-serif`,
+    text: strings.commande.reglements.titre,
+    x: config.width/2, y: __y,
+  });
+  __y += config.lineHeight;
+
+      data.reglements.forEach(reglement => {
+        composition.push({
+          action: 'fillText',
+          textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+          text: reglement.lib,
+          x: 100, y: __y,
+        });
+        composition.push({
+          action: 'fillText',
+          textAlign: "right", font: `normal ${config.fontSize.sm}px sans-serif`,
+          text:`${reglement.valeur.replace('.',',')} ${data.devise}`,
+          x: config.width, y: __y,
+        });
+        __y += config.lineHeight;
+      });
+  }
+  // ou à régler
+  else {
+    // à condition qu'il y ait quelque chose à régler...
+    if (data.total.total>0) {
+
+      composition.push({
+        action: 'drawLine',
+        x: null,
+        y: __y,
+      });
+      __y += config.lineHeight;
+
+      composition.push({
+        action: 'fillText',
+        textAlign: "center", font: `bold ${config.fontSize.md}px sans-serif`,
+        text: `${strings.commande.reglements.a_regler}   ${data.total.total.replace('.',',')}`,
+        x: config.width/2, y: __y,
+      });
+      __y += config.fontSize.md + 10;
+    }
+  }
+
+  // --- rendu monnaie ---
+  if (data.rendus.length>0) {
+
+    composition.push({
+      action: 'drawLine',
+      x: null,
+      y: __y,
+    });
+    __y += config.lineHeight;
+
+    composition.push({
+      action: 'fillText',
+      textAlign: "center", font: `normal ${config.fontSize.sm}px sans-serif`,
+      text: strings.commande.rendu.titre,
+      x: config.width/2, y: __y,
+    });
+    __y += config.lineHeight;
+
+    data.rendus.forEach(rendu => {
+      composition.push({
+        action: 'fillText',
+        textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: rendu.moyen,
+        x: 100, y: __y,
+      });
+      composition.push({
+        action: 'fillText',
+        textAlign: "right", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: `${rendu.valeur.toFixed(2).replace('.',',')} ${data.devise}`,
+        x: config.width, y: __y,
+      });
+      __y += config.lineHeight;
+    });
+  }
+  if (data.troppercu.length>0) {
+
+    composition.push({
+      action: 'drawLine',
+      x: null,
+      y: __y,
+    });
+    __y += config.lineHeight;
+
+    data.troppercu.forEach(troppercu => {
+      composition.push({
+        action: 'fillText',
+        textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: strings.commande.troppercu.titre,
+        x: 100, y: __y,
+      });
+      composition.push({
+        action: 'fillText',
+        textAlign: "right", font: `normal ${config.fontSize.sm}px sans-serif`,
+        text: `${troppercu.valeur.toFixed(2).replace('.',',')} ${data.devise}`,
+        x: config.width, y: __y,
+      });
+      __y += config.lineHeight;
+    });
+  }
+
+  composition.push({
+    action: 'drawLine',
+    x: null,
+    y: __y,
+  });
+
+
+
+  composition.push({
+    action: null,
+    y: __y + 50,
+  });
+
+  return composition;
+}
+
 function printTest(payload) {
-  return dispatch => {
-    peripheralServices.printTest()
+  return async dispatch => {
+
+    const __testtext = "اللغة العربية";
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext("2d");
+    context.textAlign = "left";
+    context.direction = "rtl";
+    context.font = "50px regular";
+    context.fillText(__testtext, 0, 50);
+    
+    const data = canvas.toDataURL('image/png',.9);
+    
+    const pixels = await getPixelsAsync(data);
+    
+    
+    console.log(pixels);
+
+//    const image = canvasBuffer(canvas, 'image/png');
+
+
+    peripheralServices.printTest(pixels)
     .then(
       response => {
         logger.info(response);
@@ -709,9 +1664,14 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           template = (ticket.template==='uber') ? templates.uber : ( (ticket.template==='deliveroo') ? templates.uber : templates.commande );
           template = [...template];
           if (options.hasOwnProperty('secondelangue') && options.secondelangue!==null) {
-            // console.log('🖨 AVANT', template);
-            template.splice(template.indexOf('legal') + 1, 0, 'separateur', 'commande_alt', 'legal_alt');
-            // console.log('🖨 APRES', template);
+            // si la seconde langue est en traitement direct
+            if (data[options.secondelangue].params.treatment==='direct') {
+              template.splice(template.indexOf('legal') + 1, 0, 'separateur', 'commande_alt', 'legal_alt');
+            }
+            // si la seconde langue est en traitement image
+            else {
+              template.splice(template.indexOf('legal') + 1, 0, 'separateur', 'ticket_image');
+            }
           }
 
           // const cmdTva = {};
@@ -916,44 +1876,6 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
           // modificateurs pour la commande
           __modificateur = cmd.modificateurs.find(c => c.item===null && c.ingredient===null);
-        //   if (__modificateur) {
-        // //   total += Number(__modificateur.valeur);
-
-        //     const ispc = String(__modificateur.valeur).substr(-1,1)==='%';
-        //     const val = Math.abs(Number(String(__modificateur.valeur).slice(0,-1)));
-        //     const montant = ispc ? total * (val/100) : val;
-
-        //     __modificateur = {...__modificateur, montant: montant};
-
-        //     // conversion du modificateur en coefficient
-        //     const modtx = (ispc)
-        //     ? (
-        //       __modificateur.operation>0 
-        //       ? (100 + val) / 100
-        //       : (100 - val) / 100
-        //       ) 
-        //     : (
-        //       __modificateur.operation>0 
-        //       ? 1 + (val/total)
-        //       : 1 - (val/total)
-        //       )
-        //     ;
-
-        //     if (ispc) {
-        //       total *= __modificateur.operation>0 ? (100 + val) / 100 : (100 - val) / 100;
-        //     } else {
-        //       total = __modificateur.operation>0 ? total + val : total - val;
-        //     }
-
-
-            // // application de la réduction aux taux de tva
-            // Object.entries(cmdTva).forEach(([key, value])=> {
-            //   cmdTva[key].montant *= modtx; 
-            //   cmdTva[key].ht *= modtx; 
-            //   cmdTva[key].ttc *= modtx; 
-            // });
-
-          // }
 
           let ventiltva = null;
           if (piece['TVA']) {
@@ -1027,16 +1949,6 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               url: peripheriques.promo_url
             };
           }
-
-
-          // let _extrait_sign = '';
-          // // caractères 3, 7, 13, 19 de la signature
-          // if (cmd.signature) {
-          //   _extrait_sign += cmd.signature.substring(2,3);
-          //   _extrait_sign += cmd.signature.substring(6,7);
-          //   _extrait_sign += cmd.signature.substring(12,13);
-          //   _extrait_sign += cmd.signature.substring(18,19);
-          // }
 
           // traitement du duplicata
           let _dupli_sign = '';
@@ -1134,6 +2046,13 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           if (ticket.template==='deliveroo') {
             let heurecmt = cmd.comments.find(c => c.item==='heure' && c.ingredient===null);
             contenu = {...contenu, deliveroo: { display_id: cmd.client.client_id, heure: format(new Date(heurecmt['texte']), 'HH:mm') }};
+          }
+
+          // si le template contient "ticket_image", on crée un ticket image à partir des données
+          // (cas des systèmes d'écritures non latins)
+          if (template.includes('ticket_image')) {
+            const image = await _getTicketImage(contenu, data[options.secondelangue].params);
+            contenu = {...contenu, ticket_image: image};
           }
 
         }

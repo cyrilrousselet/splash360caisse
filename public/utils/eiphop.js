@@ -9,7 +9,7 @@ const getMsg = (msg, dump = {}) =>
 const log = {
 	error: (msg, dump = {}) => logger.error(getMsg(msg, dump)),
 	warn: (msg, dump = {}) => logger.warn(getMsg(msg, dump)),
-	info: (msg, dump = {}) => logger.info(getMsg(msg, dump)),
+	info: (msg, dump = {}) => logger.info(getMsg(msg)),
 };
 
 const isPromise = (obj) => {
