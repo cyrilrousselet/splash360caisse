@@ -22,7 +22,7 @@ const mapDispatchToProps = (dispatch) => {
     updateTicket: peripheralActions.updateTicket,
     createTicket: peripheralActions.createTicket,
     deleteTicket: peripheralActions.deleteTicket,
-    printTest: peripheralActions.printTest,
+    // printTest: peripheralActions.printTest,
   },dispatch);
 }
 

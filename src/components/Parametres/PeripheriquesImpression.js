@@ -580,7 +580,7 @@ class PeripheriquesImpression extends React.Component {
           {tickets && <ListeImpression liste={tickets_liste} type="tickets" id='ticketsliste' openEdit={this.openTicketEdit} />}
         </div>
       </div>
-      <StdButton 
+    {/*  <StdButton 
         identifier="printtest" 
         elementclass="printtest" 
         icon={ false } 
@@ -588,6 +588,7 @@ class PeripheriquesImpression extends React.Component {
         text={ 'Print test' } 
         onClick={() => {this.props.printTest()}} 
       />
+      */}
       <EditImprimantePopin imprimante={imprimante} editOpen={editImprimanteOpen} allprinters={imprimantes_liste} closeHandler={this.closeImprimanteEdit} saveImprimante={this.saveImprimante} />
       <EditTicketPopin ticket={ticket} editOpen={editTicketOpen} allprinters={imprimantes_liste} closeHandler={this.closeTicketEdit} saveTicket={this.saveTicket} />
     </div>
