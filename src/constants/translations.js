@@ -1491,6 +1491,11 @@ const data = {
                     surplace: 'SUR PLACE',
                     emporter: 'A EMPORTER'
                 },
+                mode_short: {
+                    livraison: 'LIV',
+                    surplace: 'SPL',
+                    emporter: 'EMP'
+                },
                 status: {
                     standby: "En attente",
                     a_encaisser: "À Encaisser",

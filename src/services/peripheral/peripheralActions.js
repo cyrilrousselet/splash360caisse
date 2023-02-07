@@ -1448,92 +1448,94 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           let articles = [];
           cmd.items.forEach(article => {
 
-            let articleIngredients = [];
-            let ingredientsAsProducts = [];
-            let __comment = null;
+            if (article.produitid!=='frais') {
+
+              let articleIngredients = [];
+              let ingredientsAsProducts = [];
+              let __comment = null;
 
 
-            const inglist = [...article.composition, ...article.ingredients];
+              const inglist = [...article.composition, ...article.ingredients];
 
 
-            inglist.forEach(ing => {
+              inglist.forEach(ing => {
 
-              const ingnoprint = (ingredients[ing.ingredient].noprint!==null && ingredients[ing.ingredient].noprint!==undefined) ? ingredients[ing.ingredient].noprint : [];
+                const ingnoprint = (ingredients[ing.ingredient].noprint!==null && ingredients[ing.ingredient].noprint!==undefined) ? ingredients[ing.ingredient].noprint : [];
 
-              // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
-              let __noprint = ingnoprint.find(p=>p===ticket.ticket_id);
+                // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
+                let __noprint = ingnoprint.find(p=>p===ticket.ticket_id);
 
-              // // ordre du type d'ingrédient
-              // let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
-              // // ordre du type d'ingrédient (défini dans les paramètres)
-              // if (impression_ordre && impression_ordre.types) {
-              //   let __typeweight = impression_ordre.types.findIndex(t=>t===ing.type);
-              //   if (__typeweight>-1) __ingweight = __typeweight;
-              // }
+                // // ordre du type d'ingrédient
+                // let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
+                // // ordre du type d'ingrédient (défini dans les paramètres)
+                // if (impression_ordre && impression_ordre.types) {
+                //   let __typeweight = impression_ordre.types.findIndex(t=>t===ing.type);
+                //   if (__typeweight>-1) __ingweight = __typeweight;
+                // }
 
 
-              let __ingweight = -1;
-              // ordre des ingrédients : d'abord la composition puis les ingrédients dans l'ordre de leur step
-              if (ing.fromStep!==null) {
-                const iistep = steps[article.produitid].find(s=>s.step_id===ing.fromStep);
-                if (iistep) {
-                  __ingweight = iistep.weight;
+                let __ingweight = -1;
+                // ordre des ingrédients : d'abord la composition puis les ingrédients dans l'ordre de leur step
+                if (ing.fromStep!==null) {
+                  const iistep = steps[article.produitid].find(s=>s.step_id===ing.fromStep);
+                  if (iistep) {
+                    __ingweight = iistep.weight;
+                  }
                 }
-              }
 
 
-              if (!__noprint) {
-                if (ingredients[ing.ingredient].asproduct) {
-                  ingredientsAsProducts.push({
+                if (!__noprint) {
+                  if (ingredients[ing.ingredient].asproduct) {
+                    ingredientsAsProducts.push({
+                        qte: ing.qte * article.quantite,
+                        nom: removeDiacritics(ing.nom),
+                        ingredients: []
+                    });
+                  } else {
+                    articleIngredients.push({
                       qte: ing.qte * article.quantite,
                       nom: removeDiacritics(ing.nom),
-                      ingredients: []
-                  });
-                } else {
-                  articleIngredients.push({
-                    qte: ing.qte * article.quantite,
-                    nom: removeDiacritics(ing.nom),
-                    weight: __ingweight
-                  });
+                      weight: __ingweight
+                    });
+                  }
                 }
+              });
+
+
+              __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
+
+              articleIngredients.sort((a,b)=>a.weight-b.weight);
+
+              const prd = _getProduit(article.produitid, catalogue);
+              const prdnoprint = prd.noprint!=null ? prd.noprint : catalogue[prd.groupe].noprint;
+              // si le groupe de produits ne doit pas s'imprimer sur ce ticket
+              let __anoprint = prdnoprint.find(p=>p===ticket.ticket_id);
+
+              // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
+              let __noprintableingredient = (inglist.length>0 && articleIngredients.length===0);
+              // let __noprintableingredient = false;
+              // if (inglist.length>0) {
+              //   if (ingredientsAsProducts.length>0) __noprintableingredient = ingredientsAsProducts.length===inglist.length;
+              // } 
+              
+              // si le groupe doit s'imprimer sur ce ticket
+              // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
+              // on ajoute ce produit à la liste à imprimer
+              // if (!__noprintableingredient && (!__anoprint || (__anoprint && articleIngredients.length>0))) {
+              if (!__noprintableingredient && !__anoprint) {
+              // if (!__anoprint) {
+                articles.push({
+                  qte: article.quantite,
+                  nom: removeDiacritics(article.nom),
+                  ingredients: articleIngredients,
+                  comment: __comment ? removeDiacritics(__comment.texte) : ''
+                });        
               }
-            });
-
-
-            __comment = cmd.comments.find(c => c.item===article.itemid && c.ingredient===null);
-
-            articleIngredients.sort((a,b)=>a.weight-b.weight);
-
-            const prd = _getProduit(article.produitid, catalogue);
-            const prdnoprint = prd.noprint!=null ? prd.noprint : catalogue[prd.groupe].noprint;
-            // si le groupe de produits ne doit pas s'imprimer sur ce ticket
-            let __anoprint = prdnoprint.find(p=>p===ticket.ticket_id);
-
-            // si le produit a des ingrédients mais qu'aucun d'entre eux ne doit s'imprimer sur le ticket
-            let __noprintableingredient = (inglist.length>0 && articleIngredients.length===0);
-            // let __noprintableingredient = false;
-            // if (inglist.length>0) {
-            //   if (ingredientsAsProducts.length>0) __noprintableingredient = ingredientsAsProducts.length===inglist.length;
-            // } 
-            
-            // si le groupe doit s'imprimer sur ce ticket
-            // ou si au moins un de ses ingrédients doit s'imprimer sur ce ticket
-            // on ajoute ce produit à la liste à imprimer
-            // if (!__noprintableingredient && (!__anoprint || (__anoprint && articleIngredients.length>0))) {
-            if (!__noprintableingredient && !__anoprint) {
-            // if (!__anoprint) {
-              articles.push({
-                qte: article.quantite,
-                nom: removeDiacritics(article.nom),
-                ingredients: articleIngredients,
-                comment: __comment ? removeDiacritics(__comment.texte) : ''
-              });        
+              if (ingredientsAsProducts.length>0 && !__anoprint) {
+              // if (ingredientsAsProducts.length>0) {
+                articles = [...articles, ...ingredientsAsProducts];
+              }
             }
-            if (ingredientsAsProducts.length>0 && !__anoprint) {
-            // if (ingredientsAsProducts.length>0) {
-              articles = [...articles, ...ingredientsAsProducts];
-            }
-
           });
 
 
@@ -1542,7 +1544,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
           contenu = {
             numero: cmdnumero,
-            mode: strings.tickets.production.mode[cmd.mode],
+            mode: strings.tickets.production.mode_short[cmd.mode],
+            bipper: cmd.bipper || null,
             date: `${format(__createdAt, "dd/MM/yyyy")} à ${heure}`,
             articles: articles
           };

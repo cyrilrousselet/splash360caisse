@@ -10,10 +10,20 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 - Version arabe de l'impression bilingue
 - Prise en charge des promotions Luckylikes
 
+## [1.1.0+5] - 2023-02-07
+### Added
+- Ajout du mode de commande (abrégé) et du numéro de bipper sur les étiquettes (print label)
+
+### Changed
+- Correction de l'impression des étiquettes, filtrage des frais de service
+
+
 ## [1.1.0+4] - 2023-02-01
+
 ### Changed
 - Correction de la sélection des dates d'affichage de la liste des commandes
 - Possibilité de changer le CodeTable de l'imprimante ESC/POS
+- Correction de l'impression des étiquettes, filtrage des frais de service
 
 ### Disabled
 - Impression bilingue

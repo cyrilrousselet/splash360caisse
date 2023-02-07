@@ -741,16 +741,24 @@ function _printEtiquettes(printer, data, config) {
 
       const __date = ('TEXT 150,10,"2",0,1,1,"%DATETIME%"').replace('%DATETIME%', data.date);
       __printlist.push(__date);
+      
+      const __mod = ('TEXT 10,50,"2",0,2,2,"%MODE%"').replace('%MODE%', data.mode);
+      __printlist.push(__mod);
+      
+      if (data.bipper) {
+        const __bip = ('TEXT 200,50,"2",0,2,2,"BIP %BIPPER%"').replace('%BIPPER%', data.bipper);
+        __printlist.push(__bip);
+      }
 
-      __printlist.push('BAR 10,50,' + (__w - 20) + ',4');
+      __printlist.push('BAR 10,90,' + (__w - 20) + ',4');
 
-      const __frc = ('TEXT 10,70,"2",0,1,1,"%FRACTION%"').replace('%FRACTION%', currentarticle+'/'+totalarticles);
+      const __frc = ('TEXT 10,110,"2",0,1,1,"%FRACTION%"').replace('%FRACTION%', currentarticle+'/'+totalarticles);
       __printlist.push(__frc);
 
-      const __prd = ('TEXT 10,90,"2",0,1,2,"%PRD%"').replace('%PRD%', art.nom);
+      const __prd = ('TEXT 10,130,"2",0,1,2,"%PRD%"').replace('%PRD%', art.nom);
       __printlist.push(__prd);
 
-      let __y = 135;
+      let __y = 175;
 
       if (art.comment!=='') {
         const __cmt = ('TEXT 15,%Y%,"2",0,1,1,"-- %CMT% --"').replace('%Y%', __y).replace('%CMT%',art.comment);
