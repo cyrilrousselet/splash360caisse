@@ -95,7 +95,8 @@ function getNewCommande(params) {
     shippedAt: null,
     chronoLivraison: 0,
     beneficiaire: params.beneficiaire ? params.beneficiaire : null,
-    devise: params.devise || {iso: 'EUR', nom: 'euro', nom_pl: 'euros', symbole: '€'}
+    devise: params.devise || {iso: 'EUR', nom: 'euro', nom_pl: 'euros', symbole: '€'},
+    bipper: params.bipper ? params.bipper : null,
   };
 }
 

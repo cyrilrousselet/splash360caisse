@@ -41,6 +41,7 @@ import LoginCont from '../../containers/LoginCont';
 // import { formatRFC3339 } from 'date-fns';
 // import { add, isBefore, format } from 'date-fns';
 import { add, sub, differenceInHours, format, isBefore, set } from 'date-fns';
+import GiftIcon from '../common/icon/GiftIcon';
 
 
 let strings = new LocalizedStrings(data);
@@ -1582,6 +1583,11 @@ class Panier extends React.Component {
     this.setState({cmdMode:true, cmdModeOpen: false});
   }
 
+
+  openGiftIinput() {
+    console.log('openGiftInput');
+  }
+
   interval = 0;
 
   render() {
@@ -1808,7 +1814,7 @@ logger.info('⏰', schedule_delay);
       this.setState({inputfocus:true, selectedIndex:-1, selectedIngredient:-1, cmdMode:null});
       openReglement();
     }
-
+    
 
     const getDiscount = (item) => {
 
@@ -1864,6 +1870,9 @@ logger.info('⏰', schedule_delay);
           {/* <div className="ticketId">{ (this.interval==0?'X':'√')+strings.modules.encaissement.panier.ticket_no+' '+ticketId }</div> */}
           <div className="ticketId">{ strings.modules.encaissement.panier.ticket_no+' '+_.last(ticketId.split('-')) }</div>
           <div className="ticketComment"></div>
+           {/*<div className="gift">
+            <GiftIcon className={`ico-gift ${((this.props.commande.gift!==null && this.props.commande.gift!==undefined)?'gift-set':'')}`} onClick={this.openGiftIinput} />
+    </div> */}
           <div className="schedule">
             <AlarmIcon className={`ico-schedule ${((this.props.commande.scheduled!==null && this.props.commande.scheduled!==undefined)?'schedule-set':'')}`} onClick={this.openSchedule} />
           </div>

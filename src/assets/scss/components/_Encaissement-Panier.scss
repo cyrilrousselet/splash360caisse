@@ -45,6 +45,15 @@
                 fill: $vert;
             }
         }
+        .gift {
+            .ico-gift {
+                width: 20px;
+                cursor: pointer;
+                &.gift-set {
+                    fill: $vert;
+                }
+            }
+        }
         .bipper {
             margin-top: -5px;
             .ico-bipper {

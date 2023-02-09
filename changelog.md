@@ -9,6 +9,12 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 - Sauvegarde des z de caisse au niveau du backend
 - Prise en charge des promotions Luckylikes
 
+
+## [1.1.0+6] - 2023-02-09
+### Added
+- Prise en charge du bipper dans les commandes télétransmises (bornes, clic&collect, etc.)
+
+
 ## [1.1.0+5] - 2023-02-07
 ### Added
 - Ajout du mode de commande (abrégé) et du numéro de bipper sur les étiquettes (print label)
