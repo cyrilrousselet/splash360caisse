@@ -5,7 +5,7 @@ import StdButton from '../common/StdButton';
 
 import { List, ListItem, Fab, Modal, TextField, ListItemText, ListItemIcon, ListItemSecondaryAction, Badge } from '@material-ui/core';
 import Swal from 'sweetalert2';
-import _ from 'lodash';
+import _, { last } from 'lodash';
 import AlarmIcon from '@material-ui/icons/Alarm';
 
 import PlusIcon from '../common/icon/PlusIcon';
@@ -772,6 +772,7 @@ class Panier extends React.Component {
       ouvertureOpen: false,
       cmdModeOpen: false,
       cmdMode: null,
+      giftOpen: false,
       solde: 0,
     }
     this.setSelectedIndex = this.setSelectedIndex.bind(this);
@@ -818,6 +819,9 @@ class Panier extends React.Component {
     this.openCmdMode = this.openCmdMode.bind(this);
     this.setCmdMode = this.setCmdMode.bind(this);
     this.closeCmdMode = this.closeCmdMode.bind(this);
+
+    this.openGiftIinput = this.openGiftIinput.bind(this);
+    this.closeGiftIinput = this.closeGiftIinput.bind(this);
 
   }
 
@@ -1151,11 +1155,24 @@ class Panier extends React.Component {
       decoded += decodetable[platform][caractere];
     }
     if (String(decoded).length>0) {
-      this.send_to_search(decoded);
+      if (this.state.giftOpen) {
+        this.getGift(decoded);
+      } else {
+        this.send_to_search(decoded);
+      }
     }
     return false;
   }
 
+  getGift(value) {
+    // on découpe la valeur (probablement une URL) selon les "/"
+    // et on utilise la dernière partie
+    const value_ar = value.split('/');
+    const id = last(value_ar);
+    if (id) {
+      this.props.searchGift(id);
+    }
+  }
 
   // TODO : faire une requête plutôt que charger la liste des commandes
   // pbm : latence de l'encaissement si on met à jour la liste des commandes
@@ -1586,6 +1603,10 @@ class Panier extends React.Component {
 
   openGiftIinput() {
     console.log('openGiftInput');
+    this.setState({giftOpen: true});
+  }
+  closeGiftIinput() {
+    this.setState({giftOpen: false});
   }
 
   interval = 0;
@@ -1624,6 +1645,7 @@ class Panier extends React.Component {
            ouvertureOpen,
            scheduleOpen,
            cmdModeOpen,
+           giftOpen,
            solde,
           } = this.state;
 
@@ -1870,9 +1892,9 @@ logger.info('⏰', schedule_delay);
           {/* <div className="ticketId">{ (this.interval==0?'X':'√')+strings.modules.encaissement.panier.ticket_no+' '+ticketId }</div> */}
           <div className="ticketId">{ strings.modules.encaissement.panier.ticket_no+' '+_.last(ticketId.split('-')) }</div>
           <div className="ticketComment"></div>
-           {/*<div className="gift">
+          <div className="gift">
             <GiftIcon className={`ico-gift ${((this.props.commande.gift!==null && this.props.commande.gift!==undefined)?'gift-set':'')}`} onClick={this.openGiftIinput} />
-    </div> */}
+          </div>
           <div className="schedule">
             <AlarmIcon className={`ico-schedule ${((this.props.commande.scheduled!==null && this.props.commande.scheduled!==undefined)?'schedule-set':'')}`} onClick={this.openSchedule} />
           </div>

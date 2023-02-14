@@ -2136,10 +2136,10 @@ function setCommandeFromOrder(provider, payload) {
 
     let data = {
       ...payload,
-      operator: { id: -1, nom: "UberEats", type: "UberEats" },
-      caisse: { id: -1, nom: "UberEats", type: "UberEats" },
-      operator_encaissement: { id: -1, nom: "UberEats", type: "UberEats" },
-      caisse_encaissement: { id: -1, nom: "UberEats", type: "UberEats" },
+      operator: { id: -1, nom: "UberEats", type: "UberEats", uniqid: "-1" },
+      caisse: { id: -1, nom: "UberEats", type: "UberEats", uniqid: "-1" },
+      operator_encaissement: { id: -1, nom: "UberEats", type: "UberEats", uniqid: "-1" },
+      caisse_encaissement: { id: -1, nom: "UberEats", type: "UberEats", uniqid: "-1" },
       enproduction: true,
       reglements: [
         {
@@ -2346,12 +2346,12 @@ function setCommandeFromAPI(payload) {
           ...datacommande,
           enproduction: true,
           provider: data.provider,
-          operator: {id:'clickandcollect', nom:'clickandcollect'},
-          caisse: {id:'clickandcollect', nom:'clickandcollect', type:'clickandcollect'}
+          operator: {id:'clickandcollect', nom:'clickandcollect', uniqid: "-1"},
+          caisse: {id:'clickandcollect', nom:'clickandcollect', type:'clickandcollect', uniqid: "-1"}
         };
         if (data.reglements) {
-          data.operator = {id:'clickandcollect', nom:'clickandcollect'};
-          data.caisse = {id:'clickandcollect', nom:'clickandcollect', type:'clickandcollect'};
+          data.operator = {id:'clickandcollect', nom:'clickandcollect', uniqid: "-1"};
+          data.caisse = {id:'clickandcollect', nom:'clickandcollect', type:'clickandcollect', uniqid: "-1"};
           data.reglements = data.reglements.map(r => ( (r.reglementId) ? {...r} : {...r, reglementId: LodashId.createId()}) );
         }
       } 
@@ -2361,13 +2361,13 @@ function setCommandeFromAPI(payload) {
           ...datacommande,
           enproduction: true,
           provider: data.provider,
-          operator: {id:'deliveroo', nom:'deliveroo'},
-          caisse: {id:'deliveroo', nom:'deliveroo', type:'deliveroo'},
+          operator: {id:'deliveroo', nom:'deliveroo', uniqid: "-1"},
+          caisse: {id:'deliveroo', nom:'deliveroo', type:'deliveroo', uniqid: "-1"},
           status: 'confirmed'
         };
         if (data.reglements) {
-          data.operator = {id:'deliveroo', nom:'deliveroo'};
-          data.caisse = {id:'deliveroo', nom:'deliveroo', type:'deliveroo'};
+          data.operator = {id:'deliveroo', nom:'deliveroo', uniqid: "-1"};
+          data.caisse = {id:'deliveroo', nom:'deliveroo', type:'deliveroo', uniqid: "-1"};
           data.reglements = data.reglements.map(r => ( (r.reglementId) ? {...r} : {...r, reglementId: LodashId.createId()}) );
         }
       } 

@@ -79,6 +79,7 @@ const mapDispatchToProps = (dispatch) => {
     getSallesList: tableActions.getSallesList,
     addTresor: tresorActions.addTresor,
     log: journalActions.log,
+    searchGift: console.log,
   }, dispatch);
   return {
     ...bound,

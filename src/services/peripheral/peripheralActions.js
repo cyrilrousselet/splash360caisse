@@ -1944,10 +1944,12 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           // message promo (bon d'achat) + source de QRCode
           let promo = null;
           if (peripheriques && peripheriques.hasOwnProperty('promo_message')) {
-            promo = {
-              message: peripheriques.promo_message,
-              url: peripheriques.promo_url
-            };
+            if (peripheriques.promo_message!=='' || peripheriques.promo_url!=='') {
+              promo = {
+                message: peripheriques.promo_message,
+                url: peripheriques.promo_url
+              };
+            }
           }
 
           // traitement du duplicata

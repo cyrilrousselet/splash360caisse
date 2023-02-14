@@ -10,6 +10,12 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 - Prise en charge des promotions Luckylikes
 
 
+## [1.1.0+7] - 2023-02-14
+### Changed
+- Correction de la prise en charge d'un uniqid pour la caisse et l'opérateur pour les commandes provenant d'Ubereats, de Deliveroo et de la borne
+- Correction de la prise en charge du message et QRcode de promo (quand il n'est pas défini dans les préférences)
+
+
 ## [1.1.0+6] - 2023-02-09
 ### Added
 - Prise en charge du bipper dans les commandes télétransmises (bornes, clic&collect, etc.)

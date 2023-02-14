@@ -2527,20 +2527,27 @@ function _printLegal(printer, data, strings, encoding=null, direction='ltr') {
 // mentions légales sur le ticket
 async function _printPromo(printer, data, strings) {
 
-  const qrimg = await QRCode.toDataURL(data.url, {width:200});
-  const pixels = await getPixelsAsync(qrimg);
-  const image = new escpos.Image(pixels);
+  let image = null;
+  if (data.url!=='') {
+    const qrimg = await QRCode.toDataURL(data.url, {width:200});
+    const pixels = await getPixelsAsync(qrimg);
+    image = new escpos.Image(pixels);
+  }
 
   printer
     .align('CT')
     .feed(1)
     .drawLine()
-    .feed(1)
-    .text(data.message)
-    .align('CT');
-    
-  //  log.info(image);
+    .feed(1);
+  if (data.message!=='') {
+    printer
+      .text(data.message)
+      .align('CT');
+  }
+  if (data.url!=='') {
+    //  log.info(image);
     await _printImage(printer, image);
+  }
 }
 
 

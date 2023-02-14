@@ -219,7 +219,7 @@ async function denyOrder(provider, order) {
 
   // const __denyOrdertoken = await getToken(provider, 'acceptorder');
 
-  const utok_deny = localStorage.getItem('utok_deny');
+  const utok_deny = JSON.parse(localStorage.getItem('utok_deny'));
   let __denyOrdertoken = {access_token:''};
 
   if (!utok_deny || utok_deny.expiration < new Date().getTime()) {
@@ -246,7 +246,7 @@ async function denyOrder(provider, order) {
 async function acceptOrder(provider, order) {
 
   // const __acceptOrdertoken = await getToken(provider, 'acceptorder');
-  const utok_accept = localStorage.getItem('utok_accept');
+  const utok_accept = JSON.parse(localStorage.getItem('utok_accept'));
   let __acceptOrdertoken = {access_token:''};
   
   if (!utok_accept || utok_accept.expiration < new Date().getTime()) {
@@ -257,7 +257,7 @@ async function acceptOrder(provider, order) {
       secret: externalParams[provider].secret,
       scope: externalParams[provider].acceptorder.scope
     });
-    localStorage.setItem('utok_accept', { ...__acceptOrdertoken, expiration: new Date().getTime() + (__acceptOrdertoken.expires_in * 1000) });
+    localStorage.setItem('utok_accept', JSON.stringify({ ...__acceptOrdertoken, expiration: new Date().getTime() + (__acceptOrdertoken.expires_in * 1000) }));
   } else {
     __acceptOrdertoken.access_token = utok_accept.access_token;
   }
@@ -329,7 +329,7 @@ async function getOrder(provider, data) {
     // const __getOrdertoken = await getToken(provider, 'getorder');
     logger.info('getOrder '+provider);
 
-    const utok_getorder = localStorage.getItem('utok_getorder');
+    const utok_getorder = JSON.parse(localStorage.getItem('utok_getorder'));
     let __getOrdertoken = {access_token:''};
     
     if (!utok_getorder || utok_getorder.expiration < new Date().getTime()) {
@@ -340,7 +340,7 @@ async function getOrder(provider, data) {
         scope: externalParams[provider].getorder.scope
       });
     
-      localStorage.setItem('utok_getorder', { ...__getOrdertoken, expiration: new Date().getTime() + (__getOrdertoken.expires_in * 1000) });
+      localStorage.setItem('utok_getorder', JSON.stringify({ ...__getOrdertoken, expiration: new Date().getTime() + (__getOrdertoken.expires_in * 1000) }));
     } else {
       __getOrdertoken.access_token = utok_getorder.access_token;
     }
@@ -356,7 +356,7 @@ async function getOrder(provider, data) {
 async function setPOS(provider, data) {
 
   // const __updatePOStoken = await getToken(provider, 'pos');
-  const utok_updpos = localStorage.getItem('utok_updpos');
+  const utok_updpos = JSON.parse(localStorage.getItem('utok_updpos'));
   let __updatePOStoken = {access_token:''};
   
   if (!utok_updpos || utok_updpos.expiration < new Date().getTime()) {
@@ -366,7 +366,7 @@ async function setPOS(provider, data) {
       secret: externalParams[provider].secret,
       scope: externalParams[provider].pos.scope
     });
-    localStorage.setItem('utok_updpos', { ...__updatePOStoken, expiration: new Date().getTime() + (__updatePOStoken.expires_in * 1000) });
+    localStorage.setItem('utok_updpos', JSON.stringify({ ...__updatePOStoken, expiration: new Date().getTime() + (__updatePOStoken.expires_in * 1000) }));
   } else {
     __updatePOStoken.access_token = utok_updpos.access_token;
   }
@@ -385,7 +385,7 @@ async function setRestaurantOnline(provider, data) {
   logger.info('NSrv.setRestaurantOnline()');
   // const __updateRestaurantToken = await getToken(provider, 'restaurant');
 
-  const utok_updres = localStorage.getItem('utok_updres');
+  const utok_updres = JSON.parse(localStorage.getItem('utok_updres'));
   let __updateRestaurantToken = {access_token:''};
   
   if (!utok_updres || utok_updres.expiration < new Date().getTime()) {
@@ -395,7 +395,7 @@ async function setRestaurantOnline(provider, data) {
       secret: externalParams[provider].secret,
       scope: externalParams[provider].restaurant.scope
     });
-    localStorage.setItem('utok_updres', { ...__updateRestaurantToken, expiration: new Date().getTime() + (__updateRestaurantToken.expires_in * 1000) });
+    localStorage.setItem('utok_updres', JSON.stringify({ ...__updateRestaurantToken, expiration: new Date().getTime() + (__updateRestaurantToken.expires_in * 1000) }));
   } else {
     __updateRestaurantToken.access_token = utok_updres.access_token;
   }
@@ -412,7 +412,7 @@ async function updateProduitUber(provider, data) {
   logger.info('NSrv.updateProduitUber()');
   // const __updateProduitToken = await getToken(provider, 'updateitem');
 
-  const utok_updprd = localStorage.getItem('utok_updprd');
+  const utok_updprd = JSON.parse(localStorage.getItem('utok_updprd'));
   let __updateProduitToken = {access_token:''};
   
   if (!utok_updprd || utok_updprd.expiration < new Date().getTime()) {
@@ -422,7 +422,7 @@ async function updateProduitUber(provider, data) {
       secret: externalParams[provider].secret,
       scope: externalParams[provider].updateitem.scope
     });
-    localStorage.setItem('utok_updprd', { ...__updateProduitToken, expiration: new Date().getTime() + (__updateProduitToken.expires_in * 1000) });
+    localStorage.setItem('utok_updprd', JSON.stringify({ ...__updateProduitToken, expiration: new Date().getTime() + (__updateProduitToken.expires_in * 1000) }));
   } else {
     __updateProduitToken.access_token = utok_updprd.access_token;
   }
