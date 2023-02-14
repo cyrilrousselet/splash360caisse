@@ -300,35 +300,40 @@
         display: inline-block;
       }
         .labelledfield {
-            display: flex;
-            padding: 0 10px 10px 10px;
-            label {
-              width: 150px;
-            }
-            .input-wrapper { 
-              width: calc(100% - 150px);
-            }
+          display: flex;
+          padding: 0 10px 10px 10px;
+          label {
+            width: 150px;
           }
-          .switch-container {
-          //  width: 100%;
-            padding: 0 0 10px 10px;
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-start;
-            label {
-              position: relative;
-              user-select: none;
-             // left: 75%;
-            }
-            label+label {
-              font-family: $f_med;
-              font-size: 14px;
-              color: $noir;
-              padding-left: 20px;
-             // position: absolute;
-              left: auto;
-            }
+          .input-wrapper { 
+            width: calc(100% - 150px);
           }
+        }
+        .switch-container {
+        //  width: 100%;
+          padding: 0 0 10px 10px;
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-start;
+          label {
+            position: relative;
+            user-select: none;
+            // left: 75%;
+          }
+          label+label {
+            font-family: $f_med;
+            font-size: 14px;
+            color: $noir;
+            padding-left: 20px;
+            // position: absolute;
+            left: auto;
+          }
+        }
+        .StdButton.clear_tokens_btn {
+          margin: 15px !important;
+          background-color: $rouge;
+          text-transform: none !important;
+        }
     }
     .CommandesDiscount {
       position: relative;

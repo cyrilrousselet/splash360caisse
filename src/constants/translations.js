@@ -1270,6 +1270,10 @@ const data = {
                                         texte: 'Vous ne pouvez pas activer le point de vente sans UUID',
                                         force: 'Effacer et désactiver'
                                     },
+                                },
+                                clear_tokens: {
+                                    titre: 'Purge des jetons',
+                                    texte: 'Voulez-vous purger les jetons Ubereats ?'
                                 }
                             }
                         }

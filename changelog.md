@@ -10,10 +10,15 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 - Prise en charge des promotions Luckylikes
 
 
+## [1.1.0+8] - 2023-02-14
+### Changed
+- Ajout d'un bouton de purge des token Ubereats dans les Paramètres > Commandes > Canaux
+
 ## [1.1.0+7] - 2023-02-14
 ### Changed
 - Correction de la prise en charge d'un uniqid pour la caisse et l'opérateur pour les commandes provenant d'Ubereats, de Deliveroo et de la borne
 - Correction de la prise en charge du message et QRcode de promo (quand il n'est pas défini dans les préférences)
+- Correction de l'enregistrement du token Ubereats dans le localStorage
 
 
 ## [1.1.0+6] - 2023-02-09

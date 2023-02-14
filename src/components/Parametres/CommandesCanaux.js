@@ -4,6 +4,8 @@ import LocalizedStrings from 'react-localization';
 import LabelledField from '../common/LabelledField';
 import SwitchCheckbox from '../common/SwitchCheckbox';
 import Swal from 'sweetalert2';
+import PillButton from '../common/PillButton';
+import StdButton from '../common/StdButton';
 let strings = new LocalizedStrings(data);
 
 class CommandesCanaux extends React.Component {
@@ -54,6 +56,27 @@ class CommandesCanaux extends React.Component {
         focusConfirm: true
       });
     }
+  }
+
+  clearUberToken() {
+    Swal.fire({
+      title: strings.modules.parametres.submodules.commandes.canaux.uber.clear_tokens.titre,
+      text: strings.modules.parametres.submodules.commandes.canaux.uber.clear_tokens.texte,
+      showCancelButton: true,
+      focusCancel: true,
+      focusConfirm: false,
+      confirmButtonText: strings.general.dialog.delete
+    })
+    .then(result=>{
+      if (result.value) {
+        localStorage.removeItem('utok_deny');
+        localStorage.removeItem('utok_accept');
+        localStorage.removeItem('utok_getorder');
+        localStorage.removeItem('utok_updpos');
+        localStorage.removeItem('utok_updres');
+        localStorage.removeItem('utok_updprd');
+      }
+    });
   }
 
   updateUUID(value) {
@@ -154,6 +177,13 @@ class CommandesCanaux extends React.Component {
               })
             } } 
             label={ strings.modules.parametres.submodules.commandes.canaux.uber.auto_accept_order }
+          />
+          <StdButton 
+            identifier="clear_tokens_btn" 
+            elementclass="clear_tokens_btn" 
+            icon={ false } 
+            text={ strings.modules.parametres.submodules.commandes.canaux.uber.clear_tokens.titre } 
+            onClick={() => { this.clearUberToken() }} 
           />
         </div>
       </div>
