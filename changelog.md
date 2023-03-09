@@ -11,9 +11,15 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 
 
 
+## [1.1.1+10] - 2023-02-14
+### Changed
+- Correction de la récupération du prix unitaire TTC d'un article d'une commande Ubereats.
+
+
 ## [1.1.1+9] - 2023-02-14
 ### Changed
 - Correction de l'application des remises articles, remises panier et de la combinaison des remises articles et panier, ainsi que le calcul de la tva, des prix HT et TTC après remises.
+
 
 ## [1.1.0+7] - 2023-02-14
 ### Changed

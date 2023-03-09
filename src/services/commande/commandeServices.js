@@ -1565,7 +1565,7 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
         nom: prd.nom,
         //        prix: itm.quantity*Number(prd.prix),
         prix: Number(itm.price.base_total_price.amount / 100),
-        pu: Number(itm.price.base_total_price.amount / 100),
+        pu: Number(itm.price.base_unit_price.amount / 100),
         puht: Number(prd.prixArray_c[MODES[commande.mode]].ht / 100),
         tva: { ...catalogueReducer.tva[prd.tva_id] },
         composition: complist,
