@@ -19,6 +19,7 @@ import { tresorActions } from '../services/tresorerie/tresorActions';
 import { userServices } from '../services/user/userServices';
 import { commandeServices } from '../services/commande/commandeServices';
 import { journalActions } from '../services/journal/journalActions';
+import { marketingActions } from '../services/marketing/marketingActions';
 
 
 const gotoListeCommandes = () => {
@@ -79,7 +80,7 @@ const mapDispatchToProps = (dispatch) => {
     getSallesList: tableActions.getSallesList,
     addTresor: tresorActions.addTresor,
     log: journalActions.log,
-    searchGift: console.log,
+    searchGift: marketingActions.getGiftById,
   }, dispatch);
   return {
     ...bound,

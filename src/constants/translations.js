@@ -218,6 +218,38 @@ const data = {
                 popinmode: {
                     titre: "Mode de Commande"
                 },
+                gift: {
+                    titre: "Cadeau",
+                    input: {
+                        titre: "Code cadeau"
+                    },
+                    alertes: {
+                        nogift: {
+                            titre: "Aucun Cadeau",
+                            texte: "Aucun cadeau n'est activé pour ce restaurant"
+                        },
+                        badid: {
+                            titre: "Cadeau introuvable",
+                            texte: "Le cadeau correspondanta au QRcode est introuvable"
+                        },
+                        badrestau: {
+                            titre: "Erreur de restaurant",
+                            texte: "Le cadeau n'est pas valable dans ce restaurant"
+                        },
+                        expired: {
+                            titre: "Cadeau expiré",
+                            texte: "La date de validité du cadeau est dépassée"
+                        },
+                        burned: {
+                            titre: "Cadeau utilisé",
+                            texte: "Le cadeau a déjà été utilisé"
+                        },
+                        montant: {
+                            titre: "Erreur de montant",
+                            texte: "Le total de la commande doit atteindre %TOTAL% pour activer le cadeau"
+                        }
+                    }
+                },
                 reglement: {
                     titre: "Encaissement",
                     liste: {

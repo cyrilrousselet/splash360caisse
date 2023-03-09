@@ -104,6 +104,7 @@ const mapDispatchToProps = (dispatch) => {
     getAvoirsList: marketingActions.getAvoirsList,
     getReglesCatalogueList: marketingActions.getReglesCatalogueList,
     getReglesPanierList: marketingActions.getReglesPanierList,
+    getGiftsList: marketingActions.getGiftsList,
     getCommande: commandeActions.getCommande,
     log: journalActions.log,
     getPastNonConfirmed: commandeActions.getPastNonConfirmed,

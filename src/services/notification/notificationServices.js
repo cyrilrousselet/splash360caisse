@@ -34,7 +34,8 @@ export const notificationServices = {
   syncTickets,
   syncCatalogue,
   confirmCommande,
-  resync
+  resync,
+  getGift,
  };
 
 
@@ -121,6 +122,11 @@ async function getUberToken(params) {
   // const url = externalParams.uber.oAuth.replace('%ID%', params.id).replace('%PWD%', params.secret).replace('%SCOPE%', params.scope);
   return emit('getUberToken', {params});
 } 
+
+async function getLuckylikesToken(params) {
+  logger.info('getLuckylikesToken', params);
+  return emit('getLuckylikesToken', {params});
+}
 
 
  async function getToken(provider, task) {
@@ -432,6 +438,33 @@ async function updateProduitUber(provider, data) {
   if (__updateProduitToken.access_token) {
     var __url = externalParams[provider].updateitem.url.replace('{store_id}', data.store_id).replace('{item_id}', data.item_id);
     return emit('updateUberItem', {url: __url, access_token: __updateProduitToken.access_token, properties: data.properties});
+  }
+}
+
+async function getGift(id) {
+  const luckylikes_token = JSON.parse(localStorage.getItem('luckylikes_token'));
+  let __updateLuckylikesToken = {token:''};
+
+  if (!luckylikes_token || luckylikes_token.expiration < new Date().getTime()) {
+    __updateLuckylikesToken = await getLuckylikesToken({
+      url: externalParams.gift.gettoken.url,
+      username: externalParams.gift.gettoken.username,
+      password: externalParams.gift.gettoken.password
+    });
+    if (__updateLuckylikesToken.hasOwnProperty('token')) {
+      localStorage.setItem('luckylikes_token', JSON.stringify({...__updateLuckylikesToken, expiration: new Date().getTime() + 604800}));
+    } else {
+      throw new Error('Token error');
+    }
+  } else {
+    __updateLuckylikesToken.token = luckylikes_token.token;
+  }
+
+  logger.info('getGift token : ',__updateLuckylikesToken);
+
+  if (__updateLuckylikesToken.token) {
+    var __url = externalParams.gift.getparty.replace('{id}', id);
+    return emit('getLuckylikesGift', {url: __url, token: __updateLuckylikesToken.token});
   }
 }
 

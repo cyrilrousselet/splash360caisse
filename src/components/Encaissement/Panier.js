@@ -439,7 +439,148 @@ class BipperModal extends React.Component {
 }
 
 
+// class GiftInputModal extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = {
+//       inputcode: '',
+//       scan: true
+//     };
+//     this.resetPopin = this.resetPopin.bind(this);
+//     this.decodeGiftQRCode = this.decodeGiftQRCode.bind(this);
+//   }
+//   changeHandler(event) {
+//    // logger.info('CommentModal.changeHandler()', event.target.value);
+//     this.setState({inputcode:event.target.value});
+//   }
+//   saveCode() {
+//     const { inputcode } = this.state;
 
+//     logger.info('saveCode()', inputcode);
+
+//     this.props.submitHandler(inputcode);
+//     this.resetPopin();
+//     this.props.closeHandler();
+
+//   }
+//   resetPopin() {
+//     this.setState({inputcode:''});
+//   }
+
+//   giftSrcHandler(event) {
+//     if (event.keyCode===13) {
+//       logger.info(event.target.value);
+//       this.decodeGiftQRCode(event.target.value);
+//       event.target.value = '';
+//     }    
+//   }
+
+//   decodeGiftQRCode(value) {
+
+//     const platform = process.platform==='darwin' ? 'darwin' : 'win';
+
+//     let decoded = '';
+//     for (let caractere of value) {
+//       if (!decodetable[platform].hasOwnProperty(caractere)) {
+//         continue;
+//       }
+//       decoded += decodetable[platform][caractere];
+//     }
+
+//     console.log('decodeQRCode()',decoded);
+
+//     if (String(decoded).length>0) {
+//       const value_ar = value.split('/');
+//       const id = last(value_ar);
+//       if (id) {
+//         this.setState({inputcode: id});
+//       }
+//     }
+//     return false;
+//   }
+
+//   giftinterval = 0;
+
+//   render() {
+//     const {open, clavierOpen, code, closeHandler} = this.props;
+//     const {inputcode, scan} = this.state;
+
+//     const vcode = code || inputcode;
+
+//     const readytosave = vcode && vcode.length>0;
+
+//      // gestion du focus sur le champ de recherche (scan QR code)
+//      clearInterval(this.giftinterval);
+     
+//      const self = this;
+//      if (scan) {      
+//        this.giftinterval = setInterval(() => {
+//          if (self.refs.giftinput) self.refs.giftinput.focus();
+//         },500);
+//      } else {
+//        clearInterval(this.giftinterval);
+//        this.giftinterval = 0;
+//      }
+
+//     return(
+//       <div>
+//       <Modal
+//       open={open}
+//       >
+//       <div className={ `GiftInputModal`}>
+//         <div className="Modal-container">
+//           <div className="header">
+//             <div className="title">{ strings.modules.encaissement.gift.titre }</div>
+//           </div>
+//           <div className="body">
+//             <div className="form-group">
+//                 <div className="label">{ strings.modules.encaissement.gift.input.titre }</div>
+//                 <div className="valeur">
+
+//                   <input className="gift-input" ref="giftinput" onKeyUp={this.giftSrcHandler} />
+//                  {/* <TextField
+//                     multiline
+//                     id="texte"
+//                     value={vcode}
+//                     rowsMax={3}
+//                     onChange={this.changeHandler}
+//                     variant="filled"
+//                     ref="giftinput"
+//     />*/}
+//                 </div>
+//             </div>
+//           </div>
+//           <div className="footer">
+//             <StdButton 
+//                 identifier="modal-cancel" 
+//                 elementclass="cancel" 
+//                 icon={ false } 
+//                 text={ strings.general.dialog.cancel } 
+//                 onClick={ ()=>{this.resetPopin(); closeHandler()} } 
+//               />
+//             <StdButton 
+//               identifier="modal-save" 
+//               elementclass="save" 
+//               icon={ false } 
+//               disabled={ !readytosave }
+//               text={ strings.general.dialog.save } 
+//               onClick={this.saveCode} 
+//             />
+//           </div>
+//         </div>
+//         <Fab aria-label="close" size="small" className="close-button" onClick={ ()=>{this.resetPopin(); closeHandler()} }>
+//           <CloseIcon />
+//         </Fab>
+//       </div>
+//     </Modal>  
+//     {(clavierOpen && open) && <Clavier onChange={this.onKeyboardChange} className="ClavierComment" baseClass="KBComment" inputName="texte" inputVal={vcode} open={open && clavierOpen} />}
+//     </div>
+//     );
+//   }
+
+
+
+// }
 
 
 class CommentModal extends React.Component {
@@ -772,7 +913,8 @@ class Panier extends React.Component {
       ouvertureOpen: false,
       cmdModeOpen: false,
       cmdMode: null,
-      giftOpen: false,
+      // giftOpen: false,
+      // giftCode: null,
       solde: 0,
     }
     this.setSelectedIndex = this.setSelectedIndex.bind(this);
@@ -820,8 +962,9 @@ class Panier extends React.Component {
     this.setCmdMode = this.setCmdMode.bind(this);
     this.closeCmdMode = this.closeCmdMode.bind(this);
 
-    this.openGiftIinput = this.openGiftIinput.bind(this);
-    this.closeGiftIinput = this.closeGiftIinput.bind(this);
+    // this.openGiftIinput = this.openGiftIinput.bind(this);
+    // this.closeGiftIinput = this.closeGiftIinput.bind(this);
+    // this.getGift = this.getGift.bind(this);
 
   }
 
@@ -1146,6 +1289,7 @@ class Panier extends React.Component {
   decodeQRCode(value) {
 
     const platform = process.platform==='darwin' ? 'darwin' : 'win';
+    const {items} = this.props.commande;
 
     let decoded = '';
     for (let caractere of value) {
@@ -1154,11 +1298,15 @@ class Panier extends React.Component {
       }
       decoded += decodetable[platform][caractere];
     }
+
     if (String(decoded).length>0) {
-      if (this.state.giftOpen) {
+      if (decoded.includes('luckylikes')) {
+      // if (this.state.giftOpen) {
         this.getGift(decoded);
       } else {
-        this.send_to_search(decoded);
+        if (!items || items.length===0) {
+          this.send_to_search(decoded);
+        }
       }
     }
     return false;
@@ -1170,7 +1318,7 @@ class Panier extends React.Component {
     const value_ar = value.split('/');
     const id = last(value_ar);
     if (id) {
-      this.props.searchGift(id);
+      this.props.searchGift({code:id});
     }
   }
 
@@ -1184,7 +1332,7 @@ class Panier extends React.Component {
       const cmd = Object.values(commandeslist).find((c)=>c.ticketId===value);
       if (cmd && cmd.status==='standby') {
         logger.info('s2s commande trouvée', value);
-        this.setState({inputfocus: false});
+        // this.setState({inputfocus: false});
         this.props.getCommande(value);
       } else {
         logger.info('s2s aucune commande standby avec ce ticketId', value);
@@ -1601,13 +1749,14 @@ class Panier extends React.Component {
   }
 
 
-  openGiftIinput() {
-    console.log('openGiftInput');
-    this.setState({giftOpen: true});
-  }
-  closeGiftIinput() {
-    this.setState({giftOpen: false});
-  }
+  // openGiftIinput() {
+  //   console.log('openGiftInput');
+  //   this.setState({giftOpen: true, inputfocus: false});
+  // }
+  // closeGiftIinput() {
+  //   this.setState({giftOpen: false, inputfocus: true});
+  // }
+ 
 
   interval = 0;
 
@@ -1632,6 +1781,7 @@ class Panier extends React.Component {
             // caisses,
             monnaie,
             log,
+            // searchGift
            } = this.props;
 
     const { comments, modificateurs, items, ticketId, mode, client, bipper, type, beneficiaire } = this.props.commande;
@@ -1646,6 +1796,7 @@ class Panier extends React.Component {
            scheduleOpen,
            cmdModeOpen,
           //  giftOpen,
+          //  giftCode,
            solde,
           } = this.state;
 
@@ -1718,7 +1869,8 @@ logger.info('⏰', schedule_delay);
     logger.info('inputfocus',inputfocus);
     
     const self = this;
-    if (inputfocus && (!items || items.length===0)) {      
+    // if (inputfocus && (!items || items.length===0)) {      
+    if (inputfocus) {      
       this.interval = setInterval(() => {
         if (self.refs.searchInput) self.refs.searchInput.focus();
        },500);
@@ -1892,11 +2044,10 @@ logger.info('⏰', schedule_delay);
           {/* <div className="ticketId">{ (this.interval==0?'X':'√')+strings.modules.encaissement.panier.ticket_no+' '+ticketId }</div> */}
           <div className="ticketId">{ strings.modules.encaissement.panier.ticket_no+' '+_.last(ticketId.split('-')) }</div>
           <div className="ticketComment"></div>
-         {/*
-           <div className="gift">
-           <GiftIcon className={`ico-gift ${((this.props.commande.gift!==null && this.props.commande.gift!==undefined)?'gift-set':'')}`} onClick={this.openGiftIinput} />
-           </div>
-         */}
+       {/*   <div className="gift">
+            <GiftIcon className={`ico-gift ${((this.props.commande.gift!==null && this.props.commande.gift!==undefined)?'gift-set':'')}`} onClick={this.openGiftIinput} />
+          </div>
+    */}
           <div className="schedule">
             <AlarmIcon className={`ico-schedule ${((this.props.commande.scheduled!==null && this.props.commande.scheduled!==undefined)?'schedule-set':'')}`} onClick={this.openSchedule} />
           </div>
@@ -2084,6 +2235,13 @@ logger.info('⏰', schedule_delay);
           setMode={ this.setCmdMode }
           closePopin={ this.closeCmdMode }
         />
+     {/*   <GiftInputModal
+          open={giftOpen}
+          code={giftCode}
+          closeHandler={ this.closeGiftIinput }
+          submitHandler={ searchGift }
+          clavierOpen={ clavierOpen }
+      />*/}
       </div>
     );
   }

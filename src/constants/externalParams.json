@@ -42,5 +42,14 @@
     "ping" : "https://admin.splash360.fr",
     "checkNotif" : "https://api.splash360.fr/checknotif/{client_id}",
     "ackitNotif" : "https://api.splash360.fr/ackitnotification"
+  },
+  "gift": {
+    "gettoken": {
+      "url":"https://api-preprod.luckylikes.fr/authentication/login_check",
+      "username":"cyril@aqua-forte.net",
+      "password":"satumare"
+    },
+    "getparty": "https://api-preprod.luckylikes.fr/api/parties/?cryptId={id}",
+    "updateparty": "https://api-preprod.luckylikes.fr/api/parties/{id}"
   }
 }

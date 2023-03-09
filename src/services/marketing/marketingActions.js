@@ -3,7 +3,13 @@ import { marketingServices } from "./marketingServices";
 import { peripheralActions } from "../peripheral/peripheralActions";
 import { notificationActions } from "../notification/notificationActions";
 import logger from '../../helpers/Logger';
+import { notificationServices } from "../notification/notificationServices";
+import LocalizedStrings from "react-localization";
+import Swal from "sweetalert2";
+import { data } from "../../constants/translations";
+import { add, isBefore } from "date-fns";
 
+let strings = new LocalizedStrings(data);
 
 
 function getAvoirsList() {
@@ -131,6 +137,25 @@ function getReglesCatalogueList(params={}) {
   }
 }
 
+
+function getGiftsList(params={}) {
+
+  return dispatch => {
+    dispatch({ type: marketingActionTypes.GET_GIFTS_LIST_REQUEST });
+
+    return marketingServices.getGiftsList(params)
+    .then(
+        data => { dispatch({ type: marketingActionTypes.GET_GIFTS_LIST_SUCCESS, ...data }) }
+    )
+    .catch(
+      error => { 
+        logger.error(error);
+        dispatch({ type: marketingActionTypes.GET_GIFTS_LIST_FAILURE, error: error.toString() }) 
+      }
+    );
+  }
+}
+
 /** 
  * ajout / modif d'avoir depuis la synchro
  */
@@ -195,6 +220,95 @@ function deleteAvoirFromSync(payload) {
   }
 }
 
+function getGiftById(payload) {
+  return async (dispatch, getState) => {
+    const {code} = payload;
+    const {gifts} = getState().marketingReducer;
+
+
+    console.log('🎁 MarketingActions.getGiftById()', code);
+    dispatch({type: marketingActionTypes.GET_GIFT_REQUEST, code});
+
+    if (gifts && gifts.length>0) {
+      
+    
+      let __party = null;
+      try {
+
+        // récupération des données de cadeau depuis la luckylikes
+        __party = await notificationServices.getGift(code);
+        let err = '';
+
+        // si le cadeau est bien récupéré
+        if ( Object.keys(__party.party).includes('hydra:member') ) {
+          const party = __party.party['hydra:member'][0];
+
+          // traitement des données :
+
+          // - restaurant
+          if (gifts[0].restau_id!==party.customer.id) {
+            err = 'badrestau';
+          }
+          
+          // - validité du cadeau (date de création + délai d'expiration)
+          const _partylimite = add(new Date(party.date), {days: party.customer.delayGift});
+
+          if (isBefore(_partylimite, new Date())) {
+            console.log('🚧 GIFTS: détection de la validité désactivée.')
+            // err = 'expired';
+          }
+          
+          // - correspondance avec le cadeau en base locale
+          const gift = gifts.find(g => g.gift_id===party.gift.id);
+          if (gift===undefined) {
+            err = 'badid';
+          }
+
+          // - cadeau déjà utilisé
+          if (party.isBurned) {
+            err = 'burned';
+          }
+
+          // en cas d'erreur
+          if (err!=='') {
+            Swal.fire({
+              title: strings.modules.encaissement.gift.alertes[err].titre,
+              text: strings.modules.encaissement.gift.alertes[err].texte,
+              showCancelButton: false,
+              focusCancel: true,
+              focusConfirm: false
+            });
+            dispatch({type: marketingActionTypes.GET_GIFT_FAILURE, error: strings.modules.encaissement.gift.alertes[err].titre});
+
+          } else {            
+            dispatch({type: marketingActionTypes.GET_GIFT_SUCCESS, gift: {...gift, totalMin: party.customer.minimumBuyAmount}});
+          }
+        } else {
+          dispatch({type: marketingActionTypes.GET_GIFT_FAILURE, error: 'Party inconnue'});
+        }
+
+      }
+      catch(err) {
+        dispatch({type: marketingActionTypes.GET_GIFT_FAILURE, error: err});
+      }
+
+    } else {
+      // ERREUR : aucun cadeau activé pour le restau
+      // NB : on lance "badid" à la place de "nogift" 
+      //      pour ne pas indiquer au client qu'il n'y a aucun cadeau dans le restau
+      Swal.fire({
+        title: strings.modules.encaissement.gift.alertes.badid.titre,
+        text: strings.modules.encaissement.gift.alertes.badid.texte,
+        showCancelButton: false,
+        focusCancel: true,
+        focusConfirm: false
+      });
+      dispatch({type: marketingActionTypes.GET_GIFT_FAILURE, error: strings.modules.encaissement.gift.alertes.nogift.titre});
+    }
+
+  }
+}
+
 
 export const marketingActions = {
   getAvoirsList,
@@ -203,6 +317,8 @@ export const marketingActions = {
   deleteAvoir,
   getReglesPanierList,
   getReglesCatalogueList,
+  getGiftsList,
   setAvoirFromSync,
-  deleteAvoirFromSync
+  deleteAvoirFromSync,
+  getGiftById
 };

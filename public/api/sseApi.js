@@ -990,6 +990,101 @@ const actions = {
   },
 
 
+  getLuckylikesToken: (req, res) => {
+
+    const { params } = req.payload;
+
+    const {url, username, password} = params;
+    
+
+    let __token = [];
+
+    const __request = net.request({
+      url: url,
+      method: "post",
+    });
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/json");
+
+    const form = JSON.stringify({
+      username: username,
+      password: password
+    });
+    log.info("getLuckylikesToken form: ", form);
+    __request.write(form);
+
+    __request.on("response", (response) => {
+      response.on("data", (chunk) => {
+        __token.push(chunk);
+        log.info(`getLuckylikesToken BODY: ${chunk}`);
+      });
+      response.on("end", () => {
+        log.info("getLuckylikesToken: end");
+
+        let __conf = {};
+        try {
+          __conf = JSON.parse(__token.join(""));
+        } catch (e) {
+          __conf = { error: e.message };
+          log.error("JSON error", e);
+        }
+
+        res.send(__conf);
+      });
+    });
+
+    __request.on('error', (error) => {
+      log.error('getLuckylikesToken ERROR', error);
+      res.error(error);
+    });
+
+    __request.end();
+
+  },
+
+  getLuckylikesGift: (req, res) => {
+    const { url, token } = req.payload;
+
+    let __order = [];
+
+    const __request = net.request({
+      url: url,
+      method: "get",
+    });
+    __request.setHeader("Authorization", "Bearer " + token);
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/json");
+
+    __request.on("response", (response) => {
+      log.info(`getLuckylikesGift STATUS: ${response.statusCode}`);
+      log.info(`getLuckylikesGift HEADERS: ${JSON.stringify(response.headers)}`);
+      response.on("data", (chunk) => {
+        __order.push(chunk);
+
+        log.info(`getLuckylikesGift BODY: ${chunk}`);
+      });
+      response.on("end", () => {
+        log.info("getLuckylikesGift: end");
+        let __ord = {};
+        try {
+          __ord = { party: JSON.parse(__order.join("")) };
+        } catch (e) {
+          __ord = { error: e.message };
+          log.error("JSON error", e);
+        }
+        res.send(__ord);
+      });
+    });
+
+    __request.on('error', (error) => {
+      log.error('getLuckylikesGift ERROR', error);
+      res.error(error);
+    });
+
+    __request.end();
+  },
+
+
   // pingBO: (req, res) => { // Test à la fois la connexion au bo et la connexion internet
   //   const {url} = req.payload;
 

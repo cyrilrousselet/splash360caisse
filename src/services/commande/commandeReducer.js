@@ -1,6 +1,7 @@
 import { formatISO } from 'date-fns';
 import { commandeActionTypes } from './commandeActionTypes';
 import { numeroActionTypes } from './numeroActionTypes';
+import { marketingActionTypes } from '../marketing/marketingActionTypes';
 
 const initialState = {
   loading: false,
@@ -25,6 +26,7 @@ export function commandeReducer(state = initialState, action) {
     , cmtIndex = -1
     , modificateurs = []
     , modIndex = -1
+    , gift = null
     ;
 
   switch (action.type) {
@@ -343,6 +345,15 @@ export function commandeReducer(state = initialState, action) {
         return {
           ...state,
           numero: action.numero
+        }
+
+    case marketingActionTypes.GET_GIFT_SUCCESS:
+        return {
+          ...state,
+          commande: {
+            ...commande,
+            gift: action.gift
+          }
         }
 
     default:

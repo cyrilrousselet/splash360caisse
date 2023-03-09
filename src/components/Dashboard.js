@@ -37,6 +37,7 @@ class Dashboard extends Component {
     this.props.getAvoirsList();
     this.props.getReglesPanierList();
     this.props.getReglesCatalogueList();
+    this.props.getGiftsList();
     this.props.getCommande();
     this.props.getPastNonConfirmed();
     this.props.testCloturesAuto();

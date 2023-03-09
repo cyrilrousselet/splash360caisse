@@ -7,6 +7,7 @@ export const marketingServices = {
   getAvoirs,
   getReglesPanierList,
   getReglesCatalogueList,
+  getGiftsList,
   createAvoir,
   updateAvoir,
   deleteAvoir
@@ -24,6 +25,9 @@ function getReglesPanierList(params) {
 }
 function getReglesCatalogueList(params) {
   return emit('dbRegleCatalogueGetAll', params);
+}
+function getGiftsList(params) {
+  return emit('dbGiftsGetAll', params);
 }
 
 

@@ -100,6 +100,35 @@ const actions = {
   },
 
 
+  dbGiftsGetAll: async (req,res) => {
+    // const {payload} = req;
+    log.info("dbGiftsGetAll() in API");
+    
+    (await db.gifts)._.mixin(lodashId);
+    const proxies = await _getAllGifts();
+      
+    res.send(proxies);
+  },
+  dbGiftPersist: async (req,res) => {
+      const {payload} = req;
+      log.info("dbGiftPersist() in API");
+
+      (await db.gifts)._.mixin(lodashId);
+      const confirm = await _persistGift(payload.gift);
+
+      res.send(confirm);
+  },
+  dbGiftDelete: async (req,res) => {
+    const {payload} = req;
+    log.info("dbGiftDelete() in API");
+
+    (await db.gifts)._.mixin(lodashId);
+    const confirm = await _deleteGift(payload.gift_id);
+
+    res.send(confirm);
+  },
+
+
   dbGetItems: async (itemtype, ids) => {
     let response = [];
     if (itemtype==="avoirs") {
@@ -179,14 +208,23 @@ async function _addLocalSync(db, ids, store_id) {
               .write();
   } 
   else if (db==="reglescatalogue") {
-    await (await db.poinreglescataloguetages)
+    await (await db.reglescatalogue)
               .get("reglescatalogue")
               .filter(t => ( ids.includes(t.reglecatalogue_id) && !t.localsync.includes(store_id)) )
               .get('localsync')
               .push(store_id)
               // .assign({localsync: [...localsync, store_id]})
               .write();
-  } 
+  }  
+  else if (db==="gifts") {
+    await (await db.gifts)
+              .get("gifts")
+              .filter(t => ( ids.includes(t.gift_id) && !t.localsync.includes(store_id)) )
+              .get('localsync')
+              .push(store_id)
+              // .assign({localsync: [...localsync, store_id]})
+              .write();
+  }
   return ids.length;
 }
 
@@ -410,6 +448,77 @@ async function _deleteRegleCatalogue(reglecatalogue_id) {
                                                .remove({ reglecatalogue_id: reglecatalogue_id })
                                                .write();
   return _rgc.length>0;
+
+}
+
+
+async function _getAllGifts() {
+  
+  const __rawdata = await _findGift();
+  return _parseGift(__rawdata);
+}
+
+
+/**
+ * Get Gift data from DB
+ */
+async function _findGift(criteriae={}) {
+  log.info(criteriae);
+  let _g = [];
+  if ("gift_id" in criteriae) {
+    _g = await (await db.gifts).get('gifts')
+                               .find(criteriae)
+                               .value();
+  } else {
+    _g = await (await db.gifts).get('gifts')
+                               .value();
+  }
+  return { _g };
+}
+
+async function _persistGift(payload) {
+
+  const __now = new Date().getTime();
+  let _g = await (await db.gifts).get('gifts')
+                                 .find({gift_id: payload.gift_id})
+                                 .value();
+  log.info(_g);
+  if (_g) {
+    log.info('_g existe, donc on update');
+    let __upd = {..._g, ...payload, updatedAt: __now};
+    _g = await (await db.gifts).get('gifts')
+                               .find({gift_id: payload.gift_id})
+                               .assign(__upd)
+                               .write();
+  }
+  else {
+    log.info('pas de _g donc on insert');
+    let __ins = {...payload, createdAt: __now, updatedAt: __now};
+    _g = await (await db.gifts).get('gifts')
+                               .insert(__ins)
+                               .write();
+  }
+
+  return _g != null;
+}
+
+function _parseGift(_rawdata) {
+  // let __timeadjusts = {};
+  // _rawdata._tma.forEach(p => {
+  //   timeadjusts[p.timadjust_id] = p;
+  // });
+
+  // return {timadjustslist: __timeadjusts};
+  return {giftslist: _rawdata._g};
+}
+
+
+async function _deleteGift(gift_id) {
+
+  const _g = await (await db.gifts).get('gifts')
+                                   .remove({ gift_id: gift_id })
+                                   .write();
+  return _g.length>0;
 
 }
 

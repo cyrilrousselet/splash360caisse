@@ -17,7 +17,7 @@ const {categories, groupes, tva, types, ingredients, produits, steps} = hydratio
 const {parametres, imprimantes, tickets, secteurs, lots} = hydration;
 const {users} = hydration;
 const {pointages, shifts, timeadjusts} = hydration;
-const {reglescatalogue, reglespanier} = hydration;
+const {reglescatalogue, reglespanier, gifts} = hydration;
 const {salles, tables} = hydration;
 
 
@@ -61,6 +61,7 @@ const db = {
  timeadjusts: dbFactory('timeadjusts.json', {timeadjusts: timeadjusts}),
  reglescatalogue: dbFactory('reglescatalogue.json', {reglescatalogue: reglescatalogue}),
  reglespanier: dbFactory('reglespanier.json', {reglespanier: reglespanier}),
+ gifts: dbFactory('gifts.json', {gifts: gifts}),
  tables: dbFactory('tables.json', {salles: salles, tables: tables}),
 };
 

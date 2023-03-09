@@ -57,6 +57,7 @@ const hydration = {
   avoirs: [],
   reglespanier: [],
   reglescatalogue: [],
+  gifts: [],
 
   salles: [],
   tables: [],
