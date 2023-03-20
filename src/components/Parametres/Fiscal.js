@@ -9,6 +9,7 @@ import { Table, TableCell, TableRow, TableHead, TableBody } from '@material-ui/c
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 // import format from 'date-fns/format';
 import { remote } from 'electron';
+import { ArrowDropDownCircle } from '@material-ui/icons';
 
 const { app, dialog } = remote;
 const win = remote.getCurrentWindow();
@@ -19,6 +20,12 @@ const dialogOptions = {
   title: strings.modules.parametres.submodules.fiscal.archive.destination,
   defaultPath: `${ app.getPath('desktop') }/`,
   buttonLabel: strings.modules.parametres.submodules.fiscal.archive.exporter
+}
+
+const dialogSignatureOptions = {
+  title: strings.modules.parametres.submodules.fiscal.archive.destination,
+  defaultPath: `${ app.getPath('desktop') }/`,
+  buttonLabel: strings.modules.parametres.submodules.fiscal.archive.exportersignature
 }
 
 class Fiscal extends React.Component {
@@ -41,6 +48,26 @@ class Fiscal extends React.Component {
     console.log('⬇️ Export Archive Fiscale : ',__target.filePath);
     
     this.props.exportArchive(__target.filePath, filename);
+  }
+
+
+  async exportSignature(filename) {
+
+
+
+    let filename_r = filename.split('.');
+    filename_r[filename_r.length-2] += '-signature';
+    const nfilename = filename_r.join('.');
+
+    const __opt = {
+      ...dialogSignatureOptions,
+      defaultPath: dialogSignatureOptions.defaultPath + nfilename
+    };
+    
+    const __target = await dialog.showSaveDialog(win, __opt);
+    console.log('⬇️ Export Archive Fiscale : ',__target.filePath);
+    
+    this.props.exportSignature(__target.filePath, filename);
   }
 
  
@@ -82,6 +109,7 @@ class Fiscal extends React.Component {
                 <TableCell key={`${i}-ouverture`} className="liste-ouverture">{ debut }</TableCell>
                 <TableCell key={`${i}-cloture`} className="liste-cloture">{ fin }</TableCell>
                 <TableCell key={`${i}-actions`} className="liste-actions">
+                  <StdButton key={`${i}-export`} identifier='btnexport' elementclass={ `action action-export`} icon={ <ArrowDropDownCircle htmlColor="#ffffff" /> } disabled={row.unavailable} noStroke={true} text={ '' } onClick={ () => { this.exportSignature(row['TAG-ARC-DOC']) } } />
                   <StdButton key={`${i}-check`} identifier='btncheck' elementclass={ `action action-check${(row.verif===undefined ? '' : (row.verif===true ? ' valid' : ' nonvalid') ) }` } icon={ <CheckCircleIcon htmlColor="#ffffff" /> } disabled={row.unavailable} noStroke={true} text={ '' } onClick={ () => { checkArchive(row['TAG-ARC-DOC']) } } />
                 </TableCell>
               </TableRow>);

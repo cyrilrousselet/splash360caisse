@@ -78,6 +78,19 @@
       }
     }
     
+    .action-export {
+      background-color: $primary;
+      border-radius: 50% !important;
+      height: 30px;
+      width: 30px;
+      min-width: 30px;
+      padding: 3px 0 !important;
+      min-height: 30px;
+      .StdButton-icon {
+        width: 30px;
+        height: 30px;
+      }
+    }
     .action-check {
       background-color: $primary;
       border-radius: 50% !important;
@@ -100,6 +113,9 @@
     .liste-fichier {
       text-decoration: underline;
       font-family: $f_blk;
+    }
+    .liste-actions {
+      white-space: nowrap;
     }
 
   }

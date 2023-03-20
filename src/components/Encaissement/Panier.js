@@ -41,7 +41,7 @@ import LoginCont from '../../containers/LoginCont';
 // import { formatRFC3339 } from 'date-fns';
 // import { add, isBefore, format } from 'date-fns';
 import { add, sub, differenceInHours, format, isBefore, set } from 'date-fns';
-import GiftIcon from '../common/icon/GiftIcon';
+// import GiftIcon from '../common/icon/GiftIcon';
 
 
 let strings = new LocalizedStrings(data);

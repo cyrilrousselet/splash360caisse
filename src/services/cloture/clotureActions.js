@@ -1863,6 +1863,10 @@ function checkArchive(filename) {
       // const isVerif = signatureServices.verifyBuffer(__afcont, afdata['TAG-ARC-SIG'], publicKey);
       // const isVerif = hmac===afdata['TAG-ARC-HASH'];
       const isVerif = signature===afdata['TAG-ARC-SIG'];
+      if (!isVerif) {
+        console.log('ARCHIVE FISCALE DOESN’T MATCH');
+        dispatch(journalActions.log('90', `l’Archive Fiscale ${filename} ne correspond pas à sa signature.`));
+      }
       dispatch({ type: clotureActionTypes.QUALIFY_ARCHIVE_FISCALE, archive: {...afdata, verif: isVerif} });
     }
 
@@ -2216,6 +2220,11 @@ function archiveFiscale(intervalle, debut, fin) {
               filedef = filecont;
             }
 
+            const json_string = '['+filecont.toString().split('\n').join(',').slice(0,-1)+']';
+            const filedef_json = JSON.parse(json_string);
+
+            const jet_csv = _getJET(filedef_json);
+            __data.push({ type: 'csv', data: jet_csv.csv, file: `journaux/${fdef.replace('json','csv')}` });
             __data.push({ type: 'json', data: filedef, file: `journaux/${fdef}` });
             
           }
@@ -3122,6 +3131,50 @@ function exportArchive(target, filename) {
   }
 }
 
+function exportSignature(target, id) {
+  return async (dispatch, getState) => {
+
+
+    const { archive_secret } = getState().parametresReducer.parametres.options;
+
+    let __data = [];
+    try {
+      const archiveData = await clotureServices.getArchiveFiscale({'TAG-ARC-DOC': id});
+
+      console.log('((((((((((exportSignature', archiveData);
+      __data.push({ type: 'txt', data: archiveData[0]['TAG-ARC-SIG'], file: 'signature.txt'});
+    } catch(e) {
+      console.error('ERROR exportSignature: archive introuvable');
+      console.error(e);
+    }
+
+    let filename_r = id.split('.');
+    filename_r[filename_r.length-2] += '-signature';
+    const filename = filename_r.join('.');
+
+    if (__data.length>0) {
+      try {
+        await clotureServices.createArchiveFiscale(filename, __data, archive_secret);
+      } catch(e) {
+        console.error('ERROR createArchiveFiscale in exportSignature');
+        console.error(e);
+      }
+
+      const origin = `${app.getPath('userData')}/archives_fiscales/${filename}`;
+      
+      try {
+        // await fs.copyFile(origin, target);
+        await fsCopyFile(origin, target);
+        console.log(`${origin} was copied to ${target}`);
+        dispatch(journalActions.log('110',`Exportation de ${filename} vers ${target}`));
+      } catch {
+        console.log(`The file ${origin} could not be copied`);
+      }
+    }
+  
+  }
+}
+
 
 function exportComptable(target, debut, fin) {
   return async (dispatch, getState) => {
@@ -3178,6 +3231,45 @@ function exportComptable(target, debut, fin) {
 
   }
 }
+
+
+function _getJET(jetlist) {
+ 
+  const jetCsvString = [
+    [
+      'JET-NID',
+      'JET-EVT-NUM',
+      'JET-EVT-LIB',
+      'JET-OPE-NID',
+      'JET-GDH',
+      'JET-INF',
+      'JET-TAG-ID-KEY',
+      'JET-TAG-SIG-PRV',
+      'JET-TAG-SIG',
+    ],
+    ...jetlist.map(jl =>[
+      jl['JET-NID'],
+      jl['JET-EVT-NUM'],
+      jl['JET-EVT-LIB'],
+      jl['JET-OPE-NID'],
+      jl['JET-GDH'],
+      jl['JET-INF'],
+      jl['JET-TAG-ID-KEY'],
+      jl['JET-TAG-SIG-PRV'],
+      jl['JET-TAG-SIG']
+    ])
+  ]
+  .map(e => e.join(";")) 
+  .join("\n");
+
+  return {
+    json: jetlist,
+    csv: jetCsvString
+  };
+
+}
+
+
 
 function _getExportComptable(zcaisse) {
 
@@ -3529,6 +3621,7 @@ export const clotureActions = {
   testGTPeriodique,
   getArchivesFiscales,
   exportArchive,
+  exportSignature,
   checkArchive,
   archiveFiscale,
   exportComptable,

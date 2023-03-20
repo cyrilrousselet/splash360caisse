@@ -21,7 +21,8 @@ const mapDispatchToProps = (dispatch) => {
     archiveFiscale: clotureActions.archiveFiscale,
     getArchivesFiscales: clotureActions.getArchivesFiscales,
     checkArchive: clotureActions.checkArchive,
-    exportArchive: clotureActions.exportArchive
+    exportArchive: clotureActions.exportArchive,
+    exportSignature: clotureActions.exportSignature
   },dispatch);
 }
 

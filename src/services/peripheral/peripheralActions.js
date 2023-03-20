@@ -393,7 +393,8 @@ function _getTicketComposition(contenu, params, config) {
       composition.push({
         action: 'fillText',
         textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
-        text: article.nom,
+        // text: article.nom,
+        text: article.legende,
         x: __tabstops[1], y: __y,
       });
       composition.push({
@@ -468,7 +469,8 @@ function _getTicketComposition(contenu, params, config) {
           composition.push({
             action: 'fillText',
             textAlign: "left", font: `normal ${config.fontSize.sm}px sans-serif`,
-            text: ingredient.nom,
+            // text: ingredient.nom,
+            text: ingredient.legende,
             x: __tabstops[1], y: __y,
           });
           composition.push({
@@ -1726,7 +1728,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               console.log('ligne_i', ligne_i, ing.ingredient);
 
               if (ing.fromStep!==null && !__noprint) {
-                articleIngredients.push({
+
+                let __i = {
                   qte: ligne_i['ENC-TIK-LIG-PRO-QTE'],
                   codetva: ligne_i['ENC-TIK-LIG-TAX-NID'] || '',
                   nom: removeDiacritics(ligne_i['ENC-TIK-LIG-PRO-LIB']),
@@ -1734,37 +1737,15 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
                   prix: ligne_i['ENC-TIK-LIG-TOT-TTC']===0 ? '' : Number((ligne_i['ENC-TIK-LIG-PRO-TTC'] / 100) * ligne_i['ENC-TIK-LIG-PRO-QTE']).toFixed(2),
                   weight: __ingweight,
                   comment: __comment ? removeDiacritics(__comment.texte) : '',
-                  // modificateur: ligne_i['ENC-TIK-LIG-REM-TOT']!==0 ? {montant: Number(ligne_i['ENC-TIK-LIG-REM-TOT'] / 100).toFixed(2), valeur: ligne_i['ENC-TIK-LIG-REM-TXX']}: 0
-                  
-                  // qte: ing.qte,
-                  // codetva: artIngTva.code,
-                  // nom: removeDiacritics(ing.nom),
-                  // pu: ing.prix===0 ? '' : Number(ing.prix).toFixed(2),
-                  // prix: ing.supplement===0 ? '' : Number(ing.supplement).toFixed(2),
-                  // weight: __ingweight,
-                  // comment: __comment ? removeDiacritics(__comment.texte) : '',
-                  // modificateur: __modificateur ? __modificateur.valeur: 0
-                });
-                // articleRemise += Number(ligne_i['ENC-TIK-LIG-REM-TOT']);
+                };
+
+                if (template.includes('ticket_image')) {
+                  __i = {...__i, legende:(ing.legende || ligne_i['ENC-TIK-LIG-PRO-LIB'])};
+                }
+
+                articleIngredients.push(__i);
               }
 
-
-              // // ajout et calcul de la tva pour l'ingrédient
-              // if (!artTva.hasOwnProperty(artIngTva.code)) {
-              //   Object.defineProperty(artTva, artIngTva.code, {
-              //     value: {taux:`${Number(artIngTva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
-              //     writable: true,
-              //     enumerable: true
-              //   });
-              // }
-
-              // let iht = Number(ing.supplement) / (1 + Number(artIngTva.valeur));
-
-              // artTva[artIngTva.code] = Object.assign(artTva[artIngTva.code], {
-              //   montant: artTva[artIngTva.code].montant + (iht * Number(artIngTva.valeur)),
-              //   ht: artTva[artIngTva.code].ht + iht,
-              //   ttc: artTva[artIngTva.code].ttc + Number(ing.supplement)
-              // });
 
             });
 
@@ -1783,9 +1764,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             // modificateurs pour l'article
             __modificateur = cmd.modificateurs.find(m => m.item===article.itemid && m.ingredient===null);
 
-          
-          
-            articles.push({
+
+            let __p = {
 
               qte: ligne_p['ENC-TIK-LIG-PRO-QTE'],
               produitid: ligne_p['ENC-TIK-LIG-PRO-NID'],  // article.produitid,
@@ -1795,79 +1775,15 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
               prix: ligne_p['ENC-TIK-LIG-TOT-TTC']===0 ? '' : Number((ligne_p['ENC-TIK-LIG-PRO-TTC'] / 100) * ligne_p['ENC-TIK-LIG-PRO-QTE']).toFixed(2),
               ingredients: articleIngredients,
               comment: __comment ? removeDiacritics(__comment.texte) : '',
-              // modificateur: ligne_p['ENC-TIK-LIG-REM-TOT']!==0 ? {montant: Number((ligne_p['ENC-TIK-LIG-REM-TOT'] + articleRemise) / 100).toFixed(2), valeur: ligne_p['ENC-TIK-LIG-REM-TXX']}: 0
               soustotal: article.prix.toFixed(2),
-              // qte: article.quantite,
-              // codetva: article.tva.code,
-              // nom: removeDiacritics(article.nom),
-              // pu: Number(article.pu).toFixed(2),
-              // prix: articletotal.toFixed(2),
-              // ingredients: articleIngredients,
-              // comment: __comment ? removeDiacritics(__comment.texte) : '',
               modificateur: __modificateur ? __modificateur : null
-            });
+            };
 
-
-            // modificateur au niveau de la tva pour les ingrédients de l'article
-            // if (__modificateur) {
-            //   Object.keys(artTva).forEach(k => {
-            //     artTva[k].montant *= amodtx; 
-            //     artTva[k].ht *= amodtx;
-            //     artTva[k].ttc *= amodtx;
-            //   });
-            // } 
-
-            // // ajout et calcul de la tva pour l'article
-            // if (!cmdTva.hasOwnProperty(article.tva.code)) {
-            //   Object.defineProperty(cmdTva, article.tva.code, {
-            //     value: {taux:`${Number(article.tva.valeur)*100} %`, montant: 0, ht: 0, ttc: 0},
-            //     writable: true,
-            //     enumerable: true
-            //   });
-            // }
-
-            // let ht = (Number(article.pu)*article.quantite)*amodtx / (1 + Number(article.tva.valeur));
-
-            // cmdTva[article.tva.code] = Object.assign(cmdTva[article.tva.code], {
-            //   montant: cmdTva[article.tva.code].montant + (ht * Number(article.tva.valeur)),
-            //   ht: cmdTva[article.tva.code].ht + ht,
-            //   ttc: cmdTva[article.tva.code].ttc + ((Number(article.pu)*article.quantite)*amodtx)
-            // });
-
-            // // if (__modificateur) {
-            // //   cmdTva[article.tva.code].ht *= amodtx;
-            // //   cmdTva[article.tva.code].ttc *= amodtx;
-            // // }   
-            
-
-            // // ajout des tva des ingrédients de l'article
-            // Object.entries(artTva).forEach(([k,v]) => {
-              
-            //   // si le taux n'est pas listé dans les TVA
-            //   // on l'ajoute et on lui assigne les valeurs enregistrées pour les ingrédients
-            //   if (!cmdTva.hasOwnProperty(k)) {
-            //     Object.defineProperty(cmdTva, k, {
-            //       value: {taux:v.taux, montant: v.montant, ht: v.ht, ttc: v.ttc},
-            //       writable: true,
-            //       enumerable: true
-            //     });
-
-            //   } 
-            //   // si le taux est déjà listé,
-            //   // on additionne avec les valeurs enregistrées pour les ingrédients
-            //   else {
-            //     cmdTva[k] = Object.assign(cmdTva[k], {
-            //       montant: cmdTva[k].montant + v.montant,
-            //       ht: cmdTva[k].ht + v.ht,
-            //       ttc: cmdTva[k].ttc + v.ttc
-            //     });
-            //   }
-            // });
-            
-
-            // logger.info('iht','(Number('+article.pu+')*'+article.quantite+') / (1 + Number('+article.tva.valeur +'))');
-            // logger.info(JSON.stringify(cmdTva));
-            // total += articletotal;
+            if (template.includes('ticket_image')) {
+              __p = {...__p, legende:(article.legende || ligne_p['ENC-TIK-LIG-PRO-LIB'])};
+            }
+          
+            articles.push(__p);
           });
           
           
@@ -2081,14 +1997,6 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
               // si le type d'ingrédient ne doit pas s'imprimer sur ce ticket
               let __noprint = ingnoprint.find(p=>p===ticket.ticket_id);
-
-              // // ordre du type d'ingrédient
-              // let __ingweight = Object.values(types).length + Number(types[ing.type].weight);
-              // // ordre du type d'ingrédient (défini dans les paramètres)
-              // if (impression_ordre && impression_ordre.types) {
-              //   let __typeweight = impression_ordre.types.findIndex(t=>t===ing.type);
-              //   if (__typeweight>-1) __ingweight = __typeweight;
-              // }
 
 
               let __ingweight = -1;

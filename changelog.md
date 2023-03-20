@@ -11,6 +11,19 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 
 
 
+## [1.1.2+11] - 2023-03-20
+### Changed
+- Affichage du type de document pour l'impression des Notes
+- Correction du nombre de lignes des Notes et Tickets en base de données
+- Correction du calcul et de la ventilation de la TVA des commandes avec promotions
+- Ecriture dans la piste d'audit d'une détection d'un défaut d'intégrité dans l'archive fiscale
+
+## Added
+- Prise en charge et impression d'un nom alternatif pour les produits et les ingrédients, destiné au ticket bilingue.
+- Exportation du Journal des Événements Techniques et de la Piste d'Audit en csv dans l'Archive Fiscale.
+- Exportation de la signature des Archives Fiscales depuis les paramètres.
+
+
 ## [1.1.1+10] - 2023-02-14
 ### Changed
 - Correction de la récupération du prix unitaire TTC d'un article d'une commande Ubereats.

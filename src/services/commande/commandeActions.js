@@ -679,6 +679,8 @@ function _createTicket(confirm, params) {
     });
   });
 
+  __ticketData['ENC-TIK-LIG-NBR'] -= 1;
+
   return __ticketData;
 }
 
@@ -816,6 +818,8 @@ function _createNote(confirm, params) {
     __noteData['ENC-TIK-TOT-TTC'] += tva.ttc;
     __noteData['FAC-TOT-TVA'] += tva.tva;
   });
+
+  __noteData['ENC-TIK-LIG-NBR'] -= 1;
 
 
   return __noteData;
@@ -1150,21 +1154,6 @@ function addProduit(payload) {
     const steps = state.catalogueReducer.steps[payload.produitid];
 
 
-    // const composition = Object.entries(payload.composition).map(
-    //   ([ingid, qte]) => ({
-    //     ingredient: ingid,
-    //     qte: qte,
-    //     type: state.catalogueReducer.ingredients[ingid].type,
-    //     tva:
-    //       state.catalogueReducer.tva[
-    //         state.catalogueReducer.ingredients[ingid].tva_id
-    //       ],
-    //     prix: Number(state.catalogueReducer.ingredients[ingid].supplement),
-    //     nom: state.catalogueReducer.ingredients[ingid].nom,
-    //     fromStep: null,
-    //   })
-
-
       const composition = payload.compo.map(
         (comping) => {
           const [ingid, qte] = Object.entries(comping)[0];
@@ -1178,6 +1167,7 @@ function addProduit(payload) {
               ],
             prix: Number(state.catalogueReducer.ingredients[ingid].supplement),
             nom: state.catalogueReducer.ingredients[ingid].nom,
+            legende: state.catalogueReducer.ingredients[ingid].legende ? state.catalogueReducer.ingredients[ingid].legende : state.catalogueReducer.ingredients[ingid].nom,
             fromStep: null,
           }
         });
@@ -1248,6 +1238,7 @@ function updateProduit(payload) {
       const __prd = {
         produitid: item.produitid,
         nom: item.nom,
+        legende: item.legende ? item.legende : item.nom,
         prix: item.pu,
         puht: item.puht,
         composition: item.composition,

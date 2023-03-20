@@ -160,7 +160,7 @@ function getCommandesCaisses() {
 }
 
 function addProduit(payload, tva, items, steps) {
-  const { produitid, nom, prix, puht, composition, customizable, status } = payload;
+  const { produitid, nom, legende, prix, puht, composition, customizable, status } = payload;
 
   let mode = "";
   let item = {};
@@ -182,6 +182,7 @@ function addProduit(payload, tva, items, steps) {
     item = {
       produitid: produitid,
       nom: nom,
+      legende: legende || nom,
       prix: prix,
       pu: prix,
       puht: puht,
@@ -207,6 +208,7 @@ function addProduit(payload, tva, items, steps) {
       item = {
         produitid: produitid,
         nom: nom,
+        legende: legende || nom,
         prix: prix,
         pu: prix,
         puht: puht,
@@ -295,6 +297,7 @@ function addIngredient(ingredient, quantite, step, item, produitSteps, tva, comm
       prix: Number(ingredient.supplementArray[MODES[commandeMode]].ttc),
       ht: Number(ingredient.supplementArray[MODES[commandeMode]].ht),
       nom: ingredient.nom,
+      legende: ingredient.legende || ingredient.nom,
       fromStep: step.step_id,
       tva: tva,
     });
@@ -1554,6 +1557,7 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
             prix: Number(c_ing.supplementArray[MODES[commande.mode]].ttc),
             ht: Number(c_ing.supplementArray[MODES[commande.mode]].ht),
             nom: c_ing.nom,
+            legende: c_ing.legende || c_ing.nom,
             fromStep: null,
           };
         });
@@ -1563,6 +1567,7 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
       const item = {
         produitid: itm.id,
         nom: prd.nom,
+        legende: prd.legende || prd.nom,
         //        prix: itm.quantity*Number(prd.prix),
         prix: Number(itm.price.base_total_price.amount / 100),
         pu: Number(itm.price.base_unit_price.amount / 100),
@@ -1621,6 +1626,7 @@ function setCommandeFromOrder(data, catalogueReducer, parametres, numero) {
                 ht: Number(ingredient.supplementArray_c[MODES[commande.mode]].ht / 100),
                 supplementht: Number(ingredient.supplementArray[MODES[commande.mode]].ht) * parseInt(ing.quantity),
                 nom: ingredient.nom,
+                legende: ingredient.legende || ingredient.nom,
                 fromStep: ingredient_step.step_id,
                 tva: catalogueReducer.tva[ingredient.tvaArray[MODES[commande.mode]]]
               });
@@ -1752,6 +1758,7 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
             prix: Number(c_ing.supplementArray[MODES[commande.mode]].ttc),
             ht: Number(c_ing.supplementArray[MODES[commande.mode]].ht),
             nom: c_ing.nom,
+            legende: c_ing.legende || c_ing.nom,
             fromStep: null,
             tva: catalogueReducer.tva[c_ing.tvaArray[MODES[commande.mode]]]
           };
@@ -1776,6 +1783,7 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
         const item = {
           produitid: itm.produitid,
           nom: prd.nom,
+          legende: prd.legende || prd.nom,
           prix: Number((__itmqte * prd.prixArray_c[MODES[commande.mode]].ttc) / 100), //__itmqte * Number(prd.prix),
           pu: Number(prd.prixArray[MODES[commande.mode]].ttc),
           puht: Number(prd.prixArray[MODES[commande.mode]].ht),
@@ -1822,6 +1830,7 @@ function setCommandeFromAPI(data, catalogueReducer, parametres, numero) {
               ht: Number(ingredient.supplementArray[MODES[commande.mode]].ht),
               supplement: Number(ingredient.supplement),
               nom: ingredient.nom,
+              legende: ingredient.legende || ingredient.nom,
               fromStep: ingredient_step ? ingredient_step.step_id : null,
               tva: catalogueReducer.tva[ingredient.tva_id],
             });

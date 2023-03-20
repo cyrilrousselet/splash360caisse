@@ -99,7 +99,7 @@ class Selecteur extends React.Component {
                   color={ prd.color }
                   disabled={ prd.active===0 }
                   composition={prd.composition}
-                  onClick={ () => addProduit({produitid: prd.id, nom: prd.nom, prix: Number(prd.prixArray[MODES[mode]].ttc), puht: Number(prd.prixArray[MODES[mode]].ht), composition: prd.composition, compo: prd.compo, customizable: prd.customizable, tva_id:prd.tvaArray[MODES[mode]] }) } />
+                  onClick={ () => addProduit({produitid: prd.id, nom: prd.nom, legende: prd.legende, prix: Number(prd.prixArray[MODES[mode]].ttc), puht: Number(prd.prixArray[MODES[mode]].ht), composition: prd.composition, compo: prd.compo, customizable: prd.customizable, tva_id:prd.tvaArray[MODES[mode]] }) } />
               )}
             </TabContent>
             )}
