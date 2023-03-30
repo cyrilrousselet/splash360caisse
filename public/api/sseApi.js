@@ -1084,6 +1084,95 @@ const actions = {
     __request.end();
   },
 
+  getLuckylikesGiftById: (req, res) => {
+    const { url, token } = req.payload;
+
+    let __order = [];
+
+    const __request = net.request({
+      url: url,
+      method: "get",
+    });
+    __request.setHeader("Authorization", "Bearer " + token);
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/json");
+
+    __request.on("response", (response) => {
+      log.info(`getLuckylikesGiftById STATUS: ${response.statusCode}`);
+      log.info(`getLuckylikesGiftById HEADERS: ${JSON.stringify(response.headers)}`);
+      response.on("data", (chunk) => {
+        __order.push(chunk);
+
+        log.info(`getLuckylikesGiftById BODY: ${chunk}`);
+      });
+      response.on("end", () => {
+        log.info("getLuckylikesGiftById: end");
+        let __ord = {};
+        try {
+          __ord = { party: JSON.parse(__order.join("")) };
+        } catch (e) {
+          __ord = { error: e.message };
+          log.error("JSON error", e);
+        }
+        res.send(__ord);
+      });
+    });
+
+    __request.on('error', (error) => {
+      log.error('getLuckylikesGiftById ERROR', error);
+      res.error(error);
+    });
+
+    __request.end();
+  },
+
+  burnLuckylikesGift: (req, res) => {
+    const { url, token, data } = req.payload;
+
+    let __order = [];
+
+    const __request = net.request({
+      url: url,
+      method: "put",
+    });
+    __request.setHeader("Authorization", "Bearer " + token);
+    __request.setHeader("Access-Control-Allow-Origin", "*");
+    __request.setHeader("Content-Type", "application/json");
+
+
+    const form = JSON.stringify(data);
+    log.info("burnLuckylikesGift form: " + form);
+    __request.write(form);
+
+    __request.on("response", (response) => {
+      log.info(`burnLuckylikesGift STATUS: ${response.statusCode}`);
+      log.info(`burnLuckylikesGift HEADERS: ${JSON.stringify(response.headers)}`);
+      response.on("data", (chunk) => {
+        __order.push(chunk);
+
+        log.info(`burnLuckylikesGift BODY: ${chunk}`);
+      });
+      response.on("end", () => {
+        log.info("burnLuckylikesGift: end");
+        let __ord = {};
+        try {
+          __ord = { party: JSON.parse(__order.join("")) };
+        } catch (e) {
+          __ord = { error: e.message };
+          log.error("JSON error", e);
+        }
+        res.send(__ord);
+      });
+    });
+
+    __request.on('error', (error) => {
+      log.error('burnLuckylikesGift ERROR', error);
+      res.error(error);
+    });
+
+    __request.end();
+  },
+
 
   // pingBO: (req, res) => { // Test à la fois la connexion au bo et la connexion internet
   //   const {url} = req.payload;

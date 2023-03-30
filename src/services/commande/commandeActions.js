@@ -24,6 +24,7 @@ import packageJson from '../../../package.json';
 import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import { last } from "lodash";
+import { marketingActions } from "../marketing/marketingActions";
 // import { createObjectCsvWriter } from "csv-writer";
 const strings = new LocalizedStrings(data);
 
@@ -319,6 +320,17 @@ function confirmCommande(_payload, printTemplates) {
             type: (payloadcopy.scheduled) ? commandeActionTypes.SET_SCHEDULE : commandeActionTypes.DELETE_SCHEDULE,
             schedule: payloadcopy.ticketId
           });
+
+
+
+          // si la commande contient un modificateur provenant d'un cadeau
+          const giftmod = payloadcopy.modificateurs.find(mod => mod.item.includes('gift_'));
+          console.log('🎁 VALIDATION GIFT', giftmod);
+          if (giftmod) {
+            console.log('🎁 BURN GIFT', payloadcopy.gift.partyid);
+            // on demande le "burn" du cadeau via l'API LuckyLikes
+            dispatch(marketingActions.burnGift({partyid:payloadcopy.gift.partyid}))
+          }
 
           
           if (!confirm.signaturenote && !confirm.note) {  
@@ -1026,6 +1038,17 @@ function validateCommande(_payload, needNumero) {
           commande: {},
         });
 
+
+        // si la commande contient un modificateur provenant d'un cadeau
+        const giftmod = payloadcopy.modificateurs.find(mod => mod.item.includes('gift_'));
+        console.log('🎁 VALIDATION GIFT', giftmod);
+        if (giftmod) {
+          console.log('🎁 BURN GIFT', payloadcopy.gift.partyid);
+          // on demande le "burn" du cadeau via l'API LuckyLikes
+          dispatch(marketingActions.burnGift({partyid:payloadcopy.gift.partyid}))
+        }
+
+        
         // met à jour la liste des schedules (ajoute ou supprime la commande)
         dispatch({
           type: (confirm.scheduled) ? commandeActionTypes.SET_SCHEDULE : commandeActionTypes.DELETE_SCHEDULE,
@@ -1225,6 +1248,11 @@ function updateProduit(payload) {
       } catch(e) {
         console.error(e);
       }
+    }
+
+    // s'il s'agit d'un produit-cadeau (itemid='gift_xxx') et si on augmente la quantité
+    if (addPrd && itemid.includes('gift_')) {
+      return false;
     }
 
     // s'il s'agit d'un produit customisable et si on augmente la quantité

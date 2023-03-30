@@ -50,6 +50,7 @@
       "password":"satumare"
     },
     "getparty": "https://api-preprod.luckylikes.fr/api/parties/?cryptId={id}",
+    "getpartybyid": "https://api-preprod.luckylikes.fr/api/parties/{id}",
     "updateparty": "https://api-preprod.luckylikes.fr/api/parties/{id}"
   }
 }

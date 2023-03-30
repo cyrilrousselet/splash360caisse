@@ -4,6 +4,7 @@ import TopZone from '../../containers/TopZone';
 import SelecteurCont from '../../containers/SelecteurCont';
 import PanierCont from '../../containers/PanierCont';
 import ReglementCont from '../../containers/ReglementCont';
+import GiftSelectorCont from '../../containers/GiftSelectorCont';
 import PersonnalisationCont from '../../containers/PersonnalisationCont';
 // import Logger from '../../helpers/Logger';
 import logger from '../../helpers/Logger';
@@ -25,6 +26,7 @@ class Encaissement extends React.Component {
       personnalisationNextStep: -1,
       commandeItemToPersonnalize: null,
       lockEncaissement: true,
+      giftselectorOpen: false,
     };
     this.openReglement = this.openReglement.bind(this);
     this.closeReglement = this.closeReglement.bind(this);
@@ -32,6 +34,8 @@ class Encaissement extends React.Component {
     this.closePersonnalisation = this.closePersonnalisation.bind(this);
     this.validatePersonnalisation = this.validatePersonnalisation.bind(this);
     this.unlockEncaissement = this.unlockEncaissement.bind(this);
+    this.openGiftSelector = this.openGiftSelector.bind(this);
+    this.closeGiftSelector = this.closeGiftSelector.bind(this);
   }
 
   openReglement() {
@@ -73,6 +77,15 @@ class Encaissement extends React.Component {
     logger.info('Enc.unlockEncaissement()');
     this.setState({lockEncaissement: false});
   }
+  
+  openGiftSelector() {
+    logger.info('Enc.openGiftSelector');
+    this.setState({giftselectorOpen: true});
+  }
+  closeGiftSelector() {
+    logger.info('Enc.closeGiftSelector');
+    this.setState({giftselectorOpen: false});
+  }
 
  render () {
 
@@ -99,6 +112,8 @@ class Encaissement extends React.Component {
             unlockEncaissement={ this.unlockEncaissement }
             forcePersonnalisationItem={this.state.personnalisationReview}
             itemToPersonnalize={ this.state.commandeItemToPersonnalize } 
+            openGiftSelector={ this.openGiftSelector }
+            closeGiftSelector={ this.closeGiftSelector }
           />
           <ReglementCont 
             open={ this.state.reglementOpen } 
@@ -118,6 +133,12 @@ class Encaissement extends React.Component {
             validatePersonnalisation={ this.validatePersonnalisation }
             closePersonnalisation={ this.closePersonnalisation } 
             openPersonnalisation={ this.openPersonnalisation }
+            layout={layout}
+          />
+          <GiftSelectorCont
+            open={ this.state.giftselectorOpen }
+            closeSelector={ this.closeGiftSelector }
+            contClass="EncaissementGiftSelector" 
             layout={layout}
           />
         </div>

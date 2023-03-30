@@ -36,6 +36,8 @@ export const notificationServices = {
   confirmCommande,
   resync,
   getGift,
+  getGiftById,
+  burnGift,
  };
 
 
@@ -468,6 +470,64 @@ async function getGift(id) {
   }
 }
 
+
+async function getGiftById(id) {
+  const luckylikes_token = JSON.parse(localStorage.getItem('luckylikes_token'));
+  let __updateLuckylikesToken = {token:''};
+
+  if (!luckylikes_token || luckylikes_token.expiration < new Date().getTime()) {
+    __updateLuckylikesToken = await getLuckylikesToken({
+      url: externalParams.gift.gettoken.url,
+      username: externalParams.gift.gettoken.username,
+      password: externalParams.gift.gettoken.password
+    });
+    if (__updateLuckylikesToken.hasOwnProperty('token')) {
+      localStorage.setItem('luckylikes_token', JSON.stringify({...__updateLuckylikesToken, expiration: new Date().getTime() + 604800}));
+    } else {
+      throw new Error('Token error');
+    }
+  } else {
+    __updateLuckylikesToken.token = luckylikes_token.token;
+  }
+
+  logger.info('getGiftById token : ',__updateLuckylikesToken);
+
+  if (__updateLuckylikesToken.token) {
+    var __url = externalParams.gift.getpartybyid.replace('{id}', id);
+
+    logger.info('getGiftById url : ',__url);
+
+    return emit('getLuckylikesGiftById', {url: __url, token: __updateLuckylikesToken.token});
+  }
+}
+
+
+async function burnGift(id, _data) {
+  const luckylikes_token = JSON.parse(localStorage.getItem('luckylikes_token'));
+  let __updateLuckylikesToken = {token:''};
+
+  if (!luckylikes_token || luckylikes_token.expiration < new Date().getTime()) {
+    __updateLuckylikesToken = await getLuckylikesToken({
+      url: externalParams.gift.gettoken.url,
+      username: externalParams.gift.gettoken.username,
+      password: externalParams.gift.gettoken.password
+    });
+    if (__updateLuckylikesToken.hasOwnProperty('token')) {
+      localStorage.setItem('luckylikes_token', JSON.stringify({...__updateLuckylikesToken, expiration: new Date().getTime() + 604800}));
+    } else {
+      throw new Error('Token error');
+    }
+  } else {
+    __updateLuckylikesToken.token = luckylikes_token.token;
+  }
+
+  logger.info('burnGift token : ',__updateLuckylikesToken);
+
+  if (__updateLuckylikesToken.token) {
+    var __url = externalParams.gift.updateparty.replace('{id}', id);
+    return emit('burnLuckylikesGift', {url: __url, token: __updateLuckylikesToken.token, data: _data});
+  }
+}
 
 function initSSE(restaurant_id) {
   return emit('sseInit', {restaurant_id: restaurant_id});

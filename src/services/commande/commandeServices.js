@@ -160,7 +160,7 @@ function getCommandesCaisses() {
 }
 
 function addProduit(payload, tva, items, steps) {
-  const { produitid, nom, legende, prix, puht, composition, customizable, status } = payload;
+  const { produitid, nom, legende, prix, puht, composition, customizable, status, itemid } = payload;
 
   let mode = "";
   let item = {};
@@ -192,15 +192,15 @@ function addProduit(payload, tva, items, steps) {
       steps: steps_list,
       stepslength: steps.length,
       quantite: 1,
-      itemid: _newCommandeItemId(),
+      itemid: itemid || _newCommandeItemId(),
       status: status || "pending",
     };
   }
   // s'il s'agit d'un produit non customisable,
   else {
-    // on recherche s'il existe un item du même produit
+    // on recherche s'il existe un item du même produit (hors produit-cadeau)
     item = items.find((itm) => {
-      return itm.produitid === produitid;
+      return (itm.produitid === produitid && !itm.itemid.includes('gift_'));
     });
     // si aucun item ne correspond, on l'ajoute
     mode = "add";
@@ -216,7 +216,7 @@ function addProduit(payload, tva, items, steps) {
         composition: composition,
         ingredients: [...composition],
         quantite: 1,
-        itemid: _newCommandeItemId(),
+        itemid: itemid || _newCommandeItemId(),
         status: "completed",
       };
     }

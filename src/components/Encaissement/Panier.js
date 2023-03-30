@@ -41,7 +41,7 @@ import LoginCont from '../../containers/LoginCont';
 // import { formatRFC3339 } from 'date-fns';
 // import { add, isBefore, format } from 'date-fns';
 import { add, sub, differenceInHours, format, isBefore, set } from 'date-fns';
-// import GiftIcon from '../common/icon/GiftIcon';
+import GiftIcon from '../common/icon/GiftIcon';
 
 
 let strings = new LocalizedStrings(data);
@@ -913,6 +913,7 @@ class Panier extends React.Component {
       ouvertureOpen: false,
       cmdModeOpen: false,
       cmdMode: null,
+      giftSet: false,
       // giftOpen: false,
       // giftCode: null,
       solde: 0,
@@ -965,6 +966,9 @@ class Panier extends React.Component {
     // this.openGiftIinput = this.openGiftIinput.bind(this);
     // this.closeGiftIinput = this.closeGiftIinput.bind(this);
     // this.getGift = this.getGift.bind(this);
+    this.isGiftSet = this.isGiftSet.bind(this);
+    this._cleanOrphanGifts = this._cleanOrphanGifts.bind(this);
+    this._checkGiftCondition = this._checkGiftCondition.bind(this);
 
   }
 
@@ -1029,9 +1033,19 @@ class Panier extends React.Component {
         else {
           this.props.closePersonnalisation('Panier.componentDidUpdate()');
         }
+
+
     } else {
       this.props.closeReglement();
     }
+
+    // test des conditions d'application des cadeaux
+    this._checkGiftCondition();
+
+    // suppression des cadeaux orphelins (produit ou modificateur)
+    this._cleanOrphanGifts();
+
+
 
     const {bippersOpen} = this.state;
     const {parametres} = this.props;
@@ -1053,6 +1067,93 @@ class Panier extends React.Component {
     this.listewrapper.scrollTop = this.listewrapper.scrollHeight;
   }
 
+  /**
+   * teste si le cadeau est sélectionné 
+   */
+  isGiftSet() {
+    const {items, modificateurs} = this.props.commande;
+
+    // s'il y a un produit dont l'id contient la sous-chaine "gift_" et un modificateur associé à cet item
+    // on considère que le cadeau est attribué (giftSet=true)
+    const giftmod = modificateurs.find(mod => mod.item.includes('gift_'));
+    let giftitem = {};
+    if (giftmod) {
+      giftitem = items.find(itm => itm.itemid===giftmod.item);
+    }
+  
+    return giftitem && giftmod;
+  }
+
+  _checkGiftCondition() {
+    const { items, modificateurs, gift } = this.props.commande;
+    const { deleteDiscount, monnaie } = this.props;
+
+    // const giftitem = items.find(itm => itm.itemid.includes('gift_'));
+    const giftmod = modificateurs.find(mod => mod.item.includes('gift_'));
+
+    if (gift && items && giftmod) {
+      const __total = this.calculeTotaux(items, modificateurs, monnaie.symbole);
+      
+      // si le total du panier est inférieur au minimum requis
+      if (__total.total < gift.totalMin) {
+        // on alerte avant la suppression du cadeau sélectionné
+          
+        Swal.fire({
+          title: strings.modules.encaissement.gift.alertes.montant.titre,
+          html: strings.modules.encaissement.gift.alertes.montant.texte.replace('%TOTAL%', gift.totalMin+' '+monnaie.symbole),
+          focusConfirm: true,
+          showCancelButton: false,
+          // customClass: 'deleteconfirm',
+          confirmButtonText: strings.general.dialog.delete,
+          buttonsStyling: false 
+        })
+        .then((result) => {
+          // updateProduit({itemid: giftitem.itemid, quantite: 0});
+          try {
+            deleteDiscount({discountId:giftmod.modificateur_id});
+          } catch(e) {
+            // console.warn(e);
+          }
+        });   
+      }
+      
+    }
+
+  }
+
+  /**
+   * Nettoie les cadeaux orphelins (produit ou modificateur)
+   */
+  _cleanOrphanGifts() {
+    
+    const { items, modificateurs, gift } = this.props.commande;
+    const { deleteDiscount, updateProduit } = this.props;
+
+
+    if (gift) {
+
+      // on recherche un produit-cadeau
+      const giftitem = items.find(itm => itm.itemid.includes('gift_'));
+      if (giftitem) {
+        const giftmod = modificateurs.find(mod => mod.item===giftitem.itemid);
+        // s'il n'y a aucun modificateur correspondant on supprime le produit-cadeau
+        if (!giftmod) {
+          updateProduit({itemid: giftitem.itemid, quantite: 0});
+        }
+      }
+
+      // on recherche un modificateur-cadeau
+      const giftmod = modificateurs.find(mod => mod.item.includes('gift_'));
+      if (giftmod) {
+        const giftitem = items.find(itm => itm.itemid===giftmod.item);
+        // s'il n'y a aucun produit-cadeau correspondant, on supprime le modificateur
+        if (!giftitem) {
+          deleteDiscount({discountId:giftmod.modificateur_id});
+        }
+      }
+    }
+
+  }
 
   /**
    * S
@@ -1781,10 +1882,11 @@ class Panier extends React.Component {
             // caisses,
             monnaie,
             log,
+            openGiftSelector,
             // searchGift
            } = this.props;
 
-    const { comments, modificateurs, items, ticketId, mode, client, bipper, type, beneficiaire } = this.props.commande;
+    const { comments, modificateurs, items, ticketId, mode, client, bipper, type, beneficiaire, gift } = this.props.commande;
     
     const {inputfocus, searchval, 
            commentOpen, commentId, commentItemId, commentIngredientId,
@@ -1798,6 +1900,7 @@ class Panier extends React.Component {
           //  giftOpen,
           //  giftCode,
            solde,
+           giftSet,
           } = this.state;
 
     // récup du texte en fonction de l'id du commentaire (s'il est défini)
@@ -2137,6 +2240,19 @@ logger.info('⏰', schedule_delay);
                       discountsurvente={ type==="vente" }
                     />
                   }
+                  {(this.props.commande.gift && !this.isGiftSet()) && <DiscountListItem
+                    className={ (total>=this.props.commande.gift.totalMin) ? "pending-gift" : "nonactivable-gift" }
+                    nom={gift.nom}
+                    valeur=''
+                    id={gift.gift_id}
+                    montant='0'
+                    operation={ -1 }
+                    type={ 'gift' }
+                    onClick={() => { if (total>=this.props.commande.gift.totalMin) openGiftSelector();}}
+                    deleteHandler={ null }
+                    discountsurvente={ type==="vente" }
+                  />
+                }
                   </List>
               </div> {/* /.wrapper */}
               <div className="tools">
@@ -2290,7 +2406,7 @@ function DiscountListItem (props) {
     });
   }
 
-  const modtype = type==="discount" 
+  const modtype = (type==="discount" || type==="gift") 
   ? "type-discount" 
   : (
     operation>0 
@@ -2303,12 +2419,13 @@ function DiscountListItem (props) {
 
   return (
     <ListItem className={ `discount ${className||''} ${modtype}` }>
-      <ListItemText primary={`${(nom ? nom : valeur)}`} onClick={() => { type==="discount" ? onClick() : void(0);}} />
+     <ListItemText primary={`${(nom ? nom : valeur)}`} onClick={() => { type==="discount" || type==="gift" ? onClick() : void(0);}} />
       <ListItemSecondaryAction>
-        <ListItemIcon onClick={deleteDiscount}>
+        <ListItemIcon onClick={() => {type==="discount" ? deleteDiscount() : void(0);} }>
           {(discountsurvente && type==="discount") && (<DeleteIcon />)}
+          {(className==='pending-gift' || className==='nonactivable-gift') && (<GiftIcon />)}
         </ListItemIcon>
-        <ListItemText primary={`${(operation<0 ? '-' : '+')}${montant}`} />
+        {(className!=='pending-gift' && className!=='nonactivable-gift' && <ListItemText primary={`${(operation<0 ? '-' : '+')}${montant}`} />)}
       </ListItemSecondaryAction>
     </ListItem>
   );

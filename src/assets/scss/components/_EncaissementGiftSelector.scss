@@ -1,0 +1,223 @@
+.GiftSelector {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  outline: none;
+  .Modal-container {
+      background-color: $blanc;
+      width: 950px;
+      border-radius: 15px;
+      padding: 10px 0 0;
+  }
+  .close-button {
+      background-color: $blanc;
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 30px;
+      height: 30px;
+      min-height: 30px;
+  }
+  .header {
+    height: 35px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    .title {
+        user-select: none;
+        font-family: $f_blk;
+        font-size: 15px;
+        color: $noir;
+        text-align: center;
+        text-transform: uppercase;
+    }
+  }
+
+  .body {
+    
+    .ProduitBtn {
+
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      width: calc((100% / 10) - 4px);
+      height: 70px;
+      border-radius: 10px;
+      color: $blanc;
+      font-family: $f_blk;
+      font-size: 10px;
+      vertical-align: top;
+      text-transform: uppercase;
+      box-sizing: border-box;
+      padding: 4px;
+      margin: 2px 2px 2px;
+      box-shadow: inset 0 0 0 4px $blanc, 0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12);
+      cursor: pointer;
+      
+      
+      div.btnlabel {
+        user-select: none;
+        text-align: center;
+        line-height: 1.0em;
+        div.supplt {
+          padding-top: 7px;
+        }
+      }
+      .qte-label {
+        user-select: none;
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
+        min-width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: $rouge;
+        position: absolute;
+        top: -7px;
+        right: 10px;
+        color: $blanc;
+        box-shadow: 0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12);
+      }
+      .qte-btn {
+        display: none;
+        position: absolute;
+        width: 30px;
+        left: 10px;
+        top: -7px;
+        flex-direction: row;
+        justify-content: space-around;
+        button {
+          width: 30px;
+          height: 30px;
+          min-height: 30px;      
+        }
+      }
+      .plus {
+        background-color: $vert;
+        &:disabled {
+          filter: brightness(.5);
+        }
+      }
+      .moins {
+        background-color: $rouge;
+        &:disabled {
+          filter: brightness(.5);
+        }
+      }
+      &.with-qtebtn {
+        .qte-btn {
+          display: flex;
+        }
+      }
+
+      &:nth-child(7n+1) {
+          background-color: $wheel1;
+      }
+      &:nth-child(7n+2) {
+          background-color: $wheel2;
+      }
+      &:nth-child(7n+3) {
+          background-color: $wheel3;
+      }
+      &:nth-child(7n+4) {
+          background-color: $wheel4;
+      }
+      &:nth-child(7n+5) {
+          background-color: $wheel5;
+      }
+      &:nth-child(7n+6) {
+          background-color: $wheel6;
+      }
+      &:nth-child(7n) {
+          background-color: $wheel7;
+      }
+
+
+      &.blanc       { background-color: $prdcol_blanc; }
+      &.bleuclair   { background-color: $prdcol_bleuclair; }
+      &.bleufonce   { background-color: $prdcol_bleufonce; }
+      &.gris        { background-color: $prdcol_gris; }
+      &.jaune       { background-color: $prdcol_jaune; }
+      &.jauneorange { background-color: $prdcol_jauneorange; }
+      &.marron      { background-color: $prdcol_marron; }
+      &.noir        { background-color: $prdcol_noir; }
+      &.orange      { background-color: $prdcol_orange; }
+      &.rose        { background-color: $prdcol_rose; }
+      &.rouge       { background-color: $prdcol_rouge; }
+      &.vertclair   { background-color: $prdcol_vertclair; }
+      &.vertfonce   { background-color: $prdcol_vertfonce; }
+      &.violet      { background-color: $prdcol_violet; }
+
+      &.blanc, &.bleuclair, &.gris, &.jaune, &.jauneorange, &.orange, &.rose, &.rouge, &.vertclair {
+        color: $noir;
+      }
+      &.bleufonce, &.marron, &.noir, &.vertfonce, &.violet, &.rouge {
+        color: $blanc;
+      }
+      
+      &.btn-disabled {
+        cursor: default;
+        color: $noir;
+        background-color: $gris;
+      }
+
+    }
+
+  }
+
+
+  .modal-wrapper {
+    height: 550px;
+    overflow-y: auto;
+    padding: 0 20px;
+  }
+
+  .igtype {
+    padding: 5px 0 10px;
+  }
+
+  .igtype-nom {
+    font-family: $f_hea;
+    font-size: 16px;
+  }
+
+
+  &.personnalisation-narrow {
+
+    .IngredientBtn {
+      height: 60px;
+      margin: 1px 1px 3px;
+      box-shadow: inset 0 0 0 3px $blanc, 0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12);
+     
+    }
+    .igtype {
+      padding: 0px 0 5px;
+    }
+    .igtype-nom {
+      font-size: 13px;
+    }
+  }
+
+
+
+  .footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px 20px;
+
+    .btnprecedent {
+      background-color: $bleu;
+    }
+
+    .btnsuivant {
+      background-color: $vert;
+    }
+  }
+}

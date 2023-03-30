@@ -7,8 +7,12 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 ## [Unreleased]
 - Sauvegarde des préférences de la caisse au niveau du backend pour permettre une réinstallation sans perdre les paramètres.
 - Sauvegarde des z de caisse au niveau du backend
-- Prise en charge des promotions Luckylikes
 
+
+
+## [1.1.2+12] - 2023-03-30
+### Changed
+- Prise en charge des promotions Luckylikes
 
 
 ## [1.1.2+11] - 2023-03-20

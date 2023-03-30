@@ -7,7 +7,7 @@ import { notificationServices } from "../notification/notificationServices";
 import LocalizedStrings from "react-localization";
 import Swal from "sweetalert2";
 import { data } from "../../constants/translations";
-import { add, isBefore } from "date-fns";
+import { add, format, formatISO, isBefore } from "date-fns";
 
 let strings = new LocalizedStrings(data);
 
@@ -220,6 +220,46 @@ function deleteAvoirFromSync(payload) {
   }
 }
 
+function burnGift(payload) {
+  return async (dispatch, getState) => {
+    const {partyid} = payload;
+
+
+    dispatch({type: marketingActionTypes.BURN_GIFT_REQUEST, partyid});
+
+    let __party = {};
+    try {
+
+      // récupération des données de cadeau depuis l'API luckylikes
+      __party = await notificationServices.getGiftById(partyid);
+
+      console.log('🎁 GIFT BY ID', __party);
+    } catch(err) {
+      console.warn(err);
+      dispatch({type: marketingActionTypes.BURN_GIFT_FAILURE, error: err});
+    }
+    const { party } = __party;
+    if ( party ) {
+
+      let update = {
+        ...__party,
+        isBurned: true,
+        burnDate: formatISO(new Date())
+      };
+
+      try {
+        await notificationServices.burnGift(partyid, update);
+        dispatch({type: marketingActionTypes.BURN_GIFT_SUCCESS});
+      } catch(err) {
+        console.warn(err);
+        dispatch({type: marketingActionTypes.BURN_GIFT_FAILURE, error: err});
+      }
+
+    } 
+
+  }
+}
+
 function getGiftById(payload) {
   return async (dispatch, getState) => {
     const {code} = payload;
@@ -229,13 +269,13 @@ function getGiftById(payload) {
     console.log('🎁 MarketingActions.getGiftById()', code);
     dispatch({type: marketingActionTypes.GET_GIFT_REQUEST, code});
 
+    // s'il y a des cadeaux prévus pour cette caisse (fichier "gifts.json" dans "data/")
     if (gifts && gifts.length>0) {
-      
     
       let __party = null;
       try {
 
-        // récupération des données de cadeau depuis la luckylikes
+        // récupération des données de cadeau depuis l'API luckylikes
         __party = await notificationServices.getGift(code);
         let err = '';
 
@@ -281,7 +321,7 @@ function getGiftById(payload) {
             dispatch({type: marketingActionTypes.GET_GIFT_FAILURE, error: strings.modules.encaissement.gift.alertes[err].titre});
 
           } else {            
-            dispatch({type: marketingActionTypes.GET_GIFT_SUCCESS, gift: {...gift, totalMin: party.customer.minimumBuyAmount}});
+            dispatch({type: marketingActionTypes.GET_GIFT_SUCCESS, gift: {...gift, totalMin: party.customer.minimumBuyAmount, partyid: party.id}});
           }
         } else {
           dispatch({type: marketingActionTypes.GET_GIFT_FAILURE, error: 'Party inconnue'});
@@ -320,5 +360,6 @@ export const marketingActions = {
   getGiftsList,
   setAvoirFromSync,
   deleteAvoirFromSync,
+  burnGift,
   getGiftById
 };

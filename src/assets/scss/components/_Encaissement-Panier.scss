@@ -438,6 +438,12 @@
                 right: 10px;
             }
         }
+        &.pending-gift {
+            background-color: $orange;
+        }
+        &.nonactivable-gift {
+            background-color: $rouge;
+        }
         &.item-discount {
             background-color: $bleu;
             margin-left: 15px;

@@ -221,7 +221,7 @@ const data = {
                 gift: {
                     titre: "Cadeau",
                     input: {
-                        titre: "Code cadeau"
+                        titre: "Sélectionner un cadeau"
                     },
                     alertes: {
                         nogift: {
