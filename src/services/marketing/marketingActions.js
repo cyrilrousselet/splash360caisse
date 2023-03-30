@@ -294,8 +294,8 @@ function getGiftById(payload) {
           const _partylimite = add(new Date(party.date), {days: party.customer.delayGift});
 
           if (isBefore(_partylimite, new Date())) {
-            console.log('🚧 GIFTS: détection de la validité désactivée.')
-            // err = 'expired';
+            // console.log('🚧 GIFTS: détection de la validité désactivée.')
+            err = 'expired';
           }
           
           // - correspondance avec le cadeau en base locale
