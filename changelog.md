@@ -10,6 +10,11 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 
 
 
+## [1.1.2+13] - 2023-03-31
+### Changed
+- Connexion à l'API de production de Luckylikes
+
+
 ## [1.1.2+12] - 2023-03-30
 ### Changed
 - Prise en charge des promotions Luckylikes
