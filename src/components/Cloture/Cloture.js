@@ -1018,6 +1018,7 @@ class Cloture extends React.Component {
           especes={especes}
           onValidate={ this.validateCountTool } 
           closeHandler={this.closeCountTool} 
+          symbolemonnaie={monnaie.symbole}
         />
 
         <CountTRTool
@@ -1025,6 +1026,7 @@ class Cloture extends React.Component {
           ticket={ticket}
           onValidate={this.validateCountTRTool}
           closeHandler={this.closeCountTRTool}
+          symbolemonnaie={monnaie.symbole}
         />
         <NumberKeyboard
           clasName="ClotureKeyboard"

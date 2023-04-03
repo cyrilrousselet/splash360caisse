@@ -13,6 +13,7 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 ## [1.1.2+14] - 2023-04-03
 ### Changed
 - Correction du passage de paramètres à l'imprimante d'étiquettes (nom du template)
+- Correction de la monnaie (dynamique) pour les outils de comptage (Espèces et Tickets Restaurant) du module de clôture.
 
 
 ## [1.1.2+13] - 2023-03-31
