@@ -10,6 +10,11 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 
 
 
+## [1.1.2+14] - 2023-04-03
+### Changed
+- Correction du passage de paramètres à l'imprimante d'étiquettes (nom du template)
+
+
 ## [1.1.2+13] - 2023-03-31
 ### Changed
 - Connexion à l'API de production de Luckylikes

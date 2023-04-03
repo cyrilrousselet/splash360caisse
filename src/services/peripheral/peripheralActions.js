@@ -2374,6 +2374,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
           contenu = {
             numero: cmdnumero,
             mode: strings.tickets.production.mode_short[cmd.mode],
+            nomticket: ticket.nom,
             bipper: cmd.bipper || null,
             date: `${format(__createdAt, "dd/MM/yyyy")} à ${heure}`,
             articles: articles
@@ -2476,6 +2477,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
           contenu = {
             numero: cmdnumero,
+            nomticket: ticket.nom,
             mode: strings.tickets.production.mode[cmd.mode],
             date: `${format(__createdAt, "dd/MM/yyyy")} à ${heure}`,
             articles: articles
