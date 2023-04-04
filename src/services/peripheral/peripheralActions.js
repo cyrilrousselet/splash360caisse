@@ -1353,7 +1353,7 @@ function _setCommandeToKDS(ticketsListe, cmd, state) {
 
     let kdsCmd = {
       id: cmd.ticketId,
-      label_id: (cmd.hasOwnProperty('uber')) ? cmd.uber.display_id : cmdnumero,
+      label_id: (cmd.hasOwnProperty('uber')) ? cmd.uber.display_id : (cmd.hasOwnProperty('deliveroo')) ? cmd.deliveroo.display_id : cmdnumero,
       ticket_id: cmd.ticketId,
       origine: __origine,
       name: clt ? `${clt.prenom} ${clt.nom}`: '',

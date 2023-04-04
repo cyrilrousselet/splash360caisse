@@ -11,9 +11,9 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 
 ## [1.1.2+15] - 2023-04-04
 ### Changed
-- Lickylikes : ajout d'un test de la date d'activation du cadeau (24h après sa création), impact du délai de 24h dans le test d'expiration du cadeau
+- Luckylikes : ajout d'un test de la date d'activation du cadeau (24h après sa création), impact du délai de 24h dans le test d'expiration du cadeau
 - Limiter les logs à l'environnement de développement
-- Deliveroo + KDS : utiliser le paramètre 'origine' de la caisse si le paramètre 'type' est inexistant pour pouvoir afficher la provenance de la commande sur les Kitchen Display.
+- Deliveroo + KDS : utiliser le paramètre 'origine' de la caisse si le paramètre 'type' est inexistant pour pouvoir afficher la provenance de la commande sur les Kitchen Display et envoyer le 'display_id'
 
 ## [1.1.2+14] - 2023-04-03
 ### Changed
