@@ -7,7 +7,7 @@ import { notificationServices } from "../notification/notificationServices";
 import LocalizedStrings from "react-localization";
 import Swal from "sweetalert2";
 import { data } from "../../constants/translations";
-import { add, format, formatISO, isBefore } from "date-fns";
+import { add, format, formatISO, isAfter, isBefore } from "date-fns";
 
 let strings = new LocalizedStrings(data);
 
@@ -289,9 +289,14 @@ function getGiftById(payload) {
           if (gifts[0].restau_id!==party.customer.id) {
             err = 'badrestau';
           }
+          // - validité du cadeau (il ne sera valable que 24h après sa création)
+          const _partystart = add(new Date(party.date), {hours: 24});
+          if (isAfter(_partystart, new Date())) {
+            err = 'premature';
+          }
           
           // - validité du cadeau (date de création + délai d'expiration)
-          const _partylimite = add(new Date(party.date), {days: party.customer.delayGift});
+          const _partylimite = add(new Date(party.date), {days: party.customer.delayGift+1});
 
           if (isBefore(_partylimite, new Date())) {
             // console.log('🚧 GIFTS: détection de la validité désactivée.')

@@ -1329,7 +1329,7 @@ function _setCommandeToKDS(ticketsListe, cmd, state) {
   // y a-t-il KDS d'activé pour un des ticket de la liste ?
   if (ticketsKDS.length>0) {
 
-    let __origine = cmd.caisse.type || "caisse";
+    let __origine = cmd.caisse.type || cmd.caisse.origine || "caisse";
     if (lowerCase(cmd.caisse.nom).indexOf('borne')>-1) __origine = 'borne';
 
     const __cmt = cmd.comments.find(c => c.item==null && c.ingredient==null);

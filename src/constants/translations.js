@@ -240,6 +240,10 @@ const data = {
                             titre: "Cadeau expiré",
                             texte: "La date de validité du cadeau est dépassée"
                         },
+                        premature: {
+                            titre: "Cadeau pas encore activé",
+                            texte: "Ce cadeau sera valable 24h après sa création"
+                        },
                         burned: {
                             titre: "Cadeau utilisé",
                             texte: "Le cadeau a déjà été utilisé"

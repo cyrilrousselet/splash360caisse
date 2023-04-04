@@ -264,7 +264,7 @@ class CountTool extends React.Component
                     <div className="subtotal">{ `${devise(monnaie.eur10*10)} ${symbolemonnaie}` }</div>
                   </div>
                   <div className={ `champ${(monnaie.eur5>0?' filled':'')}` } key="ctf5">
-                    <div className="nom">(`5 ${symbolemonnaie}`)</div>
+                    <div className="nom">{`5 ${symbolemonnaie}`}</div>
                     <div className={ `field ${(activeField==="eur5")? 'active':''}`} onClick={() => {startSaisie('eur5', true)}}>{ monnaie.eur5 }</div>
                     <div className="subtotal">{ `${devise(monnaie.eur5*5)} ${symbolemonnaie}` }</div>
                   </div>

@@ -5,6 +5,7 @@ require('winston-daily-rotate-file');
 const { app } = require('electron');
 const fs = require('fs');
 const mkdirp = require('mkdirp')
+const isDev = require('electron-is-dev');
 
 
 
@@ -61,14 +62,18 @@ const errorTransport = new transports.DailyRotateFile({
 
 
 
-const logger = createLogger({
+const logger = isDev 
+? createLogger({
   transports: [
     outTransport,
     errorTransport
   ]
-});
+})
+: createLogger()
+;
 
-if (process.env.NODE_ENV !== 'production') {
+// if (process.env.NODE_ENV !== 'production') {
+if (isDev) {
   logger.add(new transports.Console({
     format: combine(colorize(), consoleOut)
   }));
