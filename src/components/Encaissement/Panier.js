@@ -1075,7 +1075,7 @@ class Panier extends React.Component {
 
     // s'il y a un produit dont l'id contient la sous-chaine "gift_" et un modificateur associé à cet item
     // on considère que le cadeau est attribué (giftSet=true)
-    const giftmod = modificateurs.find(mod => mod.item.includes('gift_'));
+    const giftmod = modificateurs.find( mod => (mod.item && mod.item.includes('gift_')) );
     let giftitem = {};
     if (giftmod) {
       giftitem = items.find(itm => itm.itemid===giftmod.item);
@@ -1089,7 +1089,7 @@ class Panier extends React.Component {
     const { deleteDiscount, monnaie } = this.props;
 
     // const giftitem = items.find(itm => itm.itemid.includes('gift_'));
-    const giftmod = modificateurs.find(mod => mod.item.includes('gift_'));
+    const giftmod = modificateurs.find( mod => (mod.item && mod.item.includes('gift_')) );
 
     if (gift && items && giftmod) {
       const __total = this.calculeTotaux(items, modificateurs, monnaie.symbole);
@@ -1135,7 +1135,7 @@ class Panier extends React.Component {
       // on recherche un produit-cadeau
       const giftitem = items.find(itm => itm.itemid.includes('gift_'));
       if (giftitem) {
-        const giftmod = modificateurs.find(mod => mod.item===giftitem.itemid);
+        const giftmod = modificateurs.find( (mod => (mod.item && mod.item===giftitem.itemid)) );
         // s'il n'y a aucun modificateur correspondant on supprime le produit-cadeau
         if (!giftmod) {
           updateProduit({itemid: giftitem.itemid, quantite: 0});
@@ -1143,7 +1143,7 @@ class Panier extends React.Component {
       }
 
       // on recherche un modificateur-cadeau
-      const giftmod = modificateurs.find(mod => mod.item.includes('gift_'));
+      const giftmod = modificateurs.find( (mod => (mod.item && mod.item.includes('gift_'))) );
       if (giftmod) {
         const giftitem = items.find(itm => itm.itemid===giftmod.item);
         // s'il n'y a aucun produit-cadeau correspondant, on supprime le modificateur

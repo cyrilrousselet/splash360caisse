@@ -324,7 +324,7 @@ function confirmCommande(_payload, printTemplates) {
 
 
           // si la commande contient un modificateur provenant d'un cadeau
-          const giftmod = payloadcopy.modificateurs.find(mod => mod.item.includes('gift_'));
+          const giftmod = payloadcopy.modificateurs.find( (mod => (mod.item && mod.item.includes('gift_'))) );
           console.log('🎁 VALIDATION GIFT', giftmod);
           if (giftmod) {
             console.log('🎁 BURN GIFT', payloadcopy.gift.partyid);
@@ -1040,7 +1040,7 @@ function validateCommande(_payload, needNumero) {
 
 
         // si la commande contient un modificateur provenant d'un cadeau
-        const giftmod = payloadcopy.modificateurs.find(mod => mod.item.includes('gift_'));
+        const giftmod = payloadcopy.modificateurs.find((mod => (mod.item && mod.item.includes('gift_'))));
         console.log('🎁 VALIDATION GIFT', giftmod);
         if (giftmod) {
           console.log('🎁 BURN GIFT', payloadcopy.gift.partyid);

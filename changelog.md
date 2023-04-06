@@ -9,6 +9,10 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 - Sauvegarde des z de caisse au niveau du backend
 
 
+## [1.1.2+16] - 2023-04-06
+### Changed
+- Correction du test des modificateurs au niveau de la détection des cadeaux luckylikes
+
 ## [1.1.2+15] - 2023-04-04
 ### Changed
 - Luckylikes : ajout d'un test de la date d'activation du cadeau (24h après sa création), impact du délai de 24h dans le test d'expiration du cadeau
