@@ -329,7 +329,7 @@ function _getTicketComposition(contenu, params, config) {
   __y += 30;
 
 
-  const artcolwidth = (data.status==='confirmed') ? 22 : 24;
+  // const artcolwidth = (data.status==='confirmed') ? 22 : 24;
   __tabstops = (data.status==='confirmed') ? [0,45,300,380,450] : [0,45,340,420];
 
   // --- articles ---

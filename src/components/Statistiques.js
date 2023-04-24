@@ -203,11 +203,11 @@ class Statistiques extends React.Component {
 
     const {startDate, endDate} = this.state;
 
-    this.props.getCommandesList({
+    this.props.getCommandesList({query: {
       $and: [
         {createdAt: { $gt: start || startDate } }, 
         {createdAt: { $lte: end || endDate } }
-      ]});
+      ]}});
   }
 
 

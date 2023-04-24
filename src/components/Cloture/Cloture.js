@@ -142,7 +142,7 @@ class Cloture extends React.Component {
 
     getCommandesCaisses();
     
-    getCommandesList({
+    getCommandesList({query: {
       $and: [
         { archived: {"$exists": false} },
         { status: { $ne: "deleted" } },
@@ -159,7 +159,7 @@ class Cloture extends React.Component {
           { centre_revenu: "restaurant" }
         ]}
       ]
-    });
+    }});
     // si la gestion du fond de caisse est activée, on récupère le solde au dernier mouvement de trésorerie.
     if (fonddecaisse_activation) {
       getLastMouvement(caisse.uniqid).then(__lastmvt => {
@@ -264,7 +264,7 @@ class Cloture extends React.Component {
     params["caisse"] = selection;
     params["vendeur"] = (selection_operator && selection_operator.id === "allope") ? null : selection_operator;
     
-    this.props.getCommandesList({
+    this.props.getCommandesList({query: {
       $and: [
         { archived: {"$exists": false} },
         { status: { $ne: "deleted" } },
@@ -281,7 +281,7 @@ class Cloture extends React.Component {
           { centre_revenu: "restaurant" }
         ]}
       ]
-    });
+    }});
 
     const __reset = {
       comptage: null,

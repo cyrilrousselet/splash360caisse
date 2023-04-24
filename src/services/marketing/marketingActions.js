@@ -7,7 +7,7 @@ import { notificationServices } from "../notification/notificationServices";
 import LocalizedStrings from "react-localization";
 import Swal from "sweetalert2";
 import { data } from "../../constants/translations";
-import { add, format, formatISO, isAfter, isBefore } from "date-fns";
+import { add, formatISO, isAfter, isBefore } from "date-fns";
 
 let strings = new LocalizedStrings(data);
 

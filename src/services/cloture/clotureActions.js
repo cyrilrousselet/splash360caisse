@@ -135,7 +135,7 @@ function getCurrentPeriode(params={}) {
 
     // récup. cmd non clôturées
 
-    const {commandeslist} = await commandeServices.getCommandesList({
+    const {commandeslist} = await commandeServices.getCommandesList({query: {
       $and: [
         { archived: {"$exists": false} },
         { status: { $ne: "deleted" } },
@@ -151,7 +151,7 @@ function getCurrentPeriode(params={}) {
           { centre_revenu: "restaurant" }
         ]}
       ]
-    });
+    }});
 
     const __gtt_ids = Object.values(commandeslist).map(c => c.ticket);
     const _gtt = await clotureServices.getGTTicket({ numeroTicket:{$in: __gtt_ids} });
@@ -440,7 +440,7 @@ function makeCloture(params={}) {
 
     
     // récup. cmd non clôturées
-    const {commandeslist} = await commandeServices.getCommandesList(query);
+    const {commandeslist} = await commandeServices.getCommandesList({query: query});
 
     // console.warn('makeCloture : commandeslist', commandeslist);
 
@@ -634,12 +634,12 @@ function testCloturesAuto() {
     }
 
     // détection des commandes "standby" et "a_encaisser" du service précédent
-    const __cmdnonconfirmees = await commandeServices.getCommandesList({
+    const __cmdnonconfirmees = await commandeServices.getCommandesList({query: {
       $and: [
         {status: {$in:['standby','a_encaisser']}},
         {createdAt:{$lt:end.getTime()}}
       ]
-    });
+    }});
     // console.log('__cmdnonconfirmees',__cmdnonconfirmees);
 
     let __canMakeCloture = true;
@@ -1526,12 +1526,12 @@ function testGTPeriodique(intervalle='jour') {
     }
 
     // détection des commandes "standby" et "a_encaisser" du service précédent
-    const __cmdaencaisser = await commandeServices.getCommandesList({
+    const __cmdaencaisser = await commandeServices.getCommandesList({query: {
       $and: [
         {status: {$in:['a_encaisser']}},
         {createdAt:{$lt:__end.getTime()}}
       ]
-    });
+    }});
     // console.log('__cmdaencaisser',__cmdaencaisser);
 
     let __canMakeGTP = true;
@@ -1915,14 +1915,14 @@ function archiveFiscale(intervalle, debut, fin) {
 
     // TEST PREALABLE
     // y a-t-il des commandes non clôturées dans la période à archiver ?
-    const cmdnonarchivees = await commandeServices.getCommandesList({
+    const cmdnonarchivees = await commandeServices.getCommandesList({query: {
       $and: [
         { createdAt: {$gte: debut.getTime()} },
         { createdAt: {$lte: fin.getTime()} },
         { status: 'confirmed' },
         { archived: {$exists: false} }
       ]
-    });
+    }});
     console.log('AF cmd non cloturees', cmdnonarchivees);
 
     if (Object.values(cmdnonarchivees.commandeslist).length>0) {
@@ -2042,7 +2042,7 @@ function archiveFiscale(intervalle, debut, fin) {
       //     {createdAt: {$lte:fin.getTime()}}
       //   ]
       // };
-      const { commandeslist } = await commandeServices.getCommandesList(__cmdQuery);
+      const { commandeslist } = await commandeServices.getCommandesList({query: __cmdQuery});
 
       if (commandeslist) {
         // fichier JSON

@@ -1782,13 +1782,13 @@ class Panier extends React.Component {
 
     logger.info('query staffmeal','{$and:[{type:"staffmeal"}, {createdAt:{$gt:'+debut+'}}, {"beneficiaire.id":"'+id+'"}]}');
 
-    const daily_staffmeal = await getCommandesList({
+    const daily_staffmeal = await getCommandesList({query: {
       $and:[
         { type: 'staffmeal' },
         { 'beneficiaire.id': id },
         { createdAt: { $gt: debut } }
       ]
-    });
+    }});
 
     logger.info('daily_staffmeal', daily_staffmeal);
 
@@ -1900,7 +1900,6 @@ class Panier extends React.Component {
           //  giftOpen,
           //  giftCode,
            solde,
-           giftSet,
           } = this.state;
 
     // récup du texte en fonction de l'id du commentaire (s'il est défini)

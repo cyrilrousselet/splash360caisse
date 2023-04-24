@@ -25,7 +25,7 @@ const DateRangePickerPopin = (props) => {
             initialDateRange={{startDate, endDate}}
             onChange={(range) => {
               setDataNotChanged(false);
-              // console.log(dataNotChanged);
+              console.log(dataNotChanged);
               console.log('DateRangePickerPopin', range);
               setDateRange(range)
             }}

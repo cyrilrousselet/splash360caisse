@@ -4,7 +4,6 @@ import LocalizedStrings from 'react-localization';
 import LabelledField from '../common/LabelledField';
 import SwitchCheckbox from '../common/SwitchCheckbox';
 import Swal from 'sweetalert2';
-import PillButton from '../common/PillButton';
 import StdButton from '../common/StdButton';
 let strings = new LocalizedStrings(data);
 

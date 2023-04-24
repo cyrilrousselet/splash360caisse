@@ -9,6 +9,10 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 - Sauvegarde des z de caisse au niveau du backend
 
 
+## [1.1.2+17] - 2023-04-25
+### Changed
+- Limitation du chargement de la liste des commandes aux 50 dernières (WIP)
+
 ## [1.1.2+16] - 2023-04-06
 ### Changed
 - Correction du test des modificateurs au niveau de la détection des cadeaux luckylikes

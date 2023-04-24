@@ -3,12 +3,7 @@ import React from "react";
 import LocalizedStrings from "react-localization";
 import { data } from "../../constants/translations";
 // import Logger from "../../helpers/Logger";
-import logger from "../../helpers/Logger";
-import { commandeServices } from "../../services/commande/commandeServices";
 import CloseIcon from "../common/icon/CloseIcon";
-import MinusIcon from "../common/icon/MinusIcon";
-import LoadingSpinner from "../common/LoadingSpinner";
-import StdButton from "../common/StdButton";
 import LodashId from "lodash-id";
 
 import {MODES} from '../../constants/commandeModes';
@@ -55,7 +50,6 @@ class GiftSelector extends React.Component {
       closeSelector,
       productsList,
       mode,
-      monnaie
     } = this.props;
 
    

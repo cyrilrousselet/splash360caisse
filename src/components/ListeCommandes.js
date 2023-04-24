@@ -53,7 +53,7 @@ import logger from '../helpers/Logger';
 
 let strings = new LocalizedStrings(data);
 
-
+const LISTNUM = 50;
 
 
 function TabPanel(props) {
@@ -270,6 +270,8 @@ class ListeCommandes extends React.Component {
     this.printTicketHandler = this.printTicketHandler.bind(this);
     this.setDateRange = this.setDateRange.bind(this);
     this.togglePicker = this.togglePicker.bind(this);
+    this.getNextList = this.getNextList.bind(this);
+    this.getPreviousList = this.getPreviousList.bind(this);
 
     const {heure_fin} = props;
     const __todayBounds = dateBounds(new Date(), heure_fin);
@@ -287,6 +289,7 @@ class ListeCommandes extends React.Component {
       livreurOpen: false,
       livraisonStatusOpen: false,
       pickerOpen: false,
+      listSkip: 0
     };
   }
   
@@ -305,13 +308,31 @@ class ListeCommandes extends React.Component {
 
   getBoundedCommandesList(start, end) {
 
-    const {startDate, endDate} = this.state;
+    const {startDate, endDate, listSkip} = this.state;
+
+    const __s_ts = start ? new Date(start).getTime() : new Date(startDate).getTime();
+    const __e_ts = end ? new Date(end).getTime() : new Date(endDate).getTime();
 
     this.props.getCommandesList({
-      $and: [
-        {createdAt: { $gt: start || startDate } }, 
-        {createdAt: { $lte: end || endDate } }
-      ]});
+      query: {
+        $and: [
+          {createdAt: { $gt: __s_ts } }, 
+          {createdAt: { $lte: __e_ts } },
+          {status: { $ne: 'deleted' } }
+        ]
+      },
+      sort: {createdAt: -1},
+      skip: listSkip,
+      limit: LISTNUM
+    });
+  }
+
+  getNextList() {
+    this.setState({listSkip: this.state.listSkip + LISTNUM});
+  }
+
+  getPreviousList() {
+    this.setState({listSkip: Math.max(0, this.state.listSkip - LISTNUM)});
   }
 
   setSelectedDate(bound,date) {
@@ -548,10 +569,18 @@ class ListeCommandes extends React.Component {
         if (value.status==='standby' && value.type==="vente") standbylist.push({id: key, commande: cmd});
         if (value.status==='confirmed' && value.type==="vente") confirmedlist.push({id: key, commande: cmd});
         if (value.type==="staffmeal") stmeallist.push({id: key, commande: cmd});
+      // } else {
+      //   console.log(__start, __end, searchval, cmd.id);
       }
     }
     // logger.info('searchval :',searchval!=='');
     
+    // console.log('toute la liste', Object.values(commandeslist));
+    // console.log('a_encaisser', a_encaisserlist);
+    // console.log('standby', standbylist);
+    // console.log('confirmed', confirmedlist);
+    // console.log('staffmeal', stmeallist);
+
   
     if(loading) {
       return <LoadingSpinner />
@@ -641,6 +670,7 @@ class ListeCommandes extends React.Component {
           <TabPanel className="panel" value={openTab} index={3}>
             <TableCommandes className="staffmeals" id="staffmeals" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } openLivreurs={ this.openLivreurs } liste={stmeallist} />
           </TabPanel>
+          {/* <div className="nextbtn" onClick={this.getNextList}>{ `charger les ${LISTNUM} commandes précédentes` }</div> */}
         </div>
 
         <ReglementCont open={ this.state.reglementOpen } contClass="ListeCommandeReglement" commandeId={ this.state.commandeId } closeReglement={ this.closeReglement } modif={openTab===2} />

@@ -112,7 +112,8 @@ function deleteCommande(id, motif) {
   return emit("dbCommandeDelete", { ticketId: id, motif: motif });
 }
 function getCommandesList(params) {
-  return emit("dbCommandeGetAll", params);
+  const {query, sort, skip, limit } = params;
+  return emit("dbCommandeGetAll", {query:query, sort:sort, skip:skip, limit:limit});
 }
 function purgeCommandes(ids) {
   return emit("dbCommandePurge", ids);

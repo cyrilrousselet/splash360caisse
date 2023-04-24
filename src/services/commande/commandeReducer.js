@@ -26,8 +26,7 @@ export function commandeReducer(state = initialState, action) {
     , cmtIndex = -1
     , modificateurs = []
     , modIndex = -1
-    , gift = null
-    ;
+  ;
 
   switch (action.type) {
     case commandeActionTypes.GET_COMMANDE_REQUEST:

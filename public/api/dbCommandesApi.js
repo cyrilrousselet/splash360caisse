@@ -13,12 +13,13 @@ const { uuid } = require("uuidv4");
 const actions = {
   dbCommandeGetAll: async (req, res) => {
     const { payload } = req;
-    log.info("dbCommandeGetAll() in API", req);
+    const { query, sort, skip, limit } = payload;
+    log.info("dbCommandeGetAll() in API :" + JSON.stringify(req));
 
     let proxies = {};
 
     if (Object.entries(payload).length > 0) {
-      proxies = await _getCommandes(payload);
+      proxies = await _getCommandes(query, sort, skip, limit);
     } else {
       proxies = await _getAll();
     }
@@ -353,17 +354,18 @@ async function _getCommandesToSync(limit = null) {
 }
 
 
-async function _getCommandes(criteriae = {}) {
+async function _getCommandes(criteriae = {}, sort = null, skip=0, limit=0) {
   const mongo = await connect();
   if (!mongo) return false;
  
-  let __criteriae = criteriae;
-  if (criteriae.hasOwnProperty('where')) {
-    __criteriae = { $where: criteriae.where };
-  }
-  log.info("CmdAPI._getCommandes() criteriae: "+JSON.stringify(__criteriae));
-  // const _rawdata = (await CommandeModel.find(__criteriae)).values();
-  const _rawdata = await CommandeModel.find( criteriae ).lean().exec();
+  // let __criteriae = criteriae;
+  // if (criteriae.hasOwnProperty('where')) {
+  //   __criteriae = { $where: criteriae.where };
+  // }
+  // log.info("CmdAPI._getCommandes() criteriae: "+JSON.stringify(__criteriae));
+  // // const _rawdata = (await CommandeModel.find(__criteriae)).values();
+
+  const _rawdata = await CommandeModel.find( criteriae ).skip(skip).limit(limit).lean().exec();
  
 //  log.info('_getCommandes : '+JSON.stringify(_rawdata));
  

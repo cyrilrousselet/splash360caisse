@@ -86,7 +86,7 @@ function checkFinDeService() {
             if (isBefore(new Date(__reponse.ouverture_mvt.createdAt), new Date().setHours(5,0))) {
 
                 // y a-t-il des commandes non cloturées ?
-                const currentCmd = await commandeServices.getCommandesList({$and: [
+                const currentCmd = await commandeServices.getCommandesList({query: {$and: [
                   { archived: {"$exists": false} },
                   { status: { $eq: "confirmed" } },
                   { $or: [
@@ -96,7 +96,7 @@ function checkFinDeService() {
                       { status: { $in: ["standby", "a_encaisser"]} }
                     ]},
                   ]}
-                ]});
+                ]}});
 
                 // s'il y a des commandes non cloturées : on bloque.
                 if (Object.values(currentCmd.commandeslist).length>0) {
@@ -112,7 +112,7 @@ function checkFinDeService() {
               logger.info('l’ouverture est avant le service d’aujourd’hui');
 
               // y a-t-il des commandes non cloturées ?
-              const currentCmd = await commandeServices.getCommandesList({$and: [
+              const currentCmd = await commandeServices.getCommandesList({query: {$and: [
                 { archived: {"$exists": false} },
                 { status: { $eq: "confirmed" } },
                 { $or: [
@@ -122,7 +122,7 @@ function checkFinDeService() {
                     { status: { $in: ["standby", "a_encaisser"]} }
                   ]},
                 ]}
-              ]});
+              ]}});
 
               // s'il y a des commandes non cloturées : on bloque.
               if (Object.values(currentCmd.commandeslist).length>0) {

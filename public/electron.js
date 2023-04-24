@@ -46,7 +46,7 @@ function createWindow() {
       } else if (process.platform === 'win32') {
         try {
           BrowserWindow.addDevToolsExtension(
-          path.join(os.homedir(), '\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\lmhkpmbekcpmknklioeibfkpmmfibljd\\3.0.11_0')
+          path.join(os.homedir(), '\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\lmhkpmbekcpmknklioeibfkpmmfibljd\\3.0.19_0')
           );
         } catch(e) {
           log.warn('pbm devtool win');

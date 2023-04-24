@@ -72,7 +72,7 @@ function getTodayCommandesList(nostrict=false) {
     if (!nostrict && liststart) {
       start = liststart;
     }
-    dispatch(getCommandesList({createdAt: { $gt: start } }));
+    dispatch(getCommandesList({query: {createdAt: { $gt: start } }}));
 
   }
 }
@@ -849,12 +849,12 @@ function getPastNonConfirmed() {
 
     console.log('__periode.debut',__periode.debut);
 
-    const __cmdnonconfirmees = await commandeServices.getCommandesList({
+    const __cmdnonconfirmees = await commandeServices.getCommandesList({query: {
       $and: [
         {status: {$in:['standby','a_encaisser']}},
         {createdAt:{$lt:__periode.debut}}
       ]
-    });
+    }});
     let __num = 0;
     if (__cmdnonconfirmees.hasOwnProperty('commandeslist')) {
       __num = Object.values(__cmdnonconfirmees.commandeslist).length;
@@ -1909,7 +1909,7 @@ function checkSchedules() {
       const lastperiode_end = __periode_bounds.debut;
 
       // récupération commandes programmées à lancer
-      const { commandeslist } = await commandeServices.getCommandesList({
+      const { commandeslist } = await commandeServices.getCommandesList({query: {
         // $and: [
         //   {createdAt: { $gt: lastperiode_end } },
         //   {scheduled: { $exists: true }},
@@ -1928,7 +1928,7 @@ function checkSchedules() {
               {'enproduction': false}
             ]}
           ]
-      });
+      }});
 
 
       console.log('checkSchedules()',commandeslist);
