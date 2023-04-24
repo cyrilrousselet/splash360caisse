@@ -9,7 +9,7 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 - Sauvegarde des z de caisse au niveau du backend
 
 
-## [1.1.2+17] - 2023-04-25
+## [1.1.2+17], [1.1.2+18] - 2023-04-25
 ### Changed
 - Limitation du chargement de la liste des commandes aux 50 dernières (WIP)
 

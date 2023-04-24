@@ -72,7 +72,7 @@ function getTodayCommandesList(nostrict=false) {
     if (!nostrict && liststart) {
       start = liststart;
     }
-    dispatch(getCommandesList({query: {createdAt: { $gt: start } }}));
+    dispatch(getCommandesList({query: {createdAt: { $gt: start } }, sort: {createdAt: -1}, skip:0, limit: 50}));
 
   }
 }
@@ -1189,6 +1189,7 @@ function addProduit(payload) {
                 state.catalogueReducer.ingredients[ingid].tva_id
               ],
             prix: Number(state.catalogueReducer.ingredients[ingid].supplement),
+            supplement: Number(state.catalogueReducer.ingredients[ingid].supplement),
             nom: state.catalogueReducer.ingredients[ingid].nom,
             legende: state.catalogueReducer.ingredients[ingid].legende ? state.catalogueReducer.ingredients[ingid].legende : state.catalogueReducer.ingredients[ingid].nom,
             fromStep: null,
