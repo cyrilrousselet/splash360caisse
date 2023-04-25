@@ -1188,7 +1188,7 @@ function addProduit(payload) {
               state.catalogueReducer.tva[
                 state.catalogueReducer.ingredients[ingid].tva_id
               ],
-            prix: Number(state.catalogueReducer.ingredients[ingid].supplement),
+            supplement: Number(state.catalogueReducer.ingredients[ingid].supplement),
             nom: state.catalogueReducer.ingredients[ingid].nom,
             legende: state.catalogueReducer.ingredients[ingid].legende ? state.catalogueReducer.ingredients[ingid].legende : state.catalogueReducer.ingredients[ingid].nom,
             fromStep: null,
