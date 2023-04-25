@@ -48,6 +48,7 @@ import DatePickerIcon from './common/icon/DatePickerIcon';
 
 // import Logger from '../helpers/Logger';
 import logger from '../helpers/Logger';
+import PillButton from './common/PillButton';
 
 // const logger = new Logger();
 
@@ -299,6 +300,7 @@ class ListeCommandes extends React.Component {
   componentDidMount() {
     // logger.info('ListeCommandes.componentDidMount()');
     this.getBoundedCommandesList();
+    this.props.getTodayCa();
     this.props.getAllActive();
     this.props.getClientsList();
     this.props.getUsers();
@@ -306,7 +308,7 @@ class ListeCommandes extends React.Component {
 
   
 
-  getBoundedCommandesList(start, end) {
+  getBoundedCommandesList(start, end, skip=null) {
 
     const {startDate, endDate, listSkip} = this.state;
 
@@ -318,21 +320,38 @@ class ListeCommandes extends React.Component {
         $and: [
           {createdAt: { $gt: __s_ts } }, 
           {createdAt: { $lte: __e_ts } },
-          {status: { $ne: 'deleted' } }
+          {status: { $eq: 'confirmed' } }
         ]
       },
       sort: {createdAt: -1},
-      skip: listSkip,
+      skip: skip===null ? listSkip : skip,
       limit: LISTNUM
     });
+
+
+    this.props.getCommandesNonconfirmeesList({
+      $and: [
+        {createdAt: { $gt: __s_ts } }, 
+        {createdAt: { $lte: __e_ts } },
+        {status: { $nin: ['confirmed','deleted'] } }
+      ]
+    })
   }
 
   getNextList() {
-    this.setState({listSkip: this.state.listSkip + LISTNUM});
+    const {startDate, endDate, listSkip} = this.state;
+    if (Object.values(this.props.commandeslist).length >= LISTNUM) {
+      this.getBoundedCommandesList(startDate, endDate, listSkip + LISTNUM);
+      this.setState({listSkip:  listSkip + LISTNUM});
+    }
   }
 
   getPreviousList() {
-    this.setState({listSkip: Math.max(0, this.state.listSkip - LISTNUM)});
+    const {startDate, endDate, listSkip} = this.state;
+    if (listSkip>0) {
+      this.getBoundedCommandesList(startDate, endDate, Math.max(0, listSkip - LISTNUM));
+      this.setState({listSkip: Math.max(0, listSkip - LISTNUM)});
+    }
   }
 
   setSelectedDate(bound,date) {
@@ -520,9 +539,9 @@ class ListeCommandes extends React.Component {
   }
 
   render() {
-    const { commandeslist, loading, tickets, thiscash, livreurs, setLivreur, monnaie } = this.props;
+    const { commandeslist, nonconfirmeeslist, loading, tickets, thiscash, livreurs, setLivreur, monnaie } = this.props;
 
-    const { startDate, endDate, openTab, commandeId, printOpen, searchval, inputfocus, keyboardOpen, livreurOpen, pickerOpen } = this.state;
+    const { startDate, endDate, openTab, commandeId, printOpen, searchval, inputfocus, keyboardOpen, livreurOpen, pickerOpen, listSkip } = this.state;
 
     const self = this;
 
@@ -565,21 +584,50 @@ class ListeCommandes extends React.Component {
       let __start = compareAsc(new Date(value.createdAt), startDate);
       let __end = compareAsc(new Date(value.createdAt), endDate);
       if ((__start>-1 && __end<1) && (searchval==='' || cmd.id.indexOf(searchval)>-1)) {
-        if (value.status==='a_encaisser' && value.type==="vente") a_encaisserlist.push({id: key, commande: cmd});
-        if (value.status==='standby' && value.type==="vente") standbylist.push({id: key, commande: cmd});
         if (value.status==='confirmed' && value.type==="vente") confirmedlist.push({id: key, commande: cmd});
         if (value.type==="staffmeal") stmeallist.push({id: key, commande: cmd});
-      // } else {
-      //   console.log(__start, __end, searchval, cmd.id);
       }
     }
-    // logger.info('searchval :',searchval!=='');
     
-    // console.log('toute la liste', Object.values(commandeslist));
-    // console.log('a_encaisser', a_encaisserlist);
-    // console.log('standby', standbylist);
-    // console.log('confirmed', confirmedlist);
-    // console.log('staffmeal', stmeallist);
+    for (let [key, value] of Object.entries(nonconfirmeeslist)) {
+
+      let cmdnum = value.ticketId;
+      if (value.numero) {
+        cmdnum = value.numero.value;
+        if (value.numero.hex===true) {
+          cmdnum = value.numero.value.toString(16);
+        }
+      }
+
+      let cmd = {
+        id: value.ticketId,
+        numero: cmdnum,
+        createdAt: value.createdAt,
+        date: format(new Date(value.createdAt), "d MMM yyyy", { locale: this.locale }),
+        heure: format(new Date(value.createdAt), "H:mm:ss"),
+        montant: `${value.total.toFixed(2).replace('.',',')} ${monnaie.symbole}`,
+        client: value.client ? value.client.nom+' '+value.client.prenom : 'Anonyme',
+        mode: value.mode,
+        caisse: value.caisse,
+        livreur: value.livreur,
+        type: value.type ? value.type : 'vente',
+        beneficiaire : value.beneficiaire ? value.beneficiaire : null, 
+        centre: value.centre_revenu ? value.centre_revenu : 'restaurant',
+        archived: value.hasOwnProperty('archived') && value.archived!==null,
+        scheduled: value.scheduled && format(new Date(value.scheduled), "H:mm:ss"),
+        enproduction: value.hasOwnProperty('enproduction') && value.enproduction,
+        pickedAt: value.pickedAt,
+        shippedAt: value.shippedAt,
+        chronoLivraison: value.chronoLivraison
+      };
+      let __start = compareAsc(new Date(value.createdAt), startDate);
+      let __end = compareAsc(new Date(value.createdAt), endDate);
+      if ((__start>-1 && __end<1) && (searchval==='' || cmd.id.indexOf(searchval)>-1)) {
+        if (value.status==='a_encaisser' && value.type==="vente") a_encaisserlist.push({id: key, commande: cmd});
+        if (value.status==='standby' && value.type==="vente") standbylist.push({id: key, commande: cmd});
+        if (value.type==="staffmeal") stmeallist.push({id: key, commande: cmd});
+      }
+    }
 
   
     if(loading) {
@@ -670,7 +718,10 @@ class ListeCommandes extends React.Component {
           <TabPanel className="panel" value={openTab} index={3}>
             <TableCommandes className="staffmeals" id="staffmeals" thiscash={thiscash} openReglement={ this.encaissementHandle } openReprise={ this.repriseHandle } openPrint={ this.openPrint } openLivreurs={ this.openLivreurs } liste={stmeallist} />
           </TabPanel>
-          {/* <div className="nextbtn" onClick={this.getNextList}>{ `charger les ${LISTNUM} commandes précédentes` }</div> */}
+          { (openTab===2) && (<div className='confirm-nav'>
+            <PillButton elementclass={`${listSkip===0?'prvbtn d-none':'prvbtn'}`} text="<" onClick={this.getPreviousList}></PillButton>
+            <PillButton elementclass="nextbtn" text=">" onClick={this.getNextList}></PillButton>
+          </div>) }
         </div>
 
         <ReglementCont open={ this.state.reglementOpen } contClass="ListeCommandeReglement" commandeId={ this.state.commandeId } closeReglement={ this.closeReglement } modif={openTab===2} />

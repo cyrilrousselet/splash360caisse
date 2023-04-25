@@ -1427,10 +1427,10 @@ class Panier extends React.Component {
   // pbm : latence de l'encaissement si on met à jour la liste des commandes
   send_to_search(value) {
     logger.info('send_to_search',value);
-    const {commandeslist } = this.props;
+    const { nonconfirmeeslist } = this.props;
 
-    if (commandeslist) {
-      const cmd = Object.values(commandeslist).find((c)=>c.ticketId===value);
+    if (nonconfirmeeslist) {
+      const cmd = Object.values(nonconfirmeeslist).find((c)=>c.ticketId===value);
       if (cmd && cmd.status==='standby') {
         logger.info('s2s commande trouvée', value);
         // this.setState({inputfocus: false});

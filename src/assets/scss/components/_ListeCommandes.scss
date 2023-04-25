@@ -56,6 +56,24 @@
     margin-top: 10px;
     height: calc(100% - 80px);
 
+    .prvbtn,
+    .nextbtn {
+      background-color: $primary;
+      position: absolute;
+      top: 50%;
+      .PillButton-text {
+        color: $blanc;
+      }
+    }
+
+    .prvbtn {
+      left: 0;
+    }
+
+    .nextbtn {
+      right: 0;
+    }
+
 
     .search-input {
       position: absolute;

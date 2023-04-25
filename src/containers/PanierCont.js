@@ -4,7 +4,7 @@ import { commandeActions } from '../services/commande/commandeActions';
 import { parametresActions } from '../services/parametres/parametresActions';
 import { peripheralActions } from '../services/peripheral/peripheralActions';
 import { getCommandeError, getCommandeLoading, getCommande } from '../services/commande/commandeReducer';
-import { getCommandesList } from '../services/commande/commandesListReducer';
+import { getCommandesNonconfirmeesList } from '../services/commande/commandesListReducer';
 import { getSteps } from '../services/catalogue/catalogueReducer';
 import { getParametres } from '../services/parametres/parametresReducer';
 import Panier from '../components/Encaissement/Panier';
@@ -40,7 +40,8 @@ const mapStateToProps = (state) => {
   return {
     loading: getCommandeLoading(state),
     commande: getCommande(state),
-    commandeslist: getCommandesList(state),
+    // commandeslist: getCommandesList(state),
+    nonconfirmeeslist: getCommandesNonconfirmeesList(state),
     error: getCommandeError(state),
     steps: getSteps(state),
     parametres: getParametres(state),

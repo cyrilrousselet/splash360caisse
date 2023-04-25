@@ -5,11 +5,12 @@ import history from './../helpers/history';
 import paths from './../constants/routes.json';
 import { commandeActions } from '../services/commande/commandeActions';
 import { catalogueActions } from '../services/catalogue/catalogueActions';
-import { getCommandesListError, getCommandesListLoading, getCommandesList } from '../services/commande/commandesListReducer';
+import { getCommandesListError, getCommandesListLoading, getCommandesList, getCommandesNonconfirmeesList } from '../services/commande/commandesListReducer';
 import { peripheralActions } from '../services/peripheral/peripheralActions';
 import { clientsActions } from '../services/clients/clientsActions';
 import { getLivreurs } from '../services/user/userReducer';
 import { userActions } from '../services/user/userActions';
+import { clotureActions } from '../services/cloture/clotureActions';
 
 
 const getTicketsListe = (state) => {
@@ -25,6 +26,8 @@ const mapStateToProps = (state) => {
       loading: getCommandesListLoading(state),
       error: getCommandesListError(state),
       commandeslist: getCommandesList(state),
+      today_numtickets: state.clotureReducer.today_numtickets,
+      nonconfirmeeslist: getCommandesNonconfirmeesList(state),
       tickets: getTicketsListe(state),
       livreurs: getLivreurs(state),
       commande : state.commandeReducer.commande,
@@ -39,6 +42,7 @@ const mapDispatchToProps = (dispatch) => {
   const bound = bindActionCreators({
       getAllActive: catalogueActions.getAllActive,
       getCommandesList: commandeActions.getCommandesList,
+      getCommandesNonconfirmeesList: commandeActions.getCommandesNonconfirmeesList,
       getCommande: commandeActions.getCommande,
       getClientsList: clientsActions.getClientsList,
       deleteCommande: commandeActions.deleteCommande,
@@ -47,8 +51,8 @@ const mapDispatchToProps = (dispatch) => {
       setLivreur: commandeActions.setLivreur,
       getUsers: userActions.getAll,
       addPrintnum: commandeActions.addPrintnum,
-      deleteCurrentCommande: commandeActions.deleteCurrentCommande,
-      getPastNonConfirmed: commandeActions.getPastNonConfirmed 
+      getTodayCa: clotureActions.getTodayCa,
+      deleteCurrentCommande: commandeActions.deleteCurrentCommande
   }, dispatch);
   return {
     ...bound,

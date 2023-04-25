@@ -36,11 +36,9 @@ function getCommandesList(params = {}) {
   return (dispatch) => {
     dispatch({ type: commandeActionTypes.GET_COMMANDESLIST_REQUEST, params:params });
 
-    // logger.time('getCommandesList');
     commandeServices
       .getCommandesList(params)
       .then((data) => {
-        // logger.timeEnd('getCommandesList');
         dispatch({
           type: commandeActionTypes.GET_COMMANDESLIST_SUCCESS,
           ...data,
@@ -48,7 +46,6 @@ function getCommandesList(params = {}) {
         dispatch(clotureActions.getTodayCa());
       })
       .catch((error) => {
-        // logger.timeEnd('getCommandesList');
         logger.error(error);
         dispatch({
           type: commandeActionTypes.GET_COMMANDESLIST_FAILURE,
@@ -75,6 +72,55 @@ function getTodayCommandesList(nostrict=false) {
     dispatch(getCommandesList({query: {createdAt: { $gt: start } }, sort: {createdAt: -1}, skip:0, limit: 50}));
 
   }
+}
+
+function getTodayCommandesNCList(nostrict=false) {
+  return (dispatch, getState) => {
+    logger.info("CmdA.getTodayCommandesNCList()");
+    const { heure_fin } = getState().parametresReducer.parametres.entreprise;
+    const { liststart } = getState().commandesListReducer;
+
+    // *** définition de la fin de la période précédente
+    const __periode_bounds = dateBounds(new Date(), heure_fin);
+    const lastperiode_end = __periode_bounds.debut;
+
+    let start = lastperiode_end;
+    if (!nostrict && liststart) {
+      start = liststart;
+    }
+    dispatch(getCommandesNonconfirmeesList({
+      query: {
+        $and:[
+          {createdAt: { $gt: start }},
+          {status: { $nin:['confirmed','deleted'] }}
+        ]
+      }
+    }));
+  }
+}
+
+function getCommandesNonconfirmeesList(params = {}) {
+  logger.info("CmdA.getCommandesNonconfirmeesList()");
+
+  return (dispatch) => {
+    dispatch({ type: commandeActionTypes.GET_COMMANDESNCLIST_REQUEST, params:params });
+
+    commandeServices
+      .getCommandesList(params)
+      .then((data) => {
+        dispatch({
+          type: commandeActionTypes.GET_COMMANDESNCLIST_SUCCESS,
+          ...data,
+        });
+      })
+      .catch((error) => {
+        logger.error(error);
+        dispatch({
+          type: commandeActionTypes.GET_COMMANDESNCLIST_FAILURE,
+          error: error.toString(),
+        });
+      });
+  };
 }
 
 function getAllTicketsRestaurant() {
@@ -1658,6 +1704,7 @@ function setLivreur(payload) {
           })
         );
         dispatch(getTodayCommandesList());
+        dispatch(getTodayCommandesNCList());
       },
       (error) =>
         dispatch({
@@ -1870,6 +1917,7 @@ function setSchedule(payload) {
           schedule: commande.ticketId
         });
         dispatch(getTodayCommandesList());
+        dispatch(getTodayCommandesNCList());
       },
       (error) =>
         dispatch({
@@ -2319,6 +2367,9 @@ function setCommandeFromOrder(provider, payload) {
 
 
         dispatch(getTodayCommandesList());
+        if (commande.status!=="confirmed") {
+          dispatch(getTodayCommandesNCList());
+        }
         dispatch(notificationActions.syncDispatch("commande", confirm));
         dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
 
@@ -2648,6 +2699,9 @@ function setCommandeFromAPI(payload) {
 
 
           dispatch(getTodayCommandesList());
+          if (confirm.status!=="confirmed") {
+            dispatch(getTodayCommandesNCList());
+          }
           dispatch(notificationActions.syncDispatch("commande", confirm));
           dispatch({ type: commandeActionTypes.SET_COMMANDE_FROM_API, commande });
           dispatch(clotureActions.getTodayCa());
@@ -2797,6 +2851,9 @@ function setCommandeFromSync(commande) {
               }
             }
             dispatch(getTodayCommandesList());
+            if (commandeconfirm.status!=="confirmed") {
+              dispatch(getTodayCommandesNCList());
+            }
             dispatch(clotureActions.getTodayCa());
           }
 
@@ -2856,6 +2913,9 @@ function setCommandeFromSync(commande) {
           }
         }
         dispatch(getTodayCommandesList());
+        if (commandeconfirm.status!=="confirmed") {
+          dispatch(getTodayCommandesNCList());
+        }
         dispatch(clotureActions.getTodayCa());
       }
       catch (error) {
@@ -3061,7 +3121,9 @@ function setTicketRestaurantFromSync(ticketrestaurant) {
 
 export const commandeActions = {
   getCommandesList,
+  getCommandesNonconfirmeesList,
   getTodayCommandesList,
+  getTodayCommandesNCList,
   checkMarketing,
   getCommande,
   setChrono,

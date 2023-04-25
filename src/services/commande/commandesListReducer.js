@@ -4,6 +4,7 @@ const initialState = {
   loading: false,
   error: null,
   commandeslist: {},
+  nonconfirmeeslist: {},
   liststart: null,
   listend: null,
   ticketsrestau: [],
@@ -64,6 +65,14 @@ export function commandesListReducer(state = initialState, action) {
         loading: false,
         error: null,
         commandeslist: action.commandeslist
+      };
+
+    case commandeActionTypes.GET_COMMANDESNCLIST_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        error: null,
+        nonconfirmeeslist: action.commandeslist
       };
     
     case commandeActionTypes.GET_COMMANDES_CAISSES_SUCCESS:
@@ -158,6 +167,7 @@ export function commandesListReducer(state = initialState, action) {
 }
 
 export const getCommandesList = state => state.commandesListReducer.commandeslist;
+export const getCommandesNonconfirmeesList = state => state.commandesListReducer.nonconfirmeeslist;
 export const getCommandesListLoading = state => state.commandesListReducer.loading;
 export const getCommandesListError = state => state.commandesListReducer.error;
 export const getTicketsRestau = state => state.commandesListReducer.ticketsrestau;

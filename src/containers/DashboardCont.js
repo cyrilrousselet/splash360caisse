@@ -97,7 +97,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   const binded = bindActionCreators({
-    getTodayCommandesList: commandeActions.getTodayCommandesList,
     getAllActive: catalogueActions.getAllActive,
     getParametres: parametresActions.getAll,
     getTodayCa: clotureActions.getTodayCa,
@@ -106,6 +105,7 @@ const mapDispatchToProps = (dispatch) => {
     getReglesPanierList: marketingActions.getReglesPanierList,
     getGiftsList: marketingActions.getGiftsList,
     getCommande: commandeActions.getCommande,
+    getTodayCommandesNCList: commandeActions.getTodayCommandesNCList,
     log: journalActions.log,
     getPastNonConfirmed: commandeActions.getPastNonConfirmed,
     testCloturesAuto: clotureActions.testCloturesAuto,

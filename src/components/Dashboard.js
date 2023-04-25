@@ -32,7 +32,6 @@ class Dashboard extends Component {
       logger.info('Dashboard.componentDidMount()');
     // this.props.getAllActive();
     this.props.getParametres();
-  //  this.props.getTodayCommandesList();
     this.props.getTodayCa();
     this.props.getAvoirsList();
     this.props.getReglesPanierList();
@@ -40,6 +39,7 @@ class Dashboard extends Component {
     this.props.getGiftsList();
     this.props.getCommande();
     this.props.getPastNonConfirmed();
+    this.props.getTodayCommandesNCList();
     this.props.testCloturesAuto();
     this.props.checkDateError();
 
@@ -194,7 +194,6 @@ Dashboard.propTypes = {
   username: PropTypes.string.isRequired,
   points: PropTypes.number,
   modules: PropTypes.arrayOf(PropTypes.string).isRequired,
-  getTodayCommandesList: PropTypes.func,
   getAllActive: PropTypes.func.isRequired,
   getParametres: PropTypes.func.isRequired,
   commandeslist: PropTypes.object,
