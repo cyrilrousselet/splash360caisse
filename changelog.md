@@ -9,6 +9,10 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 - Sauvegarde des z de caisse au niveau du backend
 
 
+## [1.1.2+23] - 2023-04-26
+### Changed
+- Correction de la réimpression d'un ticket pour une commande non-confirmée
+
 ## [1.1.2+22] - 2023-04-26
 ### Changed
 - Ajout de produit composé non personnalisable : correction des prix HT lors de la conversion d'une composition en ingrédient

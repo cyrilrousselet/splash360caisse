@@ -503,13 +503,20 @@ class ListeCommandes extends React.Component {
   }
 
   printTicketHandler(tck) {
-    const { printTicket, tickets, duplicata, commandeslist } = this.props;
+    const { printTicket, tickets, duplicata, commandeslist, nonconfirmeeslist } = this.props;
     const { commandeId } = this.state;
     // if (tck==='all' || (tck.hasOwnProperty('ids') && Array.isArray(tck.ids) && tickets.find(t => t.ticket_id===tck.ids[0]).template==="commande")) {
       //   addPrintnum({commandeId:commandeId});
       // }
 
-    const { operator } = commandeslist[commandeId];
+    // const { operator } = commandeslist[commandeId];
+    let operator = null;
+    if (commandeslist.hasOwnProperty(commandeId)) {
+      operator = commandeslist[commandeId].operator;
+    } else {
+      operator = nonconfirmeeslist.hasOwnProperty(commandeId) ? nonconfirmeeslist[commandeId].operator : null;
+    }
+
     if (operator) {
       if (String(operator.nom).toLowerCase() === 'ubereats') {
         if (tck==='all') tck = 'all_uber';
@@ -545,7 +552,7 @@ class ListeCommandes extends React.Component {
 
     const self = this;
 
-    const commandeLivreur = (commandeId!=null && commandeslist[commandeId]!=null) ? commandeslist[commandeId].livreur : null;
+    const commandeLivreur = (commandeId!=null && commandeslist[commandeId]!=null) ? commandeslist[commandeId].livreur : (commandeId!=null && nonconfirmeeslist[commandeId]!=null) ? nonconfirmeeslist[commandeId].livreur : null;
 
 
     let a_encaisserlist = [], standbylist = [], confirmedlist = [], stmeallist = [];

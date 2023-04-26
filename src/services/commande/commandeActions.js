@@ -1330,7 +1330,8 @@ function updateProduit(payload) {
         composition: item.composition,
         compo: [],
         customizable: true,
-        tva_id: item.tva.tva_id,
+        tva: {id: item.tva.id, code: item.tva.code, valeur: item.tva.valeur},
+        tva_id: item.tva.id,
         status: 'confirmed'
       };
 
@@ -1694,8 +1695,9 @@ function setLivreur(payload) {
   return (dispatch, getState) => {
     const { commandeId, livreur } = payload;
 
-    const { commandeslist } = getState().commandesListReducer;
-    const commande = Object.values(commandeslist).find(
+    const { commandeslist, nonconfirmeeslist } = getState().commandesListReducer;
+    const allcommandes = {...commandeslist, ...nonconfirmeeslist};
+    const commande = Object.values(allcommandes).find(
       (cmd) => cmd.ticketId === commandeId
     );
 
@@ -1904,8 +1906,9 @@ function setSchedule(payload) {
   return (dispatch, getState) => {
     const { ticketId, heure } = payload;
 
-    const { commandeslist } = getState().commandesListReducer;
-    const commande = Object.values(commandeslist).find(
+    const { commandeslist, nonconfirmeeslist } = getState().commandesListReducer;
+    const allcommandes = {...commandeslist, ...nonconfirmeeslist};
+    const commande = Object.values(allcommandes).find(
       (cmd) => cmd.ticketId === ticketId
     );
 

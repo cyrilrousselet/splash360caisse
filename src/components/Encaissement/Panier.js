@@ -1259,6 +1259,7 @@ class Panier extends React.Component {
         // on boucle sur le prix TTC des ingrédients
         itm.ingredients.forEach(ing => {
           __ttcing += Math.round(ing.supplement * 100);
+          console.log('🧮 _cI&R prepare TTCING (ing.supplement) = ', ing.supplement);
         });
         console.log('🧮 _cI&R TTCING = ', __ttcing);
   
