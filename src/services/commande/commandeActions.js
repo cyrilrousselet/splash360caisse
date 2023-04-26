@@ -25,6 +25,7 @@ import LocalizedStrings from 'react-localization';
 import {data} from '../../constants/translations';
 import { last } from "lodash";
 import { marketingActions } from "../marketing/marketingActions";
+import {MODES} from '../../constants/commandeModes';
 // import { createObjectCsvWriter } from "csv-writer";
 const strings = new LocalizedStrings(data);
 
@@ -393,6 +394,8 @@ function confirmCommande(_payload, printTemplates) {
             }
 
 
+            console.log('§§§NOTE confirm', confirm);
+
             const __noteData = _createNote(confirm, {
               newNote,
               entreprise,
@@ -405,6 +408,9 @@ function confirmCommande(_payload, printTemplates) {
               source: signatureNote.source,
               operation: 'VENTE'
             });
+
+
+            console.log('§§§NOTE note', __noteData);
 
             // si la note est offerte
             if (__noteData['ENC-TIK-REM-MTN']>0 && __noteData['ENC-TIK-TOT-TTC']===0) {
@@ -443,6 +449,8 @@ function confirmCommande(_payload, printTemplates) {
               signature: signatureTicket.signature
             }
 
+            console.log('§§§ confirm', confirm);
+
 
             __ticketData = _createTicket(
               {...confirm, 
@@ -462,6 +470,8 @@ function confirmCommande(_payload, printTemplates) {
                 prevticket: modifreglement ? prevticket : null
               }
             );
+
+            console.log('§§§ ticket', __ticketData);
 
             await commandeServices.persistTicket(__ticketData);
             dispatch(journalActions.log('160','Ticket #'+newTicket));
@@ -1218,7 +1228,7 @@ function deleteCurrentCommande() {
 function addProduit(payload) {
   return (dispatch, getState) => {
     const state = getState();
-    const items = state.commandeReducer.commande.items;
+    const {items, mode: commandeMode} = state.commandeReducer.commande;
     const tva = state.catalogueReducer.tva[payload.tva_id];
     const steps = state.catalogueReducer.steps[payload.produitid];
 
@@ -1236,6 +1246,7 @@ function addProduit(payload) {
               ],
             prix: Number(state.catalogueReducer.ingredients[ingid].supplement),
             supplement: Number(state.catalogueReducer.ingredients[ingid].supplement),
+            supplementht: Number(state.catalogueReducer.ingredients[ingid].supplementArray[MODES[commandeMode]].ht),
             nom: state.catalogueReducer.ingredients[ingid].nom,
             legende: state.catalogueReducer.ingredients[ingid].legende ? state.catalogueReducer.ingredients[ingid].legende : state.catalogueReducer.ingredients[ingid].nom,
             fromStep: null,
