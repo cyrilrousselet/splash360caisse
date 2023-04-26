@@ -10,7 +10,7 @@ import { peripheralActions } from '../services/peripheral/peripheralActions';
 import { clientsActions } from '../services/clients/clientsActions';
 import { getLivreurs } from '../services/user/userReducer';
 import { userActions } from '../services/user/userActions';
-import { clotureActions } from '../services/cloture/clotureActions';
+// import { clotureActions } from '../services/cloture/clotureActions';
 
 
 const getTicketsListe = (state) => {
@@ -26,7 +26,7 @@ const mapStateToProps = (state) => {
       loading: getCommandesListLoading(state),
       error: getCommandesListError(state),
       commandeslist: getCommandesList(state),
-      today_numtickets: state.clotureReducer.today_numtickets,
+      // today_numtickets: state.clotureReducer.today_numtickets,
       nonconfirmeeslist: getCommandesNonconfirmeesList(state),
       tickets: getTicketsListe(state),
       livreurs: getLivreurs(state),
@@ -51,7 +51,7 @@ const mapDispatchToProps = (dispatch) => {
       setLivreur: commandeActions.setLivreur,
       getUsers: userActions.getAll,
       addPrintnum: commandeActions.addPrintnum,
-      getTodayCa: clotureActions.getTodayCa,
+      // getTodayCa: clotureActions.getTodayCa,
       deleteCurrentCommande: commandeActions.deleteCurrentCommande
   }, dispatch);
   return {

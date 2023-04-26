@@ -8,6 +8,11 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 - Sauvegarde des préférences de la caisse au niveau du backend pour permettre une réinstallation sans perdre les paramètres.
 - Sauvegarde des z de caisse au niveau du backend
 
+
+## [1.1.2+21] - 2023-04-26
+### Changed
+- Liste des commandes : suppression du chargement du nombre de commandes du jour
+
 ## [1.1.2+20] - 2023-04-25
 ### Changed
 - Liste des commandes : séparation de la liste en deux groupes : confirmées et non confirmées et ajout d'une navigation dans la liste des commandes confirmées

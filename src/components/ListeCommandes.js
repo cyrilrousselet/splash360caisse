@@ -300,7 +300,7 @@ class ListeCommandes extends React.Component {
   componentDidMount() {
     // logger.info('ListeCommandes.componentDidMount()');
     this.getBoundedCommandesList();
-    this.props.getTodayCa();
+    // this.props.getTodayCa();
     this.props.getAllActive();
     this.props.getClientsList();
     this.props.getUsers();

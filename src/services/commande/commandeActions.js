@@ -1539,7 +1539,7 @@ function deleteCommande(payload) {
   return async (dispatch, getState) => {
     dispatch({ type: commandeActionTypes.DELETE_COMMANDE_REQUEST });
 
-    const { commandeslist } = getState().commandesListReducer;
+    const { nonconfirmeeslist } = getState().commandesListReducer;
 
     const { caisse } = getState().parametresReducer.parametres.options;
     const { user } = getState().authentication;
@@ -1548,7 +1548,7 @@ function deleteCommande(payload) {
     const { entreprise } = getState().parametresReducer.parametres;
 
 
-    let commande = Object.values(commandeslist).find(
+    let commande = Object.values(nonconfirmeeslist).find(
       (cmd) => cmd.ticketId === payload.ticketId
     );
 
@@ -1628,6 +1628,7 @@ function deleteCommande(payload) {
         };
         
         dispatch(notificationActions.syncCommandes([cmdtosync]));
+        dispatch(getTodayCommandesNCList());
       }
       catch(error) {
         dispatch({
