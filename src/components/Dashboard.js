@@ -25,7 +25,24 @@ class Dashboard extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      cashname: null,
+      username: null,
+      today_ca: null,
+      today_numtickets: null,
+      blocage_encaissement: null,
+      blocage_commande: null,
+      mandatoryError: null,
+      dateError: null,
+    };
     this.userLogout = this.userLogout.bind(this);
+    this.toggleBlockedClotureAlert = this.toggleBlockedClotureAlert.bind(this);
+
+    this._cashName = null;
+    this._userName = null;
+    this._caEval = null;
+    this._numTickets = null;
+    this._encaissement = null;
   }
 
   componentDidMount() {
@@ -42,7 +59,59 @@ class Dashboard extends Component {
     this.props.getTodayCommandesNCList();
     this.props.testCloturesAuto();
     this.props.checkDateError();
+  }
 
+  componentDidUpdate(prevprops, prevstate) {
+    const state = this.state;
+    const props = this.props;
+    let changed = false;
+    let newstate = {};
+    if (props.cashname!==state.cashname) {
+      changed = true;
+      newstate = {...newstate, cashname: props.cashname};
+      this.refs._cashName.textContent = props.cashname;
+    }
+    if (props.username!==state.username) {
+      changed = true;
+      newstate = {...newstate, username: props.username};
+      this._userName.textContent = props.username;
+    }
+    if (props.today_ca!==state.today_ca) {
+      changed = true;
+      newstate = {...newstate, today_ca: props.today_ca};
+      this._caEval.textContent = props.today_ca.toFixed(2).replace(/\./g, ",") + props.devise;
+    }
+    if (props.today_numtickets!==state.today_numtickets) {
+      changed = true;
+      newstate = {...newstate, today_numtickets: props.today_numtickets};
+      this._numTickets.textContent = props.today_numtickets;
+    }
+    if (props.blocage_encaissement!==state.blocage_encaissement) {
+      changed = true;
+      newstate = {...newstate, blocage_encaissement: props.blocage_encaissement};
+    }
+    if (props.blocage_commande!==state.blocage_commande) {
+      changed = true;
+      newstate = {...newstate, blocage_commande: props.blocage_commande};
+      if (props.blocage_commande===true) {
+        this.toggleBlockedClotureAlert();
+      }
+    }
+    if (props.mandatoryError!==state.mandatoryError) {
+      changed = true;
+      newstate = {...newstate, mandatoryError: props.mandatoryError};
+      if (props.mandatoryError===true) {
+        this.toggleMandatoryAlert();
+      } 
+    }
+    if (props.dateError!==state.dateError) {
+      changed = true;
+      newstate = {...newstate, dateError: props.dateError};
+      if (props.dateError===true) {
+        this.toggleDateAlert();
+      }
+    }
+    if (changed) this.setState({...state, ...newstate});
   }
 
   // calculeCA(){
@@ -81,21 +150,53 @@ class Dashboard extends Component {
     });
   }
 
+
+  toggleMandatoryAlert() {
+    Swal.fire({
+      title: strings.dashboard.alert.mandatory_error.titre,
+      html: strings.dashboard.alert.mandatory_error.texte
+    });
+  }
+
+  toggleBlockedClotureAlert() {
+    const {pastnonconfirmed} = this.props;
+    Swal.fire({
+      title: strings.dashboard.alert.blocked_cloture.titre,
+      html: strings.dashboard.alert.blocked_cloture[pastnonconfirmed>0 ? 'texte_nc':'texte_c']
+    }).then((result) => {
+      history.push(pastnonconfirmed>0 ? paths.LISTECOMMANDES : paths.CLOTURE);
+    });
+  }
+
+  toggleDateAlert() {
+    Swal.fire({
+      title: strings.dashboard.alert.date_error.titre,
+      html: strings.dashboard.alert.date_error.texte
+    });
+  }
+
+
   render() {
     const {
-      cashname,
-      username,
-      modules,
-      devise,
-      onClickModule,
-      today_ca,
-      today_numtickets,
+      // devise,
       blocage_encaissement,
       blocage_commande,
-      pastnonconfirmed,
       mandatoryError,
       dateError,
+      modules,
+      onClickModule,
     } = this.props;
+
+  //   const {
+  //     // cashname,
+  //     // username,
+  //     today_ca,
+  //     today_numtickets,
+  //  //   blocage_encaissement,
+  //  //   blocage_commande,
+  //  //   mandatoryError,
+  //  //   dateError,
+  //   } = this.state;
 
     // if (today_ca===undefined || ca===null) {
     //   return <LoadingSpinner className="Dashboard-loader" />;
@@ -103,33 +204,25 @@ class Dashboard extends Component {
 
     
     let modules_bloques = [...DISABLED_MODULES];
-    if (blocage_encaissement===true) {
-      if (!modules_bloques.includes('encaissement')) modules_bloques.push('encaissement');
-    }
-    if (mandatoryError===true) {
-      if (!modules_bloques.includes('encaissement')) modules_bloques.push('encaissement');
-      Swal.fire({
-        title: strings.dashboard.alert.mandatory_error.titre,
-        html: strings.dashboard.alert.mandatory_error.texte
-      });
-    }
-    if (blocage_commande===true) {
-      if (!modules_bloques.includes('encaissement')) modules_bloques.push('encaissement');
-      Swal.fire({
-        title: strings.dashboard.alert.blocked_cloture.titre,
-        html: strings.dashboard.alert.blocked_cloture[pastnonconfirmed>0 ? 'texte_nc':'texte_c']
-      }).then((result) => {
-        history.push(pastnonconfirmed>0 ? paths.LISTECOMMANDES : paths.CLOTURE);
-      });
-    }
-    if (dateError===true) {
-      if (!modules_bloques.includes('encaissement')) modules_bloques.push('encaissement');
-      Swal.fire({
-        title: strings.dashboard.alert.date_error.titre,
-        html: strings.dashboard.alert.date_error.texte
-      });
-    }
+    // if (blocage_encaissement===true) {
+    //   if (!modules_bloques.includes('encaissement')) modules_bloques.push('encaissement');
+    // }
+    // if (mandatoryError===true) {
+    //   if (!modules_bloques.includes('encaissement')) modules_bloques.push('encaissement');
+    // }
+    // if (blocage_commande===true) {
+    //   if (!modules_bloques.includes('encaissement')) modules_bloques.push('encaissement');
+    // }
+    // if (dateError===true) {
+    //   if (!modules_bloques.includes('encaissement')) modules_bloques.push('encaissement');
+    // }
 
+ if (blocage_encaissement===true ||
+     mandatoryError===true ||
+     blocage_commande===true ||
+     dateError===true) {
+      if (!modules_bloques.includes('encaissement')) modules_bloques.push('encaissement');
+    }
     
 
     const ca_eval = "good";
@@ -142,8 +235,8 @@ class Dashboard extends Component {
       <ErrorBoundary fallback={'Une erreur est survenue.'}>
         <div className="Dashboard">
           <div className="topzone">
-            <div className="cashName">{cashname}</div>
-            <div className="userName">{username}</div>
+            <div className="cashName" ref={`_cashName`}>...</div>
+            <div className="userName" ref={(element)=>{this._userName = element}}>...</div>
             <Fab
               aria-label="disconnect"
               size="small"
@@ -172,15 +265,15 @@ class Dashboard extends Component {
           {modules.indexOf("statistiques") > -1 && (
             <div className="tickets">
               {strings.dashboard.ticketsnum}
-              <span>{today_numtickets}</span>
+              <span ref={(element)=>{this._numTickets=element}}>...</span>
             </div>
           )}
           {modules.indexOf("statistiques") > -1 && (
             <div className="ca">
               {strings.dashboard.ca}
-              <span className={ca_eval}>
-                {today_ca.toFixed(2).replace(/\./g, ",")}
-                {devise}
+              <span className={ca_eval} ref={(element)=>{this._caEval=element}}>...
+                {/*today_ca.toFixed(2).replace(/\./g, ",")}
+          {devise*/}
               </span>
             </div>
           )}

@@ -9,6 +9,10 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 - Sauvegarde des z de caisse au niveau du backend
 
 
+## [1.1.2+24] - 2023-04-27
+### Changed
+- Correction de rendus multiples du Dashboard à cause des chargements concurrents et asynchrones
+
 ## [1.1.2+23] - 2023-04-26
 ### Changed
 - Correction de la réimpression d'un ticket pour une commande non-confirmée
