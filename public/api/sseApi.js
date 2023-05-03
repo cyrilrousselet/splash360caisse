@@ -76,7 +76,7 @@ const actions = {
 
     let __order = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "get",
     });
@@ -87,11 +87,8 @@ const actions = {
     __request.on("response", (response) => {
       log.info(`getUberOrder STATUS: ${response.statusCode}`);
       log.info(`getUberOrder HEADERS: ${JSON.stringify(response.headers)}`);
-      response.on("data", (chunk) => {
-        __order.push(chunk);
-
-        log.info(`getUberOrder BODY: ${chunk}`);
-      });
+      
+      
       response.on("end", () => {
         log.info("getUberOrder: end");
         let __ord = {};
@@ -102,12 +99,26 @@ const actions = {
           log.error("JSON error", e);
         }
         res.send(__ord);
+        __ord = null;
       });
+
+
+      response.on("data", (chunk) => {
+        __order.push(chunk);
+
+        log.info(`getUberOrder BODY: ${chunk}`);
+      });
+
     });
 
     __request.on('error', (error) => {
       log.error('getUberOrder ERROR', error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      __order = null;
     });
 
     __request.end();
@@ -120,7 +131,7 @@ const actions = {
 
     let __confirmation = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "post",
     });
@@ -133,20 +144,27 @@ const actions = {
     __request.on("response", (response) => {
       log.info(`acceptUberOrder STATUS: ${response.statusCode}`);
       log.info(`acceptUberOrder HEADERS: ${JSON.stringify(response.headers)}`);
-      response.on("data", (chunk) => {
-        __confirmation.push(chunk);
-        log.info(`acceptUberOrder BODY: ${chunk}`);
-      });
+     
       response.on("end", () => {
         log.info("acceptUberOrder: end");
         // res.send({confirm: JSON.parse(__confirmation.join(''))});
         res.send({ confirm: true });
+      });
+
+      response.on("data", (chunk) => {
+        __confirmation.push(chunk);
+        log.info(`acceptUberOrder BODY: ${chunk}`);
       });
     });
 
     __request.on('error', (error) => {
       log.error('acceptUberOrder ERROR', error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      __confirmation = null;
     });
 
     __request.end();
@@ -162,7 +180,7 @@ const actions = {
 
     let __confirmation = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: 'post'
     });
@@ -175,20 +193,27 @@ const actions = {
     __request.on('response', (response) => {
       log.info(`updateUberRestaurant STATUS: ${response.statusCode}`);
       log.info(`updateUberRestaurant HEADERS: ${JSON.stringify(response.headers)}`);
-      response.on('data', (chunk) => {
-        __confirmation.push(chunk);
-        log.info(`updateUberRestaurant BODY: ${chunk}`)
-      });
+      
       response.on('end', () => {
         log.info('updateUberRestaurant: end');
         // res.send({confirm: JSON.parse(__confirmation.join(''))});
         res.send({confirm: true});
+      });
+
+      response.on('data', (chunk) => {
+        __confirmation.push(chunk);
+        log.info(`updateUberRestaurant BODY: ${chunk}`)
       });
     });
 
     __request.on('error', (error) => {
       log.error('updateUberRestaurant ERROR', error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      __confirmation = null;
     });
 
     __request.end();
@@ -207,7 +232,7 @@ const actions = {
 
     let __confirmation = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "patch",
     });
@@ -220,20 +245,27 @@ const actions = {
     __request.on("response", (response) => {
       log.info(`updateUberPOS STATUS: ${response.statusCode}`);
       log.info(`updateUberPOS HEADERS: ${JSON.stringify(response.headers)}`);
-      response.on("data", (chunk) => {
-        __confirmation.push(chunk);
-        log.info(`updateUberPOS BODY: ${chunk}`);
-      });
+      
       response.on("end", () => {
         log.info("updateUberPOS: end");
         // res.send({confirm: JSON.parse(__confirmation.join(''))});
         res.send({ confirm: true });
+      });
+
+      response.on("data", (chunk) => {
+        __confirmation.push(chunk);
+        log.info(`updateUberPOS BODY: ${chunk}`);
       });
     });
 
     __request.on('error', (error) => {
       log.error('updateUberPOS ERROR', error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      __confirmation = null;
     });
 
     __request.end();
@@ -261,7 +293,7 @@ const actions = {
 
     let __confirmation = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: 'post'
     });
@@ -274,20 +306,27 @@ const actions = {
     __request.on('response', (response) => {
       log.info(`updateUberItem STATUS: ${response.statusCode}`);
       log.info(`updateUberItem HEADERS: ${JSON.stringify(response.headers)}`);
-      response.on('data', (chunk) => {
-        __confirmation.push(chunk);
-        log.info(`updateUberItem BODY: ${chunk}`)
-      });
+      
       response.on('end', () => {
         log.info('updateUberItem: end');
         // res.send({confirm: JSON.parse(__confirmation.join(''))});
         res.send({confirm: true});
+      });
+
+      response.on('data', (chunk) => {
+        __confirmation.push(chunk);
+        log.info(`updateUberItem BODY: ${chunk}`)
       });
     });
 
     __request.on('error', (error) => {
       log.error('updateUberItem ERROR', error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      __confirmation = null;
     });
 
     __request.end();
@@ -305,7 +344,7 @@ const actions = {
 
     let __confirmation = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "post",
     });
@@ -318,20 +357,27 @@ const actions = {
     __request.on("response", (response) => {
       log.info(`denyUberOrder STATUS: ${response.statusCode}`);
       log.info(`denyUberOrder HEADERS: ${JSON.stringify(response.headers)}`);
-      response.on("data", (chunk) => {
-        log.info(`denyUberOrder BODY: ${chunk}`);
-        __confirmation.push(chunk);
-      });
+      
       response.on("end", () => {
         log.info("denyUberOrder: end");
         // res.send({confirm: JSON.parse(__confirmation.join(''))});
         res.send({ confirm: true });
+      });
+
+      response.on("data", (chunk) => {
+        log.info(`denyUberOrder BODY: ${chunk}`);
+        __confirmation.push(chunk);
       });
     });
 
     __request.on('error', (error) => {
       log.error('denyUberOrder ERROR', error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      __confirmation = null;
     });
 
     __request.end();
@@ -345,14 +391,14 @@ const actions = {
 
     let __token = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "post",
     });
     __request.setHeader("Access-Control-Allow-Origin", "*");
     __request.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
-    const form = qs.stringify({
+    let form = qs.stringify({
       client_id: id,
       client_secret: secret,
       scope: scope,
@@ -362,10 +408,6 @@ const actions = {
     __request.write(form);
 
     __request.on("response", (response) => {
-      response.on("data", (chunk) => {
-        __token.push(chunk);
-        log.info(`getUberToken BODY: ${chunk}`);
-      });
       response.on("end", () => {
         log.info("getUberToken: end");
 
@@ -378,12 +420,24 @@ const actions = {
         }
 
         res.send(__conf);
+        __conf = null;
+      });
+      
+      response.on("data", (chunk) => {
+        __token.push(chunk);
+        log.info(`getUberToken BODY: ${chunk}`);
       });
     });
 
     __request.on('error', (error) => {
       log.error('getUberToken ERROR', error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      __token = null;
+      form = null;
     });
 
     __request.end();
@@ -395,7 +449,7 @@ const actions = {
 
     let __confirmation = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: params,
       method: "get",
     });
@@ -406,10 +460,7 @@ const actions = {
     __request.on("response", (response) => {
       log.info(`getSplashToken STATUS: ${response.statusCode}`);
       log.info(`getSplashToken HEADERS: ${JSON.stringify(response.headers)}`);
-      response.on("data", (chunk) => {
-        __confirmation.push(chunk);
-        log.info(`getSplashToken BODY: ${chunk}`);
-      });
+     
       response.on("end", () => {
         log.info("getSplashToken: end");
 
@@ -422,7 +473,13 @@ const actions = {
           log.error(err);
         }
         res.send(__token);
+        __token = null;
         
+      });
+      
+      response.on("data", (chunk) => {
+        __confirmation.push(chunk);
+        log.info(`getSplashToken BODY: ${chunk}`);
       });
     });
 
@@ -430,6 +487,10 @@ const actions = {
       log.warn('getSplashToken ERROR');
       log.error(error);
       res.error(error);
+    });
+    __request.on('finish close', () => {
+      __request = null;
+      __confirmation = null;
     });
 
     __request.end();
@@ -440,7 +501,7 @@ const actions = {
 
     let __database = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "get",
     });
@@ -451,10 +512,7 @@ const actions = {
     __request.on("response", (response) => {
       log.info(`getDatabase STATUS: ${response.statusCode}`);
       log.info(`getDatabase HEADERS: ${JSON.stringify(response.headers)}`);
-      response.on("data", (chunk) => {
-        __database.push(chunk);
-        log.info(`getDatabase BODY: ${chunk}`);
-      });
+      
       response.on("end", () => {
         log.info("getDatabase: end");
 
@@ -467,13 +525,24 @@ const actions = {
         }
 
         res.send(__db);
+        __db = null;
         // res.send({confirm: true});
+      });
+
+      response.on("data", (chunk) => {
+        __database.push(chunk);
+        log.info(`getDatabase BODY: ${chunk}`);
       });
     });
 
     __request.on('error', (error) => {
       log.error('getDatabase ERROR', error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      __database = null;
     });
 
     __request.end();
@@ -483,7 +552,7 @@ const actions = {
     const { url, access_token } = req.payload;
     let __commande = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "get",
     });
@@ -494,10 +563,7 @@ const actions = {
     __request.on("response", (response) => {
       log.info(`getCommande STATUS: ${response.statusCode}`);
       log.info(`getCommande HEADERS: ${JSON.stringify(response.headers)}`);
-      response.on("data", (chunk) => {
-        __commande.push(chunk);
-        log.info(`getCommande BODY: ${chunk}`);
-      });
+      
       response.on("end", () => {
         log.info("getCommande: end");
 
@@ -510,13 +576,24 @@ const actions = {
         }
 
         res.send(__cmd);
+        __cmd = null;
 
+      });
+
+      response.on("data", (chunk) => {
+        __commande.push(chunk);
+        log.info(`getCommande BODY: ${chunk}`);
       });
     });
 
     __request.on('error', (error) => {
       log.error('getCommande ERROR', error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      __commande = null;
     });
 
     __request.end();
@@ -528,7 +605,7 @@ const actions = {
 
     let __confNumero = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "post",
     });
@@ -536,15 +613,12 @@ const actions = {
     __request.setHeader("Access-Control-Allow-Origin", "*");
     __request.setHeader("Content-Type", "application/json");
 
-    const data = JSON.stringify({ numero: numero });
+    let data = JSON.stringify({ numero: numero });
     log.info("Sync numero commande req data: ", data);
     __request.write(data);
 
     __request.on("response", (response) => {
-      response.on("data", (chunk) => {
-        __confNumero.push(chunk);
-        log.info(`confirmCommandesBO BODY: ${chunk}`);
-      });
+      
       response.on("end", () => {
         log.info("confirmCommandesBO: end");
 
@@ -557,12 +631,24 @@ const actions = {
         }
 
         res.send(__conf);
+        __conf = null;
+      });
+
+      response.on("data", (chunk) => {
+        __confNumero.push(chunk);
+        log.info(`confirmCommandesBO BODY: ${chunk}`);
       });
     });
 
     __request.on('error', (error) => {
       log.error('confirmCommandesBO ERROR', error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      __confNumero = null;
+      data = null;
     });
 
     __request.end();
@@ -573,7 +659,7 @@ const actions = {
 
     let __syncedCommandes = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "post",
     });
@@ -581,15 +667,12 @@ const actions = {
     __request.setHeader("Access-Control-Allow-Origin", "*");
     __request.setHeader("Content-Type", "application/json");
 
-    const data = JSON.stringify({ commandes: commandes });
+    let data = JSON.stringify({ commandes: commandes });
   //  log.info("Sync commandes req data: ", data);
     __request.write(data);
 
     __request.on("response", (response) => {
-      response.on("data", (chunk) => {
-        __syncedCommandes.push(chunk);
-        log.info(`syncCommandesBO BODY: ${chunk}`);
-      });
+     
       response.on("end", () => {
         log.info("syncCommandesBO: end");
 
@@ -604,12 +687,24 @@ const actions = {
         res.send(__conf);
         // res.send({confirm: JSON.parse(__syncedCommandes.join(''))});
         // res.send({confirm: true});
+        __conf = null;
+      });
+
+      response.on("data", (chunk) => {
+        __syncedCommandes.push(chunk);
+        log.info(`syncCommandesBO BODY: ${chunk}`);
       });
     });
 
     __request.on('error', (error) => {
       log.error('syncCommandesBO ERROR', error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      data = null;
+      __syncedCommandes = null;
     });
 
     __request.end();
@@ -620,7 +715,7 @@ const actions = {
 
     let __syncedClotures = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "post",
     });
@@ -628,16 +723,13 @@ const actions = {
     __request.setHeader("Access-Control-Allow-Origin", "*");
     __request.setHeader("Content-Type", "application/json");
 
-    const __data = JSON.stringify({ clotures: clotures });
+    let __data = JSON.stringify({ clotures: clotures });
     console.log("Clotures to sync: ", __data);
 
     __request.write(__data);
 
     __request.on("response", (response) => {
-      response.on("data", (chunk) => {
-        __syncedClotures.push(chunk);
-        log.info(`syncCloturesBO BODY: ${chunk}`);
-      });
+      
       response.on("end", () => {
         log.info("syncCloturesBO: end");
 
@@ -651,12 +743,24 @@ const actions = {
         res.send(__conf);
         //        res.send({confirm: JSON.parse(__syncedClotures.join(''))});
         // res.send({confirm: true});
+        __conf = null;
+      });
+
+      response.on("data", (chunk) => {
+        __syncedClotures.push(chunk);
+        log.info(`syncCloturesBO BODY: ${chunk}`);
       });
     });
 
     __request.on('error', (error) => {
       log.error('syncCloturesBO ERROR', error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      __data = null;
+      __syncedClotures = null;
     });
 
     __request.end();
@@ -667,7 +771,7 @@ const actions = {
 
     let __syncedTickets = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "post",
     });
@@ -676,16 +780,13 @@ const actions = {
     __request.setHeader("Content-Type", "application/json");
     __request.setHeader("Accept", "application/json; version=1.1.0");
 
-    const __data = JSON.stringify({ tickets: tickets });
+    let __data = JSON.stringify({ tickets: tickets });
     console.log("Tickets to sync: ", __data);
 
     __request.write(__data);
 
     __request.on("response", (response) => {
-      response.on("data", (chunk) => {
-        __syncedTickets.push(chunk);
-        log.info(`syncTicketsBO BODY: ${chunk}`);
-      });
+     
       response.on("end", () => {
         log.info("syncTicketsBO: end");
 
@@ -699,12 +800,24 @@ const actions = {
         res.send(__conf);
         //        res.send({confirm: JSON.parse(__syncedClotures.join(''))});
         // res.send({confirm: true});
+        __conf = null;
+      });
+
+      response.on("data", (chunk) => {
+        __syncedTickets.push(chunk);
+        log.info(`syncTicketsBO BODY: ${chunk}`);
       });
     });
 
     __request.on('error', (error) => {
       log.error('syncTicketsBO ERROR', error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      __syncedTickets = null;
+      __data = null;
     });
 
     __request.end();
@@ -715,7 +828,7 @@ const actions = {
 
     let __reponseServer = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "post",
     });
@@ -723,16 +836,13 @@ const actions = {
     __request.setHeader("Access-Control-Allow-Origin", "*");
     __request.setHeader("Content-Type", "application/json");
 
-    const __data = JSON.stringify({ catalogue: catalogue });
+    let __data = JSON.stringify({ catalogue: catalogue });
     console.log("Catalogue to sync: ", __data);
 
     __request.write(__data);
 
     __request.on("response", (response) => {
-      response.on("data", (chunk) => {
-        __reponseServer.push(chunk);
-        log.info(`syncCatalogueBO BODY: ${chunk}`);
-      });
+      
       response.on("end", () => {
         log.info("syncCatalogueBO: end");
 
@@ -744,13 +854,24 @@ const actions = {
           log.error("synccat JSON error", e);
         }
         res.send(__conf);
+        __conf = null;
+      });
 
+      response.on("data", (chunk) => {
+        __reponseServer.push(chunk);
+        log.info(`syncCatalogueBO BODY: ${chunk}`);
       });
     });
 
     __request.on('error', (error) => {
       log.error('syncCatalogueBO ERROR', error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      __reponseServer = null;
+      __data = null;
     });
 
     __request.end();
@@ -765,14 +886,14 @@ const actions = {
     id = machineIdSync(true);
     console.log('uuid', id);
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "post",
     });
     __request.setHeader("Access-Control-Allow-Origin", "*");
     __request.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
-    const form = qs.stringify({
+    let form = qs.stringify({
       uuid: id,
       uniqid: uniqid,
       creation: creation
@@ -780,11 +901,7 @@ const actions = {
     __request.write(form);
 
     __request.on("response", (response) => {
-      response.on("data", (chunk) => {
-        log.info(`installStation BODY: ${chunk}`);
-        data += chunk;
-      });
-
+     
       response.on("end", () => {
 
         let __conf = {};
@@ -796,13 +913,25 @@ const actions = {
           log.error("installStation JSON error", e);
         }
         res.send(__conf);
+        __conf = null;
 
+      });
+
+      response.on("data", (chunk) => {
+        log.info(`installStation BODY: ${chunk}`);
+        data += chunk;
       });
     });
 
     __request.on('error', (error) => {
       log.error('installStation ERROR', error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      form = null;
+      data = null;
     });
 
     __request.end();
@@ -816,7 +945,7 @@ const actions = {
     let id;
     id = machineIdSync(true);
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "post",
     });
@@ -824,17 +953,13 @@ const actions = {
     __request.setHeader("Access-Control-Allow-Origin", "*");
     __request.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
-    const form = qs.stringify({
+    let form = qs.stringify({
       uuid: id,
     });
     __request.write(form);
 
     __request.on("response", (response) => {
 
-      response.on("data", (chunk) => {
-        log.info(`getStatus BODY: ${chunk}`);
-        data += chunk;
-      });
       response.on("end", () => {
         let __conf = {};
         try {
@@ -845,12 +970,24 @@ const actions = {
           log.error("getStatus JSON error", e);
         }
         res.send(__conf);
+        __conf = null;
+      });
+
+      response.on("data", (chunk) => {
+        log.info(`getStatus BODY: ${chunk}`);
+        data += chunk;
       });
     });
 
     __request.on('error', (error) => {
       log.error('getStatus ERROR', error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      data = null;
+      form = null;
     });
 
     __request.end();
@@ -861,7 +998,7 @@ const actions = {
 
     let data = '';
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "post",
     });
@@ -872,10 +1009,6 @@ const actions = {
     __request.on("response", (response) => {
       log.info(`confirmDispo STATUS: ${response.statusCode}`);
 
-      response.on("data", (chunk) => {
-        log.info(`confirmDispo BODY: ${chunk}`);
-        data += chunk;
-      });
       response.on("end", () => {
         let __conf = {};
         try {
@@ -886,12 +1019,23 @@ const actions = {
           log.error("confirmDispo JSON error", e);
         }
         res.send(__conf);
+        __conf = null;
+      });
+
+      response.on("data", (chunk) => {
+        log.info(`confirmDispo BODY: ${chunk}`);
+        data += chunk;
       });
     });
 
     __request.on('error', (error) => {
       log.error('confirmDispo ERROR', error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      data = null;
     });
 
     __request.end();
@@ -902,7 +1046,7 @@ const actions = {
 
     let data = '';
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "post",
     });
@@ -910,7 +1054,7 @@ const actions = {
     __request.setHeader("Access-Control-Allow-Origin", "*");
     __request.setHeader("Content-Type", "application/json");
 
-    const form = JSON.stringify({
+    let form = JSON.stringify({
       uniqid: uniqid
     });
     __request.write(form);
@@ -918,10 +1062,6 @@ const actions = {
     __request.on("response", (response) => {
       log.info(`ackitNotification STATUS: ${response.statusCode}`);
 
-      response.on("data", (chunk) => {
-        log.info(`ackitNotification BODY: ${chunk}`);
-        data += chunk;
-      });
       response.on("end", () => {
         let __conf = {};
         try {
@@ -932,12 +1072,24 @@ const actions = {
           log.error("ackitNotification JSON error", e);
         }
         res.send(__conf);
+        __conf = null;
+      });
+
+      response.on("data", (chunk) => {
+        log.info(`ackitNotification BODY: ${chunk}`);
+        data += chunk;
       });
     });
 
     __request.on('error', (error) => {
       log.error('ackitNotification ERROR', error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      data = null;
+      form = null;
     });
 
     __request.end();
@@ -948,7 +1100,7 @@ const actions = {
 
     let data = '';
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "post",
     });
@@ -956,7 +1108,7 @@ const actions = {
     __request.setHeader("Access-Control-Allow-Origin", "*");
     __request.setHeader("Content-Type", "application/json");
 
-    const form = JSON.stringify({
+    let form = JSON.stringify({
       token: token
     });
     __request.write(form);
@@ -964,10 +1116,7 @@ const actions = {
     __request.on("response", (response) => {
       log.info(`checkNotif STATUS: ${response.statusCode}`);
 
-      response.on("data", (chunk) => {
-        log.info(`checkNotif BODY: ${chunk}`);
-        data += chunk;
-      });
+      
       response.on("end", () => {
         let __conf = {};
         try {
@@ -978,6 +1127,12 @@ const actions = {
           log.error("checkNotif JSON error", e);
         }
         res.send(__conf);
+        __conf = null;
+      });
+
+      response.on("data", (chunk) => {
+        log.info(`checkNotif BODY: ${chunk}`);
+        data += chunk;
       });
     });
 
@@ -985,6 +1140,13 @@ const actions = {
       log.error('checkNotif ERROR', error);
       res.error(error);
     });
+
+    __request.on('finish close', () => {
+      __request = null;
+      form = null;
+      data = null;
+    });
+
 
     __request.end();
   },
@@ -999,14 +1161,14 @@ const actions = {
 
     let __token = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "post",
     });
     __request.setHeader("Access-Control-Allow-Origin", "*");
     __request.setHeader("Content-Type", "application/json");
 
-    const form = JSON.stringify({
+    let form = JSON.stringify({
       username: username,
       password: password
     });
@@ -1014,10 +1176,7 @@ const actions = {
     __request.write(form);
 
     __request.on("response", (response) => {
-      response.on("data", (chunk) => {
-        __token.push(chunk);
-        log.info(`getLuckylikesToken BODY: ${chunk}`);
-      });
+      
       response.on("end", () => {
         log.info("getLuckylikesToken: end");
 
@@ -1030,6 +1189,12 @@ const actions = {
         }
 
         res.send(__conf);
+        __conf = null;
+      });
+
+      response.on("data", (chunk) => {
+        __token.push(chunk);
+        log.info(`getLuckylikesToken BODY: ${chunk}`);
       });
     });
 
@@ -1037,7 +1202,11 @@ const actions = {
       log.error('getLuckylikesToken ERROR', error);
       res.error(error);
     });
-
+    __request.on('finish close', () => {
+      __request = null;
+      __token = null;
+      form = null;
+    });
     __request.end();
 
   },
@@ -1047,7 +1216,7 @@ const actions = {
 
     let __order = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "get",
     });
@@ -1058,11 +1227,7 @@ const actions = {
     __request.on("response", (response) => {
       log.info(`getLuckylikesGift STATUS: ${response.statusCode}`);
       log.info(`getLuckylikesGift HEADERS: ${JSON.stringify(response.headers)}`);
-      response.on("data", (chunk) => {
-        __order.push(chunk);
-
-        log.info(`getLuckylikesGift BODY: ${chunk}`);
-      });
+      
       response.on("end", () => {
         log.info("getLuckylikesGift: end");
         let __ord = {};
@@ -1073,12 +1238,23 @@ const actions = {
           log.error("JSON error", e);
         }
         res.send(__ord);
+        __ord = null;
+      });
+
+      response.on("data", (chunk) => {
+        __order.push(chunk);
+
+        log.info(`getLuckylikesGift BODY: ${chunk}`);
       });
     });
 
     __request.on('error', (error) => {
       log.error('getLuckylikesGift ERROR', error);
       res.error(error);
+    });
+    __request.on('finish close', () => {
+      __request = null;
+      __order = null;
     });
 
     __request.end();
@@ -1089,7 +1265,7 @@ const actions = {
 
     let __order = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "get",
     });
@@ -1100,11 +1276,7 @@ const actions = {
     __request.on("response", (response) => {
       log.info(`getLuckylikesGiftById STATUS: ${response.statusCode}`);
       log.info(`getLuckylikesGiftById HEADERS: ${JSON.stringify(response.headers)}`);
-      response.on("data", (chunk) => {
-        __order.push(chunk);
-
-        log.info(`getLuckylikesGiftById BODY: ${chunk}`);
-      });
+      
       response.on("end", () => {
         log.info("getLuckylikesGiftById: end");
         let __ord = {};
@@ -1115,6 +1287,13 @@ const actions = {
           log.error("JSON error", e);
         }
         res.send(__ord);
+        __ord = null;
+      });
+
+      response.on("data", (chunk) => {
+        __order.push(chunk);
+
+        log.info(`getLuckylikesGiftById BODY: ${chunk}`);
       });
     });
 
@@ -1123,6 +1302,10 @@ const actions = {
       res.error(error);
     });
 
+    __request.on('finish close', () => {
+      __request = null;
+      __order = null;
+    });
     __request.end();
   },
 
@@ -1131,7 +1314,7 @@ const actions = {
 
     let __order = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: url,
       method: "put",
     });
@@ -1140,18 +1323,14 @@ const actions = {
     __request.setHeader("Content-Type", "application/json");
 
 
-    const form = JSON.stringify(data);
+    let form = JSON.stringify(data);
     log.info("burnLuckylikesGift form: " + form);
     __request.write(form);
 
     __request.on("response", (response) => {
       log.info(`burnLuckylikesGift STATUS: ${response.statusCode}`);
       log.info(`burnLuckylikesGift HEADERS: ${JSON.stringify(response.headers)}`);
-      response.on("data", (chunk) => {
-        __order.push(chunk);
-
-        log.info(`burnLuckylikesGift BODY: ${chunk}`);
-      });
+      
       response.on("end", () => {
         log.info("burnLuckylikesGift: end");
         let __ord = {};
@@ -1162,12 +1341,25 @@ const actions = {
           log.error("JSON error", e);
         }
         res.send(__ord);
+        __ord = null;
+      });
+
+      response.on("data", (chunk) => {
+        __order.push(chunk);
+
+        log.info(`burnLuckylikesGift BODY: ${chunk}`);
       });
     });
 
     __request.on('error', (error) => {
       log.error('burnLuckylikesGift ERROR', error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      __order = null;
+      form = null;
     });
 
     __request.end();

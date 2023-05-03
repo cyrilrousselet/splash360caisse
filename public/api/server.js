@@ -127,7 +127,6 @@ const server = {
     api_server.post("/setcommande", (req, res) => {
       log.info("POST setcommande", req.body.data);
 
-      // const response_id = responses.push(res) - 1;
       const response_id = lodashId.createId();
       responses[response_id] = res;
       wcont.send("setCommande", { data: req.body.data, response: response_id });
@@ -415,6 +414,7 @@ const actions = {
       ticket: ticket,
       numero: numero,
     });
+    delete responses[response];
 
     log.info("ticketID : " + ticketId + " numero: " + numero);
 
@@ -441,7 +441,7 @@ const actions = {
 
     log.info("askNumero", req.payload);
 
-    const __request = net.request({
+    let __request = net.request({
       url: url + ":" + API_PORT + "/getnumero",
       method: "post",
     });
@@ -455,20 +455,29 @@ const actions = {
       log.info(`askNumero() to ${url}, status:`, response.statusCode);
       //   log.info(`acceptUberOrder STATUS: ${response.statusCode}`);
       //   log.info(`acceptUberOrder HEADERS: ${JSON.stringify(response.headers)}`);
+      
+      response.on("end", () => {
+        log.info("askNumero: end");
+        let result = JSON.parse(__confirmation.join(""));
+        res.send({ numero: result.numero });
+        delete result.numero;
+        result = null;
+      });
+
       response.on("data", (chunk) => {
         __confirmation.push(chunk);
         log.info(`askNumero BODY: ${chunk}`);
-      });
-      response.on("end", () => {
-        log.info("askNumero: end");
-        const result = JSON.parse(__confirmation.join(""));
-        res.send({ numero: result.numero });
       });
     });
 
     __request.on("error", (error) => {
       log.error("askNumero ERROR", error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      __confirmation = null;
     });
 
     __request.end();
@@ -494,7 +503,7 @@ const actions = {
 
     let __confirmation = [];
 
-    const __request = net.request({
+    let __request = net.request({
       url: url + ":" + API_PORT + "/synchroconfirm",
       method: "post",
     });
@@ -510,10 +519,6 @@ const actions = {
         response.statusCode
       );
 
-      response.on("data", (chunk) => {
-        __confirmation.push(chunk);
-        log.info(`syncConfirmToPrimary BODY: ${chunk}`);
-      });
       response.on("end", () => {
         log.info(
           "syncConfirmToPrimary: end",
@@ -521,11 +526,21 @@ const actions = {
         );
         res.send({ msg: `syncConfirmToPrimary to primary` });
       });
+
+      response.on("data", (chunk) => {
+        __confirmation.push(chunk);
+        log.info(`syncConfirmToPrimary BODY: ${chunk}`);
+      });
     });
 
     __request.on("error", (error) => {
       log.error("syncConfirmToPrimary ERROR", error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      __confirmation = null;
     });
 
     __request.end();
@@ -820,7 +835,7 @@ const actions = {
 
     log.info("syncDispatchToPrimary", req.payload);
 
-    const __request = net.request({
+    let __request = net.request({
       url: url + ":" + API_PORT + "/synchro",
       method: "post",
     });
@@ -834,11 +849,6 @@ const actions = {
 
     __request.on("response", (response) => {
       res.send({ msg: `synchro ${db} to primary` });
-
-      response.on("data", (chunk) => {
-        __syncedData.push(chunk);
-        log.info(`syncDispatchToPrimary BODY: ${chunk}`);
-      });
       response.on("end", () => {
         log.info("syncDispatchToPrimary: end");
 
@@ -853,11 +863,21 @@ const actions = {
           log.error("syncDispatchToPrimary JSON error", e);
         }
       });
+
+      response.on("data", (chunk) => {
+        __syncedData.push(chunk);
+        log.info(`syncDispatchToPrimary BODY: ${chunk}`);
+      });
     });
 
     __request.on("error", (error) => {
       log.error("syncDispatchToPrimary ERROR", error);
       res.error(error);
+    });
+
+    __request.on('finish close', () => {
+      __request = null;
+      __syncedData = null;
     });
 
     __request.end();
@@ -885,7 +905,7 @@ async function prepareExportationToPrimary(exportation) {
 }
 
 function bulkSyncToPrimary(db, data) {
-  const __request = net.request({
+  let __request = net.request({
     url: _primaryUrl + ":" + API_PORT + "/synchro",
     method: "post",
   });
@@ -895,7 +915,7 @@ function bulkSyncToPrimary(db, data) {
   __request.setHeader("Access-Control-Allow-Origin", "*");
   __request.setHeader("Content-Type", "application/json");
 
-  const __body = JSON.stringify({ db, data, emitter: _emitter });
+  let __body = JSON.stringify({ db, data, emitter: _emitter });
 
   log.info("bulk:", __body);
 
@@ -935,6 +955,12 @@ function bulkSyncToPrimary(db, data) {
 
   __request.on("error", (error) => {
     log.error("bulkSyncToPrimary ERROR", error);
+  });
+
+  __request.on('finish close', () => {
+    __request = null;
+    __syncedData = null;
+    __body = null;
   });
 
   __request.end();
