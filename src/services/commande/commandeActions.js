@@ -931,7 +931,7 @@ function standByCommande(payload, needNumero) {
     payload.status = "standby";
     payload.end = new Date();
     payload.chrono =
-      Math.round(differenceInMilliseconds(parseISO(payload.end), parseISO(payload.start)) / 10) /
+      Math.round(differenceInMilliseconds(payload.end, parseISO(payload.start)) / 10) /
       100;
     logger.info(payload);
     const state = getState();
@@ -1019,7 +1019,7 @@ function validateCommande(_payload, needNumero) {
     payload.enproduction = payload.scheduled ? false : true;
     payload.end = new Date();
     payload.chrono =
-      Math.round(differenceInMilliseconds(parseISO(payload.end), parseISO(payload.start)) / 10) /
+      Math.round(differenceInMilliseconds(payload.end, parseISO(payload.start)) / 10) /
       100;
     logger.info(payload);
 
