@@ -490,6 +490,9 @@ function confirmCommande(_payload, printTemplates) {
 
           commandeServices.persistCommande(confirm);
 
+          // mise à jour de la liste des commandes non encaissées
+          dispatch({type: commandeActionTypes.REMOVE_COMMANDENC, ticketId: confirm.ticketId});
+
 
           console.log('🖨 commande', confirm);
           
@@ -928,7 +931,7 @@ function standByCommande(payload, needNumero) {
     payload.status = "standby";
     payload.end = new Date();
     payload.chrono =
-      Math.round(differenceInMilliseconds(payload.end, payload.start) / 10) /
+      Math.round(differenceInMilliseconds(parseISO(payload.end), parseISO(payload.start)) / 10) /
       100;
     logger.info(payload);
     const state = getState();
@@ -1016,7 +1019,7 @@ function validateCommande(_payload, needNumero) {
     payload.enproduction = payload.scheduled ? false : true;
     payload.end = new Date();
     payload.chrono =
-      Math.round(differenceInMilliseconds(payload.end, payload.start) / 10) /
+      Math.round(differenceInMilliseconds(parseISO(payload.end), parseISO(payload.start)) / 10) /
       100;
     logger.info(payload);
 
@@ -1180,6 +1183,7 @@ function validateCommande(_payload, needNumero) {
         // }
 
         commandeServices.persistCommande(confirm);
+
 
 
         // si la commande à encaisser est PROGRAMMÉE,

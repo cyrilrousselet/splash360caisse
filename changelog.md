@@ -12,6 +12,7 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 ## [1.1.2+27] - 2023-05-04
 ### Changed
 - Correction de l'initialisation de la popin de programmation de commande (schedule)
+- Rafraichissement de la liste des commandes non encaissées après encaissement
 
 ## [1.1.2+25] - 2023-05-03
 ### Changed
