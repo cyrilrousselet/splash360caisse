@@ -11,6 +11,7 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 ## [1.1.2+26] - 2023-05-04
 ### Changed
 - Choix de la langue du ticket commande (sauf 'arabe')
+- Correction de l'initialisation de la popin de programmation de commandes (schedule)
 
 ## [1.1.2+25] - 2023-05-03
 ### Changed
