@@ -1393,7 +1393,9 @@ const data = {
                             titre: 'Ticket bilingue',
                             label: 'Seconde langue :',
                             aucun: 'Aucune',
-                            helper: 'Le ticket client sera imprimé en deux langues'
+                            helper: 'Le ticket client sera imprimé en deux langues',
+                            main_titre: 'Ticket commande :',
+                            main_label: 'Langue par défaut :'
                         }
                     },
                     fiscal: {

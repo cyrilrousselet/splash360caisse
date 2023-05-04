@@ -1580,6 +1580,9 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
     if (options.hasOwnProperty('secondelangue') && options.secondelangue!==null) {
       date_alt = format(__createdAt, data[options.secondelangue].params.dateformat);
     }
+    if (options.hasOwnProperty('ticketlangue') && options.ticketlangue!==null) {
+      date = format(__createdAt, data[options.ticketlangue].params.dateformat);
+    }
 
     let contenu = {};
     let target_imprimantes = [];
@@ -1816,7 +1819,8 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
 
           const __gdh = piece['ENC-TIK-HOR-GDH']
           const __datetime = new Date(__gdh.substring(0,4)+"-"+__gdh.substring(4,6)+"-"+__gdh.substring(6,8)+' '+__gdh.substring(8,10)+':'+__gdh.substring(10,12)+':'+__gdh.substring(12,14)); 
-          const __datestr = `${format(__datetime, "d MMM yyyy", { locale: frLocale })} à ${format(__datetime, "H:mm:ss")}`;
+          let __datestr = `${format(__datetime, "d MMM yyyy", { locale: frLocale })} à ${format(__datetime, "H:mm:ss")}`;
+          
 
           let __client = null;
           if (ticket.template!=='deliveroo') {
@@ -1919,6 +1923,23 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             }
           }
 
+          let strings_main = {
+            encoding: strings.params.encoding,
+            direction: strings.params.direction,
+            commande: strings.tickets.commande, 
+            uber: strings.tickets.uber, 
+            deliveroo: strings.tickets.deliveroo
+          }
+          if (options.hasOwnProperty('ticketlangue') && options.ticketlangue!==null) {
+            strings_main = {
+              encoding: data[options.ticketlangue].params.encoding,
+              direction: data[options.ticketlangue].params.direction,
+              commande: data[options.ticketlangue].tickets.commande, 
+              uber: data[options.ticketlangue].tickets.uber, 
+              deliveroo: data[options.ticketlangue].tickets.deliveroo
+            }
+          }
+
           // contenu :
           contenu = {
             // -> logo
@@ -1953,7 +1974,7 @@ function printCommandeTicket(quelstickets, cmd, nokds=false) {
             },
             promo,
             nomticket: ticket.nom,
-            strings: {commande: strings.tickets.commande, uber: strings.tickets.uber, deliveroo: strings.tickets.deliveroo},
+            strings: {commande: strings_main.commande, uber: strings_main.uber, deliveroo: strings_main.deliveroo},
             strings_alt: strings_alt
           };
 

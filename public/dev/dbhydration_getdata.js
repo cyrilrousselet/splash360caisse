@@ -101,6 +101,7 @@ const hydration = {
     { domaine: 'options', cle: 'primary', valeur: null},
     { domaine: 'planning', cle: 'shifttypes', valeur: [{id:'st01', nom:'cuisine', couleur: 'bleu', tps: true}, {id:'st02', nom:'caisse', couleur: 'vert', tps: true}, {id:'st03', nom:'salle', couleur: 'jaune', tps: true}, {id:'st04', nom:'livraison', couleur: 'orange', tps: true}, {id:'st05', nom:'fermeture', couleur: 'rose', tps: true}, {id:'st06', nom:'repos heb.', couleur: 'gris', tps: true}] },
     { domaine: 'peripheriques', cle: 'kdsurl', valeur: 'http://localhost'},
+    { domaine: 'options', cle: 'ticketlangue', valeur: 'fr'},
     { domaine: 'commandes', cle: 'lot_exp_in_minutes', valeur: 15 },
     { domaine: 'commandes', cle: 'lot_max_num_commandes', valeur: 10 },
     { domaine: 'financier', cle: 'monnaie', valeur: { iso: 'EUR', nom: 'euro', nom_pl: 'euros', symbole: '€' } },

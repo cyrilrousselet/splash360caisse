@@ -571,10 +571,12 @@ function _launchPrint(template, printer, contenu, config={}) {
       }
     }
     else if ('promo' === section) {
-      try {
-        await _printPromo(printer, contenu.promo, contenu.strings);
-      } catch(e) {
-        _printErrorHandler(e, '_printPromo', printer);
+      if (contenu.promo!==null) {
+        try {
+          await _printPromo(printer, contenu.promo, contenu.strings);
+        } catch(e) {
+          _printErrorHandler(e, '_printPromo', printer);
+        }
       }
     }
     else if ('periode_x' === section) {

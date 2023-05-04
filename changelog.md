@@ -8,6 +8,10 @@ et ce projet adhère au [Semantic Versionning](https://semver.org/lang/fr/spec/v
 - Sauvegarde des préférences de la caisse au niveau du backend pour permettre une réinstallation sans perdre les paramètres.
 - Sauvegarde des z de caisse au niveau du backend
 
+## [1.1.2+26] - 2023-05-04
+### Changed
+- Choix de la langue du ticket commande (sauf 'arabe')
+
 ## [1.1.2+25] - 2023-05-03
 ### Changed
 - Réécriture des requêtes http(s), suppression des données passées"
