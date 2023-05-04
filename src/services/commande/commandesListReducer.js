@@ -20,6 +20,7 @@ export function commandesListReducer(state = initialState, action) {
   let ticketsrestau = state.ticketsrestau;
   let schedules = state.schedules;
   let lots = state.lots;
+  let nonconfirmeeslist = state.nonconfirmeeslist;
 
   switch (action.type) {
     case commandeActionTypes.GET_ALLCOMMANDES_REQUEST:
@@ -159,6 +160,13 @@ export function commandesListReducer(state = initialState, action) {
       return {
         ...state,
         pastnonconfirmed: action.value
+      };
+
+    case commandeActionTypes.REMOVE_COMMANDENC:
+      delete nonconfirmeeslist[action.ticketId];
+      return {
+        ...state,
+        pastnonconfirmed: nonconfirmeeslist
       };
 
     default:
