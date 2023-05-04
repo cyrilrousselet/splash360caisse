@@ -144,6 +144,12 @@ class ScheduleModal extends React.Component {
     this.minDown = this.minDown.bind(this);
   }
 
+  componentDidUpdate(prevprops, prevstate) {
+    if (!this.state.schedule) {
+      this.setState({schedule: add(new Date(), {minutes:15})});
+    }
+  }
+
   deleteSchedule() {
     this.props.deleteSchedule();
     this.resetPopin();
@@ -250,9 +256,9 @@ class ScheduleModal extends React.Component {
       start = add(start, {hours: 1});
     }
     console.log('start round', format(start,'HH:mm'));
-    if (!schedule) {
-      this.setState({schedule: start});
-    }
+    // if (!schedule) {
+    //   this.setState({schedule: start});
+    // }
 
     let vschedule = schedule ? schedule : this.props.schedule;
 
