@@ -168,8 +168,8 @@ class Reglement extends React.Component {
         this.props.commande.chrono =
           Math.round(
             differenceInMilliseconds(
-              this.props.commande.end,
-              this.props.commande.start
+              formatISO(this.props.commande.end),
+              formatISO(this.props.commande.start)
             ) / 10
           ) / 100;
       }
