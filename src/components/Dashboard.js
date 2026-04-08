@@ -5,7 +5,6 @@ import React, { Component } from "react";
 import LocalizedStrings from "react-localization";
 import { data } from "../constants/translations";
 import ErrorBoundary from "./common/ErrorBoundary";
-// import {ErrorBoundary} from "@sentry/electron";
 import ConnectIcon from "./common/icon/ConnectIcon";
 import LargeButton from "./common/LargeButton";
 
