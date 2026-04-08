@@ -1,0 +1,2466 @@
+// const log = require('electron-log');
+const log = require('../utils/logger');
+const electron = require('electron');
+const { app } = electron;
+const escpos = require('escpos');
+const Printer = require('../utils/printer')
+escpos.USB = require('escpos-usb');
+escpos.Network = require('escpos-network');
+escpos.SerialPort = require('escpos-serialport');
+// const statuses = require('escpos/statuses');
+const iconv = require('iconv-lite');
+
+// const {PrinterStatus,OfflineCauseStatus,ErrorCauseStatus,RollPaperSensorStatus} = statuses;
+// const _ = require('escpos/commands');
+const path = require('path');
+const fs = require('fs');
+
+const getPixels = require('get-pixels');
+
+const QRCode = require('qrcode');
+const { logger } = require('@sentry/utils');
+
+let printerOpen = false;
+let waitInterval = null;
+
+
+let webContents = null;
+
+let printSpool = [];
+
+
+const peripheral = {
+  init: (wcont) => {
+    log.info("peripheralApi.init()");
+    webContents = wcont;
+  }
+};
+
+const actions = {
+  
+  quitApp: (req,res) => {
+    log.info('QUIT APP');
+    app.quit();
+  },
+
+  printTicket: (req, res) => {
+
+    const { imprimante, template, contenu } = req.payload;
+
+    log.info('printerOpen',printerOpen, 'actions.printTicket()');
+
+    _spoolManager({
+      action: _doPrintTicket,
+      imprimante: imprimante,
+      template: template,
+      contenu: contenu
+    });
+
+    res.send({msg: 'ticket printed'});
+  },
+
+
+
+  /**
+   * Ouverture du tiroir 
+   * connecté à l'imprimante passée en paramètre
+   */
+  openDrawer: (req,res) => {
+
+    const { imprimante } = req.payload;
+
+  //  log.info('openDrawer', imprimante);
+
+    _spoolManager({
+      action: _openDrawer,
+      imprimante: imprimante,
+      template: null,
+      contenu: null
+    });
+
+
+
+
+    // device.open(function() {
+
+    //   log.info('device open -> cashdraw()');
+    //   printer
+    //     .cashdraw()
+    //     .cashdraw();
+
+    //     // device.write('\x1b\x70\x00\x19\xfa', data => {
+    //     //   log.info("data", data);
+    //     // })
+
+
+    //   // device.on('data', function (data) {
+    //   //     // log.info(data);
+    //   //     if (typeof data === "string") {
+    //   //       log.info(' --> ',  data.charCodeAt(0).toString(2).padStart(8, '0'));
+    //   //     }
+          
+    //   // });
+  
+    //   // log.info('demande de status');
+    //   // device.write(_.DLE+_.EOT+String.fromCharCode(1));
+    //   // // device.write('\x1d\x72\x02');
+    //   // log.info('ouverture');
+    //   // device.write('\x1b\x70\x00\x19\xfa');
+      
+    //   // log.info('demande de status');
+    //   // device.write(_.DLE+_.EOT+String.fromCharCode(1));
+
+
+    //   setTimeout(() => {
+    //       printer.close();
+    //   }, 1000);
+
+    // / *
+
+    //   if (imprimante.connexion==='usb') {
+    //     log.info('send "GS r 2" to printer');
+
+    //     device.write('\x1d\x72\x02', (error,data) => {
+    //       log.info('get data',data);
+    //     });
+
+
+    //     device.write('\x1b\x70\x00\x19\xfa', (error,data) => {
+    //       log.info("open drawer data", data);
+    //     });
+
+
+    //   } else {
+    //     printer.cashdraw();
+    //     printer.getStatus(statuses.PrinterStatus.getClassName(), status => {
+    //       log.info(status.toJSON());
+    //     });
+    //   }
+    //   printer.close();
+    //   // setTimeout(() => {
+    //   //   printer.close();
+    //   // }, 200);
+    // * /  
+          
+    // });
+
+    res.send({msg: 'drawer open'});
+
+  },
+
+  /**
+   * Impression d'un ticket de test passant en revue certaines fonctionnalités de l'imprimante
+   */
+  printTest: (req,res) => {
+    const device = new escpos.USB();
+    const options = {};
+    const printer = new Printer(device, options);
+
+    const { payload } = req;
+    const msg = payload.msg!=='' ? payload.msg : 'rien';
+
+    log.info('printTest start');
+
+    const tux = path.join(__dirname, 'default_logo.png');
+    log.info('img : '+tux);
+    escpos.Image.load(tux, function(image){
+    
+
+      device.open(async function() {
+        
+        
+         printer
+          .font('A')
+          .align('CT');
+
+        let printimage = await _printImage(printer, image);
+
+        if (printimage) {
+
+          printer
+            .feed(1)
+            .fontSize('4square')
+            .text('Test impression :')
+            .text('-> '+msg+' <-')
+            .drawLine()
+            .feed(1)
+            .text('test QR code (aqua-forte.net)')
+            .cashdraw()
+            .feed(1)
+            .text('EAN13 barcode example')
+            .barcode('123456789012', 'EAN13') // code length 12
+          //  .barcode('109876543210') // default type 'EAN13'
+          //  .barcode('7654321', 'EAN8') // The EAN parity bit is automatically added.
+            .feed(2)
+            .cut()
+            .close();
+        }
+         
+      });
+    });
+
+    log.info('printTest end');
+
+    res.send({msg: 'test printed'});
+  }
+}
+
+
+// gestion des jobs envoyés aux imprimantes
+function _spoolManager(job=null) {
+
+  
+  // on ajoute le job demandé à la liste d'attente
+  if (job!==null) printSpool.push(job);
+
+
+  // si l'imprimante est ouverte...
+  if (printerOpen) {
+
+    // si aucune boucle d'attente n'est déclarée...
+    if (waitInterval===null) {
+
+
+
+      // ...on déclare un nouvel intervalle
+      waitInterval = setInterval(function() {
+        log.info('wait for printer close', printerOpen, '_spoolManager()', 'printSpool: '+printSpool.length);
+        // si l'imprimante est (enfin) fermée
+        if (!printerOpen) {
+          log.info('at last, printer closed', printerOpen, '_spoolManager()');
+          
+
+          // on récupère le premier job de la liste
+          const firstJobi = printSpool.shift();
+          // et on exécute le job
+          if (firstJobi) firstJobi.action(firstJobi.imprimante, firstJobi.template, firstJobi.contenu);
+
+          // si la liste d'attente est vide
+          if (printSpool.length===0) {
+            // on efface l'intervalle (et on met sa valeur à 'null')
+            clearInterval(waitInterval);
+            waitInterval = null;
+            // et on indique que l'imprimante est fermÃ©e
+            printerOpen = false;
+          }
+        } 
+        // si l'imprimante n'est pas fermée (suite à un bug, par ex.)
+        else {
+          // si la liste d'attente est vide
+          if (printSpool.length===0) {
+            // on efface l'intervalle (et on met sa valeur à 'null')
+            clearInterval(waitInterval);
+            waitInterval = null;
+            // et on indique que l'imprimante est fermée
+            printerOpen = false;
+          }
+        }
+      },200);
+    }
+  }
+  // si l'imprimante est fermée...
+  else {
+    // si un job est déclaré dans la liste
+    if (printSpool.length>0) {
+      // on récupère le premier job de la liste
+      const firstJobd = printSpool.shift();
+      firstJobd.action(firstJobd.imprimante, firstJobd.template, firstJobd.contenu);
+
+      // on relance le manager au cas où un autre job serait en attente dans la liste
+      _spoolManager();
+    }
+  }
+}
+
+
+function _openDrawer(imprimante, template, contenu) {
+
+
+  let vp, vid, pid;
+
+  // déclaration de l'imprimante
+  let device;
+  if (imprimante.connexion==='usb') {
+    if (imprimante.param && (typeof imprimante.param==="string") ) {
+      vp = imprimante.param.split(';');
+      vid = parseInt(vp[0], 16);
+      pid = parseInt(vp[1], 16);
+      device = new escpos.USB(vid,pid);
+    } else {
+      device = new escpos.USB();
+    }
+
+  } else if (imprimante.connexion==='network') {
+    device = new escpos.Network(imprimante.param); 
+  } else if (imprimante.connexion==='serial') {
+    device = new escpos.SerialPort(imprimante.param);
+  }
+  
+  const printer = new Printer(device);
+
+  device.open(function(error) {
+    if (error) {
+      log.warn(`ERREUR IMPRIMANTE->TIROIR (${imprimante.connexion}: ${imprimante.param})`);
+      log.error(error.message);
+      webContents.send('jet', {code:'150', description: `erreur imprimante (${imprimante.connexion}: ${imprimante.param})`});
+    } else {
+      log.info('device open -> cashdraw()');
+      printerOpen = true;
+      printer
+        .cashdraw()
+        .cashdraw();
+
+      webContents.send('jet', {code:'901', description: ''}); // evenement 'ouverture du tiroir-caisse'
+        
+      setTimeout(() => {
+        log.info('printer.close()', '_openDrawer() 2');
+        _closePrinter(printer);
+      }, 1000);
+    }
+  });
+
+}
+
+
+function _doPrintTicket(imprimante, template, contenu) {
+
+  // déclaration de l'imprimante
+  let device, vp, vid, pid;
+  const options = {
+    encoding: imprimante.encoding, 
+    width:42
+  };
+  let printer;
+  try {
+    
+
+    if (imprimante.connexion==='usb') {
+      if (imprimante.param && (typeof imprimante.param==="string") ) {
+        vp = imprimante.param.split(';');
+          vid = parseInt(vp[0], 16);
+          pid = parseInt(vp[1], 16);
+          device = new escpos.USB(vid,pid);
+        } else {
+          device = new escpos.USB();
+        }
+    } else if (imprimante.connexion==='network') {
+      device = new escpos.Network(imprimante.param); 
+    } else if (imprimante.connexion==='serial') {
+      device = new escpos.SerialPort(imprimante.param);
+    }
+    
+    // const options = {encoding: imprimante.encoding};
+    printer = new Printer(device, options);
+    
+  } catch(e) {
+    log.warn(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`);
+    webContents.send('jet', {code: '150', description: `erreur imprimante (${imprimante.connexion}: ${imprimante.param})`});
+    if (contenu.nomticket.toLowerCase()==='commande') {
+      webContents.send('jet', {code: '329', description: `${(contenu.legal.duplicataid ? contenu.legal.duplicataid : contenu.legal.ticketid)} non imprimé`});
+    }
+    log.error(e.message);
+  }
+
+  log.info('printTicket start');
+
+  // const tux = path.join(__dirname, 'default_logo.png');
+  // log.info('img : '+tux);
+
+  log.info('device opened');
+
+  // // s'il y a un logo au début du ticket
+  if (template[0]==='logo' && contenu.logo!==null) {
+    log.info('Image.load -> print');
+
+    const imglogo = getLogoImg(contenu.logo);
+
+    // on charge le logo
+    escpos.Image.load(imglogo, function(image){
+
+      // on ouvre la connexion à l'imprimante
+      if (device) {
+        
+        device.open(async function(error) {
+
+          if (error) {
+            log.warn(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`);
+            webContents.send('jet', {code: '150', description: `erreur imprimante (${imprimante.connexion}: ${imprimante.param})`});
+            log.error(error.message);
+            if (contenu.nomticket.toLowerCase()==='commande') {
+              webContents.send('jet', {code: '329', description: `${(contenu.legal.duplicataid ? contenu.legal.duplicataid : contenu.legal.ticketid)} non imprimé`});
+            }
+          } else {
+            
+            printerOpen = true;
+
+            log.info('print logo');
+            // center logo
+            printer.align('CT');
+            // impression logo
+            let printimage = await _printImage(printer, image);
+
+            // une fois le logo chargé on lance l'impression des sections du tickets
+            if (printimage) {
+              _launchPrint(template, printer, contenu, imprimante.config);
+            }
+          }
+
+        });
+      // } else {
+      //   log.error('impression impossible: template['+contenu.nomticket+']');
+      //   webContents.send('jet', {code: '150', description: `impression impossible`});
+      //   if (contenu.nomticket.toLowerCase()==='commande') {
+      //     webContents.send('jet', {code: '329', description: `${(contenu.legal.duplicataid ? contenu.legal.duplicataid : contenu.legal.ticketid)} non imprimé`});
+      //   }
+      }
+
+    });
+
+  } else {
+
+    log.info('launchPrint sans logo');
+
+    // on ouvre la connexion à l'imprimante
+    // et on lance l'impression des sections du tickets
+    if (device) {
+      device.open(function(error) {
+
+        if (error) {
+          log.warn(`ERREUR IMPRIMANTE (${imprimante.connexion}: ${imprimante.param})`);
+          webContents.send('jet', {code: '150', description: `erreur imprimante (${imprimante.connexion}: ${imprimante.param})`});
+          log.error(error.message);
+          if (contenu.nomticket.toLowerCase()==='commande') {
+            webContents.send('jet', {code: '329', description: `${(contenu.legal.duplicataid ? contenu.legal.duplicataid : contenu.legal.ticketid)} non imprimé`});
+          }
+        } else {
+
+          log.info(`DEVICE OPEN (${imprimante.connexion}: ${imprimante.param})`);
+
+          printerOpen = true;
+          _launchPrint(template, printer, contenu, imprimante.config);
+        }
+      });
+    // } else {
+    //   log.error('impression impossible template['+contenu.nomticket+']');
+    //   webContents.send('jet', {code: '150', description: `impression impossible`});
+    //   if (contenu.nomticket.toLowerCase()==='commande') {
+    //     webContents.send('jet', {code: '329', description: `${(contenu.legal.duplicataid ? contenu.legal.duplicataid : contenu.legal.ticketid)} non imprimé`});
+    //   }
+    }
+  }
+    
+
+ // log.info('printTicket end');
+
+}
+
+
+async function _printImage(printer, image) {
+
+  await printer.image(image, 'd24');
+  return true;
+
+}
+
+function _closePrinter(printer) {
+  printer.close(function() {
+    log.info('---> Printer closed');
+    printerOpen = false;
+  });
+}
+function _printErrorHandler(error, methodName, printer) {
+  log.warn(`ERREUR IMPRESSION ( ${methodName}() )`);
+  log.error(error);
+  _closePrinter(printer);
+}
+
+
+function _launchPrint(template, printer, contenu, config={}) {
+
+  log.info('_launchPrint()');
+
+  if (template.length===0) {
+    _closePrinter(printer);
+  }
+
+  
+
+  template.forEach(async (section,i,arr) => {
+
+    log.info(section);
+
+    if ('entreprise' === section) { 
+      try {
+        _printEntreprise(printer, contenu.entreprise, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printEntreprise', printer);
+      }
+    }
+    else if ('commande' === section) {
+      try {
+        const cmdcont = contenu.commande;
+        _printCommande(printer, {...cmdcont, dupli: contenu.legal.duplicataid!==''}, contenu.strings.commande);
+      } catch(e) {
+        _printErrorHandler(e, '_printCommande', printer);
+      }
+    }
+    else if ('message' === section) {
+      try {
+        _printMessage(printer, contenu.message, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printMessage', printer);
+      }
+    }
+    else if ('legal' === section) {
+      try {
+        const legalcont = contenu.legal;
+        _printLegal(printer, {...legalcont, status: contenu.commande.status}, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printLegal', printer);
+      }
+    }
+    else if ('periode_x' === section) {
+      try {
+        _printPeriodeX(printer, contenu.periode, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printPeriodeX', printer);
+      }
+    }
+    else if ('periode_z' === section) {
+      const __periode = contenu.periode;
+   //   try {
+        _printPeriodeZ(printer, {...__periode, ecarts:contenu.ecarts, comptage:contenu.comptage, prelevement:contenu.prelevement}, contenu.strings);
+   //   } catch(e) {
+   //     _printErrorHandler(e, '_printPeriodeZ', printer);
+   //   }
+    }
+    else if ('mouvements' === section) {
+      try {
+        _printMouvements(printer, contenu.mouvements, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printMouvements', printer);
+      }
+    }
+    else if ('prelevement' === section) {
+      try {
+        _printPrelevement(printer, contenu.prelevement, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printPrelevement', printer);
+      }
+    }
+    else if ('info' === section) {
+      try {
+        _printInfo(printer, {info: contenu.info, nomticket: contenu.nomticket, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode, status:contenu.detail.status, client:contenu.detail.client, bipper: contenu.detail.bipper}}, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printInfo', printer);
+      }
+    }
+    else if ('info2' === section) {
+      try {
+        _printInfo2(printer, {info: contenu.info, nomticket: contenu.nomticket, commande:{numero: contenu.detail.numero, id:contenu.detail.id, mode:contenu.detail.mode, status:contenu.detail.status, client:contenu.detail.client, bipper: contenu.detail.bipper}}, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printInfo2', printer);
+      }
+    }
+    else if ('detail' ===  section) {
+      try {
+        _printDetail(printer, contenu.detail, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printDetail', printer);
+      }
+    }
+    else if ('detail2' ===  section) {
+      try {
+        _printDetail2(printer, contenu.detail, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printDetail2', printer);
+      }
+    }
+    else if ('avoir' ===  section) {
+      try {
+        _printAvoir(printer, contenu.detail, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printAvoir', printer);
+      }
+    }
+    else if ('qrcode' ===  section) {
+      try {
+        await _printQRCode(printer, contenu.code);
+      } catch(e) {
+        _printErrorHandler(e, '_printQRCode', printer);
+      }
+    }
+    else if ('uber' ===  section) {
+      try {
+        await _printUber(printer, contenu.uber, contenu.strings.uber);
+      } catch(e) {
+        _printErrorHandler(e, '_printUber', printer);
+      }
+    } 
+    else if ('recap' === section) {
+      try {
+        _printRecap(printer, contenu.recap, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printRecap', printer);
+      }
+    } 
+    else if ('recap2' === section) {
+      try {
+        _printRecap2(printer, contenu.recap, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printRecap2', printer);
+      }
+    } 
+    else if ('prodfooter2' === section) {
+      try {
+        await _printProdfooter2(printer, {id: contenu.detail.id, info: contenu.info, logo: contenu.logo}, contenu.strings);
+      } catch(e) {
+        _printErrorHandler(e, '_printProdfooter2', printer);
+      }
+    }
+    else if ('etiquette' === section) {
+      try {
+        _printEtiquettes(printer, contenu, config);
+      } catch(e) {
+        _printErrorHandler(e, '_printEtiquettes', printer);
+      }
+    }
+    else if ('produits' === section) {
+      try {
+        _printProduits(printer, contenu, config);
+      } catch(e) {
+        _printErrorHandler(e, '_printProduits', printer);
+      }
+    }
+    // else if ('logo' === section) {
+    //   if (contenu.logo!==null) {
+    //     const qim = await _printLogo(printer, contenu.logo);
+    //   }
+    // }
+
+    // fin du ticket
+    if (i === arr.length-1) {
+      printer.feed(2)
+       .cut();
+      
+      _closePrinter(printer);
+    }
+  });
+}
+
+function _printEtiquettes(printer, data, config) {
+
+
+  log.info('_printEtiquette');
+  
+  // printer.raw('');
+
+  const __r = 0.04; // <- 1 mm / dots
+  const params = config || {
+                            resolution: 200,
+                            width: 55,
+                            height: 35,
+                            gap: 5
+                          };
+
+  let _mm = params.resolution * __r;
+  let __w = params.width * _mm;
+  let __h = params.height * _mm;
+
+  log.info('width: '+__w);
+  log.info('height: '+__h);
+
+  let __job = [];
+
+  const totalarticles = data.articles.length;
+  let currentarticle = 1;
+
+  data.articles.forEach(art => {
+
+    // let i = 0, __artqte = art.quantite;
+    // for (i;i<__artqte;i++) {
+
+      const inglist = art.ingredients.map(ing => ing.qte+'x '+ing.nom.toLowerCase());
+
+      let __printlist = [
+        'SIZE ' + params.width + ' mm,' + params.height + ' mm',
+        'GAP ' + params.gap + ' mm,0',
+        'DIRECTION 1,0',
+        'CLS'
+      ];
+
+      const __num = ('TEXT 10,10,"2",0,2,2,"#%NUMERO%"').replace('%NUMERO%', data.numero);
+      __printlist.push(__num);
+
+      const __date = ('TEXT 150,10,"2",0,1,1,"%DATETIME%"').replace('%DATETIME%', data.date);
+      __printlist.push(__date);
+
+      __printlist.push('BAR 10,50,' + (__w - 20) + ',4');
+
+      const __frc = ('TEXT 10,70,"2",0,1,1,"%FRACTION%"').replace('%FRACTION%', currentarticle+'/'+totalarticles);
+      __printlist.push(__frc);
+
+      const __prd = ('TEXT 10,90,"2",0,1,2,"%PRD%"').replace('%PRD%', art.nom);
+      __printlist.push(__prd);
+
+      let __y = 135;
+
+      if (art.comment!=='') {
+        const __cmt = ('TEXT 15,%Y%,"2",0,1,1,"-- %CMT% --"').replace('%Y%', __y).replace('%CMT%',art.comment);
+        __printlist.push(__cmt);
+        __y += 35;
+      }
+
+      const __ingline = 'TEXT 15,%Y%,"2",0,1,1,"* %ING%"';
+      inglist.forEach(ing=> {
+        __printlist.push(__ingline.replace('%Y%', __y).replace('%ING%',ing));
+        __y += 24;
+      });
+
+      __printlist.push('PRINT 1');
+
+    
+      __job = [...__job, ...__printlist];
+
+    // }
+    currentarticle++;
+  });
+
+  const feed = iconv.encode(__job.join("\n"),"Cp850"); 
+  
+  printer.print(feed);
+
+
+}
+
+function _printProduits(printer, data, strings) {
+
+  log.info('_printProduits', data);
+
+  data.articles.forEach((art, i, ar) => {
+
+    let j = 0, __artqte = art.quantite;
+    for (j;j<__artqte;j++) {
+
+      const inglist = art.ingredients.map(ing => ing.qte+'x '+ing.nom.toLowerCase());
+
+      let __fl = String(data.numero).length + 1;
+      __fl += String(data.mode).length;
+      let __sp = 21 - __fl;
+
+      const __flt = '#'+data.numero+(new Array(__sp+1)).join(' ')+data.mode;
+
+
+      printer
+        .font('A')
+        .align('CT')
+        .style('B')
+        .fontSize('4square')
+        .text(__flt)
+        // .tableCustom([
+        //   {text:'#'+data.numero, align:'LEFT', cols:19, style:'B'},
+        //   {text:data.mode, align:'RIGHT', cols:19, style:'NORMAL'},
+        // ])
+        .fontSize('normal')
+        .tableCustom([
+          {text:data.date, align:'RIGHT', cols:42, style:'NORMAL'}
+        ])
+        .drawLine()
+        .fontSize('4square')
+        .tableCustom([
+          {text: art.nom, align:'LEFT', cols:21, style:'B'}
+        ]);
+      if (art.comment!=="") {
+        printer
+        .fontSize('normal')
+        .tableCustom([
+          {text: '-- '+art.comment+' --', align:'LEFT', cols:42, style:'NORMAL'}
+        ]);
+      }
+      printer
+        .fontSize('normal')
+        .tableCustom([
+          {text: inglist.join(', '), align:'LEFT', cols:42, style:'NORMAL'}
+        ])
+        .feed(2);
+
+        if (i<ar.length-1) {
+          printer.cut();
+        }
+    }
+  });
+  
+}
+
+
+
+
+// informations commande sur le ticket
+function _printInfo(printer, data, strings) {
+
+  try {
+    printer
+      .font('A')
+      .align('CT')
+      .style('B')
+      // .size(1,2)
+      .fontSize('2height')
+      .text(data.nomticket)
+      // .fontSize('4square')
+      .fontSize('normal')
+      .drawLine()
+      .style('B')
+      // .size(2,2)
+      .fontSize('4square')
+      .text(`#${data.commande.numero}`)
+      // .fontSize('4square');
+      .fontSize('normal');
+  }
+  catch(e) {
+    logger.error('_printInfo() error, nom + numero');
+    throw(e);
+  }
+
+
+  try {
+    if (data.commande.client!==null) {
+
+      printer
+        .font('A')
+        // .fontSize('4square')
+        .fontSize('normal')
+        .feed(1)
+        .style('NORMAL')
+        .tableCustom([
+          {text: `${strings.client.titre} ${data.commande.client.prenom} ${data.commande.client.nom}`, cols:42, align:'CENTER'}
+        ]);
+    }
+  }
+  catch(e) {
+    logger.error('_printInfo() error, client');
+    throw(e);
+  }
+
+
+  try {
+    printer
+      .drawLine()
+      .style('NORMAL')
+      .text(`${strings.numero}${data.commande.id}`)
+      .text(`${strings.creation}${data.info.date} à ${data.info.heure}`)
+      // .size(2,2)
+      .fontSize('4square')
+      .text(`*** ${strings.mode[data.commande.mode]} ***`)
+      .fontSize('normal');
+  }
+  catch(e) {
+    logger.error('_printInfo() error, commandeid, date/heure, mode');
+    throw(e);
+  }
+
+
+  try {
+
+    if (data.commande.bipper) {
+      printer
+        .fontSize('normal')
+        .drawLine()
+        .style('NORMAL')
+        .fontSize('4square')
+        .text(`--- ${strings.bipper}${data.commande.bipper} ---`)
+        .fontSize('normal');
+    }
+  }
+  catch(e) {
+    logger.error('_printInfo() error, bipper');
+    throw(e);
+  }
+
+
+  try {
+    if (data.commande.status==="standby") {
+      printer
+        .drawLine()
+        .style('B')
+        .fontSize('2width')
+        .setReverseColors(true)
+        .text(printer._completeRaw(String(strings.status[data.commande.status]).toUpperCase(), "center", {width:21}))
+        .fontSize('normal')
+        .setReverseColors(false)
+        .style('NORMAL');
+    }
+  }
+  catch(e) {
+    logger.error('_printInfo() error, standby');
+    throw(e);
+  }
+
+
+  try {
+    printer
+      .fontSize('2height')
+      .drawLine()
+      .fontSize('normal');
+  }
+  catch(e) {
+    logger.error('_printInfo() error end');
+    throw(e);
+  }
+}
+
+
+
+// informations commande sur le ticket (V2)
+function _printInfo2(printer, data, strings) {
+
+  // "attachez-moi"
+  printer
+    .lineSpace(0)
+    .setReverseColors(false)
+    .font('A')
+    .fontSize('normal')
+    .style('B')
+    .frame(strings.attach, '#')
+    .lineSpace(1)
+    .feed(2)
+    ;
+
+  // mode de commande
+  printer
+    .align('CT')
+    .lineSpace(0)
+    .setReverseColors(true)
+    .fontSize('2width')
+    .text(printer._completeRaw((new Array(strings.mode[data.commande.mode].length+1)).join(' '), 'center', {width:strings.mode[data.commande.mode].length+4}))
+    .fontSize('4square')
+    .text(printer._completeRaw(strings.mode[data.commande.mode], 'center', {width:strings.mode[data.commande.mode].length+4}))
+    .fontSize('2width')
+    .text(printer._completeRaw((new Array(strings.mode[data.commande.mode].length+1)).join(' '), 'center', {width:strings.mode[data.commande.mode].length+4}))
+    .setReverseColors(false)
+    .lineSpace(1)
+    .fontSize('normal')
+    .feed(2)
+    ;
+    
+  // numéro de commande
+  printer
+    .style('A')
+    .fontSize('normal')
+    .drawLine('=')
+    .style('B')
+    .fontSize('4square')
+    .tableCustom([
+      {text: strings.commande, cols: 10, align:'LEFT'},
+      {text: `No ${data.commande.numero}`, cols: 11, align:'RIGHT'},
+    ])
+    .style('A')
+    .fontSize('normal')
+    .drawLine('=')
+    .feed(1)
+    ;
+    
+  // infos client
+  if (data.commande.client!==null) {
+
+    printer
+      .font('A')
+      .fontSize('normal')
+      .feed(1)
+      .style('NORMAL')
+      .tableCustom([
+        {text: `${strings.client.titre} ${data.commande.client.prenom} ${data.commande.client.nom}`, cols:42, align:'CENTER'}
+      ])
+      .feed(1)
+      ;
+  }
+
+  // nom du ticket
+  printer
+    .fontSize('normal')
+    .setReverseColors(true)
+    .tableCustom([
+      {text: data.nomticket, cols: strings.mode[data.commande.mode].length+4, align:'CENTER'}
+    ])
+    .setReverseColors(false)
+    .feed(1)
+    ;
+
+
+  if (data.commande.bipper) {
+    printer
+      .fontSize('normal')
+      .drawLine()
+      .style('NORMAL')
+      .fontSize('4square')
+      .text(`--- ${strings.bipper}${data.commande.bipper} ---`)
+      .fontSize('normal')
+      ;
+  }
+
+  // status de la commande
+  if (data.commande.status==="standby") {
+    printer
+      .drawLine()
+      .style('B')
+      .fontSize('2width')
+      .setReverseColors(true)
+      .text(printer._completeRaw(String(strings.status[data.commande.status]).toUpperCase(), "center", {width:21}))
+      .fontSize('normal')
+      .setReverseColors(false)
+      .style('NORMAL');
+  }
+  printer
+    .fontSize('normal')
+    .drawLine('=')
+    .fontSize('normal')
+    ;
+}
+
+
+// détail commande sur le ticket
+function _printDetail(printer, data, strings) {
+  printer
+    .align('CT')
+    // .fontSize('4square')
+    .fontSize('normal')
+    .style('B')
+    .tableCustom([
+      {text:'', cols:3},
+      {text: strings.caption.quantite, cols:3},
+      {text:'', cols:3},
+      {text: strings.caption.articles, cols:30},
+      {text:'', cols:3}
+    ]);
+
+  printer.drawLine();
+
+
+  if (data.comment!=='') {
+    printer.style('B').tableCustom([
+      {text:'', cols:3},
+      {text: '* ', cols:2, align:'RIGHT'},
+      {text: data.comment, cols:32, align:'LEFT'},
+      {text: ' *', cols:2, align:'RIGHT'},
+      {text:'', cols:3}
+    ]);
+    printer.drawLine();
+  }
+
+
+  let numarticles = 0;
+  data.articles.forEach((article) => {
+    printer.style('B').tableCustom([
+      {text:'', cols:3},
+      {text: article.qte, cols:3, align:'RIGHT'},
+      {text:'', cols:3},
+      {text: article.nom, cols:30, align:'LEFT'},
+      {text:'', cols:3}
+    ]);
+    if (article.comment!=='') {
+      printer.style('B').tableCustom([
+        {text:'', cols:3},
+        {text: '* ', cols:2, align:'RIGHT'},
+        {text: article.comment, cols:32, align:'LEFT'},
+        {text: ' *', cols:2, align:'RIGHT'},
+        {text:'', cols:3}
+      ]);
+    }
+
+    let numingredients = 0;
+    if (article.ingredients.length>0) {
+      article.ingredients.forEach((ingredient) => {
+        printer.style('NORMAL').tableCustom([
+          {text:'', cols:3},
+          {text: ingredient.qte, cols:3, align:'RIGHT'},
+          {text:'', cols:3},
+          {text: '  '+ingredient.nom, cols:30, align:'LEFT'},
+          {text:'', cols:3}
+        ]);
+      //  numingredients += ingredient.qte;
+
+        if (ingredient.comment!=='') {
+          printer.style('B').tableCustom([
+            {text:'', cols:3},
+            {text: '* ', cols:2, align:'RIGHT'},
+            {text: ingredient.comment, cols:32, align:'LEFT'},
+            {text: ' *', cols:2, align:'RIGHT'},
+            {text:'', cols:3}
+          ]);
+        }
+      });
+
+      printer.feed(1);
+
+    }
+    numarticles += numingredients>0 ? numingredients : article.qte;
+  });
+  
+  printer
+    .drawLine()
+    .align('CT')
+    // .size(1,2)
+    .fontSize('2height')
+    .text(`${strings.caption.num_articles}${numarticles}`);
+
+}
+
+// détail commande sur le ticket V2
+function _printDetail2(printer, data, strings) {
+
+  printer.lineSpace(1);
+
+  if (data.comment!=='') {
+    printer
+      // .fontSize('normal')
+      .fontSize('2height')
+      .feed(1)
+      .style('B')
+      .tableCustom([
+        {text:'', cols:3},
+        {text: '* ', cols:2, align:'RIGHT'},
+        {text: data.comment, cols:32, align:'LEFT'},
+        {text: ' *', cols:2, align:'RIGHT'},
+        {text:'', cols:3}
+      ])
+      .feed(1)
+      .drawLine();
+      ;
+  }
+
+
+  printer.fontSize('2height');
+
+  let numarticles = 0;
+  data.articles.forEach((article) => {
+    printer
+      .fontSize('2height')
+      .style('B')
+      .tableCustom([
+        {text: article.qte, cols:3, align:'RIGHT'},
+        {text:' x ', cols:3},
+        {text: article.nom, cols:36, align:'LEFT'},
+      ])
+      .fontSize('normal')
+      .feed(1)
+      ;
+      
+
+    // commentaire sur le produit
+    if (article.comment!=='') {
+      printer
+        // .fontSize('normal')
+        .fontSize('2height')
+        .style('B')
+        .tableCustom([
+          {text:'', cols:3},
+          {text: '* ', cols:2, align:'RIGHT'},
+          {text: article.comment, cols:32, align:'LEFT'},
+          {text: ' *', cols:2, align:'RIGHT'},
+          {text:'', cols:3}
+        ])
+        .feed(1)
+        ;
+    }
+
+    // liste des ingredients
+    let numingredients = 0;
+    if (article.ingredients.length>0) {
+
+      
+
+      article.types.forEach(type => {
+        
+        printer
+          .fontSize('2height')
+          .tableCustom([
+            {text:'', cols:5},
+            {text: type.nom, style:'BU', cols:37, align:'LEFT'},
+          ]);
+
+          if (type.hilite) {
+            printer.setReverseColors(true);
+          }
+      
+        type.ingredients.forEach((ingredient) => {
+          printer
+            .fontSize('2height')
+            .style('NORMAL')
+            .tableCustom([
+              {text:'', cols:5},
+              {text: ingredient.qte, cols:3, align:'RIGHT'},
+              {text:' x ', cols:3},
+              {text: '  '+ingredient.nom, cols:31, align:'LEFT'},
+            ]);
+
+          if (ingredient.comment!=='') {
+
+            printer
+              // .fontSize('normal')
+              .fontSize('2height')
+              .style('B')
+              .tableCustom([
+                {text:'', cols:5},
+                {text: '* ', cols:2, align:'RIGHT'},
+                {text: ingredient.comment, cols:33, align:'LEFT'},
+                {text: ' *', cols:2, align:'RIGHT'},
+              ])
+              .feed(1)
+              ;
+          }
+        });
+        printer.setReverseColors(false);
+        printer.fontSize('normal').feed(1);
+
+      })
+
+
+    }
+
+    printer.fontSize('normal').feed(1);
+    printer.drawLine('=');
+    printer.feed(1);
+
+    numarticles += numingredients>0 ? numingredients : article.qte;
+  });
+  
+  printer
+    .drawLine()
+    .align('CT')
+    // .size(1,2)
+    .fontSize('2height')
+    .text(`${strings.caption.num_articles}${numarticles}`);
+
+}
+
+// récap des autres tickets
+function _printRecap(printer, recap, strings) {
+
+  printer
+    // .fontSize('4square')
+    .fontSize('normal')
+    .drawLine()
+    ;
+  recap.forEach(ticket => {
+    printer
+      // .size(1,2)
+      .fontSize('2height')
+      .text(`- ${ticket.nom} : ${ticket.num} ${strings.caption.articles}`);
+  });
+
+
+}
+
+// récap des autres tickets V2
+function _printRecap2(printer, recap, strings) {
+
+  printer.lineSpace(1);
+
+  printer
+    // .fontSize('4square')
+    .fontSize('normal')
+    .drawLine()
+    ;
+  recap.forEach(ticket => {
+    printer
+      // .size(1,2)
+      .fontSize('2height')
+      .text(`- ${ticket.nom} : ${ticket.num} ${strings.caption.articles}`);
+  });
+
+
+}
+
+// footer des tickets de prod
+async function _printProdfooter2(printer, data, strings) {
+
+  printer.lineSpace(1);
+
+  printer
+    .fontSize('normal')
+    .drawLine("=")
+    .align('CT')
+    .text(`${strings.numero}${data.id}`)
+    .feed(1)
+    .text(`${data.info.date} à ${data.info.heure}`)
+    .feed(1)
+    ;
+  
+  log.info('logo',data.logo);
+  
+  if (data.logo) {
+    const pixels = await getPixelsAsync(getLogoImg(data.logo));
+    const image = new escpos.Image(pixels);
+    await _printImage(printer, image);
+  }
+}
+
+// informations Company
+function _printEntreprise(printer, data, strings) {
+    printer
+      .font('A')
+      // .fontSize('4square')
+      .fontSize('normal')
+      .feed(1)
+      .align('CT')
+    ;
+    // enseigne
+    printer.fontSize('4square').style('B').text(data.enseigne);
+    // denomination
+    printer.fontSize('normal').style('A').text(data.denomination);
+    // coordonnées
+    data.coordonnees.forEach((string) => {
+      if (string!==null ) printer.style('NORMAL').text(string);
+    });
+    // fiscal
+    if (data.fiscal.length>0) {
+      data.fiscal.forEach((string) => {
+        printer.style('NORMAL').text(string);
+      });
+    }
+    printer.feed(1);
+}
+
+function _printAvoir(printer, data, strings) {
+
+  printer
+    // .fontSize('4square')
+    .fontSize('normal')
+    .drawLine()
+    .font('A')
+    .align('CT')
+    .style('B')
+    // .size(1,2)
+    .fontSize('2height')
+    .text(strings.nom)
+    // .fontSize('4square')
+    .fontSize('normal')
+    .drawLine()
+  ;
+
+  printer
+    .style('NORMAL')
+    // .size(1,2)
+    .fontSize('2height')
+    .tableCustom([
+      {text: strings.montant, cols:25, align:'LEFT'},
+      {text:'', cols:2},
+      {text: '  '+data.valeur, cols:15, align:'RIGHT'}
+    ])
+    // .fontSize('4square')
+    .fontSize('normal')
+    .tableCustom([
+      {text: strings.validite, cols:15, align:'LEFT'},
+      {text:'', cols:2},
+      {text: '  '+data.limite, cols:25, align:'RIGHT'}
+    ]);
+
+  if (data.client!==null) {
+
+    printer.style('NORMAL').tableCustom(
+      [
+        {text: strings.client, cols:15, align:'LEFT'},
+        {text:'', cols:2},
+        {text: '  '+data.client, cols:25, align:'RIGHT'}
+      ]
+    );
+  }
+
+}
+
+
+
+function getPixelsAsync(url) {
+    return new Promise(function(resolve, reject) {
+       getPixels(url, function(err, pixels) {
+            if (err) reject(false)
+            else resolve(pixels)
+        })
+    })
+}
+
+async function _printQRCode(printer, code) {
+
+  printer.drawLine();
+    
+  const qrimg = await QRCode.toDataURL(code, {width:300});
+  const pixels = await getPixelsAsync(qrimg);
+  const image = new escpos.Image(pixels);
+//  log.info(image);
+  await _printImage(printer, image);
+
+  printer
+    // .fontSize('4square')
+    .fontSize('normal')
+    .font('A')
+    .align('CT')
+    .text(code)
+  ;
+  
+}
+
+function getLogoImg(filePath) {
+
+  let buff = fs.readFileSync(filePath);
+  return `data:image/png;base64, ${buff.toString('base64')}`;
+
+}
+
+// async function _printLogo(printer, imageUrl) {
+
+//   const pixels = await getPixelsAsync(getLogoImg(imageUrl));
+//   const image = new escpos.Image(pixels);
+// //  log.info(image);
+//   const printImage = await _printImage(printer, image);
+
+// }
+
+// impression des informations de commande
+function _printCommande(printer, data, strings) {
+
+  printer
+    .align('CT')
+    .drawLine()
+    .style('B')
+    // .size(2,2)
+    .fontSize('4square')
+    .text(`#${data.numero}`)
+    .font('A')
+    // .fontSize('4square')
+    .fontSize('normal')
+    .style('NORMAL')
+    .text(data.id)
+    .text(data.date)
+    ;
+
+    if (data.dupli) {
+
+      printer
+      .align('CT')
+      .fontSize('2width')
+      .feed(1)
+      .text(`DUPLICATA`);
+    }
+
+  printer
+    .align('CT')
+    .feed(1)
+    .style('B')
+    // .size(2,2)
+    .fontSize('4square')
+    .text(`*** ${strings.mode[data.mode]} ***`)
+    .font('A')
+    // .fontSize('4square')
+    .fontSize('normal')
+    .style('NORMAL')
+    .drawLine()
+    ;
+
+
+  if (data.bipper) {
+    printer
+      .fontSize('4square')
+      .text(`--- ${strings.bipper}${data.bipper} ---`)
+      .fontSize('2height')
+      .drawLine()
+      .fontSize('normal');
+  }
+
+  if (data.scheduled) {
+    printer
+    .fontSize('2width')
+    .text(`<<< ${strings.schedule.titre}${data.scheduled} >>>`)
+    .fontSize('normal')
+    .drawLine()
+    ;
+  }
+
+
+  if (data.comment!=='') {
+    printer.style('B').tableCustom([
+      {text:'', cols:3},
+      {text: '* ', cols:2, align:'RIGHT'},
+      {text: data.comment, cols:32, align:'LEFT'},
+      {text: ' *', cols:2, align:'RIGHT'},
+      {text:'', cols:3}
+    ]);
+    printer.font('A')
+          // .fontSize('4square')
+          .fontSize('normal')
+          .style('NORMAL')
+          .drawLine();
+  }
+
+  if (data.client!==null) {
+
+    printer.font('A')
+          // .fontSize('4square')
+          .fontSize('normal')
+          .style('NORMAL')
+          .tableCustom([
+            {text: `${strings.client.titre} ${data.client.prenom} ${data.client.nom}`, cols:42, align:'LEFT'}
+          ])
+          .tableCustom([
+            {text: `(${data.client.client_id})`, cols:42, align:'LEFT'}
+          ]);
+    if (data.client.adresse!=='') printer.tableCustom([{text: data.client.adresse, cols:42, align:'LEFT'}]);
+    if (data.client.adresse2!=='') printer.tableCustom([{text: data.client.adresse2, cols:42, align:'LEFT'}]);
+    if (data.client.batiment!=='' || data.client.etage!=='') printer.tableCustom([{text: `${((data.client.batiment!=='')?strings.client.batiment+data.client.batiment:'')}${((data.client.batiment!=='' && data.client.etage!=='')?' - ':'')}${((data.client.etage!=='')?strings.client.etage+data.client.etage:'')}`, cols:42, align:'LEFT'}]);
+    if (data.client.codepostal!=='' || data.client.ville!=='') printer.tableCustom([{text: `${data.client.codepostal} ${data.client.ville}`, cols:42, align:'LEFT'}]);
+    if (data.client.telephone!=='' || data.client.telephone2!=='') printer.tableCustom([{text: `${strings.client.tel} ${data.client.telephone}${((data.client.telephone!=='' && data.client.telephone2!=='')?' - ':'')}${data.client.telephone2}`, cols:42, align:'LEFT'}]);
+    if (data.client.commentaire!=='') printer.tableCustom([{text: `${strings.client.commentaire} ${data.client.commentaire}`, cols:42, align:'LEFT'}]);
+
+    printer.drawLine();
+  }
+
+
+  const artcolwidth = (data.status==='confirmed') ? 22 : 24;
+
+  // articles
+  // header
+
+  let __entete = [
+    {text: strings.detail.quantite, cols:3, align:'RIGHT'},
+    {text:'', cols:1},
+    {text: strings.detail.articles, cols:artcolwidth, align:'LEFT'},
+    {text:'', cols:1},
+    {text: strings.detail.prix_unitaire, cols:6, align:'RIGHT'},
+    {text:'', cols:1},
+    {text: strings.detail.total, cols:6, align:'RIGHT'}
+  ];
+  if (data.status==='confirmed') {
+    __entete = [
+      ...__entete,
+      {text:'', cols:1},
+      {text: strings.detail.code_tva, cols:1}
+    ];
+  }
+
+
+  printer
+    .style('B')
+    .tableCustom(__entete)
+    .drawLine();
+
+  // articles :
+  printer
+    .style('NORMAL');
+
+  let _linecount = 0;
+
+  // let _subtotal = 0;
+
+      
+  data.articles.forEach((article) => {
+
+
+    // _subtotal += Number(article.prix);
+    let __ligne = [
+      {text: article.qte, cols:3, align:'RIGHT'},
+      {text:'', cols:1},
+      {text: article.nom, cols:artcolwidth, align:'LEFT'},
+      {text:'', cols:1},
+      {text: String(article.pu).replace('.',','), cols:6, align:'RIGHT'},
+      {text:'', cols:1},
+      {text: (Number(article.qte)*Number(article.pu)).toFixed(2).replace('.',','), cols:6, align:'RIGHT'}
+    ];
+    if (data.status==='confirmed') {
+      __ligne = [
+        ...__ligne,
+        {text:'', cols:1},
+        {text: article.codetva, cols:1}
+      ];
+    }
+
+    printer.align('CT').style('B').tableCustom(__ligne);
+    
+    if (article.comment!=='') {
+      printer.align('CT').style('B').tableCustom([
+        {text:'', cols:3},
+        {text: '* ', cols:2, align:'RIGHT'},
+        {text: article.comment, cols:32, align:'LEFT'},
+        {text: ' *', cols:2, align:'RIGHT'},
+        {text:'', cols:3}
+      ]);
+      _linecount++;
+    }
+    _linecount++;
+
+    if (article.ingredients.length>0) {
+      article.ingredients.forEach((ingredient) => {
+        let __ingligne = [
+          {text: ingredient.qte, cols:3, align:'RIGHT'},
+          {text:'', cols:1},
+          {text: '  '+ingredient.nom, cols:artcolwidth, align:'LEFT'},
+          {text:'', cols:1},
+          {text: String(ingredient.pu).replace('.',','), cols:6, align:'RIGHT'},
+          {text:'', cols:1},
+          {text: String(ingredient.prix).replace('.',','), cols:6, align:'RIGHT'}
+        ];
+        if (data.status==='confirmed') {
+          __ingligne = [
+            ...__ingligne,
+            {text:'', cols:1},
+            {text: ingredient.codetva, cols:1}
+          ];
+        }
+        printer.align('CT').style('NORMAL').tableCustom(__ingligne);
+        if (ingredient.comment!=='') {
+          printer.align('CT').style('B').tableCustom([
+            {text:'', cols:3},
+            {text: '* ', cols:2, align:'RIGHT'},
+            {text: ingredient.comment, cols:32, align:'LEFT'},
+            {text: ' *', cols:2, align:'RIGHT'},
+            {text:'', cols:3}
+          ]);
+          _linecount++;
+        }
+        _linecount++;
+      });
+    }
+    if (article.modificateur) {
+      const modnom = strings.modificateur.discount_item;
+      const modope = '-';
+      const ispc = String(article.modificateur.valeur).substr(-1,1)==='%';
+
+      let __modligne = [
+        {text: '', cols:4},
+        {text: modnom, cols:artcolwidth, align:'LEFT'},
+        {text:'', cols:1},
+        {text: ispc ? modope+article.modificateur.valeur : '', cols:6, align:'RIGHT'},
+        {text:'', cols:1},
+        {text: modope+article.modificateur.montant.toFixed(2).replace('.',','), cols:6, align:'RIGHT'}
+      ];
+      if (data.status==='confirmed') {
+        __modligne = [
+          ...__modligne,
+          {text:'', cols:2}
+        ]
+      }
+
+      printer.align('CT').style('B').tableCustom(__modligne);
+      _linecount++;
+    }
+  });
+
+  // modificateurs (charge ou discount) au niveau de la commande
+  if (data.modificateur) {
+     const modnom = strings.modificateur.discount_panier;
+     const modope = '-';
+     const ispc = String(data.modificateur.valeur).substr(-1,1)==='%';
+     const cmdmodval = String(data.modificateur.valeur).slice(0,-1);
+
+     // sous-total
+    let __stligne = [
+      {text: `${strings.detail.sous_total}   ${data.total.soustotal.toFixed(2).replace('.',',')}`, cols:((data.status==='confirmed') ? 40 : 42), align:'right'},
+    ];
+    if (data.status==='confirmed') {
+      __stligne = [
+        ...__stligne,
+        {text:'', cols:2}
+      ];
+    }
+    printer
+      .drawLine()
+      .align('CT')
+      .fontSize('normal')
+      .tableCustom(__stligne)
+      .fontSize('normal')
+      .drawLine();
+
+      let __pmodligne = [
+        {text: '', cols:4},
+        {text: modnom, cols:22, align:'LEFT'},
+        {text:'', cols:1},
+        {text: ispc ? modope+data.modificateur.valeur : '', cols:6, align:'RIGHT'},
+        {text:'', cols:1},
+        {text: ispc ? modope+data.modificateur.montant.toFixed(2).replace('.',',') : modope+Number(cmdmodval).toFixed(2).replace('.',','), cols:((data.status==='confirmed')?6:8), align:'RIGHT'}
+      ];
+      if (data.status==='confirmed') {
+        __pmodligne = [
+          ...__pmodligne,
+          {text:'', cols:2}
+        ];
+      }
+      printer.align('CT').style('B').tableCustom(__pmodligne);
+
+    //   const ispc = String(data.modificateur.valeur).substr(-1,1)==='%';
+    //   let modval = Math.abs(Number(String(data.modificateur.valeur).slice(0,-1)));
+    //   let montant = null;
+    //   if (!ispc) {
+    //     modval = modval.toFixed(2).toString().replace('.',',') + ' EUR';
+    //   } else {
+    //     modval += ' %';
+    //     montant = data.modificateur.montant.toFixed(2).toString().replace('.',',') + ' EUR';
+    //   }
+
+  //   if (montant) {
+        
+  //     printer
+  //       .align('CT')
+  //       // .fontSize('4square')
+  //       .fontSize('normal')
+  //       .tableCustom([
+  //         {text: modnom, cols:22, align:'LEFT'},
+  //         {text: modope+modval, cols:10, align:'RIGHT'},
+  //         {text: modope+montant, cols:10, align:'RIGHT'}
+  //       ])
+  //       .fontSize('normal')
+  //     }
+  //     else {
+
+  //     printer
+  //     .align('CT')
+  //     // .fontSize('4square')
+  //     .fontSize('normal')
+  //     .tableCustom([
+  //       {text: modnom, cols:22, align:'LEFT'},
+  //       {text: '', cols:10, align:'RIGHT'},
+  //       {text: modope+modval, cols:10, align:'RIGHT'}
+  //     ])
+  //     .fontSize('normal')
+  //     }
+  }
+
+  // total
+  printer
+    .drawLine()
+    .align('CT')
+    // .size(1,2)
+    .fontSize('2height')
+    .tableCustom([
+      {text: `${strings.detail.total_ttc}   ${data.total.total.replace('.',',')}`, cols:42, align:'RIGHT'}
+    ])
+    // .fontSize('4square')
+    .fontSize('normal')
+    .drawLine();
+
+
+  printer
+  .font('A')
+  .align('CT')
+  .tableCustom([
+    {text: `${strings.detail.nbr_lignes} ${_linecount}`, cols:42, align:'LEFT'}
+  ])
+  .drawLine();
+
+  // uniquement sur ticket
+  if (data.status==='confirmed') {
+
+    // total remise
+    printer
+      .tableCustom([
+        {text: `${strings.detail.avant_remise} ${data.total.avantremise.replace('.',',')}`, cols:42, align:'LEFT'}
+      ])
+      .tableCustom([
+        {text: `${strings.detail.total_remise} ${data.total.remise.replace('.',',')}`, cols:42, align:'LEFT'}
+      ]);
+
+    // tva
+    printer
+      .align('CT')
+      .drawLine();
+
+    // header
+    printer
+      .align('CT')
+      .style('B')
+      .tableCustom([
+        {text: strings.tva.code, cols:4, align:'LEFT'},
+        {text:'', cols:2},
+        {text: strings.tva.taux, cols:6, align:'RIGHT'},
+        {text:'', cols:2},
+        {text: strings.tva.tva, cols:8, align:'RIGHT'},
+        {text:'', cols:2},
+        {text: strings.tva.ht, cols:8, align:'RIGHT'},
+        {text:'', cols:2},
+        {text: strings.tva.ttc, cols:8, align:'RIGHT'}
+      ])
+      .style('NORMAL')
+
+    // body
+    for (let value of data.total.tva) {
+
+
+      printer.tableCustom([
+        {text:value.code, cols:4, align:'LEFT'},
+        {text:'', cols:2},
+        {text:value.taux.toString().replace('.',','), cols:6, align:'RIGHT'},
+        {text:'', cols:2},
+        {text:value.taxe.replace('.',','), cols:8, align:'RIGHT'},
+        {text:'', cols:2},
+        {text:value.ht.replace('.',','), cols:8, align:'RIGHT'},
+        {text:'', cols:2},
+        {text:value.ttc.replace('.',','), cols:8, align:'RIGHT'}
+      ]);
+    }
+
+
+    // footer
+    printer
+      .align('CT')
+      .style('B')
+      .tableCustom([
+        {text: 'TOTAL :', cols:12, align:'RIGHT'},
+        {text:'', cols:2},
+        {text: data.total.taxe.replace('.',','), cols:8, align:'RIGHT'},
+        {text:'', cols:2},
+        {text: data.total.ht.replace('.',','), cols:8, align:'RIGHT'},
+        {text:'', cols:2},
+        {text: data.total.total.replace('.',','), cols:8, align:'RIGHT'}
+      ])
+      .style('NORMAL')
+
+  }
+  // reglements
+  if (data.reglements.length>0) {
+    
+    printer
+      .align('CT')
+      .drawLine()
+      .style('NORMAL').text(strings.reglements.titre);
+
+      data.reglements.forEach(reglement => {
+        printer.style('NORMAL').tableCustom([
+          {text:'', cols:1},
+          {text: reglement.lib, cols:28, align:'LEFT'},
+          {text:'', cols:1},
+          {text: `${reglement.valeur.replace('.',',')} ${strings.reglements.monnaie}`, cols:12, align:'RIGHT'}
+        ]);
+      });
+  }
+  // ou à régler
+  else {
+    // à condition qu'il y ait quelque chose à régler...
+    if (data.total.total>0) {
+      printer
+        .align('CT')
+        .drawLine()
+        // .size(1,2)
+        .fontSize('2height')
+        .tableCustom([
+          {text: `${strings.reglements.a_regler}   ${data.total.total.replace('.',',')}`, cols:42, align:'CENTER'}
+        ])
+        // .fontSize('4square');
+        .fontSize('normal');
+    }
+  }
+
+  // rendu monnaie
+  if (data.rendus.length>0) {
+    printer
+      .drawLine()
+      .style('NORMAL').text(strings.rendu.titre);
+
+    data.rendus.forEach(rendu => {
+      printer.style('NORMAL').tableCustom([
+        {text:'', cols:1},
+        {text: rendu.moyen, cols:28, align:'LEFT'},
+        {text:'', cols:1},
+        {text: `${rendu.valeur.toFixed(2).replace('.',',')} ${strings.rendu.monnaie}`, cols:12, align:'RIGHT'}
+      ]);
+    });
+  }
+  if (data.troppercu.length>0) {
+    printer
+      .drawLine();
+
+    data.troppercu.forEach(troppercu => {
+      printer.style('NORMAL').tableCustom([
+        {text:'', cols:1},
+        {text: strings.troppercu.titre, cols:28, align:'LEFT'},
+        {text:'', cols:1},
+        {text: `${troppercu.valeur.toFixed(2).replace('.',',')} ${strings.troppercu.monnaie}`, cols:12, align:'RIGHT'}
+      ]);
+    });
+  }
+
+  printer.drawLine();
+  
+
+
+
+}
+
+
+function _printPeriodeX(printer, data, strings) {
+
+  _printPeriodeZ(printer, data, strings, true);
+
+}
+
+function _printPrelevement(printer, data, strings) {
+  printer
+      // .fontSize('4square')
+      .fontSize('normal')
+      .drawLine()
+      .align('CT')
+      .tableCustom([
+        {text: strings.prelevement, cols:24, align:'LEFT'},
+        {text: Number(data).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
+      ]);
+}
+
+function _printMouvements(printer, data, strings) {
+
+  if (data!==null && data.length>0) {
+    printer
+      .drawLine()
+      .align('CT')
+      .style('B')
+      .setReverseColors(true)
+      .text(printer._completeRaw(strings.mouvements.titre, "center"))
+      .setReverseColors(false)
+      .drawLine();
+
+    let credit = 0;
+    let debit = 0;
+
+    printer
+      .tableCustom([
+        {text: strings.mouvements.type, cols:9, align:'LEFT'},
+        {text:'', cols:3},
+        {text: strings.mouvements.debit, cols:8, align:'RIGHT'},
+        {text:'', cols:3},
+        {text: strings.mouvements.credit, cols:8, align:'RIGHT'},
+        {text:'', cols:3},
+        {text: strings.mouvements.solde, cols:8, align:'RIGHT'}
+      ]);
+
+    data.forEach(mvt => { 
+      printer
+        .style('NORMAL')
+        .tableCustom([
+          {text: strings.mouvements.types[mvt.type], cols:9, align:'LEFT'},
+          {text:'', cols:3},
+          {text: (mvt.debit>0) ? '- '+Number(mvt.debit/100).toFixed(2).replace('.',',') : '---', cols:8, align:'RIGHT'},
+          {text:'', cols:3},
+          {text: (mvt.credit>0) ? '+ '+Number(mvt.credit/100).toFixed(2).replace('.',',') : '---', cols:8, align:'RIGHT'},
+          {text:'', cols:3},
+          {text: Number(mvt.solde/100).toFixed(2).replace('.',','), cols:8, align:'RIGHT'}
+        ]);
+        debit += mvt.debit;
+        credit += mvt.credit;
+    });
+
+    if (debit > 0 || credit >0) {
+      printer
+        .feed(1)
+        .tableCustom([
+          {text: strings.mouvements.total, cols:9, align:'LEFT'},
+          {text:'', cols:3},
+          {text: (debit>0) ? '- '+Number(debit/100).toFixed(2).replace('.',',') : '', cols:8, align:'RIGHT'},
+          {text:'', cols:3},
+          {text: (credit>0) ? '+ '+Number(credit/100).toFixed(2).replace('.',',') : '', cols:8, align:'RIGHT'},
+          {text:'', cols:11}
+        ]);
+    }
+  }
+}
+
+function _printPeriodeZ(printer, data, strings, printx=false) {
+
+  log.info('_printPeriodeZ data', data);
+
+  // EN-TÊTE:
+    printer
+      // .fontSize('4square')
+      .fontSize('normal')
+      .drawLine()
+      .align('CT')
+      .tableCustom([{text: strings.periode.titre, cols:42, align:'LEFT'}])
+      .tableCustom([{text: data.debut+' -> '+data.fin, cols:42, align:'CENTER'}])
+      .tableCustom([{text: strings.editeur+data.editeur.nom, cols:42, align:'LEFT'}])
+      .tableCustom([{text: strings.edited+data.createdAt, cols:42, align:'LEFT'}])
+      .feed(1)
+      ;
+    // vendeur :
+    if (data.vendeur) {
+      printer.tableCustom([
+        {text: strings.vendeurs[0]+data.vendeur.nom+' ('+data.vendeur.id+')', cols:42, align:'LEFT'}
+      ]);
+    } else {
+      printer.tableCustom([
+          {text: strings.vendeurs[1]+strings.vendeurs_all, cols:42, align:'LEFT'}
+      ]);
+    }
+    // caisse :
+    if (data.caisse) {
+      const __caisseid = data.caisse.id ? data.caisse.id : data.caisse; 
+      printer.tableCustom([
+        {text: strings.caisses[0]+__caisseid, cols:42, align:'LEFT'}
+      ]).feed(1);
+      
+    } else {
+      printer.tableCustom([
+        {text: strings.caisses[(data.caisses.length>1?1:0)]+data.caisses.join(', '), cols:42, align:'LEFT'}
+      ]).feed(1);
+    }
+    // récap montants :
+    printer
+      .tableCustom([
+        {text: strings.depenses, cols:30, align:'LEFT'},
+        {text: Number(data.depenses).toFixed(2).replace('.',','), cols:12, align:'RIGHT'}
+      ])
+      .tableCustom([
+        {text: strings.remboursements, cols:30, align:'LEFT'},
+        {text: Number(data.remboursements).toFixed(2).replace('.',','), cols:12, align:'RIGHT'}
+      ])
+      .tableCustom([
+        {text: strings.encaissements, cols:30, align:'LEFT'},
+        {text: Number(data.ventes).toFixed(2).replace('.',','), cols:12, align:'RIGHT'}
+      ])
+      // .tableCustom([
+      //   {text: strings.mtcaisse, cols:30, align:'LEFT'},
+      //   {text: Number(data.mtcaisse).toFixed(2).replace('.',','), cols:12, align:'RIGHT'}
+      // ])
+      .feed(1);
+
+  // CORPS
+    // titre0
+
+    let titre = printx ? strings.titre.x : strings.titre.z;
+    titre = titre.replace('%TYPE%', strings.type[data.ztype]);
+
+    printer
+      .drawLine()
+      .align('CT')
+      .style('B')
+      .text(titre)
+      .drawLine();
+    
+    // recap :
+    printer
+    .style('NORMAL')
+    .tableCustom([
+      {text: strings.caption.ventes, cols:22, align:'LEFT'},
+      {text: Number(data.ventes).toFixed(2).replace('.',','), cols:12, align:'RIGHT'},
+      {text: '', cols:8, align:'RIGHT'}
+    ])
+    .tableCustom([
+      {text: strings.caption.remboursements, cols:22, align:'LEFT'},
+      {text: "-"+Number(data.remboursements).toFixed(2).replace('.',','), cols:12, align:'RIGHT'},
+      {text: '', cols:6, align:'RIGHT'}
+    ])
+    .drawLine()
+    .tableCustom([
+      {text: strings.caption.ca, cols:22, align:'LEFT'},
+      {text: Number(data.ca).toFixed(2).replace('.',','), cols:12, align:'RIGHT'},
+      {text: '', cols:8, align:'RIGHT'}
+    ])
+    .feed(1)
+    .tableCustom([
+      {text: '', cols:5, align:'LEFT'},
+      {text: strings.caption.numtickets, cols:17, align:'LEFT'},
+      {text: data.numtickets, cols:12, align:'RIGHT'},
+      {text: '', cols:8, align:'RIGHT'}
+    ])
+    .tableCustom([
+      {text: '', cols:5, align:'LEFT'},
+      {text: strings.caption.ticket_moyen, cols:17, align:'LEFT'},
+      {text: Number(data.ticket_moyen).toFixed(2).replace('.',','), cols:12, align:'RIGHT'},
+      {text: '', cols:8, align:'RIGHT'}
+    ])
+    .drawLine()
+    ;
+
+    // ventilation par caissier
+    printer
+      .align('CT')
+      .style('B')
+      .setReverseColors(true)
+      .text(printer._completeRaw(strings.ventilation.vendeur, "center"))
+      .setReverseColors(false)
+      .drawLine();
+
+    let vndvnt = 0;
+    let vndrmb = 0;
+    let vndtotal = 0;
+
+    printer
+      .tableCustom([
+        {text: '', cols:15, align:'LEFT'},
+        {text: strings.caption.vente_short, cols:9, align:'RIGHT'},
+        {text: strings.caption.remboursements_short, cols:9, align:'RIGHT'},
+        {text: strings.caption.ca_short, cols:9, align:'RIGHT'}
+      ]);
+
+    Object.values(data.ventilation.vendeur).forEach(vendeur => {
+      
+      printer
+        .style('NORMAL')
+        .tableCustom([
+          {text: vendeur.nom+' ('+vendeur.id+')', cols:15, align:'LEFT'},
+          {text: Number(vendeur.ventes/100).toFixed(2).replace('.',','), cols:9, align:'RIGHT'},
+          {text: '-'+Number(vendeur.remboursements/100).toFixed(2).replace('.',','), cols:9, align:'RIGHT'},
+          {text: Number((vendeur.ventes/100) - (vendeur.remboursements/100)).toFixed(2).replace('.',','), cols:9, align:'RIGHT'}
+        ]);
+        vndvnt += vendeur.ventes;
+        vndrmb += vendeur.remboursements;
+        vndtotal += (vendeur.ventes-vendeur.remboursements);
+    });
+
+    printer
+      .feed(1)
+      .tableCustom([
+        {text: strings.caption.total, cols:15, align:'LEFT'},
+        {text: Number(vndvnt/100).toFixed(2).replace('.',','), cols:9, align:'RIGHT'},
+        {text: '-'+Number(vndrmb/100).toFixed(2).replace('.',','), cols:9, align:'RIGHT'},
+        {text: Number(vndtotal/100).toFixed(2).replace('.',','), cols:9, align:'RIGHT'}
+      ]);
+
+      // ventilation par station
+      printer
+        .align('CT')
+        .style('B')
+        .setReverseColors(true)
+        .text(printer._completeRaw(strings.ventilation.caisse, "center"))
+        .setReverseColors(false)
+        .drawLine();
+  
+      let cashtotal = 0;
+  
+      printer
+        .tableCustom([
+          {text: '', cols:24, align:'LEFT'},
+          {text: strings.caption.ca_short, cols:18, align:'RIGHT'}
+        ]);
+  
+      Object.values(data.ventilation.caisse).forEach(caisse => {
+        
+        printer
+          .style('NORMAL')
+          .tableCustom([
+            {text: caisse.nom+' ('+caisse.id+')', cols:24, align:'LEFT'},
+            {text: Number(caisse.ca/100).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
+          ]);
+          cashtotal += caisse.ca;
+      });
+  
+      printer
+        .feed(1)
+        .tableCustom([
+          {text: strings.caption.total, cols:24, align:'LEFT'},
+          {text: Number(cashtotal/100).toFixed(2).replace('.',','), cols:9, align:'RIGHT'}
+        ]);
+
+    // ventilation par TVA
+    printer
+      .drawLine()
+      .align('CT')
+      .style('B')
+      .setReverseColors(true)
+      .text(printer._completeRaw(strings.ventilation.tva, "center"))
+      .setReverseColors(false)
+      .drawLine();
+
+    let tvaht = 0;
+    let tvamnt = 0;
+    let tvattc = 0;
+
+    printer
+      .tableCustom([
+        {text: strings.caption.type, cols:9, align:'LEFT'},
+        {text:'', cols:3},
+        {text: strings.caption.ht, cols:8, align:'RIGHT'},
+        {text:'', cols:3},
+        {text: strings.caption.tva, cols:8, align:'RIGHT'},
+        {text:'', cols:3},
+        {text: strings.caption.ttc, cols:8, align:'RIGHT'}
+      ]);
+
+    Object.values(data.ventilation.tva).forEach(tva => { 
+      printer
+        .style('NORMAL')
+        .tableCustom([
+       //   {text: Number(tva.taux*100).toFixed(2).replace('.',',')+'%', cols:9, align:'LEFT'},
+          {text: tva.taux, cols:9, align:'LEFT'},
+          {text:'', cols:3},
+          {text: Number(tva.ht/100).toFixed(2).replace('.',','), cols:8, align:'RIGHT'},
+          {text:'', cols:3},
+          {text: Number(tva.taxe/100).toFixed(2).replace('.',','), cols:8, align:'RIGHT'},
+          {text:'', cols:3},
+          {text: Number(tva.ttc/100).toFixed(2).replace('.',','), cols:8, align:'RIGHT'}
+        ]);
+        tvaht += tva.ht;
+        tvamnt += tva.taxe;
+        tvattc += tva.ttc;
+    });
+
+    printer
+    .feed(1)
+    .tableCustom([
+      {text: strings.caption.total, cols:9, align:'LEFT'},
+      {text:'', cols:3},
+      {text: Number(tvaht/100).toFixed(2).replace('.',','), cols:8, align:'RIGHT'},
+      {text:'', cols:3},
+      {text: Number(tvamnt/100).toFixed(2).replace('.',','), cols:8, align:'RIGHT'},
+      {text:'', cols:3},
+      {text: Number(tvattc/100).toFixed(2).replace('.',','), cols:8, align:'RIGHT'}
+    ]);
+
+
+    // ventilation par moyen de paiement
+
+    printer
+      .drawLine()
+      .align('CT')
+      .style('B')
+      .setReverseColors(true)
+      .text(printer._completeRaw(strings.ventilation.moyen, "center"))
+      .setReverseColors(false)
+      .drawLine();
+
+    let moytotal = 0;
+    let ecarttotal = 0;
+
+
+    // en-tête
+    printer
+      .style('NORMAL')
+      .tableCustom([
+        {text: strings.caption.moyens_th.moyen, col:14, align:'LEFT'},
+        {text: strings.caption.moyens_th.theorique, col:10, align:'RIGHT'},
+        {text: strings.caption.moyens_th.comptage, col:10, align:'RIGHT'},
+        {text: strings.caption.moyens_th.ecart, col:8, align:'RIGHT'},
+      ]);
+
+
+    Object.values(data.ventilation.moyen).forEach(moyen => { 
+
+      let __moy = moyen.moyen;
+      let __moy_o = '';
+      if (moyen.moyen.includes('_')) {
+        let m_r = moyen.moyen.split('_');
+        __moy = m_r[0];
+        __moy_o = ` (${m_r[1]})`;
+      }
+      let __val = moyen.valeur;
+      let __ctg = data.comptage ? data.comptage[__moy] : 0;
+
+      // on déduit le montant des avoirs émis du total des TR
+      if (__moy==='ticket') __val -= data.emission;
+
+      const __moy_ecart = (data.ecarts && data.ecarts.hasOwnProperty(__moy) && data.ecarts[__moy]!==null) ? data.ecarts[__moy].valeur : 0;
+
+      moytotal += __val;
+      ecarttotal += __moy_ecart;
+
+      printer
+        .style('NORMAL')
+        .tableCustom([
+          {text: strings.caption.moyens[__moy]+__moy_o, col:14, align:'LEFT'},
+          {text: Number(__val).toFixed(2).replace('.',','), col:10, align:'RIGHT'},
+          {text: Number(__ctg).toFixed(2).replace('.',','), col:10, align:'RIGHT'},
+          __moy_ecart===0 ? {text: '', col:8} : {text: `${(Number(__moy_ecart)>0) ? '+':''}${ Number(__moy_ecart).toFixed(2).replace('.',',') }`, cols:8, align:'RIGHT'}
+        ]);
+      if (__moy_ecart!==0) {
+        printer
+          .tableCustom([
+            {text: ` * ${strings.caption.ecart.motif}`, cols:18, align:'LEFT'},
+            {text: data.ecarts[__moy].motif, cols:20, align:'LEFT'},
+            {text: ' *', cols:4, align:'LEFT'}
+          ])
+          .feed(1);
+      }
+
+   });
+
+    const cpttotal = (data.comptage && data.comptage.hasOwnProperty('total')) ? data.comptage.total: 0;
+
+    printer
+      .feed(1)
+      .style('NORMAL')
+      .tableCustom([
+        {text: strings.caption.total, col:14, align:'LEFT'},
+        {text: Number(moytotal).toFixed(2).replace('.',','), col:10, align:'RIGHT'},
+        {text: Number(cpttotal).toFixed(2).replace('.',','), col:10, align:'RIGHT'},
+        {text: Number(ecarttotal).toFixed(2).replace('.',','), col:8, align:'RIGHT'},
+      ]);
+
+    // trop perçu
+    if (data.troppercu>0) {
+      printer
+        .feed(1)
+        .drawLine()
+        .tableCustom([
+          {text: strings.caption.troppercu, cols:24, align:'LEFT'},
+          {text: Number(data.troppercu).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
+        ]);
+    }
+
+    // émission d'avoirs
+    if (data.emission>0) {
+      printer
+        .feed(1)
+        .drawLine()
+        .tableCustom([
+          {text: strings.caption.emission, cols:24, align:'LEFT'},
+          {text: Number(data.emission).toFixed(2).replace('.',','), cols:18, align:'RIGHT'}
+        ]);
+    }
+        
+}
+
+
+
+// // complete la ligne avec des espaces
+// function _completeRaw(string, alignment='left', options={}) {
+
+
+//   const __width = options.hasOwnProperty('width') ? 42/(options.width+1) : 42;
+
+//   const __sp = __width - String(string).length;
+//   let __str = "";
+//   switch(alignment) {
+//     case "center":
+//        __str = (new Array(Math.floor(__sp/2)+1)).join(' ') + string + (new Array(Math.floor(__sp/2)+1+(__sp%2))).join(' ');
+//        break;
+//     case "right":
+//        __str = (new Array(__sp+1)).join(' ') + string;
+//        break;
+//     default:
+//       __str = string + (new Array(__sp+1)).join(' ');
+//   }
+//   return __str;
+// }
+
+
+function _printUber(printer, data, strings) {
+  printer
+    // .fontSize('4square')
+    .fontSize('normal')
+    .drawLine()
+    .align('CT')
+    .style('B')
+    // .size(2,2)
+    .fontSize('4square')
+    .text(strings.titre)
+    .text('#'+data.display_id)
+    .font('A')
+    .fontSize('4square')
+    // .fontSize('normal')
+    .style('NORMAL')
+    .feed(1)
+    .text(`${strings.client} ${data.eater.first_name} ${data.eater.last_name}` )
+    // .fontSize('4square')
+    .fontSize('normal')
+    .drawLine()
+    // .size(2,2)
+    .fontSize('4square')
+    .text(strings.texte + data.heure)
+    // .fontSize('4square');
+    .fontSize('normal');
+}
+
+// message
+function _printMessage(printer, data, strings) {
+  
+    printer
+      .feed(1)
+      .align('CT')
+
+    data.forEach((string) => {
+      printer.style('NORMAL').text(string);
+    });
+
+    printer
+      .feed(1)
+      .drawLine()
+      .feed(1)
+}
+
+// mentions légales sur le ticket
+function _printLegal(printer, data, strings) {
+
+  printer.align('CT')
+
+  
+  printer.tableCustom([
+    {text: `Opération : ${data.type}`, cols:42, align:'LEFT'},
+  ]);
+  
+
+  printer
+    .tableCustom([{text: `Vendeur : ${data.vendeur}`, cols:42, align:'LEFT'}])
+    .tableCustom([{text: `Caisse : ${data.caisse}`, cols:42, align:'LEFT'}]);
+  
+  if (data.status==='confirmed') {
+    printer
+      .tableCustom([{text: `C.Paiement : ${data.centre}`, cols:42, align:'LEFT'}]);
+  }  
+  if (data.duplicataid!=='') {
+    printer
+    .tableCustom([{text: `(NF525) B0000 - ${data.duplicatasignature} - Splash360 ${data.version}`, cols:42, align:'LEFT'}])
+    .tableCustom([{text: `Duplicata : ${data.duplicataid}`, cols:42, align:'LEFT'}])
+    .tableCustom([{text: `${(data.status==='confirmed') ? 'Ticket original' : 'Note originale'} : ${data.ticketid} (${data.signature})`, cols:42, align:'LEFT'}]);
+  }
+  else {
+    printer
+    .tableCustom([{text: `(NF525) B0000 - ${data.signature} - Splash360 ${data.version}`, cols:42, align:'LEFT'}])
+    .tableCustom([{text: `${(data.status==='confirmed') ? 'Ticket' : 'Note'} : ${data.ticketid}`, cols:42, align:'LEFT'}]);
+    if (data.originid) {
+      printer
+      .tableCustom([{text: `Modifie ${(data.status==='confirmed') ? 'le ticket' : 'la note' } : ${data.originid}`, cols:42, align:'LEFT'}]);
+    }
+  }
+  printer.tableCustom([{text: `Nombre d'impressions : ${data.printid}`, cols:42, align:'LEFT'}]);
+  printer.feed();
+
+  if (data.status!=='confirmed') {
+    printer
+    .align('CT')
+    .fontSize('2height')
+    .text('DOCUMENT PROVISOIRE');
+  }
+  printer
+    .fontSize('normal')
+    .align('CT');
+  if (data.duplicataid!=='') {
+    printer.text('Dupliqué le '+data.duplicatagdh);
+  } else {
+    printer.text(data.date);
+  }
+  
+
+  // printer.align('LT')
+
+  
+  // printer.text(`Opération : ${data.type}`);
+  
+
+  // printer
+  //   .text(`Vendeur : ${data.vendeur}`)
+  //   .text(`Caisse : ${data.caisse}`);
+  
+  // if (data.status==='confirmed') {
+  //   printer
+  //     .text(`C.Paiement : ${data.centre}`);
+  // }  
+  // if (data.duplicataid!=='') {
+  //   printer
+  //   .text(`(NF525) B0000 - ${data.duplicatasignature} - Splash360 ${data.version}`)
+  //   .text(`Duplicata : ${data.duplicataid}`)
+  //   .text(`${(data.status==='confirmed') ? 'Ticket original' : 'Note originale'} : ${data.ticketid} (${data.signature})`);
+  // }
+  // else {
+  //   printer
+  //   .text(`(NF525) B0000 - ${data.signature} - Splash360 ${data.version}`)
+  //   .text(`${(data.status==='confirmed') ? 'Ticket' : 'Note'} : ${data.ticketid}`);
+  // }
+  // printer.text(`Nombre d'impressions : ${data.printid}`);
+  // printer.feed();
+  // if (data.status!=='confirmed') {
+  //   printer
+  //   .align('CT')
+  //   .fontSize('2height')
+  //   .text('DOCUMENT PROVISOIRE');
+  // }
+  // printer
+  //   .fontSize('normal')
+  //   .align('CT')
+  //   .text(data.date);
+}
+
+
+
+module.exports = {...peripheral, ...actions};

@@ -1,0 +1,35 @@
+{
+  "files": {
+    "main.css": "./static/css/main.eca73936.chunk.css",
+    "main.js": "./static/js/main.b851c58e.chunk.js",
+    "main.js.map": "./static/js/main.b851c58e.chunk.js.map",
+    "runtime-main.js": "./static/js/runtime-main.bfd534f0.js",
+    "runtime-main.js.map": "./static/js/runtime-main.bfd534f0.js.map",
+    "static/css/2.fadac670.chunk.css": "./static/css/2.fadac670.chunk.css",
+    "static/js/2.ed2446a2.chunk.js": "./static/js/2.ed2446a2.chunk.js",
+    "static/js/2.ed2446a2.chunk.js.map": "./static/js/2.ed2446a2.chunk.js.map",
+    "index.html": "./index.html",
+    "precache-manifest.01d67ca992b9e4a300070c2b3a3bcc91.js": "./precache-manifest.01d67ca992b9e4a300070c2b3a3bcc91.js",
+    "service-worker.js": "./service-worker.js",
+    "static/css/2.fadac670.chunk.css.map": "./static/css/2.fadac670.chunk.css.map",
+    "static/css/main.eca73936.chunk.css.map": "./static/css/main.eca73936.chunk.css.map",
+    "static/js/2.ed2446a2.chunk.js.LICENSE.txt": "./static/js/2.ed2446a2.chunk.js.LICENSE.txt",
+    "static/media/styles.scss": "./static/media/numberkeyboard.9e20b2c5.svg",
+    "static/media/fake_searchfield.svg": "./static/media/fake_searchfield.68594eb6.svg",
+    "static/media/fake_stocks_article_popin.svg": "./static/media/fake_stocks_article_popin.a2d5a518.svg",
+    "static/media/fake_stocks_articles.svg": "./static/media/fake_stocks_articles.4c1f9ab3.svg",
+    "static/media/fake_stocks_commande_popin.svg": "./static/media/fake_stocks_commande_popin.5052e88b.svg",
+    "static/media/fake_stocks_etatfournisseurs.svg": "./static/media/fake_stocks_etatfournisseurs.4c5efe37.svg",
+    "static/media/fake_stocks_fournisseur_popin.svg": "./static/media/fake_stocks_fournisseur_popin.c3a32ed6.svg",
+    "static/media/fake_stocks_fournisseurs.svg": "./static/media/fake_stocks_fournisseurs.0b4b2af7.svg",
+    "static/media/fake_stocks_inventaire.svg": "./static/media/fake_stocks_inventaire.2378864d.svg",
+    "static/media/fake_stocks_receptions.svg": "./static/media/fake_stocks_receptions.5447783f.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.bfd534f0.js",
+    "static/css/2.fadac670.chunk.css",
+    "static/js/2.ed2446a2.chunk.js",
+    "static/css/main.eca73936.chunk.css",
+    "static/js/main.b851c58e.chunk.js"
+  ]
+}
